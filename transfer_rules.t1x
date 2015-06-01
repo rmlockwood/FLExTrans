@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transfer>
+  <section-def-cats>
+    <def-cat n="adj">
+      <cat-item tags="adj"/>
+      <cat-item tags="adj.*"/>
+    </def-cat>
+    <def-cat n="post">
+      <cat-item tags="post"/>
+    </def-cat>
+  </section-def-cats>
+  <section-def-attrs>
+    <def-attr n="nbr">
+      <attr-item tags="sg"/>
+      <attr-item tags="pl"/>
+    </def-attr>
+  </section-def-attrs>
+  <section-def-vars>  
+  </section-def-vars>  
+  <section-def-lists>
+  </section-def-lists>
+  <section-def-macros>
+  </section-def-macros>
+  <section-rules>
+    <rule comment=""> 
+      <pattern>
+        <pattern-item n="adj"/>
+        <pattern-item n="post"/>
+      </pattern>
+      <action>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="whole"/>  
+            <lit-tag v="acc/dat"/>
+          </lu>
+        </out>
+      </action>
+    </rule>    
+  </section-rules>
+</transfer>

@@ -1,0 +1,6 @@
+<!-- Add definition lines here -->
+    <sdef n="sss" c="SampleCategory"/>
+<!-- Add replacement lines here -->
+    <e><p><l>SourceWord1.1<s n="n"/></l><r>TargetWord1.1<s n="sss"/></r></p></e>
+<!-- Add lines to be appended here. (Do not delete this line.) -->
+    <e><p><l>SourceWord1.1<s n="n"/></l><r>TargetWord1.1<s n="sss"/></r></p></e>
