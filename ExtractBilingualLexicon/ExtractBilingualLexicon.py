@@ -356,7 +356,7 @@ def MainFunction(DB, report, modifyAllowed):
         # output full category name
         cat_str += pos_name
         cat_str += '"/>\n'
-        f_out.write(cat_str)
+        f_out.write(cat_str.encode('utf-8'))
     
     f_out.write('  </sdefs>\n\n')
     f_out.write('  <section id="main" type="standard">\n')

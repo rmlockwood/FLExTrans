@@ -103,7 +103,10 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
         myGloss = re.sub(r'\.', r'_', myGloss)
 
     # Output gloss
-    f_handle.write('\\g ' + myGloss.encode('utf-8') + '\n')
+    if myGloss:
+        f_handle.write('\\g ' + myGloss.encode('utf-8') + '\n')
+    else:
+        f_handle.write('\\g \n')
     
     # Loop through all the allomorphs
     allEnvs = []
