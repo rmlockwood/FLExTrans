@@ -8,7 +8,7 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
-#   1.0.1 - 7/4/15 - Ron
+#   Version 2 - 7/4/15 - Ron
 #    Dump a possible inflection class present for the root/stem.
 #    Changed module description.
 
@@ -35,7 +35,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : 1.0.1,
+        'moduleVersion'    : 2,
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
