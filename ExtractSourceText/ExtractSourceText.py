@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   1.0.1 - 7/4/15 - Ron
+#    Dump a possible inflection class present for the root/stem.
+#    Changed module description.
 
 import sys
 import os
@@ -32,7 +35,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : 1.0.1,
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
@@ -44,7 +47,9 @@ fully analyzed an error will be generated.
 Next, this module will go through each bundle in the interlinear text and export
 information in the format that Apertium needs. The general idea is that
 affixes and clitics will be exported as <gloss> and root/stems will be exported
-as head_word<pos><feat1><feat2>...<featN>.
+as head_word<pos><feat1>...<featN><class>. Where feat1 to featN are one or more 
+inflection features that may be present for the root/stem 
+and class is an inflection class that may be present on the stem.
 This Module assumes the file FlexTrans.config is in the FlexTools folder.
 """ }
 
@@ -340,7 +345,12 @@ def MainFunction(DB, report, modifyAllowed):
                                             outStr += '<' + ITsString(senseOne.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text + '>'
                                         else:
                                             report.Warning("PartOfSpeech object is null.")
-                                            
+                                        
+                                        # Get inflection class abbreviation  
+                                        if senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                            outStr += '<'+ITsString(senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                  Abbreviation.BestAnalysisAlternative).Text+'>'         
+
                                         # Get any features the stem or root might have
                                         if senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA:
                                             feat_abbr_list = []
@@ -377,6 +387,11 @@ def MainFunction(DB, report, modifyAllowed):
                                     else:
                                         report.Warning("PartOfSpeech object is null.")
                                         
+                                    # Get inflection class abbreviation  
+                                    if bundle.MsaRA.InflectionClassRA:
+                                        outStr += '<'+ITsString(bundle.MsaRA.InflectionClassRA.\
+                                                              Abbreviation.BestAnalysisAlternative).Text+'>'         
+
                                     # Get any features the stem or root might have
                                     if bundle.MsaRA.MsFeaturesOA:
                                         feat_abbr_list = []
