@@ -11,6 +11,14 @@
 #   Version 2 - 7/4/15 - Ron
 #    Dump a possible inflection class present for the root/stem.
 #    Changed module description.
+#
+#   Version 3 - 7/16/15 - Ron
+#    Handle irregularly inflected forms. Do this by collecting inflection 
+#    features when moving through variants to get to a main entry. Output those
+#    saved inflection features as tags. 
+#    Handle morphology on initial component(s) of complex forms. Save any tags
+#    that are present on the initial component(s) and add them to the complex
+#    form as morphology.
 
 import sys
 import os
@@ -35,7 +43,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : 2,
+        'moduleVersion'    : 3,
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
