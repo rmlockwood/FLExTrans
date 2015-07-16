@@ -97,7 +97,7 @@ def get_position_in_component_list(e, complex_e):
                 if e == my_e:
                     return i
 
-def GetEntryWithSense(e):
+def GetEntryWithSense(e, inflFeatAbbrevs):
     # If the entry is a variant and it has no senses, loop through its references 
     # until we get to an entry that has a sense
     notDoneWithVariants = True
@@ -108,6 +108,15 @@ def GetEntryWithSense(e):
                 for entryRef in e.EntryRefsOS:
                     if entryRef.RefType == 0: # we have a variant
                         foundVariant = True
+                        
+                        # Collect any inflection features that are assigned to the special
+                        # variant types called Irregularly Inflected Form
+                        for varType in entryRef.VariantEntryTypesRS:
+                            if varType.ClassName == "LexEntryInflType":
+                                my_feat_abbr_list = []
+                                # The features might be complex, make a recursive function call to find all features
+                                get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
+                                inflFeatAbbrevs.extend(my_feat_abbr_list)
                         break
                 if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                     e = entryRef.ComponentLexemesRS.ToArray()[0]
@@ -257,7 +266,10 @@ def MainFunction(DB, report, modifyAllowed):
                             
                             # Go from variant(s) to entry/variant that has a sense
                             # We are only dealing with senses, so we have to get to one.
-                            e = GetEntryWithSense(e)
+                            # Along the way collect inflection features associated with
+                            # irregularly inflected variant forms so they can be outputted
+                            inflFeatAbbrevs = []
+                            e = GetEntryWithSense(e, inflFeatAbbrevs)
                             
                             # See if we have an enclitic or proclitic
                             if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic'):
@@ -313,13 +325,23 @@ def MainFunction(DB, report, modifyAllowed):
                                                 component_count = get_component_count(shared_complex_e)
                                                 if ccc == component_count:
                                                     ccc = 0
+                                                    savedTags = ''
                                                     pv_list = []
                                                     
                                                 # remove n/adj/... and it's tag from being output
-                                                # need the 2nd pop to get rid of the punctuation or spaces
-                                                outputStrList.pop() 
+                                                saveStr = outputStrList.pop()
+                                                # first pop may have just popped punctuation of spacing
                                                 if len(outputStrList) > 0:
-                                                    outputStrList.pop() 
+                                                    saveStr = outputStrList.pop() 
+                                                    
+                                                
+                                                # The first component(s) could have tags (from affixes or inflection info.)
+                                                # Save these tags so they can be put on the end of the complex form.
+                                                # This kind of assumes that inflection isn't happening on multiple components
+                                                # because that might give a mess when it's all duplicated on the complex form.
+                                                g = re.search(r'.+?<\w+>(<.+>)', saveStr)
+                                                if (g): 
+                                                    savedTags += g.group(1)
                                                 
                                         prev_pv_list = copy.copy(pv_list) 
                                         prev_e = e
@@ -360,6 +382,14 @@ def MainFunction(DB, report, modifyAllowed):
                                             # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                             for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
                                                 outStr += '<' + abb + '>'
+                                        
+                                        # Get any features that come from irregularly inflected forms        
+                                        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                        for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
+                                            outStr += '<' + abb + '>'
+                                            
+                                        # Add the saved tags from a previous complex form component
+                                        outStr += savedTags
                                     else:
                                         report.Warning("No senses found for the complex form.")
                                 else:
@@ -402,6 +432,10 @@ def MainFunction(DB, report, modifyAllowed):
                                         for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
                                             outStr += '<' + abb + '>'
                                     
+                                    # Get any features that come from irregularly inflected forms        
+                                    # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                    for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
+                                        outStr += '<' + abb + '>'
                         else:
                             report.Warning("Morph object is null.")    
                     # We have an affix
