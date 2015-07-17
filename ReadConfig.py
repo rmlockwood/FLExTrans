@@ -49,7 +49,7 @@ def getConfigVal(my_map, key, report):
 
 def configValIsList(my_map, key, report):    
     if type(my_map[key]) is not list:
-        report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list.')
+        report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list. For a single value, end it with a comma.')
         return False
     else:
         return True
