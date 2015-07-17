@@ -25,7 +25,7 @@
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
 #   
-#   Version 2 - 7/17/15 - Ron
+#   Version 3 - 7/17/15 - Ron
 #    Handle morphology on the first part of a complex form.
 #    Read in the TargetComplexFormsWithInflectionOn1stElement configuration 
 #    property. Verify that this and the other property are lists. Do all config.
