@@ -25,6 +25,11 @@
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
 #   
+#   Version 2 - 7/16/15 - Ron
+#    Handle irregularly inflected forms. Added new methods to the ANAInfo class.
+#    Trim newlines when reading in lines. Added functions get_feat_abbr_list and
+#    change_to_variant to support changing to a variant form. Also added logic
+#    to store all entries that have infl. variants.
 #
 
 import sys
@@ -48,7 +53,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : 2,
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -85,26 +90,42 @@ class ANAInfo(object):
         return re.search(r'(.*)<',self.Analysis).group(1)
     def getAnalysisRoot(self):
         return re.search(r'< .+ (.+) >',self.Analysis).group(1)
+    def getAnalysisRootPOS(self):
+        return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
         return re.search(r'>(.*)',self.Analysis).group(1)
-    def getPreDotRoot(self):
+    def getPreDotRoot(self): # in other words the headword
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis)
         if g:
             ret = self.removeUnderscores(g.group(1))
             return unicode(ret)
         return None
+    def getSenseNum(self):
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis).group(1)
     def getAfterPunc(self):
         return self.AfterPunc
     def getBeforePunc(self):
         return self.BeforePunc
+    def addUnderscores(self, myStr):
+        return re.sub(r' ', '_', myStr)
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
     def setAnalysis(self, myAnalysis):
         self.Analysis = myAnalysis
+    def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
+        self.Analysis = '{0} < {1} {2} > {3}'.format(' '.join(prefixes), pos, self.addUnderscores(root), ' '.join(suffixes))
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
         self.BeforePunc = myBeforePunc
+    def write(self, f_ana):
+        f_ana.write('\\a ' + self.getAnalysis().encode('utf-8') + '\n')
+        if self.getBeforePunc():
+            f_ana.write('\\f ' + self.getBeforePunc().encode('utf-8') + '\n')
+        if self.getAfterPunc():
+            f_ana.write('\\n ' + self.getAfterPunc().encode('utf-8') + '\n')
+        f_ana.write('\n')
+        
 
 # Read an ANA file and convert it to a list of ANAInfo objects
 def get_ANA_info(file_name_str):
@@ -119,11 +140,11 @@ def get_ANA_info(file_name_str):
         elif (line[1] == 'a'):
             myInfo = ANAInfo()
             infoList.append(myInfo)
-            myInfo.setAnalysis(line[3:])
+            myInfo.setAnalysis(line[3:-1])
         elif (line[1] == 'f'):
-            myInfo.setBeforePunc(line[3:])
+            myInfo.setBeforePunc(line[3:-1])
         elif (line[1] == 'n'):
-            myInfo.setAfterPunc(line[3:])
+            myInfo.setAfterPunc(line[3:-1])
     
     return infoList
 
@@ -453,14 +474,85 @@ def write_components(comp_list, f_ana, anaInfo):
         # Handle pre-punctuation
         if i == 0:
             if anaInfo.getBeforePunc():
-                f_ana.write('\\f ' + anaInfo.getBeforePunc().encode('utf-8'))
+                f_ana.write('\\f ' + anaInfo.getBeforePunc().encode('utf-8') + '\n')
                 
         # Handle post-punctuation
         if i == len(comp_list)-1:
             if anaInfo.getAfterPunc():
-                f_ana.write('\\n ' + anaInfo.getAfterPunc().encode('utf-8'))
+                f_ana.write('\\n ' + anaInfo.getAfterPunc().encode('utf-8') + '\n')
         
         f_ana.write('\n')    
+
+def get_feat_abbr_list(SpecsOC, feat_abbr_list):
+    
+    for spec in SpecsOC:
+        if spec.ClassID == 53: # FsComplexValue
+            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+        else: # FsClosedValue - I don't think the other types are in use
+            
+            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+            feat_abbr_list.append((featGrpName, abbValue))
+    return
+
+# Check if the tags (prefixes & suffixes) match the features of one of
+# the main entry's variants. If so replace the main entry headword with
+# the variant and remove the tags that matched.
+# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
+# variant type called 1Sg which has features [per: 1ST, num: SG] and the
+# Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
+# this: '< cop be1.1 >'
+def change_to_variant(myAnaInfo, my_irr_infl_var_map):
+
+    pfxs = myAnaInfo.getAnalysisPrefixes().split()
+    num_pfxs = len(pfxs)
+    sfxs = myAnaInfo.getAnalysisSuffixes().split()
+    tags = pfxs+sfxs
+    
+    # loop through the irr. infl. form variant list for this main entry
+    varList = my_irr_infl_var_map[myAnaInfo.getPreDotRoot()]
+    
+    for varTuple in varList: # each tuple as form (entry, feat_abbr_list)
+        e = varTuple[0]
+        feat_abbr_list = varTuple[1]
+
+        # See if there is a variant that has inflection features that match the tags in this entry
+        variant_matches = False
+        featList = [y[1] for y in sorted(feat_abbr_list, key=lambda x: x[0])]
+        num_features = len(featList)
+        
+        # There has to be at least as many tags as features
+        if len(tags) >= num_features:
+            # Loop through slices of the tag list
+            for i in range(0,len(tags)-num_features+1):
+                # See if we match regardless of order
+                if sorted(tags[i:i+num_features]) == sorted(featList):
+                    variant_matches = True
+                    break
+            if variant_matches:
+                break
+    
+    if variant_matches:
+        
+        # Set the headword value and the homograph #
+        headWord = ITsString(e.HeadWord).Text
+            
+        # If there is not a homograph # at the end, make it 1
+        if not re.search('(\d$)', headWord):
+            headWord += '1'
+            
+        # Remove the matched tags
+        del pfxs[i:i+num_features]
+        beg = i-num_pfxs
+        if beg < 0:
+            beg = 0
+        end = i-num_pfxs+num_features
+        if end < 0:
+            end = 0
+        del sfxs[beg:end]
+        
+        # We are intentionally not adding the sense number.
+        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", headWord, sfxs)
 
 def MainFunction(DB, report, modifyAllowed):
 
@@ -509,15 +601,23 @@ def MainFunction(DB, report, modifyAllowed):
     convertIt(anaFileName, prefixFileName, transferResults, report)
 
     complex_map = {}
+    irr_infl_var_map = {}
     report.ProgressStart(TargetDB.LexiconNumberOfEntries())
   
-    # Loop through all the entries in the lexicon and store all the complex entries
-    # Do this by creating a map from headword to the the complex entry
+    # Loop through all the entries in the lexicon 
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
         report.ProgressUpdate(i)
-        # only process complex forms
-        if e.EntryRefsOS.Count > 0:
+        
+        # Set the headword value and the homograph #
+        headWord = ITsString(e.HeadWord).Text
+        
+        # If there is not a homograph # at the end, make it 1
+        if not re.search('(\d$)', headWord):
+            headWord += '1'
+                                
+        # Store all the complex entries by creating a map from headword to the the complex entry
+        if e.EntryRefsOS.Count > 0: # only process complex forms
             for entryRef in e.EntryRefsOS:
                 if entryRef.ComponentLexemesRS and \
                    entryRef.ComponentLexemesRS.Count > 1 and \
@@ -528,17 +628,31 @@ def MainFunction(DB, report, modifyAllowed):
                         for complexType in entryRef.ComplexEntryTypesRS:
                             if ITsString(complexType.Name.BestAnalysisAlternative).Text in complexFormTypeMap:
         
-                                # Set the headword value and the homograph #
-                                headWord = ITsString(e.HeadWord).Text
-                                
-                                # If there is not a homograph # at the end, make it 1
-                                if not re.search('(\d$)', headWord):
-                                    headWord += '1'
-                                
                                 complex_map[headWord] = e
                                 break
                         break # if we found a complex form, there won't be any more
-            
+        
+        # Store all the entries that have inflectional variants with features assigned
+        if e.VariantFormEntries.Count > 0:
+            for variantForm in e.VariantFormEntries:
+                for entryRef in variantForm.EntryRefsOS:
+                    if entryRef.RefType == 0: # we have a variant
+                        
+                        # Collect any inflection features that are assigned to the special
+                        # variant types called Irregularly Inflected Form
+                        for varType in entryRef.VariantEntryTypesRS:
+                            if varType.ClassName == "LexEntryInflType":
+                                if varType.InflFeatsOA:
+                                    my_feat_abbr_list = []
+                                    # The features might be complex, make a recursive function call to find all features
+                                    get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
+                                    if len(my_feat_abbr_list) > 0:
+                                        myTuple = (variantForm, my_feat_abbr_list)
+                                        if headWord not in irr_infl_var_map:
+                                            irr_infl_var_map[headWord] = [myTuple]
+                                        else:
+                                            irr_infl_var_map[headWord].append(myTuple)
+                            
     # Now we are going to re-process the ANA file breaking down each complex form
     # into separate ANA records if needed. This is needed for instance if a source word
     # maps to multiple words in the target language. The multi-word ANA record needs to
@@ -564,12 +678,11 @@ def MainFunction(DB, report, modifyAllowed):
             write_components(comp_list, f_ana, anaInfo)
             
         else: # write it out as normal
-            f_ana.write('\\a ' + anaInfo.getAnalysis().encode('utf-8'))
-            if anaInfo.getBeforePunc():
-                f_ana.write('\\f ' + anaInfo.getBeforePunc().encode('utf-8'))
-            if anaInfo.getAfterPunc():
-                f_ana.write('\\n ' + anaInfo.getAfterPunc().encode('utf-8'))
-            f_ana.write('\n')
+            if root in irr_infl_var_map: # assume an entry can't be complex and an inflectional variant
+                # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
+                change_to_variant(anaInfo, irr_infl_var_map)
+                
+            anaInfo.write(f_ana)
         
         count += 1
     
