@@ -25,6 +25,13 @@
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
 #   
+#   Version 2 - 7/17/15 - Ron
+#    Handle morphology on the first part of a complex form.
+#    Read in the TargetComplexFormsWithInflectionOn1stElement configuration 
+#    property. Verify that this and the other property are lists. Do all config.
+#    file processing before opening the target DB. Add the 1stElement types to
+#    the complexFormTypeMap with values set to 0. Code clean up.
+#
 #   Version 2 - 7/16/15 - Ron
 #    Handle irregularly inflected forms. Added new methods to the ANAInfo class.
 #    Trim newlines when reading in lines. Added functions get_feat_abbr_list and
@@ -53,7 +60,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : 2,
+        'moduleVersion'    : 3,
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -362,7 +369,7 @@ def GetEntryWithSense(e):
 # This function will handle when an entry points to a component that is a sense not a lexeme
 def get_ana_data_from_entry(comp_e):
     
-    # default to 1st sense
+    # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned somehow from the complex form.
     sense_num = '1'
     
     # The thing the component lexeme points to could be a sense rather than an entry
@@ -400,10 +407,10 @@ def get_ana_data_from_entry(comp_e):
     
     return (a, abbrev, sense_num)
 
-# Output the components of an entry
-# Assumptions: no sub-senses, clitics will be attached on the root that takes the inflection
+# Output the components of a complex entry
+# Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection
 # This is a recursive function
-def gather_components(root, f_ana, complexFormTypeMap, complex_map, anaInfo, comp_list):
+def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list):
     # Get the entry that has components
     e = complex_map[root]
     
@@ -412,7 +419,7 @@ def gather_components(root, f_ana, complexFormTypeMap, complex_map, anaInfo, com
         if entryRef.RefType == 1: # 1=complex form, 0=variant
             for complexType in entryRef.ComplexEntryTypesRS:
                 formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
-                if formType in complexFormTypeMap:
+                if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
                     
                     # See where the inflection is to go
                     if complexFormTypeMap[formType] == 0:
@@ -422,9 +429,9 @@ def gather_components(root, f_ana, complexFormTypeMap, complex_map, anaInfo, com
                         inflectionOnFirst = False
                         inflectionOnLast = True
                         
-                    # Write out all the components
-                    first_root = False
+                    first_root = True
                     enclGloss = proGloss = ''
+                    # Write out all the components
                     for lex_index, comp_e in enumerate(entryRef.ComponentLexemesRS):
                         
                         # If the component is a proclitic, save the gloss string (with a space on the end)
@@ -432,36 +439,34 @@ def gather_components(root, f_ana, complexFormTypeMap, complex_map, anaInfo, com
                             proGloss = get_gloss(comp_e)+' '
                             continue
                         
-                        # If the component is an enclitic, use the previous component as the analysis string
+                        # If the component is an enclitic, save it with a preceding space
                         elif is_enclitic(comp_e):
                             enclGloss = ' '+get_gloss(comp_e)
                             
                         # Otherwise we have a root
                         else:
-                            if first_root == False:
-                                first_root = True
-                                
                             # Get the needed data from the entry object
-                            (head_word, abbrev, sense_num) = get_ana_data_from_entry(comp_e)
+                            (head_word, gram_cat_abbrev, sense_num) = get_ana_data_from_entry(comp_e)
                             
                             # See if this head word has components itself and call this function recursively
                             if head_word in complex_map:
-                                gather_components(head_word, f_ana, complexFormTypeMap, complex_map, anaInfo, comp_list)
+                                gather_components(head_word, complexFormTypeMap, complex_map, anaInfo, comp_list)
                             else:
                                 # See if we are at the beginning or the end, depending on where the
                                 # inflection goes, write out all the stuff with inflection
                                 if (inflectionOnFirst and first_root) or \
                                    (inflectionOnLast and lex_index==entryRef.ComponentLexemesRS.Count-1):
                                     # Build the \a string
-                                    a = proGloss + anaInfo.getAnalysisPrefixes() + '< ' + abbrev + \
+                                    a = proGloss + anaInfo.getAnalysisPrefixes() + '< ' + gram_cat_abbrev + \
                                         ' ' + head_word + '.' + sense_num + ' >' + \
                                         anaInfo.getAnalysisSuffixes() + enclGloss 
                                         
                                 # Write out the bare bones root in the analysis part
                                 else:
-                                    a = '< ' + abbrev + ' ' + head_word + '.' + sense_num + ' >'
+                                    a = '< ' + gram_cat_abbrev + ' ' + head_word + '.' + sense_num + ' >'
                             
                                 comp_list.append(a)
+                            first_root = False
                 break
         break
     
@@ -538,8 +543,7 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         headWord = ITsString(e.HeadWord).Text
             
         # If there is not a homograph # at the end, make it 1
-        if not re.search('(\d$)', headWord):
-            headWord += '1'
+        headWord = add_one(headWord)
             
         # Remove the matched tags
         del pfxs[i:i+num_features]
@@ -561,6 +565,20 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
+    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
+    prefixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+    complexForms1st = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report)
+    complexForms2nd = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
+    transferResults = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
+    if not (targetANA and prefixFile and transferResults):
+        return
+
+    # Check the validity of the complex forms lists
+    if complexForms1st and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report):
+        return
+    if complexForms2nd and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report):
+        return
+
     TargetDB = FLExDBAccess()
 
     try:
@@ -577,24 +595,16 @@ def MainFunction(DB, report, modifyAllowed):
 
     report.Info('Using: '+targetProj+' as the target database.')
 
-    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
-    prefixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
-    complexForms = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
-    transferResults = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
-    if not (targetANA and prefixFile and transferResults):
-        return
-
     anaFileName = os.path.join(tempfile.gettempdir(), targetANA)
     prefixFileName = os.path.join(tempfile.gettempdir(), prefixFile)
     
     # Build the complex forms map
-    # TODO: check for valid list
     complexFormTypeMap = {}
     
-    # Use this one later
-#    for cmplx_type in configMap['TargetComplexFormsWithInflectionOn1stElement']:
-#        complexFormTypeMap[cmplx_type] = 0 # 0 - inflection on first root
-    for cmplx_type in complexForms:
+    # Create a map that tracks which complex form types are for first or for last 
+    for cmplx_type in complexForms1st:
+        complexFormTypeMap[cmplx_type] = 0  # 0 - inflection on first root
+    for cmplx_type in complexForms2nd:
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
@@ -674,7 +684,7 @@ def MainFunction(DB, report, modifyAllowed):
         root = anaInfo.getPreDotRoot()
         if root in complex_map:
             comp_list = []
-            gather_components(root, f_ana, complexFormTypeMap, complex_map, anaInfo, comp_list)
+            gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
             write_components(comp_list, f_ana, anaInfo)
             
         else: # write it out as normal
