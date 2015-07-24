@@ -13,6 +13,7 @@ mkdir Install\Modules\FLExTrans
 mkdir Install\Modules\FLExTrans\Lib
 for /f %%f in ('dir /ad /b') do copy %%f\*.py Install\Modules\FLExTrans
 copy readconfig.py Install\Modules\FLExTrans\Lib
+copy utils.py Install\Modules\FLExTrans\Lib
 copy subdirs.pth Install\Modules
 copy FlexTrans.config Install
 copy "FLExTrans Step 1.ini" Install\Collections
