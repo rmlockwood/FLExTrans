@@ -8,9 +8,12 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
-#   Version 2 - 7/4/15 - Ron
-#    Dump a possible inflection class present for the root/stem.
-#    Changed module description.
+#   Version 4 - 7/24/15 - Ron
+#    Preserve case in words. 
+#    Do capitalization of the extracted word. Use the baseline word as a model
+#    for how to capitalize it. For the complex form case, save the 1st base-
+#    line word for a model of the whole complex form. Removed large commented
+#    section of code that was for checking if the whole text had been analyzed.
 #
 #   Version 3 - 7/16/15 - Ron
 #    Handle irregularly inflected forms. Do this by collecting inflection 
@@ -19,6 +22,11 @@
 #    Handle morphology on initial component(s) of complex forms. Save any tags
 #    that are present on the initial component(s) and add them to the complex
 #    form as morphology.
+#
+#   Version 2 - 7/4/15 - Ron
+#    Dump a possible inflection class present for the root/stem.
+#    Changed module description.
+#
 
 import sys
 import os
@@ -27,6 +35,7 @@ import tempfile
 import copy
 
 import ReadConfig
+import Utils
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
@@ -162,44 +171,6 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error('The text named: '+text_desired_eng+' not found.')
         return
     
-    # Check to see if everything is analyzed
-#    report.Info("Checking for full analysis...")
-#    allAnalyzed = True
-#    ss = SegmentServices.StTextAnnotationNavigator(text.ContentsOA)
-#    for analysisOccurance in ss.GetAnalysisOccurrencesAdvancingInStText():
-#        
-#        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
-#            continue
-#        if analysisOccurance.Analysis.ClassName == "WfiGloss":
-#            wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
-#        elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
-#            wfiAnalysis = analysisOccurance.Analysis
-#        elif analysisOccurance.Analysis.ClassName == "WfiWordform":
-#            report.Error('No analysis found for the word: '+ITsString(analysisOccurance.Analysis.Form.BestVernacularAlternative).Text)
-#            allAnalyzed = False
-#            continue
-#        else:
-#            wfiAnalysis = None
-#            
-#        if wfiAnalysis.MorphBundlesOS:
-#            for bundle in wfiAnalysis.MorphBundlesOS:
-#                if not bundle.SenseRA:
-#                    report.Error('No sense found for the word: '+ITsString(wfiAnalysis.Owner.Form.BestVernacularAlternative).Text)
-#                    allAnalyzed = False
-#                elif not bundle.MsaRA:
-#                    report.Error('No morphosyntactic analysis found for the word: '+ITsString(wfiAnalysis.Owner.Form.BestVernacularAlternative).Text)
-#                    allAnalyzed = False
-#                elif bundle.MsaRA.ClassName == 'MoStemMsa' and not bundle.MsaRA.PartOfSpeechRA:
-#                    report.Error('No POS found for the word: '+ITsString(wfiAnalysis.Owner.Form.BestVernacularAlternative).Text)
-#                    allAnalyzed = False
-#            
-#        if not wfiAnalysis.MorphBundlesOS or wfiAnalysis.MorphBundlesOS.Count == 0:
-#            allAnalyzed = False
-#               
-#    if not allAnalyzed:
-#        report.Error('All of the words have not been analyzed. See errors above.')
-#        return
-    
     prev_pv_list = []
     prev_e = None
     outputStrList = []
@@ -313,6 +284,8 @@ def MainFunction(DB, report, modifyAllowed):
                                         prev_pv_list = []
                                         ccc = 0
                                     else: # yes, we have phrasal verbs
+                                        if ccc == 0:
+                                            saved1stbaselineWord = ITsString(analysisOccurance.BaselineText).Text
                                         ccc += 1
                                         # First make sure that the entry of the last word isn't the same as this word. In that case, of course there are going to be shared complex forms, but we are only interested in different entries forming a phrasal verb.
                                         # See if the previous word had a link to a complex phrasal verb
@@ -363,8 +336,8 @@ def MainFunction(DB, report, modifyAllowed):
                                         
                                         # Get headword and set homograph # if necessary
                                         headWord = ITsString(shared_complex_e.HeadWord).Text
-                                        if not re.search('(\d$)', headWord):
-                                            headWord += '1'
+                                        headWord = Utils.do_capitalization(headWord, saved1stbaselineWord)
+                                        headWord = Utils.add_one(headWord)
                                                                     
                                         outStr += headWord + '.' + str(senseNum+1)
                                         
@@ -415,8 +388,8 @@ def MainFunction(DB, report, modifyAllowed):
                                         
                                     # Get headword and set homograph # if necessary
                                     headWord = ITsString(e.HeadWord).Text
-                                    if not re.search('(\d$)', headWord):
-                                        headWord += '1'
+                                    headWord = Utils.do_capitalization(headWord, ITsString(analysisOccurance.BaselineText).Text)
+                                    headWord = Utils.add_one(headWord)
                                     outStr += headWord + '.' + str(senseNum+1)
                                  
                                     # Get the POS
