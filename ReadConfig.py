@@ -1,12 +1,12 @@
-'''
-Created on Nov 26, 2014
+#
+#   ReadConfig
+#
+#   Ron Lockwood
+#   University of Washington, SIL International
+#   12/4/14
+#
+#   Functions for reading a configuration file
 
-@author: Ron Lockwood
-
-Read the configuration file in the current folder and parse it
-into property, value pairs. If the value has a comma, save it as a list.
-
-'''
 import re
 CONFIG_FILE = 'FlexTrans.config'
 
