@@ -25,6 +25,16 @@
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
 #   
+#   Version 4 - 7/24/15 - Ron
+#    Preserve case in words. 
+#    In the ANAInfo class, when an analysis is added check the root and determine
+#    which case format it is in and set an internal value that corresponds to the
+#    \c marker. Also always make the root lower case. Added methods for setting
+#    and getting the capitalization number. setAnalysisByPart no longer takes a
+#    list of prefixes and suffixes, rather a string. Reduce blank spaces in the 
+#    ANA file. I replaced places where the ANA records were being written 
+#    manually to a file and now use the ANAInfo.write() method.
+#
 #   Version 3 - 7/17/15 - Ron
 #    Handle morphology on the first part of a complex form.
 #    Read in the TargetComplexFormsWithInflectionOn1stElement configuration 
@@ -44,6 +54,7 @@ import re
 import os
 import tempfile
 import ReadConfig
+import Utils
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
@@ -88,19 +99,22 @@ from System import String
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
     def __init__(self, myAnalysis=None, myBeforePunc=None, myAfterPunc=None):
-        self.Analysis = myAnalysis # \a
+        if myAnalysis:
+            self.setAnalysis(myAnalysis) # \a
         self.BeforePunc = myBeforePunc # \f
         self.AfterPunc = myAfterPunc # \n
+    def getCapitalization(self):
+        return self.Capitalization
     def getAnalysis(self):
         return self.Analysis
     def getAnalysisPrefixes(self): # returns '' if no prefix
-        return re.search(r'(.*)<',self.Analysis).group(1)
+        return re.search(r'(.*)\s*<',self.Analysis).group(1)
     def getAnalysisRoot(self):
         return re.search(r'< .+ (.+) >',self.Analysis).group(1)
     def getAnalysisRootPOS(self):
         return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
-        return re.search(r'>(.*)',self.Analysis).group(1)
+        return re.search(r'>\s*(.*)',self.Analysis).group(1)
     def getPreDotRoot(self): # in other words the headword
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis)
         if g:
@@ -117,10 +131,16 @@ class ANAInfo(object):
         return re.sub(r' ', '_', myStr)
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
+    def setCapitalization(self, myCapitalization):
+        self.Capitalization = myCapitalization
     def setAnalysis(self, myAnalysis):
         self.Analysis = myAnalysis
+        # Call setAnalysisByPart to ensure the root is converted to lowercase
+        self.setAnalysisByPart(self.getAnalysisPrefixes(), self.getAnalysisRootPOS(), self.getAnalysisRoot(), self.getAnalysisSuffixes())
     def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
-        self.Analysis = '{0} < {1} {2} > {3}'.format(' '.join(prefixes), pos, self.addUnderscores(root), ' '.join(suffixes))
+        self.Capitalization = self.calcCase(root)
+        # Note this makes the root lowercase now
+        self.Analysis = '{0} < {1} {2} > {3}'.format(prefixes, pos, self.addUnderscores(root).lower(), suffixes)
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
@@ -131,8 +151,16 @@ class ANAInfo(object):
             f_ana.write('\\f ' + self.getBeforePunc().encode('utf-8') + '\n')
         if self.getAfterPunc():
             f_ana.write('\\n ' + self.getAfterPunc().encode('utf-8') + '\n')
+        if self.getCapitalization():
+            f_ana.write('\\c ' + self.getCapitalization().encode('utf-8') + '\n')
         f_ana.write('\n')
-        
+    def calcCase(self, word):
+        if word.isupper():
+            return '2'
+        elif word[0].isupper():
+            return '1'
+        else:
+            return ''
 
 # Read an ANA file and convert it to a list of ANAInfo objects
 def get_ANA_info(file_name_str):
@@ -147,11 +175,13 @@ def get_ANA_info(file_name_str):
         elif (line[1] == 'a'):
             myInfo = ANAInfo()
             infoList.append(myInfo)
-            myInfo.setAnalysis(line[3:-1])
+            myInfo.setAnalysis(line[3:].strip())
         elif (line[1] == 'f'):
-            myInfo.setBeforePunc(line[3:-1])
+            myInfo.setBeforePunc(line[3:].strip())
         elif (line[1] == 'n'):
-            myInfo.setAfterPunc(line[3:-1])
+            myInfo.setAfterPunc(line[3:].strip())
+        elif (line[1] == 'c'):
+            myInfo.setCapitalization(line[3:].strip())
     
     return infoList
 
@@ -235,15 +265,8 @@ def convertIt(ana_name, pfx_name, out_name, report):
                 
                 # write out the last word we processed.
                 if wordStr:
-                    f_ana.write('\\a' + wordStr.encode('utf-8') + '\n')
-                    
-                    if pre_punct:
-                        f_ana.write('\\f ' + pre_punct.encode('utf-8') + '\n')
-                    
-                    if post_punct:
-                        f_ana.write('\\n ' + post_punct.encode('utf-8') + '\n')
-                        
-                    f_ana.write('\n')
+                    myAnaInfo = ANAInfo(wordStr, pre_punct, post_punct)
+                    myAnaInfo.write(f_ana)
                     
                     pre_punct = next_pre_punct
                     next_pre_punct = post_punct = ''
@@ -305,24 +328,10 @@ def convertIt(ana_name, pfx_name, out_name, report):
             
         # write out the last word 
         if wordStr:
-            f_ana.write('\\a' + wordStr.encode('utf-8') + '\n')
-            
-            if pre_punct:
-                f_ana.write('\\f ' + pre_punct.encode('utf-8') + '\n')
-            
-            if post_punct:
-                f_ana.write('\\n ' + post_punct.encode('utf-8') + '\n')
-                
-            f_ana.write('\n')
+            myAnaInfo = ANAInfo(wordStr, pre_punct, post_punct)
+            myAnaInfo.write(f_ana)
 
     f_ana.close()      
-
-# Append '1' to the headWord if there is no homograph #
-def add_one(headWord): 
-    if not re.search('(\d$)', headWord):
-        return (headWord + '1')
-    else:
-        return headWord 
 
 def is_proclitic(e):
     ret_val = False
@@ -379,7 +388,7 @@ def get_ana_data_from_entry(comp_e):
         owning_e = comp_e.Owner # Assumption here that this isn't a subsense
         
         a = ITsString(owning_e.HeadWord).Text
-        a = add_one(a)
+        a = Utils.add_one(a)
         
         posObj = comp_sense.MorphoSyntaxAnalysisRA.PartOfSpeechRA
         if posObj:            
@@ -396,7 +405,7 @@ def get_ana_data_from_entry(comp_e):
         comp_e = GetEntryWithSense(comp_e)
         
         a = ITsString(comp_e.HeadWord).Text
-        a = add_one(a)
+        a = Utils.add_one(a)
         #print a   
         # Get POS
         abbrev = 'NULL'
@@ -471,22 +480,23 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
         break
     
 def write_components(comp_list, f_ana, anaInfo):
+        
     for i, comp in enumerate(comp_list):
         
-        # Write analysis string
-        f_ana.write('\\a ' + comp.encode('utf-8') + '\n')
+        myAnaInfo = ANAInfo()
+        myAnaInfo.setAnalysis(comp)
         
-        # Handle pre-punctuation
+        # Give this object pre-punctuation if it's the first component
         if i == 0:
-            if anaInfo.getBeforePunc():
-                f_ana.write('\\f ' + anaInfo.getBeforePunc().encode('utf-8') + '\n')
+            myAnaInfo.setBeforePunc(anaInfo.getBeforePunc())
+            # Change the case as necessary
+            anaInfo.setCapitalization(anaInfo.calcCase(anaInfo.getAnalysisRoot()))
                 
-        # Handle post-punctuation
+        # Give this object post-punctuation if it's the last component
         if i == len(comp_list)-1:
-            if anaInfo.getAfterPunc():
-                f_ana.write('\\n ' + anaInfo.getAfterPunc().encode('utf-8') + '\n')
+            myAnaInfo.setAfterPunc(anaInfo.getAfterPunc())
         
-        f_ana.write('\n')    
+        myAnaInfo.write(f_ana)    
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -509,6 +519,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
 # this: '< cop be1.1 >'
 def change_to_variant(myAnaInfo, my_irr_infl_var_map):
 
+    oldCap = myAnaInfo.getCapitalization()
     pfxs = myAnaInfo.getAnalysisPrefixes().split()
     num_pfxs = len(pfxs)
     sfxs = myAnaInfo.getAnalysisSuffixes().split()
@@ -543,7 +554,7 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         headWord = ITsString(e.HeadWord).Text
             
         # If there is not a homograph # at the end, make it 1
-        headWord = add_one(headWord)
+        headWord = Utils.add_one(headWord)
             
         # Remove the matched tags
         del pfxs[i:i+num_features]
@@ -556,7 +567,9 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         del sfxs[beg:end]
         
         # We are intentionally not adding the sense number.
-        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", headWord, sfxs)
+        myAnaInfo.setAnalysisByPart(' '.join(pfxs), "_variant_", headWord, ' '.join(sfxs))
+        # Change the case as necessary
+        myAnaInfo.setCapitalization(oldCap)
 
 def MainFunction(DB, report, modifyAllowed):
 
@@ -623,8 +636,7 @@ def MainFunction(DB, report, modifyAllowed):
         headWord = ITsString(e.HeadWord).Text
         
         # If there is not a homograph # at the end, make it 1
-        if not re.search('(\d$)', headWord):
-            headWord += '1'
+        headWord = Utils.add_one(headWord)
                                 
         # Store all the complex entries by creating a map from headword to the the complex entry
         if e.EntryRefsOS.Count > 0: # only process complex forms
