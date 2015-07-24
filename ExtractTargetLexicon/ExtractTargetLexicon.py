@@ -11,6 +11,11 @@
 #   environment constraints. We have to order these properly and negate the environments
 #   of the previous allomorph(s).
 #
+#   Version 3 - 7/24/15 - Ron
+#    Preserve case in words. 
+#    Convert the head word for the root dictionaries to lower case. Use the
+#    add_one utility.
+#
 #   Version 2 - 7/16/15 - Ron
 #    Support handling of irregularly inflected forms. Allow variants to be put
 #    into the root dictionary if they they are inflectional variants. Add a new
@@ -22,6 +27,7 @@ import re
 import os
 import tempfile
 import ReadConfig
+import Utils
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
@@ -296,9 +302,8 @@ def MainFunction(DB, report, modifyAllowed):
                 if got_one:                
                     # Set the headword value and the homograph #, if necessary
                     headWord = ITsString(e.HeadWord).Text
-                    if not re.search('(\d$)', headWord):
-                        headWord += '1'
-    
+                    headWord = Utils.add_one(headWord)
+                    headWord = headWord.lower()
                     # change spaces to underscores
                     headWord = re.sub('\s', '_', headWord)
     
@@ -324,8 +329,11 @@ def MainFunction(DB, report, modifyAllowed):
                 
                     # Set the headword value and the homograph #, if necessary
                     headWord = ITsString(e.HeadWord).Text
-                    if not re.search('(\d$)', headWord):
-                        headWord += '1'
+                    headWord = Utils.add_one(headWord)
+                    headWord = headWord.lower()
+                    # change spaces to underscores
+                    headWord = re.sub('\s', '_', headWord)
+
                 
                     # Get the POS abbreviation for the current sense, assuming we have a stem
                     if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
@@ -344,8 +352,6 @@ def MainFunction(DB, report, modifyAllowed):
                                        ' for headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
                     
                     
-                    # change spaces to underscores
-                    headWord = re.sub('\s', '_', headWord)
     
                     # Write out morphname field
                     f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1)+'\n')
