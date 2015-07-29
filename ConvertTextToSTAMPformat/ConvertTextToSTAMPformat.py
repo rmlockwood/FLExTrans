@@ -140,7 +140,7 @@ class ANAInfo(object):
     def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
         self.Capitalization = self.calcCase(root)
         # Note this makes the root lowercase now
-        self.Analysis = '{0} < {1} {2} > {3}'.format(prefixes, pos, self.addUnderscores(root).lower(), suffixes)
+        self.Analysis = prefixes + ' < '+pos+' '+self.addUnderscores(root).lower()+' > '+suffixes
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
