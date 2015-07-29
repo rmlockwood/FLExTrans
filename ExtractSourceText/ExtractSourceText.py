@@ -129,7 +129,7 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
                         # Collect any inflection features that are assigned to the special
                         # variant types called Irregularly Inflected Form
                         for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType" and varType.InflFeatsOA:
+                            if varType.ClassName == "LexEntryInflType":
                                 my_feat_abbr_list = []
                                 # The features might be complex, make a recursive function call to find all features
                                 get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
