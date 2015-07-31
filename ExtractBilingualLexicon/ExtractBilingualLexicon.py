@@ -278,14 +278,14 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info('Using: '+targetProj+' as the target database.')
 
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
-    senseGlkEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
-    senseGlkSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
+    senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
+    senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
-    if not (senseGlkEquivField):
+    if not (senseEquivField):
         report.Error(linkField + " field doesn't exist. Please read the instructions.")
         return
 
-    if not (senseGlkSenseNumField):
+    if not (senseSenseNumField):
         report.Error(senseNumField + " field doesn't exist. Please read the instructions.")
         return
 
@@ -399,8 +399,8 @@ def MainFunction(DB, report, modifyAllowed):
                                        ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                         #abbrev = 'unk'
                                               
-                    # If we have a link to a Gilaki entry, process it
-                    equiv = DB.LexiconGetFieldText(mySense.Hvo, senseGlkEquivField)
+                    # If we have a link to a target entry, process it
+                    equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
                     if equiv != None:
                         
                         # Parse the link to get the guid
@@ -428,7 +428,7 @@ def MainFunction(DB, report, modifyAllowed):
                                 targetHeadWord += '1'
                             
                             # An empty sense number means default to sense 1
-                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseGlkSenseNumField)
+                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
                             if senseNum == None:
                                 trgtSense = 1
                             elif is_number(senseNum):
