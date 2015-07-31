@@ -139,8 +139,12 @@ class ANAInfo(object):
         self.setAnalysisByPart(self.getAnalysisPrefixes(), self.getAnalysisRootPOS(), self.getAnalysisRoot(), self.getAnalysisSuffixes())
     def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
         self.Capitalization = self.calcCase(root)
-        # Note this makes the root lowercase now
-        self.Analysis = prefixes + ' < '+pos+' '+self.addUnderscores(root).lower()+' > '+suffixes
+        # change spaces to underscores:
+        myRoot = self.addUnderscores(root)
+        # if it's an unknown word, don't change the case
+        if pos != 'UNK': 
+            myRoot = myRoot.lower()
+        self.Analysis = prefixes + ' < '+pos+' '+myRoot+' > '+suffixes
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
