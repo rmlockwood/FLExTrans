@@ -260,10 +260,13 @@ def convertIt(ana_name, pfx_name, out_name, report):
 
         # Loop through all word packages
         for tok in word_toks:
-            # if the token is only spaces, ignore it. We will eventually output
-            # one space between words
-            if re.match('\s*$', tok): # match starts at beg. of string
+            # If the token is one whitespace, ignore it. By default no \n line in the 
+            # ANA file will produce a space after the word.
+            if re.match('\s$', tok): # match starts at beg. of string
                 continue
+            # If there is more than one whitespace, save it as post punctuation.
+            elif re.match('\s*$', tok): # match starts at beg. of string
+                post_punct = tok
             # word plus possible affixes
             elif re.search('\w', tok, re.U):
                 
