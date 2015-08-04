@@ -181,9 +181,9 @@ def get_ANA_info(file_name_str):
             infoList.append(myInfo)
             myInfo.setAnalysis(line[3:].strip())
         elif (line[1] == 'f'):
-            myInfo.setBeforePunc(line[3:].strip())
+            myInfo.setBeforePunc(line[3:-1])
         elif (line[1] == 'n'):
-            myInfo.setAfterPunc(line[3:].strip())
+            myInfo.setAfterPunc(line[3:-1])
         elif (line[1] == 'c'):
             myInfo.setCapitalization(line[3:].strip())
     
