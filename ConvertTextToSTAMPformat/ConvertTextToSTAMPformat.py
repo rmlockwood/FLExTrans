@@ -324,14 +324,19 @@ def convertIt(ana_name, pfx_name, out_name, report):
             
             # some kind of punctuation with possible spaces between. E.g. .>> <<
             else:
+                tok = re.sub(r'\n', ' ', tok)
                 if tok[0] == ' ': # we have pre-punctuation that goes with the next word
-                    next_pre_punct = tok.lstrip()
+                    next_pre_punct = tok
                 else:
                     puncts = tok.split()
-                    post_punct = puncts[0] + ' '
                     
+                    # if there is more than one punctuation cluster, save the 2nd
+                    # and beyond as pre-punctuation for the next word.
                     if len(puncts)>1:
-                        next_pre_punct = ' '.join(puncts[1:len(puncts)])
+                        next_pre_punct = tok[len(puncts[0]):] 
+                        post_punct = puncts[0]
+                    else:
+                        post_punct = tok
             
         # write out the last word 
         if wordStr:
