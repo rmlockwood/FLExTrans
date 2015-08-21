@@ -25,6 +25,7 @@ copy Linker.ui LinkerInstall\FLExTools\Modules\FLExTrans\Lib
 copy "FLExTrans Sense Linker.ini" LinkerInstall\FLExTools\Collections
 copy Qt*.* LinkerInstall\Python27.NET\FW8\PyQt4
 copy __init__.py LinkerInstall\Python27.NET\FW8\PyQt4
+copy sip.pyd LinkerInstall\Python27.NET\FW8
 cd LinkerInstall
 "C:\Program Files (x86)\7-Zip\7z" a FlexTransSenseLinker.zip FLExTools Python27.NET SenseLinkerReadme.txt
 copy /Y FlexTransSenseLinker.zip ..
