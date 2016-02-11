@@ -1,13 +1,16 @@
 #
 #   InsertTargetText
 #
-#   Take the text in the synthesis file and put it into a new text
-#   in the target database. If the name of the text already exists
-#   give it a new unique name.
-#
 #   Ron Lockwood
 #   University of Washington, SIL International
 #   12/5/14
+#
+#   Version 1.2.0 - 1/29/16 - Ron
+#    No changes to this module.
+#
+#   Take the text in the synthesis file and put it into a new text
+#   in the target database. If the name of the text already exists
+#   give it a new unique name.
 #
 
 from FTModuleClass import FlexToolsModuleClass
@@ -23,7 +26,7 @@ import tempfile
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Insert Target Text",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Insert a translated text into the target FLEx project.",
         'moduleDescription'   :

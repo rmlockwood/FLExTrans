@@ -1,15 +1,12 @@
 #
 #   ExtractTargetLexicon
 #
-#   Create the target dictionaries that STAMP needs. These are in the 
-#   AMPLE-style sfm format. Also at the end of the module, create the files that 
-#   STAMP needs (such as config files) and then run STAMP to create the
-#   Synthesis file and fix it up by removing underscores. (Underscores were used
-#   in the dictionaries instead of spaces so that STAMP could handle them.)
+#   Ron Lockwood
+#   University of Washington, SIL International
+#   12/5/14
 #
-#   As we write out entries in the dictionaries, some entries or allomorphs have
-#   environment constraints. We have to order these properly and negate the environments
-#   of the previous allomorph(s).
+#   Version 1.2.0 - 1/29/16 - Ron
+#    No changes to this module.
 #
 #   Version 3 - 7/24/15 - Ron
 #    Preserve case in words. 
@@ -21,6 +18,17 @@
 #    into the root dictionary if they they are inflectional variants. Add a new
 #    POS '_variant_' to the list. If there are no senses for an entry see if it
 #    is an infl. variant and if so write it to the root dictionary.
+#
+#   Create the target dictionaries that STAMP needs. These are in the 
+#   AMPLE-style sfm format. Also at the end of the module, create the files that 
+#   STAMP needs (such as config files) and then run STAMP to create the
+#   Synthesis file and fix it up by removing underscores. (Underscores were used
+#   in the dictionaries instead of spaces so that STAMP could handle them.)
+#
+#   As we write out entries in the dictionaries, some entries or allomorphs have
+#   environment constraints. We have to order these properly and negate the environments
+#   of the previous allomorph(s).
+#
 
 import sys
 import re 
@@ -44,7 +52,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : 2,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
