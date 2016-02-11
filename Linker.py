@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\Ron\git\FLExTrans\Linker.ui'
+# Form implementation generated from reading ui file 'Linker.ui'
 #
-# Created: Thu Jul 30 16:16:18 2015
+# Created: Wed Jan 20 12:06:24 2016
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(855, 469)
+        MainWindow.resize(855, 506)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.tableView = QtGui.QTableView(self.centralwidget)
