@@ -5,26 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Create an ANA file from the output file after the Apertium transfer
-#   has been done. Process the ANA file to deal with complex forms.
+#   Version 1.2.0 - 1/29/16 - Ron
+#    Punctuation support. Remove punctuation lexical units. Search for lu's of
+#    the form ^xxx<sent>$ and change them to xxx.
 #
-#   Conversion details: Each lemma+tags is converted to an ANA record which
-#   consists of 3 possible lines staring with an sfm marker.
-#   \a PREFIX_ENTRY... < POS ROOT_ENTRY > SUFFIX_ENTRY...    
-#  (the entries are found in the root, suffix or prefix dictionaries)
-#   \f leading punctuation
-#   \n trailing punctuation
-#   A prefix list which was created by another module is read in. This gives 
-#   us a list of what all the prefixes are in the database. When we read a tag 
-#   we check to see if it is a prefix, if not, it's a suffix. Note that we 
-#   assume no features come out of the transfer process.
-#
-#   ANA re-processing details: each ANA root could potentially be a complex
-#   form. We check each root against a list of all complex forms and if it is
-#   complex, we process recursively all the components. The end result is possibly
-#   multiple ANA records. I say possibly because some complex forms may map to
-#   clitics plus their roots without being multiple words.
-#   
 #   Version 4 - 7/24/15 - Ron
 #    Preserve case in words. 
 #    In the ANAInfo class, when an analysis is added check the root and determine
@@ -48,7 +32,26 @@
 #    change_to_variant to support changing to a variant form. Also added logic
 #    to store all entries that have infl. variants.
 #
-
+#   Create an ANA file from the output file after the Apertium transfer
+#   has been done. Process the ANA file to deal with complex forms.
+#
+#   Conversion details: Each lemma+tags is converted to an ANA record which
+#   consists of 3 possible lines staring with an sfm marker.
+#   \a PREFIX_ENTRY... < POS ROOT_ENTRY > SUFFIX_ENTRY...    
+#  (the entries are found in the root, suffix or prefix dictionaries)
+#   \f leading punctuation
+#   \n trailing punctuation
+#   A prefix list which was created by another module is read in. This gives 
+#   us a list of what all the prefixes are in the database. When we read a tag 
+#   we check to see if it is a prefix, if not, it's a suffix. Note that we 
+#   assume no features come out of the transfer process.
+#
+#   ANA re-processing details: each ANA root could potentially be a complex
+#   form. We check each root against a list of all complex forms and if it is
+#   complex, we process recursively all the components. The end result is possibly
+#   multiple ANA records. I say possibly because some complex forms may map to
+#   clitics plus their roots without being multiple words.
+#   
 import sys
 import re 
 import os
@@ -59,7 +62,7 @@ import Utils
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
 
-from FTModuleClass import FlexToolsModuleClass
+from FTModuleClass import FlexToolsModuleClass, FTM_ModuleError
 
 #----------------------------------------------------------------
 # Configurables:
@@ -71,7 +74,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : 3,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -190,7 +193,7 @@ def get_ANA_info(file_name_str):
     return infoList
 
 # Convert the output from the Apertium transfer to an ANA file
-def convertIt(ana_name, pfx_name, out_name, report):
+def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     
     f_ana = open(ana_name, 'w')
     
@@ -220,16 +223,20 @@ def convertIt(ana_name, pfx_name, out_name, report):
     f_ana.write('\n')
 
     # Each line represents a paragraph
-    for j, line in enumerate(f_apert):
-        report.ProgressUpdate(j)
+    for cnt, line in enumerate(f_apert):
+        report.ProgressUpdate(cnt)
         line = unicode(line,'utf-8')
+        
+        # convert <sent> (sentence punctuation) to simply the punctuation without the tag or ^$
+        reStr = '\^([' + sentPunct + ']+)<sent>\$'
+        line = re.sub(reStr,r'\1',line)
         
         # split on ^ or $ to get the 'word packages' (word + POS + affixes) E.g. ^xx1.1<vpst><pfv><3sg_pst>$ (assumption that no feature tags come out of the transfer process)
         aper_toks = re.split('\^|\$', line) 
         aper_toks = filter(None, aper_toks) # remove empty strings (typically at the beginning and end)
         
-        # each token can contain multiple words packages, flesh these out
-        # E.g. ^xxx1.1<ez>xxx1.1<ez>$
+        # each token can contain multiple words packages, flesh these out 
+        # E.g. ^xxx1.1<ez>xxx1.1<ez>$  NOT SURE IT'S VALID LIKE THIS
         word_toks = []
         for aper_tok in aper_toks:
             
@@ -281,9 +288,10 @@ def convertIt(ana_name, pfx_name, out_name, report):
                     # handle punctuation at the beginning of the paragraph (before the word)
                     if post_punct:
                         pre_punct = post_punct
+                        post_punct = ''
                         
                     # if first word of a non-initial paragraph
-                    if j > 0:
+                    if cnt > 0:
                         pre_punct = '\\n' + pre_punct
                 
                 # Get the root, root category and any affixes
@@ -307,7 +315,7 @@ def convertIt(ana_name, pfx_name, out_name, report):
                     report.Error("Word or POS missing. Found: "+",".join(morphs))
                     for m in morphs:
                         f_ana.write(m.encode('utf-8'))
-                    raise BaseException
+                    raise FTM_ModuleError, "Examine the target text output from apertium."
                 
                 # build output word in .ana style
                 for pr in prefix_list:
@@ -519,6 +527,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
             abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+            abbValue = re.sub('\.', '_', abbValue)
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
@@ -595,7 +604,8 @@ def MainFunction(DB, report, modifyAllowed):
     complexForms1st = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report)
     complexForms2nd = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
     transferResults = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
-    if not (targetANA and prefixFile and transferResults):
+    sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    if not (targetANA and prefixFile and transferResults and sentPunct):
         return
 
     # Check the validity of the complex forms lists
@@ -633,7 +643,7 @@ def MainFunction(DB, report, modifyAllowed):
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
-    convertIt(anaFileName, prefixFileName, transferResults, report)
+    convertIt(anaFileName, prefixFileName, transferResults, report, sentPunct)
 
     complex_map = {}
     irr_infl_var_map = {}
@@ -721,7 +731,6 @@ def MainFunction(DB, report, modifyAllowed):
         count += 1
     
     report.Info(str(count)+' records exported in ANA format.')        
-    print 'done.'
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

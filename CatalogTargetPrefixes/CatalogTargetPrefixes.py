@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.2.0 - 1/29/16 - Ron
+#    No changes to this module.
+#
 #   Go through the database and extract the gloss field for each
 #   prefix. Do this per sense. Write one gloss per line.
 #
@@ -30,9 +33,9 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Creates a text file with glosses. REMEMBER to choose the target database before running!! ",
+        'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :
 u"""
 The target database set in the configuration file will be used. This module will output all 

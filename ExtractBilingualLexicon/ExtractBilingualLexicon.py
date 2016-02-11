@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.2.0 - 1/28/16 - Ron
+#    Punctuation support. Use what the user specified in the configuration file for
+#    what is put at the bottom of the bilingual dictionary to handle sentence 
+#    punctuation.
+#    Bug fix. When getting inflection class information recursively set the name
+#    before checking for sub inflection classes.
+#
 #   Create a bilingual dictionary in Apertium format. The bilingual dictionary is one
 #   of two elements needed for the Apertium transfer system for transferring a text.
 #   the other is a rule file that transforms the stream of input words.
@@ -29,7 +36,6 @@
 #   well as any features that are present for the entry. 
 #
 
-import sys
 import re 
 import os
 import tempfile
@@ -51,7 +57,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
         'moduleDescription'   :
@@ -206,13 +212,12 @@ def do_replacements(configMap, report):
 def get_sub_ics(mySubClasses):
     ic_list = []
     for ic in mySubClasses:
+        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
+        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        ic_list.append((icAbbr,icName))
         if ic.SubclassesOC and len(ic.SubclassesOC.ToArray())>0:
             icl = get_sub_ics(ic.SubclassesOC)
             ic_list.extend(icl)
-        else:
-            icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
-            icName = ITsString(ic.Name.BestAnalysisAlternative).Text
-            ic_list.append((icAbbr,icName))
             
     return ic_list
 
@@ -220,7 +225,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
         if spec.ClassID == 53: # FsComplexValue
-            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+            get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
             
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
@@ -248,7 +253,8 @@ def MainFunction(DB, report, modifyAllowed):
     linkField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForEntryLink', report)
     senseNumField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForSenseNum', report)
     sourceMorphNames = ReadConfig.getConfigVal(configMap, 'SourceMorphNamesCountedAsRoots', report)
-    if not (linkField and senseNumField and sourceMorphNames):
+    sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    if not (linkField and senseNumField and sourceMorphNames and sentPunct):
         return
     
     # Transform the straight list of category abbreviations to a list of tuples
@@ -309,7 +315,6 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.write('  <sdefs>\n')
     f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
     
-    # TODO: merge target and source category lists
     posMap = {}
 
     # loop through all source categories
@@ -332,13 +337,13 @@ def MainFunction(DB, report, modifyAllowed):
             if posMap[posAbbr] != pos.ToString():
                 posMap[posAbbr] += ' / ' + pos.ToString()
 
-        # save inflection classes, save them along with pos's since they also need to go into the definition section
+        # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
         if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray())>0:
             AN_list = get_sub_ics(pos.InflectionClassesOC)
             for icAbbr, icName in AN_list:
                 posMap[icAbbr] = icName
                 
-    # save target features so they can go in the definition section
+    # save target features so they can go in the symbol definition section
     for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
         if feat.ClassID == 50: # FsClosedFeature
             for val in feat.ValuesOC:
@@ -532,7 +537,15 @@ def MainFunction(DB, report, modifyAllowed):
                 pass
        
     f_out.write('    <!-- SECTION: Punctuation -->\n')
-    f_out.write('   <e><re>[.\?;:!"]+</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
+    
+    # Create a regular expression string for the punctuation characters
+    # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
+    reStr = re.sub(r'([+?|*])',r'\\\1',sentPunct)
+    reStr = '['+reStr+']+'
+    
+    # This notation in Apertium basically means that any combination of the given punctuation characters
+    # with the tag <sent> will be substituted with the same thing plus the <sent> tag.
+    f_out.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
     f_out.write('  </section>\n')
     f_out.write('</dictionary>\n')
     f_out.close()

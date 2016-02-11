@@ -8,6 +8,15 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.2.0.1 - 1/28/16 - Ron
+#    Punctuation support. Allow the user to specify the punctuation that 
+#    indicates the end of a sentence. This punctuation will get marked
+#    with the tag <sent>. The user specifies it in the configuration file.
+#    Compound word support. Change one lexical unit containing multiple words
+#    to multiple lexical units, one for each word. For example: 
+#    ^room1.1<n>service1.1<n>number1.1<n>$ ->
+#    ^room1.1<n>$^service1.1<n>$^number1.1<n>$ 
+#
 #   Version 4 - 7/24/15 - Ron
 #    Preserve case in words. 
 #    Do capitalization of the extracted word. Use the baseline word as a model
@@ -52,7 +61,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : 3,
+        'moduleVersion'    : "1.2.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
@@ -86,6 +95,28 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from collections import defaultdict
 from System import Guid
 from System import String
+
+# Split a compound from one lexical unit containing multiple words to multiple
+# lexical units, one for each word. For example: ^room1.1<n>service1.1<n>number1.1<n>$
+# turns into:                                    ^room1.1<n>$^service1.1<n>$^number1.1<n>$
+def split_compounds(outStr):
+    # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
+    # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
+    toks = re.split('(>[^$<])', outStr)
+    
+    # If there is only one token return from the split, we don't have multiple words just
+    # return the input string
+    if len(toks) > 1:
+        outStr = ''
+        
+        # Every odd token will be the delimeter that was matched in the split operation
+        # Insert $^ between the > and letter of the 2-char delimeter.
+        for i,tok in enumerate(toks):
+            # if we have an odd numbered index
+            if i&1:
+                tok = tok[0]+"$^"+tok[1]
+            outStr+=tok
+    return outStr
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -171,6 +202,12 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error('The text named: '+text_desired_eng+' not found.')
         return
     
+    # Get punctuation string
+    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    
+    if not sent_punct:
+        return
+    
     prev_pv_list = []
     prev_e = None
     outputStrList = []
@@ -192,7 +229,7 @@ def MainFunction(DB, report, modifyAllowed):
     for obj_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
         pass
     
-    report.ProgressStart(obj_cnt)
+    report.ProgressStart(obj_cnt+1)
     ss = SegmentServices.StTextAnnotationNavigator(text.ContentsOA)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
@@ -209,7 +246,20 @@ def MainFunction(DB, report, modifyAllowed):
         prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
             
         if analysisOccurance.Analysis.ClassName == "PunctuationForm":
-            outputStrList.append(ITsString(analysisOccurance.Analysis.Form).Text)
+            
+            text_punct = ITsString(analysisOccurance.Analysis.Form).Text
+            
+            # See if one or more symbols is part of the user-defined sentence punctuation. If so output the
+            # punctuation as part of a data stream along with the symbol/tag <sent>
+            # convert to lists and take the set intersection
+            if set(list(text_punct)).intersection(set(list(sent_punct))):
+                outStr = "^"+text_punct+"<sent>$"
+                
+            # If not, assume this is non-sentence punctuation and just output the punctuation without a "symbol" e.g. <xxx>
+            else:
+                outStr = text_punct
+            
+            outputStrList.append(outStr)        
             continue
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
             wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
@@ -238,7 +288,7 @@ def MainFunction(DB, report, modifyAllowed):
                         # Check for valid POS
                         if not bundle.MsaRA.PartOfSpeechRA:
                             outStr = ITsString(wfiAnalysis.Owner.Form.BestVernacularAlternative).Text
-                            report.Warning('No POS found for the word: '+ outStr + ' Treating this is an unknown word.')
+                            report.Warning('No POS found for the word: '+ outStr + ' Treating this is an unknown word.', DB.BuildGotoURL(e))
                             outStr += '<UNK>'
                             break
                         if bundle.MorphRA:
@@ -443,9 +493,13 @@ def MainFunction(DB, report, modifyAllowed):
     
     # Write out all the words
     for outStr in outputStrList:
+        # Split compound words
+        outStr = split_compounds(outStr)
         f_out.write(outStr.encode('utf-8'))
 
+    f_out.close()
     report.Info('Export of '+str(obj_cnt+1)+' analyses complete to the file: '+fullPathTextOutputFile+'.')
+
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
