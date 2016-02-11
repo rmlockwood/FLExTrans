@@ -107,6 +107,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 elif col == 4:
                     qColor = QtGui.QColor(QtCore.Qt.darkBlue)
                 elif col == 3 or col == 6: #gram cat.
+                    # If there is a mismatch in grammatical category color it red
                     if self.__localData[row][3] != self.__localData[row][6]:
                         qColor = QtGui.QColor(QtCore.Qt.red)
                 qBrush = QtGui.QBrush(qColor)
@@ -177,7 +178,7 @@ class Main(QtGui.QMainWindow):
         
         # Stretch the table view to fit
         self.ui.tableView.setGeometry(10, 10, self.width() - 20, \
-                                      self.height() - 20 - self.ui.OKButton.height() - 25)
+                                      self.height() - 40 - self.ui.OKButton.height() - 25)
         
         # Move the OK and Cancel buttons as the window gets resized.
         x = self.width()/2 - 10 - self.ui.OKButton.width()
@@ -444,7 +445,10 @@ def MainFunction(DB, report, modify=True):
                                         #tgtHeadword = add_one(tgtHeadword)
                                             
                                         # Add to the data table
-                                        myData.append([(0, tgtSenseNum, mySense, tgtSense.OwningEntry.Guid), srcHeadWord, 
+                                        val = 1
+                                        if srcPOS != tgtPOS:
+                                            val = 0
+                                        myData.append([(val, tgtSenseNum, mySense, tgtSense.OwningEntry.Guid), srcHeadWord, 
                                                       srcGloss, srcPOS, tgtHeadword, tgtGloss, tgtPOS])
                                     
                                 processed_map[mySense] = 1 
