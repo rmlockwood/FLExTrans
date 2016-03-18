@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.2.1 - 2/11/16 - Ron
+#    Error checking when opening the replacement file.
+#
 #   Version 1.2.0 - 1/28/16 - Ron
 #    Punctuation support. Use what the user specified in the configuration file for
 #    what is put at the bottom of the bilingual dictionary to handle sentence 
@@ -133,7 +136,6 @@ def do_replacements(configMap, report):
         return
     
     biling = os.path.join(tempfile.gettempdir(), configMap['BilingualDictOutputFile'])
-
     
     replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
     if not replFile:
@@ -142,7 +144,11 @@ def do_replacements(configMap, report):
     shutil.copy2(biling, biling+'.old')
     f_a = open(biling+'.old')
     f_b = open(biling,'w')
-    f_r = open(replFile)
+    try:
+        f_r = open(replFile)
+    except IOError:
+        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
+        return
     
     replMap = {}
     s_lines = []
@@ -306,7 +312,7 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_out = open(fullPathBilingFile, 'w')
     except IOError as e:
-        report.Error('There was a problem creating the file: '+fullPathBilingFile+' in the current directory.')
+        report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
 
     report.Info("Outputing category information...")
     

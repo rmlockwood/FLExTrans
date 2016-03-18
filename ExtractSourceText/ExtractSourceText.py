@@ -8,7 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
-#   Version 1.2.0.1 - 1/28/16 - Ron
+#   Version 1.2.1 - 2/11/16 - Ron
+#    Error checking when opening the analyzed text file.
+#
+#   Version 1.2.0 - 1/28/16 - Ron
 #    Punctuation support. Allow the user to specify the punctuation that 
 #    indicates the end of a sentence. This punctuation will get marked
 #    with the tag <sent>. The user specifies it in the configuration file.
@@ -185,8 +188,12 @@ def MainFunction(DB, report, modifyAllowed):
         return
     #fullPathTextOutputFile = os.path.join(tempfile.gettempdir(), outFileVal)
     fullPathTextOutputFile = outFileVal
-    f_out = open(fullPathTextOutputFile, 'w')
-
+    try:
+        f_out = open(fullPathTextOutputFile, 'w')
+    except IOError:
+        report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
+        return
+    
     # Find the desired text
     text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
     if not text_desired_eng:

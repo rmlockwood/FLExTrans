@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.2.1 - 2/11/16 - Ron
+#    Error checking when opening the prefix file.
+#
 #   Version 1.2.0 - 1/29/16 - Ron
 #    No changes to this module.
 #
@@ -81,7 +84,10 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     myPath = os.path.join(tempfile.gettempdir(), outFileVal)
-    f_out = open(myPath, 'w') 
+    try:
+        f_out = open(myPath, 'w') 
+    except IOError as e:
+        report.Error('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.')
 
     TargetDB = FLExDBAccess()
 
