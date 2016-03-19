@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /media/xxxxx
+cd /media/windows-shared
 make
