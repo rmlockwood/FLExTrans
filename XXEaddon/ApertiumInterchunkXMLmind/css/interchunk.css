@@ -1,0 +1,595 @@
+/* CSS for formating Apertium Interchunk in XXE */ 
+
+@property-value def-attr-background-color() #F5DEB3; /* wheat */
+@property-value def-cat-background-color() #FFB6C1; /* lightpink */
+@property-value def-list-background-color() #CCFFCC; /* lightgreen */
+@property-value def-macro-background-color() #F09FF0; /* violet */
+@property-value def-rule-background-color() #BFD0FF; /* paleblue */
+@property-value def-var-background-color() #AFEEEE; /* paleturquoise */
+@property-value def-pos-background-color() #FFDAB9; /* peach puff */
+@property-value def-literal-background-color() #98FB98; /* pale green */
+@property-value def-literal-tag-background-color() #FFFFB5; /* pale yellow */
+@property-value def-chunk-background-color() #AEC6CF; /* pastel blue */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+action:before
+{
+    display:block;
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    " action: ";
+}
+action
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(no, 0);
+}
+
+and:before
+{
+    content: " and: ";
+}
+and
+{
+    display:block;
+    padding-left:.125in;
+}
+
+append:before
+{
+    content: " append to: "
+    text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+}
+append
+{
+    display:block;
+    padding-left:.125in;
+}
+attr-item:before
+{
+    content:"tags: ";
+} 
+attr-item[tags]
+{
+    display:block;
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,10);
+    margin-left:.8in;
+}
+
+b:before
+{
+    content: " blank space: ";
+}
+b
+{
+    display:block;
+    padding-left:.125in;
+}
+
+begins-with:before
+{
+    content: " begins with: "check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+begins-with
+{
+    display:block;
+    padding-left:.125in;
+}
+
+begins-with-list:before
+{
+    content: " begins with something in list: "check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+begins-with-list
+{
+    display:block;
+    padding-left:.125in;
+}
+
+call-macro:before
+{
+    content:"call macro: "
+    text-field(attribute,n,background-color,def-macro-background-color(),columns,16);;
+}
+call-macro
+{
+    display:block;
+    padding-left:.125in;
+}
+
+case-of:before
+{
+    content: " case of ";
+}
+case-of
+{
+    display:block;
+    content: " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,12);
+    padding-left:.125in;
+}
+
+cat-item:before
+{
+    content:"tags: ";
+}
+cat-item[tags]
+{
+    display:block;
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,10) 
+      " lemma: " text-field(attribute,lemma,background-color,def-chunk-background-color(),columns,10);
+    margin-left:.8in;
+}
+
+choose:before
+{
+    content: " choose: ";
+}
+choose
+{
+    display:block;
+    padding-left:.125in;
+}
+
+chunk:before
+{
+    content: " chunk: "
+}
+chunk
+{
+    display:block;
+    padding-left:.125in;
+}
+
+clip:before
+{
+    content: " clip ";
+}
+clip
+{
+    display:block;
+    content: " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,12)
+	         ;
+    padding-left:.125in;
+}
+
+concat:before
+{
+    content: " concat: ";
+}
+concat
+{
+    display:block;
+    padding-left:.125in;
+}
+
+contains-substring:before
+{
+    content: " contains substring: " check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+contains-substring
+{
+    display:block;
+    padding-left:.125in;
+}
+
+def-attr:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,12);
+}
+def-attr
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-cat:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " category: " text-field(attribute,n,background-color,def-cat-background-color(),columns,12);
+}
+def-cat
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible(yes, 1);
+}
+
+def-list:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " list: " text-field(attribute,n,background-color,def-list-background-color(),columns,12);
+}
+def-list
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-macro:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,16)
+    " # of parameters = " 
+    text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
+}
+def-macro
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-var:before
+{
+    content: " variable: " 
+    text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+}
+def-var
+{
+    display:block;
+    padding-left:.125in;
+}
+
+ends-with:before
+{
+    content: " ends with: ";
+}
+ends-with
+{
+    display:block;
+    padding-left:.125in;
+}
+
+ends-with-list:before
+{
+    content: " ends with something in list: " check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+ends-with-list
+{
+    display:block;
+    padding-left:.125in;
+}
+
+equal:before
+{
+    content: " equal: " check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+equal
+{
+    display:block;
+    padding-left:.125in;
+}
+
+get-case-from:before
+{
+    content: " get case from " 
+    " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+}
+get-case-from
+{
+    display:block;
+    padding-left:.125in;
+}
+
+in:before
+{
+    content: " in list: " check-box(attribute, caseless, label, "case insensitive", unchecked-value, "no", checked-value, "yes");
+}
+in
+{
+    display:block;
+    padding-left:.125in;
+}
+
+let:before
+{
+    content: " let: ";
+}
+let
+{
+    display:block;
+    padding-left:.125in;
+}
+
+list:before
+{
+    content: " list: ";
+}
+list
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-list-background-color(),columns,12);
+    padding-left:.125in;
+}
+
+list-item:before
+{
+    content:"item: ";
+}
+list-item[v]
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-chunk-background-color(),columns,10);
+    margin-left:.4in;
+}
+
+lit:before
+{
+    content:" literal string: ";
+}
+lit
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,10);
+    padding-left: .125in;
+}
+
+lit-tag:before
+{
+    content:" literal tag: ";
+}
+lit-tag
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-literal-tag-background-color(),columns,10);
+    padding-left: .125in;
+}
+
+lu:before
+{
+    content: " lexical unit: ";
+}
+lu
+{
+    display:block;
+    padding-left:.125in;
+}
+
+mlu:before
+{
+    content: " multi-word: ";
+}
+mlu
+{
+    display:block;
+    padding-left:.125in;
+}
+
+modify-case:before
+{
+    content: " modify case: ";
+}
+modify-case
+{
+    display:block;
+    padding-left:.125in;
+}
+
+not:before
+{
+    content: " not: ";
+}
+not
+{
+    display:block;
+    padding-left:.125in;
+}
+
+or:before
+{
+    content: " or: ";
+}
+or
+{
+    display:block;
+    padding-left:.125in;
+}
+
+otherwise:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    " otherwise: ";
+}
+otherwise
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+out:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    " output: ";
+}
+out
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+pattern:before
+{
+    content: " pattern: ";
+}
+pattern
+{
+    display:block;
+    padding-left:.125in;
+}
+
+pattern-item:before
+{
+    content:"item: ";
+}
+pattern-item
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-cat-background-color(),columns,12);
+    margin-left:.4in;
+}
+
+rule:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " rule: " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
+}
+rule
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+section-def-attrs:before
+{
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Attributes: ";
+}
+section-def-attrs
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
+
+section-def-cats:before
+{
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Categories: ";
+}
+section-def-cats
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
+
+section-def-lists:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Lists: ";
+}
+section-def-lists
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+
+section-def-macros:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Macros: ";
+}
+section-def-macros
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+
+section-def-vars:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Variables: ";
+}
+section-def-vars
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+section-rules:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+	" Rules: ";
+}
+section-rules
+{
+    display:block;
+    property-group:isCollapsible(no, 0);
+}
+
+tag:before
+{
+    display:block;
+    padding-left:.125in;
+    content: " tag: " ;
+}
+tag
+{
+    display:block;
+    padding-left:.125in;
+}
+
+tags:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " tags: " ;
+}
+tags
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+test:before
+{
+    content: " test: ";
+}
+test
+{
+    display:block;
+    padding-left:.125in;
+}
+
+interchunk
+{
+    display:block;
+}
+
+var:before
+{
+    content:" variable: ";
+}
+var
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+   padding-left:.125in;
+}
+
+when:before
+{
+    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    " when: ";
+}
+when
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+with-param:before
+{
+    content: " with parameter: " 
+    text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+}
+with-param
+{
+    display:block;
+    padding-left:.125in;
+}
