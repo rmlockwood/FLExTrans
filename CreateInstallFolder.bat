@@ -26,5 +26,5 @@ cd Install
 "C:\Program Files (x86)\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
 copy /Y FlexTrans.zip ..
 cd ..
-rem pause
+pause
 
