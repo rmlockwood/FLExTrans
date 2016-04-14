@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.0 - 4/13/16 - Ron
+#    Handle infixes and circumfixes.
+#    For infixes write new information to the infix dictionary that is specific
+#    to infixes. Namely the location field which we get from FLEx's 
+#    InfixPositions field. The STAMP sfm mapping file for infixes gets \l
+#    mapped to \L. Circumfixes get processed by writing the 1st allomorph to
+#    the prefix file and the 2nd allomorph to the suffix file.
+#
 #   Version 1.2.0 - 1/29/16 - Ron
 #    No changes to this module.
 #
@@ -52,7 +60,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -111,9 +119,47 @@ def output_allomorph(morph, envList, f_handle, e, report, TargetDB):
         
     for env in morph.PhoneEnvRC:
         envStr = ITsString(env.StringRepresentation).Text
-        f_handle.write(envStr.encode('utf-8'))
+        f_handle.write(envStr.encode('utf-8')+' ')
         envList.append(envStr)
     f_handle.write('\n')
+
+# A circumfix has two parts a prefix part and a suffix part
+# Write the 1st allomorph to the prefix file and the 2nd to the suffix file
+# Modify the glosses for each using the convention used in the module ConvertTextToSTAMPformat
+# GLOSS_cfx_part_X where X is a or b
+def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
+    
+    # Convert dots to underscores in the gloss if it's not a root/stem
+    if (myType == 'non-stem'):
+        myGloss = re.sub(r'\.', r'_', myGloss)
+
+    # Output gloss
+    if myGloss:
+        f_pf.write('\\g ' + myGloss.encode('utf-8')+'_cfx_part_a' + '\n')
+    else:
+        f_pf.write('\\g \n')
+    
+    # 1st allomorph for the prefix file
+    allEnvs = []
+    for i, allomorph in enumerate(e.AlternateFormsOS):
+        if i == 0:
+            output_allomorph(allomorph, allEnvs, f_pf, e, report, TargetDB)
+    
+    f_pf.write('\n')
+    
+    # Output gloss
+    if myGloss:
+        f_sf.write('\\g ' + myGloss.encode('utf-8')+'_cfx_part_b' + '\n')
+    else:
+        f_sf.write('\\g \n')
+    
+    # 2nd allomorph for the suffix file
+    allEnvs = []
+    for i, allomorph in enumerate(e.AlternateFormsOS):
+        if i == 1:
+            output_allomorph(allomorph, allEnvs, f_sf, e, report, TargetDB)
+    
+    f_sf.write('\n')
 
 def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
     
@@ -127,6 +173,19 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
     else:
         f_handle.write('\\g \n')
     
+    # For infixes, we need to output the infix positions field
+    if ITsString(e.LexemeFormOA.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'infix':
+        # AMPLE's ANA spec. says you need to specify the morpheme type that the
+        # infix applies to, FLEx doesn't restrict the infix to just one type,
+        # so use all three types when building the position field for the
+        # ANA file. 
+        morphTypesStr = 'prefix suffix root ' 
+        f_handle.write('\\l ' + morphTypesStr)
+        for position in e.LexemeFormOA.PositionRS:
+            positionStr = ITsString(position.StringRepresentation).Text
+            f_handle.write(positionStr.encode('utf-8')+' ')
+        f_handle.write('\n')
+        
     # Loop through all the allomorphs
     allEnvs = []
     for allomorph in e.AlternateFormsOS:
@@ -212,7 +271,10 @@ def MainFunction(DB, report, modifyAllowed):
         f_sycd.write(r'\ch "\mp" "P"'+'\n')
         f_sycd.write(r'\ch "\mcc" "Z"'+'\n')
         f_sycd.write(r'\ch "\!" "!"'+'\n')
-        f_sycd.write(r'\ch "\o" "O"'+'\n') # not strictly needed for roots but it doesn't break anything
+        if i != 3: # only for affixes
+            f_sycd.write(r'\ch "\o" "O"'+'\n') 
+        if i == 0: # only for infixes
+            f_sycd.write(r'\ch "\l" "L"'+'\n') # This is the infix location field
     f_sycd.close()
     
     # Create the blank files we need
@@ -245,7 +307,7 @@ def MainFunction(DB, report, modifyAllowed):
         # get abbreviation
         posAbbr = ITsString(pos.Abbreviation.AnalysisDefaultWritingSystem).Text
         f_dec.write('\\ca ' + posAbbr + '\n')
-        f_dec.write('\\ca _variant_\n') # for variant entries
+    f_dec.write('\\ca _variant_\n') # for variant entries
     f_dec.write('\n')
     
     report.Info("Outputting natural class information...")
@@ -377,15 +439,19 @@ def MainFunction(DB, report, modifyAllowed):
                                        ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text, TargetDB.BuildGotoURL(e))
                     elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
-                            if morphType == 'prefix':
+                            if morphType in ['prefix', 'prefixing interfix']:
                                 process_allomorphs(e, f_pf, gloss, report, 'non-stem', TargetDB)
                                 pf_cnt += 1
-                            elif morphType == 'suffix':
+                            elif morphType in ['suffix', 'suffixing interfix']:
                                 process_allomorphs(e, f_sf, gloss, report, 'non-stem', TargetDB)
                                 sf_cnt += 1
-                            elif morphType == 'infix':
+                            elif morphType in ['infix', 'infixing interfix']:
                                 process_allomorphs(e, f_if, gloss, report, 'non-stem', TargetDB)
                                 if_cnt += 1
+                            elif morphType == 'circumfix':
+                                process_circumfix(e, f_pf, f_sf, gloss, report, 'non-stem', TargetDB)
+                                pf_cnt += 1
+                                sf_cnt += 1
                             else:
                                 report.Warning('Skipping entry because the morph type is: ' + morphType, TargetDB.BuildGotoURL(e))
                         else:
@@ -409,7 +475,7 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info("STAMP dictionaries created.")
     report.Info(str(pf_cnt)+' prefixes in the prefix dictionary.')
     report.Info(str(sf_cnt)+' suffixes in the suffix dictionary.')
-    #report.Info(str(if_cnt)+' infixes in the infix dictionary.')
+    report.Info(str(if_cnt)+' infixes in the infix dictionary.')
     report.Info(str(rt_cnt)+' roots in the root dictionary.')
     report.Info("Synthesizing the target text...")
 

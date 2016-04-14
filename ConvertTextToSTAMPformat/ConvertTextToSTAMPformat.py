@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.0 - 4/13/16 - Ron
+#    Handle infixes and circumfixes.
+#    Read the new version of the "prefix" file which now has all affixes
+#    and their morphtypes. Use a map to store the affixes and types. Process
+#    the affixes in the stream and now see if there are infixes or circumfixes.
+#
 #   Version 1.2.0 - 1/29/16 - Ron
 #    Punctuation support. Remove punctuation lexical units. Search for lu's of
 #    the form ^xxx<sent>$ and change them to xxx.
@@ -74,7 +80,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -197,15 +203,15 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     
     f_ana = open(ana_name, 'w')
     
-    all_prefixes = []
+    affix_map = {}
     
-    # Read in the target prefix list. We need this to figure out which affixes (tags)
-    # are prefixes. The rest are suffixes.
-    f_pfx = open(pfx_name, 'r')
-    for line in f_pfx:
-        all_prefixes.append(line.rstrip())
+    # Read in the target affix list. 
+    f_afx = open(pfx_name, 'r')
+    for line in f_afx:
+        (affix, morph_type) = re.split(',', line.rstrip())
+        affix_map[affix] = morph_type
         
-    f_pfx.close()
+    f_afx.close()
 
     try:
         f_test = open(out_name, 'r')
@@ -300,12 +306,33 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                 
                 prefix_list = []
                 suffix_list = []
+                infix_list = []
+                circumfix_list = []
                 # start at position 2 since this is where the affixes start
                 for i in range(2,len(morphs)):
+                    if morphs[i] not in affix_map:
+                        report.Error("Affix not found: " + morphs[i])
+                        break
                     # prefix
-                    if morphs[i] in all_prefixes:
+                    if affix_map[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
                         prefix_list.append(morphs[i])
-                    # suffix
+                    # infix
+                    elif affix_map[morphs[i]] in ['infix', 'infixing interfix']:
+                        infix_list.append(morphs[i])
+                    # circumfix
+                    elif affix_map[morphs[i]] == 'circumfix':
+                        # Circumfixes are made of two parts, a prefix part and a suffix part
+                        # when we encounter a new circumfix, give it a unique new gloss and
+                        # add it to the prefix list. When we see one that we've seen before,
+                        # it must be the suffix part. Give it a unique new gloss and add it to
+                        # the suffix list.
+                        if morphs[i] not in circumfix_list:
+                            prefix_list.append(morphs[i]+'_cfx_part_a')
+                            circumfix_list.append(morphs[i])
+                        else:
+                            suffix_list.append(morphs[i]+'_cfx_part_b')
+                    # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix).
+                    # The other types are not supported, but will end up here.
                     else:
                         suffix_list.append(morphs[i])
                 
@@ -318,15 +345,22 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                     raise FTM_ModuleError, "Examine the target text output from apertium."
                 
                 # build output word in .ana style
+                # first do the prefixes
                 for pr in prefix_list:
                     wordStr += ' '+pr
                 
-                # change spaces to underscores
+                # now do the infixes (I believe we could put them either before or after the root)
+                for infix in infix_list:
+                    wordStr += ' '+infix
+                
+                # change spaces to underscores in the root
                 morphs[0] = re.sub('\s', '_', morphs[0])
                 
                 # now we have the root (morphs[0]) and the POS of the root (morphs[1])
                 # .ana requires the POS first
                 wordStr += ' < '+ morphs[1] + ' ' + morphs[0] + ' > '
+                
+                # lastly append the suffixes
                 for su in suffix_list:
                     wordStr += ' '+su
             
@@ -631,7 +665,7 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info('Using: '+targetProj+' as the target database.')
 
     anaFileName = os.path.join(tempfile.gettempdir(), targetANA)
-    prefixFileName = os.path.join(tempfile.gettempdir(), prefixFile)
+    affixFileName = os.path.join(tempfile.gettempdir(), prefixFile)
     
     # Build the complex forms map
     complexFormTypeMap = {}
@@ -643,7 +677,7 @@ def MainFunction(DB, report, modifyAllowed):
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
-    convertIt(anaFileName, prefixFileName, transferResults, report, sentPunct)
+    convertIt(anaFileName, affixFileName, transferResults, report, sentPunct)
 
     complex_map = {}
     irr_infl_var_map = {}

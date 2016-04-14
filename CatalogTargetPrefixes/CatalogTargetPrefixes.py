@@ -5,14 +5,20 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.0 - 4/13/16 - Ron
+#    Handle infixes and circumfixes.
+#    Instead of just outputting prefixes, output all affix glosses and their
+#    corresponding morphtype. Also convert dots to underscores in the glosses.
+#    Process all allomorphs of an entry to see if there are affixes/clitics.
+#
 #   Version 1.2.1 - 2/11/16 - Ron
 #    Error checking when opening the prefix file.
 #
 #   Version 1.2.0 - 1/29/16 - Ron
 #    No changes to this module.
 #
-#   Go through the database and extract the gloss field for each
-#   prefix. Do this per sense. Write one gloss per line.
+#   Go through the database and extract the gloss field and morpheme type
+#   for each affix. Do this per sense. Write one gloss and type per line.
 #
 
 import sys
@@ -36,13 +42,13 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :
 u"""
 The target database set in the configuration file will be used. This module will output all 
-the gloss fields for the best analysis writing system for morphtypes that are 'prefix.' 
+the gloss and morphtype fields for the best analysis writing system for all affixes. 
 NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
@@ -80,7 +86,9 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Build an output path using the system temp directory.
     outFileVal = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
-    if not outFileVal:
+    morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+
+    if not (outFileVal and morphNames):
         return
 
     myPath = os.path.join(tempfile.gettempdir(), outFileVal)
@@ -112,25 +120,49 @@ def MainFunction(DB, report, modifyAllowed):
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
         report.ProgressUpdate(i)
+        processIt = False
         
-        # only process prefixes
-        if e.LexemeFormOA and \
-           e.LexemeFormOA.ClassName == 'MoAffixAllomorph' and \
-           e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
-           MorphTypeRA.Name.BestAnalysisAlternative).Text in ('prefix'):
-        
-            # Set the headword value and the homograph #
-            #headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
+        # Make sure we have a valid MorphType object
+        if e.LexemeFormOA.MorphTypeRA:
+          
+            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text
             
-            # Loop through senses
-            for i, mySense in enumerate(e.SensesOS):
+            # Check if either the main form or any allomorphs are affixes or clitics
+            
+            # First main form
+            if (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoAffixAllomorph' and e.LexemeFormOA.MorphTypeRA) or \
+               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType not in morphNames):
+    
+                processIt = True
+            
+            # If main form isn't an affix or clitic look in allomorphs
+            if processIt == False:
+                for allomorph in e.AlternateFormsOS:
+                    
+                    morphType = ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text
+                    if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
+                       (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType not in morphNames):
+            
+                        processIt = True
+                        break
                 
-                count += 1
-                # Write out the gloss
-                f_out.write(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
-                f_out.write('\n')
+            # Process affixes or clitics (stems that aren't in the morphNames list)
+            if processIt:
+            
+                # Loop through senses
+                for i, mySense in enumerate(e.SensesOS):
+                    
+                    count += 1
+                    
+                    # Convert dots to underscores in the affix gloss
+                    myGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                    myGloss = re.sub(r'\.', r'_', myGloss)
+                    
+                    # Write out the gloss and morph type
+                    f_out.write(myGloss +','+ morphType)
+                    f_out.write('\n')
                 
-    report.Info(str(count)+' prefixes exported to the catalog.')
+    report.Info(str(count)+' affixes/clitics exported to the catalog.')
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
