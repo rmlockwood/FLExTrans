@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    No changes to this module.
+#
 #   Version 1.3.0 - 4/13/16 - Ron
 #    Handle infixes and circumfixes.
 #    Read the new version of the "prefix" file which now has all affixes
@@ -80,7 +83,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :

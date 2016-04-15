@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    No changes to this module.
+#
 #   Version 1.3.0 - 4/13/16 - Ron
 #    Handle infixes and circumfixes.
 #    Instead of just outputting prefixes, output all affix glosses and their
@@ -42,7 +45,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    No changes to this module.
+#
 #   Version 1.2.1 - 2/11/16 - Ron
 #    Error checking when opening the replacement file.
 #
@@ -60,7 +63,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
         'moduleDescription'   :

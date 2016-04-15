@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    No changes to this module.
+#
 #   Version 1.2.0 - 1/29/16 - Ron
 #    No changes to this module.
 #
@@ -26,7 +29,7 @@ import tempfile
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Insert Target Text",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Insert a translated text into the target FLEx project.",
         'moduleDescription'   :

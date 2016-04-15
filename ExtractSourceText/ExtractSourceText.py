@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    No changes to this module.
+#
 #   Version 1.2.1 - 2/11/16 - Ron
 #    Error checking when opening the analyzed text file.
 #
@@ -64,7 +67,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.2.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
