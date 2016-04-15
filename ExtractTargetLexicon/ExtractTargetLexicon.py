@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.1 - 4/15/16 - Ron
+#    Handle allomorphs of circumfixes.
+#    Don't assume one prefix and one suffix allomorph. Put all prefix 
+#    allomorphs in the prefix file and likewise for suffix allomorphs.
+#
 #   Version 1.3.0 - 4/13/16 - Ron
 #    Handle infixes and circumfixes.
 #    For infixes write new information to the infix dictionary that is specific
@@ -60,7 +65,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.0",
+        'moduleVersion'    : "1.3.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -142,7 +147,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
     # 1st allomorph for the prefix file
     allEnvs = []
     for i, allomorph in enumerate(e.AlternateFormsOS):
-        if i == 0:
+        if ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'prefix':
             output_allomorph(allomorph, allEnvs, f_pf, e, report, TargetDB)
     
     f_pf.write('\n')
@@ -156,7 +161,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
     # 2nd allomorph for the suffix file
     allEnvs = []
     for i, allomorph in enumerate(e.AlternateFormsOS):
-        if i == 1:
+        if ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'suffix':
             output_allomorph(allomorph, allEnvs, f_sf, e, report, TargetDB)
     
     f_sf.write('\n')
