@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.2 - 4/23/16 - Ron
+#    Check for valid analysis object before checking class name.
+#    Don't use tempfile for the bilingual dictionary file.
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
 #
@@ -131,22 +135,22 @@ def is_number(s):
 # Two types of lines are in the replacement file, <sdef> lines which need to be added to the
 # symbol definition section and lemma lines which are inserted and the old lemma lines are
 # commented out.
-def do_replacements(configMap, report):
+def do_replacements(configMap, report, fullPathBilingFile):
 
     # See if we need to do replacements
     # See if the config setting is there or if it has valid info.
     if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
         return
     
-    biling = os.path.join(tempfile.gettempdir(), configMap['BilingualDictOutputFile'])
+    #biling = os.path.join(tempfile.gettempdir(), configMap['BilingualDictOutputFile'])
     
     replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
     if not replFile:
         return
     
-    shutil.copy2(biling, biling+'.old')
-    f_a = open(biling+'.old')
-    f_b = open(biling,'w')
+    shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
+    f_a = open(fullPathBilingFile+'.old')
+    f_b = open(fullPathBilingFile,'w')
     try:
         f_r = open(replFile)
     except IOError:
@@ -402,115 +406,120 @@ def MainFunction(DB, report, modifyAllowed):
                 
                 trgtFound = False
                 
-                # Get the POS abbreviation for the current sense, assuming we have a stem
-                if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                    
-                    if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
-                        abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                              Abbreviation.BestAnalysisAlternative).Text
-                    else:
-                        report.Warning('Skipping sense because the POS is unknown: '+\
-                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                        #abbrev = 'unk'
-                                              
-                    # If we have a link to a target entry, process it
-                    equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-                    if equiv != None:
+                # Make sure we have a valid analysis object
+                if mySense.MorphoSyntaxAnalysisRA:
+                
+                    # Get the POS abbreviation for the current sense, assuming we have a stem
+                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                         
-                        # Parse the link to get the guid
-                        u = equiv.index('guid')
-                        myGuid = equiv[u+7:u+7+36]
-                        
-                        # Look up the entry in the trgt project
-                        repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
-                        guid = Guid(String(myGuid))
-
-                        try:
-                            targetEntry = repo.GetObject(guid)
-                        except:
-                            report.Error('Skipping sense because the link to the target entry is invalid: '+\
-                                         ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                            continue
-                        
-                        if targetEntry:
+                        if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
+                            abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                  Abbreviation.BestAnalysisAlternative).Text
+                        else:
+                            report.Warning('Skipping sense because the POS is unknown: '+\
+                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                            #abbrev = 'unk'
+                                                  
+                        # If we have a link to a target entry, process it
+                        equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
+                        if equiv != None:
                             
-                            # Set the target headword value and the homograph #
-                            targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
+                            # Parse the link to get the guid
+                            u = equiv.index('guid')
+                            myGuid = equiv[u+7:u+7+36]
                             
-                            # If there is not a homograph # at the end, make it 1
-                            if not re.search('(\d$)', targetHeadWord):
-                                targetHeadWord += '1'
+                            # Look up the entry in the trgt project
+                            repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
+                            guid = Guid(String(myGuid))
+    
+                            try:
+                                targetEntry = repo.GetObject(guid)
+                            except:
+                                report.Error('Skipping sense because the link to the target entry is invalid: '+\
+                                             ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                continue
                             
-                            # An empty sense number means default to sense 1
-                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
-                            if senseNum == None:
-                                trgtSense = 1
-                            elif is_number(senseNum):
-                                trgtSense = int(senseNum)
-                            else:
-                                report.Warning('Sense number: '+trgtSense+\
-                                               ' is not valid for target headword: '+\
-                                               ITsString(targetEntry.HeadWord).Text+\
-                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                            
-                            # Make sure that sense number is valid    
-                            if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
-                            
-                                # Get the POS abbreviation for the target sense, assuming we have a stem
-                                targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
-                                if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                                    
-                                    trgtFound = True
-                                    # Get target pos abbreviation
-                                    trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                          Abbreviation.BestAnalysisAlternative).Text
-                                    
-                                    # Get target inflection class
-                                    trgtInflCls =''
-                                    if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                                        trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                              Abbreviation.BestAnalysisAlternative).Text+s4a         
-                                    
-                                    # Get target features                                                     
-                                    featStr = ''
-                                    if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                                        feat_abbr_list = []
-                                        # The features might be complex, make a recursive function call to find all leaf features
-                                        get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
-                                        
-                                        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                        for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                            featStr += s2 + abb + s4a
-                                    
-                                    # output the bilingual dictionary line (the sX is xml stuff)
-                                    out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
-                                              str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                    f_out.write(out_str.encode('utf-8'))
-                                    records_dumped_cnt += 1
+                            if targetEntry:
+                                
+                                # Set the target headword value and the homograph #
+                                targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
+                                
+                                # If there is not a homograph # at the end, make it 1
+                                if not re.search('(\d$)', targetHeadWord):
+                                    targetHeadWord += '1'
+                                
+                                # An empty sense number means default to sense 1
+                                senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
+                                if senseNum == None:
+                                    trgtSense = 1
+                                elif is_number(senseNum):
+                                    trgtSense = int(senseNum)
                                 else:
-                                    report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
-                                                   ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                   ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                            else:
-                                if targetEntry.SensesOS == None:
-                                    report.Warning('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                   ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                elif trgtSense > targetEntry.SensesOS.Count:
-                                    report.Warning('Sense number: '+str(trgtSense)+\
-                                                   ' is not valid. That many senses do not exist for target headword: '+\
+                                    report.Warning('Sense number: '+trgtSense+\
+                                                   ' is not valid for target headword: '+\
                                                    ITsString(targetEntry.HeadWord).Text+\
                                                    ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                
+                                # Make sure that sense number is valid    
+                                if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
+                                
+                                    # Get the POS abbreviation for the target sense, assuming we have a stem
+                                    targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
+                                    if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                                        
+                                        trgtFound = True
+                                        # Get target pos abbreviation
+                                        trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                              Abbreviation.BestAnalysisAlternative).Text
+                                        
+                                        # Get target inflection class
+                                        trgtInflCls =''
+                                        if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                            trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                  Abbreviation.BestAnalysisAlternative).Text+s4a         
+                                        
+                                        # Get target features                                                     
+                                        featStr = ''
+                                        if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                                            feat_abbr_list = []
+                                            # The features might be complex, make a recursive function call to find all leaf features
+                                            get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                            
+                                            # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                            for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                featStr += s2 + abb + s4a
+                                        
+                                        # output the bilingual dictionary line (the sX is xml stuff)
+                                        out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
+                                                  str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
+                                        f_out.write(out_str.encode('utf-8'))
+                                        records_dumped_cnt += 1
+                                    else:
+                                        report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
+                                                       ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                else:
+                                    if targetEntry.SensesOS == None:
+                                        report.Warning('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    elif trgtSense > targetEntry.SensesOS.Count:
+                                        report.Warning('Sense number: '+str(trgtSense)+\
+                                                       ' is not valid. That many senses do not exist for target headword: '+\
+                                                       ITsString(targetEntry.HeadWord).Text+\
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                            else:
+                                report.Warning('Target entry not found. This target GUID does not exist: '+myGuid+\
+                                               ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                         else:
-                            report.Warning('Target entry not found. This target GUID does not exist: '+myGuid+\
-                                           ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                            pass
+                            # Don't report this. Most of the time the equivalent field will be empty.
+                            #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
                     else:
-                        pass
-                        # Don't report this. Most of the time the equivalent field will be empty.
-                        #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
+                        report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                                       ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                 else:
-                    report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                   ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                    
+                    report.Warning('Skipping sense, no analysis object'\
+                                       ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                 if not trgtFound:
                     # output the bilingual dictionary line -- source and target are the same
                     
@@ -560,7 +569,7 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.close()
     
     # As a last step, replace certain parts of the bilingual dictionary
-    if do_replacements(configMap, report) == False:
+    if do_replacements(configMap, report, fullPathBilingFile) == False:
         return
         
     report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
