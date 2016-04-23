@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.2 - 4/23/16 - Ron
+#    Check for a non-null natural class name.
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    Handle allomorphs of circumfixes.
 #    Don't assume one prefix and one suffix allomorph. Put all prefix 
@@ -65,7 +68,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.1",
+        'moduleVersion'    : "1.3.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -323,21 +326,23 @@ def MainFunction(DB, report, modifyAllowed):
         
         # Get the natural class name and write it out
         natClassName = ITsString(natClass.Abbreviation.AnalysisDefaultWritingSystem).Text
-        f_dec.write('\\scl '+natClassName.encode('utf-8')+'\n')
         
-        # Loop through all the segments in the class
-        for seg in natClass.SegmentsRC:
-
-            # Loop through all the graphemes for each segment
-            for graph in seg.CodesOS:
-                # Write out the grapheme string one after another on the line
-                grapheme = ITsString(graph.Representation.VernacularDefaultWritingSystem).Text
-                if not grapheme:
-                    report.Warning('Null grapheme found for natural class: '+natClassName+'. Skipping.')
-                    continue
-                else:
-                    f_dec.write(' '+grapheme.encode('utf-8'))
-        f_dec.write('\n')
+        if natClassName:
+            f_dec.write('\\scl '+natClassName.encode('utf-8')+'\n')
+        
+            # Loop through all the segments in the class
+            for seg in natClass.SegmentsRC:
+    
+                # Loop through all the graphemes for each segment
+                for graph in seg.CodesOS:
+                    # Write out the grapheme string one after another on the line
+                    grapheme = ITsString(graph.Representation.VernacularDefaultWritingSystem).Text
+                    if not grapheme:
+                        report.Warning('Null grapheme found for natural class: '+natClassName+'. Skipping.')
+                        continue
+                    else:
+                        f_dec.write(' '+grapheme.encode('utf-8'))
+            f_dec.write('\n')
     f_dec.close()
     
     report.Info("Creating the STAMP dictionaries...")
