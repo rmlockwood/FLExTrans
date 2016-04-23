@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.2 - 4/23/16 - Ron
+#    Use | as the seperater between affix name and mopheme type.
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
 #
@@ -45,7 +48,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.1",
+        'moduleVersion'    : "1.3.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :
@@ -162,7 +165,7 @@ def MainFunction(DB, report, modifyAllowed):
                     myGloss = re.sub(r'\.', r'_', myGloss)
                     
                     # Write out the gloss and morph type
-                    f_out.write(myGloss +','+ morphType)
+                    f_out.write(myGloss +'|'+ morphType)
                     f_out.write('\n')
                 
     report.Info(str(count)+' affixes/clitics exported to the catalog.')

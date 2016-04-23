@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.2 - 4/23/16 - Ron
+#    Use | as the seperater between affix name and mopheme type.
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
 #
@@ -83,7 +86,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.1",
+        'moduleVersion'    : "1.3.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -211,7 +214,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     # Read in the target affix list. 
     f_afx = open(pfx_name, 'r')
     for line in f_afx:
-        (affix, morph_type) = re.split(',', line.rstrip())
+        (affix, morph_type) = re.split('\|', line.rstrip())
         affix_map[affix] = morph_type
         
     f_afx.close()
