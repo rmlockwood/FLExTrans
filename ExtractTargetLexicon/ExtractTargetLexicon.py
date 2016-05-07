@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.3 - 5/7/16 - Ron
+#    Give a more helpful message when the target database is not found.
+#    If the gloss is None for an affix, skip it and give a warning message.
+#
 #   Version 1.3.2 - 4/23/16 - Ron
 #    Check for a non-null natural class name.
 #
@@ -212,11 +216,17 @@ def MainFunction(DB, report, modifyAllowed):
 
     TargetDB = FLExDBAccess()
 
+    # Open the target database
+    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in DB.GetDatabaseNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+
     try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-        if not targetProj:
-            return
         TargetDB.OpenDatabase(targetProj, verbose = True)
     except FDA_DatabaseError, e:
         report.Error(e.message)
@@ -348,7 +358,7 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info("Creating the STAMP dictionaries...")
     
     report.ProgressStart(TargetDB.LexiconNumberOfEntries())
-
+    
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
     # Loop through all the entries
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
@@ -423,7 +433,7 @@ def MainFunction(DB, report, modifyAllowed):
                                                   Abbreviation.AnalysisDefaultWritingSystem).Text
                         else:
                             report.Warning('Skipping sense because the POS is unknown: '+\
-                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+                                           ' while processing target headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
                             #abbrev = 'unk'
                             continue
                                                   
@@ -442,7 +452,9 @@ def MainFunction(DB, report, modifyAllowed):
                     rt_cnt +=1
                 # Now process non-roots
                 else:
-                    if e.LexemeFormOA == None:
+                    if gloss == None:
+                        report.Warning('No gloss Skipping. Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+                    elif e.LexemeFormOA == None:
                         report.Warning('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
                     elif e.LexemeFormOA.MorphTypeRA == None:
                         report.Warning('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+\
