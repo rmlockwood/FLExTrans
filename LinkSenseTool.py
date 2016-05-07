@@ -30,7 +30,7 @@ import unicodedata
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : 1,
+        'moduleVersion'    : "1.0.1",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :
