@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.3 - 5/7/16 - Ron
+#    Give a more helpful message when the target database is not found.
+#    Give an error for every category abbreviation that has a space in it then
+#    exit.
+#
 #   Version 1.3.2 - 4/23/16 - Ron
 #    Check for valid analysis object before checking class name.
 #    Don't use tempfile for the bilingual dictionary file.
@@ -282,11 +287,17 @@ def MainFunction(DB, report, modifyAllowed):
         
     TargetDB = FLExDBAccess()
 
+    # Open the target database
+    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in DB.GetDatabaseNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+    
     try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-        if not targetProj:
-            return
         TargetDB.OpenDatabase(targetProj, verbose = True)
     except FDA_DatabaseError, e:
         report.Error(e.message)
@@ -329,19 +340,31 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
     
     posMap = {}
-
+    abbrevError = False
+    
     # loop through all source categories
     for pos in DB.lp.AllPartsOfSpeech:
 
         # save abbreviation
         posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
         posMap[posAbbr] = pos.ToString()
+        
+        # give an error if there is a space in the category abbreviation, STAMP can't handle it.
+        if re.search(r'\s', posAbbr):
+            report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
+            abbrevError = True
     
     # loop through all target categories
     for pos in TargetDB.lp.AllPartsOfSpeech:
 
         # save abbreviation
         posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+
+        # give an error if there is a space in the category abbreviation, STAMP can't handle it.
+        if re.search(r'\s', posAbbr):
+            report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the target database.")
+            abbrevError = True
+            
         if posAbbr not in posMap:
             posMap[posAbbr] = pos.ToString()
         else:
@@ -355,7 +378,11 @@ def MainFunction(DB, report, modifyAllowed):
             AN_list = get_sub_ics(pos.InflectionClassesOC)
             for icAbbr, icName in AN_list:
                 posMap[icAbbr] = icName
-                
+    
+    # Exit after showing all abbreviation errors            
+    if abbrevError:
+        return
+    
     # save target features so they can go in the symbol definition section
     for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
         if feat.ClassID == 50: # FsClosedFeature
