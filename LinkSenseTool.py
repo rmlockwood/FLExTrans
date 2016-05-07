@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 1.0.1 - 5/7/16 - Ron
+#    Give a more helpful message when the target database is not found.
+#
 #   For a given text, see which senses have no link to a target sense. For 
 #   those that don't have a link, propose possible target senses to link
 #   to if the glosses for each match. Those chosen for linking will have the
@@ -332,11 +335,17 @@ def MainFunction(DB, report, modify=True):
 
     TargetDB = FLExDBAccess()
 
+    # Open the target database
+    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in DB.GetDatabaseNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+
     try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-        if not targetProj:
-            return
         TargetDB.OpenDatabase(targetProj, modify, verbose = True)
     except FDA_DatabaseError, e:
         report.Error(e.message)
