@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.3 - 5/9/16 - Ron
+#    Allow items that are not affixes (usually features) to be tags instead
+#    of giving an error for items that aren't in the affix list. These features
+#    end up looking like suffixes in the ANA file initially until a variant is
+#    found that matches it.
+#
 #   Version 1.3.2 - 4/23/16 - Ron
 #    Use | as the seperater between affix name and mopheme type.
 #
@@ -86,7 +92,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.2",
+        'moduleVersion'    : "1.3.3",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -316,11 +322,13 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                 circumfix_list = []
                 # start at position 2 since this is where the affixes start
                 for i in range(2,len(morphs)):
+                    # If we don't have the item in the affix map, then it must be a feature.
+                    # Treat it like a suffix, because change_to_variant will use the feature(s) to find a variant
                     if morphs[i] not in affix_map:
-                        report.Error("Affix not found: " + morphs[i])
-                        break
+                        #report.Error("Affix not found: " + morphs[i] + ' in the word: '+morphs[0]+ '. Skipping this affix.')
+                        suffix_list.append(morphs[i])
                     # prefix
-                    if affix_map[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
+                    elif affix_map[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
                         prefix_list.append(morphs[i])
                     # infix
                     elif affix_map[morphs[i]] in ['infix', 'infixing interfix']:
