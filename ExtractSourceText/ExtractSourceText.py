@@ -8,6 +8,11 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.2 - 5/9/16 - Ron
+#    Make sure bundle.MorphRA is not null. This can happen when a lexical
+#    item gets updated in the lexicon and it leaves no lexical entry link there
+#    are *** instead. The sense information might still be there.
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
 #
@@ -67,7 +72,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.3.1",
+        'moduleVersion'    : "1.3.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
@@ -288,7 +293,7 @@ def MainFunction(DB, report, modifyAllowed):
         # Go through each morpheme in the word (i.e. bundle)
         for bundle in wfiAnalysis.MorphBundlesOS:
             if bundle.SenseRA:
-                if bundle.MsaRA:
+                if bundle.MsaRA and bundle.MorphRA:
                     # Get the LexEntry object
                     e = bundleEntry = bundle.MorphRA.Owner
                         
