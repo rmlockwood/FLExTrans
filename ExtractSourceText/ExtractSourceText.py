@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.3 - 6/18/16 - Ron
+#    Handle variants of senses.
+#
 #   Version 1.3.2 - 5/9/16 - Ron
 #    Make sure bundle.MorphRA is not null. This can happen when a lexical
 #    item gets updated in the lexicon and it leaves no lexical entry link there
@@ -72,7 +75,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.3.2",
+        'moduleVersion'    : "1.3.3",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
@@ -178,8 +181,13 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
                                 inflFeatAbbrevs.extend(my_feat_abbr_list)
                         break
                 if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    e = entryRef.ComponentLexemesRS.ToArray()[0]
-                    continue
+                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
+                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
+                        break
+                    else: # normal variant of entry
+                        e = entryRef.ComponentLexemesRS.ToArray()[0]
+                        continue
         notDoneWithVariants = False
     return e
        

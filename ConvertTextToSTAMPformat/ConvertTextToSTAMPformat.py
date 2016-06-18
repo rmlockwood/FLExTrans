@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.4 - 6/18/16 - Ron
+#    Handle variants of senses.
+#
 #   Version 1.3.3 - 5/9/16 - Ron
 #    Allow items that are not affixes (usually features) to be tags instead
 #    of giving an error for items that aren't in the affix list. These features
@@ -92,7 +95,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.3",
+        'moduleVersion'    : "1.3.4",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -437,8 +440,13 @@ def GetEntryWithSense(e):
                         foundVariant = True
                         break
                 if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    e = entryRef.ComponentLexemesRS.ToArray()[0]
-                    continue
+                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
+                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
+                        break
+                    else: # normal variant of entry
+                        e = entryRef.ComponentLexemesRS.ToArray()[0]
+                        continue
         notDoneWithVariants = False
     return e
 
