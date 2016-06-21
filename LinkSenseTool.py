@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.0.1 - 6/21/16 - Ron
+#    Don't allow Link It column to change to 1 if there is no target information.
+#    Force resizing a bit for filter/unfilter to force a refresh of the table.
+#
 #   Version 2.0 - 6/16/16 - Ron
 #    Major overhaul. Use class objects to model the link information.
 #    Allow the user to link any sense in the text not just the unlinked ones
@@ -62,7 +66,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.0",
+        'moduleVersion'    : "2.0.1",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :
@@ -254,8 +258,12 @@ class LinkerTable(QtCore.QAbstractTableModel):
         
         if role == QtCore.Qt.EditRole:
             if col == 0:
-                self.dataChanged.emit(index, index)
-                return 1 # default to 1 every time so the user can just double-click
+                # make sure we have a target info.
+                if self.__localData[row].get_tgtHPG() == None:
+                    return 0
+                else:
+                    self.dataChanged.emit(index, index)
+                    return 1 # default to 1 every time so the user can just double-click
             elif col == 4: # target headword column
                 self.__localData[row].set_tgtHPG(self.__selectedHPG)
                 self.__localData[row].linkIt = True
@@ -337,9 +345,10 @@ class LinkerTable(QtCore.QAbstractTableModel):
             col = index.column()
             if col == 0:
                 myVal = value.toInt()
-                if myVal[0] >= 1:
+                # make sure we have a target info.
+                if myVal[0] >= 1 and self.__localData[row].get_tgtHPG() is not None:
                     linkIt = True
-                elif myVal[0] <= 0:
+                else:
                     linkIt = False
                 self.__localData[row].linkIt = linkIt
         return True
@@ -420,11 +429,15 @@ class Main(QtGui.QMainWindow):
                 filteredData.append(myLink)
         self.__model.setInternalData(filteredData)
         self.rows = len(self.__model.getInternalData())
+        #self.__model.modelReset() # causes crash
+        self.setGeometry(self.x()+10,self.y()+10,self.width(),self.height()+1)
+        self.ui.tableView
         self.ui.tableView.update()
         self.__model.resetInternalData()
         return
     def unfilter(self):
         self.__model.setInternalData(self.__fullData)
+        self.setGeometry(self.x()+1,self.y()+1,self.width(),self.height()+1)
         self.ui.tableView.update()
         return
         
