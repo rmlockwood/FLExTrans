@@ -38,12 +38,16 @@ copy stamp32.exe Install\FLExTools1.2.4\FlexTools
 
 rem Sense Linker pieces
 mkdir Install\FLExTools1.2.4\Python27.NET\FW8\PyQt4  
+mkdir Install\FLExTools1.2.4\Python27.NET\FW8\Levenshtein  
+mkdir Install\FLExTools1.2.4\Python27.NET\FW8\fuzzywuzzy  
 copy LinkSenseTool.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
 copy Linker.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy Linker.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy "FLExTrans Sense Linker.ini" Install\FLExTools1.2.4\FLExTools\Collections
 copy Qt*.* Install\FLExTools1.2.4\Python27.NET\FW8\PyQt4
 copy __init__.py Install\FLExTools1.2.4\Python27.NET\FW8\PyQt4
+copy fuzzywuzzy Install\FLExTools1.2.4\Python27.NET\FW8\fuzzywuzzy
+copy Levenshtein Install\FLExTools1.2.4\Python27.NET\FW8\Levenshtein
 copy sip.pyd Install\FLExTools1.2.4\Python27.NET\FW8
 
 cd Install
