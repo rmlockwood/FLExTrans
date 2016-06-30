@@ -3,7 +3,13 @@ del /S /Q /F Install\* >nul
 for /d %%i in (Install\*) do @rmdir /s /q "%%i"
 mkdir Install\Collections
 mkdir Install\Modules\FLExTrans\Lib
-for /f %%f in ('dir /ad /b') do copy %%f\*.py Install\Modules\FLExTrans
+copy CatalogTargetPrefixes.py Install\Modules\FLExTrans
+copy ConvertTextToSTAMPformat.py Install\Modules\FLExTrans
+copy ExtractBilingualLexicon.py Install\Modules\FLExTrans
+copy ExtractSourceText.py Install\Modules\FLExTrans
+copy ExtractTargetLexicon.py Install\Modules\FLExTrans
+copy InsertTargetText.py Install\Modules\FLExTrans
+copy Sleep.py Install\Modules\FLExTrans
 copy readconfig.py Install\Modules\FLExTrans\Lib
 copy Utils.py Install\Modules\FLExTrans\Lib
 copy subdirs.pth Install\Modules
@@ -23,7 +29,13 @@ cd ..
 rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker all in one file
 mkdir Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 xcopy /s FLExTools1.2.4 Install\FLExTools1.2.4 
-for /f %%f in ('dir /ad /b') do copy %%f\*.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy CatalogTargetPrefixes.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy ConvertTextToSTAMPformat.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy ExtractBilingualLexicon.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy ExtractSourceText.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy ExtractTargetLexicon.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy InsertTargetText.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy Sleep.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy readconfig.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy Utils.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy /Y subdirs.pth Install\FLExTools1.2.4\FlexTools\Modules
