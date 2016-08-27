@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.0.2 - 6/21/16 - Ron
+#    Change scale numbers to 1 if they come out 0 initially.
+#
 #   Version 2.0.1 - 6/21/16 - Ron
 #    Don't allow Link It column to change to 1 if there is no target information.
 #    Force resizing a bit for filter/unfilter to force a refresh of the table.
@@ -662,6 +665,10 @@ def MainFunction(DB, report, modify=True):
     
     entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
     bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
+    if entries_scale == 0:
+    	entries_scale = 1
+    if bundles_scale == 0:
+    	bundles_scale = 1
 
     # Create a map of glosses to target senses and their number
     if not get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
