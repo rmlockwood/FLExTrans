@@ -5,7 +5,7 @@
 #   SIL International
 #   7/18/15
 #
-#   Version 2.0.2 - 6/21/16 - Ron
+#   Version 2.0.2 - 8/27/16 - Ron
 #    Change scale numbers to 1 if they come out 0 initially.
 #
 #   Version 2.0.1 - 6/21/16 - Ron
