@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transfer>
   <section-def-cats>
-    <def-cat n="adj">
+    <def-cat n="c_adj">
       <cat-item tags="adj"/>
       <cat-item tags="adj.*"/>
     </def-cat>
-    <def-cat n="post">
-      <cat-item tags="post"/>
-    </def-cat>
   </section-def-cats>
   <section-def-attrs>
-    <def-attr n="nbr">
+    <def-attr n="a_nbr">
       <attr-item tags="sg"/>
       <attr-item tags="pl"/>
     </def-attr>
   </section-def-attrs>
-  <section-def-vars>  
-  </section-def-vars>  
+  <section-def-vars>
+    <def-var n="v_myvar"/>
+  </section-def-vars>
   <section-def-lists>
+    <def-list n="l_mylist">
+      <list-item v="stuff"/>
+    </def-list>
   </section-def-lists>
   <section-def-macros>
+    <def-macro n="m_macro1" npar="1">
+      <choose>
+        <when>
+          <test>
+            <equal>
+              <clip part="a_nbr" pos="1" side="sl"/>
+              <lit-tag v="pl"/>
+            </equal>
+          </test>
+        </when>
+      </choose>
+    </def-macro>
   </section-def-macros>
   <section-rules>
-    <rule comment=""> 
+    <rule comment="my comment">
       <pattern>
-        <pattern-item n="adj"/>
-        <pattern-item n="post"/>
+        <pattern-item n="c_adj"/>
       </pattern>
       <action>
         <out>
           <lu>
-            <clip pos="1" side="tl" part="whole"/>  
-            <lit-tag v="acc/dat"/>
+            <lit-tag v="pl"/>
           </lu>
         </out>
       </action>
-    </rule>    
+    </rule>
   </section-rules>
 </transfer>
