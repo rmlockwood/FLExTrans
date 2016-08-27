@@ -69,7 +69,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.0.1",
+        'moduleVersion'    : "2.0.2",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :
