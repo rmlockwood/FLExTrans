@@ -169,7 +169,7 @@ clip
      " side: "  radio-buttons(attribute, side,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,5)
+     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,8)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
     padding-left:.125in;
 }

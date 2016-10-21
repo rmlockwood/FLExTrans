@@ -155,7 +155,7 @@ clip
 {
     display:block;
     content: " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,12)
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,8)
 	         ;
     padding-left:.125in;
 }
