@@ -27,6 +27,7 @@ copy /Y FlexTrans.zip ..
 cd ..
 
 rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker all in one file
+mkdir Install\FLExTools1.2.4\FlexTools\Output
 mkdir Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 xcopy /s FLExTools1.2.4 Install\FLExTools1.2.4 
 copy CatalogTargetPrefixes.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
@@ -44,9 +45,19 @@ copy "FLExTrans Step 1.ini" Install\FLExTools1.2.4\FlexTools\Collections
 copy "FLExTrans Step 3.ini" Install\FLExTools1.2.4\FlexTools\Collections
 copy "FLExTrans All Steps.ini" Install\FLExTools1.2.4\FlexTools\Collections
 copy /Y flextools.ini Install\FLExTools1.2.4\FlexTools
-copy *.t1x Install\FLExTools1.2.4\FlexTools
-copy replace.dix Install\FLExTools1.2.4\FlexTools
+copy transfer_rules.t1x Install\FLExTools1.2.4\FlexTools\Output
+copy replace.dix Install\FLExTools1.2.4\FlexTools\Output
 copy stamp32.exe Install\FLExTools1.2.4\FlexTools
+copy VirtualMachineFiles\do_make.sh Install\FLExTools1.2.4\FlexTools\Output
+copy VirtualMachineFiles\crontab.txt Install\FLExTools1.2.4\FlexTools\Output
+copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output
+copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output
+copy VirtualMachineFiles\setup.sh Install\FLExTools1.2.4\FlexTools\Output
+
+rem Sample projects
+mkdir "Install\FLExTools1.2.4\Sample Projects"
+copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install\FLExTools1.2.4\Sample Projects"
+copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Install\FLExTools1.2.4\Sample Projects"
 
 rem Sense Linker pieces
 mkdir Install\FLExTools1.2.4\Python27.NET\FW8\PyQt4  
@@ -61,6 +72,18 @@ copy __init__.py Install\FLExTools1.2.4\Python27.NET\FW8\PyQt4
 copy fuzzywuzzy Install\FLExTools1.2.4\Python27.NET\FW8\fuzzywuzzy
 copy Levenshtein Install\FLExTools1.2.4\Python27.NET\FW8\Levenshtein
 copy sip.pyd Install\FLExTools1.2.4\Python27.NET\FW8
+
+rem Live Rule Tester pieces
+mkdir Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
+copy LiveRuleTesterTool.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy LiveRuleTester.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy LiveRuleTester.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy "FlexTrans Live Rule Tester.ini" Install\FLExTools1.2.4\FLExTools\Collections
+copy UpArrow.png Install\FLExTools1.2.4\FLExTools
+copy DownArrow.png Install\FLExTools1.2.4\FLExTools
+copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
+copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
+copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
 
 cd Install
 "C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
