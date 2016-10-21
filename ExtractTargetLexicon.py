@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.4 - 10/21/16 - Ron
+#    Allow the affix and ana files to not be in the temp folder if a slash is present.
+#
 #   Version 1.3.3 - 5/7/16 - Ron
 #    Give a more helpful message when the target database is not found.
 #    If the gloss is None for an affix, skip it and give a warning message.
@@ -72,7 +75,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.3",
+        'moduleVersion'    : "1.3.4",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -249,10 +252,13 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         cleanUpText = False
 
+    # Allow the synthesis and ana files to not be in the temp folder if a slash is present
+    synFile = Utils.build_path_default_to_temp(targetSynthesis)
+    anaFile = Utils.build_path_default_to_temp(targetANA)
+    
+    # All other supporting files will be in the temp folder 
     partPath = os.path.join(tempfile.gettempdir(), targetProject)
     
-    anaFile = os.path.join(tempfile.gettempdir(), targetANA)
-    synFile = os.path.join(tempfile.gettempdir(), targetSynthesis)
     cmdFileName = partPath+'_ctrl_files.txt'
     decFileName = partPath+'_stamp.dec'
     dicFileNameList = [partPath+'_pf.dic',partPath+'_if.dic',partPath+'_sf.dic',partPath+'_rt.dic']

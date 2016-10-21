@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.2 - 10/21/16 - Ron
+#    Allow the synthesis file to not be in the temp folder if a slash is present
+#
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
 #
@@ -18,6 +21,7 @@
 
 from FTModuleClass import FlexToolsModuleClass
 import ReadConfig
+import Utils
 import os
 import tempfile
 
@@ -29,7 +33,7 @@ import tempfile
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Insert Target Text",
-        'moduleVersion'    : "1.3.1",
+        'moduleVersion'    : "1.3.2",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Insert a translated text into the target FLEx project.",
         'moduleDescription'   :
@@ -103,7 +107,9 @@ def MainFunction(DB, report, modify=True):
     if not (sourceTextName and targetSynthesis):
         return
     
-    synFile = os.path.join(tempfile.gettempdir(), targetSynthesis)
+    # Allow the synthesis and ana files to not be in the temp folder if a slash is present
+    synFile = Utils.build_path_default_to_temp(targetSynthesis)
+
     try:
         f = open(synFile)
     except:

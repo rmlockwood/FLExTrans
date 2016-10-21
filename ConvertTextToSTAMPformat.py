@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.5 - 10/21/16 - Ron
+#    Allow the affix and ana files to not be in the temp folder if a slash is present.
+#
 #   Version 1.3.4 - 6/18/16 - Ron
 #    Handle variants of senses.
 #
@@ -95,7 +98,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.4",
+        'moduleVersion'    : "1.3.5",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -686,8 +689,9 @@ def MainFunction(DB, report, modifyAllowed):
 
     report.Info('Using: '+targetProj+' as the target database.')
 
-    anaFileName = os.path.join(tempfile.gettempdir(), targetANA)
-    affixFileName = os.path.join(tempfile.gettempdir(), prefixFile)
+    # Allow the affix and ana files to not be in the temp folder if a slash is present
+    anaFileName = Utils.build_path_default_to_temp(targetANA)
+    affixFileName = Utils.build_path_default_to_temp(prefixFile)
     
     # Build the complex forms map
     complexFormTypeMap = {}

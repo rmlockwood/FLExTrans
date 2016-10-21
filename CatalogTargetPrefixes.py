@@ -5,8 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.3 - 10/21/16 - Ron
+#    Allow the affix file to not be in the temp folder if a slash is present.
+#
 #   Version 1.3.2 - 4/23/16 - Ron
-#    Use | as the seperater between affix name and mopheme type.
+#    Use | as the separator between affix name and mopheme type.
 #
 #   Version 1.3.1 - 4/15/16 - Ron
 #    No changes to this module.
@@ -30,8 +33,8 @@
 import sys
 import re 
 import os
-import tempfile
 import ReadConfig
+import Utils
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
@@ -48,7 +51,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.2",
+        'moduleVersion'    : "1.3.3",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :
@@ -96,8 +99,9 @@ def MainFunction(DB, report, modifyAllowed):
 
     if not (outFileVal and morphNames):
         return
-
-    myPath = os.path.join(tempfile.gettempdir(), outFileVal)
+    
+    # Allow the affix file to not be in the temp folder if a slash is present
+    myPath = Utils.build_path_default_to_temp(outFileVal)
     try:
         f_out = open(myPath, 'w') 
     except IOError as e:
