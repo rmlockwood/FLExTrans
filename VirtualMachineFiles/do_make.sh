@@ -1,3 +1,3 @@
 #!/bin/sh
-cd /media/windows-shared
+cd /media/flextrans-project
 make
