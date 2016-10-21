@@ -79,7 +79,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.3.3",
+        'moduleVersion'    : "1.3.4",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':

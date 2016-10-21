@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.1 - 9/28/16 - Ron
+#    Moved main extraction code from ExtractSourceText here to be shared with 
+#    LiveRuleTesterTool.py
+#
 #   Shared functions
 
 import re
