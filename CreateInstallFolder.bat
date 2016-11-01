@@ -55,6 +55,12 @@ copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\setup.sh Install\FLExTools1.2.4\FlexTools\Output
 
+rem Documentation
+mkdir "Install\FLExTools1.2.4\FLExTrans Documentation"
+mkdir "Install\FLExTools1.2.4\FLExTrans Documentation\Images"
+copy Doc\*.htm "Install\FLExTools1.2.4\FLExTrans Documentation"
+copy Doc\Images\* "Install\FLExTools1.2.4\FLExTrans Documentation\Images"
+
 rem Sample projects
 mkdir "Install\FLExTools1.2.4\Sample Projects"
 copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install\FLExTools1.2.4\Sample Projects"
