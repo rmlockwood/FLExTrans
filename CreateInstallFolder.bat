@@ -39,6 +39,7 @@ copy InsertTargetText.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy Sleep.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy readconfig.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy Utils.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
+copy MyTableView.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy /Y subdirs.pth Install\FLExTools1.2.4\FlexTools\Modules
 copy /Y FlexTrans.config Install\FLExTools1.2.4\FlexTools
 copy "FLExTrans Step 1.ini" Install\FLExTools1.2.4\FlexTools\Collections
