@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.1 - 10/27/16 - Ron
+#    Converted the Link It column to checkboxes.
+#
 #   Version 2.0.2 - 8/27/16 - Ron
 #    Change scale numbers to 1 if they come out 0 initially.
 #
@@ -69,7 +72,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.0.2",
+        'moduleVersion'    : "2.1",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :
@@ -79,11 +82,10 @@ in the source project to senses in the target project. This module will show a w
 with a list of all the senses in the text. White background rows indicate links that
 already exist. blue background rows indicate suggested links based on an exact match
 on gloss, light blue background rows indicate suggested links based on a close match on
-gloss (currently 75% similar), pink background rows
+gloss (currently 75% similar), red background rows
 have no link yet established. Double-click on the Target Head Word column for a row to copy
-the currently selected target sense in the upper combo box into that row. Double-click on the first column of a
-row in order to turn it from a 0 to a 1. All rows that have a 1 will have a link 
-created when the OK button is clicked. Set the first column to 0 to cancel linking two senses. 
+the currently selected target sense in the upper combo box into that row. Click the checkbox
+to create a link for that row. I.e. the source sense will be linked to the target sense.
 Close matches are only attempted for words with five letters or longer.
 For suggested sense pairs where
 there is a mismatch in the grammatical category, both categories are colored red. This
@@ -260,13 +262,13 @@ class LinkerTable(QtCore.QAbstractTableModel):
         col = index.column()
         
         if role == QtCore.Qt.EditRole:
-            if col == 0:
+            if col == 0: # Checkbox column
                 # make sure we have a target info.
                 if self.__localData[row].get_tgtHPG() == None:
-                    return 0
+                    return False
                 else:
                     self.dataChanged.emit(index, index)
-                    return 1 # default to 1 every time so the user can just double-click
+                    return True # default to True every time 
             elif col == 4: # target headword column
                 self.__localData[row].set_tgtHPG(self.__selectedHPG)
                 self.__localData[row].linkIt = True
@@ -292,6 +294,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         # Set the background color
         if role == QtCore.Qt.BackgroundRole:
             if row >= 0:
+                # Not working because painting is handled in the delegate class
                 # Mark in yellow the first column cells for the rows to be linked
                 if col == 0 and self.__localData[row].linkIt == True:
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
@@ -317,10 +320,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             
             if col == 0:
-                if self.__localData[row].linkIt == True:
-                    value = 1
-                else:
-                    value = 0
+                value = self.__localData[row].linkIt
             else:
                 value = self.__localData[row].getDataByColumn(col)
                 
@@ -330,30 +330,24 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 return value
             
         elif role == QtCore.Qt.TextAlignmentRole:
-            if col == 0:
-                return QtCore.Qt.AlignCenter
             # Check if we have right to left data in a column, if so align it right
             if col > 0 and len(self.__localData[row].getDataByColumn(col)) > 0 and unicodedata.bidirectional(\
               self.__localData[row].getDataByColumn(col)[0]) in (u'R', u'AL'): # check first character of the given cell
                 return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
     def flags(self, index):
-        # Allow the user to type in column 0
-        val = QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled 
-        if index.column() == 0 or index.column() == 4:
+        # Columns 0 and 4 are editable
+        val = QtCore.Qt.ItemIsEnabled
+        if index.column() == 0:
             val = val | QtCore.Qt.ItemIsEditable 
+        if index.column() == 4:
+            val = val | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable 
         return val
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         if role == QtCore.Qt.EditRole:
             row = index.row()
             col = index.column()
             if col == 0:
-                myVal = value.toInt()
-                # make sure we have a target info.
-                if myVal[0] >= 1 and self.__localData[row].get_tgtHPG() is not None:
-                    linkIt = True
-                else:
-                    linkIt = False
-                self.__localData[row].linkIt = linkIt
+                self.__localData[row].linkIt = value
         return True
             
 class Main(QtGui.QMainWindow):
@@ -366,6 +360,9 @@ class Main(QtGui.QMainWindow):
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
         self.__model = LinkerTable(myData, headerData)
         self.ui.tableView.setModel(self.__model)
+        # Prepare the checkbox column
+        for row in range(0, self.__model.rowCount(self)):
+            self.ui.tableView.openPersistentEditor(self.__model.index(row, 0))
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.ret_val = 0
@@ -433,14 +430,19 @@ class Main(QtGui.QMainWindow):
         self.__model.setInternalData(filteredData)
         self.rows = len(self.__model.getInternalData())
         #self.__model.modelReset() # causes crash
-        self.setGeometry(self.x()+10,self.y()+10,self.width(),self.height()+1)
-        self.ui.tableView
+        # crude way to cause a repaint
+        tv = self.ui.tableView
+        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
+        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
         self.ui.tableView.update()
         self.__model.resetInternalData()
         return
     def unfilter(self):
         self.__model.setInternalData(self.__fullData)
-        self.setGeometry(self.x()+1,self.y()+1,self.width(),self.height()+1)
+        # crude way to cause a repaint
+        tv = self.ui.tableView
+        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
+        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
         self.ui.tableView.update()
         return
         
@@ -791,7 +793,7 @@ def MainFunction(DB, report, modify=True):
         window = Main(myData, myHeaderData, tgtLexList)
         
         window.show()
-        app.exec_()
+        exec_val = app.exec_()
         
         cnt = 0
         # Update the source database with the correct links
@@ -819,6 +821,7 @@ def MainFunction(DB, report, modify=True):
                         updated_senses[currSense] = 1
                     
         report.Info(str(cnt)+' links created.')
+    #exit(exec_val)
  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

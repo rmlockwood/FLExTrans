@@ -8,7 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-
+import MyTableView
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.tableView = QtGui.QTableView(self.centralwidget)
+        self.tableView = MyTableView.MyTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 835, 351))
         self.tableView.setObjectName(_fromUtf8("tableView"))
         self.OKButton = QtGui.QPushButton(self.centralwidget)
