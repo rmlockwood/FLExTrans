@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE lingPaper PUBLIC "-//XMLmind//DTD XLingPap//EN"
+"XLingPap.dtd">
+<lingPaper
+automaticallywrapinterlinears="yes"
+version="2.20.0"
+><frontMatter
+><title
+><object
+type="tFlextrans"
+></object
+> User Documentation</title
+><author
+>Ronald M. Lockwood</author
+><emailAddress
+>flextrans.help@gmail.com</emailAddress
+><date
+>21 October 2016</date
+><version
+>Version: 1.3.6</version
+><contents
+></contents
+><abstract
+><p
+>This paper describes how to use the <object
+type="tFlextrans"
+></object
+> machine translation system. It is a supplement to my master's thesis which goes into more detail on the background and documents a test case. Please see <link
+href="https://digital.lib.washington.edu/researchworks/handle/1773/33999"
+>A Linguist-Friendly Machine Translation System for Low-Resource Languages</link
+>.</p
+></abstract
+></frontMatter
+><!--<section1
+id="s0"
+><secTitle
+>Introduction</secTitle
+><p
+>Main sections to read in the thesis to get oriented.</p
+>
+</section1
+><section1
+id="s1"
+><secTitle
+>FLExTrans Modules</secTitle
+><p
+></p
+></section1
+>
+--><section1
+id="s2"
+><secTitle
+><object
+type="tSenseLinker"
+></object
+></secTitle
+><p
+>The <object
+type="tSenseLinker"
+></object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here's sample screen shot of the <object
+type="tSenseLinker"
+></object
+>:</p
+><example
+num="xLinkerToolShot"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="../Images/SenseLinkerCapture.png"
+></img
+></chart
+></example
+><p
+>Here's a key to the color coding:</p
+><table
+border="1"
+><tr
+><th
+>Color</th
+><th
+></th
+></tr
+><tr
+><td
+>White</td
+><td
+>Source sense has been linked to a target sense.</td
+></tr
+><tr
+><td
+>Red</td
+><td
+>Source sense has not been linked to a target sense.</td
+></tr
+><tr
+><td
+>Light Blue</td
+><td
+>A target sense has been suggested for this source sense through a partial match of the glosses.</td
+></tr
+><tr
+><td
+>Blue</td
+><td
+>A target sense has been suggested for this source sense through an exact match of the glosses.</td
+></tr
+><tr
+><td
+>Green</td
+><td
+>The target sense has been set or changed for this source sense.</td
+></tr
+><tr
+><td
+>Red Text</td
+><td
+>There is a mismatch of grammatical category even though the glosses match.</td
+></tr
+></table
+><p
+>For suggested sense links (colored in blue), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of senses () then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color.</p
+><p
+>If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p
+></section1
+><!--<section1
+id="s3"
+><secTitle
+>Live Rule Tester Tool</secTitle
+><p
+></p
+></section1
+><section1
+id="s4"
+><secTitle
+>Editing Transfer Rules with <object
+type="tXMLmindXMLEditor"
+></object
+></secTitle
+><p
+></p
+></section1
+><section1
+id="s5"
+><secTitle
+>Configuration File</secTitle
+><p
+></p
+></section1
+><section1
+id="s"
+><secTitle
+>Virtual Machine Processing of Transfer Rules</secTitle
+><p
+></p
+></section1
+><section1
+id="s"
+><secTitle
+>Getting started</secTitle
+><p
+></p
+></section1
+><section1
+id="s"
+><secTitle
+>How do I ...</secTitle
+><p
+></p
+></section1
+><section1
+id="s"
+><secTitle
+>Working with the Sample Projects</secTitle
+><p
+></p
+></section1
+>
+--><backMatter
+><endnotes
+></endnotes
+><references
+></references
+></backMatter
+><languages
+><language
+id="lVernacular"
+name="vernacular"
+></language
+><language
+id="lGloss"
+name="gloss"
+></language
+><language
+id="en"
+></language
+></languages
+><types
+><comment
+>The following types are provided as pre-set examples. You may well want to create your own types that refer to one or more of these. You do that by typing in the names of the types in the types attribute of your type.</comment
+><type
+font-weight="bold"
+id="tBold"
+></type
+><type
+font-style="italic"
+font-weight="bold"
+id="tBoldItalic"
+></type
+><type
+font-weight="bold"
+id="tEmphasis"
+></type
+><type
+after="FLExTrans"
+id="tFlextrans"
+types="tTool"
+></type
+><type
+after="FLEx"
+id="tFlexx"
+types="tTool"
+></type
+><type
+id="tGrammaticalGloss"
+types="tSmallCaps"
+></type
+><type
+font-style="italic"
+id="tItalic"
+></type
+><type
+cssSpecial="text-decoration:none"
+id="tNoOverline"
+xsl-foSpecial="text-decoration=&quot;no-overline&quot;"
+></type
+><type
+font-variant="normal"
+id="tNoSmallCaps"
+></type
+><type
+cssSpecial="text-decoration:none"
+id="tNoStrikethrough"
+xsl-foSpecial="text-decoration=&quot;no-line-through&quot;"
+></type
+><type
+cssSpecial="text-decoration:none"
+id="tNoUnderline"
+xsl-foSpecial="text-decoration=&quot;no-underline&quot;"
+></type
+><type
+cssSpecial="text-decoration:overline"
+id="tOverline"
+xsl-foSpecial="text-decoration=&quot;overline&quot;"
+></type
+><type
+font-style="normal"
+font-variant="normal"
+font-weight="normal"
+id="tRegular"
+></type
+><type
+after="Sense Linker Tool"
+id="tSenseLinker"
+types="tTool"
+></type
+><type
+font-family="Charis SIL Small Caps"
+id="tSmallCaps"
+></type
+><type
+XeLaTeXSpecial="line-through"
+cssSpecial="text-decoration:line-through"
+id="tStrikethrough"
+xsl-foSpecial="text-decoration=&quot;line-through&quot;"
+></type
+><type
+XeLaTeXSpecial="subscript"
+cssSpecial="vertical-align:sub;"
+font-size="65%"
+id="tSubscript"
+xsl-foSpecial="baseline-shift='sub'"
+></type
+><type
+XeLaTeXSpecial="superscript"
+cssSpecial="vertical-align:super;"
+font-size="65%"
+id="tSuperscript"
+xsl-foSpecial="baseline-shift='super'"
+></type
+><type
+color="navy"
+font-family="Courier New"
+font-weight="bold"
+id="tTool"
+></type
+><type
+XeLaTeXSpecial="underline"
+cssSpecial="text-decoration:underline"
+id="tUnderline"
+xsl-foSpecial="text-decoration=&quot;underline&quot;"
+></type
+><type
+after="XMLmind XML Editor"
+id="tXMLmindXMLEditor"
+types="tTool"
+></type
+><comment
+>Add your custom types here.</comment
+></types
+></lingPaper
+>
