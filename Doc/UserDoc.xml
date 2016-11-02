@@ -48,7 +48,7 @@ id="s1"
 ></section1
 >
 --><section1
-id="s2"
+id="sLinker"
 ><secTitle
 >The <object
 type="tSenseLinker"
@@ -124,6 +124,87 @@ border="1"
 ><p
 >If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p
 ></section1
+><section1
+id="sRuleTester"
+><secTitle
+>The <object
+type="tLiveRuleTester"
+></object
+></secTitle
+><p
+>The <object
+type="tLiveRuleTester"
+></object
+> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don't have to run the whole system against the whole text file and all transfer rules. Here's sample screen shot of the <object
+type="tLiveRuleTester"
+></object
+>:</p
+><example
+num="xTesterImage"
+><chart
+><img
+XeLaTeXSpecial="scaled='400'"
+cssSpecial=" height:40%"
+src="Images/LiveRuleTester.png"
+></img
+></chart
+></example
+><section2
+id="sTesterQuickGuide"
+><secTitle
+>Quick Guide</secTitle
+><p
+>Here's a quick guide on using the tool.</p
+><ol
+><li
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more words and when you do the <genericRef
+gref="gDataStream"
+>data stream format</genericRef
+> of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking the check box for the sentence you want.</li
+><li
+>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the Select All button. Uncheck them all with the Refresh button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
+><li
+>Now you are ready to test. Click the Test button and the selected works will get processed. The results will show in <genericRef
+gref="gDataStream"
+>data stream format</genericRef
+> in the green colored area.</li
+><li
+>Check the yellow Information box. It will show which words were matched for the rules that were executed.</li
+></ol
+></section2
+><section2
+id="sTesterOther"
+><secTitle
+>Other Parts of the Tool</secTitle
+><p
+>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration file. The transfer fules file and the bilingual lexicon file can be changed if desired by clicking the corresponding Browse buttons.</p
+><p
+>In this version of the tool, you can't change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
+><p
+>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in <genericRef
+gref="gDataStream"
+>data stream format</genericRef
+>. This might be useful if you want to test a sense that isn't in your text.</p
+><p
+>The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing the rules that are used in the advanced <object
+type="tTool"
+>Apertium</object
+> transfer engine.</p
+><p
+>You can't edit the transfer rules in the <object
+type="tLiveRuleTester"
+></object
+> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the Refresh button.</p
+><p
+>You need to have the <object
+type="tTool"
+>Apertium</object
+> virtual machine running in order for the <object
+type="tLiveRuleTester"
+></object
+> to work.</p
+></section2
+></section1
 ><!--<section1
 id="s3"
 ><secTitle
@@ -178,6 +259,36 @@ id="s"
 ></section1
 >
 --><backMatter
+><appendix
+id="a"
+><secTitle
+>Appendix</secTitle
+><p
+></p
+><section1
+id="s"
+><secTitle
+>Data Stream Format</secTitle
+><p
+>The <genericTarget
+id="gDataStream"
+></genericTarget
+><object
+type="tTool"
+>Apertium</object
+> data stream format consists of one or more lexical units. In <object
+type="tFlextrans"
+></object
+>, a lexical unit looks something like this:</p
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="width:60%"
+src="Images/LexicalUnit.PNG"
+></img
+></chart
+></section1
+></appendix
 ><endnotes
 ></endnotes
 ><references
@@ -229,6 +340,11 @@ types="tSmallCaps"
 ><type
 font-style="italic"
 id="tItalic"
+></type
+><type
+after="Live Rule Tester Tool"
+id="tLiveRuleTester"
+types="tTool"
 ></type
 ><type
 cssSpecial="text-decoration:none"

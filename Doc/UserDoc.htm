@@ -17,7 +17,16 @@
          <center><big><big><b>Contents</b></big></big></center>
          <ul>
             <li><a href="#rXLingPapAbstract">Abstract</a></li>
-            <li><a href="#s2">1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
+            <li><a href="#sLinker">1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
+            <li><a href="#sRuleTester">2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
+            <ul>
+               <li><a href="#sTesterQuickGuide">2.1&nbsp;Quick Guide</a></li>
+               <li><a href="#sTesterOther">2.2&nbsp;Other Parts of the Tool</a></li>
+            </ul>
+            <li><a href="#a">A&nbsp;Appendix</a><ul>
+                  <li><a href="#s">A.1&nbsp;Data Stream Format</a></li>
+               </ul>
+            </li>
             <li><a href="#rXLingPapReferences">References</a></li>
          </ul>
       </div><br><hr>
@@ -28,7 +37,7 @@
          </p>
       </div>
       <hr>
-      <h1 style=""><a name="s2"></a>1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
+      <h1 style=""><a name="sLinker"></a>1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file
          and lists every sense that was analyzed in that text in order. Here's sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>:
       </p>
@@ -86,6 +95,72 @@
          color.
       </p>
       <p>If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p>
+      <h1 style=""><a name="sRuleTester"></a>2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h1>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful
+         for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just
+         one source word and applying the pertinent transfer rule. In this way you don't have to run the whole system against the whole
+         text file and all transfer rules. Here's sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>:
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xTesterImage">(2)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:40%" src="Images/LiveRuleTester.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h2 style=""><a name="sTesterQuickGuide"></a>2.1&nbsp;Quick Guide
+      </h2>
+      <p>Here's a quick guide on using the tool.</p>
+      <ol style="list-style-type:decimal; ">
+         <li>First you want to choose something from your source text that you want to test. When you first run the tool, the words of
+            the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more
+            words and when you do the <a href="#gDataStream">data stream format</a> of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences
+            tab and clicking the check box for the sentence you want.
+         </li>
+         <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
+            appropriate. Check them all with the Select All button. Uncheck them all with the Refresh button. Move a rule up or down by
+            clicking on it and clicking the up or down arrow buttons.
+         </li>
+         <li>Now you are ready to test. Click the Test button and the selected works will get processed. The results will show in <a href="#gDataStream">data stream format</a> in the green colored area.
+         </li>
+         <li>Check the yellow Information box. It will show which words were matched for the rules that were executed.</li>
+      </ol>
+      <h2 style=""><a name="sTesterOther"></a>2.2&nbsp;Other Parts of the Tool
+      </h2>
+      <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration
+         file. The transfer fules file and the bilingual lexicon file can be changed if desired by clicking the corresponding Browse
+         buttons.
+      </p>
+      <p>In this version of the tool, you can't change the Source Text Name. You will have to edit the configuration file, change the
+         SourceTextName value and re-run the tool.
+      </p>
+      <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses)
+         directly in <a href="#gDataStream">data stream format</a>. This might be useful if you want to test a sense that isn't in your text.
+      </p>
+      <p>The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing
+         the rules that are used in the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
+      </p>
+      <p>You can't edit the transfer rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload
+         the transfer rules after you have changed them, click on the Refresh button.
+      </p>
+      <p>You need to have the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> virtual machine running in order for the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> to work.
+      </p>
+      <hr size="3">
+      <h1 style=""><a name="a"></a>A.&nbsp;Appendix
+      </h1>
+      <p></p>
+      <h1 style=""><a name="s"></a>A.1&nbsp;Data Stream Format
+      </h1>
+      <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
+      </p>
+      <div style=""><img style="width:60%" src="Images/LexicalUnit.PNG"></div>
       <hr size="3"><a name="rXLingPapReferences"></a><p style=""><big><big><big><b>References</b></big></big></big></p>
       <div style="margin-left:0.25in"></div>
    </body>
