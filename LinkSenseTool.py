@@ -662,7 +662,7 @@ def MainFunction(DB, report, modify=True):
     # We will scale the progress indication according to the following
     # weighting factors
     report.ProgressStart(100)
-    ENTRIES_SCALE_FACTOR = 66.3333
+    ENTRIES_SCALE_FACTOR = 66.6666
     BUNDLES_SCALE_FACTOR = 33.3333
     
     entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
