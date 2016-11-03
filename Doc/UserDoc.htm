@@ -17,14 +17,22 @@
          <center><big><big><b>Contents</b></big></big></center>
          <ul>
             <li><a href="#rXLingPapAbstract">Abstract</a></li>
-            <li><a href="#sLinker">1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
-            <li><a href="#sRuleTester">2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
+            <li><a href="#sStarting">1&nbsp;Getting Started</a></li>
             <ul>
-               <li><a href="#sTesterQuickGuide">2.1&nbsp;Quick Guide</a></li>
-               <li><a href="#sTesterOther">2.2&nbsp;Other Parts of the Tool</a></li>
+               <li><a href="#sAnalyze">1.1&nbsp;Analyze the Source Text</a></li>
+               <li><a href="#sLinkSenses">1.2&nbsp;Link Senses</a></li>
+               <li><a href="#sWriteRules">1.3&nbsp;Write Transfer Rules</a></li>
+               <li><a href="#sRunModules">1.4&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules</a></li>
+            </ul>
+            <li><a href="#sLinker">2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
+            <li><a href="#sRuleTester">3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
+            <ul>
+               <li><a href="#sTesterQuickGuide">3.1&nbsp;Quick Guide</a></li>
+               <li><a href="#sTesterOther">3.2&nbsp;Other Parts of the Tool</a></li>
             </ul>
             <li><a href="#a">A&nbsp;Appendix</a><ul>
-                  <li><a href="#s">A.1&nbsp;Data Stream Format</a></li>
+                  <li><a href="#sStartFlextools">A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></a></li>
+                  <li><a href="#sDataStreamFormat">A.2&nbsp;Data Stream Format</a></li>
                </ul>
             </li>
             <li><a href="#rXLingPapReferences">References</a></li>
@@ -32,19 +40,324 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This paper describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. It is a supplement to my master's thesis which goes into more detail on the background and documents
+         <p>This paper describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. It is a supplement to a master's thesis which goes into more detail on the background and documents
             a test case. Please see <a href="https://digital.lib.washington.edu/researchworks/handle/1773/33999">A Linguist-Friendly Machine Translation System for Low-Resource Languages</a>.
          </p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
+         <p></p>
       </div>
       <hr>
-      <h1 style=""><a name="sLinker"></a>1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
+      <h1 style=""><a name="sStarting"></a>1&nbsp;Getting Started
+      </h1>
+      <p>The basic steps for machine translation with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> are as follows:
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Analyze the text you want to translate in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
+         </li>
+         <li>Link lexical senses that are in the source text to senses in the target FLEx project using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></li>
+         <li>Write transfer rules that convert source words and phrases to target words and phrases.</li>
+         <li>Run the six <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
+         </li>
+      </ol>
+      <p>Let's look at each step in more detail.</p>
+      <h2 style=""><a name="sAnalyze"></a>1.1&nbsp;Analyze the Source Text
+      </h2>
+      <ol style="list-style-type:decimal; ">
+         <li>Create a new text in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
+         </li>
+         <li>Paste in some text. (Start with a simple text; perhaps just one sentence.)</li>
+         <li>Analyze this text.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Divide each word into its morphemes.</li>
+               <li>Accept the analysis of each word.</li>
+            </ol>
+         </li>
+      </ol>
+      <p>Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <a href="#xAnalyzedText">(1)</a> below.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xAnalyzedText">(1)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/AnalyzedText.PNG"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>Note: Word gloss and category are hidden as well as free translation.</p>
+      <p></p>
+      <p></p>
+      <p></p>
+      <h2 style=""><a name="sLinkSenses"></a>1.2&nbsp;Link Senses
+      </h2>
+      <ol style="list-style-type:decimal; ">
+         <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> in the installation folder. See <a href="#sStartFlextools">A.1</a> for step-by-step instructions. It should look like <a href="#xFirstStart">(2)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xFirstStart">(2)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style=" height:60%" src="Images/FLExTransModules.png"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Click on the <img style="Width:5%" src="Images/DatabaseBut.PNG"> button and choose your source database, i.e. <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
+         </li>
+         <li>Edit the configuration file and change two values.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Open <span style="font-family:Courier New; font-weight:bold; color:navy; ">Notepad</span></li>
+               <li>Select File &gt; Open from the menu.</li>
+               <li>Navigate to the install folder and into the <span style="font-weight:bold; ">FlexTools</span> folder.
+               </li>
+               <li>Select <span style="font-weight:bold; ">FlexTrans.config</span></li>
+               <li>Change these two values:
+                  <div align="left">
+                     <table style="" border="1">
+                        <tr style="">
+                           <th align="left" valign="top" style="padding-left:.2em; ">Value</th>
+                           <th align="left" valign="top" style="padding-left:.2em; ">Change to</th>
+                        </tr>
+                        <tr style="">
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">SourceTextName</span></td>
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The title of the text you want to translate in the source </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> <span style="font-style:italic; ">project</span></td>
+                        </tr>
+                        <tr style="">
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">TargetProject</span></td>
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The name of your target </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span><span style="font-style:italic; "> project</span></td>
+                        </tr>
+                     </table>
+                  </div>
+               </li>
+            </ol>
+         </li>
+         <li>Click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xLinkerInCollections">(3)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xLinkerInCollections">(3)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/LinkerInCollections.png"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Double-click on <span style="font-weight:bold; ">FLExTrans Sense Linker</span> in the list and you'll see this:
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xLinkerModule">(4)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/LinkerModule.png"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Click on the <img style="Width:5%" src="Images/RunModifyBut.PNG"> button to run the module. Click OK on the message box that comes up to confirm you want to change <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> data. You'll now see the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> with no links yet established. The window will look something like this:
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xLinkerNoLinks">(5)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/SenseLinkerNoLinks.png"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Link each sense. (cf. section&nbsp;<a href="#sLinker">2</a>)
+            <ol style="list-style-type:lower-alpha; ">
+               <li>For blue rows that look good, simply check the check box in the <span style="font-weight:bold; ">Link It</span> column.
+               </li>
+               <li>For red rows pick the appropriate target sense in the drop-down list, then double-click in the <span style="font-weight:bold; ">Target Head Word</span> column for that row.
+               </li>
+            </ol>
+         </li>
+         <li>Click OK</li>
+      </ol>
+      <p></p>
+      <p></p>
+      <h2 style=""><a name="sWriteRules"></a>1.3&nbsp;Write Transfer Rules
+      </h2>
+      <p>If you have not yet installed <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, follow the first two steps <a href="https://github.com/rmlockwood/FLExTrans/wiki/Transfer-Rule-Editing-App">on this page</a>.
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Navigate to the <span style="font-weight:bold; ">FlexTools\Output</span> folder in your installation folder.
+         </li>
+         <li>Double-click on the file <span style="font-weight:bold; ">transfer_rules.t1x</span> which will open the file in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(6)</a>. This is the transfer rules file that works with the sample projects.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xInitialSampleRules">(6)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleInitial.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Expand the <span style="font-weight:bold; ">rule </span> element and also the <span style="font-weight:bold; ">action</span> element so that it looks like <a href="#xRulesSampleVerbRule">(7)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xRulesSampleVerbRule">(7)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleVerbRule.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Pick a category that you are going to process. In this example let's use noun, abbreviated "n".</li>
+         <li>Change the <span style="font-weight:bold; ">rule</span> comment shown in blue to "Nouns"
+         </li>
+         <li>Change the <span style="font-weight:bold; ">item</span> element to "c_n". This means category noun. This changes the pattern to match nouns. Nouns get defined below.
+         </li>
+         <li>Remove the two <span style="font-weight:bold; ">literal tag</span> elements by clicking on the word "literal" and pressing the delete key. The rule should now look like <a href="#xRulesSampleNounRule">(8)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xRulesSampleNounRule">(8)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleNounRule.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Expand the <span style="font-weight:bold; ">Categories</span> element and the second <span style="font-weight:bold; ">category</span> element and it should look like <a href="#xRulesSampleCatsBefore">(9)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xRulesSampleCatsBefore">(9)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleCatsBefore.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Change "c_v" to "c_n" in the <span style="font-weight:bold; ">category</span> element and "v" to "n" in both <span style="font-weight:bold; ">tags</span> elements. Now it should look something like <a href="#xRulesSampleCatsAfter">(10)</a>. Category "c_n" is now defined as the single tag "n" or the tag "n" followed by any other tag, i.e. affixes and the like.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xRulesSampleCatsAfter">(10)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleCatsAfter.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Expand the <span style="font-weight:bold; ">Attributes</span> element and the second <span style="font-weight:bold; ">attribute</span> element and it should look like <a href="#xRulesSampleAttribs">(11)</a>. Note that we already have a tag for a noun.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xRulesSampleAttribs">(11)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img style="Height:60%" src="Images/RulesSampleAttribs.PNG"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>We are done editing the rule. You can save the file.</li>
+      </ol>
+      <p>In brief what this rule does is set up an action to take place when a word is processed by the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> engine that has the "n" tag. (Every word coming from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> has the word's gammatical category in the form of a tag.)
+      </p>
+      <p>The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the
+         word itself -- the "lem" part and the grammatical category -- anything that matches a tag specified by in the "a_gram_cat"
+         attribute. No affixes are explicitly outputted. The <span style="font-weight:bold; ">target lang.</span> attribute of the <span style="font-weight:bold; ">clip</span> elements in <a href="#xRulesSampleNounRule">(8)</a> above is selected so the target word that corresponds to the input source word is outputted.
+      </p>
+      <h2 style=""><a name="sRunModules"></a>1.4&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules
+      </h2>
+      <ol style="list-style-type:decimal; ">
+         <li>Make sure you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> Virtual Machine. (See <a href="https://github.com/rmlockwood/FLExTrans/wiki/Installation">this link</a> for instructions on setting it up.) 
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">Virtual Box</span>.
+               </li>
+               <li>Click on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span>.
+               </li>
+               <li>Click on the Start button.</li>
+            </ol>
+         </li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button.  
+         </li>
+         <li>Double-click on <span style="font-weight:bold; ">FLExTrans All Steps</span> in the list and you'll see <a href="#xFirstStart">(2)</a>.
+         </li>
+         <li>Click on the <img style="Width:5%" src="Images/RunAllModifyBut.PNG"> button to run all the modules. Click OK on the message box that comes up to confirm you want to change <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> data. You'll see the modules run and see various bits of output. 
+         </li>
+      </ol>
+      <p>You can see the results by opening the target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. (You may have to do a "refresh" to see the new text.)
+      </p>
+      <p></p>
+      <p></p>
+      <h1 style=""><a name="sLinker"></a>2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file
          and lists every sense that was analyzed in that text in order. Here's sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>:
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xLinkerToolShot">(1)</a></td>
+               <td valign="top"><a name="xLinkerToolShot">(12)</a></td>
                <td>
                   <table>
                      <tr>
@@ -95,7 +408,7 @@
          color.
       </p>
       <p>If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p>
-      <h1 style=""><a name="sRuleTester"></a>2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h1>
+      <h1 style=""><a name="sRuleTester"></a>3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful
          for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just
          one source word and applying the pertinent transfer rule. In this way you don't have to run the whole system against the whole
@@ -104,7 +417,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xTesterImage">(2)</a></td>
+               <td valign="top"><a name="xTesterImage">(13)</a></td>
                <td>
                   <table>
                      <tr>
@@ -115,7 +428,7 @@
             </tr>
          </table>
       </div>
-      <h2 style=""><a name="sTesterQuickGuide"></a>2.1&nbsp;Quick Guide
+      <h2 style=""><a name="sTesterQuickGuide"></a>3.1&nbsp;Quick Guide
       </h2>
       <p>Here's a quick guide on using the tool.</p>
       <ol style="list-style-type:decimal; ">
@@ -132,7 +445,7 @@
          </li>
          <li>Check the yellow Information box. It will show which words were matched for the rules that were executed.</li>
       </ol>
-      <h2 style=""><a name="sTesterOther"></a>2.2&nbsp;Other Parts of the Tool
+      <h2 style=""><a name="sTesterOther"></a>3.2&nbsp;Other Parts of the Tool
       </h2>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration
          file. The transfer fules file and the bilingual lexicon file can be changed if desired by clicking the corresponding Browse
@@ -156,7 +469,19 @@
       <h1 style=""><a name="a"></a>A.&nbsp;Appendix
       </h1>
       <p></p>
-      <h1 style=""><a name="s"></a>A.1&nbsp;Data Stream Format
+      <h1 style=""><a name="sStartFlextools"></a>A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></h1>
+      <p>Here are the steps:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Navigate to the folder where you unzipped the install files.</li>
+         <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file)
+         </li>
+         <li>The first time you run it, it may give you a message saying, "FLExTools has updated its configuration to match the new version
+            of Fieldworks. Restarting."
+         </li>
+         <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> window should appear which will look something like <a href="#xFirstStart">(2)</a>.
+         </li>
+      </ol>
+      <h1 style=""><a name="sDataStreamFormat"></a>A.2&nbsp;Data Stream Format
       </h1>
       <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
       </p>

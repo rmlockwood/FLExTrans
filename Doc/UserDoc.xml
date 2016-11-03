@@ -25,29 +25,598 @@ type="tFlextrans"
 >This paper describes how to use the <object
 type="tFlextrans"
 ></object
-> machine translation system. It is a supplement to my master's thesis which goes into more detail on the background and documents a test case. Please see <link
+> machine translation system. It is a supplement to a master's thesis which goes into more detail on the background and documents a test case. Please see <link
 href="https://digital.lib.washington.edu/researchworks/handle/1773/33999"
 >A Linguist-Friendly Machine Translation System for Low-Resource Languages</link
->.</p
+>.<comment
+></comment
+></p
+><p
+><comment
+>Ideas for content for this document</comment
+></p
+><p
+><comment
+>Sections to read in the thesis to get oriented. (temporary)</comment
+></p
+><p
+><comment
+>Installation</comment
+></p
+><p
+><comment
+>Sample projects, understanding, modifying.</comment
+></p
+><p
+><comment
+>How to ... FAQs</comment
+></p
+><p
+><comment
+>Things that were in the presentation to LSDev (variants [inflectional &amp; normal], </comment
+></p
+><p
+><comment
+>Rule examples</comment
+></p
+><p
+><comment
+>Overview with diagram</comment
+></p
+><p
+><comment
+>How to edit using XXE</comment
+></p
+><p
+><comment
+>Each module explained</comment
+></p
+><p
+><comment
+>Configuration file</comment
+></p
+><p
+><comment
+>Troubleshooting</comment
+></p
 ></abstract
 ></frontMatter
-><!--<section1
-id="s0"
-><secTitle
->Introduction</secTitle
-><p
->Main sections to read in the thesis to get oriented.</p
->
-</section1
 ><section1
-id="s1"
+id="sStarting"
 ><secTitle
->FLExTrans Modules</secTitle
+>Getting Started</secTitle
 ><p
+>The basic steps for machine translation with <object
+type="tFlextrans"
+></object
+> are as follows:</p
+><ol
+><li
+>Analyze the text you want to translate in the source <object
+type="tFlexx"
+></object
+> project.</li
+><li
+>Link lexical senses that are in the source text to senses in the target FLEx project using the <object
+type="tSenseLinker"
+></object
+></li
+><li
+>Write transfer rules that convert source words and phrases to target words and phrases.</li
+><li
+>Run the six <object
+type="tFlextrans"
+></object
+> modules.</li
+></ol
+><p
+>Let's look at each step in more detail.<comment
+> For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
+><section2
+id="sAnalyze"
+><secTitle
+>Analyze the Source Text</secTitle
+><ol
+><li
+>Create a new text in <object
+type="tFlexx"
+></object
+>.</li
+><li
+>Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
+><li
+>Analyze this text.<ol
+><li
+>Divide each word into its morphemes.</li
+><li
+>Accept the analysis of each word.</li
+></ol
+></li
+></ol
+><p
+>Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
+letter="xAnalyzedText"
+num="xAnalyzedText"
+></exampleRef
+> below.</p
+><example
+num="xAnalyzedText"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AnalyzedText.PNG"
+></img
+></chart
+></example
+><p
+>Note: Word gloss and category are hidden as well as free translation.</p
+><p
+><comment
+>Advanced info. for the later section:</comment
+></p
+><p
+><comment
+>All affixes and clitics need to have unique glosses</comment
+></p
+><p
+><comment
+>Use the parser for faster analysis.</comment
+></p
+></section2
+><section2
+id="sLinkSenses"
+><secTitle
+>Link Senses</secTitle
+><ol
+><li
+>Start <object
+type="tFlexxTools"
+></object
+> in the installation folder. See <appendixRef
+app="sStartFlextools"
+></appendixRef
+> for step-by-step instructions. It should look like <exampleRef
+letter="xFirstStart"
+num="xFirstStart"
+></exampleRef
+>.<example
+num="xFirstStart"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/FLExTransModules.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/DatabaseBut.PNG"
+></img
+> button and choose your source database, i.e. <object
+type="tFlexx"
+></object
+> project.</li
+><li
+>Edit the configuration file and change two values.<ol
+><li
+>Open <object
+type="tTool"
+>Notepad</object
+></li
+><li
+>Select File &gt; Open from the menu.</li
+><li
+>Navigate to the install folder and into the <object
+type="tBold"
+>FlexTools</object
+> folder.</li
+><li
+>Select <object
+type="tBold"
+>FlexTrans.config</object
+></li
+><li
+>Change these two values:<table
+border="1"
+><tr
+><th
+>Value</th
+><th
+>Change to</th
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>SourceTextName</object
+></td
+><td
+><object
+type="tItalic"
+>The title of the text you want to translate in the source </object
+><object
+type="tFlexx"
+></object
+> <object
+type="tItalic"
+>project</object
+></td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>TargetProject</object
+></td
+><td
+><object
+type="tItalic"
+>The name of your target </object
+><object
+type="tFlexx"
+></object
+><object
+type="tItalic"
+> project</object
+></td
+></tr
+></table
+></li
+></ol
+></li
+><li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/CollectionsBut.PNG"
+></img
+> button which will bring up a list of collections as shown in <exampleRef
+letter="xLinkerInCollections"
+num="xLinkerInCollections"
+></exampleRef
+>.<example
+num="xLinkerInCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Double-click on <object
+type="tBold"
+>FLExTrans Sense Linker</object
+> in the list and you'll see this:<example
+num="xLinkerModule"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/LinkerModule.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/RunModifyBut.PNG"
+></img
+> button to run the module. Click OK on the message box that comes up to confirm you want to change <object
+type="tFlexx"
+></object
+> data. You'll now see the <object
+type="tSenseLinker"
+></object
+> with no links yet established. The window will look something like this:<example
+num="xLinkerNoLinks"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/SenseLinkerNoLinks.png"
+></img
+></chart
+></example
+></li
+><li
+>Link each sense. (cf. <sectionRef
+sec="sLinker"
+showTitle="numberOnly"
+textBefore="singular"
+></sectionRef
+>)<ol
+><li
+>For blue rows that look good, simply check the check box in the <object
+type="tBold"
+>Link It</object
+> column.</li
+><li
+>For red rows pick the appropriate target sense in the drop-down list, then double-click in the <object
+type="tBold"
+>Target Head Word</object
+> column for that row.</li
+></ol
+></li
+><li
+>Click OK</li
+></ol
+><p
+><comment
+>Advanced info. for the later section:</comment
+></p
+><p
+><comment
+>Explain why senses are linked. Bilingual dictionary, etc.</comment
+></p
+></section2
+><section2
+id="sWriteRules"
+><secTitle
+>Write Transfer Rules</secTitle
+><p
+>If you have not yet installed <object
+type="tXMLmindXMLEditor"
+></object
+>, follow the first two steps <link
+href="https://github.com/rmlockwood/FLExTrans/wiki/Transfer-Rule-Editing-App"
+>on this page</link
+>.</p
+><ol
+><li
+>Navigate to the <object
+type="tBold"
+>FlexTools\Output</object
+> folder in your installation folder.</li
+><li
+>Double-click on the file <object
+type="tBold"
+>transfer_rules.t1x</object
+> which will open the file in <object
+type="tXMLmindXMLEditor"
+></object
+>. It should look something like <exampleRef
+letter="xInitialSampleRules"
+num="xInitialSampleRules"
+></exampleRef
+>. This is the transfer rules file that works with the sample projects.<example
+num="xInitialSampleRules"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleInitial.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Expand the <object
+type="tRuleElemInXXE"
+>rule </object
+> element and also the <object
+type="tRuleElemInXXE"
+>action</object
+> element so that it looks like <exampleRef
+letter="xRulesSampleVerbRule"
+num="xRulesSampleVerbRule"
+></exampleRef
+>.<example
+num="xRulesSampleVerbRule"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleVerbRule.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Pick a category that you are going to process. In this example let's use noun, abbreviated "n".</li
+><li
+>Change the <object
+type="tRuleElemInXXE"
+>rule</object
+> comment shown in blue to "Nouns"</li
+><li
+>Change the <object
+type="tRuleElemInXXE"
+>item</object
+> element to "c_n". This means category noun. This changes the pattern to match nouns. Nouns get defined below.</li
+><li
+>Remove the two <object
+type="tRuleElemInXXE"
+>literal tag</object
+> elements by clicking on the word "literal" and pressing the delete key. The rule should now look like <exampleRef
+letter="xRulesSampleNounRule"
+num="xRulesSampleNounRule"
+></exampleRef
+>.<example
+num="xRulesSampleNounRule"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleNounRule.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Expand the <object
+type="tRuleElemInXXE"
+>Categories</object
+> element and the second <object
+type="tRuleElemInXXE"
+>category</object
+> element and it should look like <exampleRef
+letter="xRulesSampleCatsBefore"
+num="xRulesSampleCatsBefore"
+></exampleRef
+>.<example
+num="xRulesSampleCatsBefore"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleCatsBefore.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Change "c_v" to "c_n" in the <object
+type="tRuleElemInXXE"
+>category</object
+> element and "v" to "n" in both <object
+type="tRuleElemInXXE"
+>tags</object
+> elements. Now it should look something like <exampleRef
+letter="xRulesSampleCatsAfter"
+num="xRulesSampleCatsAfter"
+></exampleRef
+>. Category "c_n" is now defined as the single tag "n" or the tag "n" followed by any other tag, i.e. affixes and the like.<example
+num="xRulesSampleCatsAfter"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleCatsAfter.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Expand the <object
+type="tRuleElemInXXE"
+>Attributes</object
+> element and the second <object
+type="tRuleElemInXXE"
+>attribute</object
+> element and it should look like <exampleRef
+letter="xRulesSampleAttribs"
+num="xRulesSampleAttribs"
+></exampleRef
+>. Note that we already have a tag for a noun.<example
+num="xRulesSampleAttribs"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesSampleAttribs.PNG"
+></img
+></chart
+></example
+></li
+><li
+>We are done editing the rule. You can save the file.</li
+></ol
+><p
+>In brief what this rule does is set up an action to take place when a word is processed by the <object
+type="tTool"
+>Apertium</object
+> engine that has the "n" tag. (Every word coming from <object
+type="tFlexx"
+></object
+> has the word's gammatical category in the form of a tag.)</p
+><p
+>The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the word itself -- the "lem" part and the grammatical category -- anything that matches a tag specified by in the "a_gram_cat" attribute. No affixes are explicitly outputted. The <object
+type="tRuleElemInXXE"
+>target lang.</object
+> attribute of the <object
+type="tRuleElemInXXE"
+>clip</object
+> elements in <exampleRef
+letter="xRulesSampleNounRule"
+num="xRulesSampleNounRule"
+></exampleRef
+> above is selected so the target word that corresponds to the input source word is outputted.</p
+></section2
+><section2
+id="sRunModules"
+><secTitle
+>Run <object
+type="tFlextrans"
+></object
+> Modules</secTitle
+><ol
+><li
+>Make sure you start the <object
+type="tTool"
+>Apertium</object
+> Virtual Machine. (See <link
+href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
+>this link</link
+> for instructions on setting it up.) <ol
+><li
+>Start <object
+type="tTool"
+>Virtual Box</object
+>.</li
+><li
+>Click on the <object
+type="tFlextrans"
+></object
+> <object
+type="tTool"
+>Apertium</object
+>.</li
+><li
+>Click on the Start button.</li
+></ol
+></li
+><li
+>In <object
+type="tFlexxTools"
+></object
+>, click on the <img
+cssSpecial="Width:5%"
+src="Images/CollectionsBut.PNG"
+></img
+> button.  </li
+><li
+>Double-click on <object
+type="tBold"
+>FLExTrans All Steps</object
+> in the list and you'll see <exampleRef
+letter="xFirstStart"
+num="xFirstStart"
+></exampleRef
+>.</li
+><li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/RunAllModifyBut.PNG"
+></img
+> button to run all the modules. Click OK on the message box that comes up to confirm you want to change <object
+type="tFlexx"
+></object
+> data. You'll see the modules run and see various bits of output. </li
+></ol
+><p
+>You can see the results by opening the target <object
+type="tFlexx"
+></object
+> project. (You may have to do a "refresh" to see the new text.)</p
+><p
+><comment
+>Advanced info.: </comment
+></p
+><p
+><comment
+>Results can also be seen in the Output folder.</comment
+></p
+></section2
 ></section1
->
---><section1
+><section1
 id="sLinker"
 ><secTitle
 >The <object
@@ -205,60 +774,7 @@ type="tLiveRuleTester"
 > to work.</p
 ></section2
 ></section1
-><!--<section1
-id="s3"
-><secTitle
->Live Rule Tester Tool</secTitle
-><p
-></p
-></section1
-><section1
-id="s4"
-><secTitle
->Editing Transfer Rules with <object
-type="tXMLmindXMLEditor"
-></object
-></secTitle
-><p
-></p
-></section1
-><section1
-id="s5"
-><secTitle
->Configuration File</secTitle
-><p
-></p
-></section1
-><section1
-id="s"
-><secTitle
->Virtual Machine Processing of Transfer Rules</secTitle
-><p
-></p
-></section1
-><section1
-id="s"
-><secTitle
->Getting started</secTitle
-><p
-></p
-></section1
-><section1
-id="s"
-><secTitle
->How do I ...</secTitle
-><p
-></p
-></section1
-><section1
-id="s"
-><secTitle
->Working with the Sample Projects</secTitle
-><p
-></p
-></section1
->
---><backMatter
+><backMatter
 ><appendix
 id="a"
 ><secTitle
@@ -266,7 +782,37 @@ id="a"
 ><p
 ></p
 ><section1
-id="s"
+id="sStartFlextools"
+><secTitle
+>Starting <object
+type="tFlexxTools"
+></object
+></secTitle
+><p
+>Here are the steps:</p
+><ol
+><li
+>Navigate to the folder where you unzipped the install files.</li
+><li
+>Double-click on the file <object
+type="tBold"
+>FlexTools.vbs</object
+> (a Visual Basic script file)</li
+><li
+>The first time you run it, it may give you a message saying, "FLExTools has updated its configuration to match the new version of Fieldworks. Restarting."</li
+><li
+>The <object
+type="tFlexxTools"
+></object
+> window should appear which will look something like <exampleRef
+letter="xFirstStart"
+num="xFirstStart"
+></exampleRef
+>.</li
+></ol
+></section1
+><section1
+id="sDataStreamFormat"
 ><secTitle
 >Data Stream Format</secTitle
 ><p
@@ -324,27 +870,12 @@ font-weight="bold"
 id="tEmphasis"
 ></type
 ><type
-after="FLExTrans"
-id="tFlextrans"
-types="tTool"
-></type
-><type
-after="FLEx"
-id="tFlexx"
-types="tTool"
-></type
-><type
 id="tGrammaticalGloss"
 types="tSmallCaps"
 ></type
 ><type
 font-style="italic"
 id="tItalic"
-></type
-><type
-after="Live Rule Tester Tool"
-id="tLiveRuleTester"
-types="tTool"
 ></type
 ><type
 cssSpecial="text-decoration:none"
@@ -377,11 +908,6 @@ font-weight="normal"
 id="tRegular"
 ></type
 ><type
-after="Sense Linker Tool"
-id="tSenseLinker"
-types="tTool"
-></type
-><type
 font-family="Charis SIL Small Caps"
 id="tSmallCaps"
 ></type
@@ -406,24 +932,58 @@ id="tSuperscript"
 xsl-foSpecial="baseline-shift='super'"
 ></type
 ><type
+XeLaTeXSpecial="underline"
+cssSpecial="text-decoration:underline"
+id="tUnderline"
+xsl-foSpecial="text-decoration=&quot;underline&quot;"
+></type
+><comment
+>Add your custom types here.</comment
+><type
+font-family="Courier New"
+font-size="100%"
+id="tCourier"
+></type
+><type
+after="FLExTrans"
+id="tFlextrans"
+types="tTool"
+></type
+><type
+after="FLExTools"
+id="tFlexxTools"
+types="tTool"
+></type
+><type
+after="FLEx"
+id="tFlexx"
+types="tTool"
+></type
+><type
+after="Live Rule Tester Tool"
+id="tLiveRuleTester"
+types="tTool"
+></type
+><type
+id="tRuleElemInXXE"
+types="tBold"
+></type
+><type
+after="Sense Linker Tool"
+id="tSenseLinker"
+types="tTool"
+></type
+><type
 color="navy"
 font-family="Courier New"
 font-weight="bold"
 id="tTool"
 ></type
 ><type
-XeLaTeXSpecial="underline"
-cssSpecial="text-decoration:underline"
-id="tUnderline"
-xsl-foSpecial="text-decoration=&quot;underline&quot;"
-></type
-><type
 after="XMLmind XML Editor"
 id="tXMLmindXMLEditor"
 types="tTool"
 ></type
-><comment
->Add your custom types here.</comment
 ></types
 ></lingPaper
 >
