@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 1.0.1 - 11/8/16 - Ron
+#    Smaller interface.
+#
 #   Version 1.0 - 8/27/16 - Ron
 #    Initial version.
 #
@@ -48,7 +51,7 @@ TESTER_FOLDER = 'Output\\LiveRuleTester'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "1.0",
+        'moduleVersion'    : "1.0.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Test transfer rules live.",
         'moduleDescription'   :
