@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"
+"transfer.dtd">
 <transfer>
 	<section-def-cats>
 		<def-cat n="c_adj">
