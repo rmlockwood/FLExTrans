@@ -168,7 +168,7 @@ class Main(QtGui.QMainWindow):
         self.__rule_model = None
         self.transfer_rules_file = None
         self.TRIndex = None
-        
+        self.setStatusBar(None)
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TestClicked)
         self.ui.CloseButton.clicked.connect(self.CloseClicked)

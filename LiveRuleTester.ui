@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1679</width>
-    <height>1081</height>
+    <width>1271</width>
+    <height>859</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>631</y>
+      <y>506</y>
       <width>781</width>
-      <height>321</height>
+      <height>278</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -44,8 +44,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>775</width>
-        <height>286</height>
+        <width>771</width>
+        <height>243</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -72,7 +72,7 @@
         <x>0</x>
         <y>0</y>
         <width>775</width>
-        <height>286</height>
+        <height>243</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -93,7 +93,7 @@
         <x>0</x>
         <y>0</y>
         <width>775</width>
-        <height>286</height>
+        <height>243</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -107,20 +107,20 @@
      <rect>
       <x>20</x>
       <y>23</y>
-      <width>111</width>
+      <width>81</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Transfer File</string>
+     <string>Rules File</string>
     </property>
    </widget>
    <widget class="QPushButton" name="TransferFileBrowseButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>290</x>
       <y>10</y>
-      <width>131</width>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -131,9 +131,9 @@
    <widget class="QLineEdit" name="TransferFileEdit">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>110</x>
       <y>19</y>
-      <width>221</width>
+      <width>171</width>
       <height>29</height>
      </rect>
     </property>
@@ -147,9 +147,9 @@
    <widget class="QLineEdit" name="BilingFileEdit">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>550</x>
       <y>19</y>
-      <width>221</width>
+      <width>171</width>
       <height>29</height>
      </rect>
     </property>
@@ -160,9 +160,9 @@
    <widget class="QPushButton" name="BilingFileBrowseButton">
     <property name="geometry">
      <rect>
-      <x>920</x>
+      <x>728</x>
       <y>10</y>
-      <width>131</width>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -173,23 +173,23 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>410</x>
       <y>23</y>
-      <width>161</width>
+      <width>131</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Bilingual Dict. File</string>
+     <string>Biling. Dict. File</string>
     </property>
    </widget>
    <widget class="QTabWidget" name="tabSource">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
-      <width>1631</width>
-      <height>281</height>
+      <y>100</y>
+      <width>1231</width>
+      <height>231</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -212,8 +212,8 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>185</y>
-        <width>1625</width>
+        <y>135</y>
+        <width>1225</width>
         <height>61</height>
        </rect>
       </property>
@@ -226,7 +226,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1625</width>
+        <width>1225</width>
         <height>29</height>
        </rect>
       </property>
@@ -236,8 +236,8 @@
        <rect>
         <x>0</x>
         <y>30</y>
-        <width>1625</width>
-        <height>151</height>
+        <width>1225</width>
+        <height>103</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -251,8 +251,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1623</width>
-         <height>149</height>
+         <width>1223</width>
+         <height>101</height>
         </rect>
        </property>
       </widget>
@@ -267,8 +267,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1625</width>
-        <height>181</height>
+        <width>1225</width>
+        <height>132</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -279,8 +279,8 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>185</y>
-        <width>1625</width>
+        <y>135</y>
+        <width>1225</width>
         <height>61</height>
        </rect>
       </property>
@@ -298,8 +298,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1625</width>
-        <height>246</height>
+        <width>1225</width>
+        <height>196</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -312,9 +312,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>440</y>
-      <width>1631</width>
-      <height>121</height>
+      <y>379</y>
+      <width>1231</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -328,7 +328,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>410</y>
+      <y>349</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -341,7 +341,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
+      <y>70</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -353,10 +353,10 @@
    <widget class="QPlainTextEdit" name="LogEdit">
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>631</y>
-      <width>821</width>
-      <height>291</height>
+      <x>800</x>
+      <y>506</y>
+      <width>451</width>
+      <height>245</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -369,9 +369,9 @@
    <widget class="QPushButton" name="TestButton">
     <property name="geometry">
      <rect>
-      <x>667</x>
-      <y>961</y>
-      <width>131</width>
+      <x>490</x>
+      <y>775</y>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -382,9 +382,9 @@
    <widget class="QPushButton" name="CloseButton">
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>961</y>
-      <width>131</width>
+      <x>653</x>
+      <y>775</y>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -396,7 +396,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>601</y>
+      <y>476</y>
       <width>171</width>
       <height>23</height>
      </rect>
@@ -408,8 +408,8 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>601</y>
+      <x>800</x>
+      <y>476</y>
       <width>141</width>
       <height>23</height>
      </rect>
@@ -421,22 +421,22 @@
    <widget class="QLabel" name="SourceTextName">
     <property name="geometry">
      <rect>
-      <x>1068</x>
+      <x>848</x>
       <y>23</y>
-      <width>161</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Source Text Name</string>
+     <string>Text Name</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="SourceFileEdit">
     <property name="geometry">
      <rect>
-      <x>1230</x>
+      <x>950</x>
       <y>19</y>
-      <width>221</width>
+      <width>171</width>
       <height>29</height>
      </rect>
     </property>
@@ -444,28 +444,12 @@
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="ChooseSourceButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1470</x>
-      <y>10</y>
-      <width>131</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Choose...</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
-      <x>667</x>
-      <y>587</y>
-      <width>131</width>
+      <x>690</x>
+      <y>462</y>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -477,8 +461,8 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>587</y>
-      <width>131</width>
+      <y>462</y>
+      <width>101</width>
       <height>40</height>
      </rect>
     </property>
@@ -490,8 +474,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>571</y>
-      <width>1631</width>
+      <y>446</y>
+      <width>1231</width>
       <height>10</height>
      </rect>
     </property>
@@ -503,8 +487,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>395</y>
-      <width>1631</width>
+      <y>334</y>
+      <width>1231</width>
       <height>16</height>
      </rect>
     </property>
@@ -516,8 +500,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>60</y>
-      <width>1631</width>
+      <y>55</y>
+      <width>1231</width>
       <height>16</height>
      </rect>
     </property>
@@ -529,7 +513,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>587</y>
+      <y>462</y>
       <width>41</width>
       <height>40</height>
      </rect>
@@ -546,7 +530,7 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>587</y>
+      <y>462</y>
       <width>41</width>
       <height>40</height>
      </rect>
@@ -559,18 +543,38 @@
       <normaloff>DownArrow.png</normaloff>DownArrow.png</iconset>
     </property>
    </widget>
+   <widget class="QPushButton" name="ChooseSourceButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>1130</x>
+      <y>10</y>
+      <width>101</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose...</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1679</width>
+     <width>1271</width>
      <height>36</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
