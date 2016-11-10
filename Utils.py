@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.1.1 - 11/9/16 - Ron
+#    Handle any kind of text contents coming in -- scripture or standard.
+#    Handle no analyses in a text.
+#
 #   Version 1.1 - 9/28/16 - Ron
 #    Moved main extraction code from ExtractSourceText here to be shared with 
 #    LiveRuleTesterTool.py
@@ -106,7 +110,7 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
-def get_interlin_data(DB, report, sent_punct, text, typesList, getSurfaceForm):
+def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm):
     
     prev_pv_list = []
     prev_e = None
@@ -117,12 +121,17 @@ def get_interlin_data(DB, report, sent_punct, text, typesList, getSurfaceForm):
     prevEndOffset = 0
 
     # count analysis objects
-    ss = SegmentServices.StTextAnnotationNavigator(text.ContentsOA)
+    obj_cnt = -1
+    ss = SegmentServices.StTextAnnotationNavigator(contents)
     for obj_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
         pass
     
-    report.ProgressStart(obj_cnt+1)
-    ss = SegmentServices.StTextAnnotationNavigator(text.ContentsOA)
+    if obj_cnt == -1:
+        report.Warning('No analyses found.')
+    else:
+        report.ProgressStart(obj_cnt+1)
+        
+    ss = SegmentServices.StTextAnnotationNavigator(contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
         report.ProgressUpdate(prog_cnt)
