@@ -113,6 +113,14 @@ type="tFlextrans"
 >Let's look at each step in more detail.<comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
+><p
+>(It is assumed that you have gone through the <link
+href="https://github.com/rmlockwood/FLExTrans/wiki/Download"
+>download</link
+> and <link
+href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
+>installation</link
+> steps as given on the FLExTrans Wiki and that you have FLExTrans working for the sample projects. It is also assumed that you have two FLEx projects to use as source and target projects for the following steps.)</p
 ><section2
 id="sAnalyze"
 ><secTitle
@@ -166,41 +174,10 @@ src="Images/AnalyzedText.PNG"
 ></p
 ></section2
 ><section2
-id="sLinkSenses"
+id="sPrepSteps"
 ><secTitle
->Link Senses</secTitle
+>Preparatory Steps</secTitle
 ><ol
-><li
->Start <object
-type="tFlexxTools"
-></object
-> in the installation folder. See <appendixRef
-app="sStartFlextools"
-></appendixRef
-> for step-by-step instructions. It should look like <exampleRef
-letter="xFirstStart"
-num="xFirstStart"
-></exampleRef
->.<example
-num="xFirstStart"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial=" height:60%"
-src="Images/FLExTransModules.png"
-></img
-></chart
-></example
-></li
-><li
->Click on the <img
-cssSpecial="Width:5%"
-src="Images/DatabaseBut.PNG"
-></img
-> button and choose your source database, i.e. <object
-type="tFlexx"
-></object
-> project.</li
 ><li
 >Edit the configuration file and change two values.<ol
 ><li
@@ -238,13 +215,13 @@ type="tCourier"
 ><td
 ><object
 type="tItalic"
->The title of the text you want to translate in the source </object
+>The title of the text you want to translate (from the source </object
 ><object
 type="tFlexx"
 ></object
 > <object
 type="tItalic"
->project</object
+>project)</object
 ></td
 ></tr
 ><tr
@@ -269,6 +246,109 @@ type="tItalic"
 ></li
 ></ol
 ></li
+><li
+>Add two custom fields to your source <object
+type="tFlexx"
+></object
+> project. This is where link information to the target senses is kept.<ol
+><li
+>In your source <object
+type="tFlexx"
+></object
+> project, go to the Lexicon area</li
+><li
+>From the menu select Tools &gt; Configure &gt; Custom Fields</li
+><li
+>Click Add and use the following settings:<ol
+><li
+>Custom Field Name: Target Equivalent<endnote
+id="nCustomFieldNames"
+><p
+>You may choose a different names for the custom fields, but you also have to update the configuration file to match these names. The names <object
+type="tBold"
+>Target Equivalent</object
+> and <object
+type="tBold"
+>Target Sense Number</object
+>  are already set in the configuration file that gets installed with <object
+type="tFlextrans"
+></object
+>.</p
+></endnote
+></li
+><li
+>Location: <object
+type="tUnderline"
+>Sense</object
+></li
+><li
+>Type: Single-line Text</li
+><li
+>Writing Systems(s): First Analysis Writing System</li
+></ol
+></li
+><li
+>Click Add again and use the following settings for a second custom field:<ol
+><li
+>Custom Field Name: Target Sense Number<endnoteRef
+note="nCustomFieldNames"
+></endnoteRef
+></li
+><li
+>Location: <object
+type="tUnderline"
+>Sense</object
+></li
+><li
+>Type: Single-line Text</li
+><li
+>Writing Systems(s): First Analysis Writing System</li
+></ol
+></li
+><li
+>Click OK</li
+></ol
+></li
+><li
+>Close the FLEx source and target projects.</li
+><li
+>Start <object
+type="tFlexxTools"
+></object
+> in the installation folder. See <appendixRef
+app="sStartFlextools"
+></appendixRef
+> for step-by-step instructions. It should look like <exampleRef
+letter="xFirstStart"
+num="xFirstStart"
+></exampleRef
+>.<example
+num="xFirstStart"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/FLExTransModules.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/DatabaseBut.PNG"
+></img
+> button and choose your source database, i.e. <object
+type="tFlexx"
+></object
+> project.</li
+></ol
+></section2
+><section2
+id="sLinkSenses"
+><secTitle
+>Link Senses</secTitle
+><ol
 ><li
 >Click on the <img
 cssSpecial="Width:5%"
@@ -365,10 +445,10 @@ id="sWriteRules"
 >If you have not yet installed <object
 type="tXMLmindXMLEditor"
 ></object
->, follow the first two steps <link
+> and the needed files for editing transfer rules within it, follow the first two steps <link
 href="https://github.com/rmlockwood/FLExTrans/wiki/Transfer-Rule-Editing-App"
 >on this page</link
->.</p
+>. We are going to make a rule that removes affixes from words of a certain category. We'll modify an existing rule to do this.</p
 ><ol
 ><li
 >Navigate to the <object
@@ -539,6 +619,17 @@ letter="xRulesSampleNounRule"
 num="xRulesSampleNounRule"
 ></exampleRef
 > above is selected so the target word that corresponds to the input source word is outputted.</p
+><p
+>The authoritative reference document for transfer rules is found in section 3.5 and appendix 3 of <citation
+ref="rApertium"
+></citation
+>. <comment
+>intro info here (not sure if would be helpful) http://wiki.apertium.org/wiki/Apertium_New_Language_Pair_HOWTO#Transfer_rules</comment
+></p
+><p
+><comment
+>Maybe reference to where to find other transfer rules</comment
+></p
 ></section2
 ><section2
 id="sRunModules"
@@ -581,7 +672,7 @@ type="tFlexxTools"
 cssSpecial="Width:5%"
 src="Images/CollectionsBut.PNG"
 ></img
-> button.  </li
+> button.</li
 ><li
 >Double-click on <object
 type="tBold"
@@ -599,7 +690,7 @@ src="Images/RunAllModifyBut.PNG"
 > button to run all the modules. Click OK on the message box that comes up to confirm you want to change <object
 type="tFlexx"
 ></object
-> data. You'll see the modules run and see various bits of output. </li
+> data. You'll see the modules run and see various bits of output.</li
 ></ol
 ><p
 >You can see the results by opening the target <object
@@ -838,6 +929,23 @@ src="Images/LexicalUnit.PNG"
 ><endnotes
 ></endnotes
 ><references
+><refAuthor
+citename="Forcada et al."
+name="Forcada, Mikel L., Bonev, Boyan Ivanov, Rojas, Sergio Ortiz, Ortiz, Juan Antonio Perez, Sanchez, Gema Ramirez, Martinez, Felipe Sanchez, Armentano-Oller, Carme, Montava, Marco A., Tyers, Francis M."
+><refWork
+id="rApertium"
+><refDate
+>2010</refDate
+><refTitle
+>Documentation of the Open-Source Shallow-Transfer Machine Translation Platform Apertium</refTitle
+><ms
+><institution
+>Departament de Llenguatges i Sistemes Informàtics Universitat d’Alacant</institution
+></ms
+><url
+>http://xixona.dlsi.ua.es/~fran/apertium2-documentation.pdf</url
+></refWork
+></refAuthor
 ></references
 ></backMatter
 ><languages
