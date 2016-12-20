@@ -15,17 +15,18 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->29 November 2016</date
+>17 December 2016</date
 ><version
->1.3.9 (Sense Linker 2.1, Live Rule Tester 1.0.1)</version
+>1.3.9 (Sense Linker 2.1.1, Live Rule Tester 1.0.2)</version
 ><contents
+showLevel="4"
 ></contents
 ><abstract
 ><p
 >This paper describes how to use the <object
 type="tFlextrans"
 ></object
-> machine translation system. It is a supplement to a master's thesis which goes into more detail on the background and documents a test case. Please see <link
+> machine translation system. It is a supplement to a master’s thesis which goes into more detail on the background and documents a test case. Please see <link
 href="https://digital.lib.washington.edu/researchworks/handle/1773/33999"
 >A Linguist-Friendly Machine Translation System for Low-Resource Languages</link
 >.<comment
@@ -82,7 +83,7 @@ href="https://digital.lib.washington.edu/researchworks/handle/1773/33999"
 ></abstract
 ></frontMatter
 ><section1
-id="sStarting"
+id="sGettingStarted"
 ><secTitle
 >Getting Started</secTitle
 ><p
@@ -97,7 +98,10 @@ type="tFlexx"
 ></object
 > project.</li
 ><li
->Link lexical senses that are in the source text to senses in the target FLEx project using the <object
+>Link lexical senses that are in the source text to senses in the target <object
+type="tFlexx"
+></object
+> project using the <object
 type="tSenseLinker"
 ></object
 ></li
@@ -110,7 +114,7 @@ type="tFlextrans"
 > modules.</li
 ></ol
 ><p
->Let's look at each step in more detail.<comment
+>Let’s look at each step in more detail.<comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
 ><p
@@ -120,7 +124,16 @@ href="https://github.com/rmlockwood/FLExTrans/wiki/Download"
 > and <link
 href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
 >installation</link
-> steps as given on the FLExTrans Wiki and that you have FLExTrans working for the sample projects. It is also assumed that you have two FLEx projects to use as source and target projects for the following steps.)</p
+> steps as given on the <object
+type="tFlextrans"
+></object
+> Wiki and that you have <object
+type="tFlextrans"
+></object
+> working for the sample projects. It is also assumed that you have two <object
+type="tFlexx"
+></object
+> projects to use as source and target projects for the following steps.)</p
 ><section2
 id="sAnalyze"
 ><secTitle
@@ -189,14 +202,14 @@ type="tTool"
 >Select File &gt; Open from the menu.</li
 ><li
 >Navigate to the install folder and into the <object
-type="tBold"
+type="tFoldername"
 >FlexTools</object
 > folder.</li
 ><li
->Select <object
-type="tBold"
+>Select the <object
+type="tFilename"
 >FlexTrans.config</object
-></li
+> file.</li
 ><li
 >Change these two values:<table
 border="1"
@@ -270,7 +283,7 @@ type="tBold"
 > and <object
 type="tBold"
 >Target Sense Number</object
->  are already set in the configuration file that gets installed with <object
+> are already set in the configuration file that gets installed with <object
 type="tFlextrans"
 ></object
 >.</p
@@ -310,12 +323,15 @@ type="tUnderline"
 ></ol
 ></li
 ><li
->Close the FLEx source and target projects.</li
+>Close the <object
+type="tFlexx"
+></object
+> source and target projects.</li
 ><li
 >Start <object
 type="tFlexxTools"
 ></object
-> in the installation folder. See <appendixRef
+>. See <appendixRef
 app="sStartFlextools"
 ></appendixRef
 > for step-by-step instructions. It should look like <exampleRef
@@ -371,9 +387,9 @@ src="Images/LinkerInCollections.png"
 ></li
 ><li
 >Double-click on <object
-type="tBold"
+type="tCollection"
 >FLExTrans Sense Linker</object
-> in the list and you'll see this:<example
+> in the list and you’ll see this:<example
 num="xLinkerModule"
 ><chart
 ><img
@@ -392,7 +408,7 @@ src="Images/RunModifyBut.PNG"
 > button to run the module. Click OK on the message box that comes up to confirm you want to change <object
 type="tFlexx"
 ></object
-> data. You'll now see the <object
+> data. You’ll now see the <object
 type="tSenseLinker"
 ></object
 > with no links yet established. The window will look something like this:<example
@@ -429,6 +445,8 @@ type="tBold"
 >Click OK</li
 ></ol
 ><p
+>Now you have senses linked from source project to the target. You haven’t created anything in the target project yet, but you have done the preparatory work.</p
+><p
 ><comment
 >Advanced info. for the later section:</comment
 ></p
@@ -445,21 +463,29 @@ id="sWriteRules"
 >If you have not yet installed <object
 type="tXMLmindXMLEditor"
 ></object
-> and the needed files for editing transfer rules within it, follow the first two steps <link
+> and the <object
+type="tUnderline"
+>needed files</object
+> for editing transfer rules within it, follow the first two steps <link
 href="https://github.com/rmlockwood/FLExTrans/wiki/Transfer-Rule-Editing-App"
 >on this page</link
->. We are going to make a rule that removes affixes from words of a certain category. We'll modify an existing rule to do this.</p
+>. Even if you already have <object
+type="tXMLmindXMLEditor"
+></object
+> installed you still need the addon files. See the previous link.</p
+><p
+>In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category. We’ll modify an existing rule to do this.</p
 ><ol
 ><li
 >Navigate to the <object
-type="tBold"
->FlexTools\Output</object
+type="tFoldername"
+>'lFlexTools\Output</object
 > folder in your installation folder.</li
 ><li
->Double-click on the file <object
-type="tBold"
+>Open the file <object
+type="tFilename"
 >transfer_rules.t1x</object
-> which will open the file in <object
+> in <object
 type="tXMLmindXMLEditor"
 ></object
 >. It should look something like <exampleRef
@@ -483,7 +509,7 @@ type="tRuleElemInXXE"
 >rule </object
 > element and also the <object
 type="tRuleElemInXXE"
->action</object
+>output</object
 > element so that it looks like <exampleRef
 letter="xRulesSampleVerbRule"
 num="xRulesSampleVerbRule"
@@ -500,22 +526,22 @@ src="Images/RulesSampleVerbRule.PNG"
 ></example
 ></li
 ><li
->Pick a category that you are going to process. In this example let's use noun, abbreviated "n".</li
+>Pick a category that you are going to process. In this example let’s use noun, abbreviated “n”.</li
 ><li
 >Change the <object
 type="tRuleElemInXXE"
 >rule</object
-> comment shown in blue to "Nouns"</li
+> comment shown in blue to “Nouns”</li
 ><li
 >Change the <object
 type="tRuleElemInXXE"
 >item</object
-> element to "c_n". This means category noun. This changes the pattern to match nouns. Nouns get defined below.</li
+> element to “c_n”. This means category noun. This changes the pattern to match nouns. Nouns get defined below.</li
 ><li
 >Remove the two <object
 type="tRuleElemInXXE"
 >literal tag</object
-> elements by clicking on the word "literal" and pressing the delete key. The rule should now look like <exampleRef
+> elements by clicking on the word “literal” and pressing the delete key. The rule should now look like <exampleRef
 letter="xRulesSampleNounRule"
 num="xRulesSampleNounRule"
 ></exampleRef
@@ -553,17 +579,17 @@ src="Images/RulesSampleCatsBefore.PNG"
 ></example
 ></li
 ><li
->Change "c_v" to "c_n" in the <object
+>Change “c_v” to “c_n” in the <object
 type="tRuleElemInXXE"
 >category</object
-> element and "v" to "n" in both <object
+> element and “v” to “n” in both <object
 type="tRuleElemInXXE"
 >tags</object
 > elements. Now it should look something like <exampleRef
 letter="xRulesSampleCatsAfter"
 num="xRulesSampleCatsAfter"
 ></exampleRef
->. Category "c_n" is now defined as the single tag "n" or the tag "n" followed by any other tag, i.e. affixes and the like.<example
+>. Category “c_n” is now defined as the single tag “n” or the tag “n” followed by any other tag, i.e. affixes and the like.<example
 num="xRulesSampleCatsAfter"
 ><chart
 ><img
@@ -603,12 +629,12 @@ src="Images/RulesSampleAttribs.PNG"
 >In brief what this rule does is set up an action to take place when a word is processed by the <object
 type="tTool"
 >Apertium</object
-> engine that has the "n" tag. (Every word coming from <object
+> engine that has the “n” tag. (Every word coming from <object
 type="tFlexx"
 ></object
-> has the word's gammatical category in the form of a tag.)</p
+> has the word’s grammatical category in the form of a tag.)</p
 ><p
->The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the word itself -- the "lem" part and the grammatical category -- anything that matches a tag specified by in the "a_gram_cat" attribute. No affixes are explicitly outputted. The <object
+>The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the word itself -- the “lem” part and the grammatical category -- anything that matches a tag specified by in the “a_gram_cat” attribute. No affixes are explicitly outputted. The <object
 type="tRuleElemInXXE"
 >target lang.</object
 > attribute of the <object
@@ -643,10 +669,18 @@ type="tFlextrans"
 >Make sure you start the <object
 type="tTool"
 >Apertium</object
-> Virtual Machine. (See <link
+> virtual machine. (See <link
 href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
 >this link</link
-> for instructions on setting it up.) <ol
+> for instructions on setting it up.) The virtual machine has to be running so that it can run the transfer process<endnote
+id="nSleepModule"
+><p
+>That’s why there is a <object
+type="tFlextrans"
+></object
+> module that “sleeps” for five seconds. It gives the transfer process five seconds to take the source text, the bilingual dictionary and the transfer rules and create the target text.</p
+></endnote
+>.<ol
 ><li
 >Start <object
 type="tTool"
@@ -661,7 +695,10 @@ type="tTool"
 >Apertium</object
 >.</li
 ><li
->Click on the Start button.</li
+>Click on the <object
+type="tButton"
+>Start</object
+> button.</li
 ></ol
 ></li
 ><li
@@ -675,9 +712,9 @@ src="Images/CollectionsBut.PNG"
 > button.</li
 ><li
 >Double-click on <object
-type="tBold"
+type="tCollection"
 >FLExTrans All Steps</object
-> in the list and you'll see <exampleRef
+> in the list and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
@@ -690,13 +727,13 @@ src="Images/RunAllModifyBut.PNG"
 > button to run all the modules. Click OK on the message box that comes up to confirm you want to change <object
 type="tFlexx"
 ></object
-> data. You'll see the modules run and see various bits of output.</li
+> data. You’ll see the modules run and see various bits of output.</li
 ></ol
 ><p
 >You can see the results by opening the target <object
 type="tFlexx"
 ></object
-> project. (You may have to do a "refresh" to see the new text.)</p
+> project. (You may have to do a “refresh” to see the new text.)</p
 ><p
 ><comment
 >Advanced info.: </comment
@@ -718,7 +755,7 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here's sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -733,7 +770,7 @@ src="Images/SenseLinkerCapture.png"
 ></chart
 ></example
 ><p
->Here's a key to the color coding:</p
+>Here’s a key to the color coding:</p
 ><table
 border="1"
 ><tr
@@ -795,7 +832,7 @@ type="tLiveRuleTester"
 >The <object
 type="tLiveRuleTester"
 ></object
-> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don't have to run the whole system against the whole text file and all transfer rules. Here's sample screen shot of the <object
+> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don’t have to run the whole system against the whole text file and all transfer rules. Here’s sample screen shot of the <object
 type="tLiveRuleTester"
 ></object
 >:</p
@@ -814,7 +851,7 @@ id="sTesterQuickGuide"
 ><secTitle
 >Quick Guide</secTitle
 ><p
->Here's a quick guide on using the tool.</p
+>Here’s a quick guide on using the tool.</p
 ><ol
 ><li
 >First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more words and when you do the <genericRef
@@ -822,9 +859,18 @@ gref="gDataStream"
 >data stream format</genericRef
 > of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking the check box for the sentence you want.</li
 ><li
->Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the Select All button. Uncheck them all with the Refresh button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
+>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
+type="tButton"
+>Select All</object
+> button. Uncheck them all with the <object
+type="tButton"
+>Refresh</object
+> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
 ><li
->Now you are ready to test. Click the Test button and the selected works will get processed. The results will show in <genericRef
+>Now you are ready to test. Click the <object
+type="tButton"
+>Test</object
+> button and the selected works will get processed. The results will show in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
 > in the green colored area.</li
@@ -837,24 +883,30 @@ id="sTesterOther"
 ><secTitle
 >Other Parts of the Tool</secTitle
 ><p
->By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration file. The transfer fules file and the bilingual lexicon file can be changed if desired by clicking the corresponding Browse buttons.</p
+>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration file. The transfer rules file and the bilingual lexicon file can be changed if desired by clicking the corresponding <object
+type="tButton"
+>Browse</object
+> buttons.</p
 ><p
->In this version of the tool, you can't change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
+>In this version of the tool, you can’t change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
 ><p
 >You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
->. This might be useful if you want to test a sense that isn't in your text.</p
+>. This might be useful if you want to test a sense that isn’t in your text.</p
 ><p
 >The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing the rules that are used in the advanced <object
 type="tTool"
 >Apertium</object
 > transfer engine.</p
 ><p
->You can't edit the transfer rules in the <object
+>You can’t edit the transfer rules in the <object
 type="tLiveRuleTester"
 ></object
-> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the Refresh button.</p
+> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the <object
+type="tButton"
+>Refresh</object
+> button.</p
 ><p
 >You need to have the <object
 type="tTool"
@@ -865,12 +917,1931 @@ type="tLiveRuleTester"
 > to work.</p
 ></section2
 ></section1
+><section1
+id="sTransferTutorial"
+><secTitle
+>A Tutorial on Writing Transfer Rules<endnote
+id="nReproducing"
+><p
+>For this tutorial I am basically reproducing the <object
+type="tTool"
+>Apertium</object
+> article <link
+href="wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules"
+>A long introduction to transfer rules</link
+>. I am mainly modifying it to show the <object
+type="tXMLmindXMLEditor"
+></object
+> method of editing the transfer rules, but also the <object
+type="tFlextrans"
+></object
+> process is assumed instead of the <object
+type="tTool"
+>Apertium</object
+> process.</p
+></endnote
+></secTitle
+><p
+>Writing transfer rules might seem to be tricky, but it is not so bad when you get use to it. People generally understand the basic concepts, but they sometimes struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural statements. This tutorial should help you get used to writing transfer rules.</p
+><section2
+id="sOverview"
+><secTitle
+>Overview</secTitle
+><p
+>Here’s a brief overview.</p
+><section3
+id="sFormalities"
+><secTitle
+>Some Formalities</secTitle
+><p
+>Before starting, it is important to get an idea of what we can’t do, before explaining what we can.</p
+><ul
+><li
+>There are no recursive rules. Rules match fixed-length patterns. There is no optionality at the level of words. There is no way of saying one or more, it’s just one.</li
+><li
+><object
+type="tTool"
+>Apertium’s</object
+> rules are very tied to the <object
+type="tTool"
+>Apertium</object
+> <genericRef
+gref="sDataStreamFormat"
+>data stream format</genericRef
+>. If you don’t understand the data stream format, it will be a lot more difficult to understand the rules.</li
+><li
+>Rules contain both declarative parts and procedural parts. You can’t just expect to say what you want or how you want to do it. You need to do both -- but in different places (but it’s quite intuitive).</li
+><li
+>Patterns match only on the source side -- not on the target side.</li
+><li
+>The transfer process has no access to the information in the target language dictionary. This means that if the transfer needs some information about the available forms of a particular word, e.g. if it is only singular, or only plural, then this information needs to go in the bilingual dictionary.</li
+></ul
+></section3
+><section3
+id="sApproach"
+><secTitle
+>Approaching the Process of Writing Transfer Rules</secTitle
+><p
+>Think bottom up, not top down -- start with questions like “What is simplest and least bad equivalent for dative in a language which does not have a dative?” not “How can I change SOV order to SVO order”.</p
+></section3
+><section3
+id="sLexicalStruct"
+><secTitle
+>Lexical Transfer and Structural Transfer</secTitle
+><p
+>At this point it’s worth not confusing the roles of lexical transfer and structural transfer. There is a grey area between the two, but there are also big parts that don’t overlap.</p
+><ul
+><li
+><object
+type="tBold"
+>Lexical transfer</object
+> (the <object
+type="tFilename"
+>bilingual.dix</object
+> file -- produced by the <object
+type="tSenseLinker"
+></object
+> and the <object
+type="tModule"
+>Extract Bilingual Lexicon</object
+> module)<ul
+><li
+>Nearly always gives translations between words, not tags.</li
+><li
+>Can add or change tags, on a per-sense basis.</li
+><li
+>Doesn’t do reordering.</li
+><li
+>Can be used to give a head’s up to the structural transfer to draw attention to missing features, or features that cannot be decided on a no-context basis. For example:</li
+></ul
+></li
+><li
+><object
+type="tBold"
+>Structural transfer</object
+> (the <object
+type="tFilename"
+>transfer_rules.t1x</object
+> file -- edited with <object
+type="tXMLmindXMLEditor"
+></object
+>)<ul
+><li
+>Rarely gives translations between single words.</li
+><li
+>Often adds or changes tags on a per-category (groups of words) basis.</li
+><li
+>Can change the order of words.</li
+></ul
+></li
+></ul
+><p
+>A rule-of-thumb is that if the rule applies to all words in a category, it probably wants to be treated in the structural transfer, and if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.</p
+><p
+>Lexical transfer looks like <exampleRef
+letter="xLexXfer"
+num="xLexXfer"
+></exampleRef
+>. In other words, the bilingual dictionary maps a source word to target word. In <object
+type="tFlextrans"
+></object
+> we don’t see the source and target lexical units together like this, but under the hood this is what it is.</p
+><example
+num="xLexXfer"
+><single
+><langData
+lang="lVernacular"
+>^slword&lt;sometag&gt;$ -&gt; ^tlword&lt;sometag&gt;$ <br
+></br
+>^slword1&lt;sometag&gt;&lt;blah&gt;$ -&gt; ^tlword3&lt;sometag&gt;&lt;foo&gt;$ <br
+></br
+>^slword3&lt;sometag&gt;&lt;blah&gt;$ -&gt; ^tlword2&lt;sometag&gt;&lt;GD&gt;$</langData
+></single
+></example
+><p
+>The output of the structural transfer would look like <exampleRef
+letter="xStrXfer"
+num="xStrXfer"
+></exampleRef
+>.</p
+><example
+num="xStrXfer"
+><single
+><langData
+lang="lVernacular"
+>^tlword&lt;sometag&gt;$ ^tlword3&lt;sometag&gt;&lt;foo&gt;$ ^tlword2&lt;sometag&gt;&lt;GD&gt;$</langData
+></single
+></example
+><p
+>When you are in the structural transfer stage you have access to both the source and target sides of the translation. After the structural transfer stage, you only have access to the target side.</p
+><section4
+id="sLexTransProc"
+><secTitle
+>How Lexical Transfer is Processed</secTitle
+><p
+>This isn’t critical information that you have to know, but gives insight into what’s going on. Feel free to skip this section.</p
+><p
+>Given a input lexical unit shown in <exampleRef
+letter="xInputLexUnit"
+num="xInputLexUnit"
+></exampleRef
+>.</p
+><example
+num="xInputLexUnit"
+><single
+><langData
+lang="lVernacular"
+>^slword&lt;tag1&gt;&lt;tag2&gt;&lt;tag3&gt;$</langData
+></single
+></example
+><p
+>If we have the following in the bilingual dictionary:</p
+><example
+num="xBiLingEntry"
+><single
+><langData
+lang="lVernacular"
+>&lt;e&gt;&lt;p&gt;&lt;l&gt;slword&lt;s n="tag1"/&gt;&lt;s n="tag2"/&gt;&lt;/l&gt;&lt;r&gt;tlword&lt;s n="tag1"/&gt;&lt;/r&gt;&lt;/p&gt;&lt;/e&gt;</langData
+></single
+></example
+><p
+>Which gives the following mapping in terms of lexical units:</p
+><example
+num="xMappingSample"
+><single
+><langData
+lang="lVernacular"
+>^slword&lt;tag1&gt;&lt;tag2&gt;$ -&gt; ^tlword&lt;tag1&gt;$</langData
+></single
+></example
+><p
+>We will get this target-language output from the lexical-transfer module:</p
+><example
+num="xLexXferResult"
+><single
+><langData
+lang="lVernacular"
+>^tlword&lt;tag1&gt;&lt;tag3&gt;$</langData
+></single
+></example
+><p
+>Note that the target-language lexical form as defined in the bilingual dictionary entry in <exampleRef
+letter="xBiLingEntry"
+num="xBiLingEntry"
+></exampleRef
+> is produced by replacing two tags on the source side (i.e. <langData
+lang="lVernacular"
+>&lt;s n="tag1"/&gt;&lt;s n="tag2"/&gt;</langData
+>) with one tag on the target side (i.e. <langData
+lang="lVernacular"
+>&lt;s n="tag1"/&gt;</langData
+>).</p
+><p
+>Important: any source language tags not matched in the bilingual dictionary entry are copied into the output on the target language side. In our example, <langData
+lang="lVernacular"
+>&lt;tag3&gt;</langData
+> in <exampleRef
+letter="xInputLexUnit"
+num="xInputLexUnit"
+></exampleRef
+> gets copied to the final output in <exampleRef
+letter="xLexXferResult"
+num="xLexXferResult"
+></exampleRef
+>.</p
+></section4
+></section3
+><section3
+id="sPrelim"
+><secTitle
+>Some Preliminaries</secTitle
+><p
+>The transfer rule file is written in an XML format and in <object
+type="tFlextrans"
+></object
+> it is named <object
+type="tFilename"
+>transfer_rules.t1x</object
+><endnote
+id="nT1X"
+><p
+>The 1 in .t1x stands for the first structural transfer pass. This is the only file we worry about when doing a shallow-transfer system. For advanced-transfer, you use three rule files and the extensions .t2x and .t3x are also used.</p
+></endnote
+>. We could do all the editing of the transfer rules in a text editor, but by using the structured editor <object
+type="tXMLmindXMLEditor"
+></object
+> we not only get a graphical user interface, but also verification that the rule file we are writing is valid. In fact the <object
+type="tXMLmindXMLEditor"
+></object
+> and the addons for <object
+type="tFlextrans"
+></object
+> make it hard to write an invalid rule file.</p
+></section3
+><section3
+id="sFileOverview"
+><secTitle
+>Overview of a Transfer File</secTitle
+><p
+>It’s hard to give a step-by-step overview of what a transfer file looks like because there is quite a lot of obligatory parts that need to go into even the most basic file. But, it’s important to get a general view before we go into the details. Here is an example in which I’m deliberately not going to use linguistic names for the different parts to try and avoid assumptions.</p
+><example
+num="xOverviewRuleFile"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesTutOverview.PNG"
+></img
+></chart
+></example
+><p
+>You should see this same thing when you open <object
+type="tFilename"
+>transfer_rules.t1x</object
+> in the <object
+type="tXMLmindXMLEditor"
+></object
+>. (Expand all the elements.)</p
+><p
+>The transfer file is divided into two main parts: a declaration section and a rules section. The rules section uses information from the declaration section. In fact, every kind of reference in the rules section has to be declared in the declaration section. The rules section is clearly denoted by the element <object
+type="tRuleElemInXXE"
+>Rules</object
+>. All of the elements above <object
+type="tRuleElemInXXE"
+>Rules</object
+> are part of the declaration section. In <exampleRef
+letter="xOverviewRuleFile"
+num="xOverviewRuleFile"
+></exampleRef
+> a minimal amount of declarations are shown, namely the <object
+type="tRuleElemInXXE"
+>Categories</object
+>, <object
+type="tRuleElemInXXE"
+>Attributes</object
+>, and <object
+type="tRuleElemInXXE"
+>Variables</object
+> elements. (The elements <object
+type="tRuleElemInXXE"
+>Lists</object
+> and <object
+type="tRuleElemInXXE"
+>Macros</object
+> are not shown.)</p
+><p
+>Rules have two main parts: the pattern definition and the actions to be carried out.</p
+><p
+>The <object
+type="tRuleElemInXXE"
+>pattern</object
+> element is what determines if the rule will be executed or not. If the input word or words match the pattern the rule will be executed. The thing that goes in the <object
+type="tRuleElemInXXE"
+>item</object
+> sub-element of the <object
+type="tRuleElemInXXE"
+>pattern</object
+> element is a list of one or more categories (declared above) that are to be matched.</p
+><p
+>The <object
+type="tRuleElemInXXE"
+>action</object
+> element contains the steps that are to be performed in the rule, generally ending with an <object
+type="tRuleElemInXXE"
+>output</object
+> element where lexical units are outputted into the data stream. Note how declared attributes are used in the <object
+type="tRuleElemInXXE"
+>action</object
+> element. Categories and attributes are discussed more below.</p
+></section3
+><section3
+id="sRulesApplied"
+><secTitle
+>How Rules are Applied</secTitle
+><p
+>Rules are applied when a pattern is matched in the source language input data stream. Which patterns are matched in which order goes like this. The longest patterns are attempted first and then successive shorter patterns are attempted. When there is more than one pattern of the same length, the pattern that comes first in the file is attempted first followed by the rest in order.</p
+><p
+>Patterns do not overlap. Once a pattern is matched, the matched words are processed and not considered again for any other patterns. In other words, the source language words are processed sequentially in chunks.</p
+></section3
+></section2
+><section2
+id="sPracticalEx"
+><secTitle
+>Practical Example</secTitle
+><example
+num="xCroatEngTable"
+><table
+border="1"
+><tr
+><th
+>Input:</th
+><td
+>Otišla si</td
+><td
+>tiho</td
+><td
+>i</td
+><td
+>bez</td
+><td
+>pozdrava</td
+></tr
+><tr
+><th
+>Output:</th
+><td
+>You left</td
+><td
+>quietly</td
+><td
+>and</td
+><td
+>without</td
+><td
+>a word</td
+></tr
+></table
+></example
+><p
+>Let’s do an exercise where the goal is to turn a sentence in Croatian into English. The input and desired output is shown in <exampleRef
+letter="xCroatEngTable"
+num="xCroatEngTable"
+></exampleRef
+>.</p
+><section3
+id="sTutSetup"
+><secTitle
+>Getting Set Up</secTitle
+><ol
+><li
+>There are two <object
+type="tFlexx"
+></object
+> projects already set up that we are going to use. You will find them in the <object
+type="tFoldername"
+>FLExTrans Documentation\Transfer Rules Tutorial</object
+> folder. They are called <object
+type="tFilename"
+>Croatian-FLExTrans-Sample.fwbackup</object
+> and <object
+type="tFilename"
+>English-FLExTrans-Sample.fwbackup</object
+>. Double-click on them one by one to restore them into <object
+type="tFlexx"
+></object
+>.</li
+><li
+>We will be writing new transfer rules so let’s rename the current rule file.<ol
+><li
+>Go to the <object
+type="tFoldername"
+>FlexTools\Output</object
+> folder and rename the file <object
+type="tFilename"
+>transfer_rules.t1x</object
+> to <object
+type="tFilename"
+>transfer_rules_saved.t1x</object
+>.</li
+><li
+>Go to the <object
+type="tFoldername"
+>FLExTrans Documentation\Transfer Rules Tutorial</object
+> folder again and copy the file <object
+type="tFilename"
+>transfer_rules.t1x</object
+> to the <object
+type="tFoldername"
+>FlexTools\Output</object
+> folder.</li
+><li
+>Delete the file <object
+type="tFilename"
+>transfer_rules.t1x.bin</object
+> if it exists.</li
+><li
+>Open <object
+type="tFilename"
+>transfer_rules.t1x</object
+> in the <object
+type="tXMLmindXMLEditor"
+></object
+>.</li
+></ol
+></li
+><li
+>Start the <object
+type="tTool"
+>Apertium</object
+> virtual machine if needed. (See <sectionRef
+sec="sRunModules"
+></sectionRef
+> step 1)</li
+><li
+>Start <object
+type="tFlexxTools"
+></object
+>. See <appendixRef
+app="sStartFlextools"
+></appendixRef
+> for step-by-step instructions.</li
+><li
+>Make sure the <object
+type="tCollection"
+>FlexTrans All Steps</object
+> collection is active.</li
+></ol
+></section3
+><section3
+id="sLexicalTransfer"
+><secTitle
+>Lexical Transfer</secTitle
+><p
+>For the purposes of this example, we are going to use some “pre-prepared” data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
+><p
+>Let’s see what our input and output looks like initially if we run the system. Our input of course, according to <exampleRef
+letter="xCroatEngTable"
+num="xCroatEngTable"
+></exampleRef
+> is: <langData
+lang="hr"
+>Otišla si tiho i bez pozdrava.</langData
+></p
+><ol
+><li
+>Bring up the <object
+type="tFlexxTools"
+></object
+> app.</li
+><li
+>Click the <object
+type="tButton"
+>Run All (Modify)</object
+> button to run all the <object
+type="tFlextrans"
+></object
+> modules.</li
+><li
+>Open the <object
+type="tBold"
+>English-FLExTrans-Sample</object
+> <object
+type="tFlexx"
+></object
+> project.</li
+><li
+>In the Texts and Words view, refresh the screen and click on the text titled “Left Behind”.</li
+></ol
+><p
+>You should see:</p
+><example
+num="xOutputInitial"
+><single
+><gloss
+lang="lGloss"
+>Leavepfvptcpfsg beprssg2 quietly and without wordgensg</gloss
+></single
+></example
+><p
+>Clearly we have some work to do, but at least three words look good. <exampleRef
+letter="xOutputInitial"
+num="xOutputInitial"
+></exampleRef
+> is what we get using straight lexical transfer. In other words, English word-senses are substituted for Croatian word-senses. The sample transfer rule we are using (shown in <exampleRef
+letter="xOverviewRuleFile"
+num="xOverviewRuleFile"
+></exampleRef
+>) is having no influence during the transfer process.</p
+><p
+>Let’s look at the input and output in data stream format.</p
+><example
+num="xCroatEngDataStreamTable"
+><table
+border="1"
+><tr
+><th
+>Input:<endnote
+id="nInputFile"
+><p
+>You would see this in the <object
+type="tFilename"
+>source_text.aper</object
+> file in the <object
+type="tFoldername"
+>Output</object
+> folder.</p
+></endnote
+></th
+><td
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^tiho1.1&lt;adv&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^i1.1&lt;coordconn&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^bez1.1&lt;prep&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$ </langData
+></td
+></tr
+><tr
+><th
+>Output:<endnote
+id="nOutputFile"
+><p
+>You would see this in the <object
+type="tFilename"
+>target_text.aper</object
+> file in the <object
+type="tFoldername"
+>Output</object
+> folder.</p
+></endnote
+></th
+><td
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^quietly1.1&lt;adv&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^and1.1&lt;coordconn&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^without1.1&lt;prep&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^word1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$ </langData
+></td
+></tr
+></table
+></example
+></section3
+><section3
+id="sThinking"
+><secTitle
+>Thinking it Through</secTitle
+><p
+>Let’s think about what changes we need to make in order to convert the output shown in <exampleRef
+letter="xCroatEngDataStreamTable"
+num="xCroatEngDataStreamTable"
+></exampleRef
+> into an adequate form for target language synthesis. NB: If we want to change information, it’s a procedure, if we want to output it or not, it’s a declaration.</p
+><section4
+id="sProc"
+><secTitle
+>Procedures</secTitle
+><ol
+><li
+>If the source language grammatical category tag is <langData
+lang="lVernacular"
+>&lt;ptcp&gt;</langData
+>, change the target language tag to <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+><endnote
+id="nPastSuf"
+><p
+><langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+> corresponds to the past suffix in the English <object
+type="tFlexx"
+></object
+> project (and also the past tense feature).</p
+></endnote
+></li
+></ol
+></section4
+><section4
+id="sDecl"
+><secTitle
+>Declarations</secTitle
+><ol
+><li
+>Output a subject pronoun which takes its person and number information from the main verb.</li
+><li
+>Output the main verb with information on category and tense (but not aspect, gender or number).</li
+><li
+>Do not output the auxiliary verb <langData
+lang="hr"
+>biti</langData
+>, “be”.</li
+><li
+>Output nouns with their grammatical category (but not number or case).</li
+></ol
+><p
+>Keep in mind, words should be outputted encapsulated in <langData
+lang="lVernacular"
+>^</langData
+> and <langData
+lang="lVernacular"
+>$</langData
+>. Tags should be outputted encapsulated in <langData
+lang="lVernacular"
+>&lt;</langData
+> and <langData
+lang="lVernacular"
+>&gt;</langData
+>.</p
+></section4
+><section4
+id="sWorkOrder"
+><secTitle
+>Work Order</secTitle
+><p
+>So, what order do we do these in? Well it doesn’t really matter -- an experienced developer would probably do it in two steps, but for pedagogical purposes, we’re going to split it up into five steps:</p
+><ul
+><li
+>First we’re going to write a rule which matches the participle and auxiliary construction and outputs only the main verb (declarations: 2 &amp; 3). <ul
+><li
+>Define the categories of “ptcp” and “biti”.</li
+></ul
+></li
+><li
+>Second we’re going to edit that rule to change the source language tag from <langData
+lang="lVernacular"
+>&lt;ptcp&gt;</langData
+> to <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+> (procedure: 1).<ul
+><li
+>Define the attribute of “tense”.</li
+></ul
+></li
+><li
+>Third we’re going to edit the same rule to not output aspect, gender or number (declaration: 2).<ul
+><li
+>Define the attribute for grammatical category and add the tag for verb.</li
+></ul
+></li
+><li
+>Fourth we’re going to edit the same rule to output a subject pronoun before the verb (declaration: 1).<ul
+><li
+>Define the attributes of “person” and “number”</li
+></ul
+></li
+><li
+>Fifth we’re going to write a new rule which matches the noun construction and output only the grammatical category (declaration: 4) <ul
+><li
+>Define the category of “noun”</li
+><li
+>Add the tag for nouns to the grammatical category attribute.</li
+></ul
+></li
+></ul
+></section4
+><section4
+id="sCheatsheet"
+><secTitle
+>Cheat Sheet</secTitle
+><p
+>Here is what the input and output data stream of each of the above steps will look like:</p
+><example
+num="xCheatsheet"
+><table
+border="1"
+><tr
+><th
+>Step</th
+><th
+>Input</th
+><th
+>Output</th
+></tr
+><tr
+><td
+>1</td
+><td
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+></td
+></tr
+><tr
+><td
+>2</td
+><td
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;$ </langData
+></td
+></tr
+><tr
+><td
+>3</td
+><td
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pst&gt;$ </langData
+></td
+></tr
+><tr
+><td
+>4</td
+><td
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^Propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$ ^leave1.1&lt;v&gt;&lt;pst&gt;$ </langData
+></td
+></tr
+><tr
+><td
+>5</td
+><td
+><langData
+lang="lVernacular"
+>^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$</langData
+></td
+><td
+><langData
+lang="lVernacular"
+>^word1.1&lt;n&gt;$</langData
+></td
+></tr
+></table
+></example
+></section4
+></section3
+><section3
+id="sImplementation"
+><secTitle
+>Implementation</secTitle
+><p
+>Let’s see what data stream output we get for the first two words right now. To do this we will use the <object
+type="tLiveRuleTester"
+></object
+> which is a great tool for applying a single rule to one or more words and checking the result. See <sectionRef
+sec="sRuleTester"
+showTitle="numberOnly"
+textBefore="singular"
+></sectionRef
+>.</p
+><ol
+><li
+>Close the <object
+type="tBold"
+>English-FLExTrans-Sample</object
+> <object
+type="tFlexx"
+></object
+> project.</li
+><li
+>Bring up the <object
+type="tFlexxTools"
+></object
+> app.</li
+><li
+>Click the <object
+type="tButton"
+>Collections</object
+> button.</li
+><li
+>Double-click on the <object
+type="tCollection"
+>FlexTrans Live Rule Tester</object
+> collection.</li
+><li
+>Click on the <object
+type="tButton"
+>Run</object
+> button.</li
+><li
+>Select the <object
+type="tFilename"
+>transfer_rules.t1x</object
+> file in your <object
+type="tFoldername"
+>Output</object
+> folder and click OK.</li
+><li
+>Check the first two Croatian words.</li
+><li
+>Check the rule “comment goes here”</li
+><li
+>Click on the <object
+type="tButton"
+>Test</object
+> button.</li
+></ol
+><p
+>Your <object
+type="tLiveRuleTester"
+></object
+> app should look like this:</p
+><example
+num="xTesterStep0"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/RulesTutTesterStep0.PNG"
+></img
+></chart
+></example
+><p
+>In the blue box we have the input data stream for the first two (checked) Croatian words:</p
+><example
+num="xStep0Source"
+><single
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+></single
+></example
+><p
+>This matches what we have in the cheat sheet in <exampleRef
+letter="xCheatsheet"
+num="xCheatsheet"
+></exampleRef
+>.</p
+><p
+>In the green box we have the output data stream after the Past Construction rule is applied.</p
+><example
+num="xStep0Target"
+><single
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+></single
+></example
+><p
+>Since we haven’t done anything, it doesn’t yet match our output goal for step one in the cheat sheet.</p
+><section4
+id="step1"
+><secTitle
+>Step 1</secTitle
+><ol
+><li
+><p
+>Define the categories we need in <object
+type="tFilename"
+>transfer_rules.t1x</object
+>. Replace the dummy <object
+type="tRuleElemInXXE"
+>Categories</object
+> element with:</p
+><example
+num="xCat1"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutCat1.PNG"
+></img
+></chart
+></example
+><p
+>You be wondering how you get a new <object
+type="tRuleElemInXXE"
+>category</object
+> element inserted. It is straightforward.</p
+><ol
+><li
+>Click on the word “category”. The whole element becomes outlined in a red rectangle.</li
+><li
+>Now either right-click and choose Insert After... or click on the <img
+src="Images/ButInsertAfter.PNG"
+></img
+> button (upper right side) or press Ctrl-J.</li
+><li
+>At this point a list of elements to insert shows up in the upper right pane as shown in <exampleRef
+letter="xInsertListCat"
+num="xInsertListCat"
+></exampleRef
+>.<example
+num="xInsertListCat"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/InsertListCat.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Choose in this case <object
+type="tItalic"
+>def-cat(category)</object
+> since we only need one <object
+type="tRuleElemInXXE"
+>tags</object
+> element. (By the way, this insert procedure will present only valid elements that can be inserted at this point in the rules file.)</li
+></ol
+><p
+>Why do we need <langData
+lang="lVernacular"
+>.*</langData
+> in the <object
+type="tRuleElemInXXE"
+>tags</object
+> elements? -- Because of how the matching system for categories works. In the middle of tag sequences, a <langData
+lang="lVernacular"
+>*</langData
+> is counted as a single tag. At the end, it is counted as any sequence of tags. So, what we have is <langData
+lang="lVernacular"
+>&lt;v&gt;</langData
+> followed by any tag, followed by <langData
+lang="lVernacular"
+>&lt;ptcp&gt;</langData
+> followed by any sequence of tags.</p
+><p
+>Note: we are using the convention of starting all categories with “c_”.</p
+></li
+><li
+>Edit the example rule and replace the pattern as shown.<example
+num="xPattern1"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutPattern1.PNG"
+></img
+></chart
+></example
+><p
+><object
+type="tItalic"
+>Trick: Click in the pink area of the <object
+type="tRuleElemInXXE"
+>item</object
+> element and press <object
+type="tButton"
+>F11</object
+>. You will get a list of possible categories that can be used in this element. The list looks like</object
+> <exampleRef
+letter="xCatList"
+num="xCatList"
+></exampleRef
+>.</p
+><example
+num="xCatList"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutCatList.PNG"
+></img
+></chart
+></example
+><p
+>By using this pattern we will detect a participle followed by the auxiliary. Once detected, the rule will run. </p
+><p
+>Notice that the example rule as written outputs only the first among two lexical units as seen in <exampleRef
+letter="xOutput1"
+num="xOutput1"
+></exampleRef
+> (“pos: 1” means the word in position 1). The result is that our <langData
+lang="lVernacular"
+>biti1.1</langData
+> word will disappear.</p
+><example
+num="xOutput1"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutOutput0.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Test it in the <object
+type="tLiveRuleTester"
+></object
+>.<ol
+><li
+>Save the rule file.</li
+><li
+>Bring up the <object
+type="tLiveRuleTester"
+></object
+></li
+><li
+>Click the <object
+type="tButton"
+>Refresh</object
+> button to reload the modified rule file.</li
+><li
+>Check the rule “Past Construction”</li
+><li
+>Click on the <object
+type="tButton"
+>Test</object
+> button. (This time you will notice some text in the yellow information box. This shows which rules matched which input words.)</li
+></ol
+></li
+></ol
+><p
+>The result is:</p
+><example
+num="xStep1Target"
+><single
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+></single
+></example
+><p
+>Great!</p
+></section4
+><section4
+id="step2"
+><secTitle
+>Step 2</secTitle
+><ol
+><li
+>Replace the dummy <object
+type="tRuleElemInXXE"
+>attribute</object
+> element with an attribute that gives possible values of the tense feature. <br
+></br
+><br
+></br
+>So, now that we’ve gotten rid of the verb “be”, we want to change the tag for tense from <langData
+lang="lVernacular"
+>&lt;ptcp&gt;</langData
+> to <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+>. This will involve using a procedure statement, explicitly telling the transfer what we want to change. But before that, we need to define which possible values our feature can take. We do this with the <object
+type="tRuleElemInXXE"
+>attribute</object
+> element. Let’s call it “a_tense”. Note we are using the convention of starting all attributes with “a_”.<br
+></br
+><br
+></br
+>Add the following under the <object
+type="tRuleElemInXXE"
+>Attributes</object
+> element. <example
+num="xAttrTense"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutAttrTense.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Write a statement which changes the tense on the target language. This statement should go immediately after the <object
+type="tRuleElemInXXE"
+>action</object
+> element and before the <object
+type="tRuleElemInXXE"
+>output</object
+> element. Make sure you select the <object
+type="tRuleElemInXXE"
+>target lang.</object
+> property.<example
+num="xLet1"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLet1.PNG"
+></img
+></chart
+></example
+><object
+type="tItalic"
+>Trick: Click in the brown area of the <object
+type="tRuleElemInXXE"
+>part</object
+> property and press <object
+type="tButton"
+>F11</object
+>. You will get a list of possible attributes that can be used in this element. The list looks like</object
+> <exampleRef
+letter="xAttrList"
+num="xAttrList"
+></exampleRef
+>.<example
+num="xAttrList"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutAttrList.PNG"
+></img
+></chart
+></example
+>(Note: the statement in <exampleRef
+letter="xLet1"
+num="xLet1"
+></exampleRef
+> will always change the target language tag to <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+>, even if the input is not <langData
+lang="lVernacular"
+>&lt;ptcp&gt;</langData
+>. This is good enough for our current example, but for a description of how conditional statements work, see ...<comment
+>Link to a section on conditionals</comment
+>) <br
+></br
+><br
+></br
+></li
+><li
+>Now test it in the <object
+type="tLiveRuleTester"
+></object
+>. (Don’t forget to refresh the rules first!)</li
+></ol
+><p
+>The result is:</p
+><example
+num="xStep2Target"
+><single
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;$</langData
+></single
+></example
+><p
+>Excellent!</p
+></section4
+><section4
+id="step3"
+><secTitle
+>Step 3</secTitle
+><p
+>So far we have been outputting the whole target language lexical unit, as seen in <exampleRef
+letter="xLexUnitWhole"
+num="xLexUnitWhole"
+></exampleRef
+> below.</p
+><p
+>An important thing to know about lexical transfer is that any source language tags not matched in the bilingual dictionary are copied into the output on the target language side. In our case, <langData
+lang="lVernacular"
+>&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;</langData
+> are all tags that get copied from source to target because in the bilingual dictionary (<object
+type="tFilename"
+>bilingual.dix</object
+>) <langData
+lang="lVernacular"
+>otići1.1&lt;v&gt;</langData
+> maps to <langData
+lang="lVernacular"
+>leave1.1&lt;v&gt;</langData
+>. Except for the <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+> tag, we don’t need these other tags on the English side to synthesize the target English word. We need to declare that they should not be outputted.</p
+><ol
+><li
+>Define the features that we want to output.<br
+></br
+><br
+></br
+>We have already defined the feature “tense”, the only remaining tag we need to output is the grammatical category, i.e. <langData
+lang="lVernacular"
+>&lt;v&gt;</langData
+> meaning verb. So, make a new attribute element for grammatical category.<example
+num="xAttrGramCat"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutAttrGramCat.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Declare which features we want to output. <br
+></br
+><br
+></br
+>So, now that we’ve got our two features defined, let’s change our output statement: <br
+></br
+><br
+></br
+>Where we previously had:<example
+num="xLexUnitWhole"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLexUnitWhole.PNG"
+></img
+></chart
+></example
+>Replace it with:<example
+num="xLexUnit3Clips"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLexUnit3Clips.PNG"
+></img
+></chart
+></example
+>The last two features we know, as we’ve just added them. The “lem” feature is a predefined feature which corresponds to lemma, i.e. the part before the tags. In this example it would be <langData
+lang="lVernacular"
+>leave1.1</langData
+>. There are other predefined features, but if you remember this one and “whole” which corresponds to the whole lexical unit, you have the main ones.<br
+></br
+><br
+></br
+></li
+><li
+>Now test it in the <object
+type="tLiveRuleTester"
+></object
+>. (Don’t forget to refresh the rules first!)</li
+></ol
+><p
+>The result is:</p
+><example
+num="xStep3Target"
+><single
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+></single
+></example
+><p
+>Woo! What just happened was that we magically deleted the three unwanted tags <langData
+lang="lVernacular"
+>&lt;pfv&gt;</langData
+>, <langData
+lang="lVernacular"
+>&lt;f&gt;</langData
+> and <langData
+lang="lVernacular"
+>&lt;sg&gt;</langData
+> by not specifying that we wanted them. Tag deletion is thus not stated as tag deletion (tag → 0), but by not declaring them.</p
+><p
+>Now we should have a lexical form for “leave” which we can synthesize. Let’s give it a go:</p
+><ol
+><li
+>Close the <object
+type="tLiveRuleTester"
+></object
+>.</li
+><li
+>Go back to the <object
+type="tCollection"
+>FlexTrans All Steps</object
+> collection in <object
+type="tFlexxTools"
+></object
+>.</li
+><li
+>Click the <object
+type="tButton"
+>Run All (Modify)</object
+> button.</li
+><li
+>Open the <object
+type="tBold"
+>English-FLExTrans-Sample</object
+> <object
+type="tFlexx"
+></object
+> project.</li
+><li
+>In the Texts and Words view, refresh the screen and click on the new text.</li
+></ol
+><p
+>You should see:</p
+><example
+num="xOutputStep3"
+><single
+><gloss
+lang="lGloss"
+>Left quietly and without wordgensg</gloss
+></single
+></example
+><p
+>This looks a lot better than our initial results in <exampleRef
+letter="xOutputInitial"
+num="xOutputInitial"
+></exampleRef
+>. The word <object
+type="tItalic"
+>Left</object
+> is now there correctly. It’s beyond the scope of this exercise to explain in detail how the synthesis works in this case, but the tag <langData
+lang="lVernacular"
+>&lt;pst&gt;</langData
+> matches the feature <langData
+lang="lVernacular"
+>pst</langData
+> on the variant form of the verb <object
+type="tItalic"
+>leave</object
+>.</p
+><p
+>We’re getting there, now let’s move onto the next step.</p
+></section4
+><section4
+id="step4"
+><secTitle
+>Step 4</secTitle
+><p
+>To recap, our input is:</p
+><example
+num="xStep4Input"
+><single
+><langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+></single
+></example
+><p
+>And our current output is:</p
+><example
+num="xStep4CurrentTarget"
+><single
+><langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+></single
+></example
+><p
+>What we now need to do is take the information from the (not outputted) verb <object
+type="tItalic"
+>biti</object
+> “be” and use it to output a personal pronoun before the verb. Remember, that when we do not output something we are not deleting it, it is still there in the input, we are just choosing not to put it in the output.</p
+><p
+>The pronoun that we want to output looks like <exampleRef
+letter="xStep4TargetGoal"
+num="xStep4TargetGoal"
+></exampleRef
+>. If we get it in this form, it will synthesize into the word <object
+type="tItalic"
+>you</object
+>.</p
+><example
+num="xStep4TargetGoal"
+><single
+><langData
+lang="lVernacular"
+>^propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$</langData
+></single
+></example
+><p
+><object
+type="tUnderline"
+>Important</object
+>: We need to remember to output the <langData
+lang="lVernacular"
+>1.1</langData
+> after the word and not just <langData
+lang="lVernacular"
+>propers</langData
+>. Even though in the target <object
+type="tFlexx"
+></object
+> project the lexeme form is <langData
+lang="lVernacular"
+>propers</langData
+>, <object
+type="tFlextrans"
+></object
+> automatically adds the homograph number (<langData
+lang="lVernacular"
+>1</langData
+> because it’s the first and only homograph) and the sense number (<langData
+lang="lVernacular"
+>1</langData
+> because it’s the first sense). If we mistakenly use <langData
+lang="lVernacular"
+>propers</langData
+> instead of <langData
+lang="lVernacular"
+>propers1.1</langData
+>, the word won’t synthesize because <object
+type="tFlextrans"
+></object
+> won’t find <langData
+lang="lVernacular"
+>propers</langData
+> in its internal dictionary. This use of <langData
+lang="lVernacular"
+>x.x</langData
+> after the word helps <object
+type="tFlextrans"
+></object
+> identify each unique sense in the dictionary.</p
+><ol
+><li
+>Output a skeleton pronoun.<br
+></br
+><br
+></br
+>So, we need to take the person and number information from the verb “be”, and the rest we need to just declare to be outputted. Let’s start with outputting the string <langData
+lang="lVernacular"
+>^propers1.1&lt;pro&gt;&lt;nom&gt;$</langData
+>; we won’t worry about the <langData
+lang="lVernacular"
+>&lt;2&gt;&lt;sg&gt;</langData
+> tags yet.<br
+></br
+><br
+></br
+></li
+><li
+>Insert this before our current <object
+type="tRuleElemInXXE"
+>lexical unit</object
+> element.<example
+num="xLexUnitPron"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLexUnitPron.PNG"
+></img
+></chart
+></example
+>The <object
+type="tRuleElemInXXE"
+>lexical unit</object
+> statement outputs a <langData
+lang="lVernacular"
+>^</langData
+> and <langData
+lang="lVernacular"
+>$</langData
+> before and after the contents contained within it. The <object
+type="tRuleElemInXXE"
+>literal string</object
+> element outputs the given string of characters, and the <object
+type="tRuleElemInXXE"
+>literal tag</object
+> element outputs a tag sequence which starts with a <langData
+lang="lVernacular"
+>&lt;</langData
+>, ends with a <langData
+lang="lVernacular"
+>&gt;</langData
+> and where each <langData
+lang="lVernacular"
+>.</langData
+> is replaced with <langData
+lang="lVernacular"
+>&gt;&lt;</langData
+>. The <object
+type="tRuleElemInXXE"
+>blank space</object
+> element outputs a single space character.<br
+></br
+><br
+></br
+></li
+><li
+>Define features for person and number. <br
+></br
+><br
+></br
+>The next step is to declare the features from the verb “be” to output. To do this we need to again define some features and their possible values. Add this:<example
+num="xAttrNumPers"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutAttrNumPer.PNG"
+></img
+></chart
+></example
+></li
+><li
+>We then go back to our skeleton pronoun and add the missing features:<example
+num="xLexUnitPronPerNum"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLexUnitPronPerNum.PNG"
+></img
+></chart
+></example
+>Note, that we are “clipping” (copying a part of a string which matches a pattern) from position 2, i.e. the verb “be”. To be clearer, the first clip statement in <exampleRef
+letter="xLexUnitPronPerNum"
+num="xLexUnitPronPerNum"
+></exampleRef
+> makes a copy of the part of the lexical unit in position 2, on the source language side, which matches one of the patterns defined in the attribute element “a_pers” (which can be either <langData
+lang="lVernacular"
+>&lt;1&gt;</langData
+>, <langData
+lang="lVernacular"
+>&lt;2&gt;</langData
+> or <langData
+lang="lVernacular"
+>&lt;3&gt;</langData
+>). If we look at the lexical transfer output that is internally coming from the bilingual dictionary for position 2 this will become clearer:<br
+></br
+><br
+></br
+><example
+num="xStep4Diagram"
+><single
+><langData
+lang="lVernacular"
+>^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ -&gt; ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$<br
+></br
+>|                      | |    |                      |<br
+></br
+>|                 person |    |                      |<br
+></br
+>|________________________|    |______________________|<br
+></br
+>    source language                target language</langData
+><langData
+lang="lVernacular"
+></langData
+></single
+></example
+>If we tried to clip from position 1 (<langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>), we would get no result for the person attribute because the verb in position 1 does not contain any tags which match the tags in the definition for person.<br
+></br
+><br
+></br
+></li
+><li
+>Now test it in the <object
+type="tLiveRuleTester"
+></object
+>.</li
+></ol
+><p
+>The result is:</p
+><example
+num="xStep4Target"
+><single
+><langData
+lang="lVernacular"
+>^propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$ ^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+></single
+></example
+><p
+>Run the modules in the <object
+type="tCollection"
+>FlexTrans All Steps</object
+> collection to see what our English sentence looks like now.</p
+><p
+><object
+type="tItalic"
+>Trick: After the modules have been run, you can see the result without having to open the <object
+type="tBold"
+>English-FLExTrans-Sample</object
+> <object
+type="tFlexx"
+></object
+> project. In the <object
+type="tFoldername"
+>Output</object
+> folder, open the synthesis file named <object
+type="tNoItalic"
+>myText.syn</object
+>.</object
+></p
+><p
+>Now we get:</p
+><example
+num="xOutputStep4"
+><single
+><gloss
+lang="lGloss"
+>you Left quietly and without wordgensg</gloss
+></single
+></example
+><p
+>We get the second person singular pronoun that we wanted, but this is not totally satisfying because <object
+type="tItalic"
+>you</object
+> should be capitalized and <object
+type="tItalic"
+>Left</object
+> should not be. Let’s fix that.</p
+><ol
+><li
+>We want to be careful, because we don’t want <object
+type="tItalic"
+>you</object
+> capitalized in all circumstances. For example if the Croatian past tense clause is embedded in another phrase, the first word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization to the pronoun. Make your <object
+type="tRuleElemInXXE"
+>lexical unit</object
+> element look like this:<example
+num="xGetCase1"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutGetCase1.PNG"
+></img
+></chart
+></example
+>Notice how the literal string element is indented under the <object
+type="tRuleElemInXXE"
+>get case from</object
+> element. This means that it is a child element of the <object
+type="tRuleElemInXXE"
+>get case from</object
+> element. To accomplish this, <object
+type="tXMLmindXMLEditor"
+></object
+> has a way to wrap an element around another element. This is what you do.<ol
+><li
+>Click on the words “literal string”. The whole element becomes outlined in a red rectangle.</li
+><li
+>Either right-click and choose Convert [wrap]... or click on the <img
+src="Images/ButWrap.PNG"
+></img
+> button (upper right side) or press Ctrl-Shift-T.</li
+><li
+>At this point a list of elements to insert shows up in the upper right pane. Choose <object
+type="tRuleElemInXXE"
+>get-case-from</object
+>.</li
+><li
+>Now set the <object
+type="tRuleElemInXXE"
+>pos</object
+> property to 1 and we will be getting the capitalization from the first word.<br
+></br
+><br
+></br
+></li
+></ol
+></li
+><li
+>Now we need to make the second lexical unit come out with the first letter in lower case. We could use the <object
+type="tRuleElemInXXE"
+>modify-case</object
+> element, but we would have to add a new statement above the <object
+type="tRuleElemInXXE"
+>output</object
+> element. Instead we can just use the same method as above to get the case from the first word. This time wrap the <object
+type="tRuleElemInXXE"
+>get case from</object
+> element around the <object
+type="tRuleElemInXXE"
+>clip</object
+> element that copies the lemma. This is shown below: <example
+num="xGetCase2"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutGetCase2.PNG"
+></img
+></chart
+></example
+><object
+type="tItalic"
+>Trick: Click on the words "get case from" and type Ctrl-a. This will execute again the last command you did in the <object
+type="tXMLmindXMLEditor"
+></object
+> (namley wrap an element with the <object
+type="tRuleElemInXXE"
+>get case from</object
+> element.)</object
+></li
+></ol
+><p
+>Run the modules in the <object
+type="tCollection"
+>FlexTrans All Steps</object
+> collection again.</p
+><p
+>Now we get:</p
+><example
+num="xOutputStep4b"
+><single
+><gloss
+lang="lGloss"
+>You left quietly and without wordgensg</gloss
+></single
+></example
+><p
+>Looking good!</p
+></section4
+><section4
+id="step5"
+><secTitle
+>Step 5</secTitle
+><p
+>The last remaining thing to do is to not output the genitive or singular tags on the noun. We’re going to have to make a whole new rule to match nouns.</p
+><ol
+><li
+>Define a category for nouns.<example
+num="xCatN"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutCatN.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Make a new rule which matches nouns as defined by the previous category. To start with we’ll just output the whole lexical unit. <example
+num="xRuleN"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutRuleN.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Add nouns to the grammatical <object
+type="tRuleElemInXXE"
+>category attribute</object
+> element. Now it looks like this:<example
+num="xAttrWithN"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutAttrGramCatWNoun.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Adjust the rule to output only the lemma and grammatical category.<example
+num="xLexUnitNoun"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/RulesTutLexUnitNoun1.PNG"
+></img
+></chart
+></example
+></li
+></ol
+><p
+>Now test it in the <object
+type="tLiveRuleTester"
+></object
+>, but this time check the Croatian word <object
+type="tItalic"
+>pozdrava</object
+> and check the new Nouns rule.</p
+><p
+>Starting with:</p
+><example
+num="xStep5Source"
+><single
+><langData
+lang="lVernacular"
+>^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$</langData
+></single
+></example
+><p
+>The result is:</p
+><example
+num="xStep5Target"
+><single
+><langData
+lang="lVernacular"
+>^word1.1&lt;n&gt;$</langData
+></single
+></example
+><p
+>Run the modules in the <object
+type="tCollection"
+>FlexTrans All Steps</object
+> to see what our English sentence looks like.</p
+><p
+>Now we get:</p
+><example
+num="xOutputStep5"
+><single
+><gloss
+lang="lGloss"
+>You left quietly and without word</gloss
+></single
+></example
+><p
+>Success!</p
+></section4
+><section4
+id="step6"
+><secTitle
+>Step 6</secTitle
+><p
+>Step 6 is left as an exercise for the reader. Change the noun rule to output an indefinite article before the noun. You can do this by following the instructions for adding the pronoun, see <sectionRef
+sec="step4"
+showTitle="full"
+textBefore="none"
+></sectionRef
+>. The string you need to output is <langData
+lang="lVernacular"
+>^a1.1&lt;indf&gt;$</langData
+>.</p
+><p
+>You can find the solution transfer file called <object
+type="tFilename"
+>solution.t1x</object
+> in the <object
+type="tFoldername"
+>FLExTrans Documentation\Transfer Rules Tutorial</object
+> folder.</p
+><p
+>You may think this was a lot of work to translate one sentence from Croatian to English, but consider the fact that now every Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will also be handled.</p
+></section4
+></section3
+></section2
+></section1
 ><backMatter
 ><appendix
 id="a"
 ><secTitle
 >Appendix</secTitle
 ><p
+><comment
+>Somewhere I need to mention that glosses have to be unique and no spaces.</comment
 ></p
 ><section1
 id="sStartFlextools"
@@ -890,7 +2861,7 @@ type="tBold"
 >FlexTools.vbs</object
 > (a Visual Basic script file)</li
 ><li
->The first time you run it, it may give you a message saying, "FLExTools has updated its configuration to match the new version of Fieldworks. Restarting."</li
+>The first time you run it, it may give you a message saying, “FLExTools has updated its configuration to match the new version of Fieldworks. Restarting.”</li
 ><li
 >The <object
 type="tFlexxTools"
@@ -905,7 +2876,9 @@ num="xFirstStart"
 ><section1
 id="sDataStreamFormat"
 ><secTitle
->Data Stream Format</secTitle
+>Data Stream Format<comment
+>put a footnote with explanation that this is how we used it in FLExTrans, the full format is described at: wiki.apertium.org/wiki/Apertium_stream_format</comment
+></secTitle
 ><p
 >The <genericTarget
 id="gDataStream"
@@ -950,15 +2923,25 @@ id="rApertium"
 ></backMatter
 ><languages
 ><language
+font-family="Courier New"
+font-size="90%"
+font-style="normal"
+font-weight="bold"
 id="lVernacular"
 name="vernacular"
 ></language
 ><language
+font-family="Times New Roman"
+font-style="italic"
 id="lGloss"
 name="gloss"
 ></language
 ><language
 id="en"
+></language
+><language
+font-style="italic"
+id="hr"
 ></language
 ></languages
 ><types
@@ -1048,9 +3031,26 @@ xsl-foSpecial="text-decoration=&quot;underline&quot;"
 ><comment
 >Add your custom types here.</comment
 ><type
+font-style="normal"
+font-weight="bold"
+id="tButton"
+></type
+><type
+color="#660066"
+font-family="Arial"
+font-size="80%"
+font-style="normal"
+font-weight="bold"
+id="tCollection"
+></type
+><type
 font-family="Courier New"
 font-size="100%"
 id="tCourier"
+></type
+><type
+font-style="italic"
+id="tFilename"
 ></type
 ><type
 after="FLExTrans"
@@ -1068,11 +3068,32 @@ id="tFlexx"
 types="tTool"
 ></type
 ><type
+font-family="Tahoma"
+font-size="80%"
+font-style="normal"
+font-weight="normal"
+id="tFoldername"
+></type
+><type
 after="Live Rule Tester Tool"
 id="tLiveRuleTester"
 types="tTool"
 ></type
 ><type
+color="navy"
+font-family="Courier New"
+font-weight="bold"
+id="tModule"
+></type
+><type
+font-style="normal"
+font-weight="normal"
+id="tNoItalic"
+></type
+><type
+color="#006633"
+font-family="Arial"
+font-size="80%"
 id="tRuleElemInXXE"
 types="tBold"
 ></type
