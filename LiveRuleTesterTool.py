@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 1.0.2 - 12/12/16 - Ron
+#    Use contentsOA for the call to get_interlin_data just like the ExtractSourceText module.
+#    Handle scripture texts.
+#
 #   Version 1.0.1 - 11/8/16 - Ron
 #    Smaller interface.
 #
@@ -51,7 +55,7 @@ TESTER_FOLDER = 'Output\\LiveRuleTester'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "1.0.1",
+        'moduleVersion'    : "1.0.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Test transfer rules live.",
         'moduleDescription'   :
@@ -64,6 +68,7 @@ TODO
 
 from SIL.FieldWorks.FDO import ILexPronunciation
 from SIL.FieldWorks.FDO import ITextRepository
+from SIL.FieldWorks.FDO import IScrSectionRepository
 from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
 from SIL.FieldWorks.FDO import ILexEntryRepository
 from SIL.FieldWorks.FDO import ILexEntry, ILexSense
@@ -225,13 +230,16 @@ class Main(QtGui.QMainWindow):
         # Check for right to left data and set the sentence list direction if needed
         # Just check the first surface form for the first word, i.e. word 0, tuple index 0
         currSent = self.__sent_model.getCurrentSent()
-        word1 = currSent[0][0]
-        for i in range(0, len(word1)):
-            if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
-                self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
-                self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
-                self.__sent_model.setRTL(True)
-                break
+        
+        # make sure we have some data
+        if len(currSent) > 0:
+            word1 = currSent[0][0]
+            for i in range(0, len(word1)):
+                if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
+                    self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
+                    self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                    self.__sent_model.setRTL(True)
+                    break
     
     def TRSelectionChanged(self):
         self.TRIndex = index.row() # currentIndex
@@ -337,6 +345,7 @@ class Main(QtGui.QMainWindow):
         self.ui.SelectedWordsEdit.setPlainText('')
         self.__ClearAllChecks()
         
+        i=0
         # Position a check box for each "word" in the sentence
         for i,wrdTup in enumerate(mySent):
             # Get the ith checkbox
@@ -443,6 +452,9 @@ class Main(QtGui.QMainWindow):
             # Get the comment for the rule
             comment = rule_el.get('comment')
             
+            if comment == None:
+                comment = 'missing comment'
+                
             # Create an item object
             item = QtGui.QStandardItem(comment) 
             item.setCheckable(True)
@@ -657,15 +669,23 @@ def MainFunction(DB, report, modify=False):
     for interlinText in DB.ObjectsIn(ITextRepository):
         if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
             foundText = True
-            text = interlinText
+            contents = interlinText.ContentsOA
         text_list.append(text_desired_eng)
-        
+    
     if not foundText:
-        report.Error('The text named: '+text_desired_eng+' not found.')
-        return
+        # check if it's scripture text
+        for section in DB.ObjectsIn(IScrSectionRepository):
+            if text_desired_eng == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
+                contents = section.ContentOA
+                foundText = True
+                break
+            
+        if not foundText:    
+            report.Error('The text named: '+text_desired_eng+' not found.')
+            return
 
     getSurfaceForm = True
-    segment_list = Utils.get_interlin_data(DB, report, sent_punct, text, typesList, getSurfaceForm)
+    segment_list = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
     
     # See if we have any data to show
     if len(segment_list) > 0:
