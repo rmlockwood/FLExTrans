@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.4 - 1/18/17 - Ron
+#    Use BestAnalysisAlternative instead of AnalysisDefault.
+#    Check for empty morphType.
+#
 #   Version 1.3.3 - 10/21/16 - Ron
 #    Allow the affix file to not be in the temp folder if a slash is present.
 #
@@ -51,7 +55,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.3",
+        'moduleVersion'    : "1.3.4",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with prefix glosses.",
         'moduleDescription'   :
@@ -135,23 +139,25 @@ def MainFunction(DB, report, modifyAllowed):
         # Make sure we have a valid MorphType object
         if e.LexemeFormOA.MorphTypeRA:
           
-            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text
+            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
             
-            # Check if either the main form or any allomorphs are affixes or clitics
+            # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
-            # First main form
+            # First the main form. If we have an affix or stem type that is anything other than the ones counted 
+            # as roots according to the config file (morphNames), e.g. clitic, enclitic, proclitic, etc.
             if (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoAffixAllomorph' and e.LexemeFormOA.MorphTypeRA) or \
-               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType not in morphNames):
+               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType <> None and morphType not in morphNames):
     
                 processIt = True
             
-            # If main form isn't an affix or clitic look in allomorphs
+            # If main form isn't an affix or non-root look in allomorphs. This is because you can have for example a
+            # clitic allomorph of a stem.
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphType = ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text
+                    morphType = ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
-                       (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType not in morphNames):
+                       (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType <> None and morphType not in morphNames):
             
                         processIt = True
                         break

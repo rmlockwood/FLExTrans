@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.5 - 1/18/17 - Ron
+#    Use BestAnalysisAlternative instead of AnalysisDefault.
+#    Change the spaces to underscores and remove periods in
+#    grammatical categories.
+#
 #   Version 1.3.4 - 10/21/16 - Ron
 #    Allow the affix and ana files to not be in the temp folder if a slash is present.
 #
@@ -75,7 +80,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.4",
+        'moduleVersion'    : "1.3.5",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -157,7 +162,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
     # 1st allomorph for the prefix file
     allEnvs = []
     for i, allomorph in enumerate(e.AlternateFormsOS):
-        if ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'prefix':
+        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'prefix':
             output_allomorph(allomorph, allEnvs, f_pf, e, report, TargetDB)
     
     f_pf.write('\n')
@@ -171,7 +176,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
     # 2nd allomorph for the suffix file
     allEnvs = []
     for i, allomorph in enumerate(e.AlternateFormsOS):
-        if ITsString(allomorph.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'suffix':
+        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'suffix':
             output_allomorph(allomorph, allEnvs, f_sf, e, report, TargetDB)
     
     f_sf.write('\n')
@@ -189,7 +194,7 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
         f_handle.write('\\g \n')
     
     # For infixes, we need to output the infix positions field
-    if ITsString(e.LexemeFormOA.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text == 'infix':
+    if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'infix':
         # AMPLE's ANA spec. says you need to specify the morpheme type that the
         # infix applies to, FLEx doesn't restrict the infix to just one type,
         # so use all three types when building the position field for the
@@ -325,11 +330,18 @@ def MainFunction(DB, report, modifyAllowed):
 
     report.Info("Outputting category information...")
     
-    # loop through all target categories
+    # loop through all target categories and write them to the dec file
     for pos in TargetDB.lp.AllPartsOfSpeech:
 
         # get abbreviation
-        posAbbr = ITsString(pos.Abbreviation.AnalysisDefaultWritingSystem).Text
+        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+        
+        # change spaces to underscores
+        posAbbr = re.sub('\s', '_', posAbbr)
+
+        # remove periods
+        posAbbr = re.sub('\.', '', posAbbr)
+
         f_dec.write('\\ca ' + posAbbr + '\n')
     f_dec.write('\\ca _variant_\n') # for variant entries
     f_dec.write('\n')
@@ -341,7 +353,7 @@ def MainFunction(DB, report, modifyAllowed):
     for natClass in TargetDB.lp.PhonologicalDataOA.NaturalClassesOS:
         
         # Get the natural class name and write it out
-        natClassName = ITsString(natClass.Abbreviation.AnalysisDefaultWritingSystem).Text
+        natClassName = ITsString(natClass.Abbreviation.BestAnalysisAlternative).Text
         
         if natClassName:
             f_dec.write('\\scl '+natClassName.encode('utf-8')+'\n')
@@ -370,7 +382,7 @@ def MainFunction(DB, report, modifyAllowed):
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
         report.ProgressUpdate(i)
-        morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.AnalysisDefaultWritingSystem).Text
+        morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
         # If no senses, check if this entry is an inflectional variant and output it
         if e.SensesOS.Count == 0:
@@ -415,7 +427,7 @@ def MainFunction(DB, report, modifyAllowed):
             # Loop through senses
             for i, mySense in enumerate(e.SensesOS):
                 
-                gloss = ITsString(mySense.Gloss.AnalysisDefaultWritingSystem).Text
+                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # Process roots
                 # Don't process clitics in this block
@@ -427,16 +439,16 @@ def MainFunction(DB, report, modifyAllowed):
                     headWord = ITsString(e.HeadWord).Text
                     headWord = Utils.add_one(headWord)
                     headWord = headWord.lower()
+                    
                     # change spaces to underscores
                     headWord = re.sub('\s', '_', headWord)
 
-                
                     # Get the POS abbreviation for the current sense, assuming we have a stem
                     if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                         
                         if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
                             abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                  Abbreviation.AnalysisDefaultWritingSystem).Text
+                                                  Abbreviation.BestAnalysisAlternative).Text
                         else:
                             report.Warning('Skipping sense because the POS is unknown: '+\
                                            ' while processing target headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
@@ -451,6 +463,13 @@ def MainFunction(DB, report, modifyAllowed):
     
                     # Write out morphname field
                     f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1)+'\n')
+                    
+                    # change spaces to underscores
+                    abbrev = re.sub('\s', '_', abbrev)
+
+                    # remove periods
+                    abbrev = re.sub('\.', '', abbrev)
+
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.1.2 - 1/18/17 - Ron
+#    Scripture text fixes. Surface forms had empty lines. Prevented this.
+#    Changed some comments.
+#
 #   Version 1.1.1 - 11/9/16 - Ron
 #    Handle any kind of text contents coming in -- scripture or standard.
 #    Handle no analyses in a text.
@@ -139,10 +143,11 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         
         if getSurfaceForm:
             
-            # If we are on a different segment, start a new list
+            # If we are on a different segment, start a new list (if the last one was non-empty)
             if analysisOccurance.Segment.Hvo <> curr_SegNum:
-                bundle_list = []
-                segment_list.append(bundle_list)
+                if len(segment_list) == 0 or len(segment_list[-1]) > 0:
+                    bundle_list = []
+                    segment_list.append(bundle_list)
                 curr_SegNum = analysisOccurance.Segment.Hvo
         else:
             
@@ -173,7 +178,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 outStr = text_punct
             
             if not getSurfaceForm:
-                outputStrList.append(outStr)        
+                outputStrList.append(outStr)     
             continue
         
         if getSurfaceForm:
@@ -230,8 +235,12 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                             
                             # See if we have an enclitic or proclitic
                             if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic'):
-                                # Get the clitic gloss. Substitute periods with underscores to make it easier in Apertium.
+                                # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
                                 affixStr += '<' + re.sub(r'\.', r'_',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+                                
+                                # TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
+                                # Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
+                                #affixStr += '<' + re.sub(r'\.', r'><',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
                             
                             # Otherwise we have a root or stem or phrase
                             else:
@@ -411,8 +420,12 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                     # We have an affix
                     else:
                         if bundle.SenseRA:
-                            # Get the affix gloss. Substitute periods with underscores to make it easier in Apertium.
+                            # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
                             affixStr += '<' + re.sub(r'\.', r'_',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+                            
+                            # TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
+                            # Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
+                            #affixStr += '<' + re.sub(r'\.', r'><',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
                         else:
                             #e = GetEntryWithSense(e)
                             report.Warning("Sense object for affix is null.")

@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.6 - 1/18/17 - Ron
+#    Significant change to the ANAInfo class. New constructor. GetAnalysisPrefixes now
+#    returns a list. Same with Suffixes. Added removePeriods. Always remove periods that
+#    are in the POS. In the convertIt function, create AnaInfo objects instead of using 
+#    strings. Also create an ANAInfo object in gather_components. Change places where
+#    Get..Prefixes/Suffixes was being called.
+#
 #   Version 1.3.5 - 10/21/16 - Ron
 #    Allow the affix and ana files to not be in the temp folder if a slash is present.
 #
@@ -98,7 +105,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.5",
+        'moduleVersion'    : "1.3.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -125,23 +132,31 @@ from System import String
 
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
-    def __init__(self, myAnalysis=None, myBeforePunc=None, myAfterPunc=None):
-        if myAnalysis:
-            self.setAnalysis(myAnalysis) # \a
-        self.BeforePunc = myBeforePunc # \f
-        self.AfterPunc = myAfterPunc # \n
+    def __init__(self, pfxList=None, sfxList=None, pos=None, root=None, infxList=None):
+        # If root is given, intialize with all the stuff.
+        if root:
+            # Treat the infixes as additional prefixes.
+            # (I believe we could put them either before or after the root)
+            if infxList:
+                newList = pfxList+infxList
+            else:
+                newList = pfxList
+            self.setAnalysisByPart(newList, pos, root, sfxList)
+        self.setBeforePunc('')
+        self.setAfterPunc('')
+    
     def getCapitalization(self):
         return self.Capitalization
     def getAnalysis(self):
         return self.Analysis
-    def getAnalysisPrefixes(self): # returns '' if no prefix
-        return re.search(r'(.*)\s*<',self.Analysis).group(1)
+    def getAnalysisPrefixes(self): # returns [] if no prefix
+        return re.search(r'(.*)\s*<',self.Analysis).group(1).split()
     def getAnalysisRoot(self):
         return re.search(r'< .+ (.+) >',self.Analysis).group(1)
     def getAnalysisRootPOS(self):
         return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
-        return re.search(r'>\s*(.*)',self.Analysis).group(1)
+        return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getPreDotRoot(self): # in other words the headword
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis)
         if g:
@@ -158,20 +173,31 @@ class ANAInfo(object):
         return re.sub(r' ', '_', myStr)
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
+    def removePeriods(self, myStr):
+        return re.sub(r'\.', '', myStr)
     def setCapitalization(self, myCapitalization):
         self.Capitalization = myCapitalization
     def setAnalysis(self, myAnalysis):
         self.Analysis = myAnalysis
+        
         # Call setAnalysisByPart to ensure the root is converted to lowercase
         self.setAnalysisByPart(self.getAnalysisPrefixes(), self.getAnalysisRootPOS(), self.getAnalysisRoot(), self.getAnalysisSuffixes())
     def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
         self.Capitalization = self.calcCase(root)
-        # change spaces to underscores:
+        # change spaces to underscores in the root:
         myRoot = self.addUnderscores(root)
-        # if it's an unknown word, don't change the case
+        
+        # change spaces to underscores in the POS:
+        myPos = self.addUnderscores(pos)
+        
+        # remove periods in the POS: (probably not needed since periods get removed in POSs in the bilingual dictionary)
+        myPos = self.removePeriods(pos)
+        
+        # if it's an unknown word, don't change the case, otherwise we always store lower case
         if pos != 'UNK': 
             myRoot = myRoot.lower()
-        self.Analysis = prefixes + ' < '+pos+' '+myRoot+' > '+suffixes
+            
+        self.Analysis = ' '.join(prefixes) + ' < '+myPos+' '+myRoot+' > '+' '.join(suffixes)
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
@@ -284,7 +310,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
             else:
                 word_toks.append(aper_tok)
         
-        wordStr = ''
+        wordAnaInfo = None
         pre_punct = ''
         next_pre_punct = ''
         post_punct = ''
@@ -302,9 +328,10 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
             elif re.search('\w', tok, re.U):
                 
                 # write out the last word we processed.
-                if wordStr:
-                    myAnaInfo = ANAInfo(wordStr, pre_punct, post_punct)
-                    myAnaInfo.write(f_ana)
+                if wordAnaInfo:
+                    wordAnaInfo.setBeforePunc(pre_punct)
+                    wordAnaInfo.setAfterPunc(post_punct)
+                    wordAnaInfo.write(f_ana)
                     
                     pre_punct = next_pre_punct
                     next_pre_punct = post_punct = ''
@@ -356,7 +383,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                     else:
                         suffix_list.append(morphs[i])
                 
-                wordStr = ''
+                wordAnaInfo = None
 
                 if len(morphs) <2:
                     report.Error("Word or POS missing. Found: "+",".join(morphs))
@@ -364,25 +391,9 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                         f_ana.write(m.encode('utf-8'))
                     raise FTM_ModuleError, "Examine the target text output from apertium."
                 
-                # build output word in .ana style
-                # first do the prefixes
-                for pr in prefix_list:
-                    wordStr += ' '+pr
-                
-                # now do the infixes (I believe we could put them either before or after the root)
-                for infix in infix_list:
-                    wordStr += ' '+infix
-                
-                # change spaces to underscores in the root
-                morphs[0] = re.sub('\s', '_', morphs[0])
-                
-                # now we have the root (morphs[0]) and the POS of the root (morphs[1])
-                # .ana requires the POS first
-                wordStr += ' < '+ morphs[1] + ' ' + morphs[0] + ' > '
-                
-                # lastly append the suffixes
-                for su in suffix_list:
-                    wordStr += ' '+su
+                # Create an ANA Info object
+                # We have the root (morphs[0]) and the POS of the root (morphs[1])
+                wordAnaInfo = ANAInfo(prefix_list, suffix_list, morphs[1], morphs[0], infix_list)
             
             # some kind of punctuation with possible spaces between. E.g. .>> <<
             else:
@@ -401,9 +412,10 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                         post_punct = tok
             
         # write out the last word 
-        if wordStr:
-            myAnaInfo = ANAInfo(wordStr, pre_punct, post_punct)
-            myAnaInfo.write(f_ana)
+        if wordAnaInfo:
+            wordAnaInfo.setBeforePunc(pre_punct)
+            wordAnaInfo.setAfterPunc(post_punct)
+            wordAnaInfo.write(f_ana)
 
     f_ana.close()      
 
@@ -544,38 +556,36 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                                 # inflection goes, write out all the stuff with inflection
                                 if (inflectionOnFirst and first_root) or \
                                    (inflectionOnLast and lex_index==entryRef.ComponentLexemesRS.Count-1):
-                                    # Build the \a string
-                                    a = proGloss + anaInfo.getAnalysisPrefixes() + '< ' + gram_cat_abbrev + \
-                                        ' ' + head_word + '.' + sense_num + ' >' + \
-                                        anaInfo.getAnalysisSuffixes() + enclGloss 
+                                    # Build the an ANA Info object
+                                    currANAInfo = ANAInfo([proGloss]+anaInfo.getAnalysisPrefixes(), 
+                                                          anaInfo.getAnalysisSuffixes()+[enclGloss], \
+                                                          gram_cat_abbrev, head_word + '.' + sense_num)
                                         
                                 # Write out the bare bones root in the analysis part
                                 else:
-                                    a = '< ' + gram_cat_abbrev + ' ' + head_word + '.' + sense_num + ' >'
+                                    # no prefixes or suffixes, give []
+                                    currANAInfo = ANAInfo([], [], gram_cat_abbrev, head_word + '.' + sense_num)
                             
-                                comp_list.append(a)
+                                comp_list.append(currANAInfo)
                             first_root = False
                 break
         break
     
 def write_components(comp_list, f_ana, anaInfo):
         
-    for i, comp in enumerate(comp_list):
-        
-        myAnaInfo = ANAInfo()
-        myAnaInfo.setAnalysis(comp)
+    for i, listAnaInfo in enumerate(comp_list):
         
         # Give this object pre-punctuation if it's the first component
         if i == 0:
-            myAnaInfo.setBeforePunc(anaInfo.getBeforePunc())
+            listAnaInfo.setBeforePunc(anaInfo.getBeforePunc())
             # Change the case as necessary
             anaInfo.setCapitalization(anaInfo.calcCase(anaInfo.getAnalysisRoot()))
                 
         # Give this object post-punctuation if it's the last component
         if i == len(comp_list)-1:
-            myAnaInfo.setAfterPunc(anaInfo.getAfterPunc())
+            listAnaInfo.setAfterPunc(anaInfo.getAfterPunc())
         
-        myAnaInfo.write(f_ana)    
+        listAnaInfo.write(f_ana)    
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -600,9 +610,9 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
 def change_to_variant(myAnaInfo, my_irr_infl_var_map):
 
     oldCap = myAnaInfo.getCapitalization()
-    pfxs = myAnaInfo.getAnalysisPrefixes().split()
+    pfxs = myAnaInfo.getAnalysisPrefixes()
     num_pfxs = len(pfxs)
-    sfxs = myAnaInfo.getAnalysisSuffixes().split()
+    sfxs = myAnaInfo.getAnalysisSuffixes()
     tags = pfxs+sfxs
     
     # loop through the irr. infl. form variant list for this main entry
@@ -646,8 +656,10 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
             end = 0
         del sfxs[beg:end]
         
-        # We are intentionally not adding the sense number.
-        myAnaInfo.setAnalysisByPart(' '.join(pfxs), "_variant_", headWord, ' '.join(sfxs))
+        # Create an ANA Info object with the POS being _variant_
+        # (We are intentionally not adding the sense number.)
+        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", headWord, sfxs)
+        
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
 

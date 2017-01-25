@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.4 - 1/18/17 - Ron
+#    Give a warning if there is a space or an period in a grammatical category.
+#    Change the space to an underscore and remove periods.
+#
 #   Version 1.3.3 - 5/7/16 - Ron
 #    Give a more helpful message when the target database is not found.
 #    Give an error for every category abbreviation that has a space in it then
@@ -72,7 +76,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : "1.3.3",
+        'moduleVersion'    : "1.3.4",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
         'moduleDescription'   :
@@ -351,7 +355,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         # give an error if there is a space in the category abbreviation, STAMP can't handle it.
         if re.search(r'\s', posAbbr):
-            report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
+            report.Error("The source abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
             abbrevError = True
     
     # loop through all target categories
@@ -360,11 +364,18 @@ def MainFunction(DB, report, modifyAllowed):
         # save abbreviation
         posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
 
-        # give an error if there is a space in the category abbreviation, STAMP can't handle it.
+        # DONE: allow spaces in POS abbreviations
+        # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
         if re.search(r'\s', posAbbr):
-            report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the target database.")
-            abbrevError = True
+            report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
+            posAbbr = re.sub(r'\s', '_', posAbbr)
+        #    abbrevError = True
             
+        # give a warning if there is a period in the target category. Remove them.
+        if re.search(r'\.', posAbbr):
+            report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
+            posAbbr = re.sub(r'\.', '', posAbbr)
+
         if posAbbr not in posMap:
             posMap[posAbbr] = pos.ToString()
         else:
@@ -498,6 +509,10 @@ def MainFunction(DB, report, modifyAllowed):
                                         # Get target pos abbreviation
                                         trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                               Abbreviation.BestAnalysisAlternative).Text
+                                        
+                                        # Convert spaces to underscores and remove periods
+                                        trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
+                                        trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
                                         
                                         # Get target inflection class
                                         trgtInflCls =''

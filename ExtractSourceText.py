@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.6 - 12/12/16 - Ron
+#    Simpler extraction of Scripture text title.
+#
 #   Version 1.3.5 - 11/9/16 - Ron
 #    If a text name is not found, check to see if it matches a scripture section.
 #
@@ -82,7 +85,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.3.5",
+        'moduleVersion'    : "1.3.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':
@@ -104,7 +107,7 @@ This Module assumes the file FlexTrans.config is in the FlexTools folder.
 # The main processing function
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IScrSectionRepository, IScrBookRepository
+from SIL.FieldWorks.FDO import IScrSectionRepository
 from SIL.FieldWorks.FDO import ITextFactory
 from SIL.FieldWorks.FDO import IStTextFactory
 from SIL.FieldWorks.FDO import IStTxtParaFactory
@@ -117,18 +120,6 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from collections import defaultdict
 from System import Guid
 from System import String
-
-BK_DIVISOR = 1000000
-CH_DIVISOR = 1000
-
-def get_parts(refNum, bookMap):
-
-    bkNum = refNum/BK_DIVISOR
-    rest = refNum%BK_DIVISOR
-    bkChap = rest/CH_DIVISOR
-    bkVerse = rest%CH_DIVISOR
-    bkName = ITsString(bookMap[bkNum].BestAnalysisAlternative).Text
-    return (bkName, str(bkChap), str(bkVerse))
 
 # Split a compound from one lexical unit containing multiple words to multiple
 # lexical units, one for each word. For example: ^room1.1<n>service1.1<n>number1.1<n>$
@@ -184,39 +175,13 @@ def MainFunction(DB, report, modifyAllowed):
             break;
         
     if not foundText:
-        scrBookMap = {}
-        for scrBook in DB.ObjectsIn(IScrBookRepository): # These are the books in the associated PT project
-            scrBookMap[scrBook.CanonicalNum] = scrBook.Name
         
         # check if it's scripture text
         for section in DB.ObjectsIn(IScrSectionRepository):
-            # TODO: this won't handle a section spanning a chapter.
-            # parse the scripture section reference. Of the form 1 John 10:1-12.
-            #                 digit or space
-            #                   |    letters in book name
-            #                   |    |   1 space
-            #                   |    |   |             optional end range of verses
-            #                   |    |   |             |
-            m = re.search(r'((\d\s)*\w+)\s(\d+):(\d+)(-\d+)*', text_desired_eng)
-            if m:
-                bookName = m.group(1)
-                chapter = m.group(3)
-                verseBeg = m.group(4)
-                # the end verse could be None if not present
-                if m.group(5):
-                    verseEnd = m.group(5)[1:] # skip the dash
-                else:
-                    verseEnd = verseBeg
-            
-                # break down the parts of the reference integers
-                (begBk, begCh, begVs) = get_parts(section.VerseRefStart, scrBookMap)
-                (endBk, endCh, endVs) = get_parts(section.VerseRefEnd, scrBookMap)
-    
-                # Check the reference parts
-                if bookName == begBk and chapter == begCh and verseBeg == begVs and verseEnd == endVs:
-                    contents = section.ContentOA
-                    foundText = True
-                    break
+            if text_desired_eng == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
+                contents = section.ContentOA
+                foundText = True
+                break
                 
         # Pattern not found
         if not foundText:
