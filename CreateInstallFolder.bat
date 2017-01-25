@@ -58,8 +58,10 @@ copy VirtualMachineFiles\setup.sh Install\FLExTools1.2.4\FlexTools\Output
 rem Documentation
 mkdir "Install\FLExTools1.2.4\FLExTrans Documentation"
 mkdir "Install\FLExTools1.2.4\FLExTrans Documentation\Images"
+mkdir "Install\FLExTools1.2.4\FLExTrans Documentation\Transfer Rules Tutorial"
 copy Doc\*.htm "Install\FLExTools1.2.4\FLExTrans Documentation"
 copy Doc\Images\* "Install\FLExTools1.2.4\FLExTrans Documentation\Images"
+copy "Doc\Transfer Rules Tutorial\*" "Install\FLExTools1.2.4\FLExTrans Documentation\Transfer Rules Tutorial"
 
 rem Sample projects
 mkdir "Install\FLExTools1.2.4\Sample Projects"

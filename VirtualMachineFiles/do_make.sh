@@ -1,3 +1,3 @@
 #!/bin/sh
 cd /media/flextrans-project
-make
+make 2>err_out

@@ -3,7 +3,7 @@
   xmlns:cfg="http://www.xmlmind.com/xmleditor/schema/configuration">
   <!--
 ========================================
-	 Element templates 
+   Element templates 
 ========================================
 -->
   <cfg:elementTemplate name="and_equal_2">
@@ -36,7 +36,7 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="append_clip">
-    <append n="???">
+    <append n="v_">
       <clip pos="1" side="sl" part="???"/>
     </append>
   </cfg:elementTemplate>
@@ -46,18 +46,18 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="attribute">
-    <def-attr n="a">
+    <def-attr n="a_">
       <attr-item tags="aaa"/>
     </def-attr>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="attribute_2">
-    <def-attr n="a">
+    <def-attr n="a_">
       <attr-item tags="aaa"/>
       <attr-item tags="aaa"/>
     </def-attr>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="attribute_3">
-    <def-attr n="a">
+    <def-attr n="a_">
       <attr-item tags="aaa"/>
       <attr-item tags="aaa"/>
       <attr-item tags="aaa"/>
@@ -74,7 +74,7 @@
   <cfg:elementTemplate name="begins-with-list">
     <begins-with-list>
       <clip pos="1" side="sl" part="???"/>
-      <list n="???"/>
+      <list n="l_"/>
     </begins-with-list>
   </cfg:elementTemplate>
 
@@ -83,12 +83,12 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="call-macro_1">
-    <call-macro n="m">
+    <call-macro n="m_">
       <with-param pos="1"/>
     </call-macro>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="call-macro_2">
-    <call-macro n="m">
+    <call-macro n="m_">
       <with-param pos="1"/>
       <with-param pos="2"/>
     </call-macro>
@@ -102,18 +102,18 @@
   </cfg:elementTemplate>
   
   <cfg:elementTemplate name="category">
-    <def-cat n="c">
+    <def-cat n="c_">
       <cat-item tags="???"/>
     </def-cat>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="category_2">
-    <def-cat n="c">
+    <def-cat n="c_">
       <cat-item tags="???"/>
       <cat-item tags="???"/>
     </def-cat>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="category_3">
-    <def-cat n="c">
+    <def-cat n="c_">
       <cat-item tags="???"/>
       <cat-item tags="???"/>
       <cat-item tags="???"/>
@@ -131,16 +131,16 @@
     <choose>
       <when>
         <test>
-			    <and>
-			      <equal>
-			        <clip pos="1" side="sl" part="???"/>
-			        <lit-tag v="???"/>
-			      </equal>
-			      <equal>
-			        <clip pos="1" side="sl" part="???"/>
-			        <lit-tag v="???"/>
-			      </equal>
-			    </and>
+          <and>
+            <equal>
+              <clip pos="1" side="sl" part="???"/>
+              <lit-tag v="???"/>
+            </equal>
+            <equal>
+              <clip pos="1" side="sl" part="???"/>
+              <lit-tag v="???"/>
+            </equal>
+          </and>
         </test>
       </when>
     </choose>
@@ -165,7 +165,7 @@
         <test>
           <begins-with-list>
             <clip pos="1" side="sl" part="???"/>
-            <list n="???"/>
+            <list n="l_"/>
           </begins-with-list>
         </test>
       </when>
@@ -204,7 +204,7 @@
         <test>
           <ends-with-list>
             <clip pos="1" side="sl" part="???"/>
-            <list n="???"/>
+            <list n="l_"/>
           </ends-with-list>
         </test>
       </when>
@@ -226,14 +226,14 @@
 
   <cfg:elementTemplate name="choose_in">
     <choose>
-	    <when>
-	      <test>
-			    <in>
-			      <clip pos="1" side="sl" part="???"/>
-			      <list n="???"/>
-			    </in>
-	      </test>
-	    </when>
+      <when>
+        <test>
+          <in>
+            <clip pos="1" side="sl" part="???"/>
+            <list n="l_"/>
+          </in>
+        </test>
+      </when>
     </choose>
   </cfg:elementTemplate>
 
@@ -241,12 +241,12 @@
     <choose>
       <when>
         <test>
-			    <not>
-			      <equal>
-			        <clip pos="1" side="sl" part="???"/>
-			        <lit-tag v="???"/>
-			      </equal>
-			    </not>
+          <not>
+            <equal>
+              <clip pos="1" side="sl" part="???"/>
+              <lit-tag v="???"/>
+            </equal>
+          </not>
         </test>
       </when>
     </choose>
@@ -256,16 +256,16 @@
     <choose>
       <when>
         <test>
-			    <or>
-			      <equal>
-			        <clip pos="1" side="sl" part="???"/>
-			        <lit-tag v="???"/>
-			      </equal>
-			      <equal>
-			        <clip pos="1" side="sl" part="???"/>
-			        <lit-tag v="???"/>
-			      </equal>
-			    </or>
+          <or>
+            <equal>
+              <clip pos="1" side="sl" part="???"/>
+              <lit-tag v="???"/>
+            </equal>
+            <equal>
+              <clip pos="1" side="sl" part="???"/>
+              <lit-tag v="???"/>
+            </equal>
+          </or>
         </test>
       </when>
     </choose>
@@ -311,7 +311,7 @@
   <cfg:elementTemplate name="ends-with-list">
     <ends-with-list>
       <clip pos="1" side="sl" part="???"/>
-      <list n="???"/>
+      <list n="l_"/>
     </ends-with-list>
   </cfg:elementTemplate>
 
@@ -331,32 +331,38 @@
   <cfg:elementTemplate name="in">
     <in>
       <clip pos="1" side="sl" part="???"/>
-      <list n="???"/>
+      <list n="l_"/>
     </in>
   </cfg:elementTemplate>
 
+  <cfg:elementTemplate name="let_clip_lit-tag">
+    <let>
+      <clip pos="1" side="tl" part="???"/>
+      <lit-tag v="???"/>
+    </let>
+  </cfg:elementTemplate>
   <cfg:elementTemplate name="let_var_clip">
     <let>
-      <var n="v"/>
+      <var n="v_"/>
       <clip pos="1" side="sl" part="???"/>
     </let>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="let_clip_var">
     <let>
-      <clip pos="1" side="sl" part="???"/>
-      <var n="v"/>
+      <clip pos="1" side="tl" part="???"/>
+      <var n="v_"/>
     </let>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="let_var_lit-tag">
     <let>
-      <var n="v"/>
+      <var n="v_"/>
       <lit-tag v="???"/>
     </let>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="let_var_lit-string">
     <let>
-      <var n="v"/>
+      <var n="v_"/>
       <lit v="???"/>
     </let>
   </cfg:elementTemplate>
@@ -381,18 +387,18 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="list">
-    <def-list n="l">
+    <def-list n="l_">
       <list-item v="???"/>
     </def-list>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="list_2">
-    <def-list n="l">
+    <def-list n="l_">
       <list-item v="???"/>
       <list-item v="???"/>
     </def-list>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="list_3">
-    <def-list n="l">
+    <def-list n="l_">
       <list-item v="???"/>
       <list-item v="???"/>
       <list-item v="???"/>
@@ -408,7 +414,7 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="macro_choose">
-    <def-macro n="m" npar="0">
+    <def-macro n="m_" npar="0">
       <choose>
         <when>
           <test>
@@ -475,7 +481,7 @@
   <cfg:elementTemplate name="otherwise_let">
     <otherwise>
       <let>
-        <var n="v"/>
+        <var n="v_"/>
         <lit-tag v="???"/>
       </let>
     </otherwise>
@@ -515,33 +521,35 @@
   <cfg:elementTemplate name="rule">
     <rule comment="???">
       <pattern>
-        <pattern-item n="c"/>
+        <pattern-item n="c_"/>
       </pattern>
-      <action/>
+      <action>
+        <out>
+          <lu>
+            <clip pos="1" side="tl" part="???"/>
+          </lu>
+        </out>
+      </action>
     </rule>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="variable">
-    <def-var n="v"/>
-  </cfg:elementTemplate>
-
-  <cfg:elementTemplate name="variable">
-    <var n="???"/>
+    <def-var n="v_"/>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="when_and">
     <when>
       <test>
-		    <and>
-		      <equal>
-		        <clip pos="1" side="sl" part="???"/>
-		        <lit-tag v="???"/>
-		      </equal>
-		      <equal>
-		        <clip pos="1" side="sl" part="???"/>
-		        <lit-tag v="???"/>
-		      </equal>
-		    </and>
+        <and>
+          <equal>
+            <clip pos="1" side="sl" part="???"/>
+            <lit-tag v="???"/>
+          </equal>
+          <equal>
+            <clip pos="1" side="sl" part="???"/>
+            <lit-tag v="???"/>
+          </equal>
+        </and>
       </test>
     </when>
   </cfg:elementTemplate>
@@ -562,7 +570,7 @@
       <test>
         <begins-with-list>
           <clip pos="1" side="sl" part="???"/>
-          <list n="???"/>
+          <list n="l_"/>
         </begins-with-list>
       </test>
     </when>
@@ -595,7 +603,7 @@
       <test>
         <ends-with-list>
           <clip pos="1" side="sl" part="???"/>
-          <list n="???"/>
+          <list n="l_"/>
         </ends-with-list>
       </test>
     </when>
@@ -615,10 +623,10 @@
   <cfg:elementTemplate name="when_in">
     <when>
       <test>
-		    <in>
-		      <clip pos="1" side="sl" part="???"/>
-		      <list n="???"/>
-		    </in>
+        <in>
+          <clip pos="1" side="sl" part="???"/>
+          <list n="l_"/>
+        </in>
       </test>
     </when>
   </cfg:elementTemplate>
@@ -626,12 +634,12 @@
   <cfg:elementTemplate name="when_not_equal">
     <when>
       <test>
-		    <not>
-		      <equal>
-		        <clip pos="1" side="sl" part="???"/>
-		        <lit-tag v="???"/>
-		      </equal>
-		    </not>
+        <not>
+          <equal>
+            <clip pos="1" side="sl" part="???"/>
+            <lit-tag v="???"/>
+          </equal>
+        </not>
       </test>
     </when>
   </cfg:elementTemplate>
@@ -639,16 +647,16 @@
   <cfg:elementTemplate name="when_or">
     <when>
       <test>
-		    <or>
-		      <equal>
-		        <clip pos="1" side="sl" part="???"/>
-		        <lit-tag v="???"/>
-		      </equal>
-		      <equal>
-		        <clip pos="1" side="sl" part="???"/>
-		        <lit-tag v="???"/>
-		      </equal>
-		    </or>
+        <or>
+          <equal>
+            <clip pos="1" side="sl" part="???"/>
+            <lit-tag v="???"/>
+          </equal>
+          <equal>
+            <clip pos="1" side="sl" part="???"/>
+            <lit-tag v="???"/>
+          </equal>
+        </or>
       </test>
     </when>
   </cfg:elementTemplate>

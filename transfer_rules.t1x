@@ -7,13 +7,13 @@
 			<cat-item tags="adj"></cat-item>
 			<cat-item tags="adj.*"></cat-item>
 		</def-cat>
-		<def-cat  n="c_v">
+		<def-cat n="c_v">
 			<cat-item tags="v"></cat-item>
 			<cat-item tags="v.*"></cat-item>
 		</def-cat>
 	</section-def-cats>
 	<section-def-attrs>
-		<def-attr n="a_nbr">
+		<def-attr n="a_num">
 			<attr-item tags="sg"></attr-item>
 			<attr-item tags="pl"></attr-item>
 		</def-attr>
