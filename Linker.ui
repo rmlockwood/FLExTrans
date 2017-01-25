@@ -29,6 +29,11 @@
       <height>351</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
    </widget>
    <widget class="QPushButton" name="OKButton">
     <property name="geometry">
@@ -64,6 +69,11 @@
       <width>361</width>
       <height>29</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="toolTip">
      <string>After selecting the desired sense here, double-click in the target head word column for the desired row to copy it.</string>
@@ -105,7 +115,7 @@
      <x>0</x>
      <y>0</y>
      <width>1372</width>
-     <height>36</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

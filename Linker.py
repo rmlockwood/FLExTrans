@@ -2,13 +2,14 @@
 
 # Form implementation generated from reading ui file 'Linker.ui'
 #
-# Created: Thu Jun 16 09:53:04 2016
+# Created: Fri Jan 06 16:28:53 2017
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 import MyTableView
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -36,6 +37,9 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.tableView = MyTableView.MyTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 835, 351))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.tableView.setFont(font)
         self.tableView.setObjectName(_fromUtf8("tableView"))
         self.OKButton = QtGui.QPushButton(self.centralwidget)
         self.OKButton.setGeometry(QtCore.QRect(260, 400, 90, 25))
@@ -45,6 +49,9 @@ class Ui_MainWindow(object):
         self.CancelButton.setObjectName(_fromUtf8("CancelButton"))
         self.targetLexCombo = QtGui.QComboBox(self.centralwidget)
         self.targetLexCombo.setGeometry(QtCore.QRect(160, 10, 361, 29))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.targetLexCombo.setFont(font)
         self.targetLexCombo.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.targetLexCombo.setObjectName(_fromUtf8("targetLexCombo"))
         self.FilterCheckBox = QtGui.QCheckBox(self.centralwidget)
@@ -55,7 +62,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName(_fromUtf8("label"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 36))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 26))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)

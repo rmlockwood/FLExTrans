@@ -5,6 +5,17 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.2 - 1/18/17 - Ron
+#    Use BestAnalysisAlternative instead of AnalysisDefault.
+#    Fixed bug where only one fuzzy match was getting processed.
+#    To improve performance, only find fuzzy matches when the difference in 
+#    the length of the glosses is less than or equal to a constant -- 
+#    currently set at 3.
+#    If no POS found, return unicode string UNK instead of normal string -- 
+#    Fixes bug when checking for RTL text in a cell.
+#    Change the way FlexTools Update status bar gets calculated. Weighted by 
+#    lexicon total now.
+#
 #   Version 2.1 - 10/27/16 - Ron
 #    Converted the Link It column to checkboxes.
 #
@@ -63,6 +74,9 @@ import copy
 # The minimum length a word should have before doing a fuzzy compare
 # otherwise an exact comparision is used
 MIN_GLOSS_LEN_FOR_FUZZ = 5
+# Only do a fuzzy compare if the difference in the lengths of the strings
+# is less than this number
+MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
 # The percentage or higher in similarity that two words must have in  
 # order to be outputted as a possible match. 
 FUZZ_THRESHOLD = 74
@@ -72,7 +86,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.1",
+        'moduleVersion'    : "2.2",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :
@@ -110,6 +124,7 @@ from SIL.FieldWorks.FDO import ILexPronunciation
 from SIL.FieldWorks.FDO import ITextRepository
 from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
 from SIL.FieldWorks.FDO import ILexEntryRepository
+from SIL.FieldWorks.FDO import ILexSenseRepository
 from SIL.FieldWorks.FDO import ILexEntry, ILexSense
 from SIL.FieldWorks.FDO import SpecialWritingSystemCodes
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
@@ -191,7 +206,7 @@ class Link(object):
         elif col > 3 and col < 7:
             # columns 4-6 need to be blank if there is no tgtHPG 
             if self.get_tgtHPG() == None:
-                ret = ''   
+                ret = u''   
             elif col == 4:
                 ret = self.get_tgtHPG().getHeadword()
             elif col == 5:
@@ -331,9 +346,12 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
         elif role == QtCore.Qt.TextAlignmentRole:
             # Check if we have right to left data in a column, if so align it right
-            if col > 0 and len(self.__localData[row].getDataByColumn(col)) > 0 and unicodedata.bidirectional(\
-              self.__localData[row].getDataByColumn(col)[0]) in (u'R', u'AL'): # check first character of the given cell
-                return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
+            if col > 0 and len(self.__localData[row].getDataByColumn(col)) > 0:
+                
+                # check first character of the given cell
+                if unicodedata.bidirectional(self.__localData[row].getDataByColumn(col)[0]) in (u'R', u'AL'): 
+                    
+                    return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
     def flags(self, index):
         # Columns 0 and 4 are editable
         val = QtCore.Qt.ItemIsEnabled
@@ -490,8 +508,9 @@ def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, sca
                     POS = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
                 else:
-                    POS = 'UNK'
-                gloss = ITsString(mySense.Gloss.AnalysisDefaultWritingSystem).Text
+                    POS = u'UNK'
+                    
+                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # If we have a valid gloss, add it to the map
                 if gloss and len(gloss) > 0:
@@ -538,7 +557,7 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
                 POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                 Abbreviation.BestAnalysisAlternative).Text
          
-                Gloss = ITsString(targetSense.Gloss.AnalysisDefaultWritingSystem).Text
+                Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
                 
                 # Create an HPG (headword-POS-gloss) object
                 myHPG = HPG(targetSense, targetHeadWord, POS, Gloss, senseNum)
@@ -556,20 +575,24 @@ def getMatchesOnGloss(gloss, gloss_map, save_map):
     if gloss in gloss_map:
         matchList = gloss_map[gloss]
     else:    
-        # See if we have a candidate for a fuzzy compare
-        if len(gloss) >= MIN_GLOSS_LEN_FOR_FUZZ:
-            # Loop through all the glosses
-            for mgloss in gloss_map.keys():
-                # See if we have a match
-                if gloss not in save_map:
-                    # Look for a match TODO: - maybe skip the fuzzy match if there's a big difference in length
-                    if fuzz.QRatio(mgloss.lower(), gloss.lower()) > FUZZ_THRESHOLD:
-                        matchList.extend(gloss_map[mgloss])
-                    
-                        save_map[gloss] = matchList
-                else: 
-                    # use saved list
-                    matchList = save_map[gloss]
+        # See if we've processed this gloss before
+        if gloss not in save_map:
+            # See if we have a candidate for a fuzzy compare
+            gloss_len = len(gloss)
+            if gloss_len >= MIN_GLOSS_LEN_FOR_FUZZ:
+                # Loop through all the target glosses
+                for mgloss in gloss_map.keys():
+                    mgloss_len = len(mgloss)
+                    # skip the fuzzy match if the target gloss is to small or there's a big difference in length
+                    if mgloss_len >= MIN_GLOSS_LEN_FOR_FUZZ and \
+                       abs(mgloss_len-gloss_len) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
+                        # See if we have a match
+                        if fuzz.QRatio(mgloss, gloss) > FUZZ_THRESHOLD:
+                            matchList.extend(gloss_map[mgloss])
+                            save_map[gloss] = matchList
+        else: 
+            # use saved list
+            matchList = save_map[gloss]
     return matchList
 
 def MainFunction(DB, report, modify=True):
@@ -649,7 +672,7 @@ def MainFunction(DB, report, modify=True):
     updated_senses = {}
     tgtLexList = []
 
-    TargetDB_tot = TargetDB.LexiconNumberOfEntries()
+    TargetDB_tot = TargetDB.LexiconNumberOfEntries() #DB.ObjectCountFor(ILexSenseRepository) 
     
     # count the number of "bundles" we will process for progress bar
     bundle_tot = 0
@@ -661,9 +684,17 @@ def MainFunction(DB, report, modify=True):
     
     # We will scale the progress indication according to the following
     # weighting factors
+    # 385 units for an entry to process in the get_gloss_map function
+    TIME_RATIO = 385
+    # 1 unit for each fuzzy compare
+    
     report.ProgressStart(100)
-    ENTRIES_SCALE_FACTOR = 66.6666
-    BUNDLES_SCALE_FACTOR = 33.3333
+    #ENTRIES_SCALE_FACTOR = float(TargetDB_tot) / float(TargetDB_tot+bundle_tot) * 100.0 
+    
+    # The time to process a bundle depends on the number of glosses (roughly total entries). 
+    # This is because a fuzzy compare gets done on each target gloss for each unique bundle
+    ENTRIES_SCALE_FACTOR = float(TargetDB_tot*TIME_RATIO) / float(TargetDB_tot*TIME_RATIO+bundle_tot*TargetDB_tot*1) * 100.0
+    BUNDLES_SCALE_FACTOR = 100.0 - ENTRIES_SCALE_FACTOR
     
     entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
     bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
@@ -714,7 +745,7 @@ def MainFunction(DB, report, modify=True):
                         # If we have processed this sense already, we will just re-add it to the list
                         if mySense not in processed_map:
                             # Get gloss
-                            srcGloss = ITsString(mySense.Gloss.AnalysisDefaultWritingSystem).Text
+                            srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
     
                             # Get headword and set homograph # if necessary
                             srcHeadWord = ITsString(e.HeadWord).Text
@@ -723,7 +754,7 @@ def MainFunction(DB, report, modify=True):
                             if bundle.MsaRA.PartOfSpeechRA:
                                 srcPOS =  ITsString(bundle.MsaRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                srcPOS = 'UNK'
+                                srcPOS = u'UNK'
                             
                             # Create a headword-POS-gloss object and initialize a Link object with this
                             # as the source sense info.
@@ -820,7 +851,10 @@ def MainFunction(DB, report, modify=True):
                     
                         updated_senses[currSense] = 1
                     
-        report.Info(str(cnt)+' links created.')
+        if cnt == 1:
+            report.Info(str(cnt)+' link created.')
+        else:
+            report.Info(str(cnt)+' links created.')
     #exit(exec_val)
  
 #----------------------------------------------------------------
