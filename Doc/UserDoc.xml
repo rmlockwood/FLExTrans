@@ -277,7 +277,7 @@ type="tFlexx"
 >Custom Field Name: Target Equivalent<endnote
 id="nCustomFieldNames"
 ><p
->You may choose a different names for the custom fields, but you also have to update the configuration file to match these names. The names <object
+>You may choose different names for the custom fields, but you also have to update the configuration file to match these names. The names <object
 type="tBold"
 >Target Equivalent</object
 > and <object
@@ -942,13 +942,13 @@ type="tTool"
 ></endnote
 ></secTitle
 ><p
->Writing transfer rules might seem to be tricky, but it is not so bad when you get use to it. People generally understand the basic concepts, but they sometimes struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural statements. This tutorial should help you get used to writing transfer rules.</p
+>Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural statements. This tutorial should help you get used to writing transfer rules.</p
 ><section2
 id="sOverview"
 ><secTitle
 >Overview</secTitle
 ><p
->Here’s a brief overview.</p
+>Here’s a brief overview:</p
 ><section3
 id="sFormalities"
 ><secTitle
@@ -968,11 +968,11 @@ type="tTool"
 > <genericRef
 gref="sDataStreamFormat"
 >data stream format</genericRef
->. If you don’t understand the data stream format, it will be a lot more difficult to understand the rules.</li
+>. If you don’t understand the data stream format, it will be much more difficult to understand the rules.</li
 ><li
 >Rules contain both declarative parts and procedural parts. You can’t just expect to say what you want or how you want to do it. You need to do both -- but in different places (but it’s quite intuitive).</li
 ><li
->Patterns match only on the source side -- not on the target side.</li
+>Patterns match only on the source side, not on the target side.</li
 ><li
 >The transfer process has no access to the information in the target language dictionary. This means that if the transfer needs some information about the available forms of a particular word, e.g. if it is only singular, or only plural, then this information needs to go in the bilingual dictionary.</li
 ></ul
@@ -982,14 +982,14 @@ id="sApproach"
 ><secTitle
 >Approaching the Process of Writing Transfer Rules</secTitle
 ><p
->Think bottom up, not top down -- start with questions like “What is simplest and least bad equivalent for dative in a language which does not have a dative?” not “How can I change SOV order to SVO order”.</p
+>Think bottom up, not top down. Start with a question like “What is the simplest and best equivalent for dative in a language which does not have dative?” not “How can I change SOV order to SVO order?”</p
 ></section3
 ><section3
 id="sLexicalStruct"
 ><secTitle
 >Lexical Transfer and Structural Transfer</secTitle
 ><p
->At this point it’s worth not confusing the roles of lexical transfer and structural transfer. There is a grey area between the two, but there are also big parts that don’t overlap.</p
+>We don't want to confuse the roles of lexical transfer and structural transfer. There is a grey area between the two, but there are also big parts that don’t overlap.</p
 ><ul
 ><li
 ><object
@@ -1012,7 +1012,7 @@ type="tModule"
 ><li
 >Doesn’t do reordering.</li
 ><li
->Can be used to give a head’s up to the structural transfer to draw attention to missing features, or features that cannot be decided on a no-context basis. For example:</li
+>Can be used to give a head’s up to the structural transfer to draw attention to missing features, or features that cannot be decided on a no-context basis.</li
 ></ul
 ></li
 ><li
@@ -1036,7 +1036,7 @@ type="tXMLmindXMLEditor"
 ></li
 ></ul
 ><p
->A rule-of-thumb is that if the rule applies to all words in a category, it probably wants to be treated in the structural transfer, and if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.</p
+>A rule-of-thumb is, if the rule applies to all words in a category, it probably wants to be treated in the structural transfer; if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.</p
 ><p
 >Lexical transfer looks like <exampleRef
 letter="xLexXfer"
@@ -1073,7 +1073,7 @@ lang="lVernacular"
 ></single
 ></example
 ><p
->When you are in the structural transfer stage you have access to both the source and target sides of the translation. After the structural transfer stage, you only have access to the target side.</p
+>When you are in the structural transfer stage, you have access to both the source and target sides of the translation. After the structural transfer stage, you only have access to the target side.</p
 ><section4
 id="sLexTransProc"
 ><secTitle
@@ -1081,11 +1081,11 @@ id="sLexTransProc"
 ><p
 >This isn’t critical information that you have to know, but gives insight into what’s going on. Feel free to skip this section.</p
 ><p
->Given a input lexical unit shown in <exampleRef
+>Given an input lexical unit shown in <exampleRef
 letter="xInputLexUnit"
 num="xInputLexUnit"
 ></exampleRef
->.</p
+>:</p
 ><example
 num="xInputLexUnit"
 ><single
@@ -1125,11 +1125,11 @@ lang="lVernacular"
 ></single
 ></example
 ><p
->Note that the target-language lexical form as defined in the bilingual dictionary entry in <exampleRef
+>Note that the target-language lexical form, as defined in the bilingual dictionary entry in <exampleRef
 letter="xBiLingEntry"
 num="xBiLingEntry"
 ></exampleRef
-> is produced by replacing two tags on the source side (i.e. <langData
+>, is produced by replacing two tags on the source side (i.e. <langData
 lang="lVernacular"
 >&lt;s n="tag1"/&gt;&lt;s n="tag2"/&gt;</langData
 >) with one tag on the target side (i.e. <langData
@@ -1165,7 +1165,7 @@ type="tFilename"
 ><endnote
 id="nT1X"
 ><p
->The 1 in .t1x stands for the first structural transfer pass. This is the only file we worry about when doing a shallow-transfer system. For advanced-transfer, you use three rule files and the extensions .t2x and .t3x are also used.</p
+>The 1 in .t1x stands for the first structural transfer pass. This is the only file we worry about when doing a shallow-transfer system. For advanced-transfer, you use three rule files, and the extensions .t2x and .t3x are also used.</p
 ></endnote
 >. We could do all the editing of the transfer rules in a text editor, but by using the structured editor <object
 type="tXMLmindXMLEditor"
@@ -1173,7 +1173,7 @@ type="tXMLmindXMLEditor"
 > we not only get a graphical user interface, but also verification that the rule file we are writing is valid. In fact the <object
 type="tXMLmindXMLEditor"
 ></object
-> and the addons for <object
+> and the add-ons for <object
 type="tFlextrans"
 ></object
 > make it hard to write an invalid rule file.</p
@@ -1195,15 +1195,18 @@ src="Images/RulesTutOverview.PNG"
 ></chart
 ></example
 ><p
->You should see this same thing when you open <object
+>You should see this same thing when you open the file <object
 type="tFilename"
 >transfer_rules.t1x</object
-> in the <object
+> (<object
+type="tFoldername"
+>FLExTrans Documentation\Transfer Rules Tutorial</object
+> folder) in the <object
 type="tXMLmindXMLEditor"
 ></object
 >. (Expand all the elements.)</p
 ><p
->The transfer file is divided into two main parts: a declaration section and a rules section. The rules section uses information from the declaration section. In fact, every kind of reference in the rules section has to be declared in the declaration section. The rules section is clearly denoted by the element <object
+>The transfer file is divided into two main parts: a declaration section and a rules section. The rules section uses information from the declaration section. In fact, every kind of reference you make in the rules section, you have to declare in the declaration section. The rules section is clearly denoted by the element <object
 type="tRuleElemInXXE"
 >Rules</object
 >. All of the elements above <object
@@ -1235,21 +1238,27 @@ type="tRuleElemInXXE"
 >The <object
 type="tRuleElemInXXE"
 >pattern</object
-> element is what determines if the rule will be executed or not. If the input word or words match the pattern the rule will be executed. The thing that goes in the <object
+> element is what determines if <object
+type="tTool"
+>Apertium</object
+> runs the rule or not. If the input word or words match the pattern, <object
+type="tTool"
+>Apertium</object
+> will run the rule. The thing that goes in the <object
 type="tRuleElemInXXE"
 >item</object
 > sub-element of the <object
 type="tRuleElemInXXE"
 >pattern</object
-> element is a list of one or more categories (declared above) that are to be matched.</p
+> element is a list of one or more categories (from the declaration section) you want to match.</p
 ><p
 >The <object
 type="tRuleElemInXXE"
 >action</object
-> element contains the steps that are to be performed in the rule, generally ending with an <object
+> element contains the steps you want to perform in the rule, generally ending with an <object
 type="tRuleElemInXXE"
 >output</object
-> element where lexical units are outputted into the data stream. Note how declared attributes are used in the <object
+> element where you output lexical units into the data stream. Note how declared attributes are used in the <object
 type="tRuleElemInXXE"
 >action</object
 > element. Categories and attributes are discussed more below.</p
@@ -1259,7 +1268,7 @@ id="sRulesApplied"
 ><secTitle
 >How Rules are Applied</secTitle
 ><p
->Rules are applied when a pattern is matched in the source language input data stream. Which patterns are matched in which order goes like this. The longest patterns are attempted first and then successive shorter patterns are attempted. When there is more than one pattern of the same length, the pattern that comes first in the file is attempted first followed by the rest in order.</p
+>Rules are applied when a pattern is matched in the source language input data stream. Which patterns are matched in which order goes like this: the longest patterns are attempted first and then successive shorter patterns are attempted. When there is more than one pattern of the same length, the pattern that comes first in the file is attempted first followed by the rest in order.</p
 ><p
 >Patterns do not overlap. Once a pattern is matched, the matched words are processed and not considered again for any other patterns. In other words, the source language words are processed sequentially in chunks.</p
 ></section3
@@ -1330,6 +1339,11 @@ type="tFilename"
 type="tFlexx"
 ></object
 >.</li
+><li
+>Now close both <object
+type="tFlexx"
+></object
+> projects,</li
 ><li
 >We will be writing new transfer rules so let’s rename the current rule file.<ol
 ><li
@@ -1420,7 +1434,7 @@ type="tButton"
 > button to run all the <object
 type="tFlextrans"
 ></object
-> modules.</li
+> modules. (Click Yes when prompted to make changes.)</li
 ><li
 >Open the <object
 type="tBold"
@@ -1439,7 +1453,7 @@ num="xOutputInitial"
 ><single
 ><gloss
 lang="lGloss"
->Leavepfvptcpfsg beprssg2 quietly and without wordgensg</gloss
+>Leavepfvptcp f sg beprssg2 quietly and without wordgen sg</gloss
 ></single
 ></example
 ><p
@@ -1475,7 +1489,7 @@ type="tFoldername"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
 ></td
 ><td
 ><langData
@@ -1500,7 +1514,7 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$ </langData
+>^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$ </langData
 ></td
 ></tr
 ><tr
@@ -1520,7 +1534,7 @@ type="tFoldername"
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ </langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ </langData
 ></td
 ><td
 ><langData
@@ -1545,7 +1559,7 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^word1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$ </langData
+>^word1.1&lt;n&gt;&lt;gen_sg&gt;$ </langData
 ></td
 ></tr
 ></table
@@ -1560,7 +1574,7 @@ id="sThinking"
 letter="xCroatEngDataStreamTable"
 num="xCroatEngDataStreamTable"
 ></exampleRef
-> into an adequate form for target language synthesis. NB: If we want to change information, it’s a procedure, if we want to output it or not, it’s a declaration.</p
+> into an adequate form for target language synthesis. NB: If we want to change information, it’s a procedure; if we want to output it or not, it’s a declaration.</p
 ><section4
 id="sProc"
 ><secTitle
@@ -1569,7 +1583,7 @@ id="sProc"
 ><li
 >If the source language grammatical category tag is <langData
 lang="lVernacular"
->&lt;ptcp&gt;</langData
+>&lt;ptcp_f_sg&gt;</langData
 >, change the target language tag to <langData
 lang="lVernacular"
 >&lt;pst&gt;</langData
@@ -1593,9 +1607,9 @@ id="sDecl"
 >Declarations</secTitle
 ><ol
 ><li
->Output a subject pronoun which takes its person and number information from the main verb.</li
+>Output a subject pronoun which takes its person and number information from the auxiliary verb.</li
 ><li
->Output the main verb with information on category and tense (but not aspect, gender or number).</li
+>Output the main verb with information on category and tense (but not aspect).</li
 ><li
 >Do not output the auxiliary verb <langData
 lang="hr"
@@ -1624,18 +1638,21 @@ id="sWorkOrder"
 ><secTitle
 >Work Order</secTitle
 ><p
->So, what order do we do these in? Well it doesn’t really matter -- an experienced developer would probably do it in two steps, but for pedagogical purposes, we’re going to split it up into five steps:</p
+>So, what order do we do these in? Well it doesn’t really matter. An experienced <object
+type="tFlextrans"
+></object
+> linguist would probably do it in two steps, but for pedagogical purposes, we’re going to split it up into five steps:</p
 ><ul
 ><li
->First we’re going to write a rule which matches the participle and auxiliary construction and outputs only the main verb (declarations: 2 &amp; 3). <ul
+>First, we’re going to write a rule which matches the participle and auxiliary construction and outputs only the main verb (declarations: 2 &amp; 3). <ul
 ><li
->Define the categories of “ptcp” and “biti”.</li
+>Define the categories of “ptcp_f_sg” and “biti”.</li
 ></ul
 ></li
 ><li
->Second we’re going to edit that rule to change the source language tag from <langData
+>Second, we’re going to edit that rule to change the source language tag from <langData
 lang="lVernacular"
->&lt;ptcp&gt;</langData
+>&lt;ptcp_f_sg&gt;</langData
 > to <langData
 lang="lVernacular"
 >&lt;pst&gt;</langData
@@ -1645,21 +1662,21 @@ lang="lVernacular"
 ></ul
 ></li
 ><li
->Third we’re going to edit the same rule to not output aspect, gender or number (declaration: 2).<ul
+>Third, we’re going to edit the same rule to not output aspect (declaration: 2).<ul
 ><li
 >Define the attribute for grammatical category and add the tag for verb.</li
 ></ul
 ></li
 ><li
->Fourth we’re going to edit the same rule to output a subject pronoun before the verb (declaration: 1).<ul
+>Fourth, we’re going to edit the same rule to output a subject pronoun before the verb (declaration: 1).<ul
 ><li
->Define the attributes of “person” and “number”</li
+>Define the attributes of “person” and “number”.</li
 ></ul
 ></li
 ><li
->Fifth we’re going to write a new rule which matches the noun construction and output only the grammatical category (declaration: 4) <ul
+>Fifth, we’re going to write a new rule which matches the noun construction and output only the grammatical category (declaration: 4) <ul
 ><li
->Define the category of “noun”</li
+>Define the category of “noun”.</li
 ><li
 >Add the tag for nouns to the grammatical category attribute.</li
 ></ul
@@ -1690,12 +1707,12 @@ border="1"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
 ></td
 ></tr
 ><tr
@@ -1704,12 +1721,12 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;$ </langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;$ </langData
 ></td
 ></tr
 ><tr
@@ -1718,7 +1735,7 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
 ></td
 ><td
 ><langData
@@ -1732,7 +1749,7 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
 ></td
 ><td
 ><langData
@@ -1746,7 +1763,7 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$</langData
+>^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
 ></td
 ><td
 ><langData
@@ -1802,17 +1819,9 @@ type="tButton"
 >Run</object
 > button.</li
 ><li
->Select the <object
-type="tFilename"
->transfer_rules.t1x</object
-> file in your <object
-type="tFoldername"
->Output</object
-> folder and click OK.</li
-><li
 >Check the first two Croatian words.</li
 ><li
->Check the rule “comment goes here”</li
+>Check the rule “comment goes here”.</li
 ><li
 >Click on the <object
 type="tButton"
@@ -1823,7 +1832,7 @@ type="tButton"
 >Your <object
 type="tLiveRuleTester"
 ></object
-> app should look like this:</p
+> should look like this:</p
 ><example
 num="xTesterStep0"
 ><chart
@@ -1841,7 +1850,7 @@ num="xStep0Source"
 ><single
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
 ></single
 ></example
 ><p
@@ -1857,7 +1866,7 @@ num="xStep0Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
 ></single
 ></example
 ><p
@@ -1886,10 +1895,10 @@ src="Images/RulesTutCat1.PNG"
 ></chart
 ></example
 ><p
->You be wondering how you get a new <object
+>You may be wondering how you get a new <object
 type="tRuleElemInXXE"
 >category</object
-> element inserted. It is straightforward.</p
+> element inserted. It is straightforward:</p
 ><ol
 ><li
 >Click on the word “category”. The whole element becomes outlined in a red rectangle.</li
@@ -1929,7 +1938,7 @@ lang="lVernacular"
 > in the <object
 type="tRuleElemInXXE"
 >tags</object
-> elements? -- Because of how the matching system for categories works. In the middle of tag sequences, a <langData
+> elements? This is because of how the matching system for categories works. In the middle of tag sequences, a <langData
 lang="lVernacular"
 >*</langData
 > is counted as a single tag. At the end, it is counted as any sequence of tags. So, what we have is <langData
@@ -1937,13 +1946,13 @@ lang="lVernacular"
 >&lt;v&gt;</langData
 > followed by any tag, followed by <langData
 lang="lVernacular"
->&lt;ptcp&gt;</langData
+>&lt;ptcp_f_sg&gt;</langData
 > followed by any sequence of tags.</p
 ><p
 >Note: we are using the convention of starting all categories with “c_”.</p
 ></li
 ><li
->Edit the example rule and replace the pattern as shown.<example
+>Edit the example rule and replace the pattern as shown. Also change the rule comment to “Past Construction”.<example
 num="xPattern1"
 ><chart
 ><img
@@ -1983,7 +1992,7 @@ src="Images/RulesTutCatList.PNG"
 letter="xOutput1"
 num="xOutput1"
 ></exampleRef
-> (“pos: 1” means the word in position 1). The result is that our <langData
+> (“pos: 1” means the word in position 1). We are not outputting the word in position 2. The result is that our <langData
 lang="lVernacular"
 >biti1.1</langData
 > word will disappear.</p
@@ -2008,14 +2017,14 @@ type="tLiveRuleTester"
 >Bring up the <object
 type="tLiveRuleTester"
 ></object
-></li
+>.</li
 ><li
 >Click the <object
 type="tButton"
 >Refresh</object
 > button to reload the modified rule file.</li
 ><li
->Check the rule “Past Construction”</li
+>Check the rule “Past Construction”.</li
 ><li
 >Click on the <object
 type="tButton"
@@ -2031,7 +2040,7 @@ num="xStep1Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
 ></single
 ></example
 ><p
@@ -2052,7 +2061,7 @@ type="tRuleElemInXXE"
 ></br
 >So, now that we’ve gotten rid of the verb “be”, we want to change the tag for tense from <langData
 lang="lVernacular"
->&lt;ptcp&gt;</langData
+>&lt;ptcp_f_sg&gt;</langData
 > to <langData
 lang="lVernacular"
 >&lt;pst&gt;</langData
@@ -2066,7 +2075,7 @@ type="tRuleElemInXXE"
 >Add the following under the <object
 type="tRuleElemInXXE"
 >Attributes</object
-> element. <example
+> element:<example
 num="xAttrTense"
 ><chart
 ><img
@@ -2126,8 +2135,11 @@ lang="lVernacular"
 >&lt;pst&gt;</langData
 >, even if the input is not <langData
 lang="lVernacular"
->&lt;ptcp&gt;</langData
->. This is good enough for our current example, but for a description of how conditional statements work, see ...<comment
+>&lt;ptcp_f_sg&gt;</langData
+>. This is good enough for our current example, but for a description of how conditional statements work, see ...<object
+type="tItalic"
+>[TO BE WRITTEN]</object
+> <comment
 >Link to a section on conditionals</comment
 >) <br
 ></br
@@ -2147,7 +2159,7 @@ num="xStep2Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;$</langData
 ></single
 ></example
 ><p
@@ -2166,27 +2178,30 @@ num="xLexUnitWhole"
 ><p
 >An important thing to know about lexical transfer is that any source language tags not matched in the bilingual dictionary are copied into the output on the target language side. In our case, <langData
 lang="lVernacular"
->&lt;pfv&gt;&lt;pst&gt;&lt;f&gt;&lt;sg&gt;</langData
-> are all tags that get copied from source to target because in the bilingual dictionary (<object
+>&lt;pfv&gt;&lt;pst&gt;</langData
+> are the tags that get copied from source to target because, in the bilingual dictionary (<object
 type="tFilename"
 >bilingual.dix</object
->) <langData
+>), <langData
 lang="lVernacular"
 >otići1.1&lt;v&gt;</langData
 > maps to <langData
 lang="lVernacular"
 >leave1.1&lt;v&gt;</langData
->. Except for the <langData
+>. All we need is the <langData
 lang="lVernacular"
 >&lt;pst&gt;</langData
-> tag, we don’t need these other tags on the English side to synthesize the target English word. We need to declare that they should not be outputted.</p
+> tag; we don’t need the <langData
+lang="lVernacular"
+>&lt;pfv&gt;</langData
+> tag, so we need to declare that it should not be outputted.</p
 ><ol
 ><li
 >Define the features that we want to output.<br
 ></br
 ><br
 ></br
->We have already defined the feature “tense”, the only remaining tag we need to output is the grammatical category, i.e. <langData
+>We have already defined the feature “tense”: the only remaining tag we need to output is the grammatical category, i.e. <langData
 lang="lVernacular"
 >&lt;v&gt;</langData
 > meaning verb. So, make a new attribute element for grammatical category.<example
@@ -2251,16 +2266,10 @@ lang="lVernacular"
 ></single
 ></example
 ><p
->Woo! What just happened was that we magically deleted the three unwanted tags <langData
+>Woo! What just happened was that we magically deleted the unwanted <langData
 lang="lVernacular"
 >&lt;pfv&gt;</langData
->, <langData
-lang="lVernacular"
->&lt;f&gt;</langData
-> and <langData
-lang="lVernacular"
->&lt;sg&gt;</langData
-> by not specifying that we wanted them. Tag deletion is thus not stated as tag deletion (tag → 0), but by not declaring them.</p
+> tag by not specifying that we wanted it. Tag deletion is thus not stated as tag deletion (tag → 0), but by not declaring it.</p
 ><p
 >Now we should have a lexical form for “leave” which we can synthesize. Let’s give it a go:</p
 ><ol
@@ -2300,7 +2309,7 @@ num="xOutputStep3"
 ><single
 ><gloss
 lang="lGloss"
->Left quietly and without wordgensg</gloss
+>Left quietly and without wordgen sg</gloss
 ></single
 ></example
 ><p
@@ -2322,7 +2331,7 @@ type="tItalic"
 >leave</object
 >.</p
 ><p
->We’re getting there, now let’s move onto the next step.</p
+>We’re getting there, now let’s move on to the next step.</p
 ></section4
 ><section4
 id="step4"
@@ -2335,7 +2344,7 @@ num="xStep4Input"
 ><single
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
 ></single
 ></example
 ><p
@@ -2352,7 +2361,7 @@ lang="lVernacular"
 >What we now need to do is take the information from the (not outputted) verb <object
 type="tItalic"
 >biti</object
-> “be” and use it to output a personal pronoun before the verb. Remember, that when we do not output something we are not deleting it, it is still there in the input, we are just choosing not to put it in the output.</p
+> “be” and use it to output a personal pronoun before the verb. Remember that when we do not output something we are not deleting it. It is still there in the input, we are just choosing not to put it in the output.</p
 ><p
 >The pronoun that we want to output looks like <exampleRef
 letter="xStep4TargetGoal"
@@ -2495,7 +2504,13 @@ src="Images/RulesTutAttrNumPer.PNG"
 ></example
 ></li
 ><li
->We then go back to our skeleton pronoun and add the missing features:<example
+>We then go back to our skeleton pronoun and add the missing features. We also need a <object
+type="tRuleElemInXXE"
+>blank space</object
+> element after the <object
+type="tRuleElemInXXE"
+>lexical unit</object
+> element.<example
 num="xLexUnitPronPerNum"
 ><chart
 ><img
@@ -2504,7 +2519,7 @@ src="Images/RulesTutLexUnitPronPerNum.PNG"
 ></img
 ></chart
 ></example
->Note, that we are “clipping” (copying a part of a string which matches a pattern) from position 2, i.e. the verb “be”. To be clearer, the first clip statement in <exampleRef
+>Note that we are “clipping” (copying a part of a string which matches a pattern) from position 2, i.e. the verb “be”. To be clearer, the first clip statement in <exampleRef
 letter="xLexUnitPronPerNum"
 num="xLexUnitPronPerNum"
 ></exampleRef
@@ -2517,7 +2532,7 @@ lang="lVernacular"
 > or <langData
 lang="lVernacular"
 >&lt;3&gt;</langData
->). If we look at the lexical transfer output that is internally coming from the bilingual dictionary for position 2 this will become clearer:<br
+>). If we look at the lexical transfer output, that is internally coming from the bilingual dictionary for position 2, this will become clearer:<br
 ></br
 ><br
 ></br
@@ -2542,7 +2557,7 @@ lang="lVernacular"
 ></example
 >If we tried to clip from position 1 (<langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp&gt;&lt;f&gt;&lt;sg&gt;$</langData
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
 >), we would get no result for the person attribute because the verb in position 1 does not contain any tags which match the tags in the definition for person.<br
 ></br
 ><br
@@ -2593,7 +2608,7 @@ num="xOutputStep4"
 ><single
 ><gloss
 lang="lGloss"
->you Left quietly and without wordgensg</gloss
+>you Left quietly and without wordgen sg</gloss
 ></single
 ></example
 ><p
@@ -2609,7 +2624,7 @@ type="tItalic"
 >We want to be careful, because we don’t want <object
 type="tItalic"
 >you</object
-> capitalized in all circumstances. For example if the Croatian past tense clause is embedded in another phrase, the first word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization to the pronoun. Make your <object
+> capitalized in all circumstances. For example, if the Croatian past tense clause is embedded in another phrase, the first word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization to the pronoun. Make your <object
 type="tRuleElemInXXE"
 >lexical unit</object
 > element look like this:<example
@@ -2661,7 +2676,7 @@ type="tRuleElemInXXE"
 > element, but we would have to add a new statement above the <object
 type="tRuleElemInXXE"
 >output</object
-> element. Instead we can just use the same method as above to get the case from the first word. This time wrap the <object
+> element. Instead we can just use the same method as above to get the case from the second word. This time wrap the <object
 type="tRuleElemInXXE"
 >get case from</object
 > element around the <object
@@ -2678,10 +2693,10 @@ src="Images/RulesTutGetCase2.PNG"
 ></example
 ><object
 type="tItalic"
->Trick: Click on the words "get case from" and type Ctrl-a. This will execute again the last command you did in the <object
+>Trick: Click on the word "clip" and type Ctrl-a. This will execute the last command you did in the <object
 type="tXMLmindXMLEditor"
 ></object
-> (namley wrap an element with the <object
+> again (namley wrap an element with the <object
 type="tRuleElemInXXE"
 >get case from</object
 > element.)</object
@@ -2699,7 +2714,7 @@ num="xOutputStep4b"
 ><single
 ><gloss
 lang="lGloss"
->You left quietly and without wordgensg</gloss
+>You left quietly and without wordgen sg</gloss
 ></single
 ></example
 ><p
@@ -2724,7 +2739,7 @@ src="Images/RulesTutCatN.PNG"
 ></example
 ></li
 ><li
->Make a new rule which matches nouns as defined by the previous category. To start with we’ll just output the whole lexical unit. <example
+>Make a new rule which matches nouns as defined by the previous category. To start with, we’ll just output the whole lexical unit. <example
 num="xRuleN"
 ><chart
 ><img
@@ -2775,7 +2790,7 @@ num="xStep5Source"
 ><single
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen&gt;&lt;sg&gt;$</langData
+>^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
 ></single
 ></example
 ><p
@@ -2859,7 +2874,7 @@ type="tFlexxTools"
 >Double-click on the file <object
 type="tBold"
 >FlexTools.vbs</object
-> (a Visual Basic script file)</li
+> (a Visual Basic script file).</li
 ><li
 >The first time you run it, it may give you a message saying, “FLExTools has updated its configuration to match the new version of Fieldworks. Restarting.”</li
 ><li
