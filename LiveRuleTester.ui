@@ -63,7 +63,7 @@
      <attribute name="toolTip">
       <string>Not Implemented</string>
      </attribute>
-     <widget class="QListView" name="listInterchunkRules">
+     <widget class="QListView" name="listInterChunkRules">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -71,7 +71,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>775</width>
+        <width>771</width>
         <height>243</height>
        </rect>
       </property>
@@ -92,7 +92,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>775</width>
+        <width>771</width>
         <height>243</height>
        </rect>
       </property>
@@ -217,6 +217,11 @@
         <height>61</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(193, 250, 255);</string>
       </property>
@@ -230,6 +235,11 @@
         <height>29</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
      </widget>
      <widget class="QScrollArea" name="scrollArea">
       <property name="geometry">
@@ -239,6 +249,11 @@
         <width>1225</width>
         <height>103</height>
        </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 220, 213);</string>
@@ -284,6 +299,11 @@
         <height>61</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(193, 250, 255);</string>
       </property>
@@ -302,6 +322,11 @@
         <height>196</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(193, 250, 255);</string>
       </property>
@@ -316,6 +341,11 @@
       <width>1231</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(203, 255, 211);</string>
@@ -559,6 +589,19 @@
      <string>Choose...</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="unselectAllButton">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>462</y>
+      <width>101</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Unselect All</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -566,7 +609,7 @@
      <x>0</x>
      <y>0</y>
      <width>1271</width>
-     <height>36</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>

@@ -5,8 +5,21 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 2.0 - 1/18/17 - Ron
+#    The tool now supports advanced transfer processing. When the .t2x and .t3x
+#    files are present, advanced mode is enabled and the Interchunk and Postchunk
+#    tabs can be used. The output from one gets copied to the input of the other
+#    when the tab is changed.
+#    Don't prompt the user for the transfer rules file anymore, just use the one
+#    defined in the configuration file by default.
+#    Copy the bilingual dictionary file and the Makefile once upon startup to the
+#    LiveRuleTester folder. If the biling. dictionary changes. The tool will have
+#    to be restarted or you can browse to find the file again.
+#    Removed unused RuleList class.
+#
 #   Version 1.0.2 - 12/12/16 - Ron
-#    Use contentsOA for the call to get_interlin_data just like the ExtractSourceText module.
+#    Use contentsOA for the call to get_interlin_data just like the ExtractSourceText 
+#    module.
 #    Handle scripture texts.
 #
 #   Version 1.0.1 - 11/8/16 - Ron
@@ -50,12 +63,13 @@ from PyQt4.QtGui import QFileDialog, QMessageBox
 #----------------------------------------------------------------
 # Configurables:
 TESTER_FOLDER = 'Output\\LiveRuleTester'
+OUTPUT_FOLDER = 'Output'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "1.0.2",
+        'moduleVersion'    : "2.0",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Test transfer rules live.",
         'moduleDescription'   :
@@ -109,11 +123,11 @@ class SentenceList(QtCore.QAbstractListModel):
         mySent = self.__localData[row]
         
         if role == QtCore.Qt.DisplayRole:
-            if self.getRTL():
-                pass
+            #if self.getRTL():
+            #    pass
                 #value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
-            else:
-                value = self.joinTupParts(mySent, 0)
+            #else:
+            value = self.joinTupParts(mySent, 0)
             self.__currentSent = mySent    
             return QtCore.QString(value)
             
@@ -124,42 +138,6 @@ class SentenceList(QtCore.QAbstractListModel):
         for t in tupList:
             ret += ' ' + t[i]
         return ret.lstrip()
-
-            
-# Model class for list of rules.
-class RuleList(QtCore.QAbstractListModel):
-    
-    def __init__(self, myData = [], parent = None):
-        QtCore.QAbstractListModel.__init__(self, parent)
-        self.__localData = myData
-        self.__currentRule = myData[0] # start out on the first one
-    def getCurrentRule(self):
-        return self.__currentRule
-    def rowCount(self, parent):
-        return len(self.__localData)
-    def data(self, index, role):
-        row = index.row()
-        myRule = self.__localData[row]
-        
-        if role == QtCore.Qt.DisplayRole:
-            self.__currentRule = myRule
-            
-            # Show the rule comment and the count of active rules
-            selected = myRule[0]
-            value = myRule[1]
-            if selected: 
-                value += ' Active rule ' + str(self.__getActiveRuleNum(row))
-            return QtCore.QString(value)
-            
-    def setData(self, index, value, role = QtCore.Qt.EditRole):
-        return True
-    def __getActiveRuleNum(self, rowNum):
-        # Add up all the rules that are selected to this row number
-        ret = 0
-        for x in range(0, rowNum+1):
-            if self.__localData[x][0]: # True value for selected
-                ret += 1
-        return ret
 
 class Main(QtGui.QMainWindow):
 
@@ -172,25 +150,32 @@ class Main(QtGui.QMainWindow):
         self.ui.BilingFileEdit.setText(biling_file)
         self.__source_text = source_text
         self.ui.SourceFileEdit.setText(source_text)
+        self.__transfer_rules_file = None
+        self.advancedTransfer = False
         
-        self.__rule_model = None
-        self.transfer_rules_file = None
+        self.__ruleModel = self.__transferModel = None
+        self.__interChunkModel = None
+        self.__postChunkModel = None
+        self.__transferRulesElement = None
+        self.__interchunkRulesElement = None
+        self.__postchunkRulesElement = None
         self.TRIndex = None
         self.setStatusBar(None)
+        
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TestClicked)
         self.ui.CloseButton.clicked.connect(self.CloseClicked)
         self.ui.listSentences.clicked.connect(self.listSentClicked)
-        #self.ui.listTransferRules.currentChanged.connect(self.listTransferRulesClicked)
-        #self.ui.listTransferRules.dataChanged.connect(self.listTransferRulesClicked)
-        self.ui.listTransferRules.clicked.connect(self.listTransferRulesClicked)
-        #self.ui.listTransferRules.selectionChanged.connect(self.TRSelectionChanged)
+        self.ui.listTransferRules.clicked.connect(self.rulesListClicked)
+        self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
+        self.ui.listPostChunkRules.clicked.connect(self.rulesListClicked)
         self.ui.SentCombo.currentIndexChanged.connect(self.listSentComboClicked)
         self.ui.TransferFileBrowseButton.clicked.connect(self.TransferBrowseClicked)
         self.ui.BilingFileBrowseButton.clicked.connect(self.BilingBrowseClicked)
-        self.ui.tabSource.currentChanged.connect(self.TabClicked)
+        self.ui.tabRules.currentChanged.connect(self.TabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
         self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
+        self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         
@@ -203,22 +188,42 @@ class Main(QtGui.QMainWindow):
             myCheck = QtGui.QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
-            myCheck.setGeometry(QtCore.QRect(0,0, 27, 27)) # default position
+            myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
             
             # connect to a function
-            myCheck.clicked.connect(self.CheckClicked)
+            myCheck.clicked.connect(self.SourceCheckBoxClicked)
             
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
-        # Simulate a click on the transfer browse button to get the user
-        # to select a transfer file
-        if self.TransferBrowseClicked() == False:
+        pwd = os.getcwd()
+        self.__transfer_rules_file= os.path.join(pwd, OUTPUT_FOLDER, 'transfer_rules.t1x')
+        if not self.loadTransferRules():
             self.ret_val = 0
             self.close()
+            return False
+        
+        # Simulate a click on the transfer browse button to get the user
+        # to select a transfer file
+        #if self.TransferBrowseClicked() == False:
+        #    self.ret_val = 0
+        #    self.close()
         
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
+
+        # Check for right to left data and set the sentence list direction if needed
+        # Just check the first surface form for the first word, i.e. word 0, tuple index 0
+        currSent = self.__sent_model.getCurrentSent()
+        
+        # make sure we have some data
+        if len(currSent) > 0:
+            word1 = currSent[0][0]
+            if self.has_RTL_data(word1):
+                self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
+                self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                self.__sent_model.setRTL(True)
+        
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
         
@@ -227,72 +232,70 @@ class Main(QtGui.QMainWindow):
         
         self.ret_val = 0
         
-        # Check for right to left data and set the sentence list direction if needed
-        # Just check the first surface form for the first word, i.e. word 0, tuple index 0
-        currSent = self.__sent_model.getCurrentSent()
+        # Copy bilingual file to the tester folder
+        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
         
-        # make sure we have some data
-        if len(currSent) > 0:
-            word1 = currSent[0][0]
-            for i in range(0, len(word1)):
-                if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
-                    self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
-                    self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
-                    self.__sent_model.setRTL(True)
-                    break
-    
-    def TRSelectionChanged(self):
-        self.TRIndex = index.row() # currentIndex
-    
+        # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
+        shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+
+    def has_RTL_data(self, word1):
+        for i in range(0, len(word1)):
+            if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
+                return True
+        return False
+        
     def UpButtonClicked(self):
         if self.TRIndex and self.TRIndex.row() > 0:
             # pop current list item and insert it one above
-            self.rules_element._children.insert(self.TRIndex.row()-1,\
-                                                self.rules_element._children.pop(self.TRIndex.row()))
+            self.__rulesElement._children.insert(self.TRIndex.row()-1,\
+                                                self.__rulesElement._children.pop(self.TRIndex.row()))
             
             # copy the selection
-            cur_state = self.__rule_model.item(self.TRIndex.row()).checkState()
-            oth_state = self.__rule_model.item(self.TRIndex.row()-1).checkState()
-            self.__rule_model.item(self.TRIndex.row()).setCheckState(oth_state)
-            self.__rule_model.item(self.TRIndex.row()-1).setCheckState(cur_state)
+            cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
+            oth_state = self.__ruleModel.item(self.TRIndex.row()-1).checkState()
+            self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
+            self.__ruleModel.item(self.TRIndex.row()-1).setCheckState(cur_state)
             
             # redo the display
-            self.listTransferRulesClicked(self.TRIndex)
-            
-            # change the selection to the one just moved
-            #self.__rule_model.item(self.TRIndex.row()-1).setSelected(True)
+            self.rulesListClicked(self.TRIndex)
             
     def DownButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() < len(self.rules_element._children)-1:
+        if self.TRIndex and self.TRIndex.row() < len(self.__rulesElement._children)-1:
             # pop current list item and insert it one above
-            self.rules_element._children.insert(self.TRIndex.row()+1,\
-                                                self.rules_element._children.pop(self.TRIndex.row()))
+            self.__rulesElement._children.insert(self.TRIndex.row()+1,\
+                                                self.__rulesElement._children.pop(self.TRIndex.row()))
             
             # copy the selection
-            cur_state = self.__rule_model.item(self.TRIndex.row()).checkState()
-            oth_state = self.__rule_model.item(self.TRIndex.row()+1).checkState()
-            self.__rule_model.item(self.TRIndex.row()).setCheckState(oth_state)
-            self.__rule_model.item(self.TRIndex.row()+1).setCheckState(cur_state)
+            cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
+            oth_state = self.__ruleModel.item(self.TRIndex.row()+1).checkState()
+            self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
+            self.__ruleModel.item(self.TRIndex.row()+1).setCheckState(cur_state)
             
             # redo the display
-            self.listTransferRulesClicked(self.TRIndex)
+            self.rulesListClicked(self.TRIndex)
     
-            # change the selection to the one just moved
-            #self.__rule_model.item(self.TRIndex.row()+1).setSelected(True)
-            
     def SelectAllClicked(self):
         # Loop through all the items in the rule list model
-        for i in range(0, self.__rule_model.rowCount()):
+        for i in range(0, self.__ruleModel.rowCount()):
             # Check each box
-            self.__rule_model.item(i).setCheckState(QtCore.Qt.Checked)
+            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
         
         # Redo the numbering
-        self.listTransferRulesClicked(self.TRIndex)
+        self.rulesListClicked(self.TRIndex)
+            
+    def UnselectAllClicked(self):
+        # Loop through all the items in the rule list model
+        for i in range(0, self.__ruleModel.rowCount()):
+            # Check each box
+            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
+        
+        # Redo the numbering
+        self.rulesListClicked(self.TRIndex)
             
     def RefreshClicked(self):
         self.loadTransferRules()
     
-    def CheckClicked(self):
+    def SourceCheckBoxClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         val = ''
         
@@ -304,7 +307,11 @@ class Main(QtGui.QMainWindow):
                 
                 # The 2nd part of the tuple has the data stream info.
                 val += mySent[i][1] + ' '
-                
+        
+        # Add a LTR marker if our text language is RTL
+        if self.__sent_model.getRTL():
+            val = u'\u200E' + val        
+            
         self.ui.SelectedWordsEdit.setPlainText(val)                
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
@@ -322,17 +329,69 @@ class Main(QtGui.QMainWindow):
         # Populate the data stream box with the values from each word in the sentence
         # tup is (surface_form, datastream_form)
         val = self.__sent_model.joinTupParts(mySent, 1) # 1 for the 2nd tuple element
+
+        # Add a LTR marker if our text language is RTL
+        if self.__sent_model.getRTL():
+            val = u'\u200E' + val        
+            
         self.ui.SelectedSentencesEdit.setPlainText(val)
     def __ClearAllChecks(self):
         for check in self.__checkBoxList:
             check.setVisible(False)
             check.setChecked(False)
+    # set global variables to the appropriate list variables
+    # change interface as needed.
+    def __MakeVisible(self, isVisible):
+        # hide or unhide the sentence drop-down box, list box, check box area
+        self.ui.SentCombo.setVisible(isVisible)
+        self.ui.scrollArea.setVisible(isVisible)
+        self.ui.listSentences.setVisible(isVisible)
+    def __CopyStuff(self):
+        # copy text from results to the source boxes
+        self.ui.SelectedWordsEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
+        self.ui.SelectedSentencesEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
+        self.ui.ManualEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
+        self.__ClearStuff()
+    def __ClearStuff(self):
+        self.ui.TargetTextEdit.setPlainText('')
+        self.ui.LogEdit.setPlainText('')
     def TabClicked(self):
-        pass
-        #if self.ui.tabSource.currentIndex() != 0:
-        #    self.__ClearAllChecks()
-        #else:
-        #    self.listSentComboClicked()
+        if self.advancedTransfer:
+            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+                self.__ruleModel = self.__transferModel
+                self.__rulesElement = self.__transferRulesElement
+                
+                # unhide stuff
+                self.__MakeVisible(True)
+                
+                # re-write the check boxes
+                self.SourceCheckBoxClicked()
+                
+                # blank the other two source boxes
+                self.ui.SelectedSentencesEdit.setPlainText('')
+                self.ui.ManualEdit.setPlainText('')
+    
+                self.__ClearStuff()
+                
+            elif self.ui.tabRules.currentIndex() == 1: #'tab_interchunk_rules':
+                self.__ruleModel = self.__interChunkModel
+                self.__rulesElement = self.__interchunkRulesElement
+                
+                # hide stuff
+                self.__MakeVisible(False)
+                
+                # copy stuff
+                self.__CopyStuff()
+                
+            else: # postchunk
+                self.__ruleModel = self.__postChunkModel
+                self.__rulesElement = self.__postchunkRulesElement
+    
+                # hide stuff
+                self.__MakeVisible(False)
+    
+                # copy stuff
+                self.__CopyStuff()
     def listSentComboClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         space_val = 10
@@ -391,13 +450,16 @@ class Main(QtGui.QMainWindow):
         self.__biling_file = biling_file_tup[0]
         self.ui.BilingFileEdit.setText(self.__biling_file)
         
+        # Copy bilingual file to the tester folder
+        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+        
     def TransferBrowseClicked(self):
         # Bring up file select dialog
-        transfer_rules_file_tup = \
+        __transfer_rules_file_tup = \
          QFileDialog.getOpenFileNameAndFilter(self, 'Choose Transfer File',\
             'Output', 'Transfer Rules (transfer_rules.t1x)')
         
-        self.transfer_rules_file = transfer_rules_file_tup[0]
+        self.__transfer_rules_file = __transfer_rules_file_tup[0]
         
         if not self.loadTransferRules():
             self.ret_val = 0
@@ -410,41 +472,129 @@ class Main(QtGui.QMainWindow):
             
         # Verify we have a valid transfer file.
         try:
-            test_tree = ET.parse(self.transfer_rules_file)
+            test_tree = ET.parse(self.__transfer_rules_file)
         except:
             QMessageBox.warning(self, 'Invalid File', 'The transfer file you selected is invalid.')
             return False
         
         test_rt = test_tree.getroot()
-        self.rules_element = test_rt.find('section-rules')
+        self.__transferRulesElement = test_rt.find('section-rules')
         
-        if self.rules_element:
-            self.ui.TransferFileEdit.setText(self.transfer_rules_file)
-            self.__ruleFileXMLtree = test_tree
-            self.displayRules(self.rules_element)
+        if self.__transferRulesElement is not None:
+            self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
+            self.__transferRuleFileXMLtree = test_tree
+            self.__transferModel = QtGui.QStandardItemModel()
+            self.displayRules(self.__transferRulesElement, self.__transferModel)
+            # Initialize the model for the rule list control
+            self.ui.listTransferRules.setModel(self.__transferModel)
+            
         else:
             QMessageBox.warning(self, 'Invalid Rules File', \
             'The transfer file has no transfer element or no section-rules element')
             self.ui.TransferFileEdit.setText('')
+            return False
         
+        # Check if we have an interchunk rules file (.t2x)
+        
+        # build the interchunk rules file name
+        rest = self.__transfer_rules_file[0:-4] #os.path.splitext(self.__transfer_rules_file.toStdString())
+        interchunk_rules_file = rest + '.t2x'
+        
+        # Check if the file exists. If it does, we assume we have advanced transfer going on
+        if os.path.isfile(interchunk_rules_file):
+            
+            # Verify we have a valid transfer file.
+            try:
+                interchunk_tree = ET.parse(interchunk_rules_file)
+            except:
+                QMessageBox.warning(self, 'Invalid File', 'The interchunk transfer file you selected is invalid.')
+                return False
+            
+            interchunk_rt = interchunk_tree.getroot()
+            self.__interchunkRulesElement = interchunk_rt.find('section-rules')
+            
+            if self.__interchunkRulesElement is not None:
+                self.__interChunkRuleFileXMLtree = interchunk_tree
+                self.__interChunkModel = QtGui.QStandardItemModel()
+                self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
+                # Initialize the model for the rule list control
+                self.ui.listInterChunkRules.setModel(self.__interChunkModel)
+            else:
+                QMessageBox.warning(self, 'Invalid Interchunk Rules File', \
+                'The interchunk transfer file has no transfer element or no section-rules element')
+                return False
+            
+            # build the postchunk rules file name
+            postchunk_rules_file = rest + '.t3x'
+            
+            # Check if the file exists. If it does, we assume we have advanced transfer going on
+            if os.path.isfile(postchunk_rules_file):
+                
+                # Verify we have a valid transfer file.
+                try:
+                    postchunk_tree = ET.parse(postchunk_rules_file)
+                except:
+                    QMessageBox.warning(self, 'Invalid File', 'The postchunk transfer file you selected is invalid.')
+                    return False
+                
+                postchunk_rt = postchunk_tree.getroot()
+                self.__postchunkRulesElement = postchunk_rt.find('section-rules')
+                
+                if self.__postchunkRulesElement is not None:
+                    self.__postChunkRuleFileXMLtree = postchunk_tree
+                    self.__postChunkModel = QtGui.QStandardItemModel()
+                    self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
+                    # Initialize the model for the rule list control
+                    self.ui.listPostChunkRules.setModel(self.__postChunkModel)
+                else:
+                    QMessageBox.warning(self, 'Invalid postchunk Rules File', \
+                    'The postchunk transfer file has no transfer element or no section-rules element')
+                    return False
+    
+                # if we have interchunk and postchunk transfer rules files we are in advanced mode
+                self.advancedTransfer = True
+         
+        if self.advancedTransfer:
+            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+                # Set these global variables to the transfer ones
+                self.__ruleModel = self.__transferModel
+                self.__rulesElement = self.__transferRulesElement
+                
+            elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+                # Set these global variables to the interchunk ones
+                self.__ruleModel = self.__interChunkModel
+                self.__rulesElement = self.__interchunkRulesElement
+
+            else: # postchunk
+                # Set these global variables to the postchunk ones
+                self.__ruleModel = self.__transferModel
+                self.__rulesElement = self.__postchunkRulesElement
+
+        else:
+            # Set these global variables to the transfer ones
+            self.__ruleModel = self.__transferModel
+            self.__rulesElement = self.__transferRulesElement
+ 
+            
         return True
 
-    def listTransferRulesClicked(self, index):
+    def rulesListClicked(self, index):
         self.TRIndex = index
         active_rules = 1
-        for i, el in enumerate(self.rules_element):
+        for i, el in enumerate(self.__rulesElement):
             ruleText = el.get('comment')
             
+            if ruleText == None:
+                ruleText = 'missing comment'
+                
             # If active add text with the active rule #
-            if self.__rule_model.item(i).checkState():
-                self.__rule_model.item(i).setText(ruleText + ' - Active Rule ' + str(active_rules))
+            if self.__ruleModel.item(i).checkState():
+                self.__ruleModel.item(i).setText(ruleText + ' - Active Rule ' + str(active_rules))
                 active_rules += 1
             else:
-                self.__rule_model.item(i).setText(ruleText)
+                self.__ruleModel.item(i).setText(ruleText)
     
-    def displayRules(self, rules_element):
-        self.__rule_model = QtGui.QStandardItemModel()
-        self.__rule_comment_list = []
+    def displayRules(self, rules_element, ruleModel):
         
         # Loop through each rule
         for rule_el in rules_element:
@@ -459,12 +609,8 @@ class Main(QtGui.QMainWindow):
             item = QtGui.QStandardItem(comment) 
             item.setCheckable(True)
             item.setCheckState(False)
-            self.__rule_model.appendRow(item)
-            #self.__rule_comment_list.append(comment)
+            ruleModel.appendRow(item)
             
-        # Initialize the model for the rule list control
-        self.ui.listTransferRules.setModel(self.__rule_model)
-        
     def TestClicked(self):
         
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
@@ -478,23 +624,61 @@ class Main(QtGui.QMainWindow):
         #if not os.path.exists(TESTER_FOLDER):
         #    os.makedirs(TESTER_FOLDER)
             
-        # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
-        
+        if self.advancedTransfer:
+            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+                source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
+                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
+                tgt_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
+                log_file = os.path.join(TESTER_FOLDER, 'err_log')
+                
+                # Copy the xml structure to a new object
+                myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
+                rule_file = self.__transferRuleFileXMLtree.getroot()
+                
+            elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+                source_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
+                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t2x')
+                tgt_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
+                log_file = os.path.join(TESTER_FOLDER, 'err_log2')
+                
+                # Copy the xml structure to a new object
+                myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
+                rule_file = self.__interChunkRuleFileXMLtree.getroot()
+
+            else: # postchunk
+                source_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
+                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t3x')
+                tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
+                log_file = os.path.join(TESTER_FOLDER, 'err_log3')
+                
+                # Copy the xml structure to a new object
+                myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
+                rule_file = self.__postChunkRuleFileXMLtree.getroot()
+
+        else:
+            source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
+            tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
+            tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
+            log_file = os.path.join(TESTER_FOLDER, 'err_log')
+            
+            # Copy the xml structure to a new object
+            myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
+            rule_file = self.__transferRuleFileXMLtree.getroot()
+            
         # Save the source text to the tester folder
-        source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
         sf = open(source_file, 'w')
         myStr = unicode(self.getActiveTextEditVal())
+        
+        # Remove any LTR markers
+        myStr = re.sub(u'\u200E', '', myStr)
+        
         sf.write(myStr.encode('utf-8'))
         sf.close()
         
         # Save the transfer rules file with the selected rules present
-
-        tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
         rf = open(tr_file, 'w')
         
         # Copy the xml structure to a new object
-        myTree = copy.deepcopy(self.__ruleFileXMLtree)
         myRoot = myTree.getroot()
         
         sr_element = myRoot.find('section-rules')
@@ -505,14 +689,16 @@ class Main(QtGui.QMainWindow):
         # Recreate the section-rules element
         new_sr_element = ET.SubElement(myRoot, 'section-rules')
         
-        rule_file = self.__ruleFileXMLtree.getroot()
         rules_element = rule_file.find('section-rules')
 
+        # Put a space in the rules section so we get a closing element </section-rules>
+        #makrules_element.text = ' '
+        
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):
         
             # Add to the xml structure if it is a selected rule
-            if self.__rule_model.item(i).checkState():
+            if self.__ruleModel.item(i).checkState():
                 new_sr_element.append(rule_el) 
             
         # Write out the file
@@ -524,8 +710,6 @@ class Main(QtGui.QMainWindow):
         # Clear the results box
         self.ui.TargetTextEdit.setPlainText('') 
         
-        tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-
         changed = False
         elapsed_secs = 0
         start_secs = time.time()
@@ -563,14 +747,17 @@ class Main(QtGui.QMainWindow):
         
         # Load the target text contents into the results edit box
         tgtf = open(tgt_file)
-        target_output = tgtf.read()
+        target_output = unicode(tgtf.read(),'utf-8')
+        
+        # If we have RTL chars, put in some LTR markers
+        if self.has_RTL_data(target_output):
+            target_output = u'\u200E' + re.sub(u'<', u'\u200E<', target_output)
         self.ui.TargetTextEdit.setPlainText(target_output)
         tgtf.close()
         
         # Load the log file
-        log_file = os.path.join(TESTER_FOLDER, 'err_log')
         lf = open(log_file)
-        self.ui.LogEdit.setPlainText(lf.read())
+        self.ui.LogEdit.setPlainText(unicode(lf.read(),'utf-8'))
         lf.close()
         
         QApplication.restoreOverrideCursor()
