@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.7 - 5/31/17 - Ron
+#    Make the sentance punctuation string from the configuration file a unicode string
+#    so that things like the right/left-pointing angle quotation mark get substituted 
+#    out correctly
+#
 #   Version 1.3.6 - 1/18/17 - Ron
 #    Significant change to the ANAInfo class. New constructor. GetAnalysisPrefixes now
 #    returns a list. Same with Suffixes. Added removePeriods. Always remove periods that
@@ -678,6 +683,9 @@ def MainFunction(DB, report, modifyAllowed):
     sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
     if not (targetANA and prefixFile and transferResults and sentPunct):
         return
+
+    # Convert the sentence punctuation to a unicode string
+    sentPunct = unicode(sentPunct,'utf-8')
 
     # Check the validity of the complex forms lists
     if complexForms1st and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report):

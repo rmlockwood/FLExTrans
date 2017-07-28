@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.7 - 5/3/17 - Ron
+#    Convert punctuation string to unicode
+#
 #   Version 1.3.6 - 12/12/16 - Ron
 #    Simpler extraction of Scripture text title.
 #
@@ -189,7 +192,7 @@ def MainFunction(DB, report, modifyAllowed):
             return
     
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = unicode(ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report), "utf-8")
     
     if not sent_punct:
         return
