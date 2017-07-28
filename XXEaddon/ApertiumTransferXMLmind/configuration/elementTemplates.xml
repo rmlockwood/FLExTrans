@@ -341,6 +341,12 @@
       <lit-tag v="???"/>
     </let>
   </cfg:elementTemplate>
+  <cfg:elementTemplate name="let_clip_lit-string">
+    <let>
+      <clip pos="1" side="tl" part="???"/>
+      <lit v="???"/>
+    </let>
+  </cfg:elementTemplate>
   <cfg:elementTemplate name="let_var_clip">
     <let>
       <var n="v_"/>
