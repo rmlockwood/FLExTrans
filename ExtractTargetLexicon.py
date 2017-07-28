@@ -126,7 +126,8 @@ def output_allomorph(morph, envList, f_handle, e, report, TargetDB):
     
     # If there is nothing for any WS we get ***
     if amorph == '***' or amorph == None:
-        report.Warning('No allomorph found. Skipping 1 allomorph for Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+        # Suppress this warning for now. 
+        #report.Warning('No allomorph found. Skipping 1 allomorph for Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
         return
     
     # Convert spaces between words to underscores, these have to be removed later.
