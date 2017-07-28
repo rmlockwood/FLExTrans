@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.5 - 7/28/17 - Ron
+#    Check that there is a valid target POS before processing the POS names and 
+#    abbreviations.
+#
 #   Version 1.3.4 - 1/18/17 - Ron
 #    Give a warning if there is a space or an period in a grammatical category.
 #    Change the space to an underscore and remove periods.
@@ -505,37 +509,43 @@ def MainFunction(DB, report, modifyAllowed):
                                     targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
                                     if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                                         
-                                        trgtFound = True
-                                        # Get target pos abbreviation
-                                        trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                              Abbreviation.BestAnalysisAlternative).Text
-                                        
-                                        # Convert spaces to underscores and remove periods
-                                        trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
-                                        trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
-                                        
-                                        # Get target inflection class
-                                        trgtInflCls =''
-                                        if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                                            trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                                  Abbreviation.BestAnalysisAlternative).Text+s4a         
-                                        
-                                        # Get target features                                                     
-                                        featStr = ''
-                                        if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                                            feat_abbr_list = []
-                                            # The features might be complex, make a recursive function call to find all leaf features
-                                            get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                        if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+                                            trgtFound = True
+                                            # Get target pos abbreviation
+                                            trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                                  Abbreviation.BestAnalysisAlternative).Text
                                             
-                                            # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                            for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                featStr += s2 + abb + s4a
-                                        
-                                        # output the bilingual dictionary line (the sX is xml stuff)
-                                        out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
-                                                  str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                        f_out.write(out_str.encode('utf-8'))
-                                        records_dumped_cnt += 1
+                                            # Convert spaces to underscores and remove periods
+                                            trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
+                                            trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
+                                            
+                                            # Get target inflection class
+                                            trgtInflCls =''
+                                            if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                                trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                      Abbreviation.BestAnalysisAlternative).Text+s4a         
+                                            
+                                            # Get target features                                                     
+                                            featStr = ''
+                                            if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                                                feat_abbr_list = []
+                                                # The features might be complex, make a recursive function call to find all leaf features
+                                                get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                                
+                                                # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                                for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                    featStr += s2 + abb + s4a
+                                            
+                                            # output the bilingual dictionary line (the sX is xml stuff)
+                                            out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
+                                                      str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
+                                            f_out.write(out_str.encode('utf-8'))
+                                            records_dumped_cnt += 1
+                                    
+                                        else:
+                                            report.Warning('Skipping sense because the target POS is undefined '+\
+                                                           ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                                     else:
                                         report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
                                                        ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
