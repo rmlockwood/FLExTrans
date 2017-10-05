@@ -69,6 +69,9 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
 from subprocess import call
 from FTModuleClass import FlexToolsModuleClass
+import os
+import platform
+import subprocess
 
 #----------------------------------------------------------------
 # Configurables:
@@ -244,6 +247,15 @@ def MainFunction(DB, report, modifyAllowed):
         return
         
     report.Info('Using: '+targetProj+' as the target database.')
+
+    # Run the makefile to run Apertium
+
+    is32bit = (platform.architecture()[0] == '32bit')
+    system32 = os.path.join(os.environ['SystemRoot'],
+                            'SysNative' if is32bit else 'System32')
+    bash = os.path.join(system32, 'bash.exe')
+
+    subprocess.call('"%s" -c "Output/do_make_direct.sh"' % bash)
 
     targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
     targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
@@ -530,7 +542,7 @@ def MainFunction(DB, report, modifyAllowed):
     # run STAMP to sythesize the results. E.g. stamp32" -f Gilaki-Thesis_ctrl_files. txt -i pes_verbs.ana -o pes_verbs.syn
     # this assumes stamp32.exe is in the current working directory.
     call(['stamp32.exe', '-f', cmdFileName, '-i', anaFile, '-o', synFile])
-    
+
     report.Info("Fixing up the target text...")
     
     # Replace underscores with spaces in the Synthesized file

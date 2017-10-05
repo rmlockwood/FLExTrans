@@ -50,6 +50,7 @@ copy transfer_rules.t1x Install\FLExTools1.2.4\FlexTools\Output
 copy replace.dix Install\FLExTools1.2.4\FlexTools\Output
 copy stamp32.exe Install\FLExTools1.2.4\FlexTools
 copy VirtualMachineFiles\do_make.sh Install\FLExTools1.2.4\FlexTools\Output
+copy VirtualMachineFiles\do_make_direct.sh Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\crontab.txt Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output
