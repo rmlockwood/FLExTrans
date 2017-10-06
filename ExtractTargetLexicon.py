@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.6 - 10/6/17 - Marc
+#    Added call to do_make_direct.sh to use Windows Subsystem for Linux and to avoid
+#    the use of VirtualBox for Apertium.
+#
 #   Version 1.3.5 - 1/18/17 - Ron
 #    Use BestAnalysisAlternative instead of AnalysisDefault.
 #    Change the spaces to underscores and remove periods in
@@ -83,7 +87,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.5",
+        'moduleVersion'    : "1.3.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
