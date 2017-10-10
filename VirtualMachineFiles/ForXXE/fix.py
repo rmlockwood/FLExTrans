@@ -4,11 +4,12 @@ lines = f.readlines()
 f.close()
 f = open(sys.argv[2],"w")
 for line in lines:
-	if line != '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"'+'\n' and \
-           line != '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"'+'\n' and \
-           line != '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"'+'\n' and \
-           line != '"transfer.dtd">'+'\n' and \
-           line != '"interchunk.dtd">'+'\n' and \
-           line != '"postchunk.dtd">'+'\n':
+	strippedLine = line.strip()
+	if strippedLine != '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' and \
+           strippedLine != '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' and \
+           strippedLine != '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' and \
+           strippedLine != '"transfer.dtd">' and \
+           strippedLine != '"interchunk.dtd">' and \
+           strippedLine != '"postchunk.dtd">':
 		f.write(line)
 f.close()
