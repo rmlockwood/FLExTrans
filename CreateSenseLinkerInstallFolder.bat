@@ -27,7 +27,7 @@ copy Qt*.* LinkerInstall\Python27.NET\FW8\PyQt4
 copy __init__.py LinkerInstall\Python27.NET\FW8\PyQt4
 copy sip.pyd LinkerInstall\Python27.NET\FW8
 cd LinkerInstall
-"C:\Program Files (x86)\7-Zip\7z" a FlexTransSenseLinker.zip FLExTools Python27.NET SenseLinkerReadme.txt
+"C:\Program Files\7-Zip\7z" a FlexTransSenseLinker.zip FLExTools Python27.NET SenseLinkerReadme.txt
 copy /Y FlexTransSenseLinker.zip ..
 cd ..
 rem pause

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.7 - 10/10/17 - Marc
+#    Extracted call to do_make_direct.sh to RunApertium.py
+#
 #   Version 1.3.6 - 10/6/17 - Marc
 #    Added call to do_make_direct.sh to use Windows Subsystem for Linux and to avoid
 #    the use of VirtualBox for Apertium.
@@ -87,7 +90,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.6",
+        'moduleVersion'    : "1.3.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -251,15 +254,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
         
     report.Info('Using: '+targetProj+' as the target database.')
-
-    # Run the makefile to run Apertium
-
-    is32bit = (platform.architecture()[0] == '32bit')
-    system32 = os.path.join(os.environ['SystemRoot'],
-                            'SysNative' if is32bit else 'System32')
-    bash = os.path.join(system32, 'bash.exe')
-
-    subprocess.call('"%s" -c "Output/do_make_direct.sh"' % bash)
 
     targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
     targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)

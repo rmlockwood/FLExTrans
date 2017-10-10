@@ -10,6 +10,7 @@ copy ExtractSourceText.py Install\Modules\FLExTrans
 copy ExtractTargetLexicon.py Install\Modules\FLExTrans
 copy InsertTargetText.py Install\Modules\FLExTrans
 copy Sleep.py Install\Modules\FLExTrans
+copy RunApertium.py Install\Modules\FLExTrans
 copy readconfig.py Install\Modules\FLExTrans\Lib
 copy Utils.py Install\Modules\FLExTrans\Lib
 copy subdirs.pth Install\Modules
@@ -22,7 +23,7 @@ copy *.t1x Install
 copy replace.dix Install
 copy stamp32.exe Install
 cd Install
-"C:\Program Files (x86)\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
+"C:\Program Files\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
 copy /Y FlexTrans.zip ..
 cd ..
 
@@ -37,6 +38,7 @@ copy ExtractSourceText.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy ExtractTargetLexicon.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy InsertTargetText.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy Sleep.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
+copy RunApertium.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans
 copy readconfig.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy Utils.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
 copy MyTableView.py Install\FLExTools1.2.4\FlexTools\Modules\FLExTrans\Lib
@@ -96,7 +98,7 @@ copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
 
 cd Install
-"C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
+"C:\Program Files\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
 cd ..
 
