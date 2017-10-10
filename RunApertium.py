@@ -17,11 +17,6 @@ import platform
 import subprocess
 
 #----------------------------------------------------------------
-# Configurables:
-
-sleepSeconds = 5
-
-#----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {'moduleName'       : "Run Apertium",
