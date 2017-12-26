@@ -27,10 +27,20 @@ alphabet
     display:block;
 } 
 
+a:before
+{
+    content:"[post-gen activation]";
+    color:Green;
+} 
+a
+{
+    display:inline;
+} 
+
 b:before
 {
-    content:"<blank>";
-    color:Lime;
+    content:"[space]";
+    color:Blue;
 } 
 b
 {
@@ -47,6 +57,21 @@ e
     margin-left:.4in;
 } 
 
+g:before
+{
+    content:"[beg-group]";
+    color:Maroon;
+} 
+g
+{
+    display:inline;
+} 
+g:after
+{
+    content:"[end-group]";
+    color:Maroon;
+}
+
 i:before
 {
     content:"identity: ";
@@ -56,6 +81,16 @@ i
 {
     display:inline;
     color:Maroon;
+} 
+
+j:before
+{
+    content:"[join]";
+    color:Orange;
+} 
+j
+{
+    display:inline;
 } 
 
 l:before
@@ -77,6 +112,42 @@ p
 {
     display:inline;
 } 
+
+par:before
+{
+    content:"uses paradigm: ";
+} 
+par[n]
+{
+    display:block;
+    content: text-field(attribute,n,background-color,def-chunk-background-color(),columns,15);
+    margin-left:.4in;
+}
+
+
+pardef:before
+{
+    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Paradigm: " text-field(attribute,n,background-color,def-rule-background-color(),columns,15)
+    " Description: " text-field(attribute,c,background-color,def-rule-background-color(),columns,15);
+} 
+pardef
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+    margin-left:.2in;
+}
+
+pardefs:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+	 " Paradigms: ";
+}
+pardefs
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
 
 r:before
 {
@@ -108,7 +179,7 @@ re
 s
 {
     display:inline;
-    content: text-field(attribute,n,background-color,def-chunk-background-color(),columns,6);
+    content:" "text-field(attribute,n,background-color,def-chunk-background-color(),columns,6);
     color:Black;
 } 
 
@@ -126,7 +197,7 @@ sdef[n]
 
 sdefs:before
 {
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Symbols: ";
 }
 sdefs
@@ -137,7 +208,7 @@ sdefs
 
 section:before
 {
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Section: " text-field(attribute,id,background-color,def-rule-background-color(),columns,15)
 	" Type: " text-field(attribute,type,background-color,def-rule-background-color(),columns,15);
 }

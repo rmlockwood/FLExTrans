@@ -6,7 +6,7 @@
    Element templates 
 ========================================
 -->
-  <cfg:elementTemplate name="blank">
+  <cfg:elementTemplate name="space">
     <b></b>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="entry_pair">

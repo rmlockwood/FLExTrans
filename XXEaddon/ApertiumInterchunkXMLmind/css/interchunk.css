@@ -21,7 +21,7 @@
 action:before
 {
     display:block;
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " action: ";
 }
 action
@@ -182,7 +182,7 @@ contains-substring
 
 def-attr:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,12);
 }
 def-attr
@@ -194,7 +194,7 @@ def-attr
 
 def-cat:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " category: " text-field(attribute,n,background-color,def-cat-background-color(),columns,12);
 }
 def-cat
@@ -206,7 +206,7 @@ def-cat
 
 def-list:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " list: " text-field(attribute,n,background-color,def-list-background-color(),columns,12);
 }
 def-list
@@ -218,7 +218,7 @@ def-list
 
 def-macro:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,16)
     " # of parameters = " 
     text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
@@ -398,7 +398,7 @@ or
 
 otherwise:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " otherwise: ";
 }
 otherwise
@@ -410,7 +410,7 @@ otherwise
 
 out:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " output: ";
 }
 out
@@ -443,7 +443,7 @@ pattern-item
 
 rule:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " rule: " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
 }
 rule
@@ -454,7 +454,7 @@ rule
 }
 section-def-attrs:before
 {
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Attributes: ";
 }
 section-def-attrs
@@ -465,7 +465,7 @@ section-def-attrs
 
 section-def-cats:before
 {
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Categories: ";
 }
 section-def-cats
@@ -477,7 +477,7 @@ section-def-cats
 section-def-lists:before
 {
    display:block;
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Lists: ";
 }
 section-def-lists
@@ -489,7 +489,7 @@ section-def-lists
 section-def-macros:before
 {
    display:block;
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Macros: ";
 }
 section-def-macros
@@ -501,7 +501,7 @@ section-def-macros
 section-def-vars:before
 {
    display:block;
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Variables: ";
 }
 section-def-vars
@@ -512,7 +512,7 @@ section-def-vars
 section-rules:before
 {
    display:block;
-   content:collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box))
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
 	" Rules: ";
 }
 section-rules
@@ -535,7 +535,7 @@ tag
 
 tags:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " tags: " ;
 }
 tags
@@ -573,7 +573,7 @@ var
 
 when:before
 {
-    content: collapser(collapsed-icon, icon(plus-box), expanded-icon, icon(minus-box)) 
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
     " when: ";
 }
 when

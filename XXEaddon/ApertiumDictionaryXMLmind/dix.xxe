@@ -14,6 +14,6 @@
 	<css name="ApertiumDictionary" location="css/dix.css"/>
 	<!-- Following is not right, but we'll need to do something to get spell checker to ignore certain elements -->
 	<spellCheckOptions languageAttribute="lang" skippedElements="langData tree url" useAutomaticSpellChecker="true"/>
-	<schematron location="dix.sch"/>
+	<schematron location="dix.sch" />
 	<saveOptions saveCharsAsEntityRefs="false" indent="none"/>
 </configuration>
