@@ -5,6 +5,12 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.1.3 - 12/26/17 - Ron
+#    Suppress warnings for standard format markers (e.g. \s) and some special
+#    Combinations of a sfm and following text. Also suppress warnings when the
+#    same unknown word occurs more than once, but give a warning that an
+#    unknown word occurred multiple times.
+#
 #   Version 1.1.2 - 1/18/17 - Ron
 #    Scripture text fixes. Surface forms had empty lines. Prevented this.
 #    Changed some comments.
@@ -134,7 +140,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         report.Warning('No analyses found.')
     else:
         report.ProgressStart(obj_cnt+1)
-        
+    
+    prevOutStr = ''    
+    unknownWordList = []
+    multiple_unknown_words = False
     ss = SegmentServices.StTextAnnotationNavigator(contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
@@ -190,20 +199,41 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
         elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
             wfiAnalysis = analysisOccurance.Analysis
-        # We get into this block if there are no analyses for the word or a analysis suggestion hasn't been accepted.
+        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
             outStr = ITsString(analysisOccurance.Analysis.Form.BestVernacularAlternative).Text
             
             if getSurfaceForm:
                 surfaceForm = outStr
+            
+            # Don't give the warning if it's an sfm marker or a number following a \v or \c
+            if outStr[0] == '\\':
+                pass
+            elif (prevOutStr == '\\v' or prevOutStr == '\\c') and outStr.isdigit():
+                pass
+            # or anything after \f or \fr
+            elif prevOutStr == '\\f' or prevOutStr == '\\fr':
+                pass
+            # Don't warn on the second time an unknown word is encountered
+            elif outStr in unknownWordList:
+                multiple_unknown_words = True
+                pass
+            else:
+                report.Warning('No analysis found for the word: '+ outStr + ' Treating this is an unknown word.')
                 
-            report.Warning('No analysis found for the word: '+ outStr + ' Treating this is an unknown word.')
+                # Check if we've had this unknown word already
+                if outStr not in unknownWordList:
+                    # Add this word to the unknown word list
+                    unknownWordList.append(outStr)
+                
+            prevOutStr = outStr
             outStr += '<UNK>'
             
             if getSurfaceForm:
                 bundle_list.append((surfaceForm, '^'+outStr+'$'))
             else:
                 outputStrList.append('^'+outStr+'$')
+            
             continue
         else:
             wfiAnalysis = None
@@ -447,6 +477,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         else:
             outputStrList.append('^'+outStr+'$')
     
+    if multiple_unknown_words:
+        report.Warning('One or more unknown words occurred multiple times.')
     if getSurfaceForm:
         report.Info('Processed '+str(obj_cnt+1)+' analyses.')
         return segment_list
