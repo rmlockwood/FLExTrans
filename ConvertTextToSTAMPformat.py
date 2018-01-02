@@ -271,7 +271,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     num_lines = sum(1 for line in open(out_name))
     report.ProgressStart(num_lines)
     
-    # Read the output file. Sample text: xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: xxx1.1<perspro>$
+    # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
     f_apert = open(out_name, 'r')
     
     # Have to start with a blank line with utf8 files
