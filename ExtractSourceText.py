@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.8 - 12/26/17 - Ron
+#    Report the name of the extracted text.
+#
 #   Version 1.3.7 - 5/3/17 - Ron
 #    Convert punctuation string to unicode
 #
@@ -209,6 +212,7 @@ def MainFunction(DB, report, modifyAllowed):
     getSurfaceForm = False
     outputStrList = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
 
+    report.Info("Export of " + text_desired_eng + " complete.")
     # Write out all the words
     for outStr in outputStrList:
         # Split compound words
