@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.3.9 - 1/10/18 - Ron Lockwood
+#    Moved the split_compounds function into the Utils file for use by
+#    other modules.
+#
 #   Version 1.3.8 - 12/26/17 - Ron
 #    Report the name of the extracted text.
 #
@@ -127,28 +131,6 @@ from collections import defaultdict
 from System import Guid
 from System import String
 
-# Split a compound from one lexical unit containing multiple words to multiple
-# lexical units, one for each word. For example: ^room1.1<n>service1.1<n>number1.1<n>$
-# turns into:                                    ^room1.1<n>$^service1.1<n>$^number1.1<n>$
-def split_compounds(outStr):
-    # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
-    # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
-    toks = re.split('(>[^$<])', outStr)
-    
-    # If there is only one token return from the split, we don't have multiple words just
-    # return the input string
-    if len(toks) > 1:
-        outStr = ''
-        
-        # Every odd token will be the delimeter that was matched in the split operation
-        # Insert $^ between the > and letter of the 2-char delimeter.
-        for i,tok in enumerate(toks):
-            # if we have an odd numbered index
-            if i&1:
-                tok = tok[0]+"$^"+tok[1]
-            outStr+=tok
-    return outStr
-
 def MainFunction(DB, report, modifyAllowed):
     
     # Read the configuration file which we assume is in the current directory.
@@ -216,7 +198,7 @@ def MainFunction(DB, report, modifyAllowed):
     # Write out all the words
     for outStr in outputStrList:
         # Split compound words
-        outStr = split_compounds(outStr)
+        outStr = Utils.split_compounds(outStr)
         f_out.write(outStr.encode('utf-8'))
 
     f_out.close()
