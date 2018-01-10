@@ -4,7 +4,7 @@
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
 #   Version 1.1 1/9/2018 - Ron Lockwood
-#      Use absolute paths.
+#      Use absolute paths and moved most of the code into Utils.
 #
 #   Version 1.0 10/10/2017 - Marc Penner
 #      Extracted call to run Apertium commands
