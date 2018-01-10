@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.6 - 12/24/17 - Ron
+#    Changed the way the replacement file is processed since it is now a fully
+#    valid XML file with two section elements for replacing or appending. We 
+#    now process both the replacement file and the bilingual file with 
+#    ElementTree & Element objects. Loop through objects in both XML files and
+#    replace or add entries from the replacement file in the bilingual dic. file.
+#
 #   Version 1.3.5 - 7/28/17 - Ron
 #    Check that there is a valid target POS before processing the POS names and 
 #    abbreviations.
@@ -67,6 +74,7 @@ import ReadConfig
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
+import xml.etree.ElementTree as ET
 
 from FTModuleClass import FlexToolsModuleClass
 
@@ -144,10 +152,16 @@ def is_number(s):
         return False
 
 # Use the replacement file specified by BilingualDictReplacmentFile in the
-# configuration file to replace lines in the bilingual dictionary.    
-# Two types of lines are in the replacement file, <sdef> lines which need to be added to the
-# symbol definition section and lemma lines which are inserted and the old lemma lines are
-# commented out.
+# configuration file to replace or add entries in or to the bilingual dictionary.    
+# Two types of entries are in the replacement file, replacement entries and append entries.
+# These are found in two different section elements. For the replacement entries, the 
+# matching lemma in the bilingual file is found and replaced. The old lemma is shown in 
+# a comment along with an info. comment that says there was a replacement made there.
+# For append entries, they are just added at the end of the section element of the bilingual
+# dictionary. For the replacement file to be valid, it has to have all the symbols defined
+# in its symbol definition section <sdefs>. This function takes all those symbol definitions
+# and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
+# indicate where the new <sdef> elements start.
 def do_replacements(configMap, report, fullPathBilingFile):
 
     # See if we need to do replacements
@@ -161,80 +175,125 @@ def do_replacements(configMap, report, fullPathBilingFile):
     if not replFile:
         return
     
+    # Save a copy of the bilingual dictionary
     shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
-    f_a = open(fullPathBilingFile+'.old')
-    f_b = open(fullPathBilingFile,'w')
+
+    # Parse the replacement file as XML
     try:
-        f_r = open(replFile)
+        replEtree = ET.parse(replFile)
     except IOError:
         report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return
     
     replMap = {}
-    s_lines = []
-    append_lines = []
-    insertion_not_done = True
-    do_append = False
+    replRoot = replEtree.getroot()
     
-    # First read the replacement file. Comment lines are ignored.
-    # Read the additional sdef lines into a list.
-    # Read the replacement lines into a map with the lemma as the key
-    for line_r in f_r:
-        line_r = unicode(line_r, 'utf-8')
-        
-        g = re.search(r'lines to be appended',line_r)
-        if g:
-            do_append = True
-            
-        g = re.search(r'<sdef ',line_r)
-        if g:
-            s_lines.append(line_r)
-            continue
-            
-        g = re.search(r'<[li]>(.+?)<s',line_r) # get the lemma which is between <l> or <i> and <s...>
-        if g:
-            if do_append == True:
-                append_lines.append(line_r)
-            else: # replacement lines
-                replMap[g.group(1)] = line_r
+    ## Put the replacement entries into a map
+    # Get the replacement entries section
+    repl_sec = replRoot.find(".//*[@id='replacement']")
     
-    # Read through the bilingual dictionary
-    for line in f_a:
-        line = unicode(line, 'utf-8')
+    # Loop through the entries in this section
+    for entry in repl_sec:
+        # Get the <l> text which is under the <p> which is under the <e>
+        left = entry.find('p/l')
+        replMap[left.text] = entry
+    
+    # Read in the bilingual xml file
+    try:
+        bilingEtree = ET.parse(fullPathBilingFile)
+    except IOError:
+        report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
+        return
+    
+    ## Add in new symbol definitions from the replacement file
+    
+    bilingRoot = bilingEtree.getroot()
+    
+    # Get symbol definitions element (sdefs)
+    bilingSdefs = bilingRoot.find('sdefs')
+    replSdefs = replRoot.find('sdefs')
+    
+    # Add a comment before the new sdefs get added
+    comment = ET.Comment('Inserted symbol definitions from replacement file')
+    bilingSdefs.append(comment)
+    
+    # Loop through the replacement sdefs
+    for symbol_def in replSdefs:
+        # add the sdef element from repl file to the end of the biling sdefs list
+        bilingSdefs.append(symbol_def)
         
-        # if we find the first sdef line, insert the ones from the replace file here
-        g = re.search(r'<sdef ',line)
-        if insertion_not_done and g:
-            insertion_not_done = False
-            # Leave comments before and after the inserted lines
-            f_b.write('<!-- Inserted sdef lines from replace file -->\n')
-            for sdef_line in s_lines:
-                f_b.write(sdef_line.encode('utf-8'))
-            f_b.write('<!-- end of insertion -->\n')
-            
-        # get current lemma
-        g = re.search(r'<[li]>(.+?)<s',line)
-        if g:
-            # we we match on the current lemma, do the replacement
-            if g.group(1) in replMap:
-                # Leave a comment before the old line 
-                f_b.write('<!-- This line replaced with the one below it from the file ' + replFile + ' -->\n')
-                line = line.rstrip()
-                # Comment out the old line
-                f_b.write('<!-- '+line.encode('utf-8')+'-->\n')
-                f_b.write(replMap[g.group(1)].encode('utf-8'))
-                continue
-
-        # find the end of the section
-        g = re.search(r'/section',line)
-        if g:
-            # Append the new lines now
-            f_b.write('<!-- Custom lines appended below. -->\n')
-            for new_line in append_lines:
-                f_b.write(new_line.encode('utf-8'))
-            
-        f_b.write(line.encode('utf-8'))
+    ## Find entries that match replacement entries, comment out the old and insert the new
+    
+    # Get the section element
+    biling_section = bilingRoot.find('section')
+    
+    # Create a new section element to replace the old
+    new_biling_section = ET.Element('section')
+    new_biling_section.attrib = biling_section.attrib
+    
+    # Loop through all the bilingual entries
+    for entry in biling_section:
+        # Get the left lemma text
+        left = entry.find('p/l')
         
+        # If we can't find it, use the identity text <e> should either have <l> (and <r>) or <i>
+        if not left:
+            left = entry.find('i')
+        
+        # See if we have a match for replacing the entry
+        if left.text in replMap:
+            
+            # Create a comment containing the old entry and a note and insert them into the entry list
+            comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.')
+            
+            # Create string with the old contents of the entry. Using tostring() didn't work because of &# symbols come out for non-ascii text
+            if left.tag == 'i':
+                s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+            else:
+                s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+                s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
+                
+            comment2 = ET.Comment(s)
+            
+            new_biling_section.append(comment1)
+            new_biling_section.append(comment2)
+            
+            # Insert the new entry from the replacement file map
+            new_biling_section.append(replMap[left.text])
+            
+        else: # copy the old entry to the new
+            new_biling_section.append(entry)
+    
+    ## Add the entries from the replacement file marked as 'append'
+    
+    # Get the append entries section
+    append_sec = replRoot.find(".//*[@id='append']")
+    
+    # Make a comment and adds it
+    comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.')
+    new_biling_section.append(comment)
+    
+    # Loop through these entries
+    for entry in append_sec:
+        # add them to the list of bilingual entries
+        new_biling_section.append(entry)
+        
+    # Remove the old entries list and add the new
+    bilingRoot.remove(biling_section)
+    bilingRoot.append(new_biling_section)
+    
+    bilingEtree.write(fullPathBilingFile, 'utf-8', True)
+    
+    # Insert the DOCTYPE as the 2nd line of the file.
+    f = open(fullPathBilingFile, "r")
+    contents = f.readlines()
+    f.close()
+    contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+    f = open(fullPathBilingFile, 'w')
+    contents = "".join(contents)
+    f.write(contents)
+    f.close()
+    
 def get_sub_ics(mySubClasses):
     ic_list = []
     for ic in mySubClasses:
@@ -342,6 +401,8 @@ def MainFunction(DB, report, modifyAllowed):
 
     report.Info("Outputing category information...")
     
+    f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
+    f_out.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
     f_out.write('<dictionary>\n')
     f_out.write('  <alphabet/>\n')
     f_out.write('  <sdefs>\n')
