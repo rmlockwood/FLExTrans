@@ -176,8 +176,7 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
 # Split a compound from one lexical unit containing multiple words to multiple
-# lexical units, one for each word. For example: ^room1.1<n>service1.1<n>number1.1<n>$
-# turns into:                                    ^room1.1<n>$^service1.1<n>$^number1.1<n>$
+# lexical units, 
 def split_compounds(outStr):
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
