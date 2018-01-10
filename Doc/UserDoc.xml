@@ -959,17 +959,6 @@ id="sFormalities"
 ><li
 >There are no recursive rules. Rules match fixed-length patterns. There is no optionality at the level of words. There is no way of saying one or more, it’s just one.</li
 ><li
-><object
-type="tTool"
->Apertium’s</object
-> rules are very tied to the <object
-type="tTool"
->Apertium</object
-> <genericRef
-gref="sDataStreamFormat"
->data stream format</genericRef
->. If you don’t understand the data stream format, it will be much more difficult to understand the rules.</li
-><li
 >Rules contain both declarative parts and procedural parts. You can’t just expect to say what you want or how you want to do it. You need to do both -- but in different places (but it’s quite intuitive).</li
 ><li
 >Patterns match only on the source side, not on the target side.</li
@@ -1051,11 +1040,59 @@ num="xLexXfer"
 ><single
 ><langData
 lang="lVernacular"
->^slword&lt;sometag&gt;$ -&gt; ^tlword&lt;sometag&gt;$ <br
+>slword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> -&gt; tlword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <br
 ></br
->^slword1&lt;sometag&gt;&lt;blah&gt;$ -&gt; ^tlword3&lt;sometag&gt;&lt;foo&gt;$ <br
+>slword1<object
+type="tSubscript"
+>2.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>blah</object
+> -&gt; tlword3<object
+type="tSubscript"
+>1.2</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>foo</object
+><br
 ></br
->^slword3&lt;sometag&gt;&lt;blah&gt;$ -&gt; ^tlword2&lt;sometag&gt;&lt;GD&gt;$</langData
+>slword3<object
+type="tSubscript"
+>3.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>blah</object
+> -&gt; tlword2<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>GD</object
+></langData
 ></single
 ></example
 ><p
@@ -1069,11 +1106,35 @@ num="xStrXfer"
 ><single
 ><langData
 lang="lVernacular"
->^tlword&lt;sometag&gt;$ ^tlword3&lt;sometag&gt;&lt;foo&gt;$ ^tlword2&lt;sometag&gt;&lt;GD&gt;$</langData
+>tlword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> tlword3<object
+type="tSubscript"
+>1.2</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>foo</object
+> tlword2<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>somecat</object
+> <object
+type="tluAffix"
+>GD</object
+></langData
 ></single
 ></example
 ><p
->When you are in the structural transfer stage, you have access to both the source and target sides of the translation. After the structural transfer stage, you only have access to the target side.</p
+>When you are in the structural transfer stage, you have access to both the source and target sides of the translation.</p
 ><section4
 id="sLexTransProc"
 ><secTitle
@@ -1091,18 +1152,32 @@ num="xInputLexUnit"
 ><single
 ><langData
 lang="lVernacular"
->^slword&lt;tag1&gt;&lt;tag2&gt;&lt;tag3&gt;$</langData
+>slword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cat1</object
+> <object
+type="tluAffix"
+>aff2</object
+> <object
+type="tluAffix"
+>aff3</object
+></langData
 ></single
 ></example
 ><p
 >If we have the following in the bilingual dictionary:</p
 ><example
 num="xBiLingEntry"
-><single
-><langData
-lang="lVernacular"
->&lt;e&gt;&lt;p&gt;&lt;l&gt;slword&lt;s n="tag1"/&gt;&lt;s n="tag2"/&gt;&lt;/l&gt;&lt;r&gt;tlword&lt;s n="tag1"/&gt;&lt;/r&gt;&lt;/p&gt;&lt;/e&gt;</langData
-></single
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:75%"
+src="Images/RulesTutSampBilEntry.PNG"
+></img
+></chart
 ></example
 ><p
 >Which gives the following mapping in terms of lexical units:</p
@@ -1111,7 +1186,22 @@ num="xMappingSample"
 ><single
 ><langData
 lang="lVernacular"
->^slword&lt;tag1&gt;&lt;tag2&gt;$ -&gt; ^tlword&lt;tag1&gt;$</langData
+>slword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cat1</object
+> <object
+type="tluAffix"
+>aff2</object
+> -&gt; tlword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cat1</object
+></langData
 ></single
 ></example
 ><p
@@ -1121,7 +1211,16 @@ num="xLexXferResult"
 ><single
 ><langData
 lang="lVernacular"
->^tlword&lt;tag1&gt;&lt;tag3&gt;$</langData
+>tlword<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cat1</object
+> <object
+type="tluAffix"
+>aff3</object
+></langData
 ></single
 ></example
 ><p
@@ -1131,15 +1230,18 @@ num="xBiLingEntry"
 ></exampleRef
 >, is produced by replacing two tags on the source side (i.e. <langData
 lang="lVernacular"
->&lt;s n="tag1"/&gt;&lt;s n="tag2"/&gt;</langData
+>cat1 aff2</langData
 >) with one tag on the target side (i.e. <langData
 lang="lVernacular"
->&lt;s n="tag1"/&gt;</langData
+>cat1</langData
 >).</p
 ><p
 >Important: any source language tags not matched in the bilingual dictionary entry are copied into the output on the target language side. In our example, <langData
 lang="lVernacular"
->&lt;tag3&gt;</langData
+><object
+type="tluAffix"
+>aff3</object
+></langData
 > in <exampleRef
 letter="xInputLexUnit"
 num="xInputLexUnit"
@@ -1369,10 +1471,13 @@ type="tFoldername"
 >FlexTools\Output</object
 > folder.</li
 ><li
->Delete the file <object
+>Delete the files <object
 type="tFilename"
 >transfer_rules.t1x.bin</object
-> if it exists.</li
+> and <object
+type="tFilename"
+>tr.t1x</object
+> if they exist.</li
 ><li
 >Open <object
 type="tFilename"
@@ -1381,6 +1486,32 @@ type="tFilename"
 type="tXMLmindXMLEditor"
 ></object
 >.</li
+></ol
+></li
+><li
+>We will be changing the configuration file so let’s rename the current one.<ol
+><li
+>Go to the <object
+type="tFoldername"
+>FlexTools</object
+> folder and rename the file <object
+type="tFilename"
+>FlexTrans.config</object
+> to <object
+type="tFilename"
+>FlexTrans_saved.config</object
+>.</li
+><li
+>Go to the <object
+type="tFoldername"
+>FLExTrans Documentation\Transfer Rules Tutorial</object
+> folder again and copy the file <object
+type="tFilename"
+>FlexTrans.config</object
+> to the <object
+type="tFoldername"
+>FlexTools</object
+> folder.</li
 ></ol
 ></li
 ><li
@@ -1427,6 +1558,14 @@ lang="hr"
 type="tFlexxTools"
 ></object
 > app.</li
+><li
+>Click the <object
+type="tButton"
+>Database</object
+> button, select <object
+type="tBoldItalic"
+>Croatian-FLExTrans-Sample</object
+> and close the Choose Database box.</li
 ><li
 >Click the <object
 type="tButton"
@@ -1477,44 +1616,104 @@ border="1"
 >Input:<endnote
 id="nInputFile"
 ><p
->You would see this in the <object
+>You would see this if you use the <object
+type="tModule"
+>View Source/Target Apertium File Tool</object
+>. It is the friendly view of the file <object
 type="tFilename"
 >source_text.aper</object
-> file in the <object
+> in the <object
 type="tFoldername"
 >Output</object
-> folder.</p
+> folder. The actual content looks like this: <langData
+lang="lVernacular"
+>^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
+></p
 ></endnote
 ></th
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs</object
+> <object
+type="tluAffix"
+>sg</object
+> <object
+type="tluAffix"
+>2</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^tiho1.1&lt;adv&gt;$</langData
+>tiho<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>adv</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^i1.1&lt;coordconn&gt;$</langData
+>i<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>coordconn</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^bez1.1&lt;prep&gt;$</langData
+>bez<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>prep</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$ </langData
+>pozdrav<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>gen_sg</object
+> </langData
 ></td
 ></tr
 ><tr
@@ -1522,44 +1721,107 @@ lang="lVernacular"
 >Output:<endnote
 id="nOutputFile"
 ><p
->You would see this in the <object
+>You would see this if you use the <object
+type="tModule"
+>View Source/Target Apertium File Tool</object
+> and click the <object
+type="tButton"
+>Target</object
+> button. It is the friendly view of the file <object
 type="tFilename"
 >target_text.aper</object
-> file in the <object
+> in the <object
 type="tFoldername"
 >Output</object
-> folder.</p
+> folder. The actual content looks like this: <langData
+lang="lVernacular"
+>^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
+></p
 ></endnote
 ></th
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ </langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+> </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>be<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs</object
+> <object
+type="tluAffix"
+>sg</object
+> <object
+type="tluAffix"
+>2</object
+> </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^quietly1.1&lt;adv&gt;$ </langData
+>quietly<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>adv</object
+> </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^and1.1&lt;coordconn&gt;$ </langData
+>and<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>coordconn</object
+> </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^without1.1&lt;prep&gt;$ </langData
+>without<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>prep</object
+> </langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^word1.1&lt;n&gt;&lt;gen_sg&gt;$ </langData
+>word<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>gen_sg</object
+> </langData
 ></td
 ></tr
 ></table
@@ -1574,25 +1836,34 @@ id="sThinking"
 letter="xCroatEngDataStreamTable"
 num="xCroatEngDataStreamTable"
 ></exampleRef
-> into an adequate form for target language synthesis. NB: If we want to change information, it’s a procedure; if we want to output it or not, it’s a declaration.</p
+> into an adequate form for target language synthesis. NB: If we want to change information, it’s a procedure; if we want to output information or not output information, it’s a declaration.</p
 ><section4
 id="sProc"
 ><secTitle
 >Procedures</secTitle
 ><ol
 ><li
->If the source language grammatical category tag is <langData
+>If the source language grammatical category tag is<langData
 lang="lVernacular"
->&lt;ptcp_f_sg&gt;</langData
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 >, change the target language tag to <langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 ><endnote
 id="nPastSuf"
 ><p
 ><langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+> <object
+type="tluAffix"
+>pst</object
+></langData
 > corresponds to the past suffix in the English <object
 type="tFlexx"
 ></object
@@ -1618,20 +1889,6 @@ lang="hr"
 ><li
 >Output nouns with their grammatical category (but not number or case).</li
 ></ol
-><p
->Keep in mind, words should be outputted encapsulated in <langData
-lang="lVernacular"
->^</langData
-> and <langData
-lang="lVernacular"
->$</langData
->. Tags should be outputted encapsulated in <langData
-lang="lVernacular"
->&lt;</langData
-> and <langData
-lang="lVernacular"
->&gt;</langData
->.</p
 ></section4
 ><section4
 id="sWorkOrder"
@@ -1650,12 +1907,18 @@ type="tFlextrans"
 ></ul
 ></li
 ><li
->Second, we’re going to edit that rule to change the source language tag from <langData
+>Second, we’re going to edit that rule to change the source language tag from<langData
 lang="lVernacular"
->&lt;ptcp_f_sg&gt;</langData
-> to <langData
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
+> to<langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+> <object
+type="tluAffix"
+>pst</object
+></langData
 > (procedure: 1).<ul
 ><li
 >Define the attribute of “tense”.</li
@@ -1664,7 +1927,7 @@ lang="lVernacular"
 ><li
 >Third, we’re going to edit the same rule to not output aspect (declaration: 2).<ul
 ><li
->Define the attribute for grammatical category and add the tag for verb.</li
+>Define the attribute for grammatical category and add the tag for “verb”.</li
 ></ul
 ></li
 ><li
@@ -1707,12 +1970,45 @@ border="1"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 ></td
 ></tr
 ><tr
@@ -1721,12 +2017,45 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;$ </langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>pst</object
+> </langData
 ></td
 ></tr
 ><tr
@@ -1735,12 +2064,42 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pst&gt;$ </langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pst</object
+> </langData
 ></td
 ></tr
 ><tr
@@ -1749,12 +2108,57 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ </langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv</object
+> <object
+type="tluAffix"
+>ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^Propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$ ^leave1.1&lt;v&gt;&lt;pst&gt;$ </langData
+>Propers<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>pro</object
+> <object
+type="tluAffix"
+>nom</object
+> <object
+type="tluAffix"
+>2</object
+> <object
+type="tluAffix"
+>sg</object
+> leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pst</object
+> </langData
 ></td
 ></tr
 ><tr
@@ -1763,12 +2167,27 @@ lang="lVernacular"
 ><td
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
+>pozdrav<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>gen_sg</object
+></langData
 ></td
 ><td
 ><langData
 lang="lVernacular"
->^word1.1&lt;n&gt;$</langData
+>word<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+></langData
 ></td
 ></tr
 ></table
@@ -1850,7 +2269,25 @@ num="xStep0Source"
 ><single
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></single
 ></example
 ><p
@@ -1866,7 +2303,25 @@ num="xStep0Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv ptcp_f_sg</object
+> be<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></single
 ></example
 ><p
@@ -1934,22 +2389,37 @@ type="tRuleElemInXXE"
 ><p
 >Why do we need <langData
 lang="lVernacular"
->.*</langData
+><object
+type="tBold"
+>.*</object
+></langData
 > in the <object
 type="tRuleElemInXXE"
 >tags</object
 > elements? This is because of how the matching system for categories works. In the middle of tag sequences, a <langData
 lang="lVernacular"
->*</langData
+><object
+type="tBold"
+>*</object
+></langData
 > is counted as a single tag. At the end, it is counted as any sequence of tags. So, what we have is <langData
 lang="lVernacular"
->&lt;v&gt;</langData
+><object
+type="tluGrammCat"
+>v</object
+></langData
 > followed by any tag, followed by <langData
 lang="lVernacular"
->&lt;ptcp_f_sg&gt;</langData
+><object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 > followed by any sequence of tags.</p
 ><p
->Note: we are using the convention of starting all categories with “c_”.</p
+>Note: we are using the convention of starting all categories with “<object
+type="tBold"
+>c_</object
+>”.</p
 ></li
 ><li
 >Edit the example rule and replace the pattern as shown. Also change the rule comment to “Past Construction”.<example
@@ -1994,7 +2464,10 @@ num="xOutput1"
 ></exampleRef
 > (“pos: 1” means the word in position 1). We are not outputting the word in position 2. The result is that our <langData
 lang="lVernacular"
->biti1.1</langData
+>biti<object
+type="tSubscript"
+>1.1</object
+></langData
 > word will disappear.</p
 ><example
 num="xOutput1"
@@ -2040,7 +2513,16 @@ num="xStep1Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv ptcp_f_sg</object
+></langData
 ></single
 ></example
 ><p
@@ -2061,14 +2543,26 @@ type="tRuleElemInXXE"
 ></br
 >So, now that we’ve gotten rid of the verb “be”, we want to change the tag for tense from <langData
 lang="lVernacular"
->&lt;ptcp_f_sg&gt;</langData
+><object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 > to <langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 >. This will involve using a procedure statement, explicitly telling the transfer what we want to change. But before that, we need to define which possible values our feature can take. We do this with the <object
 type="tRuleElemInXXE"
 >attribute</object
-> element. Let’s call it “a_tense”. Note we are using the convention of starting all attributes with “a_”.<br
+> element. Let’s call it “<object
+type="tBold"
+>a_tense</object
+>”. Note we are using the convention of starting all attributes with “<object
+type="tBold"
+>a_</object
+>”.<br
 ></br
 ><br
 ></br
@@ -2132,10 +2626,16 @@ num="xLet1"
 ></exampleRef
 > will always change the target language tag to <langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 >, even if the input is not <langData
 lang="lVernacular"
->&lt;ptcp_f_sg&gt;</langData
+><object
+type="tluAffix"
+>ptcp_f_sg</object
+></langData
 >. This is good enough for our current example, but for a description of how conditional statements work, see ...<object
 type="tItalic"
 >[TO BE WRITTEN]</object
@@ -2159,7 +2659,16 @@ num="xStep2Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;pst&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv pst</object
+></langData
 ></single
 ></example
 ><p
@@ -2178,22 +2687,43 @@ num="xLexUnitWhole"
 ><p
 >An important thing to know about lexical transfer is that any source language tags not matched in the bilingual dictionary are copied into the output on the target language side. In our case, <langData
 lang="lVernacular"
->&lt;pfv&gt;&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pfv pst</object
+></langData
 > are the tags that get copied from source to target because, in the bilingual dictionary (<object
 type="tFilename"
 >bilingual.dix</object
 >), <langData
 lang="lVernacular"
->otići1.1&lt;v&gt;</langData
+>otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+></langData
 > maps to <langData
 lang="lVernacular"
->leave1.1&lt;v&gt;</langData
+>leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+></langData
 >. All we need is the <langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 > tag; we don’t need the <langData
 lang="lVernacular"
->&lt;pfv&gt;</langData
+><object
+type="tluAffix"
+>pfv</object
+></langData
 > tag, so we need to declare that it should not be outputted.</p
 ><ol
 ><li
@@ -2203,7 +2733,10 @@ lang="lVernacular"
 ></br
 >We have already defined the feature “tense”: the only remaining tag we need to output is the grammatical category, i.e. <langData
 lang="lVernacular"
->&lt;v&gt;</langData
+><object
+type="tluGrammCat"
+>v</object
+></langData
 > meaning verb. So, make a new attribute element for grammatical category.<example
 num="xAttrGramCat"
 ><chart
@@ -2243,7 +2776,10 @@ src="Images/RulesTutLexUnit3Clips.PNG"
 ></example
 >The last two features we know, as we’ve just added them. The “lem” feature is a predefined feature which corresponds to lemma, i.e. the part before the tags. In this example it would be <langData
 lang="lVernacular"
->leave1.1</langData
+>leave<object
+type="tSubscript"
+>1.1</object
+></langData
 >. There are other predefined features, but if you remember this one and “whole” which corresponds to the whole lexical unit, you have the main ones.<br
 ></br
 ><br
@@ -2262,13 +2798,25 @@ num="xStep3Target"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pst</object
+></langData
 ></single
 ></example
 ><p
 >Woo! What just happened was that we magically deleted the unwanted <langData
 lang="lVernacular"
->&lt;pfv&gt;</langData
+><object
+type="tluAffix"
+>pfv</object
+></langData
 > tag by not specifying that we wanted it. Tag deletion is thus not stated as tag deletion (tag → 0), but by not declaring it.</p
 ><p
 >Now we should have a lexical form for “leave” which we can synthesize. Let’s give it a go:</p
@@ -2322,10 +2870,16 @@ type="tItalic"
 >Left</object
 > is now there correctly. It’s beyond the scope of this exercise to explain in detail how the synthesis works in this case, but the tag <langData
 lang="lVernacular"
->&lt;pst&gt;</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 > matches the feature <langData
 lang="lVernacular"
->pst</langData
+><object
+type="tluAffix"
+>pst</object
+></langData
 > on the variant form of the verb <object
 type="tItalic"
 >leave</object
@@ -2344,7 +2898,25 @@ num="xStep4Input"
 ><single
 ><langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$</langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv ptcp_f_sg</object
+> biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+></langData
 ></single
 ></example
 ><p
@@ -2354,7 +2926,16 @@ num="xStep4CurrentTarget"
 ><single
 ><langData
 lang="lVernacular"
->^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+>Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pst</object
+></langData
 ></single
 ></example
 ><p
@@ -2376,7 +2957,16 @@ num="xStep4TargetGoal"
 ><single
 ><langData
 lang="lVernacular"
->^propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$</langData
+>propers<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>pro</object
+> <object
+type="tluAffix"
+>nom 2 sg</object
+></langData
 ></single
 ></example
 ><p
@@ -2431,10 +3021,22 @@ type="tFlextrans"
 ></br
 >So, we need to take the person and number information from the verb “be”, and the rest we need to just declare to be outputted. Let’s start with outputting the string <langData
 lang="lVernacular"
->^propers1.1&lt;pro&gt;&lt;nom&gt;$</langData
+>propers<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>pro</object
+> <object
+type="tluAffix"
+>nom</object
+></langData
 >; we won’t worry about the <langData
 lang="lVernacular"
->&lt;2&gt;&lt;sg&gt;</langData
+><object
+type="tluAffix"
+>2 sg</object
+></langData
 > tags yet.<br
 ></br
 ><br
@@ -2456,30 +3058,52 @@ src="Images/RulesTutLexUnitPron.PNG"
 >The <object
 type="tRuleElemInXXE"
 >lexical unit</object
-> statement outputs a <langData
+> statement means we are outputting a word<endnote
+id="nLexUnit"
+><p
+>In our <object
+type="tFilename"
+>target_text.aper</object
+> file it puts a <langData
 lang="lVernacular"
 >^</langData
 > and <langData
 lang="lVernacular"
 >$</langData
-> before and after the contents contained within it. The <object
+> before and after the contents contained within it.</p
+></endnote
+>. The <object
 type="tRuleElemInXXE"
 >literal string</object
 > element outputs the given string of characters, and the <object
 type="tRuleElemInXXE"
 >literal tag</object
-> element outputs a tag sequence which starts with a <langData
+> element outputs a tag sequence<endnote
+id="nTagSeq"
+><p
+>In our <object
+type="tFilename"
+>target_text.aper</object
+> file each tag starts with a <langData
 lang="lVernacular"
 >&lt;</langData
 >, ends with a <langData
 lang="lVernacular"
->&gt;</langData
-> and where each <langData
+>&gt;.</langData
+></p
+></endnote
+>. Multiple tags are separated by a period, so in this case two tags we are outputting two tags: <langData
 lang="lVernacular"
->.</langData
-> is replaced with <langData
+><object
+type="tluGrammCat"
+>pro</object
+></langData
+> and <langData
 lang="lVernacular"
->&gt;&lt;</langData
+><object
+type="tluAffix"
+>nom</object
+></langData
 >. The <object
 type="tRuleElemInXXE"
 >blank space</object
@@ -2504,13 +3128,7 @@ src="Images/RulesTutAttrNumPer.PNG"
 ></example
 ></li
 ><li
->We then go back to our skeleton pronoun and add the missing features. We also need a <object
-type="tRuleElemInXXE"
->blank space</object
-> element after the <object
-type="tRuleElemInXXE"
->lexical unit</object
-> element.<example
+>We then go back to our skeleton pronoun and add the missing features.<example
 num="xLexUnitPronPerNum"
 ><chart
 ><img
@@ -2525,13 +3143,13 @@ num="xLexUnitPronPerNum"
 ></exampleRef
 > makes a copy of the part of the lexical unit in position 2, on the source language side, which matches one of the patterns defined in the attribute element “a_pers” (which can be either <langData
 lang="lVernacular"
->&lt;1&gt;</langData
+> 1</langData
 >, <langData
 lang="lVernacular"
->&lt;2&gt;</langData
+> 2</langData
 > or <langData
 lang="lVernacular"
->&lt;3&gt;</langData
+> 3</langData
 >). If we look at the lexical transfer output, that is internally coming from the bilingual dictionary for position 2, this will become clearer:<br
 ></br
 ><br
@@ -2541,15 +3159,33 @@ num="xStep4Diagram"
 ><single
 ><langData
 lang="lVernacular"
->^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ -&gt; ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$<br
+>biti<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+> -&gt; be<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>cop</object
+> <object
+type="tluAffix"
+>prs sg 2</object
+><br
 ></br
->|                      | |    |                      |<br
+>|                ||   |              |<br
 ></br
->|                 person |    |                      |<br
+>|           person|   |              |<br
 ></br
->|________________________|    |______________________|<br
+>|_________________|   |______________|<br
 ></br
->    source language                target language</langData
+>  source language      target language</langData
 ><langData
 lang="lVernacular"
 ></langData
@@ -2557,7 +3193,16 @@ lang="lVernacular"
 ></example
 >If we tried to clip from position 1 (<langData
 lang="lVernacular"
->^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$</langData
+>Otići<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pfv ptcp_f_sg</object
+></langData
 >), we would get no result for the person attribute because the verb in position 1 does not contain any tags which match the tags in the definition for person.<br
 ></br
 ><br
@@ -2576,7 +3221,25 @@ num="xStep4Target"
 ><single
 ><langData
 lang="lVernacular"
->^propers1.1&lt;pro&gt;&lt;nom&gt;&lt;2&gt;&lt;sg&gt;$ ^Leave1.1&lt;v&gt;&lt;pst&gt;$</langData
+>propers<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>pro</object
+> <object
+type="tluAffix"
+>nom 2 sg</object
+> Leave<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>pst</object
+></langData
 ></single
 ></example
 ><p
@@ -2790,7 +3453,16 @@ num="xStep5Source"
 ><single
 ><langData
 lang="lVernacular"
->^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
+>pozdrav<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>gen_sg</object
+></langData
 ></single
 ></example
 ><p
@@ -2800,7 +3472,13 @@ num="xStep5Target"
 ><single
 ><langData
 lang="lVernacular"
->^word1.1&lt;n&gt;$</langData
+>word<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+></langData
 ></single
 ></example
 ><p
@@ -2833,7 +3511,13 @@ textBefore="none"
 ></sectionRef
 >. The string you need to output is <langData
 lang="lVernacular"
->^a1.1&lt;indf&gt;$</langData
+>a<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>indf</object
+></langData
 >.</p
 ><p
 >You can find the solution transfer file called <object
@@ -2912,6 +3596,33 @@ cssSpecial="width:60%"
 src="Images/LexicalUnit.PNG"
 ></img
 ></chart
+><p
+>You can use the <object
+type="tTool"
+>View Source/Target Apertium File Tool</object
+> for a more friendly view of the data stream format found in the files <object
+type="tFilename"
+>source_text.aper</object
+> and <object
+type="tFilename"
+>target_text.aper</object
+>. The above lexical unit looks like this in the friendly view:</p
+><p
+><langData
+lang="lVernacular"
+>take<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>v</object
+> <object
+type="tluAffix"
+>3sg</object
+></langData
+></p
+><p
+>The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored in green.</p
 ></section1
 ></appendix
 ><endnotes
@@ -3093,6 +3804,30 @@ id="tFoldername"
 after="Live Rule Tester Tool"
 id="tLiveRuleTester"
 types="tTool"
+></type
+><type
+color="#00B050"
+font-family="Courier New"
+font-size="90%"
+id="tluAffix"
+></type
+><type
+color="#0070c0"
+font-family="Courier New"
+font-size="90%"
+id="tluGrammCat"
+></type
+><type
+color="#FF0000"
+font-family="Courier New"
+font-size="90%"
+id="tluNotFound"
+></type
+><type
+color="#FFC000"
+font-family="Courier New"
+font-size="90%"
+id="tluPunctuation"
 ></type
 ><type
 color="navy"
