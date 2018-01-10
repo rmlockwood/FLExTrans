@@ -1,6 +1,7 @@
 rem Delete everything in Install
 del /S /Q /F Install\* >nul
 for /d %%i in (Install\*) do @rmdir /s /q "%%i"
+pause
 mkdir Install\Collections
 mkdir Install\Modules\FLExTrans\Lib
 copy CatalogTargetPrefixes.py Install\Modules\FLExTrans
@@ -23,7 +24,7 @@ copy *.t1x Install
 copy replace.dix Install
 copy stamp32.exe Install
 cd Install
-"C:\Program Files\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
+"C:\Program Files (x86)\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
 copy /Y FlexTrans.zip ..
 cd ..
 
@@ -104,7 +105,7 @@ copy SrcTgtViewer.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy "FlexTrans View Source-Target.ini" Install\FLExTools1.2.4\FLExTools\Collections
 
 cd Install
-"C:\Program Files\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
+"C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
 cd ..
 
