@@ -199,7 +199,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="movable">
      <bool>false</bool>
@@ -208,24 +208,6 @@
      <attribute name="title">
       <string>Select Words</string>
      </attribute>
-     <widget class="QPlainTextEdit" name="SelectedWordsEdit">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>135</y>
-        <width>1225</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>9</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(193, 250, 255);</string>
-      </property>
-     </widget>
      <widget class="QComboBox" name="SentCombo">
       <property name="geometry">
        <rect>
@@ -272,6 +254,30 @@
        </property>
       </widget>
      </widget>
+     <widget class="QTextEdit" name="SelectedWordsEdit">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>135</y>
+        <width>1225</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_select_sentences">
      <attribute name="title">
@@ -290,7 +296,7 @@
        <string notr="true">background-color: rgb(255, 220, 213);</string>
       </property>
      </widget>
-     <widget class="QPlainTextEdit" name="SelectedSentencesEdit">
+     <widget class="QTextEdit" name="SelectedSentencesEdit">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -304,8 +310,14 @@
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(193, 250, 255);</string>
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -328,31 +340,10 @@
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(193, 250, 255);</string>
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
       </property>
      </widget>
     </widget>
-   </widget>
-   <widget class="QPlainTextEdit" name="TargetTextEdit">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>379</y>
-      <width>1231</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(203, 255, 211);</string>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
@@ -389,6 +380,11 @@
       <height>245</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(251, 255, 206);</string>
     </property>
@@ -412,7 +408,7 @@
    <widget class="QPushButton" name="CloseButton">
     <property name="geometry">
      <rect>
-      <x>653</x>
+      <x>660</x>
       <y>775</y>
       <width>101</width>
       <height>40</height>
@@ -600,6 +596,27 @@
     </property>
     <property name="text">
      <string>&amp;Unselect All</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="TargetTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>379</y>
+      <width>1231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(229, 255, 236);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
