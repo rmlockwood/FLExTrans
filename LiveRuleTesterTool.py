@@ -1,9 +1,20 @@
 #
-#   LiveRuleTesterTool.py
+#   LiveRuleTesterTool
 #
 #   Ron Lockwood
 #   SIL International
 #   7/2/16
+#
+#   Version 2.2 - 1/10/18 - Ron Lockwood
+#    Added the direct call to Apertium through bash. This uses the same
+#    code that the RunApertium module has. Handle splitting of compounds into parts
+#    just as ExtractSourceText does.
+#
+#   Version 2.1 - 1/2/18 - Ron
+#    Display the lexical units in a more readable manner using the same style
+#    as in the View Source-Target module. Fixed bug where RTL text wasn't detected
+#    properly because there was sfm markers at the beginning. Now we check the 
+#    first 5 sentences to find RTL text.
 #
 #   Version 2.0 - 1/18/17 - Ron
 #    The tool now supports advanced transfer processing. When the .t2x and .t3x
@@ -58,6 +69,9 @@ import sys
 import unicodedata
 import copy
 import time
+import platform
+import subprocess
+
 from PyQt4.QtGui import QFileDialog, QMessageBox
 
 #----------------------------------------------------------------
@@ -161,6 +175,11 @@ class Main(QtGui.QMainWindow):
         self.__postchunkRulesElement = None
         self.TRIndex = None
         self.setStatusBar(None)
+        self.__lexicalUnits = ''
+        
+        # Make sure we are on the 1st tabs
+        self.ui.tabRules.setCurrentIndex(0)
+        self.ui.tabSource.setCurrentIndex(0)
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TestClicked)
@@ -196,6 +215,7 @@ class Main(QtGui.QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Load the transfer rules
         pwd = os.getcwd()
         self.__transfer_rules_file= os.path.join(pwd, OUTPUT_FOLDER, 'transfer_rules.t1x')
         if not self.loadTransferRules():
@@ -203,26 +223,22 @@ class Main(QtGui.QMainWindow):
             self.close()
             return False
         
-        # Simulate a click on the transfer browse button to get the user
-        # to select a transfer file
-        #if self.TransferBrowseClicked() == False:
-        #    self.ret_val = 0
-        #    self.close()
-        
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
 
-        # Check for right to left data and set the sentence list direction if needed
-        # Just check the first surface form for the first word, i.e. word 0, tuple index 0
-        currSent = self.__sent_model.getCurrentSent()
-        
-        # make sure we have some data
-        if len(currSent) > 0:
-            word1 = currSent[0][0]
-            if self.has_RTL_data(word1):
-                self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
-                self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
-                self.__sent_model.setRTL(True)
+        # Check in the first 5 sentences if we have any RTL data and set the sentence list direction if needed
+        found_rtl = False
+        for i,mySent in enumerate(sentence_list):
+            if found_rtl == True or i >= 5:
+                break
+            for myWordBundle in mySent:
+                surface_form = myWordBundle[0]
+                if self.has_RTL_data(surface_form):
+                    self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
+                    self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                    self.__sent_model.setRTL(True)
+                    found_rtl = True
+                    break
         
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
@@ -294,10 +310,36 @@ class Main(QtGui.QMainWindow):
             
     def RefreshClicked(self):
         self.loadTransferRules()
+    def doLexicalUnitProcessing(self, mySent, i, p):
+        # Split compounds
+        # The 2nd part of the tuple has the data stream info.
+        luStr = Utils.split_compounds(mySent[i][1])
+        
+        # parse the lexical units. This will give us tokens before, between 
+        # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
+        #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
+        # in this case we won't have punctuation
+        tokens = re.split('\^|\$', luStr)
+            
+        # process pairs of tokens (white space and lexical unit)
+        # we only care about the 2nd item in the pair, the lexical unit
+        for j in range(0,len(tokens)-1,2):
     
+            # Save the lexical unit in the saved string
+            # Preserve whitespace that may be between compound elements by adding the j+2 item
+            self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
+            
+            # Turn the lexical unit into color-coded html. 
+            Utils.process_lexical_unit(tokens[j+1]+' ', p, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+        
+        # Add a space at the end
+        self.__lexicalUnits += ' '
     def SourceCheckBoxClicked(self):
         mySent = self.__sent_model.getCurrentSent()
-        val = ''
+        self.__lexicalUnits = ''
+        
+        # Create a <p> html element
+        p = ET.Element('p')
         
         # Loop through all the check boxes 
         for i in range(0, len(mySent)):
@@ -305,36 +347,45 @@ class Main(QtGui.QMainWindow):
             # If the check box is checked, put the data stream form into the source box
             if self.__checkBoxList[i].isChecked():
                 
-                # The 2nd part of the tuple has the data stream info.
-                val += mySent[i][1] + ' '
+                # process this lexical unit to set both the lexicalUnits variable
+                # and get an color-coded html element (<p>)
+                self.doLexicalUnitProcessing(mySent, i, p)
         
-        # Add a LTR marker if our text language is RTL
-        if self.__sent_model.getRTL():
-            val = u'\u200E' + val        
+        # The p element now has one or more <span> children, turn them into a string        
+        val = ET.tostring(p)
+        
+        # The text box will turn the html into rich text    
+        self.ui.SelectedWordsEdit.setText(val)                
+    def listSentClicked(self):
+        mySent = self.__sent_model.getCurrentSent()
+        self.__lexicalUnits = ''
+        
+        # Create a <p> html element
+        p = ET.Element('p')
+
+        for i in range(0, len(mySent)):
+
+            # process this lexical unit to set both the lexicalUnits variable
+            # and get an color-coded html element (<p>)
+            self.doLexicalUnitProcessing(mySent, i, p)
+        
+        # The p element now has one or more <span> children, turn them into a string        
+        val = ET.tostring(p)
             
-        self.ui.SelectedWordsEdit.setPlainText(val)                
+        # The text box will turn the html into rich text    
+        self.ui.SelectedSentencesEdit.setText(val)
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
     def getActiveTextEditVal(self):
         if self.ui.tabSource.currentIndex() == 0:
-            ret = self.ui.SelectedWordsEdit.toPlainText()
+            #ret = self.ui.SelectedWordsEdit.toPlainText()
+            ret = self.__lexicalUnits
         elif self.ui.tabSource.currentIndex() == 1:
-            ret = self.ui.SelectedSentencesEdit.toPlainText()
+            #ret = self.ui.SelectedSentencesEdit.toPlainText()
+            ret = self.__lexicalUnits
         else:
             ret = self.ui.ManualEdit.toPlainText()
         return ret
-    def listSentClicked(self):
-        mySent = self.__sent_model.getCurrentSent()
-        
-        # Populate the data stream box with the values from each word in the sentence
-        # tup is (surface_form, datastream_form)
-        val = self.__sent_model.joinTupParts(mySent, 1) # 1 for the 2nd tuple element
-
-        # Add a LTR marker if our text language is RTL
-        if self.__sent_model.getRTL():
-            val = u'\u200E' + val        
-            
-        self.ui.SelectedSentencesEdit.setPlainText(val)
     def __ClearAllChecks(self):
         for check in self.__checkBoxList:
             check.setVisible(False)
@@ -669,9 +720,6 @@ class Main(QtGui.QMainWindow):
         sf = open(source_file, 'w')
         myStr = unicode(self.getActiveTextEditVal())
         
-        # Remove any LTR markers
-        myStr = re.sub(u'\u200E', '', myStr)
-        
         sf.write(myStr.encode('utf-8'))
         sf.close()
         
@@ -708,51 +756,40 @@ class Main(QtGui.QMainWindow):
         ## Display the results
         
         # Clear the results box
-        self.ui.TargetTextEdit.setPlainText('') 
+        self.ui.TargetTextEdit.setText('') 
+
+        # Run the makefile to run Apertium tools to do the transfer
+        # component of FLExTrans. Pass in the folder of the bash
+        # file to run. The current directory is FlexTools
+        ret = Utils.run_makefile('Output\\LiveRuleTester')
         
-        changed = False
-        elapsed_secs = 0
-        start_secs = time.time()
-        
-        # Wait for the modification time of the target text file to be different
-        # It could take up to 3+ seconds for the target file to get created 
-        while not changed and elapsed_secs < 5:
-            
-            # See if target file is changed in the last 4 seconds
-            try:
-                modified_time_in_secs = os.path.getmtime(tgt_file)
-            except:
-                elapsed_secs = 99
-                break
-            
-            current_time_in_secs = time.time()
-            if current_time_in_secs - modified_time_in_secs < 4:
-                changed = True
-                
-            # Calculate elapsed seconds
-            elapsed_secs = current_time_in_secs - start_secs
-            
-        # If it takes more than 5 seconds give an error
-        if elapsed_secs == 99:
-            self.ui.TargetTextEdit.setPlainText('Target file not found!')
-            QApplication.restoreOverrideCursor()
+        if ret:
+            self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
             return
-        elif elapsed_secs >= 5:
-            self.ui.TargetTextEdit.setPlainText('No results!')
-            QApplication.restoreOverrideCursor()
-            return
-        
-        # Pause to allow the target file to be written
-        time.sleep(1)
         
         # Load the target text contents into the results edit box
         tgtf = open(tgt_file)
         target_output = unicode(tgtf.read(),'utf-8')
         
-        # If we have RTL chars, put in some LTR markers
-        if self.has_RTL_data(target_output):
-            target_output = u'\u200E' + re.sub(u'<', u'\u200E<', target_output)
-        self.ui.TargetTextEdit.setPlainText(target_output)
+        # Create a <p> html element
+        p = ET.Element('p')
+
+        # parse the lexical units. This will give us tokens before, between 
+        # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
+        #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
+        tokens = re.split('\^|\$', target_output)
+        
+        # process pairs of tokens (punctuation and lexical unit)
+        # ignore the punctuation (spaces)
+        for i in range(0,len(tokens)-1,2):
+            # Turn the lexical units into color-coded html.            
+            Utils.process_lexical_unit(tokens[i+1]+' ', p, self.has_RTL_data(target_output), True) # last parameter: show UNK categories
+        
+        # The p element now has one or more <span> children, turn them into an html string        
+        val = ET.tostring(p)
+
+        self.ui.TargetTextEdit.setText(val)
+        
         tgtf.close()
         
         # Load the log file
