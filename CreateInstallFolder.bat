@@ -1,7 +1,6 @@
 rem Delete everything in Install
 del /S /Q /F Install\* >nul
 for /d %%i in (Install\*) do @rmdir /s /q "%%i"
-pause
 mkdir Install\Collections
 mkdir Install\Modules\FLExTrans\Lib
 copy CatalogTargetPrefixes.py Install\Modules\FLExTrans
