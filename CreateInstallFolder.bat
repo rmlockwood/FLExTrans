@@ -97,6 +97,12 @@ copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install\FLExTools1.2.4\Fle
 copy VirtualMachineFiles\ForXXE\Makefile Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
 copy VirtualMachineFiles\ForXXE\fix.py Install\FLExTools1.2.4\FlexTools\Output\LiveRuleTester
 
+rem View Source-Target pieces
+copy ViewSrcTgt.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy SrcTgtViewer.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy SrcTgtViewer.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy "FlexTrans View Source-Target.ini" Install\FLExTools1.2.4\FLExTools\Collections
+
 cd Install
 "C:\Program Files\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
