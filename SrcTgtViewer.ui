@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>891</width>
+    <height>702</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Source/Target Viewer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWebView" name="webView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>871</width>
+      <height>591</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="zoomFactor">
+     <double>1.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="OKButton">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>620</y>
+      <width>90</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>OK</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="FontButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>620</y>
+      <width>90</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Font</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="SourceRadio">
+    <property name="geometry">
+     <rect>
+      <x>252</x>
+      <y>622</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="TargetRadio">
+    <property name="geometry">
+     <rect>
+      <x>325</x>
+      <y>622</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Target</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="RTL">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>622</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Right to Left</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="FontNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>114</x>
+      <y>622</y>
+      <width>110</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Arial</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ZoomIncrease">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>620</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ZoomDecrease">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>620</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>–</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ZoomLabel">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>622</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Zoom:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="linkLabel">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>622</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;a href=&quot;file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html&quot;&gt;Open in Browser&lt;/a&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::TextBrowserInteraction</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>891</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
