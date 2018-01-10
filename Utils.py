@@ -5,6 +5,15 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.1.5 - 1/10/18 - Ron Lockwood
+#    Put run_makefile in this file so that both RunApertium and LiveRuleTesterTool
+#    can use it. Put split_compounds in this file so that ExtractSourceText and 
+#    LiveRuleTesterTool can use it.
+#
+#   Version 1.1.4 - 1/1/18 - Ron
+#    Put process_lexical_unit and associated functions in this file so that
+#    both ViewSrcTgt and LiveRuleTesterTool can use it.
+#
 #   Version 1.1.3 - 12/26/17 - Ron
 #    Suppress warnings for standard format markers (e.g. \s) and some special
 #    Combinations of a sfm and following text. Also suppress warnings when the
@@ -29,8 +38,164 @@ import re
 import copy
 import tempfile
 import os
+import xml.etree.ElementTree as ET
+import platform
+import subprocess
+
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+
+# Main color of the headwords
+LEMMA_COLOR = '000000' #black
+# For grammatical category - always the 1st symbol
+GRAM_CAT_COLOR = '0070C0' #blue
+# The color of affixes or other things such as features, classes, etc.
+AFFIX_COLOR = '00B050' #green
+# The color of non-sentence punctuation. Sentence punctuation will be in its
+# own lexical item with <sent> as the category
+PUNC_COLOR = 'FFC000' #orange
+# Lemmas that have cat: UNK
+UNKNOWN_LEMMA_COLOR = 'CC0066' #dark pink
+# The color of UNK
+UNKNOWN_CAT_COLOR = 'FF99FF' #pink
+# The color of a target lemma that is not found (when an @ is there)
+NOT_FOUND_COLOR = 'FF0000' #red
+# The size of the subscript numbers in %. E.g. 50 means the subscripts will be 
+# 50% as big as it normally would be (which is already smaller than normal text)
+SUBSCRIPT_SIZE_PERCENTAGE = '60'
+
+# Run the makefile to run Apertium tools to do the transfer
+# component of FLExTrans. The makefile is run by invoking a
+# bash file. Absolute paths seem to be necessary.
+# relPathToBashFile is expected to be with Windows backslashes
+def run_makefile(relPathToBashFile):
+    
+    # Change path to bash based on the architecture
+    is32bit = (platform.architecture()[0] == '32bit')
+    system32 = os.path.join(os.environ['SystemRoot'],
+                            'SysNative' if is32bit else 'System32')
+    bash = os.path.join(system32, 'bash.exe')
+
+    # Get the current working directory
+    cwd = os.getcwd()
+    cwd = re.sub(r'\\','/',cwd) # change to forward slashes
+    (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
+    drive = re.sub(':','',drive) # remove colon
+    unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
+    dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
+    full_path = "'"+dir_path+"/do_make_direct.sh'"
+    
+    # Create the bash file which mered cds to the appropriate 
+    # directory and runs make. Open as a binary file so that
+    # we get unix line feeds not windows carriage return line feeds
+    f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
+    f.write('#!/bin/sh\n')
+    f.write('cd '+"'"+dir_path+"'"+'\n')
+    f.write('make 2>err_out\n')
+    f.close()
+    
+    cmd = [bash, '-c', full_path]
+    return subprocess.call(cmd)
+    
+
+# Create a span element and set the color and text
+def output_span(parent, color, text_str, rtl):
+    
+    span = ET.Element('span')
+    parent.append(span)
+    span.attrib['style'] = 'color:#' + color
+    
+    # Check for RTL
+    if rtl == True:
+        # prepend the RTL marker
+        text_str = ur'\u200F'+text_str
+        
+    span.text = text_str
+    
+    return span
+
+def add_subscript(span, num):
+    
+    sub = ET.Element('sub')
+    sub.attrib['style'] = 'font-size:' + SUBSCRIPT_SIZE_PERCENTAGE + '%'
+    span.append(sub)
+    sub.text = num
+        
+def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
+    # Split off the symbols from the lemma in the lexical unit (which is i+1)
+    symbols = re.split('<|>', lu_str)
+    symbols = filter(None, symbols) # filter out the empty strings
+    
+    # Lemma is the first one
+    lemma = symbols.pop(0)
+    
+    # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
+    lemma_parts = re.split('(\d+\.\d+)', lemma) # last item is empty
+    
+    # Check for an @
+    if lemma_parts[0][0] == '@':
+        # color it red for not found
+        lexeme_color = NOT_FOUND_COLOR
+        
+        # remove the @
+        lemma_parts[0] = lemma_parts[0][1:]
+        
+    # if the first symbol is UNK, use a special lemma color
+    elif symbols[0] == 'UNK':
+        lexeme_color = UNKNOWN_LEMMA_COLOR
+    else:
+        lexeme_color = LEMMA_COLOR
+    
+    # Output the lexeme
+    span = output_span(parent_element, lexeme_color, lemma_parts[0], rtl)
+    
+    # Output the subscript
+    if len(lemma_parts) > 1:
+        add_subscript(span, lemma_parts[1])
+    
+    # Loop through the symbols
+    for i, symb in enumerate(symbols):
+        # Check for unknown category
+        if symb == 'UNK':
+            symbol_color = UNKNOWN_CAT_COLOR
+            
+            if show_unk == False:
+                # skip this symbol in the output
+                continue
+        elif i == 0:
+            symbol_color = GRAM_CAT_COLOR
+        else:
+            symbol_color = AFFIX_COLOR
+        
+        # Check for RTL
+        if rtl == True:
+            # prepend the RTL marker
+            symb = ur'\u200F' + symb
+        
+        # output the symbol
+        output_span(parent_element, symbol_color, ' '+symb, rtl)
+
+# Split a compound from one lexical unit containing multiple words to multiple
+# lexical units, one for each word. For example: ^room1.1<n>service1.1<n>number1.1<n>$
+# turns into:                                    ^room1.1<n>$^service1.1<n>$^number1.1<n>$
+def split_compounds(outStr):
+    # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
+    # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
+    toks = re.split('(>[^$<])', outStr)
+    
+    # If there is only one token return from the split, we don't have multiple words just
+    # return the input string
+    if len(toks) > 1:
+        outStr = ''
+        
+        # Every odd token will be the delimeter that was matched in the split operation
+        # Insert $^ between the > and letter of the 2-char delimeter.
+        for i,tok in enumerate(toks):
+            # if we have an odd numbered index
+            if i&1:
+                tok = tok[0]+"$^"+tok[1]
+            outStr+=tok
+    return outStr
 
 # If the given path is has any relative or full paths
 # I.e. there is a slash somewhere, then don't use the
