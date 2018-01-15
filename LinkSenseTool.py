@@ -445,7 +445,9 @@ class Main(QtGui.QMainWindow):
         for myLink in self.__model.getInternalData():
             if myLink.get_tgtHPG() is None or myLink.suggestion:
                 filteredData.append(myLink)
+        self.__model.beginResetModel();
         self.__model.setInternalData(filteredData)
+        self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
         #self.__model.modelReset() # causes crash
         # crude way to cause a repaint
@@ -456,7 +458,9 @@ class Main(QtGui.QMainWindow):
         self.__model.resetInternalData()
         return
     def unfilter(self):
+        self.__model.beginResetModel();
         self.__model.setInternalData(self.__fullData)
+        self.__model.endResetModel();
         # crude way to cause a repaint
         tv = self.ui.tableView
         tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
