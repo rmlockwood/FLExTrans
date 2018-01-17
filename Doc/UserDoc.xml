@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->25 January 2017</date
+>17 January 2018</date
 ><version
->1.3.10 (Sense Linker 2.2, Live Rule Tester 2.0)</version
+>1.5 (Sense Linker 2.2, Live Rule Tester 2.2, Source/Target Viewer 1.0)</version
 ><contents
 showLevel="4"
 ></contents
@@ -666,42 +666,6 @@ type="tFlextrans"
 > Modules</secTitle
 ><ol
 ><li
->Make sure you start the <object
-type="tTool"
->Apertium</object
-> virtual machine. (See <link
-href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
->this link</link
-> for instructions on setting it up.) The virtual machine has to be running so that it can run the transfer process<endnote
-id="nSleepModule"
-><p
->That’s why there is a <object
-type="tFlextrans"
-></object
-> module that “sleeps” for five seconds. It gives the transfer process five seconds to take the source text, the bilingual dictionary and the transfer rules and create the target text.</p
-></endnote
->.<ol
-><li
->Start <object
-type="tTool"
->Virtual Box</object
->.</li
-><li
->Click on the <object
-type="tFlextrans"
-></object
-> <object
-type="tTool"
->Apertium</object
->.</li
-><li
->Click on the <object
-type="tButton"
->Start</object
-> button.</li
-></ol
-></li
-><li
 >In <object
 type="tFlexxTools"
 ></object
@@ -907,15 +871,78 @@ type="tLiveRuleTester"
 type="tButton"
 >Refresh</object
 > button.</p
+></section2
+></section1
+><section1
+id="sViewSrcTgt"
+><secTitle
+>The <object
+type="tViewSrcTgt"
+></object
+></secTitle
 ><p
->You need to have the <object
+>The <object
+type="tViewSrcTgt"
+></object
+> is a tool that allows you to view the <object
 type="tTool"
 >Apertium</object
-> virtual machine running in order for the <object
-type="tLiveRuleTester"
+> source or target files in an easy-to-read manner. You may not need to examine the <object
+type="tTool"
+>Apertium</object
+> files <object
+type="tFilename"
+>source_text.aper</object
+> or <object
+type="tFilename"
+>target_text.aper</object
+> very often, but sometimes you may find it useful to see what got extracted from the source <object
+type="tFlexx"
 ></object
-> to work.</p
-></section2
+> project into <object
+type="tFilename"
+>source_text.aper</object
+> or to see what the transfer rules produced after running the <object
+type="tModule"
+>RunApertium</object
+> module in the form of <object
+type="tFilename"
+>target_text.aper</object
+>. Run this tool to see the contents of these files. <exampleRef
+letter="xViewSrcTgt"
+num="xViewSrcTgt"
+></exampleRef
+> shows what the tool looks like. The actual file contents look like <exampleRef
+letter="xDataStream"
+num="xDataStream"
+></exampleRef
+>.</p
+><example
+num="xViewSrcTgt"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/SourceTargetViewer.png"
+></img
+></chart
+></example
+><example
+num="xDataStream"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/DataStreamFormat.PNG"
+></img
+></chart
+></example
+><p
+>You have the options of changing the font, increasing the zoom level, displaying the text right-to-left or opening a similar view in the default web browser. If you click on the <object
+type="tBold"
+>Target</object
+> button, you will see the contents of <object
+type="tFilename"
+>target_text.aper</object
+>.</p
 ></section1
 ><section1
 id="sTransferTutorial"
@@ -1514,14 +1541,6 @@ type="tFoldername"
 > folder.</li
 ></ol
 ></li
-><li
->Start the <object
-type="tTool"
->Apertium</object
-> virtual machine if needed. (See <sectionRef
-sec="sRunModules"
-></sectionRef
-> step 1)</li
 ><li
 >Start <object
 type="tFlexxTools"
@@ -3533,9 +3552,112 @@ type="tFoldername"
 ></section3
 ></section2
 ></section1
+><section1
+id="sHowTo"
+><secTitle
+>FLExTrans How To’s</secTitle
+><p
+></p
+><section2
+id="sTransferRuleHowTos"
+><secTitle
+>Transfer Rules</secTitle
+><p
+></p
+><section3
+id="sDeleteWord"
+><secTitle
+>How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</secTitle
+><p
+>The short answer is don't output it. In other words, don't declare that it should be outputted into the target data stream.</p
+><p
+>When you match two or more words in the <object
+type="tRuleElemInXXE"
+>pattern</object
+> section of a transfer rule, you can choose to only list some of the words in the <object
+type="tRuleElemInXXE"
+>output</object
+> section. This is exactly what we did in <sectionRef
+sec="step1"
+showTitle="full"
+textBefore="useDefault"
+></sectionRef
+> of the tutorial. In <exampleRef
+letter="xOutput1"
+num="xOutput1"
+></exampleRef
+> we only declared that the word in <object
+type="tRuleElemInXXE"
+>position</object
+> 1 should be outputted.</p
+></section3
+><section3
+id="sDeleteAffix"
+><secTitle
+>How do I delete an affix?</secTitle
+><p
+>There are two methods for deleting an affix. You can either set the value for that affix (attribute) to blank or you can not declare that the affix (attribute) gets outputted.</p
+><ol
+><li
+>Method 1. Use the <object
+type="tRuleElemInXXE"
+>let</object
+> element to set an attribute's value to blank. See <exampleRef
+letter="xLetBlank"
+num="xLetBlank"
+></exampleRef
+>.<example
+num="xLetBlank"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/LetBlank.PNG"
+></img
+></chart
+></example
+>Here we are overriding whatever is in the enclitic attribute (a_encl) with a blank string. Whenever the enclitic affix gets outputted, it will be outputted as nothing. As an example, in <exampleRef
+letter="xOutputWhole"
+num="xOutputWhole"
+></exampleRef
+> the whole word is outputted with all its attributes.<example
+num="xOutputWhole"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/OutputWholeWord.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Method 2. In the <object
+type="tRuleElemInXXE"
+>Output</object
+> element, explicitly declare each attribute of the word that you want to output. Don't include the attribute that needs to be deleted.<example
+num="xOutMultAffixes"
+><chart
+><img
+cssSpecial="Height:60%"
+src="Images/OutputMultAffixes.PNG"
+></img
+></chart
+></example
+>In <exampleRef
+letter="xOutMultAffixes"
+num="xOutMultAffixes"
+></exampleRef
+> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this method is that you have to explicitly declare every possible attribute that could occur. Where as in <exampleRef
+letter="xOutputWhole"
+num="xOutputWhole"
+></exampleRef
+> in Method 1, you just have to output the whole word. </li
+></ol
+></section3
+></section2
+></section1
 ><backMatter
 ><appendix
-id="a"
+id="aAppend"
 ><secTitle
 >Appendix</secTitle
 ><p
@@ -3857,6 +3979,11 @@ color="navy"
 font-family="Courier New"
 font-weight="bold"
 id="tTool"
+></type
+><type
+after="Source/Target Viewer Tool"
+id="tViewSrcTgt"
+types="tTool"
 ></type
 ><type
 after="XMLmind XML Editor"

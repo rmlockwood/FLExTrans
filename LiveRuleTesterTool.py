@@ -83,7 +83,7 @@ OUTPUT_FOLDER = 'Output'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "2.0",
+        'moduleVersion'    : "2.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Test transfer rules live.",
         'moduleDescription'   :
