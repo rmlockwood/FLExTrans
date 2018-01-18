@@ -930,7 +930,6 @@ src="Images/SourceTargetViewer.png"
 num="xDataStream"
 ><chart
 ><img
-cssSpecial=" height:60%"
 src="Images/DataStreamFormat.PNG"
 ></img
 ></chart
@@ -3610,7 +3609,7 @@ num="xLetBlank"
 num="xLetBlank"
 ><chart
 ><img
-cssSpecial="Height:60%"
+cssSpecial="Height:75%"
 src="Images/LetBlank.PNG"
 ></img
 ></chart
@@ -3623,7 +3622,7 @@ num="xOutputWhole"
 num="xOutputWhole"
 ><chart
 ><img
-cssSpecial="Height:60%"
+cssSpecial="Height:75%"
 src="Images/OutputWholeWord.PNG"
 ></img
 ></chart
@@ -3637,7 +3636,7 @@ type="tRuleElemInXXE"
 num="xOutMultAffixes"
 ><chart
 ><img
-cssSpecial="Height:60%"
+cssSpecial="Height:75%"
 src="Images/OutputMultAffixes.PNG"
 ></img
 ></chart
@@ -3652,6 +3651,138 @@ num="xOutputWhole"
 ></exampleRef
 > in Method 1, you just have to output the whole word. </li
 ></ol
+></section3
+></section2
+><section2
+id="sOther"
+><secTitle
+>Other</secTitle
+><p
+></p
+><section3
+id="sRepl"
+><secTitle
+>I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?</secTitle
+><p
+>You can handle this by using the <object
+type="tFilename"
+>replace.dix</object
+> file to add additional mappings to the bilingual lexicon. </p
+><p
+>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
+letter="xBilingEntries"
+num="xBilingEntries"
+></exampleRef
+>. You can view the bilingual lexicon by double-clicking on the file <object
+type="tFilename"
+>bilingual.dix</object
+> in the <object
+type="tFoldername"
+>FlexTools\Output</object
+> folder. Both the <object
+type="tFilename"
+>replace.dix</object
+> and <object
+type="tFilename"
+>bilingual.dix</object
+> files are XML files and will load automatically in <object
+type="tXMLmindXMLEditor"
+></object
+>.</p
+><example
+num="xBilingEntries"
+><chart
+><img
+src="Images/BilingalEntries2.PNG"
+></img
+></chart
+></example
+><p
+>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
+type="tFilename"
+>replace.dix</object
+> you will see something like <exampleRef
+letter="xReplacement"
+num="xReplacement"
+></exampleRef
+>.</p
+><example
+num="xReplacement"
+><chart
+><img
+src="Images/Replacement_In_XXE2.PNG"
+></img
+></chart
+></example
+><p
+>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because that gets generated automatically by <object
+type="tFlextrans"
+> </object
+>. </p
+><p
+>Let's say that we want to map the past tense of the entry for <langData
+lang="lVernacular"
+>lieben</langData
+> shown in <exampleRef
+letter="xBilingEntries"
+num="xBilingEntries"
+></exampleRef
+> to a different Swedish word, we change the replacement file to something like <exampleRef
+letter="xRepChanged"
+num="xRepChanged"
+></exampleRef
+>.</p
+><example
+num="xRepChanged"
+><chart
+><img
+src="Images/ReplacementFileChanged2.PNG"
+></img
+></chart
+></example
+><p
+>Let’s look closer at the last line. The <object
+type="tRuleElemInXXE"
+>left</object
+> element has <langData
+lang="lVernacular"
+>lieben1.1</langData
+> and the “symbol” <langData
+lang="lVernacular"
+>v</langData
+> just like the bilingual file, but it also has a new symbol <langData
+lang="lVernacular"
+>PST</langData
+>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <object
+type="tFlextrans"
+></object
+> that we are mapping the past inflection of <langData
+lang="lVernacular"
+>lieben1.1</langData
+> to something else. The new Swedish word is listed for the <object
+type="tRuleElemInXXE"
+>right</object
+> element. Note that we also had to add two new symbol definitions so that <object
+type="tFlextrans"
+></object
+> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <object
+type="tRuleElemInXXE"
+>Symbols</object
+> element.</p
+><p
+>You also have to make a change to the configuration file (<object
+type="tFilename"
+>FlexTrans.config</object
+> in the <object
+type="tFoldername"
+>FlexTools</object
+> folder) to signal <object
+type="tFlextrans"
+></object
+> to use the replacement file. Change the applicable line to look like this: <object
+type="tCourier"
+>BilingualDictReplacementFile=Output\replace.dix</object
+></p
 ></section3
 ></section2
 ></section1
