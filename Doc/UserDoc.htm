@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i>Ronald M. Lockwood</i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>17 January 2018</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>14 February 2018</small></center>
       <center><small>Version: 1.5 (Sense Linker 2.2, Live Rule Tester 2.2, Source/Target Viewer 1.0)</small></center>
       <hr>
       <div>
@@ -74,11 +74,15 @@
                <ul>
                   <li><a href="#sDeleteWord">6.1.1&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
                   <li><a href="#sDeleteAffix">6.1.2&nbsp;How do I delete an affix?</a></li>
+                  <li><a href="#sAgreement">6.1.3&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
+                  <li><a href="#s">6.1.4&nbsp;</a></li>
                </ul>
                <li><a href="#sOther">6.2&nbsp;Other</a></li>
                <ul>
                   <li><a href="#sRepl">6.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
+                  <li><a href="#sInflVariantTgt">6.2.2&nbsp;How do I handle irregularly inflected variants in the target language?</a></li>
+                  <li><a href="#sInflVariantSrc">6.2.3&nbsp;How do I handle inflectional variants in the source language?</a></li>
                </ul>
             </ul>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
@@ -1805,16 +1809,28 @@
                   </tr>
                </table>
             </div>In <a href="#xOutMultAffixes">(66)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
-            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(65)</a> in Method 1, you just have to output the whole word. 
+            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(65)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
+      <h3 style=""><a name="sAgreement"></a>6.1.3&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
+      </h3>
+      <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
+         transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
+      </p>
+      <p>To see how to do this in a sample language pair, please watch <a href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA">video 1</a> and <a href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_">video 2</a>.
+      </p>
+      <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
+      </p>
+      <h3 style=""><a name="s"></a>6.1.4&nbsp;
+      </h3>
+      <p></p>
       <h2 style=""><a name="sOther"></a>6.2&nbsp;Other
       </h2>
       <p></p>
       <h3 style=""><a name="sRepl"></a>6.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
-      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon. 
+      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon.
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual
@@ -1851,9 +1867,11 @@
             </tr>
          </table>
       </div>
-      <p>The replacement file has two sections main sections, one for replacing default bilingual entries with one of your choice and
-         one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can't edit
-         the bilingual dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>. Let's say that we want to map the past tense of our entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(69)</a>.
+      <p>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section
+         for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
+         dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>.
+      </p>
+      <p>Let's say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(67)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(69)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1869,9 +1887,27 @@
             </tr>
          </table>
       </div>
-      <p>Let's look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
+      <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
       <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=Output\replace.dix</span></p>
+      <h3 style=""><a name="sInflVariantTgt"></a>6.2.2&nbsp;How do I handle irregularly inflected variants in the target language?
+      </h3>
+      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
+      </p>
+      <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
+         Form variants that match exactly the suffixes that would normally be used.
+      </p>
+      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
+      </p>
+      <h3 style=""><a name="sInflVariantSrc"></a>6.2.3&nbsp;How do I handle inflectional variants in the source language?
+      </h3>
+      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
+      </p>
+      <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
+         Form variants that match exactly the suffixes that would normally be used.
+      </p>
+      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the SourceTextName property in the configuration file to &#8220;Text2&#8221;.
+      </p>
       <hr size="3">
       <h1 style=""><a name="aAppend"></a>A.&nbsp;Appendix
       </h1>
@@ -1892,11 +1928,8 @@
       </h1>
       <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
       </p>
-      <div style=""><img style="width:60%" src="Images/LexicalUnit.PNG"></div>
-      <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.aper</span> and <span style="font-style:italic; ">target_text.aper</span>. The above lexical unit looks like this in the friendly view:
-      </p>
-      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span></span></p>
-      <p>The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
+      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">9</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">10</a>]</span></span></p>
+      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">11</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
          in green.
       </p>
       <hr size="3"><a name="rXLingPapEndnotes"></a><p style=""><big><big><big><b>Endnotes</b></big></big></big></p>
@@ -1954,6 +1987,36 @@
             <td valign="top"><a name="nTagSeq">[8]</a></td>
             <td>
                <p>In our <span style="font-style:italic; ">target_text.aper</span> file each tag starts with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&lt;</span>, ends with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&gt;.</span></p>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nToolToView">[9]</a></td>
+            <td>
+               <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.aper</span> and <span style="font-style:italic; ">target_text.aper</span>.
+               </p>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nRawDataStream">[10]</a></td>
+            <td>
+               <p>In the plain format the stream format can be explained as follows:</p>
+               <table>
+                  <tr>
+                     <tr>
+                        <td></td>
+                        <td>
+                           <div><img style="width:60%" src="Images/LexicalUnit.PNG"></div>
+                        </td>
+                     </tr>
+                  </tr>
+               </table>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nNoOneHomograph">[11]</a></td>
+            <td>
+               <p>Technically <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> headword is just plain -- without any subscript.
+               </p>
             </td>
          </tr>
       </table>

@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->17 January 2018</date
+>14 February 2018</date
 ><version
 >1.5 (Sense Linker 2.2, Live Rule Tester 2.2, Source/Target Viewer 1.0)</version
 ><contents
@@ -3649,8 +3649,41 @@ num="xOutMultAffixes"
 letter="xOutputWhole"
 num="xOutputWhole"
 ></exampleRef
-> in Method 1, you just have to output the whole word. </li
+> in Method 1, you just have to output the whole word.</li
 ></ol
+></section3
+><section3
+id="sAgreement"
+><secTitle
+>How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</secTitle
+><p
+>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
+><p
+>To see how to do this in a sample language pair, please watch <link
+href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA"
+>video 1</link
+> and <link
+href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_"
+>video 2</link
+>.</p
+><p
+>If you would like to try creating the rules along with the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Agreement</object
+> folder. See the file <object
+type="tFilename"
+>transfer_rules - solution.t1x</object
+> which shows the form of the rules shown in the video.</p
+></section3
+><section3
+id="s"
+><secTitle
+></secTitle
+><p
+></p
 ></section3
 ></section2
 ><section2
@@ -3667,7 +3700,7 @@ id="sRepl"
 >You can handle this by using the <object
 type="tFilename"
 >replace.dix</object
-> file to add additional mappings to the bilingual lexicon. </p
+> file to add additional mappings to the bilingual lexicon.</p
 ><p
 >The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
 letter="xBilingEntries"
@@ -3718,7 +3751,7 @@ src="Images/Replacement_In_XXE2.PNG"
 >The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because that gets generated automatically by <object
 type="tFlextrans"
 > </object
->. </p
+>.</p
 ><p
 >Let's say that we want to map the past tense of the entry for <langData
 lang="lVernacular"
@@ -3784,6 +3817,46 @@ type="tCourier"
 >BilingualDictReplacementFile=Output\replace.dix</object
 ></p
 ></section3
+><section3
+id="sInflVariantTgt"
+><secTitle
+>How do I handle irregularly inflected variants in the target language?</secTitle
+><p
+>To learn how FT can handle these kind of variants, please watch this <link
+href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
+>video</link
+>.</p
+><p
+>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected Form variants that match exactly the suffixes that would normally be used.</p
+><p
+>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Irregular Form</object
+> folder.</p
+></section3
+><section3
+id="sInflVariantSrc"
+><secTitle
+>How do I handle inflectional variants in the source language?</secTitle
+><p
+>To learn how FT can handle these kind of variants, please watch this <link
+href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
+>video</link
+>.</p
+><p
+>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected Form variants that match exactly the suffixes that would normally be used.</p
+><p
+>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Irregular Form</object
+> folder. Note: be sure to set the SourceTextName property in the configuration file to “Text2”.</p
+></section3
 ></section2
 ></section1
 ><backMatter
@@ -3842,24 +3915,6 @@ type="tTool"
 type="tFlextrans"
 ></object
 >, a lexical unit looks something like this:</p
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="width:60%"
-src="Images/LexicalUnit.PNG"
-></img
-></chart
-><p
->You can use the <object
-type="tTool"
->View Source/Target Apertium File Tool</object
-> for a more friendly view of the data stream format found in the files <object
-type="tFilename"
->source_text.aper</object
-> and <object
-type="tFilename"
->target_text.aper</object
->. The above lexical unit looks like this in the friendly view:</p
 ><p
 ><langData
 lang="lVernacular"
@@ -3872,10 +3927,53 @@ type="tluGrammCat"
 > <object
 type="tluAffix"
 >3sg</object
+><endnote
+id="nToolToView"
+><p
+>You can use the <object
+type="tTool"
+>View Source/Target Apertium File Tool</object
+> for a more friendly view of the data stream format found in the files <object
+type="tFilename"
+>source_text.aper</object
+> and <object
+type="tFilename"
+>target_text.aper</object
+>.</p
+></endnote
+><endnote
+id="nRawDataStream"
+><p
+>In the plain format the stream format can be explained as follows:</p
+><chart
+><img
+XeLaTeXSpecial="scaled='300'"
+cssSpecial="width:60%"
+src="Images/LexicalUnit.PNG"
+></img
+></chart
+></endnote
 ></langData
 ></p
 ><p
->The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored in green.</p
+>Where take<object
+type="tSubscript"
+>1</object
+><endnote
+id="nNoOneHomograph"
+><p
+>Technically <object
+type="tFlexx"
+></object
+> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <object
+type="tFlexx"
+></object
+> headword is just plain -- without any subscript.</p
+></endnote
+> is the headword from <object
+type="tFlexx"
+></object
+>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored in green.</p
 ></section1
 ></appendix
 ><endnotes
