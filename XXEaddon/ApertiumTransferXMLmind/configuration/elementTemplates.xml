@@ -373,22 +373,27 @@
     </let>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="lexical_unit">
+  <cfg:elementTemplate name="lexical_unit_clip">
     <lu>
       <clip pos="1" side="tl" part="???"/>
     </lu>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="lexical_unit_2">
+  <cfg:elementTemplate name="lexical_unit_clip_2">
     <lu>
       <clip pos="1" side="tl" part="???"/>
       <clip pos="1" side="tl" part="???"/>
     </lu>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="lexical_unit_3">
+  <cfg:elementTemplate name="lexical_unit_clip_3">
     <lu>
       <clip pos="1" side="tl" part="???"/>
       <clip pos="1" side="tl" part="???"/>
       <clip pos="1" side="tl" part="???"/>
+    </lu>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="lexical_unit_lit-string">
+    <lu>
+      <lit v="???"/>
     </lu>
   </cfg:elementTemplate>
 
