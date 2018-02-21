@@ -2654,12 +2654,12 @@ lang="lVernacular"
 type="tluAffix"
 >ptcp_f_sg</object
 ></langData
->. This is good enough for our current example, but for a description of how conditional statements work, see ...<object
-type="tItalic"
->[TO BE WRITTEN]</object
-> <comment
->Link to a section on conditionals</comment
->) <br
+>. This is good enough for our current example, but for a description of how conditional logic works, see <sectionRef
+sec="sCondLogic"
+showTitle="numberOnly"
+textBefore="capitalizedSingular"
+></sectionRef
+>.<br
 ></br
 ><br
 ></br
@@ -3653,6 +3653,16 @@ num="xOutputWhole"
 ></ol
 ></section3
 ><section3
+id="sCondLogic"
+><secTitle
+>Conditional Logic</secTitle
+><p
+>In the transfer rules you have the ability to use conditional logic. Please watch this <link
+href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
+>video</link
+> for an explanation.</p
+></section3
+><section3
 id="sAgreement"
 ><secTitle
 >How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</secTitle
@@ -3677,13 +3687,6 @@ type="tFoldername"
 type="tFilename"
 >transfer_rules - solution.t1x</object
 > which shows the form of the rules shown in the video.</p
-></section3
-><section3
-id="s"
-><secTitle
-></secTitle
-><p
-></p
 ></section3
 ></section2
 ><section2

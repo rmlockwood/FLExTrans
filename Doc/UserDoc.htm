@@ -74,8 +74,8 @@
                <ul>
                   <li><a href="#sDeleteWord">6.1.1&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
                   <li><a href="#sDeleteAffix">6.1.2&nbsp;How do I delete an affix?</a></li>
-                  <li><a href="#sAgreement">6.1.3&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
-                  <li><a href="#s">6.1.4&nbsp;</a></li>
+                  <li><a href="#sCondLogic">6.1.3&nbsp;Conditional Logic</a></li>
+                  <li><a href="#sAgreement">6.1.4&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
                </ul>
                <li><a href="#sOther">6.2&nbsp;Other</a></li>
                <ul>
@@ -1266,7 +1266,7 @@
                      </td>
                   </tr>
                </table>
-            </div>(Note: the statement in <a href="#xLet1">(37)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional statements work, see ...<span style="font-style:italic; ">[TO BE WRITTEN]</span> ) <br><br></li>
+            </div>(Note: the statement in <a href="#xLet1">(37)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">6.1.3</a>.<br><br></li>
          <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)
          </li>
       </ol>
@@ -1812,7 +1812,11 @@
             method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(65)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
-      <h3 style=""><a name="sAgreement"></a>6.1.3&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
+      <h3 style=""><a name="sCondLogic"></a>6.1.3&nbsp;Conditional Logic
+      </h3>
+      <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation.
+      </p>
+      <h3 style=""><a name="sAgreement"></a>6.1.4&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
       </h3>
       <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
          transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
@@ -1821,9 +1825,6 @@
       </p>
       <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
       </p>
-      <h3 style=""><a name="s"></a>6.1.4&nbsp;
-      </h3>
-      <p></p>
       <h2 style=""><a name="sOther"></a>6.2&nbsp;Other
       </h2>
       <p></p>
