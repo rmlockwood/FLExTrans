@@ -103,6 +103,10 @@ copy SrcTgtViewer.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy SrcTgtViewer.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy "FlexTrans View Source-Target.ini" Install\FLExTools1.2.4\FLExTools\Collections
 
+rem SetUp Gramm Categories pieces
+copy SetUpTransferRuleGramCat.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy "FlexTrans Set Up Transfer Rules.ini" Install\FLExTools1.2.4\FLExTools\Collections
+
 cd Install
 "C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
