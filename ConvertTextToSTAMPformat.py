@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.8 - 1/26/18 - Ron Lockwood
+#    When looping through all entries in the main function, make the Headword lowercase
+#    in order to match ANA records which have been converted to lowercase when checking
+#    for variants or complex entries.
+#
 #   Version 1.3.7 - 5/31/17 - Ron
 #    Make the sentance punctuation string from the configuration file a unicode string
 #    so that things like the right/left-pointing angle quotation mark get substituted 
@@ -110,7 +115,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.6",
+        'moduleVersion'    : "1.3.8",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -611,7 +616,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
 # E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
 # variant type called 1Sg which has features [per: 1ST, num: SG] and the
 # Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
-# this: '< cop be1.1 >'
+# this: '< _variant_ am1 >'
 def change_to_variant(myAnaInfo, my_irr_infl_var_map):
 
     oldCap = myAnaInfo.getCapitalization()
@@ -738,7 +743,8 @@ def MainFunction(DB, report, modifyAllowed):
         headWord = ITsString(e.HeadWord).Text
         
         # If there is not a homograph # at the end, make it 1
-        headWord = Utils.add_one(headWord)
+        # Also make it lower case. All ANA "roots" are lower case so we need to match them that way
+        headWord = Utils.add_one(headWord).lower()
                                 
         # Store all the complex entries by creating a map from headword to the the complex entry
         if e.EntryRefsOS.Count > 0: # only process complex forms
@@ -811,7 +817,7 @@ def MainFunction(DB, report, modifyAllowed):
         count += 1
     
     report.Info(str(count)+' records exported in ANA format.')        
-
+    f_ana.close()
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
