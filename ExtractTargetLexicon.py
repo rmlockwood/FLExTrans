@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.8 - 01/19/18 - Ron Lockwood
+#    Skip natural classes that are related to phonological features (PhNCFeatures)
+#
 #   Version 1.3.7 - 10/10/17 - Marc
 #    Extracted call to do_make_direct.sh to RunApertium.py
 #
@@ -90,7 +93,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.7",
+        'moduleVersion'    : "1.3.8",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -366,7 +369,8 @@ def MainFunction(DB, report, modifyAllowed):
         # Get the natural class name and write it out
         natClassName = ITsString(natClass.Abbreviation.BestAnalysisAlternative).Text
         
-        if natClassName:
+        # Make sure we have a valid class name and that it is not a Natural Class of Features which we are not concerned with
+        if natClassName and natClass.ClassName <> 'PhNCFeatures':
             f_dec.write('\\scl '+natClassName.encode('utf-8')+'\n')
         
             # Loop through all the segments in the class
