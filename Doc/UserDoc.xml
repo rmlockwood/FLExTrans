@@ -656,6 +656,10 @@ ref="rApertium"
 ><comment
 >Maybe reference to where to find other transfer rules</comment
 ></p
+><p
+><comment
+>Run Set up Gramm Categories Tool at some early stage</comment
+></p
 ></section2
 ><section2
 id="sRunModules"
