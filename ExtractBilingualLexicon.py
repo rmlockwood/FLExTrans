@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.3.7 - 12/24/17 - Ron Lockwood
+#    When processing replacements, don't add symbols that already exist in the
+#    bilingual dictionary. Add new lines at then end of comment elements to get
+#    multiple lines.
+# 
 #   Version 1.3.6 - 12/24/17 - Ron
 #    Changed the way the replacement file is processed since it is now a fully
 #    valid XML file with two section elements for replacing or appending. We 
@@ -88,7 +93,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : "1.3.4",
+        'moduleVersion'    : "1.3.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
         'moduleDescription'   :
@@ -213,14 +218,22 @@ def do_replacements(configMap, report, fullPathBilingFile):
     bilingSdefs = bilingRoot.find('sdefs')
     replSdefs = replRoot.find('sdefs')
     
+    # Create a map of all the symbol abbreviations in the bilingual dictionary
+    sdfMap={}
+    for mySdef in bilingSdefs:
+        sdfMap[mySdef.attrib['n']]=1
+        
     # Add a comment before the new sdefs get added
     comment = ET.Comment('Inserted symbol definitions from replacement file')
     bilingSdefs.append(comment)
     
     # Loop through the replacement sdefs
     for symbol_def in replSdefs:
-        # add the sdef element from repl file to the end of the biling sdefs list
-        bilingSdefs.append(symbol_def)
+        
+        # if the symbol abbreviation doesn't already exist, add it
+        if symbol_def.attrib['n'] not in sdfMap:
+            # add the sdef element from repl file to the end of the biling sdefs list
+            bilingSdefs.append(symbol_def)
         
     ## Find entries that match replacement entries, comment out the old and insert the new
     
@@ -244,7 +257,7 @@ def do_replacements(configMap, report, fullPathBilingFile):
         if left.text in replMap:
             
             # Create a comment containing the old entry and a note and insert them into the entry list
-            comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.')
+            comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
             
             # Create string with the old contents of the entry. Using tostring() didn't work because of &# symbols come out for non-ascii text
             if left.tag == 'i':
@@ -253,7 +266,7 @@ def do_replacements(configMap, report, fullPathBilingFile):
                 s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
                 s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
                 
-            comment2 = ET.Comment(s)
+            comment2 = ET.Comment(s+'\n')
             
             new_biling_section.append(comment1)
             new_biling_section.append(comment2)
@@ -270,7 +283,7 @@ def do_replacements(configMap, report, fullPathBilingFile):
     append_sec = replRoot.find(".//*[@id='append']")
     
     # Make a comment and adds it
-    comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.')
+    comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.\n')
     new_biling_section.append(comment)
     
     # Loop through these entries
