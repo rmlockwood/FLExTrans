@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->14 February 2018</date
+>28 February 2018</date
 ><version
->1.5 (Sense Linker 2.2, Live Rule Tester 2.2, Source/Target Viewer 1.0)</version
+>1.5.1 (Sense Linker 2.2, Live Rule Tester 2.2, Source/Target Viewer 1.0)</version
 ><contents
 showLevel="4"
 ></contents
@@ -796,7 +796,7 @@ type="tLiveRuleTester"
 >The <object
 type="tLiveRuleTester"
 ></object
-> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don’t have to run the whole system against the whole text file and all transfer rules. Here’s sample screen shot of the <object
+> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules not are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don’t have to run the whole system against the whole text file and all transfer rules. Here’s sample screen shot of the <object
 type="tLiveRuleTester"
 ></object
 >:</p
@@ -942,6 +942,56 @@ type="tBold"
 type="tFilename"
 >target_text.aper</object
 >.</p
+></section1
+><section1
+id="sSetupGramCat"
+><secTitle
+>The <object
+type="tTool"
+>Set Up Transfer Rule Grammatical Categories Tool</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Set Up Transfer Rule Grammatical Categories Tool</object
+> is a tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer rule will likely need to reference the grammatical category of a word either in the source or target language. The initial transfer rules file that comes with <object
+type="tFlextrans"
+></object
+> has just a few sample grammatical categories. This tool will take the categories that are in the bilingual lexicon file and insert them as tags under the specific attribute called <object
+type="tCourier"
+>a_gram_cat</object
+> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both the source and target <object
+type="tFlexx"
+></object
+> projects.</p
+><p
+>You should only need to run this tool one time at the beginning of the <object
+type="tFlextrans"
+></object
+> project. If new grammatical categories get added to either <object
+type="tFlexx"
+></object
+> project, you could delete the <object
+type="tCourier"
+>a_gram_cat</object
+> attribute and run this tool again to get an updated list in your transfer rules file.</p
+><p
+><exampleRef
+letter="xSetupGramCat"
+num="xSetupGramCat"
+></exampleRef
+> shows what the <object
+type="tCourier"
+>a_gram_cat</object
+> attribute looks like after running this tool.</p
+><example
+num="xSetupGramCat"
+><chart
+><img
+src="Images/SetupGramCat.PNG"
+></img
+></chart
+></example
 ></section1
 ><section1
 id="sTransferTutorial"
@@ -3555,14 +3605,153 @@ type="tFoldername"
 id="sHowTo"
 ><secTitle
 >FLExTrans How To’s</secTitle
-><p
-></p
 ><section2
 id="sTransferRuleHowTos"
 ><secTitle
 >Transfer Rules</secTitle
+><section3
+id="sCategory"
+><secTitle
+>How do I use the category element in the transfer rules?</secTitle
+><p
+>Lexical categories are used to group words together. The grouping can be very broad such as verbs or very specific such as pronouns with feminine suffixes. The categories are used in the pattern matching system of transfer rules.</p
+><example
+num="xCat"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/CategoryEx.PNG"
+></img
+></chart
+></example
+><p
+><exampleRef
+letter="xCat"
+num="xCat"
+></exampleRef
+> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more final tags. For example, if I have the lexical unit <langData
+lang="lVernacular"
+>book</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>f</object
+> <object
+type="tluAffix"
+>sg</object
+>, it could be precisely matched by a <object
+type="tRuleElemInXXE"
+>tags</object
+> element containing <object
+type="tCourier"
+>n.f.sg</object
+>. More generally we could match <langData
+lang="lVernacular"
+>book</langData
+> with the <object
+type="tRuleElemInXXE"
+>tags</object
+> element containing <object
+type="tCourier"
+>n.f.*</object
+>. This would refer to all words that have the grammatical category <object
+type="tluGrammCat"
+>n</object
+> followed by the tag <object
+type="tluAffix"
+>f</object
+> followed by anything else, i.e. feminine nouns. <exampleRef
+letter="xCat"
+num="xCat"
+></exampleRef
+> defines the set of all indefinite nouns — words that have the the grammatical category <object
+type="tluGrammCat"
+>n</object
+> or <object
+type="tluGrammCat"
+>n-irreg</object
+> followed by <object
+type="tluAffix"
+>f</object
+> and optionally something else afterward.</p
+><p
+>You can use the lemma element to identify a specific word-sense. <exampleRef
+letter="xCatLem"
+num="xCatLem"
+></exampleRef
+> shows how the category <object
+type="tCourier"
+>dem_this</object
+> can be defined as a word that has a grammatical category of <object
+type="tluGrammCat"
+>dem</object
+> and lemma <langData
+lang="lVernacular"
+>this</langData
+><object
+type="tSubscript"
+>1.1</object
+> (in <object
+type="tFlexx"
+></object
+>: headword <langData
+lang="lVernacular"
+>this</langData
+><object
+type="tSubscript"
+>1</object
+> , sense 1). This might be useful when you want to match phrases containing the word <object
+type="tCourier"
+>this</object
+>.</p
+><example
+num="xCatLem"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/CategoryLemmaEx.PNG"
+></img
+></chart
+></example
+></section3
+><section3
+id="sAttribute"
+><secTitle
+>How do I use the attribute element in the transfer rules?</secTitle
+><p
+>Attributes are defined in the rule file in order to identify possible values for word characteristics. An example is shown in <exampleRef
+letter="xAttrib"
+num="xAttrib"
+></exampleRef
+>.</p
+><example
+num="xAttrib"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/AttributeEx.PNG"
+></img
+></chart
+></example
+><p
+>Certain words may have affixes that indicate grammatical number. <exampleRef
+letter="xAttrib"
+num="xAttrib"
+></exampleRef
+> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these refer to tags in the data stream. Attributes are used within rules to get or set values.</p
+></section3
+><section3
+id="sPatternMatch"
+><secTitle
+>How does pattern matching work?</secTitle
 ><p
 ></p
+></section3
 ><section3
 id="sDeleteWord"
 ><secTitle
@@ -3655,7 +3844,7 @@ num="xOutputWhole"
 ><section3
 id="sCondLogic"
 ><secTitle
->Conditional Logic</secTitle
+>How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</secTitle
 ><p
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
