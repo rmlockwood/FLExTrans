@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 2.2.1 - 2/28/18 - Ron Lockwood
+#    More gracefully handle when the LiveRuleTester folder doesn't exist. Added
+#    missing module description.
+#
 #   Version 2.2 - 1/10/18 - Ron Lockwood
 #    Added the direct call to Apertium through bash. This uses the same
 #    code that the RunApertium module has. Handle splitting of compounds into parts
@@ -83,12 +87,17 @@ OUTPUT_FOLDER = 'Output'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "2.2",
+        'moduleVersion'    : "2.2.1",
         'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Test transfer rules live.",
+        'moduleSynopsis'   : "Test transfer rules live against specific words.",
         'moduleDescription'   :
 u"""
-TODO
+The Live Rule Tester Tool is a tool that allows you to test source words or 
+sentences live against transfer rules. This tool is especially helpful for 
+finding out why transfer rules are not doing what you expect them to do. 
+You can zero in on the problem by selecting just one source word and applying 
+the pertinent transfer rule. In this way you don't have to run the whole system 
+against the whole text file and all transfer rules.
 """ }
                  
 #----------------------------------------------------------------
@@ -219,9 +228,9 @@ class Main(QtGui.QMainWindow):
         pwd = os.getcwd()
         self.__transfer_rules_file= os.path.join(pwd, OUTPUT_FOLDER, 'transfer_rules.t1x')
         if not self.loadTransferRules():
-            self.ret_val = 0
+            self.ret_val = False
             self.close()
-            return False
+            return 
         
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
@@ -246,14 +255,24 @@ class Main(QtGui.QMainWindow):
         # Simulate a click on the sentence list box
         self.listSentComboClicked()
         
-        self.ret_val = 0
-        
         # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
-        
+        try:
+          shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+        except:
+          QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+          self.ret_val = False
+          return 
+        	
         # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-        shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-
+        try:
+          shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+        except:
+          QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+          self.ret_val = False
+          return 
+        	
+        self.ret_val = True
+        
     def has_RTL_data(self, word1):
         for i in range(0, len(word1)):
             if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
@@ -927,20 +946,13 @@ def MainFunction(DB, report, modify=False):
         # Supply the segment list to the main windowed program
         window = Main(segment_list, bilingFile, text_desired_eng)
         
+        if window.ret_val == False:
+          report.Error('An error occurred getting things initialized.')
+          return
+        
         window.show()
         app.exec_()
         
-        cnt = 0
-        
-        # Update the source database with the correct links
-        if window.ret_val: # True = make the changes
-            pass
-
-
-
-                    
-    #report.Info(str(cnt)+' links created.')
-     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
