@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 1.0.1 - 2/28/18 - Ron Lockwood
+#    Write the DOCTYPE.
+#
 #   Version 1.0 - 2/22/18 - Ron Lockwood
 #    Initial version.
 #
@@ -15,16 +18,13 @@
 #   both the source and target lexicons.
 #
 
-from FTModuleClass import FlexToolsModuleClass
-import shutil
-
 #----------------------------------------------------------------
 # Configurables:
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {'moduleName'       : "Set Up Transfer Rule Grammatical Categories",
-        'moduleVersion'    : '1.0',
+        'moduleVersion'    : '1.0.1',
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         'moduleDescription': 
@@ -35,7 +35,10 @@ lexicon, which represent all the grammatical categories in both the source and t
 lexicons and put them under an attribute called a_gram_cat in the transfer rule file.
 """}
 
+from FTModuleClass import FlexToolsModuleClass
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
+import shutil
+import codecs
 import ReadConfig
 import xml.etree.ElementTree as ET
 
@@ -107,7 +110,9 @@ def MainFunction(DB, report, modify=True):
         def_attr.append(new_attr_item)
         
     # Write the transfer rule file
-    transEtree.write(transFile, 'utf-8', True)
+    ff = codecs.open(transFile, 'w', 'utf-8')
+    ff.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"\n"transfer.dtd">\n')
+    transEtree.write(ff, 'utf-8')
     
 #----------------------------------------------------------------
 # define the FlexToolsModule
