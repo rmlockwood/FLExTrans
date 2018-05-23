@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.1.5 - 1/10/18 - Ron Lockwood
 #    Put run_makefile in this file so that both RunApertium and LiveRuleTesterTool
 #    can use it. Put split_compounds in this file so that ExtractSourceText and 

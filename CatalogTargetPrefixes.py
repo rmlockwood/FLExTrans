@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 1.3.5 - 2/7/18 - Ron Lockwood
+#   Version 1.6 - 2/7/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into a another
 #    that can be called by the Live Rule Tester.
 #
@@ -59,7 +59,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.5",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         'moduleDescription'   :

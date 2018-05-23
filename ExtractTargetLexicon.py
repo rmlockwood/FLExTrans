@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 1.3.9 - 3/30/18 - Ron Lockwood
+#   Version 1.6 - 3/30/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into two main functions 
 #    one for extracting the target lexicon and one for running the synthesis. Also 
 #    modularized a lot more of the code.
@@ -98,7 +98,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.9",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :

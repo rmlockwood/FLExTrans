@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 1.3.9 - 3/30/18 - Ron Lockwood
+#   Version 1.6 - 3/30/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into a another
 #    that can be called by the Live Rule Tester.
 #
@@ -119,7 +119,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.9",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :

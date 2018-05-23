@@ -3,6 +3,9 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.1.1 2/28/2018 - Ron Lockwood
 #      Fixed typo. Use report.Error instead of report.error
 #
@@ -30,7 +33,7 @@ import FTReport
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {'moduleName'       : "Run Apertium",
-        'moduleVersion'    : '1.1.1',
+        'moduleVersion'    : '1.6',
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : descr,
         'moduleDescription': descr}

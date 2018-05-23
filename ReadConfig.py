@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.1 - 3/7/18 - Ron Lockwood
 #    Give an error only if the report object is not None 
 #
