@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.3.5 - 2/7/18 - Ron Lockwood
+#    Made the main function minimal and separated the main logic into a another
+#    that can be called by the Live Rule Tester.
+#
 #   Version 1.3.4 - 1/18/17 - Ron
 #    Use BestAnalysisAlternative instead of AnalysisDefault.
 #    Check for empty morphType.
@@ -55,9 +59,9 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.3.4",
+        'moduleVersion'    : "1.3.5",
         'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Creates a text file with prefix glosses.",
+        'moduleSynopsis'   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         'moduleDescription'   :
 u"""
 The target database set in the configuration file will be used. This module will output all 
@@ -90,50 +94,50 @@ def is_number(s):
     except ValueError:
         return False
     
-def MainFunction(DB, report, modifyAllowed):
-
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+def catalog_affixes(DB, configMap, filePath, report=None):
+    
+    error_list = []
+    
     morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
 
-    if not (outFileVal and morphNames):
-        return
+    if not morphNames:
+        error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
+        return error_list
     
     # Allow the affix file to not be in the temp folder if a slash is present
-    myPath = Utils.build_path_default_to_temp(outFileVal)
+    myPath = Utils.build_path_default_to_temp(filePath)
     try:
         f_out = open(myPath, 'w') 
     except IOError as e:
-        report.Error('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.')
-
+        error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
+        return error_list
+    
     TargetDB = FLExDBAccess()
 
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
-            return
+            error_list.append(('Problem accessing the target project.', 2))
+            return error_list
         TargetDB.OpenDatabase(targetProj, verbose = True)
     except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
-
-    report.Info('Using: '+targetProj+' as the target database.')
+        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+        error_list.append((e.message, 2))
+        return error_list
+    
+    error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
     count = 0
-    report.ProgressStart(TargetDB.LexiconNumberOfEntries())
+    if report is not None:
+        report.ProgressStart(TargetDB.LexiconNumberOfEntries())
   
     # Loop through all the entries
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
-        report.ProgressUpdate(i)
+        if report is not None:
+            report.ProgressUpdate(i)
+        
         processIt = False
         
         # Make sure we have a valid MorphType object
@@ -177,8 +181,36 @@ def MainFunction(DB, report, modifyAllowed):
                     # Write out the gloss and morph type
                     f_out.write(myGloss +'|'+ morphType)
                     f_out.write('\n')
+    
+    error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
+    return error_list
+
+def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Build an output path using the system temp directory.
+    outFileVal = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+
+    if not outFileVal:
+        return
+    
+    error_list = catalog_affixes(DB, configMap, outFileVal, report)
+    
+    # output info, warnings, errors
+    for msg in error_list:
+        
+        # msg is a pair -- string & code
+        if msg[1] == 0:
+            report.Info(msg[0])
+        elif msg[1] == 1:
+            report.Warning(msg[0])
+        else: # error=2
+            report.Error(msg[0])
                 
-    report.Info(str(count)+' affixes/clitics exported to the catalog.')
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
