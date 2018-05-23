@@ -260,7 +260,11 @@ def get_ANA_info(file_name_str):
 def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     error_list = []
     
-    f_ana = open(ana_name, 'w')
+    try:
+        f_ana = open(ana_name, 'w')
+    except IOError:
+        error_list.append(('The file: '+ana_name+' was not found.', 2))
+        return error_list
     
     affix_map = {}
     
@@ -276,7 +280,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         f_test = open(out_name, 'r')
     except IOError:
         error_list.append(('The file: '+out_name+' was not found.', 2))
-        return
+        return error_list
         
     num_lines = sum(1 for line in open(out_name))
     
@@ -409,7 +413,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                     error_list.append(("Word or POS missing. Found: "+",".join(morphs),2))
                     for m in morphs:
                         f_ana.write(m.encode('utf-8'))
-                    raise FTM_ModuleError, "Examine the target text output from apertium."
+                    return error_list
+                    #raise FTM_ModuleError, "Examine the target text output from apertium."
                 
                 # Create an ANA Info object
                 # We have the root (morphs[0]) and the POS of the root (morphs[1])
@@ -685,13 +690,13 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
 
-def convert_to_STAMP(DB, configMap, targetANA, affixFile, transferResults, report=None):
+def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
     error_list = []
     
     complexForms1st = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report)
     complexForms2nd = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
     sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
-    if not (targetANA and affixFile and transferResults and sentPunct):
+    if not (targetANAFile and affixFile and transferResultsFile and sentPunct):
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
@@ -713,7 +718,7 @@ def convert_to_STAMP(DB, configMap, targetANA, affixFile, transferResults, repor
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
-            return
+            return error_list
         TargetDB.OpenDatabase(targetProj, verbose = True)
     except FDA_DatabaseError, e:
         error_list.append((e.message, 2))
@@ -723,7 +728,7 @@ def convert_to_STAMP(DB, configMap, targetANA, affixFile, transferResults, repor
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
     # Allow the affix and ana files to not be in the temp folder if a slash is present
-    anaFileName = Utils.build_path_default_to_temp(targetANA)
+    anaFileName = Utils.build_path_default_to_temp(targetANAFile)
     affixFileName = Utils.build_path_default_to_temp(affixFile)
     
     # Build the complex forms map
@@ -736,11 +741,11 @@ def convert_to_STAMP(DB, configMap, targetANA, affixFile, transferResults, repor
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
-    err_list = convertIt(anaFileName, affixFileName, transferResults, report, sentPunct)
+    err_list = convertIt(anaFileName, affixFileName, transferResultsFile, report, sentPunct)
     
     if len(err_list) > 0:
         error_list.extend(err_list)
-        return
+        return error_list
 
     complex_map = {}
     irr_infl_var_map = {}
@@ -843,11 +848,11 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
-    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
+    targetANAFile = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
     affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
-    transferResults = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
+    transferResultsFile = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
 
-    error_list = convert_to_STAMP(DB, configMap, targetANA, affixFile, transferResults, report)
+    error_list = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report)
 
     # output info, warnings, errors
     for msg, code in error_list:

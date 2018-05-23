@@ -530,6 +530,9 @@ def extract_target_lex(DB, configMap, report=None):
     try:
         # Open the target database
         TargetDB.OpenDatabase(targetProj, verbose = True)
+        if not targetProj:
+            error_list.append(('Problem accessing the target project.', 2))
+            return error_list
     except FDA_DatabaseError, e:
         error_list.append((e.message, 2))
         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
@@ -538,12 +541,12 @@ def extract_target_lex(DB, configMap, report=None):
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
     targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+    morphNames    = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
     if not (targetProject and morphNames): 
         error_list.append(('Configuration file problem.', 2))
         return error_list
     
-    # Create the dictionary files 
+    # Create the dictionary files in a temp folder
     partPath = os.path.join(tempfile.gettempdir(), targetProject)
     (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
 

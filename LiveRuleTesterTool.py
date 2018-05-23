@@ -326,7 +326,7 @@ class Main(QtGui.QMainWindow):
             error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
             for msg, code in error_list:
                 if code == 2:
-                    QMessageBox.warning(self, 'Catalog Prefix Error', msg)
+                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
                     return
                 
             self.__doCatalog = False
@@ -339,7 +339,7 @@ class Main(QtGui.QMainWindow):
             error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, TARGET_ANA_PATH, AFFIX_GLOSS_PATH, TRANFER_RESULTS_PATH)
             for msg, code in error_list:
                 if code == 2:
-                    QMessageBox.warning(self, msg)
+                    QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
                     return
             
             self.__convertIt = False
@@ -352,21 +352,21 @@ class Main(QtGui.QMainWindow):
             error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
             for msg, code in error_list:
                 if code == 2:
-                    QMessageBox.warning(self, msg)
+                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
                     return
             
             # Extract the lexicon        
             error_list = ExtractTargetLexicon.extract_target_lex(self.__DB, self.__configMap)
             for msg, code in error_list:
                     if code == 2:
-                        QMessageBox.warning(self, msg)
+                        QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
                         return
         
         ## SYNTHESIZE
         error_list = ExtractTargetLexicon.synthesize(self.__configMap, TARGET_ANA_PATH, SYNTHESIS_FILE_PATH) 
         for msg, code in error_list:
             if code == 2:
-                QMessageBox.warning(self, msg)
+                QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
                 return
                     
         # Load the synthesized result into the text box
