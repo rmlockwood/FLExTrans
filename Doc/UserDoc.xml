@@ -808,8 +808,8 @@ type="tLiveRuleTester"
 num="xTesterImage"
 ><chart
 ><img
-XeLaTeXSpecial="scaled='400'"
-cssSpecial=" height:40%"
+XeLaTeXSpecial="scaled='700'"
+cssSpecial=" height:70%"
 src="Images/LiveRuleTester.png"
 ></img
 ></chart
@@ -819,31 +819,36 @@ id="sTesterQuickGuide"
 ><secTitle
 >Quick Guide</secTitle
 ><p
->Here’s a quick guide on using the tool.</p
+>Here’s a quick guide on using the Live Rule Tester Tool.</p
 ><ol
 ><li
->First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more words and when you do the <genericRef
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking the check box for the sentence you want.</li
+> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking on the sentence you want.</li
 ><li
 >Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
 type="tButton"
 >Select All</object
 > button. Uncheck them all with the <object
 type="tButton"
->Refresh</object
+>Unselect All</object
 > button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
 >Test</object
-> button and the selected works will get processed. The results will show in <genericRef
+> button and you will process the selected words. You will see the results in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> in the green colored area.</li
+> in the green-colored area.</li
 ><li
 >Check the yellow Information box. It will show which words were matched for the rules that were executed.</li
+><li
+>Now you are ready to synthesize. Click the <object
+type="tButton"
+>Synthesize</object
+> button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored area.</li
 ></ol
 ></section2
 ><section2
@@ -858,12 +863,12 @@ type="tButton"
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
 ><p
->You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in <genericRef
-gref="gDataStream"
->data stream format</genericRef
+>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in plain text data stream format<endnoteRef
+note="nRawDataStream"
+></endnoteRef
 >. This might be useful if you want to test a sense that isn’t in your text.</p
 ><p
->The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing the rules that are used in the advanced <object
+>The rules list Interchunk and Postchunk tabs are for use in testing rules in conjunction with the advanced <object
 type="tTool"
 >Apertium</object
 > transfer engine.</p
@@ -873,8 +878,13 @@ type="tLiveRuleTester"
 ></object
 > and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the <object
 type="tButton"
->Refresh</object
+>Refresh Rules</object
 > button.</p
+><p
+>If you change the target lexicon, click the <object
+type="tButton"
+>Refresh Target Lexicon</object
+> button to reload it.</p
 ></section2
 ></section1
 ><section1

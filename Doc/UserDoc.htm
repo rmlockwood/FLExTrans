@@ -515,7 +515,7 @@
                <td>
                   <table>
                      <tr>
-                        <td><img style=" height:40%" src="Images/LiveRuleTester.png"></td>
+                        <td><img style=" height:70%" src="Images/LiveRuleTester.png"></td>
                      </tr>
                   </table>
                </td>
@@ -524,19 +524,22 @@
       </div>
       <h2 style=""><a name="sTesterQuickGuide"></a>3.1&nbsp;Quick Guide
       </h2>
-      <p>Here&#8217;s a quick guide on using the tool.</p>
+      <p>Here&#8217;s a quick guide on using the Live Rule Tester Tool.</p>
       <ol style="list-style-type:decimal; ">
          <li>First you want to choose something from your source text that you want to test. When you first run the tool, the words of
-            the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more
-            words and when you do the <a href="#gDataStream">data stream format</a> of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences
-            tab and clicking the check box for the sentence you want.
+            the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more
+            words and when you do the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the Select Sentences
+            tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
-            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Refresh</span> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.
+            appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.
          </li>
-         <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Test</span> button and the selected works will get processed. The results will show in <a href="#gDataStream">data stream format</a> in the green colored area.
+         <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Test</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored area.
          </li>
          <li>Check the yellow Information box. It will show which words were matched for the rules that were executed.</li>
+         <li>Now you are ready to synthesize. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored
+            area.
+         </li>
       </ol>
       <h2 style=""><a name="sTesterOther"></a>3.2&nbsp;Other Parts of the Tool
       </h2>
@@ -547,13 +550,14 @@
          SourceTextName value and re-run the tool.
       </p>
       <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses)
-         directly in <a href="#gDataStream">data stream format</a>. This might be useful if you want to test a sense that isn&#8217;t in your text.
+         directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">10</a>]</span>. This might be useful if you want to test a sense that isn&#8217;t in your text.
       </p>
-      <p>The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing
-         the rules that are used in the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
+      <p>The rules list Interchunk and Postchunk tabs are for use in testing rules in conjunction with the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
       </p>
       <p>You can&#8217;t edit the transfer rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload
-         the transfer rules after you have changed them, click on the <span style="font-style:normal; font-weight:bold; ">Refresh</span> button.
+         the transfer rules after you have changed them, click on the <span style="font-style:normal; font-weight:bold; ">Refresh Rules</span> button.
+      </p>
+      <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it.
       </p>
       <h1 style=""><a name="sViewSrcTgt"></a>4&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.aper</span> or <span style="font-style:italic; ">target_text.aper</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.aper</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:navy; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.aper</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(14)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(15)</a>.
