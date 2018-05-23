@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6 - 3/30/18 - Ron Lockwood
+#    Made the main function minimal and separated the main logic into a another
+#    that can be called by the Live Rule Tester.
+#
 #   Version 1.3.8 - 1/26/18 - Ron Lockwood
 #    When looping through all entries in the main function, make the Headword lowercase
 #    in order to match ANA records which have been converted to lowercase when checking
@@ -115,7 +119,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.3.8",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :
@@ -254,8 +258,13 @@ def get_ANA_info(file_name_str):
 
 # Convert the output from the Apertium transfer to an ANA file
 def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
+    error_list = []
     
-    f_ana = open(ana_name, 'w')
+    try:
+        f_ana = open(ana_name, 'w')
+    except IOError:
+        error_list.append(('The file: '+ana_name+' was not found.', 2))
+        return error_list
     
     affix_map = {}
     
@@ -270,11 +279,13 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     try:
         f_test = open(out_name, 'r')
     except IOError:
-        report.Error('The file: '+out_name+' was not found.')
-        return
+        error_list.append(('The file: '+out_name+' was not found.', 2))
+        return error_list
         
     num_lines = sum(1 for line in open(out_name))
-    report.ProgressStart(num_lines)
+    
+    if report is not None:
+        report.ProgressStart(num_lines)
     
     # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
     f_apert = open(out_name, 'r')
@@ -284,7 +295,9 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
 
     # Each line represents a paragraph
     for cnt, line in enumerate(f_apert):
-        report.ProgressUpdate(cnt)
+        if report is not None:
+            report.ProgressUpdate(cnt)
+            
         line = unicode(line,'utf-8')
         
         # convert <sent> (sentence punctuation) to simply the punctuation without the tag or ^$
@@ -396,10 +409,12 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                 wordAnaInfo = None
 
                 if len(morphs) <2:
-                    report.Error("Word or POS missing. Found: "+",".join(morphs))
+                            
+                    error_list.append(("Word or POS missing. Found: "+",".join(morphs),2))
                     for m in morphs:
                         f_ana.write(m.encode('utf-8'))
-                    raise FTM_ModuleError, "Examine the target text output from apertium."
+                    return error_list
+                    #raise FTM_ModuleError, "Examine the target text output from apertium."
                 
                 # Create an ANA Info object
                 # We have the root (morphs[0]) and the POS of the root (morphs[1])
@@ -428,6 +443,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
             wordAnaInfo.write(f_ana)
 
     f_ana.close()      
+    
+    return error_list
 
 def is_proclitic(e):
     ret_val = False
@@ -673,30 +690,26 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
 
-def MainFunction(DB, report, modifyAllowed):
-
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
-    prefixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
+    error_list = []
+    
     complexForms1st = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report)
     complexForms2nd = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
-    transferResults = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
     sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
-    if not (targetANA and prefixFile and transferResults and sentPunct):
-        return
+    if not (targetANAFile and affixFile and transferResultsFile and sentPunct):
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
 
     # Convert the sentence punctuation to a unicode string
     sentPunct = unicode(sentPunct,'utf-8')
 
     # Check the validity of the complex forms lists
     if complexForms1st and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report):
-        return
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
     if complexForms2nd and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report):
-        return
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
 
     TargetDB = FLExDBAccess()
 
@@ -704,19 +717,19 @@ def MainFunction(DB, report, modifyAllowed):
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
-            return
+            error_list.append(('Problem accessing the target project.', 2))
+            return error_list
         TargetDB.OpenDatabase(targetProj, verbose = True)
     except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
+        error_list.append((e.message, 2))
+        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+        return error_list
 
-    report.Info('Using: '+targetProj+' as the target database.')
+    error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
     # Allow the affix and ana files to not be in the temp folder if a slash is present
-    anaFileName = Utils.build_path_default_to_temp(targetANA)
-    affixFileName = Utils.build_path_default_to_temp(prefixFile)
+    anaFileName = Utils.build_path_default_to_temp(targetANAFile)
+    affixFileName = Utils.build_path_default_to_temp(affixFile)
     
     # Build the complex forms map
     complexFormTypeMap = {}
@@ -728,16 +741,23 @@ def MainFunction(DB, report, modifyAllowed):
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
-    convertIt(anaFileName, affixFileName, transferResults, report, sentPunct)
+    err_list = convertIt(anaFileName, affixFileName, transferResultsFile, report, sentPunct)
+    
+    if len(err_list) > 0:
+        error_list.extend(err_list)
+        return error_list
 
     complex_map = {}
     irr_infl_var_map = {}
-    report.ProgressStart(TargetDB.LexiconNumberOfEntries())
+    
+    if report is not None:
+        report.ProgressStart(TargetDB.LexiconNumberOfEntries())
   
     # Loop through all the entries in the lexicon 
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
-        report.ProgressUpdate(i)
+        if report is not None:
+            report.ProgressUpdate(i)
         
         # Set the headword value and the homograph #
         headWord = ITsString(e.HeadWord).Text
@@ -816,8 +836,34 @@ def MainFunction(DB, report, modifyAllowed):
         
         count += 1
     
-    report.Info(str(count)+' records exported in ANA format.')        
+    error_list.append((str(count)+' records exported in ANA format.', 0))
     f_ana.close()
+    
+    return error_list
+
+def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    targetANAFile = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
+    affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+    transferResultsFile = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
+
+    error_list = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report)
+
+    # output info, warnings, errors
+    for msg, code in error_list:
+        
+        if code == 0:
+            report.Info(msg)
+        elif code == 1:
+            report.Warning(msg)
+        else: # error=2
+            report.Error(msg)
+    
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 

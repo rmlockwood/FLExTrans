@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6 - 3/30/18 - Ron Lockwood
+#    Made the main function minimal and separated the main logic into two main functions 
+#    one for extracting the target lexicon and one for running the synthesis. Also 
+#    modularized a lot more of the code.
+#
 #   Version 1.3.8 - 01/19/18 - Ron Lockwood
 #    Skip natural classes that are related to phonological features (PhNCFeatures)
 #
@@ -93,7 +98,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.3.8",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :
@@ -228,63 +233,40 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
     # Now process the lexeme form which is the default allomorph
     output_allomorph(e.LexemeFormOA, allEnvs, f_handle, e, report, TargetDB)
     f_handle.write('\n')
-        
-def MainFunction(DB, report, modifyAllowed):
 
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    TargetDB = FLExDBAccess()
-
-    # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    if not targetProj:
-        return
-    
-    # See if the target project is a valid database name.
-    if targetProj not in DB.GetDatabaseNames():
-        report.Error('The Target Database does not exist. Please check the configuration file.')
-        return
-
-    try:
-        TargetDB.OpenDatabase(targetProj, verbose = True)
-    except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
-        
-    report.Info('Using: '+targetProj+' as the target database.')
-
-    targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
-    targetSynthesis = ReadConfig.getConfigVal(configMap, 'TargetOutputSynthesisFile', report)
-    morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
-    clean = ReadConfig.getConfigVal(configMap, 'CleanUpUnknownTargetWords', report)
-    if not (targetProject and targetANA and targetSynthesis and morphNames and clean):
-        return
-    
-    if clean[0].lower() == 'y':
-        cleanUpText = True
-    else:
-        cleanUpText = False
-
-    # Allow the synthesis and ana files to not be in the temp folder if a slash is present
-    synFile = Utils.build_path_default_to_temp(targetSynthesis)
-    anaFile = Utils.build_path_default_to_temp(targetANA)
-    
-    # All other supporting files will be in the temp folder 
-    partPath = os.path.join(tempfile.gettempdir(), targetProject)
-    
-    cmdFileName = partPath+'_ctrl_files.txt'
-    decFileName = partPath+'_stamp.dec'
+def define_some_names(partPath):
     dicFileNameList = [partPath+'_pf.dic',partPath+'_if.dic',partPath+'_sf.dic',partPath+'_rt.dic']
+    decFileName = partPath+'_stamp.dec'
+    
+    return (dicFileNameList, decFileName)
+
+def create_dictionary_files(partPath):
+
+    (dicFileNameList, decFileName) = define_some_names(partPath)
+    
+    # Open the dictionary files we are going to create
+    f_pf = open(dicFileNameList[0], 'w') # prefixes
+    f_if = open(dicFileNameList[1], 'w') # infixes
+    f_sf = open(dicFileNameList[2], 'w') # suffixes
+    f_rt = open(dicFileNameList[3], 'w') # roots
+    f_dec = open(decFileName, 'w') # categories and string (natural) classes 
+    
+    # need a blank line at the top
+    f_pf.write('\n\n') 
+    f_if.write('\n\n') 
+    f_sf.write('\n\n') 
+    f_rt.write('\n\n') 
+    f_dec.write('\n') # blank line
+    
+    return (f_pf, f_if, f_sf, f_rt, f_dec)
+    
+def create_synthesis_files(partPath):
+
+    (dicFileNameList, decFileName) = define_some_names(partPath)
+
     blankFileNameList = [partPath+'_XXXtr.chg',partPath+'_synt.chg',partPath+'_outtx.ctl']
     sycdFileName = partPath+'_sycd.chg'
-    
-    ## Create other files we need for STAMP
+    cmdFileName = partPath+'_ctrl_files.txt'
     
     # Command file
     f_cmd = open(cmdFileName, 'w')
@@ -319,30 +301,15 @@ def MainFunction(DB, report, modifyAllowed):
         if i == 0: # only for infixes
             f_sycd.write(r'\ch "\l" "L"'+'\n') # This is the infix location field
     f_sycd.close()
-    
+
     # Create the blank files we need
     for b in blankFileNameList:
         f = open(b,'w')
         f.close()
-        
-    # Open the dictionary files we are going to create
-    f_pf = open(dicFileNameList[0], 'w') # prefixes
-    f_if = open(dicFileNameList[1], 'w') # infixes
-    f_sf = open(dicFileNameList[2], 'w') # suffixes
-    f_rt = open(dicFileNameList[3], 'w') # roots
-    f_dec = open(decFileName, 'w') # categories and string (natural) classes 
     
-    # need a blank line at the top
-    f_rt.write('\n\n') 
-    f_pf.write('\n\n') 
-    f_if.write('\n\n') 
-    f_sf.write('\n\n') 
-    f_dec.write('\n') 
-    
-    #vernWS = TargetDB.GetDefaultVernacularWS()
-    #analyWS = TargetDB.GetDefaultAnalysisWS()
+    return cmdFileName
 
-    report.Info("Outputting category information...")
+def output_cat_info(TargetDB, f_dec):
     
     # loop through all target categories and write them to the dec file
     for pos in TargetDB.lp.AllPartsOfSpeech:
@@ -360,7 +327,10 @@ def MainFunction(DB, report, modifyAllowed):
     f_dec.write('\\ca _variant_\n') # for variant entries
     f_dec.write('\n')
     
-    report.Info("Outputting natural class information...")
+    return
+
+def output_nat_class_info(TargetDB, f_dec):
+    err_list = []
     
     # Write out all the natural classes and the graphemes that they are made up of
     # Loop through all natural classes
@@ -381,22 +351,29 @@ def MainFunction(DB, report, modifyAllowed):
                     # Write out the grapheme string one after another on the line
                     grapheme = ITsString(graph.Representation.VernacularDefaultWritingSystem).Text
                     if not grapheme:
-                        report.Warning('Null grapheme found for natural class: '+natClassName+'. Skipping.')
+                        err_list.append(('Null grapheme found for natural class: '+natClassName+'. Skipping.', 1))
                         continue
                     else:
                         f_dec.write(' '+grapheme.encode('utf-8'))
             f_dec.write('\n')
     f_dec.close()
     
-    report.Info("Creating the STAMP dictionaries...")
-    
-    report.ProgressStart(TargetDB.LexiconNumberOfEntries())
+    return err_list
+
+def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report):
+    err_list = []
+        
+    if report is not None:
+        report.ProgressStart(TargetDB.LexiconNumberOfEntries())
     
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
+    
     # Loop through all the entries
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
-        report.ProgressUpdate(i)
+        if report is not None:
+            report.ProgressUpdate(i)
+            
         morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
         # If no senses, check if this entry is an inflectional variant and output it
@@ -465,16 +442,13 @@ def MainFunction(DB, report, modifyAllowed):
                             abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                   Abbreviation.BestAnalysisAlternative).Text
                         else:
-                            report.Warning('Skipping sense because the POS is unknown: '+\
-                                           ' while processing target headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
-                            #abbrev = 'unk'
+                            err_list.append(('Skipping sense because the POS is unknown: '+\
+                                           ' while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                             continue
                                                   
                     else:
-                        report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                       ' for headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
-                    
-                    
+                        err_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                                       ' for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
     
                     # Write out morphname field
                     f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1)+'\n')
@@ -487,18 +461,19 @@ def MainFunction(DB, report, modifyAllowed):
 
                     f_rt.write('\\c '+abbrev+'\n')
                     
-                    # Process all allomorphs and their environments
+                    # Process all allomorphs and their environments 
                     process_allomorphs(e, f_rt, gloss, report, 'stem', TargetDB)
                     rt_cnt +=1
+
                 # Now process non-roots
                 else:
                     if gloss == None:
-                        report.Warning('No gloss Skipping. Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+                        err_list.append(('No gloss. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                     elif e.LexemeFormOA == None:
-                        report.Warning('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+                        err_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                     elif e.LexemeFormOA.MorphTypeRA == None:
-                        report.Warning('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+\
-                                       ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text, TargetDB.BuildGotoURL(e))
+                        err_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+\
+                                       ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text, 1, TargetDB.BuildGotoURL(e)))
                     elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
                             if morphType in ['prefix', 'prefixing interfix']:
@@ -515,9 +490,9 @@ def MainFunction(DB, report, modifyAllowed):
                                 pf_cnt += 1
                                 sf_cnt += 1
                             else:
-                                report.Warning('Skipping entry because the morph type is: ' + morphType, TargetDB.BuildGotoURL(e))
+                                err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
                         else:
-                            report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, TargetDB.BuildGotoURL(e))
+                            err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
                     elif morphType not in morphNames:
                         if morphType == 'proclitic':
                             process_allomorphs(e, f_pf, gloss, report, 'non-stem', TargetDB)
@@ -526,28 +501,78 @@ def MainFunction(DB, report, modifyAllowed):
                             process_allomorphs(e, f_sf, gloss, report, 'non-stem', TargetDB)
                             sf_cnt += 1
                         else:
-                            report.Warning('Skipping entry because the morph type is: ' + morphType, TargetDB.BuildGotoURL(e))
+                            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+    
+    err_list.append(('STAMP dictionaries created.', 0))
+    err_list.append((str(pf_cnt)+' prefixes in the prefix dictionary.', 0))
+    err_list.append((str(sf_cnt)+' suffixes in the suffix dictionary.', 0))
+    err_list.append((str(if_cnt)+' infixes in the infix dictionary.', 0))
+    err_list.append((str(rt_cnt)+' roots in the root dictionary.', 0))
 
+    return err_list
+    
+def extract_target_lex(DB, configMap, report=None):
+    error_list = []
+        
+    TargetDB = FLExDBAccess()
+
+    # Open the target database
+    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        error_list.append(('Configuration file problem with TargetProject.', 2))
+        return error_list
+    
+    # See if the target project is a valid database name.
+    if targetProj not in DB.GetDatabaseNames():
+        error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
+        return error_list
+
+    try:
+        # Open the target database
+        TargetDB.OpenDatabase(targetProj, verbose = True)
+        if not targetProj:
+            error_list.append(('Problem accessing the target project.', 2))
+            return error_list
+    except FDA_DatabaseError, e:
+        error_list.append((e.message, 2))
+        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+        return error_list
+
+    error_list.append(('Using: '+targetProj+' as the target database.', 0))
+
+    targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    morphNames    = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+    if not (targetProject and morphNames): 
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
+    
+    # Create the dictionary files in a temp folder
+    partPath = os.path.join(tempfile.gettempdir(), targetProject)
+    (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
+
+    # Output category info.
+    error_list.append(('Outputting category information...', 0))
+    output_cat_info(TargetDB, f_dec)
+    
+    # Output natural class info.
+    error_list.append(('Outputting natural class information...', 0))
+    err_list = output_nat_class_info(TargetDB, f_dec)
+    error_list.extend(err_list)
+    
+    # Put data into the STAMP dictionaries
+    error_list.append(('Making the STAMP dictionaries...', 0))
+    err_list = create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report)
+    error_list.extend(err_list)
+    
     f_pf.close() 
     f_if.close() 
     f_sf.close() 
     f_rt.close() 
     f_dec.close()
     
-    report.Info("STAMP dictionaries created.")
-    report.Info(str(pf_cnt)+' prefixes in the prefix dictionary.')
-    report.Info(str(sf_cnt)+' suffixes in the suffix dictionary.')
-    report.Info(str(if_cnt)+' infixes in the infix dictionary.')
-    report.Info(str(rt_cnt)+' roots in the root dictionary.')
-    report.Info("Synthesizing the target text...")
+    return error_list
 
-    # run STAMP to sythesize the results. E.g. stamp32" -f Gilaki-Thesis_ctrl_files. txt -i pes_verbs.ana -o pes_verbs.syn
-    # this assumes stamp32.exe is in the current working directory.
-    call(['stamp32.exe', '-f', cmdFileName, '-i', anaFile, '-o', synFile])
-
-    report.Info("Fixing up the target text...")
-    
-    # Replace underscores with spaces in the Synthesized file
+def fix_up_text(synFile, cleanUpText):
     # Also remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
     f_s = open(synFile)
     line_list = []
@@ -564,6 +589,82 @@ def MainFunction(DB, report, modifyAllowed):
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()
+
+def synthesize(configMap, anaFile, synFile, report=None):
+    error_list = []
+    
+    targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    clean = ReadConfig.getConfigVal(configMap, 'CleanUpUnknownTargetWords', report)
+
+    if not (targetProject and clean): 
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
+    
+    if clean[0].lower() == 'y':
+        cleanUpText = True
+    else:
+        cleanUpText = False
+
+    # Create other files we need for STAMP
+    partPath = os.path.join(tempfile.gettempdir(), targetProject)
+    cmdFileName = create_synthesis_files(partPath)
+
+    # Synthesize the target text
+    error_list.append(('Synthesizing the target text...', 0))
+
+    # run STAMP to synthesize the results. E.g. stamp32" -f Gilaki-Thesis_ctrl_files. txt -i pes_verbs.ana -o pes_verbs.syn
+    # this assumes stamp32.exe is in the current working directory.
+    call(['stamp32.exe', '-f', cmdFileName, '-i', anaFile, '-o', synFile])
+
+    error_list.append(('Fixing up the target text...', 0))
+    
+    
+    # Replace underscores with spaces in the Synthesized file
+    # Underscores were added for multiword entries that contained a space
+    fix_up_text(synFile, cleanUpText)
+    
+    return error_list
+
+def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Allow the synthesis and ana files to not be in the temp folder if a slash is present
+    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
+    targetSynthesis = ReadConfig.getConfigVal(configMap, 'TargetOutputSynthesisFile', report)
+    if not (targetANA and targetSynthesis):
+        return 
+    
+    anaFile = Utils.build_path_default_to_temp(targetANA)
+    synFile = Utils.build_path_default_to_temp(targetSynthesis)
+    
+    # Extract the target lexicon
+    error_list = extract_target_lex(DB, configMap, report)
+
+    # Synthesize the new target text
+    err_list = synthesize(configMap, anaFile, synFile, report)
+    error_list.extend(err_list)
+    
+    # output info, warnings, errors
+    for triplet in error_list:
+        msg = triplet[0]
+        code = triplet[1]
+        
+        # sometimes we'll have a url to output in the error/warning
+        if len(triplet) == 3:
+            url = triplet[2]
+        else:
+            url = None
+            
+        if code == 0:
+            report.Info(msg, url)
+        elif code == 1:
+            report.Warning(msg, url)
+        else: # error=2
+            report.Error(msg, url)
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

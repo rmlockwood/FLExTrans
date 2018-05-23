@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1271</width>
-    <height>859</height>
+    <height>817</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>506</y>
-      <width>781</width>
-      <height>278</height>
+      <y>384</y>
+      <width>777</width>
+      <height>148</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -33,7 +33,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_transfer_rules">
      <attribute name="title">
@@ -45,7 +45,7 @@
         <x>0</x>
         <y>0</y>
         <width>771</width>
-        <height>243</height>
+        <height>120</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -72,7 +72,7 @@
         <x>0</x>
         <y>0</y>
         <width>771</width>
-        <height>243</height>
+        <height>120</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -93,7 +93,7 @@
         <x>0</x>
         <y>0</y>
         <width>771</width>
-        <height>243</height>
+        <height>120</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -119,9 +119,9 @@
     <property name="geometry">
      <rect>
       <x>290</x>
-      <y>10</y>
+      <y>19</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -161,9 +161,9 @@
     <property name="geometry">
      <rect>
       <x>728</x>
-      <y>10</y>
+      <y>19</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -189,7 +189,7 @@
       <x>20</x>
       <y>100</y>
       <width>1231</width>
-      <height>231</height>
+      <height>225</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -199,7 +199,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="movable">
      <bool>false</bool>
@@ -349,7 +349,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>349</y>
+      <y>560</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -375,9 +375,9 @@
     <property name="geometry">
      <rect>
       <x>800</x>
-      <y>506</y>
+      <y>384</y>
       <width>451</width>
-      <height>245</height>
+      <height>122</height>
      </rect>
     </property>
     <property name="font">
@@ -396,33 +396,20 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>775</y>
+      <y>553</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>&amp;Test</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="CloseButton">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>775</y>
-      <width>101</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Close</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>476</y>
+      <y>352</y>
       <width>171</width>
       <height>23</height>
      </rect>
@@ -435,7 +422,7 @@
     <property name="geometry">
      <rect>
       <x>800</x>
-      <y>476</y>
+      <y>354</y>
       <width>141</width>
       <height>23</height>
      </rect>
@@ -473,23 +460,23 @@
    <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>462</y>
-      <width>101</width>
-      <height>40</height>
+      <x>630</x>
+      <y>348</y>
+      <width>161</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>&amp;Refresh</string>
+     <string>&amp;Refresh Rules</string>
     </property>
    </widget>
    <widget class="QPushButton" name="selectAllButton">
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>462</y>
+      <y>348</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -500,7 +487,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>446</y>
+      <y>657</y>
       <width>1231</width>
       <height>10</height>
      </rect>
@@ -539,9 +526,9 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>462</y>
+      <y>348</y>
       <width>41</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -556,9 +543,9 @@
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>462</y>
+      <y>348</y>
       <width>41</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -576,9 +563,9 @@
     <property name="geometry">
      <rect>
       <x>1130</x>
-      <y>10</y>
+      <y>19</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -589,9 +576,9 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>462</y>
+      <y>348</y>
       <width>101</width>
-      <height>40</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -602,7 +589,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>379</y>
+      <y>590</y>
       <width>1231</width>
       <height>61</height>
      </rect>
@@ -619,6 +606,79 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>675</y>
+      <width>161</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Synthesized Text</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="SynthTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>707</y>
+      <width>1231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(254, 194,194);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>540</y>
+      <width>1231</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="synthesizeButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>670</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Synthesize</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="refreshLexButton">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>670</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Refresh Target &amp;Lexicon</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -626,7 +686,7 @@
      <x>0</x>
      <y>0</y>
      <width>1271</width>
-     <height>26</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>

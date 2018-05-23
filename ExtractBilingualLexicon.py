@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.3.7 - 12/24/17 - Ron Lockwood
 #    When processing replacements, don't add symbols that already exist in the
 #    bilingual dictionary. Add new lines at then end of comment elements to get
@@ -93,7 +96,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : "1.3.7",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
         'moduleDescription'   :
