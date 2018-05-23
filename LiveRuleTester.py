@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\LiveRuleTester.ui'
+# Form implementation generated from reading ui file 'LiveRuleTester.ui'
 #
-# Created: Fri Mar 30 20:27:55 2018
+# Created: Wed May 23 13:17:44 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,7 +62,7 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QtCore.QRect(20, 23, 81, 23))
         self.label.setObjectName(_fromUtf8("label"))
         self.TransferFileBrowseButton = QtGui.QPushButton(self.centralwidget)
-        self.TransferFileBrowseButton.setGeometry(QtCore.QRect(290, 20, 101, 31))
+        self.TransferFileBrowseButton.setGeometry(QtCore.QRect(290, 19, 101, 31))
         self.TransferFileBrowseButton.setObjectName(_fromUtf8("TransferFileBrowseButton"))
         self.TransferFileEdit = QtGui.QLineEdit(self.centralwidget)
         self.TransferFileEdit.setGeometry(QtCore.QRect(110, 19, 171, 29))
@@ -74,7 +74,7 @@ class Ui_MainWindow(object):
         self.BilingFileEdit.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.BilingFileEdit.setObjectName(_fromUtf8("BilingFileEdit"))
         self.BilingFileBrowseButton = QtGui.QPushButton(self.centralwidget)
-        self.BilingFileBrowseButton.setGeometry(QtCore.QRect(728, 20, 101, 31))
+        self.BilingFileBrowseButton.setGeometry(QtCore.QRect(728, 19, 101, 31))
         self.BilingFileBrowseButton.setObjectName(_fromUtf8("BilingFileBrowseButton"))
         self.label_2 = QtGui.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(410, 23, 131, 23))
@@ -208,7 +208,7 @@ class Ui_MainWindow(object):
         self.downButton.setObjectName(_fromUtf8("downButton"))
         self.ChooseSourceButton = QtGui.QPushButton(self.centralwidget)
         self.ChooseSourceButton.setEnabled(False)
-        self.ChooseSourceButton.setGeometry(QtCore.QRect(1130, 20, 101, 31))
+        self.ChooseSourceButton.setGeometry(QtCore.QRect(1130, 19, 101, 31))
         self.ChooseSourceButton.setObjectName(_fromUtf8("ChooseSourceButton"))
         self.unselectAllButton = QtGui.QPushButton(self.centralwidget)
         self.unselectAllButton.setGeometry(QtCore.QRect(320, 348, 101, 31))
@@ -222,7 +222,7 @@ class Ui_MainWindow(object):
         self.TargetTextEdit.setReadOnly(True)
         self.TargetTextEdit.setObjectName(_fromUtf8("TargetTextEdit"))
         self.label_7 = QtGui.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(20, 675, 111, 23))
+        self.label_7.setGeometry(QtCore.QRect(20, 675, 161, 23))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.SynthTextEdit = QtGui.QTextEdit(self.centralwidget)
         self.SynthTextEdit.setGeometry(QtCore.QRect(20, 707, 1231, 61))
@@ -241,11 +241,11 @@ class Ui_MainWindow(object):
         self.synthesizeButton.setGeometry(QtCore.QRect(490, 670, 101, 31))
         self.synthesizeButton.setObjectName(_fromUtf8("synthesizeButton"))
         self.refreshLexButton = QtGui.QPushButton(self.centralwidget)
-        self.refreshLexButton.setGeometry(QtCore.QRect(630, 670, 161, 31))
+        self.refreshLexButton.setGeometry(QtCore.QRect(630, 670, 201, 31))
         self.refreshLexButton.setObjectName(_fromUtf8("refreshLexButton"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1271, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1271, 31))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
