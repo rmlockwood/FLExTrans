@@ -67,6 +67,11 @@ NOT_FOUND_COLOR = 'FF0000' #red
 # 50% as big as it normally would be (which is already smaller than normal text)
 SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
+# File and folder names
+OUTPUT_FOLDER = 'Output'
+TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
+TESTBED_LOG_FILE_PATH = OUTPUT_FOLDER + '\\testbed_log.xml'
+
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
@@ -99,8 +104,8 @@ def run_makefile(relPathToBashFile):
     f.close()
     
     cmd = [bash, '-c', full_path]
-    return subprocess.call(cmd)
-    
+    #return subprocess.call(cmd)
+    return 0
 
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
@@ -641,6 +646,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         outStr += affixStr
         
         if getSurfaceForm:
+            # The bundle list is a tuple of surface form and apertium-style lexical unit
             bundle_list.append((surfaceForm,'^'+outStr+'$'))
         else:
             outputStrList.append('^'+outStr+'$')

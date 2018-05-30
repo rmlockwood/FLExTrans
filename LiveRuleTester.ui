@@ -402,7 +402,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&amp;Test</string>
+     <string>Transfer</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -410,12 +410,12 @@
      <rect>
       <x>20</x>
       <y>352</y>
-      <width>171</width>
+      <width>211</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Select Rules to Test</string>
+     <string>Select transfer rules to test</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -473,7 +473,7 @@
    <widget class="QPushButton" name="selectAllButton">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>240</x>
       <y>348</y>
       <width>101</width>
       <height>31</height>
@@ -525,7 +525,7 @@
    <widget class="QPushButton" name="upButton">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>490</x>
       <y>348</y>
       <width>41</width>
       <height>31</height>
@@ -542,7 +542,7 @@
    <widget class="QPushButton" name="downButton">
     <property name="geometry">
      <rect>
-      <x>500</x>
+      <x>540</x>
       <y>348</y>
       <width>41</width>
       <height>31</height>
@@ -575,7 +575,7 @@
    <widget class="QPushButton" name="unselectAllButton">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>360</x>
       <y>348</y>
       <width>101</width>
       <height>31</height>
@@ -679,21 +679,58 @@
      <string>Refresh Target &amp;Lexicon</string>
     </property>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1271</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar">
-   <property name="sizeGripEnabled">
-    <bool>true</bool>
-   </property>
+   <widget class="QPushButton" name="addToTestbedButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>778</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Add to Testbed</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="addMultipleCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>781</y>
+      <width>391</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add multiple words to the testbed word by word</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editTestbedButton">
+    <property name="geometry">
+     <rect>
+      <x>754</x>
+      <y>778</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Edit Testbed</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="viewTestbedLogButton">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>778</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;View Testbed Log</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

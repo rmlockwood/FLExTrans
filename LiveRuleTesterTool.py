@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1 - 3/30/18 - Ron Lockwood
+#    ???????
+#
 #   Version 3.0 - 3/30/18 - Ron Lockwood
 #    Added the capability of doing a test synthesis on the results of the test
 #    rules that were run. This involves running the last 4 of the main FLExTrans
@@ -90,8 +93,7 @@ from PyQt4.QtGui import QFileDialog, QMessageBox
 
 #----------------------------------------------------------------
 # Configurables:
-OUTPUT_FOLDER = 'Output'
-TESTER_FOLDER = OUTPUT_FOLDER+'\\LiveRuleTester'
+TESTER_FOLDER = Utils.OUTPUT_FOLDER+'\\LiveRuleTester'
 AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
 TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
 TARGET_ANA_PATH = TESTER_FOLDER + '\\myText.ana'
@@ -101,9 +103,9 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "3.0",
+        'moduleVersion'    : "3.1",
         'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Test transfer rules live against specific words.",
+        'moduleSynopsis'   : "Test transfer rules and synthesis live against specific words.",
         'moduleDescription'   :
 u"""
 The Live Rule Tester Tool is a tool that allows you to test source words or 
@@ -111,7 +113,8 @@ sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do. 
 You can zero in on the problem by selecting just one source word and applying 
 the pertinent transfer rule. In this way you don't have to run the whole system 
-against the whole text file and all transfer rules.
+against the whole text file and all transfer rules. You can also test that the 
+transfer results get synthesized correctly into target words.
 """ }
                  
 #----------------------------------------------------------------
@@ -137,8 +140,143 @@ from PyQt4.QtGui import QApplication, QCursor
 from LiveRuleTester import Ui_MainWindow
 import xml.etree.ElementTree as ET
 import shutil
+import uuid
 
-
+class TestbedTestXMLObject():
+    def __init__(self, testsRoot, luList, origin, synthResult):
+        test = ET.SubElement(testsRoot, 'test')
+        test.attrib['id'] = str(uuid.uuid4())
+        test.attrib['isValid'] = 'yes'
+        sourceInput = ET.SubElement(test, 'sourceInput')
+        sourceInput.attrib['origin'] = origin
+        lexicalUnitsXML = ET.SubElement(sourceInput, 'lexicalUnits')
+        
+        for lu in luList:
+            lexicalUnitXML = ET.Element('lexicalUnit')
+            lexicalUnitsXML.append(lexicalUnitXML)
+            headword = ET.SubElement(lexicalUnitXML,'headword')
+            headword.text = lu.getHeadword()
+            grammaticalCategoryTag = ET.SubElement(lexicalUnitXML,'grammaticalCategoryTag')
+            grammaticalCategoryTag.text = lu.getGramCat()
+            senseNum = ET.SubElement(lexicalUnitXML,'senseNum')
+            
+            if grammaticalCategoryTag.text != 'sent':       
+                senseNum.text = lu.getSenseNum()
+            else:
+                senseNum.text = 'n/a'
+            
+            otherTags = ET.SubElement(lexicalUnitXML,'otherTags')
+            for myTag in lu.getOtherTags():
+                tag = ET.Element('tag')
+                otherTags.append(tag)
+                tag.text = myTag
+        
+        targetOutput = ET.SubElement(test, 'targetOutput')
+        expectedResult = ET.SubElement(targetOutput, 'expectedResult')
+        expectedResult.text = unicode(synthResult).strip()
+        actualResult = ET.SubElement(targetOutput, 'actualResult')
+            
+        
+class LexicalUnit():
+    def __init__(self, str2Parse):
+        self.__inStr = str2Parse
+        self.__headword = None
+        self.__senseNum = None
+        self.__gramCat = None
+        self.__otherTags = []
+        self.__invalid = False
+        self.__parse()
+        
+    def getHeadword(self):
+        return self.__headword
+    def getSenseNum(self):
+        return self.__senseNum
+    def getGramCat(self):
+        return self.__gramCat
+    def getOtherTags(self):
+        return self.__otherTags
+    def isValid(self):
+        return not self.__invalid
+    def __parse(self):
+        if re.search('>', self.__inStr):
+            self.__parseApertiumStyle()
+        else:    
+            self.__parsePlainText()
+            
+    def __parseApertiumStyle(self):
+        
+        # Split off the symbols from the lemma in the lexical unit
+        tokens = re.split('<|>', self.__inStr)
+        tokens = filter(None, tokens) # filter out the empty strings
+        
+        # If we have less than 2 items, it's invalid. We need at least a value plus it's gramm. category
+        if len(tokens) < 2:
+            self.__invalid = True
+            return
+        
+        # lemma (e.g. haus1.1) is the first one
+        lemma = tokens.pop(0)
+        
+        # gram. cat. is the next one
+        self.__gramCat = tokens.pop(0)
+        
+        # if sentence punctuation, don't assign sense number
+        if self.__gramCat != 'sent':
+            myResult = lemma.split('.')
+            if len(myResult) != 2:
+                self.__invalid = True
+                return 
+            else:
+                (self.__headword, self.__senseNum) = myResult
+        else:
+            self.__headword = lemma
+        
+        self.__otherTags = tokens
+        
+    def __parsePlainText(self):
+        pass    
+            
+class LexicalUnitParser():
+    
+    def __init__(self, string2Parse):
+        self.__inputStr = unicode(string2Parse)
+        self.__lexUnitList = []
+        self.__parse()
+        self.__invalid = False
+        
+    def __parse(self):
+        if re.search('>', self.__inputStr):
+            self.__parseApertiumStyle()
+        else:    
+            self.__parsePlainText()
+    
+    def __parseApertiumStyle(self):
+        myStr = self.__inputStr
+        
+        luStr = Utils.split_compounds(myStr)
+        
+        tokens = re.split('\^|\$', luStr)
+        
+        # If we have less than 2 tokens, there is something wrong. It may mean there are no ^$ delimiters
+        if len(tokens) < 2:
+            self.__invalid = True
+            return
+        
+        # process pairs of tokens (white space and lexical unit)
+        # we only care about the 2nd item in the pair, the lexical unit
+        for j in range(0,len(tokens)-1,2):
+    
+            lu = LexicalUnit(tokens[j+1])
+            if lu.isValid() == False:
+                self.__invalid = True
+                return
+            self.__lexUnitList.append(lu)
+        
+    def __parsePlainText(self):
+        pass    
+    def getLexicalUnits(self):
+        return self.__lexUnitList 
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
     
@@ -228,6 +366,7 @@ class Main(QtGui.QMainWindow):
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
         self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
+        self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         
         # Right align some text boxes
         self.ui.SourceFileEdit.home(False)
@@ -248,7 +387,7 @@ class Main(QtGui.QMainWindow):
 
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, OUTPUT_FOLDER, 'transfer_rules.t1x')
+        self.__transfer_rules_file= os.path.join(pwd, Utils.OUTPUT_FOLDER, 'transfer_rules.t1x')
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()
@@ -257,7 +396,7 @@ class Main(QtGui.QMainWindow):
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
 
-        # Check in the first 5 sentences if we have any RTL data and set the sentence list direction if needed
+        # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
         for i,mySent in enumerate(sentence_list):
             if found_rtl == True or i >= 5:
@@ -292,15 +431,101 @@ class Main(QtGui.QMainWindow):
 
         # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
         try:
-            shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-            m_path = os.path.join(OUTPUT_FOLDER, 'Makefile')
+            shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+            m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
             self.ret_val = False
             return 
+        
+        ## Testbed preparation
+        # If the testbed doesn't exist, set a flag so that it can be created later
+        if os.path.exists(Utils.TESTBED_FILE_PATH):
+            # Load the default testbed
+            self.loadTestbed()
+            self.createTestbed = False
+        else:
+            self.createTestbed = True
+            
+        # Disable buttons as needed.
+        self.ui.addToTestbedButton.setEnabled(False)
+        self.ui.addMultipleCheckBox.setEnabled(False)
+        
+        if self.createTestbed:
+            self.ui.editTestbedButton.setEnabled(False)
+
+        if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
+            self.ui.viewTestbedLogButton.setEnabled(False)
 
         self.ret_val = True
+
+    def addToTestbed(self, eRoot, synthesisResult):
         
+        # Initialize a Parser object
+        lexParser = LexicalUnitParser(self.getActiveTextEditVal())
+        
+        # Check for invalid lexical units
+        if lexParser.isValid == False:
+            QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) are incorrectly formed.')
+        
+        # Get the lexical units from the parser
+        lexUnitList = lexParser.getLexicalUnits()
+        
+        # Get the name of the text this lu came from
+        origin = str(self.ui.SourceFileEdit.text())
+        
+        # Initialize a Test XML object and fill out its data given a list of
+        # lexical units and a result from the synthesis step
+        myTestObj = TestbedTestXMLObject(eRoot, lexUnitList, origin, synthesisResult)
+        
+    def AddTestbedButtonClicked(self):
+        
+        # If no testbed exists, Initialize the XML objects
+        if self.createTestbed:
+            
+            xmlRoot = self.initializeTestbed()
+            testBedTree = ET.ElementTree(xmlRoot)
+            self.ui.editTestbedButton.setEnabled(True)
+        else:
+            # Otherwise read the xml file
+            try:
+                testBedTree = ET.parse(Utils.TESTBED_FILE_PATH)
+                xmlRoot = testBedTree.getroot()
+            except:
+                QMessageBox.warning(self, 'Invalid File', 'The testbed file: ' + Utils.TESTBED_FILE_PATH + ' is invalid.')
+                return False
+            
+        testsNode = xmlRoot.find('./testbeds/testbed/tests')    
+        
+        result = self.ui.SynthTextEdit.toPlainText()
+
+        # TODO: check for existing source
+        
+        # TODO: check if add-multiple
+        self.addToTestbed(testsNode, result)
+        testBedTree.write(Utils.TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+
+    def initializeTestbed(self):
+        
+        top = ET.Element('FLExTransTestbed')
+        
+        if self.__sent_model.getRTL():
+            direction = 'rtl'
+        else:
+            direction = 'ltr'
+            
+        top.attrib['source_direction'] = direction
+        
+        testbeds = ET.SubElement(top, 'testbeds')
+        testbed = ET.SubElement(testbeds, 'testbed')
+        testbed.attrib['n'] = 'default'
+        tests = ET.SubElement(testbed, 'tests')
+        
+        return top
+        
+    def loadTestbed(self):
+        pass
+    
     def has_RTL_data(self, word1):
         for i in range(0, len(word1)):
             if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
@@ -383,6 +608,20 @@ class Main(QtGui.QMainWindow):
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
         
+        # See if we have synthesis text without @'s. If so, enable the Add to Testbed button
+        if len(synthText) > 0 and re.search('@', synthText) == None:
+        
+            self.ui.addToTestbedButton.setEnabled(True)
+
+            # See if we have multiple words, If so, enable the Add Multiple... checkbox
+            if re.search('\w+\s+\w+', synthText):
+                self.ui.addMultipleCheckBox.setEnabled(True)
+            else:
+                self.ui.addMultipleCheckBox.setEnabled(False)
+        else:
+            self.ui.addToTestbedButton.setEnabled(False)
+            self.ui.addMultipleCheckBox.setEnabled(False)
+        
         return
                 
     def UpButtonClicked(self):
@@ -436,7 +675,7 @@ class Main(QtGui.QMainWindow):
     def RefreshClicked(self):
         self.loadTransferRules()
         self.ui.SynthTextEdit.setPlainText('')
-    def doLexicalUnitProcessing(self, mySent, i, p):
+    def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
         luStr = Utils.split_compounds(mySent[i][1])
@@ -456,16 +695,17 @@ class Main(QtGui.QMainWindow):
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
             
             # Turn the lexical unit into color-coded html. 
-            Utils.process_lexical_unit(tokens[j+1]+' ', p, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+            Utils.process_lexical_unit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
         
         # Add a space at the end
         self.__lexicalUnits += ' '
+        
     def SourceCheckBoxClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
         
         # Create a <p> html element
-        p = ET.Element('p')
+        paragraph_element = ET.Element('p')
         
         # Loop through all the check boxes 
         for i in range(0, len(mySent)):
@@ -475,31 +715,33 @@ class Main(QtGui.QMainWindow):
                 
                 # process this lexical unit to set both the lexicalUnits variable
                 # and get an color-coded html element (<p>)
-                self.doLexicalUnitProcessing(mySent, i, p)
+                self.doLexicalUnitProcessing(mySent, i, paragraph_element)
         
-        # The p element now has one or more <span> children, turn them into a string        
-        val = ET.tostring(p)
+        # The paragraph_element now has one or more <span> children, turn it into a string        
+        val = ET.tostring(paragraph_element)
         
         # The text box will turn the html into rich text    
-        self.ui.SelectedWordsEdit.setText(val)                
+        self.ui.SelectedWordsEdit.setText(val)    
+                    
     def listSentClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
         
         # Create a <p> html element
-        p = ET.Element('p')
+        paragraph_element = ET.Element('p')
 
         for i in range(0, len(mySent)):
 
             # process this lexical unit to set both the lexicalUnits variable
             # and get an color-coded html element (<p>)
-            self.doLexicalUnitProcessing(mySent, i, p)
+            self.doLexicalUnitProcessing(mySent, i, paragraph_element)
         
-        # The p element now has one or more <span> children, turn them into a string        
-        val = ET.tostring(p)
+        # The paragraph_element now has one or more <span> children, turn them into a string        
+        val = ET.tostring(paragraph_element)
             
         # The text box will turn the html into rich text    
         self.ui.SelectedSentencesEdit.setText(val)
+        
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
     def getActiveTextEditVal(self):
