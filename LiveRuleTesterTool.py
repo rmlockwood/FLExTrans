@@ -6,7 +6,10 @@
 #   7/2/16
 #
 #   Version 3.1 - 3/30/18 - Ron Lockwood
-#    ???????
+#    Add lexical units and synthesis results to the testbed. There is an option
+#    to add multiple lexical units and synthesis results if they match in number
+#    this could be useful for adding a whole paradigm to the testbed. Also added
+#    buttons to let the user edit the testbed or view the testbed log.
 #
 #   Version 3.0 - 3/30/18 - Ron Lockwood
 #    Added the capability of doing a test synthesis on the results of the test
