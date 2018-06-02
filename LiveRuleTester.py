@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'LiveRuleTester.ui'
 #
-# Created: Wed May 30 05:41:43 2018
+# Created: Thu May 31 17:58:28 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -255,6 +255,10 @@ class Ui_MainWindow(object):
         self.viewTestbedLogButton = QtGui.QPushButton(self.centralwidget)
         self.viewTestbedLogButton.setGeometry(QtCore.QRect(940, 778, 181, 31))
         self.viewTestbedLogButton.setObjectName(_fromUtf8("viewTestbedLogButton"))
+        self.TestsAddedLabel = QtGui.QLabel(self.centralwidget)
+        self.TestsAddedLabel.setEnabled(True)
+        self.TestsAddedLabel.setGeometry(QtCore.QRect(20, 781, 131, 20))
+        self.TestsAddedLabel.setObjectName(_fromUtf8("TestsAddedLabel"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -293,4 +297,5 @@ class Ui_MainWindow(object):
         self.addMultipleCheckBox.setText(_translate("MainWindow", "Add multiple words to the testbed word by word", None))
         self.editTestbedButton.setText(_translate("MainWindow", "&Edit Testbed", None))
         self.viewTestbedLogButton.setText(_translate("MainWindow", "&View Testbed Log", None))
+        self.TestsAddedLabel.setText(_translate("MainWindow", "X tests added.", None))
 

@@ -731,6 +731,22 @@
      <string>&amp;View Testbed Log</string>
     </property>
    </widget>
+   <widget class="QLabel" name="TestsAddedLabel">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>781</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X tests added.</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

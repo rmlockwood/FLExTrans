@@ -44,9 +44,316 @@ import os
 import xml.etree.ElementTree as ET
 import platform
 import subprocess
+import uuid
 
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+
+# Testbed XML constants
+FLEXTRANS_TESTBED = 'FLExTransTestbed'
+TESTBEDS = 'testbeds' 
+TESTBED = 'testbed' 
+TESTS = 'tests' 
+TEST = 'test' 
+SOURCE_INPUT = 'sourceInput'
+LEXICAL_UNITS = 'lexicalUnits'
+LEXICAL_UNIT = 'lexicalUnit'
+HEAD_WORD = 'headWord'        
+SENSE_NUM = 'senseNum'        
+GRAM_CAT = 'grammaticalCategoryTag'        
+OTHER_TAGS = 'otherTags'        
+TAG = 'tag'     
+SENT = 'sent'   
+TARGET_OUTPUT = 'targetOutput' 
+EXPECTED_RESULT = 'expectedResult' 
+ACTUAL_RESULT = 'actualResult' 
+SOURCE_DIRECTION = 'source_direction' 
+TARGET_DIRECTION = 'target_direction' 
+N_ATTRIB = 'n' 
+ID = 'id' 
+IS_VALID = 'is_valid' 
+ORIGIN = 'origin' 
+RTL = 'rtl' 
+LTR = 'ltr' 
+NA = 'n/a' 
+YES = 'yes'
+NO = 'no'
+DEFAULT = 'default'
+
+# Testbed classes
+class LexicalUnit():
+    def __init__(self, str2Parse=None, luNode=None):
+        self.__headWord = None
+        self.__senseNum = None
+        self.__gramCat = None
+        self.__otherTags = []
+        self.__invalid = False 
+        
+        if str2Parse != None:
+            self.__inStr = str2Parse
+            self.__parse()
+        elif luNode != None:
+            self.__luNode = luNode
+            self.__unpackXML()
+    def getHeadWord(self):
+        return self.__headWord
+    def getSenseNum(self):
+        return self.__senseNum
+    def getGramCat(self):
+        return self.__gramCat
+    def getOtherTags(self):
+        return self.__otherTags
+    def isValid(self):
+        return not self.__invalid
+    def toString(self):
+        ret_str = self.__headWord
+        if self.__gramCat != SENT:
+            ret_str += '.' + self.__senseNum
+        ret_str += ' ' + self.__gramCat
+        for tag in self.__otherTags:
+            ret_str += ' ' + tag
+        return ret_str
+    def __parse(self):
+        if re.search('>', self.__inStr):
+            self.__parseApertiumStyle()
+        else:    
+            self.__parsePlainText()
+            
+    def __unpackXML(self):
+        self.__headWord = self.__luNode.find(HEAD_WORD).text
+        self.__senseNum = self.__luNode.find(SENSE_NUM).text
+        self.__gramCat = self.__luNode.find(GRAM_CAT).text
+        for tagNode in list(self.__luNode.find(OTHER_TAGS)):
+            self.__otherTags.append(tagNode.text)
+        
+    def __parseApertiumStyle(self):
+        
+        # Split off the symbols from the lemma in the lexical unit
+        tokens = re.split('<|>', self.__inStr)
+        tokens = filter(None, tokens) # filter out the empty strings
+        
+        # If we have less than 2 items, it's invalid. We need at least a value plus it's gramm. category
+        if len(tokens) < 2:
+            self.__invalid = True
+            return
+        
+        # lemma (e.g. haus1.1) is the first one
+        lemma = tokens.pop(0)
+        
+        # gram. cat. is the next one
+        self.__gramCat = tokens.pop(0)
+        
+        # if sentence punctuation, don't assign sense number
+        if self.__gramCat != SENT:
+            myResult = lemma.split('.')
+            if len(myResult) != 2:
+                self.__invalid = True
+                return 
+            else:
+                (self.__headWord, self.__senseNum) = myResult
+        else:
+            self.__headWord = lemma
+        
+        self.__otherTags = tokens
+        
+    def __parsePlainText(self):
+        pass    
+            
+class LexicalUnitParser():
+    
+    def __init__(self, string2Parse):
+        self.__inputStr = unicode(string2Parse)
+        self.__lexUnitList = []
+        self.__parse()
+        self.__invalid = False
+    
+    def isValid(self):
+        return not self.__invalid    
+    def __parse(self):
+        if re.search('>', self.__inputStr):
+            self.__parseApertiumStyle()
+        else:    
+            self.__parsePlainText()
+    
+    def __parseApertiumStyle(self):
+        myStr = self.__inputStr
+        
+        luStr = split_compounds(myStr)
+        
+        tokens = re.split('\^|\$', luStr)
+        
+        # If we have less than 2 tokens, there is something wrong. It may mean there are no ^$ delimiters
+        if len(tokens) < 2:
+            self.__invalid = True
+            return
+        
+        # process pairs of tokens (white space and lexical unit)
+        # we only care about the 2nd item in the pair, the lexical unit
+        for j in range(0,len(tokens)-1,2):
+    
+            lu = LexicalUnit(tokens[j+1])
+            if lu.isValid() == False:
+                self.__invalid = True
+                return
+            self.__lexUnitList.append(lu)
+        
+    def __parsePlainText(self):
+        pass    
+    def getLexicalUnits(self):
+        return self.__lexUnitList 
+
+class TestbedTestXMLObject():
+    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None):
+        self.__luList = luList
+        self.__origin = origin
+        self.__synthResult = synthResult
+        self.__testNode = testNode
+        
+        # If no lexical unit object list is given, create it
+        if luList == None:
+            self.__createLUListFromXMLStructure()
+        else:
+            self.__createXMLStructureFromLUList()
+    
+    def __createLUListFromXMLStructure(self):
+        self.__luList = []
+
+        sourceInputNode = self.__testNode.find(SOURCE_INPUT)
+        lexicalUnitsNode = sourceInputNode.find(LEXICAL_UNITS)
+        
+        # Go through all the lexical units
+        for luNode in list(lexicalUnitsNode):
+            lu = LexicalUnit(None, luNode) # 1st param is str2parse
+            self.__luList.append(lu)
+            
+    def __createXMLStructureFromLUList(self):
+        self.__testNode = ET.Element(TEST)
+        self.__testNode.attrib[ID] = str(uuid.uuid4())
+        self.__testNode.attrib[IS_VALID] = YES
+        sourceInput = ET.SubElement(self.__testNode, SOURCE_INPUT)
+        sourceInput.attrib[ORIGIN] = self.__origin
+        lexicalUnitsXML = ET.SubElement(sourceInput, LEXICAL_UNITS)
+        
+        for lu in self.__luList:
+            lexicalUnitXML = ET.Element(LEXICAL_UNIT)
+            lexicalUnitsXML.append(lexicalUnitXML)
+            headWord = ET.SubElement(lexicalUnitXML, HEAD_WORD)
+            headWord.text = lu.getHeadWord()
+            senseNum = ET.SubElement(lexicalUnitXML, SENSE_NUM)
+            grammaticalCategoryTag = ET.SubElement(lexicalUnitXML, GRAM_CAT)
+            grammaticalCategoryTag.text = lu.getGramCat()
+            
+            if grammaticalCategoryTag.text != SENT:       
+                senseNum.text = lu.getSenseNum()
+            else:
+                senseNum.text = NA
+            
+            otherTags = ET.SubElement(lexicalUnitXML, OTHER_TAGS)
+            for myTag in lu.getOtherTags():
+                tag = ET.Element(TAG)
+                otherTags.append(tag)
+                tag.text = myTag
+        
+        targetOutput = ET.SubElement(self.__testNode, TARGET_OUTPUT)
+        expectedResult = ET.SubElement(targetOutput, EXPECTED_RESULT)
+        expectedResult.text = unicode(self.__synthResult).strip()
+        ET.SubElement(targetOutput, ACTUAL_RESULT)
+    
+    def getID(self):
+        return self.__testNode.attrib[ID]
+    def isValid(self):
+        if self.__testNode.attrib[IS_VALID] == YES:
+            return True
+        return False
+    def getOrigin(self):
+        return self.__testNode.find(SOURCE_INPUT).attrib(ORIGIN)
+    def getExpectedResult(self):
+        return self.__testNode.find(TARGET_OUTPUT+'/'+EXPECTED_RESULT).text
+    def getActualResult(self):
+        return self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text
+    def getTestNode(self):
+        return self.__testNode
+        
+    def getLUString(self):
+        ret_str = ''
+        
+        for lu in self.__luList:
+            ret_str += ' ' + lu.toString()
+        
+        return ret_str.strip()
+    
+    def equalLexUnits(self, myTestObj):
+        localLUString = self.getLUString()
+        cmpLUString = myTestObj.getLUString()
+        
+        if localLUString == cmpLUString:
+            return True
+        
+        return False 
+         
+class FLExTransTestbedXMLObject():
+    def __init__(self, new=False, direction=None):
+        self.__rootNode = None
+        self.__TestXMLObjectList = []
+        self.__direction = direction
+        
+        # if new is False, create the structure down to the tests node
+        if new:
+            self.__initBasicStructure()
+            self.__testBedTree = ET.ElementTree(self.__rootNode)
+        # else we assume we have a full structure create a list of test nodes
+        else:
+            try:
+                self.__testBedTree = ET.parse(TESTBED_FILE_PATH)
+            except:
+                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
+                return
+            self.__rootNode = self.__testBedTree.getroot()
+            self.__testsNode = self.__getTestsNode()
+            self.__createTestXMLObjectList()
+    
+    def addToTestbed(self, newTestObj):
+        newNode = newTestObj.getTestNode()
+        self.__testsNode.append(newNode)
+    
+    def overwriteInTestbed(self, oldTestObj, newTestObj):
+        # get the id for the old test
+        oldId = oldTestObj.getID()
+        
+        # loop through all the tests until we get a match
+        for i, testNode  in enumerate(list(self.__testsNode)):
+            # when we find it, remove it and replace with the new 
+            currId = testNode.attrib[ID]
+            if currId == oldId:
+                newNode = newTestObj.getTestNode()
+                self.__testsNode.insert(i, newNode)
+                self.__testsNode.remove(testNode)
+                break
+            
+    def __getTestsNode(self):
+        # For now we assume just one testbed (named 'default')
+        # In the future we will support a user selected testbed or testbeds
+        return self.__rootNode.find(TESTBEDS+'/'+TESTBED+'/'+TESTS)
+    
+    def getTestXMLObjectList(self):
+        return self.__TestXMLObjectList
+    
+    def __initBasicStructure(self):
+        self.__rootNode = ET.Element(FLEXTRANS_TESTBED)
+        self.__rootNode.attrib[SOURCE_DIRECTION] = self.__direction
+        testbeds = ET.SubElement(self.__rootNode, TESTBEDS)
+        testbed = ET.SubElement(testbeds, TESTBED)
+        testbed.attrib[N_ATTRIB] = DEFAULT
+        self.__testsNode = ET.SubElement(testbed, TESTS)
+    
+    def __createTestXMLObjectList(self):
+        # loop through all the tests
+        for testNode in list(self.__testsNode):
+            newTestXMLObj = TestbedTestXMLObject(None, None, None, testNode) # luList=None, origin=None, synthResult=None
+            self.__TestXMLObjectList.append(newTestXMLObj)
+    
+    def write(self):
+        self.__testBedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
 
 # Main color of the headwords
 LEMMA_COLOR = '000000' #black
@@ -104,7 +411,7 @@ def run_makefile(relPathToBashFile):
     f.close()
     
     cmd = [bash, '-c', full_path]
-    #return subprocess.call(cmd)
+    return subprocess.call(cmd)
     return 0
 
 # Create a span element and set the color and text

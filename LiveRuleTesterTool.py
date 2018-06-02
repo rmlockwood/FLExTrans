@@ -73,23 +73,7 @@
 #   Makefile in the LiveRuleTester folder every 3 seconds. The Makefile builds
 #   the necessary files to create the target text file.
 #
-
-from FTModuleClass import FlexToolsModuleClass
-import ReadConfig
 import Utils
-import CatalogTargetPrefixes
-import ConvertTextToSTAMPformat
-import ExtractTargetLexicon
-import os
-import re
-import sys
-import unicodedata
-import copy
-import time
-import platform
-import subprocess
-
-from PyQt4.QtGui import QFileDialog, QMessageBox
 
 #----------------------------------------------------------------
 # Configurables:
@@ -120,6 +104,7 @@ transfer results get synthesized correctly into target words.
 #----------------------------------------------------------------
 # The main processing function
 
+from FTModuleClass import FlexToolsModuleClass
 from SIL.FieldWorks.FDO import ILexPronunciation
 from SIL.FieldWorks.FDO import ITextRepository
 from SIL.FieldWorks.FDO import IScrSectionRepository
@@ -134,148 +119,28 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from System import Guid
 from System import String
  
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QApplication, QCursor
-from LiveRuleTester import Ui_MainWindow
+import ReadConfig
+import CatalogTargetPrefixes
+import ConvertTextToSTAMPformat
+import ExtractTargetLexicon
+import os
+import re
+import sys
+import unicodedata
+import copy
+import time
+import platform
+import subprocess
 import xml.etree.ElementTree as ET
 import shutil
 import uuid
 
-class TestbedTestXMLObject():
-    def __init__(self, testsRoot, luList, origin, synthResult):
-        test = ET.SubElement(testsRoot, 'test')
-        test.attrib['id'] = str(uuid.uuid4())
-        test.attrib['isValid'] = 'yes'
-        sourceInput = ET.SubElement(test, 'sourceInput')
-        sourceInput.attrib['origin'] = origin
-        lexicalUnitsXML = ET.SubElement(sourceInput, 'lexicalUnits')
-        
-        for lu in luList:
-            lexicalUnitXML = ET.Element('lexicalUnit')
-            lexicalUnitsXML.append(lexicalUnitXML)
-            headword = ET.SubElement(lexicalUnitXML,'headword')
-            headword.text = lu.getHeadword()
-            grammaticalCategoryTag = ET.SubElement(lexicalUnitXML,'grammaticalCategoryTag')
-            grammaticalCategoryTag.text = lu.getGramCat()
-            senseNum = ET.SubElement(lexicalUnitXML,'senseNum')
-            
-            if grammaticalCategoryTag.text != 'sent':       
-                senseNum.text = lu.getSenseNum()
-            else:
-                senseNum.text = 'n/a'
-            
-            otherTags = ET.SubElement(lexicalUnitXML,'otherTags')
-            for myTag in lu.getOtherTags():
-                tag = ET.Element('tag')
-                otherTags.append(tag)
-                tag.text = myTag
-        
-        targetOutput = ET.SubElement(test, 'targetOutput')
-        expectedResult = ET.SubElement(targetOutput, 'expectedResult')
-        expectedResult.text = unicode(synthResult).strip()
-        actualResult = ET.SubElement(targetOutput, 'actualResult')
-            
-        
-class LexicalUnit():
-    def __init__(self, str2Parse):
-        self.__inStr = str2Parse
-        self.__headword = None
-        self.__senseNum = None
-        self.__gramCat = None
-        self.__otherTags = []
-        self.__invalid = False
-        self.__parse()
-        
-    def getHeadword(self):
-        return self.__headword
-    def getSenseNum(self):
-        return self.__senseNum
-    def getGramCat(self):
-        return self.__gramCat
-    def getOtherTags(self):
-        return self.__otherTags
-    def isValid(self):
-        return not self.__invalid
-    def __parse(self):
-        if re.search('>', self.__inStr):
-            self.__parseApertiumStyle()
-        else:    
-            self.__parsePlainText()
-            
-    def __parseApertiumStyle(self):
-        
-        # Split off the symbols from the lemma in the lexical unit
-        tokens = re.split('<|>', self.__inStr)
-        tokens = filter(None, tokens) # filter out the empty strings
-        
-        # If we have less than 2 items, it's invalid. We need at least a value plus it's gramm. category
-        if len(tokens) < 2:
-            self.__invalid = True
-            return
-        
-        # lemma (e.g. haus1.1) is the first one
-        lemma = tokens.pop(0)
-        
-        # gram. cat. is the next one
-        self.__gramCat = tokens.pop(0)
-        
-        # if sentence punctuation, don't assign sense number
-        if self.__gramCat != 'sent':
-            myResult = lemma.split('.')
-            if len(myResult) != 2:
-                self.__invalid = True
-                return 
-            else:
-                (self.__headword, self.__senseNum) = myResult
-        else:
-            self.__headword = lemma
-        
-        self.__otherTags = tokens
-        
-    def __parsePlainText(self):
-        pass    
-            
-class LexicalUnitParser():
-    
-    def __init__(self, string2Parse):
-        self.__inputStr = unicode(string2Parse)
-        self.__lexUnitList = []
-        self.__parse()
-        self.__invalid = False
-        
-    def __parse(self):
-        if re.search('>', self.__inputStr):
-            self.__parseApertiumStyle()
-        else:    
-            self.__parsePlainText()
-    
-    def __parseApertiumStyle(self):
-        myStr = self.__inputStr
-        
-        luStr = Utils.split_compounds(myStr)
-        
-        tokens = re.split('\^|\$', luStr)
-        
-        # If we have less than 2 tokens, there is something wrong. It may mean there are no ^$ delimiters
-        if len(tokens) < 2:
-            self.__invalid = True
-            return
-        
-        # process pairs of tokens (white space and lexical unit)
-        # we only care about the 2nd item in the pair, the lexical unit
-        for j in range(0,len(tokens)-1,2):
-    
-            lu = LexicalUnit(tokens[j+1])
-            if lu.isValid() == False:
-                self.__invalid = True
-                return
-            self.__lexUnitList.append(lu)
-        
-    def __parsePlainText(self):
-        pass    
-    def getLexicalUnits(self):
-        return self.__lexUnitList 
+from PyQt4.QtGui import QFileDialog, QMessageBox
+from PyQt4 import QtGui, QtCore
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QApplication, QCursor
+from LiveRuleTester import Ui_MainWindow
+from OverWriteTestDlg import Ui_OverWriteTest
     
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
@@ -313,7 +178,36 @@ class SentenceList(QtCore.QAbstractListModel):
         for t in tupList:
             ret += ' ' + t[i]
         return ret.lstrip()
-
+    
+class OverWriteDlg(QtGui.QDialog):
+    def __init__(self, luStr):
+        QtGui.QDialog.__init__(self)
+        self.ui = Ui_OverWriteTest()
+        self.ui.setupUi(self)
+        
+        # Default to NoToAll. 
+        self.retValue = QtGui.QDialogButtonBox.NoToAll
+        
+        # Add the lexical unit to the label
+        labelStr = str(self.ui.label.text())
+        labelStr = re.sub('XX', '"' + luStr + '"', labelStr)
+        self.ui.label.setText(labelStr)
+        
+        self.ui.buttonBox.button(QtGui.QDialogButtonBox.YesToAll).clicked.connect(self.yesToAllClicked)
+        self.ui.buttonBox.button(QtGui.QDialogButtonBox.NoToAll).clicked.connect(self.noToAllClicked)
+        self.ui.buttonBox.button(QtGui.QDialogButtonBox.Yes).clicked.connect(self.yesClicked)
+        self.ui.buttonBox.button(QtGui.QDialogButtonBox.No).clicked.connect(self.noClicked)
+    def yesToAllClicked(self):
+        self.retValue = QtGui.QDialogButtonBox.YesToAll
+    def noToAllClicked(self):
+        self.retValue = QtGui.QDialogButtonBox.NoToAll
+    def yesClicked(self):
+        self.retValue = QtGui.QDialogButtonBox.Yes
+    def noClicked(self):
+        self.retValue = QtGui.QDialogButtonBox.No
+    def getRetValue(self):
+        return self.retValue
+        
 class Main(QtGui.QMainWindow):
 
     def __init__(self, sentence_list, biling_file, source_text, DB, configMap, report):
@@ -367,6 +261,9 @@ class Main(QtGui.QMainWindow):
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
         self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
+        
+        # Blank out the tests added feedback label
+        self.ui.TestsAddedLabel.setText('')
         
         # Right align some text boxes
         self.ui.SourceFileEdit.home(False)
@@ -459,70 +356,167 @@ class Main(QtGui.QMainWindow):
 
         self.ret_val = True
 
-    def addToTestbed(self, eRoot, synthesisResult):
-        
+    def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
-        lexParser = LexicalUnitParser(self.getActiveTextEditVal())
+        lexParser = Utils.LexicalUnitParser(lexUnitStr)
         
         # Check for invalid lexical units
-        if lexParser.isValid == False:
+        if lexParser.isValid() == False:
             QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) are incorrectly formed.')
-        
+            return None
+            
         # Get the lexical units from the parser
-        lexUnitList = lexParser.getLexicalUnits()
+        return lexParser.getLexicalUnits()
         
+    def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
         # Get the name of the text this lu came from
-        origin = str(self.ui.SourceFileEdit.text())
+        origin = unicode(self.ui.SourceFileEdit.text())
         
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
-        myTestObj = TestbedTestXMLObject(eRoot, lexUnitList, origin, synthesisResult)
+        myObj = Utils.TestbedTestXMLObject(lexUnitList, origin, synthesisResult)
         
+        return myObj
+    
     def AddTestbedButtonClicked(self):
+        self.ui.TestsAddedLabel.setText('')
         
         # If no testbed exists, Initialize the XML objects
         if self.createTestbed:
             
-            xmlRoot = self.initializeTestbed()
-            testBedTree = ET.ElementTree(xmlRoot)
+            # Set the direction attribute
+            if self.__sent_model.getRTL():
+                direction = Utils.RTL
+            else:
+                direction = Utils.LTR
+            
+            # Initialize an object that models the testbed XML file    
+            testbedObj = Utils.FLExTransTestbedXMLObject(True, direction) # new=True
             self.ui.editTestbedButton.setEnabled(True)
         else:
             # Otherwise read the xml file
             try:
-                testBedTree = ET.parse(Utils.TESTBED_FILE_PATH)
-                xmlRoot = testBedTree.getroot()
-            except:
-                QMessageBox.warning(self, 'Invalid File', 'The testbed file: ' + Utils.TESTBED_FILE_PATH + ' is invalid.')
-                return False
+                testbedObj = Utils.FLExTransTestbedXMLObject()
+            except ValueError as err:
+                QMessageBox.warning(self, 'XML File Problem', "".join(err.args))
+                return
+         
+        # Get the current list of tests in the XML testbed    
+        testXMLObjList = testbedObj.getTestXMLObjectList()
+        
+        # Get the synthesis result text
+        synResult = unicode(self.ui.SynthTextEdit.toPlainText()).strip()
+        
+        cnt = 0
+        
+        # Check if add-multiple was selected
+        if self.ui.addMultipleCheckBox.isChecked():
             
-        testsNode = xmlRoot.find('./testbeds/testbed/tests')    
-        
-        result = self.ui.SynthTextEdit.toPlainText()
-
-        # TODO: check for existing source
-        
-        # TODO: check if add-multiple
-        self.addToTestbed(testsNode, result)
-        testBedTree.write(Utils.TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
-
-    def initializeTestbed(self):
-        
-        top = ET.Element('FLExTransTestbed')
-        
-        if self.__sent_model.getRTL():
-            direction = 'rtl'
+            luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+            resultList = synResult.split(' ') # split on space
+            
+            # Check for an equal amount of lexical units as synthesis results
+            if len(luObjList) != len(resultList):
+                QMessageBox.warning(self, 'Testbed Error', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.')
+                return
+            
+            ret_val = None
+            
+            # Loop through all the lexical units and results
+            for i in range (0, len(luObjList)):
+                luObj = luObjList[i]
+                result = resultList[i]
+                
+                # take the lexical unit and result and build a Test XML node
+                myTestXMLObj = self.buildTestNodeFromInput([luObj], result) # first parameter is a list
+                
+                # We'll get None if there was an error
+                if myTestXMLObj == None:
+                    return
+                
+                # If we created a new testbed, just add the new test
+                if self.createTestbed:
+                    testbedObj.addToTestbed(myTestXMLObj)
+                    cnt += 1
+                else:    
+                    # Check if the lexical unit already exists for a test in the testbed
+                    # None gets returned if it wasn't found
+                    existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
+                    
+                    if existingTestXMLObj:
+                        # Get confirmation from the user if necessary.
+                        if ret_val != QtGui.QDialogButtonBox.YesToAll:
+                            dlg = OverWriteDlg(myTestXMLObj.getLUString())
+                            dlg.exec_()
+                            ret_val = dlg.getRetValue()
+                        
+                        # See if we should overwrite    
+                        if ret_val == QtGui.QDialogButtonBox.Yes or ret_val == QtGui.QDialogButtonBox.YesToAll:
+                            testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
+                            cnt += 1
+                        
+                        # Break out of the loop if the user said no to all    
+                        elif ret_val == QtGui.QDialogButtonBox.NoToAll:
+                            break
+                    else:
+                        testbedObj.addToTestbed(myTestXMLObj)
+                        cnt += 1
+                    
         else:
-            direction = 'ltr'
+            luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+
+            # take the lexical unit(s) and result and build a Test XML node
+            myTestXMLObj = self.buildTestNodeFromInput(luObjList, synResult)
             
-        top.attrib['source_direction'] = direction
+            # We'll get None if there was an error
+            if myTestXMLObj == None:
+                return
+            
+            # If we created a new testbed, just add the new test
+            if self.createTestbed:
+                testbedObj.addToTestbed(myTestXMLObj)
+                cnt += 1
+            else:
+                # Check if the lexical unit already exists for a test in the testbed
+                # None gets returned if it wasn't found
+                existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
+                if existingTestXMLObj:
+                    # Get confirmation from the user.
+                    dlg = OverWriteDlg(myTestXMLObj.getLUString())
+                    
+                    # Only show the Yes and No buttons
+                    dlg.ui.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.No|QtGui.QDialogButtonBox.Yes)
+
+                    # Show the dialog
+                    ret_val = dlg.exec_()
+                    
+                    # See if we should overwrite    
+                    if ret_val == 1: # Yes
+                        testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
+                        cnt += 1
+                else:
+                    testbedObj.addToTestbed(myTestXMLObj)
+                    cnt += 1
         
-        testbeds = ET.SubElement(top, 'testbeds')
-        testbed = ET.SubElement(testbeds, 'testbed')
-        testbed.attrib['n'] = 'default'
-        tests = ET.SubElement(testbed, 'tests')
+        # Tell the user how many tests were added.
+        if cnt == 1:
+            feedbackStr = str(cnt) + ' test added.'
+        else:
+            feedbackStr = str(cnt) + ' tests added.'
+        self.ui.TestsAddedLabel.setText(feedbackStr)
         
-        return top
+        # Write the XML file
+        if cnt > 0:
+            testbedObj.write()
+
+    def getExistingTest(self, testXMLObjList, myTestXMLObj):
         
+        for testXMLObj in testXMLObjList:
+            if testXMLObj.equalLexUnits(myTestXMLObj):
+                return testXMLObj
+        
+        return None
+    
     def loadTestbed(self):
         pass
     
@@ -538,6 +532,7 @@ class Main(QtGui.QMainWindow):
         self.__doCatalog = True
         
     def SynthesizeButtonClicked(self):
+        self.ui.TestsAddedLabel.setText('')
         error_list = []
         
         # Make the text box blank to start out.
@@ -701,6 +696,7 @@ class Main(QtGui.QMainWindow):
         self.__lexicalUnits += ' '
         
     def SourceCheckBoxClicked(self):
+        self.ui.TestsAddedLabel.setText('')
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
         
@@ -752,7 +748,7 @@ class Main(QtGui.QMainWindow):
             #ret = self.ui.SelectedSentencesEdit.toPlainText()
             ret = self.__lexicalUnits
         else:
-            ret = self.ui.ManualEdit.toPlainText()
+            ret = unicode(self.ui.ManualEdit.toPlainText())
         return ret
     def __ClearAllChecks(self):
         for check in self.__checkBoxList:
