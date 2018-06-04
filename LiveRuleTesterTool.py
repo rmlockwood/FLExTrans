@@ -101,7 +101,9 @@ finding out why transfer rules are not doing what you expect them to do.
 You can zero in on the problem by selecting just one source word and applying 
 the pertinent transfer rule. In this way you don't have to run the whole system 
 against the whole text file and all transfer rules. You can also test that the 
-transfer results get synthesized correctly into target words.
+transfer results get synthesized correctly into target words. If you want, you
+can add the source lexical items paired with the synthesis results to a testbed. 
+You can run the testbed to check that you are getting the results you expect.
 """ }
                  
 #----------------------------------------------------------------
@@ -339,21 +341,10 @@ class Main(QtGui.QMainWindow):
             return 
         
         ## Testbed preparation
-        # If the testbed doesn't exist, set a flag so that it can be created later
-        if os.path.exists(Utils.TESTBED_FILE_PATH):
-            # Load the default testbed
-            self.loadTestbed()
-            self.createTestbed = False
-        else:
-            self.createTestbed = True
-            
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        if self.createTestbed:
-            self.ui.editTestbedButton.setEnabled(False)
-
         if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
             self.ui.viewTestbedLogButton.setEnabled(False)
 
@@ -363,9 +354,9 @@ class Main(QtGui.QMainWindow):
         # Initialize a Parser object
         lexParser = Utils.LexicalUnitParser(lexUnitStr)
         
-        # Check for invalid lexical units
-        if lexParser.isValid() == False:
-            QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) are incorrectly formed.')
+        # Check for badly formed lexical units
+        if lexParser.isWellFormed() == False:
+            QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) is/are incorrectly formed.')
             return None
             
         # Get the lexical units from the parser
@@ -385,7 +376,9 @@ class Main(QtGui.QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         
         # If no testbed exists, Initialize the XML objects
-        if self.createTestbed:
+        if not os.path.exists(Utils.TESTBED_FILE_PATH):
+            
+            self.createTestbed = True
             
             # Set the direction attribute
             if self.__sent_model.getRTL():
@@ -397,6 +390,7 @@ class Main(QtGui.QMainWindow):
             testbedObj = Utils.FLExTransTestbedXMLObject(True, direction) # new=True
             self.ui.editTestbedButton.setEnabled(True)
         else:
+            self.createTestbed = False
             # Otherwise read the xml file
             try:
                 testbedObj = Utils.FLExTransTestbedXMLObject()
@@ -416,6 +410,8 @@ class Main(QtGui.QMainWindow):
         if self.ui.addMultipleCheckBox.isChecked():
             
             luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+            if luObjList == None:
+                return
             resultList = synResult.split(' ') # split on space
             
             # Check for an equal amount of lexical units as synthesis results
@@ -467,6 +463,8 @@ class Main(QtGui.QMainWindow):
                     
         else:
             luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+            if luObjList == None:
+                return
 
             # take the lexical unit(s) and result and build a Test XML node
             myTestXMLObj = self.buildTestNodeFromInput(luObjList, synResult)

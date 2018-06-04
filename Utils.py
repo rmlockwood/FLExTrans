@@ -87,7 +87,7 @@ class LexicalUnit():
         self.__senseNum = None
         self.__gramCat = None
         self.__otherTags = []
-        self.__invalid = False 
+        self.__badly_formed = False 
         
         if str2Parse != None:
             self.__inStr = str2Parse
@@ -103,8 +103,22 @@ class LexicalUnit():
         return self.__gramCat
     def getOtherTags(self):
         return self.__otherTags
-    def isValid(self):
-        return not self.__invalid
+    def isWellFormed(self):
+        if self.__badly_formed == True:
+            return False
+        else:
+            # Do a detailed check of well-formedness
+            if self.__headWord == None or self.__senseNum == None or self.__gramCat == None:
+                return False
+            if len(self.__headWord) < 1 or len(self.__senseNum) < 1 or len(self.__gramCat) < 1:
+                return False
+            # Check homograph #
+            if not self.__headWord[-1].isdigit():
+                return False
+            # Check senseNum
+            if not self.__senseNum.isdigit():
+                return False
+            
     def toString(self):
         ret_str = self.__headWord
         if self.__gramCat != SENT:
@@ -132,9 +146,9 @@ class LexicalUnit():
         tokens = re.split('<|>', self.__inStr)
         tokens = filter(None, tokens) # filter out the empty strings
         
-        # If we have less than 2 items, it's invalid. We need at least a value plus it's gramm. category
+        # If we have less than 2 items, it's badly_formed. We need at least a value plus it's gramm. category
         if len(tokens) < 2:
-            self.__invalid = True
+            self.__badly_formed = True
             return
         
         # lemma (e.g. haus1.1) is the first one
@@ -147,7 +161,7 @@ class LexicalUnit():
         if self.__gramCat != SENT:
             myResult = lemma.split('.')
             if len(myResult) != 2:
-                self.__invalid = True
+                self.__badly_formed = True
                 return 
             else:
                 (self.__headWord, self.__senseNum) = myResult
@@ -157,18 +171,40 @@ class LexicalUnit():
         self.__otherTags = tokens
         
     def __parsePlainText(self):
-        pass    
+        
+        tokens = re.split(' ',  self.__inStr)
+        
+        # If we have less than 2 items, it's badly_formed. We need at least a headword plus it's gramm. category
+        if len(tokens) < 2:
+            self.__badly_formed = True
+            return    
+        
+        # lemma (e.g. haus1.1) is the first one
+        lemma = tokens.pop(0)
+        
+        # gram. cat. is the next one
+        self.__gramCat = tokens.pop(0)
+        
+        # split off the sense #
+        myResult = lemma.split('.')
+        if len(myResult) != 2:
+            self.__badly_formed = True
+            return 
+        else:
+            (self.__headWord, self.__senseNum) = myResult
             
+        self.__otherTags = tokens
+        
 class LexicalUnitParser():
     
     def __init__(self, string2Parse):
         self.__inputStr = unicode(string2Parse)
+        self.__badly_formed = False
         self.__lexUnitList = []
         self.__parse()
-        self.__invalid = False
     
-    def isValid(self):
-        return not self.__invalid    
+    def isWellFormed(self):
+        return not self.__badly_formed    
     def __parse(self):
         if re.search('>', self.__inputStr):
             self.__parseApertiumStyle()
@@ -184,7 +220,7 @@ class LexicalUnitParser():
         
         # If we have less than 2 tokens, there is something wrong. It may mean there are no ^$ delimiters
         if len(tokens) < 2:
-            self.__invalid = True
+            self.__badly_formed = True
             return
         
         # process pairs of tokens (white space and lexical unit)
@@ -192,13 +228,69 @@ class LexicalUnitParser():
         for j in range(0,len(tokens)-1,2):
     
             lu = LexicalUnit(tokens[j+1])
-            if lu.isValid() == False:
-                self.__invalid = True
+            if lu.isWellFormed() == False:
+                self.__badly_formed = True
                 return
             self.__lexUnitList.append(lu)
         
     def __parsePlainText(self):
-        pass    
+        myStr = self.__inputStr
+        
+        # Split on the . that's between homograph # and sense #
+        # We'll get something like: ['ich1', '1 pro lieben2', '2 v 1/3SG dich3', '44 pro suf1 suf2']
+        tokens = re.split('\.', myStr)
+        
+        # Go through the tokens
+        for i, tok in enumerate(tokens):
+            
+            # first one is just the headword
+            if i == 0:
+                # save the headword
+                headword = tok
+                
+            # last one - everything but the headword which we get from the previous save of headword
+            elif i == len(tokens)-1:
+                
+                # build the lu
+                luStr = headword+'.'+tok
+                
+                # initialize a Lexical unit object with the string
+                lu = LexicalUnit(luStr)
+                
+                # check if it's valid
+                if lu.isWellFormed() == False:
+                    self.__badly_formed = True
+                    return 
+                
+                # Add it to the list
+                self.__lexUnitList.append(lu)
+                
+            else: # not first or last - use the saved headword and add the current token
+                #   except for the last word which is the next headword
+                
+                # separate on space  
+                subTokens = re.split(' ', tok)
+
+                # build the lu
+                luStr = headword+'.'+' '.join(subTokens[0:-1])
+                
+                # save the headword
+                headword = subTokens[-1]
+                
+                # initialize a Lexical unit object with the string
+                lu = LexicalUnit(luStr)
+                
+                # check if it's valid
+                if lu.isWellFormed() == False:
+                    self.__badly_formed = True
+                    return 
+                
+                # Add it to the list
+                self.__lexUnitList.append(lu)
+        
+        if len(self.__lexUnitList) == 0:
+            self.__badly_formed = True
+                
     def getLexicalUnits(self):
         return self.__lexUnitList 
 
@@ -261,7 +353,7 @@ class TestbedTestXMLObject():
     
     def getID(self):
         return self.__testNode.attrib[ID]
-    def isValid(self):
+    def isWellFormed(self):
         if self.__testNode.attrib[IS_VALID] == YES:
             return True
         return False
@@ -411,7 +503,7 @@ def run_makefile(relPathToBashFile):
     f.close()
     
     cmd = [bash, '-c', full_path]
-    return subprocess.call(cmd)
+    #return subprocess.call(cmd)
     return 0
 
 # Create a span element and set the color and text
