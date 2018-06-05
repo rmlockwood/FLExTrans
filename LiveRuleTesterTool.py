@@ -5,6 +5,17 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.0 - 3/30/18 - Ron Lockwood
+#    Added the capability of doing a test synthesis on the results of the test
+#    rules that were run. This involves running the last 4 of the main FLExTrans
+#    modules from this module. Each of these 4 modules was modified to give a
+#    function that this module could call. New interface elements were added.
+#    most of the new capability get run when the synthesize button is pushed.
+#
+#   Version 2.2.1 - 2/28/18 - Ron Lockwood
+#    More gracefully handle when the LiveRuleTester folder doesn't exist. Added
+#    missing module description.
+#
 #   Version 2.2 - 1/10/18 - Ron Lockwood
 #    Added the direct call to Apertium through bash. This uses the same
 #    code that the RunApertium module has. Handle splitting of compounds into parts
@@ -63,6 +74,9 @@
 from FTModuleClass import FlexToolsModuleClass
 import ReadConfig
 import Utils
+import CatalogTargetPrefixes
+import ConvertTextToSTAMPformat
+import ExtractTargetLexicon
 import os
 import re
 import sys
@@ -76,19 +90,28 @@ from PyQt4.QtGui import QFileDialog, QMessageBox
 
 #----------------------------------------------------------------
 # Configurables:
-TESTER_FOLDER = 'Output\\LiveRuleTester'
 OUTPUT_FOLDER = 'Output'
+TESTER_FOLDER = OUTPUT_FOLDER+'\\LiveRuleTester'
+AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
+TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
+TARGET_ANA_PATH = TESTER_FOLDER + '\\myText.ana'
+SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "2.0",
+        'moduleVersion'    : "3.0",
         'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Test transfer rules live.",
+        'moduleSynopsis'   : "Test transfer rules live against specific words.",
         'moduleDescription'   :
 u"""
-TODO
+The Live Rule Tester Tool is a tool that allows you to test source words or 
+sentences live against transfer rules. This tool is especially helpful for 
+finding out why transfer rules are not doing what you expect them to do. 
+You can zero in on the problem by selecting just one source word and applying 
+the pertinent transfer rule. In this way you don't have to run the whole system 
+against the whole text file and all transfer rules.
 """ }
                  
 #----------------------------------------------------------------
@@ -155,7 +178,7 @@ class SentenceList(QtCore.QAbstractListModel):
 
 class Main(QtGui.QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, source_text):
+    def __init__(self, sentence_list, biling_file, source_text, DB, configMap, report):
         QtGui.QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -164,8 +187,14 @@ class Main(QtGui.QMainWindow):
         self.ui.BilingFileEdit.setText(biling_file)
         self.__source_text = source_text
         self.ui.SourceFileEdit.setText(source_text)
+        self.__DB = DB
+        self.__configMap = configMap
+        self.__report = report
         self.__transfer_rules_file = None
         self.advancedTransfer = False
+        self.__convertIt = True
+        self.__extractIt = True
+        self.__doCatalog = True
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None
@@ -183,7 +212,7 @@ class Main(QtGui.QMainWindow):
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TestClicked)
-        self.ui.CloseButton.clicked.connect(self.CloseClicked)
+        #self.ui.CloseButton.clicked.connect(self.CloseClicked)
         self.ui.listSentences.clicked.connect(self.listSentClicked)
         self.ui.listTransferRules.clicked.connect(self.rulesListClicked)
         self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
@@ -197,6 +226,8 @@ class Main(QtGui.QMainWindow):
         self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
+        self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
+        self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
         
         # Right align some text boxes
         self.ui.SourceFileEdit.home(False)
@@ -219,9 +250,9 @@ class Main(QtGui.QMainWindow):
         pwd = os.getcwd()
         self.__transfer_rules_file= os.path.join(pwd, OUTPUT_FOLDER, 'transfer_rules.t1x')
         if not self.loadTransferRules():
-            self.ret_val = 0
+            self.ret_val = False
             self.close()
-            return False
+            return 
         
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
@@ -240,26 +271,120 @@ class Main(QtGui.QMainWindow):
                     found_rtl = True
                     break
         
+        if found_rtl:
+            # this doesn't seem to be working
+            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
+            self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
+            
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
         
         # Simulate a click on the sentence list box
         self.listSentComboClicked()
         
-        self.ret_val = 0
-        
         # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
-        
-        # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-        shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+        try:
+            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+        except:
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            self.ret_val = False
+            return 
 
+        # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
+        try:
+            shutil.copy(os.path.join(OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+            m_path = os.path.join(OUTPUT_FOLDER, 'Makefile')
+        except:
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            self.ret_val = False
+            return 
+
+        self.ret_val = True
+        
     def has_RTL_data(self, word1):
         for i in range(0, len(word1)):
             if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
                 return True
         return False
+
+    def RefreshLexButtonClicked(self):
+        self.ui.SynthTextEdit.setPlainText('')
+        self.__extractIt = True
+        self.__doCatalog = True
         
+    def SynthesizeButtonClicked(self):
+        error_list = []
+        
+        # Make the text box blank to start out.
+        self.ui.SynthTextEdit.setPlainText('')
+        
+        ## CATALOG
+        # Catalog all the target affixes
+        # We only need to do this once, until the user requests to refresh the lexicon
+        if self.__doCatalog:
+            
+            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            for msg, code in error_list:
+                if code == 2:
+                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                    return
+                
+            self.__doCatalog = False
+                    
+        ## CONVERT
+        # if the target text has changed, we need to do the affixes and convert the target text to STAMP format
+        if self.__convertIt == True:
+            
+            # Convert the target text to .ana format (for STAMP)
+            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, TARGET_ANA_PATH, AFFIX_GLOSS_PATH, TRANFER_RESULTS_PATH)
+            for msg, code in error_list:
+                if code == 2:
+                    QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
+                    return
+            
+            self.__convertIt = False
+                    
+        ## EXTRACT
+        # if the refresh lexicon button was pressed or this is the first run, extract the target lexicon
+        if self.__extractIt == True:
+            
+            # Redo the catalog of prefixes in case the user changed an affix
+            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            for msg, code in error_list:
+                if code == 2:
+                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                    return
+            
+            # Extract the lexicon        
+            error_list = ExtractTargetLexicon.extract_target_lex(self.__DB, self.__configMap)
+            for msg, code in error_list:
+                    if code == 2:
+                        QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                        return
+        
+        ## SYNTHESIZE
+        error_list = ExtractTargetLexicon.synthesize(self.__configMap, TARGET_ANA_PATH, SYNTHESIS_FILE_PATH) 
+        for msg, code in error_list:
+            if code == 2:
+                QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                return
+                    
+        # Load the synthesized result into the text box
+        lf = open(SYNTHESIS_FILE_PATH)
+        synthText = unicode(lf.read(),'utf-8')
+        
+        # if RTL text, prepend the RTL mark
+        if self.__sent_model.getRTL():
+            synthText = ur'\u200F' + synthText
+            
+        self.ui.SynthTextEdit.setPlainText(synthText)
+        lf.close()
+
+        # Set a flag so that we don't extract the dictionary next time
+        self.__extractIt = False
+        
+        return
+                
     def UpButtonClicked(self):
         if self.TRIndex and self.TRIndex.row() > 0:
             # pop current list item and insert it one above
@@ -310,6 +435,7 @@ class Main(QtGui.QMainWindow):
             
     def RefreshClicked(self):
         self.loadTransferRules()
+        self.ui.SynthTextEdit.setPlainText('')
     def doLexicalUnitProcessing(self, mySent, i, p):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
@@ -666,6 +792,8 @@ class Main(QtGui.QMainWindow):
         
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         
+        self.__convertIt = True
+        
         # TODO: allow editable rule file edit box?
         # Make sure we have a transfer file
         if self.ui.TransferFileEdit.text() == '':
@@ -765,6 +893,7 @@ class Main(QtGui.QMainWindow):
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
+            QApplication.restoreOverrideCursor()
             return
         
         # Load the target text contents into the results edit box
@@ -865,14 +994,12 @@ def MainFunction(DB, report, modify=False):
     if not configMap:
         return
 
-    # Get need configuration file properties
+    # Get needed configuration file properties
     text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, 'SourceMorphNamesCountedAsRoots', report)
-    targetMorphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
     bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
 
     # check for errors
-    if not (text_desired_eng and targetMorphNames and sourceMorphNames and bilingFile):
+    if not (text_desired_eng and bilingFile):
         return
     
     # Get punctuation string
@@ -925,22 +1052,15 @@ def MainFunction(DB, report, modify=False):
             bilingFile = os.path.join(pwd, bilingFile)
             
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, text_desired_eng)
+        window = Main(segment_list, bilingFile, text_desired_eng, DB, configMap, report)
+        
+        if window.ret_val == False:
+            report.Error('An error occurred getting things initialized.')
+            return
         
         window.show()
         app.exec_()
         
-        cnt = 0
-        
-        # Update the source database with the correct links
-        if window.ret_val: # True = make the changes
-            pass
-
-
-
-                    
-    #report.Info(str(cnt)+' links created.')
-     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

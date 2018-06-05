@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.3.9 - 1/10/18 - Ron Lockwood
 #    Moved the split_compounds function into the Utils file for use by
 #    other modules.
@@ -95,7 +98,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.3.6",
+        'moduleVersion'    : "1.6",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
         'moduleDescription':

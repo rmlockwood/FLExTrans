@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
+#   Version 1.1 - 3/7/18 - Ron Lockwood
+#    Give an error only if the report object is not None 
+#
 #   Functions for reading a configuration file
 
 import re
@@ -14,20 +20,23 @@ def readConfig(report):
     try:
         f_handle = open(CONFIG_FILE)
     except:
-        report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
+        if report is not None:
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
         return None
     
     my_map = {}
     for line in f_handle:
         if len(line) < 2:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
+            if report is not None:
+                report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
             return
         # Skip commented lines
         if line[0] == '#':
             continue
         # We expect lines in the form -- property=value
         if not re.search('=',line):
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
+            if report is not None:
+                report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
             return
         (prop, value) = line.split('=')
         value = value.rstrip()
@@ -42,14 +51,16 @@ def readConfig(report):
 
 def getConfigVal(my_map, key, report):
     if key not in my_map:
-        report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+        if report is not None:
+            report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
         return my_map[key]
 
 def configValIsList(my_map, key, report):    
     if type(my_map[key]) is not list:
-        report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list. For a single value, end it with a comma.')
+        if report is not None:
+            report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list. For a single value, end it with a comma.')
         return False
     else:
         return True

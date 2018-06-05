@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 1.1 - 4/12/18 - Ron
+#    Fixed bug in message box call.
+#
 #   Version 1.0 - 12/30/17 - Ron
 #    Initial version.
 #
@@ -37,7 +40,7 @@ import shutil
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "View Source/Target Apertium Text Tool",
-        'moduleVersion'    : "1.0",
+        'moduleVersion'    : "1.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "View a more readable source or target text file.",
         'moduleDescription'   :
@@ -143,7 +146,7 @@ class Main(QtGui.QMainWindow):
         try:
             f = open(self.viewFile)
         except IOError:
-            QMessageBox.warning(self, 'There was a problem opening the file: '+self.viewFile+'. ')
+            QMessageBox.warning(self, 'File Error', 'There was a problem opening the file: '+self.viewFile+'. ')
             return
         
         # Create the root element

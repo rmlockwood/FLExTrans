@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.2.1 - 1/15/18 - Marc Penner
+#    Wrapped calls to resetInternalData with beginResetModel and end.. so that 
+#    blank lines get removed.
+#
 #   Version 2.2 - 1/18/17 - Ron
 #    Use BestAnalysisAlternative instead of AnalysisDefault.
 #    Fixed bug where only one fuzzy match was getting processed.
@@ -87,7 +91,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.2",
+        'moduleVersion'    : "2.2.1",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Link source and target senses.",
         'moduleDescription'   :

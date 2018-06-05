@@ -3,6 +3,12 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
+#   Version 1.1.1 2/28/2018 - Ron Lockwood
+#      Fixed typo. Use report.Error instead of report.error
+#
 #   Version 1.1 1/9/2018 - Ron Lockwood
 #      Use absolute paths and moved most of the code into Utils.
 #
@@ -11,7 +17,6 @@
 #
 #
 
-from FTModuleClass import FlexToolsModuleClass
 import time
 from subprocess import call
 from FTModuleClass import FlexToolsModuleClass
@@ -20,18 +25,19 @@ import platform
 import subprocess
 import re
 import Utils
+from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
+import FTReport
+
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {'moduleName'       : "Run Apertium",
-        'moduleVersion'    : '1.1',
+        'moduleVersion'    : '1.6',
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : descr,
         'moduleDescription': descr}
                  
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -42,7 +48,7 @@ def MainFunction(DB, report, modify=True):
     ret = Utils.run_makefile('Output')
     
     if ret:
-        report.error('An error happened when running the Apertium tools.')
+        report.Error('An error happened when running the Apertium tools.')
    
 
 #----------------------------------------------------------------

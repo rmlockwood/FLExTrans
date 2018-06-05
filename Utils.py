@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.6 - 5/23/18 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.1.5 - 1/10/18 - Ron Lockwood
 #    Put run_makefile in this file so that both RunApertium and LiveRuleTesterTool
 #    can use it. Put split_compounds in this file so that ExtractSourceText and 
@@ -85,13 +88,14 @@ def run_makefile(relPathToBashFile):
     dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
     full_path = "'"+dir_path+"/do_make_direct.sh'"
     
-    # Create the bash file which mered cds to the appropriate 
+    # Create the bash file which merely cds to the appropriate 
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
     f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
     f.write('#!/bin/sh\n')
     f.write('cd '+"'"+dir_path+"'"+'\n')
     f.write('make 2>err_out\n')
+    #f.write('# '+full_path)
     f.close()
     
     cmd = [bash, '-c', full_path]

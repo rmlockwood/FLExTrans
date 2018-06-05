@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->25 January 2017</date
+>28 February 2018</date
 ><version
->1.3.10 (Sense Linker 2.2, Live Rule Tester 2.0)</version
+>1.5.1 (Sense Linker 2.2.1, Live Rule Tester 2.2.1, Source/Target Viewer 1.0)</version
 ><contents
 showLevel="4"
 ></contents
@@ -656,6 +656,10 @@ ref="rApertium"
 ><comment
 >Maybe reference to where to find other transfer rules</comment
 ></p
+><p
+><comment
+>Run Set up Gramm Categories Tool at some early stage</comment
+></p
 ></section2
 ><section2
 id="sRunModules"
@@ -665,42 +669,6 @@ type="tFlextrans"
 ></object
 > Modules</secTitle
 ><ol
-><li
->Make sure you start the <object
-type="tTool"
->Apertium</object
-> virtual machine. (See <link
-href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
->this link</link
-> for instructions on setting it up.) The virtual machine has to be running so that it can run the transfer process<endnote
-id="nSleepModule"
-><p
->That’s why there is a <object
-type="tFlextrans"
-></object
-> module that “sleeps” for five seconds. It gives the transfer process five seconds to take the source text, the bilingual dictionary and the transfer rules and create the target text.</p
-></endnote
->.<ol
-><li
->Start <object
-type="tTool"
->Virtual Box</object
->.</li
-><li
->Click on the <object
-type="tFlextrans"
-></object
-> <object
-type="tTool"
->Apertium</object
->.</li
-><li
->Click on the <object
-type="tButton"
->Start</object
-> button.</li
-></ol
-></li
 ><li
 >In <object
 type="tFlexxTools"
@@ -832,7 +800,7 @@ type="tLiveRuleTester"
 >The <object
 type="tLiveRuleTester"
 ></object
-> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don’t have to run the whole system against the whole text file and all transfer rules. Here’s sample screen shot of the <object
+> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful for finding out why transfer rules not are doing what you expect them to do. You can zero in on the problem by selecting just one source word and applying the pertinent transfer rule. In this way you don’t have to run the whole system against the whole text file and all transfer rules. Here’s sample screen shot of the <object
 type="tLiveRuleTester"
 ></object
 >:</p
@@ -840,8 +808,8 @@ type="tLiveRuleTester"
 num="xTesterImage"
 ><chart
 ><img
-XeLaTeXSpecial="scaled='400'"
-cssSpecial=" height:40%"
+XeLaTeXSpecial="scaled='700'"
+cssSpecial=" height:70%"
 src="Images/LiveRuleTester.png"
 ></img
 ></chart
@@ -851,31 +819,36 @@ id="sTesterQuickGuide"
 ><secTitle
 >Quick Guide</secTitle
 ><p
->Here’s a quick guide on using the tool.</p
+>Here’s a quick guide on using the Live Rule Tester Tool.</p
 ><ol
 ><li
->First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach colored area. You can check one or more words and when you do the <genericRef
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> of the words is shown in the blue colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking the check box for the sentence you want.</li
+> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking on the sentence you want.</li
 ><li
 >Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
 type="tButton"
 >Select All</object
 > button. Uncheck them all with the <object
 type="tButton"
->Refresh</object
+>Unselect All</object
 > button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
 >Test</object
-> button and the selected works will get processed. The results will show in <genericRef
+> button and you will process the selected words. You will see the results in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> in the green colored area.</li
+> in the green-colored area.</li
 ><li
 >Check the yellow Information box. It will show which words were matched for the rules that were executed.</li
+><li
+>Now you are ready to synthesize. Click the <object
+type="tButton"
+>Synthesize</object
+> button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored area.</li
 ></ol
 ></section2
 ><section2
@@ -890,12 +863,12 @@ type="tButton"
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
 ><p
->You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in <genericRef
-gref="gDataStream"
->data stream format</genericRef
+>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in plain text data stream format<endnoteRef
+note="nRawDataStream"
+></endnoteRef
 >. This might be useful if you want to test a sense that isn’t in your text.</p
 ><p
->The Interchunk and Postchunk tabs for the rules list are not currently available in this version. They are for use in testing the rules that are used in the advanced <object
+>The rules list Interchunk and Postchunk tabs are for use in testing rules in conjunction with the advanced <object
 type="tTool"
 >Apertium</object
 > transfer engine.</p
@@ -905,17 +878,134 @@ type="tLiveRuleTester"
 ></object
 > and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the <object
 type="tButton"
->Refresh</object
+>Refresh Rules</object
 > button.</p
 ><p
->You need to have the <object
+>If you change the target lexicon, click the <object
+type="tButton"
+>Refresh Target Lexicon</object
+> button to reload it.</p
+></section2
+></section1
+><section1
+id="sViewSrcTgt"
+><secTitle
+>The <object
+type="tViewSrcTgt"
+></object
+></secTitle
+><p
+>The <object
+type="tViewSrcTgt"
+></object
+> is a tool that allows you to view the <object
 type="tTool"
 >Apertium</object
-> virtual machine running in order for the <object
-type="tLiveRuleTester"
+> source or target files in an easy-to-read manner. You may not need to examine the <object
+type="tTool"
+>Apertium</object
+> files <object
+type="tFilename"
+>source_text.aper</object
+> or <object
+type="tFilename"
+>target_text.aper</object
+> very often, but sometimes you may find it useful to see what got extracted from the source <object
+type="tFlexx"
 ></object
-> to work.</p
-></section2
+> project into <object
+type="tFilename"
+>source_text.aper</object
+> or to see what the transfer rules produced after running the <object
+type="tModule"
+>RunApertium</object
+> module in the form of <object
+type="tFilename"
+>target_text.aper</object
+>. Run this tool to see the contents of these files. <exampleRef
+letter="xViewSrcTgt"
+num="xViewSrcTgt"
+></exampleRef
+> shows what the tool looks like. The actual file contents look like <exampleRef
+letter="xDataStream"
+num="xDataStream"
+></exampleRef
+>.</p
+><example
+num="xViewSrcTgt"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/SourceTargetViewer.png"
+></img
+></chart
+></example
+><example
+num="xDataStream"
+><chart
+><img
+src="Images/DataStreamFormat.PNG"
+></img
+></chart
+></example
+><p
+>You have the options of changing the font, increasing the zoom level, displaying the text right-to-left or opening a similar view in the default web browser. If you click on the <object
+type="tBold"
+>Target</object
+> button, you will see the contents of <object
+type="tFilename"
+>target_text.aper</object
+>.</p
+></section1
+><section1
+id="sSetupGramCat"
+><secTitle
+>The <object
+type="tTool"
+>Set Up Transfer Rule Grammatical Categories Tool</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Set Up Transfer Rule Grammatical Categories Tool</object
+> is a tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer rule will likely need to reference the grammatical category of a word either in the source or target language. The initial transfer rules file that comes with <object
+type="tFlextrans"
+></object
+> has just a few sample grammatical categories. This tool will take the categories that are in the bilingual lexicon file and insert them as tags under the specific attribute called <object
+type="tCourier"
+>a_gram_cat</object
+> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both the source and target <object
+type="tFlexx"
+></object
+> projects.</p
+><p
+>You should only need to run this tool one time at the beginning of the <object
+type="tFlextrans"
+></object
+> project. If new grammatical categories get added to either <object
+type="tFlexx"
+></object
+> project, you could delete the <object
+type="tCourier"
+>a_gram_cat</object
+> attribute and run this tool again to get an updated list in your transfer rules file.</p
+><p
+><exampleRef
+letter="xSetupGramCat"
+num="xSetupGramCat"
+></exampleRef
+> shows what the <object
+type="tCourier"
+>a_gram_cat</object
+> attribute looks like after running this tool.</p
+><example
+num="xSetupGramCat"
+><chart
+><img
+src="Images/SetupGramCat.PNG"
+></img
+></chart
+></example
 ></section1
 ><section1
 id="sTransferTutorial"
@@ -1514,14 +1604,6 @@ type="tFoldername"
 > folder.</li
 ></ol
 ></li
-><li
->Start the <object
-type="tTool"
->Apertium</object
-> virtual machine if needed. (See <sectionRef
-sec="sRunModules"
-></sectionRef
-> step 1)</li
 ><li
 >Start <object
 type="tFlexxTools"
@@ -2636,12 +2718,12 @@ lang="lVernacular"
 type="tluAffix"
 >ptcp_f_sg</object
 ></langData
->. This is good enough for our current example, but for a description of how conditional statements work, see ...<object
-type="tItalic"
->[TO BE WRITTEN]</object
-> <comment
->Link to a section on conditionals</comment
->) <br
+>. This is good enough for our current example, but for a description of how conditional logic works, see <sectionRef
+sec="sCondLogic"
+showTitle="numberOnly"
+textBefore="capitalizedSingular"
+></sectionRef
+>.<br
 ></br
 ><br
 ></br
@@ -3533,9 +3615,459 @@ type="tFoldername"
 ></section3
 ></section2
 ></section1
+><section1
+id="sHowTo"
+><secTitle
+>FLExTrans How To’s</secTitle
+><section2
+id="sTransferRuleHowTos"
+><secTitle
+>Transfer Rules</secTitle
+><section3
+id="sCategory"
+><secTitle
+>How do I use the category element in the transfer rules?</secTitle
+><p
+>Lexical categories are used to group words together. The grouping can be very broad such as verbs or very specific such as pronouns with feminine suffixes. The categories are used in the pattern matching system of transfer rules.</p
+><example
+num="xCat"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/CategoryEx.PNG"
+></img
+></chart
+></example
+><p
+><exampleRef
+letter="xCat"
+num="xCat"
+></exampleRef
+> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more final tags. For example, if I have the lexical unit <langData
+lang="lVernacular"
+>book</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>f</object
+> <object
+type="tluAffix"
+>sg</object
+>, it could be precisely matched by a <object
+type="tRuleElemInXXE"
+>tags</object
+> element containing <object
+type="tCourier"
+>n.f.sg</object
+>. More generally we could match <langData
+lang="lVernacular"
+>book</langData
+> with the <object
+type="tRuleElemInXXE"
+>tags</object
+> element containing <object
+type="tCourier"
+>n.f.*</object
+>. This would refer to all words that have the grammatical category <object
+type="tluGrammCat"
+>n</object
+> followed by the tag <object
+type="tluAffix"
+>f</object
+> followed by anything else, i.e. feminine nouns. <exampleRef
+letter="xCat"
+num="xCat"
+></exampleRef
+> defines the set of all indefinite nouns — words that have the the grammatical category <object
+type="tluGrammCat"
+>n</object
+> or <object
+type="tluGrammCat"
+>n-irreg</object
+> followed by <object
+type="tluAffix"
+>f</object
+> and optionally something else afterward.</p
+><p
+>You can use the lemma element to identify a specific word-sense. <exampleRef
+letter="xCatLem"
+num="xCatLem"
+></exampleRef
+> shows how the category <object
+type="tCourier"
+>dem_this</object
+> can be defined as a word that has a grammatical category of <object
+type="tluGrammCat"
+>dem</object
+> and lemma <langData
+lang="lVernacular"
+>this</langData
+><object
+type="tSubscript"
+>1.1</object
+> (in <object
+type="tFlexx"
+></object
+>: headword <langData
+lang="lVernacular"
+>this</langData
+><object
+type="tSubscript"
+>1</object
+> , sense 1). This might be useful when you want to match phrases containing the word <object
+type="tCourier"
+>this</object
+>.</p
+><example
+num="xCatLem"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/CategoryLemmaEx.PNG"
+></img
+></chart
+></example
+></section3
+><section3
+id="sAttribute"
+><secTitle
+>How do I use the attribute element in the transfer rules?</secTitle
+><p
+>Attributes are defined in the rule file in order to identify possible values for word characteristics. An example is shown in <exampleRef
+letter="xAttrib"
+num="xAttrib"
+></exampleRef
+>.</p
+><example
+num="xAttrib"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/AttributeEx.PNG"
+></img
+></chart
+></example
+><p
+>Certain words may have affixes that indicate grammatical number. <exampleRef
+letter="xAttrib"
+num="xAttrib"
+></exampleRef
+> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these refer to tags in the data stream. Attributes are used within rules to get or set values.</p
+></section3
+><section3
+id="sPatternMatch"
+><secTitle
+>How does pattern matching work?</secTitle
+><p
+></p
+></section3
+><section3
+id="sDeleteWord"
+><secTitle
+>How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</secTitle
+><p
+>The short answer is don't output it. In other words, don't declare that it should be outputted into the target data stream.</p
+><p
+>When you match two or more words in the <object
+type="tRuleElemInXXE"
+>pattern</object
+> section of a transfer rule, you can choose to only list some of the words in the <object
+type="tRuleElemInXXE"
+>output</object
+> section. This is exactly what we did in <sectionRef
+sec="step1"
+showTitle="full"
+textBefore="useDefault"
+></sectionRef
+> of the tutorial. In <exampleRef
+letter="xOutput1"
+num="xOutput1"
+></exampleRef
+> we only declared that the word in <object
+type="tRuleElemInXXE"
+>position</object
+> 1 should be outputted.</p
+></section3
+><section3
+id="sDeleteAffix"
+><secTitle
+>How do I delete an affix?</secTitle
+><p
+>There are two methods for deleting an affix. You can either set the value for that affix (attribute) to blank or you can not declare that the affix (attribute) gets outputted.</p
+><ol
+><li
+>Method 1. Use the <object
+type="tRuleElemInXXE"
+>let</object
+> element to set an attribute's value to blank. See <exampleRef
+letter="xLetBlank"
+num="xLetBlank"
+></exampleRef
+>.<example
+num="xLetBlank"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/LetBlank.PNG"
+></img
+></chart
+></example
+>Here we are overriding whatever is in the enclitic attribute (a_encl) with a blank string. Whenever the enclitic affix gets outputted, it will be outputted as nothing. As an example, in <exampleRef
+letter="xOutputWhole"
+num="xOutputWhole"
+></exampleRef
+> the whole word is outputted with all its attributes.<example
+num="xOutputWhole"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/OutputWholeWord.PNG"
+></img
+></chart
+></example
+></li
+><li
+>Method 2. In the <object
+type="tRuleElemInXXE"
+>Output</object
+> element, explicitly declare each attribute of the word that you want to output. Don't include the attribute that needs to be deleted.<example
+num="xOutMultAffixes"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/OutputMultAffixes.PNG"
+></img
+></chart
+></example
+>In <exampleRef
+letter="xOutMultAffixes"
+num="xOutMultAffixes"
+></exampleRef
+> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this method is that you have to explicitly declare every possible attribute that could occur. Where as in <exampleRef
+letter="xOutputWhole"
+num="xOutputWhole"
+></exampleRef
+> in Method 1, you just have to output the whole word.</li
+></ol
+></section3
+><section3
+id="sCondLogic"
+><secTitle
+>How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</secTitle
+><p
+>In the transfer rules you have the ability to use conditional logic. Please watch this <link
+href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
+>video</link
+> for an explanation.</p
+></section3
+><section3
+id="sAgreement"
+><secTitle
+>How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</secTitle
+><p
+>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
+><p
+>To see how to do this in a sample language pair, please watch <link
+href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA"
+>video 1</link
+> and <link
+href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_"
+>video 2</link
+>.</p
+><p
+>If you would like to try creating the rules along with the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Agreement</object
+> folder. See the file <object
+type="tFilename"
+>transfer_rules - solution.t1x</object
+> which shows the form of the rules shown in the video.</p
+></section3
+></section2
+><section2
+id="sOther"
+><secTitle
+>Other</secTitle
+><p
+></p
+><section3
+id="sRepl"
+><secTitle
+>I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?</secTitle
+><p
+>You can handle this by using the <object
+type="tFilename"
+>replace.dix</object
+> file to add additional mappings to the bilingual lexicon.</p
+><p
+>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
+letter="xBilingEntries"
+num="xBilingEntries"
+></exampleRef
+>. You can view the bilingual lexicon by double-clicking on the file <object
+type="tFilename"
+>bilingual.dix</object
+> in the <object
+type="tFoldername"
+>FlexTools\Output</object
+> folder. Both the <object
+type="tFilename"
+>replace.dix</object
+> and <object
+type="tFilename"
+>bilingual.dix</object
+> files are XML files and will load automatically in <object
+type="tXMLmindXMLEditor"
+></object
+>.</p
+><example
+num="xBilingEntries"
+><chart
+><img
+src="Images/BilingalEntries2.PNG"
+></img
+></chart
+></example
+><p
+>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
+type="tFilename"
+>replace.dix</object
+> you will see something like <exampleRef
+letter="xReplacement"
+num="xReplacement"
+></exampleRef
+>.</p
+><example
+num="xReplacement"
+><chart
+><img
+src="Images/Replacement_In_XXE2.PNG"
+></img
+></chart
+></example
+><p
+>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because that gets generated automatically by <object
+type="tFlextrans"
+> </object
+>.</p
+><p
+>Let's say that we want to map the past tense of the entry for <langData
+lang="lVernacular"
+>lieben</langData
+> shown in <exampleRef
+letter="xBilingEntries"
+num="xBilingEntries"
+></exampleRef
+> to a different Swedish word, we change the replacement file to something like <exampleRef
+letter="xRepChanged"
+num="xRepChanged"
+></exampleRef
+>.</p
+><example
+num="xRepChanged"
+><chart
+><img
+src="Images/ReplacementFileChanged2.PNG"
+></img
+></chart
+></example
+><p
+>Let’s look closer at the last line. The <object
+type="tRuleElemInXXE"
+>left</object
+> element has <langData
+lang="lVernacular"
+>lieben1.1</langData
+> and the “symbol” <langData
+lang="lVernacular"
+>v</langData
+> just like the bilingual file, but it also has a new symbol <langData
+lang="lVernacular"
+>PST</langData
+>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <object
+type="tFlextrans"
+></object
+> that we are mapping the past inflection of <langData
+lang="lVernacular"
+>lieben1.1</langData
+> to something else. The new Swedish word is listed for the <object
+type="tRuleElemInXXE"
+>right</object
+> element. Note that we also had to add two new symbol definitions so that <object
+type="tFlextrans"
+></object
+> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <object
+type="tRuleElemInXXE"
+>Symbols</object
+> element.</p
+><p
+>You also have to make a change to the configuration file (<object
+type="tFilename"
+>FlexTrans.config</object
+> in the <object
+type="tFoldername"
+>FlexTools</object
+> folder) to signal <object
+type="tFlextrans"
+></object
+> to use the replacement file. Change the applicable line to look like this: <object
+type="tCourier"
+>BilingualDictReplacementFile=Output\replace.dix</object
+></p
+></section3
+><section3
+id="sInflVariantTgt"
+><secTitle
+>How do I handle irregularly inflected variants in the target language?</secTitle
+><p
+>To learn how FT can handle these kind of variants, please watch this <link
+href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
+>video</link
+>.</p
+><p
+>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected Form variants that match exactly the suffixes that would normally be used.</p
+><p
+>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Irregular Form</object
+> folder.</p
+></section3
+><section3
+id="sInflVariantSrc"
+><secTitle
+>How do I handle inflectional variants in the source language?</secTitle
+><p
+>To learn how FT can handle these kind of variants, please watch this <link
+href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
+>video</link
+>.</p
+><p
+>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected Form variants that match exactly the suffixes that would normally be used.</p
+><p
+>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <object
+type="tFilename"
+>Readme.txt</object
+> in the <object
+type="tFoldername"
+>Doc\Irregular Form</object
+> folder. Note: be sure to set the SourceTextName property in the configuration file to “Text2”.</p
+></section3
+></section2
+></section1
 ><backMatter
 ><appendix
-id="a"
+id="aAppend"
 ><secTitle
 >Appendix</secTitle
 ><p
@@ -3589,24 +4121,6 @@ type="tTool"
 type="tFlextrans"
 ></object
 >, a lexical unit looks something like this:</p
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="width:60%"
-src="Images/LexicalUnit.PNG"
-></img
-></chart
-><p
->You can use the <object
-type="tTool"
->View Source/Target Apertium File Tool</object
-> for a more friendly view of the data stream format found in the files <object
-type="tFilename"
->source_text.aper</object
-> and <object
-type="tFilename"
->target_text.aper</object
->. The above lexical unit looks like this in the friendly view:</p
 ><p
 ><langData
 lang="lVernacular"
@@ -3619,10 +4133,53 @@ type="tluGrammCat"
 > <object
 type="tluAffix"
 >3sg</object
+><endnote
+id="nToolToView"
+><p
+>You can use the <object
+type="tTool"
+>View Source/Target Apertium File Tool</object
+> for a more friendly view of the data stream format found in the files <object
+type="tFilename"
+>source_text.aper</object
+> and <object
+type="tFilename"
+>target_text.aper</object
+>.</p
+></endnote
+><endnote
+id="nRawDataStream"
+><p
+>In the plain format the stream format can be explained as follows:</p
+><chart
+><img
+XeLaTeXSpecial="scaled='300'"
+cssSpecial="width:60%"
+src="Images/LexicalUnit.PNG"
+></img
+></chart
+></endnote
 ></langData
 ></p
 ><p
->The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored in green.</p
+>Where take<object
+type="tSubscript"
+>1</object
+><endnote
+id="nNoOneHomograph"
+><p
+>Technically <object
+type="tFlexx"
+></object
+> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <object
+type="tFlexx"
+></object
+> headword is just plain -- without any subscript.</p
+></endnote
+> is the headword from <object
+type="tFlexx"
+></object
+>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored in green.</p
 ></section1
 ></appendix
 ><endnotes
@@ -3857,6 +4414,11 @@ color="navy"
 font-family="Courier New"
 font-weight="bold"
 id="tTool"
+></type
+><type
+after="Source/Target Viewer Tool"
+id="tViewSrcTgt"
+types="tTool"
 ></type
 ><type
 after="XMLmind XML Editor"
