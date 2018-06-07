@@ -80,8 +80,14 @@ YES = 'yes'
 NO = 'no'
 DEFAULT = 'default'
 
-# Testbed classes
+## Testbed classes
+# Models a single FLExTrans lexical unit
+# A lexical unit consists of a headword, a sense number, a grammatical category 
+# and zero or more tags which could be affix glosses, inflection feature abbreviations, etc.
 class LexicalUnit():
+    # You initialize the class in two ways
+    # 1) give a string and it parses it and sets the members
+    # 2) give it a <lexicalUnit> xml object (ElementTree.Element) and it sets the members
     def __init__(self, str2Parse=None, luNode=None):
         self.__headWord = None
         self.__senseNum = None
@@ -194,7 +200,10 @@ class LexicalUnit():
             (self.__headWord, self.__senseNum) = myResult
             
         self.__otherTags = tokens
-        
+
+# This class helps you to parse multiple lexical units in a string
+# into LexicalUnit objects        
+# It contains a list of LexicalUnit objects
 class LexicalUnitParser():
     
     def __init__(self, string2Parse):
@@ -294,7 +303,12 @@ class LexicalUnitParser():
     def getLexicalUnits(self):
         return self.__lexUnitList 
 
+# Models the test element portion of the testbed XML file
+# It contains a list of LexicalUnit objects
 class TestbedTestXMLObject():
+    # You can initialize this class in two ways:
+    # 1) Give it a list of LexicalUnit objects + origin + synthesis result and it creates the testbed XML object
+    # 2) Give it a <test> XML object (ElementTree.Element) and it initializes the LexicalUnit List
     def __init__(self, luList=None, origin=None, synthResult=None, testNode=None):
         self.__luList = luList
         self.__origin = origin
@@ -348,7 +362,6 @@ class TestbedTestXMLObject():
         
         targetOutput = ET.SubElement(self.__testNode, TARGET_OUTPUT)
         expectedResult = ET.SubElement(targetOutput, EXPECTED_RESULT)
-        expectedResult.text = unicode(self.__synthResult).strip()
         ET.SubElement(targetOutput, ACTUAL_RESULT)
     
     def getID(self):
@@ -365,7 +378,8 @@ class TestbedTestXMLObject():
         return self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text
     def getTestNode(self):
         return self.__testNode
-        
+    
+    # Convert all the lexical units into one string    
     def getLUString(self):
         ret_str = ''
         
@@ -374,6 +388,7 @@ class TestbedTestXMLObject():
         
         return ret_str.strip()
     
+    # See if this object is equal to another object in terms of the lexical unit portion
     def equalLexUnits(self, myTestObj):
         localLUString = self.getLUString()
         cmpLUString = myTestObj.getLUString()
@@ -382,14 +397,19 @@ class TestbedTestXMLObject():
             return True
         
         return False 
-         
+
+# Models the testbed XML File        
+# It contains a list of TestXMLObjects 
 class FLExTransTestbedXMLObject():
+    # You can create this class in two ways:
+    # 1) initialize a new one which creates the basic structure without test elements
+    # 2) initialize from an existing XML file which fills out everything including a list of TestXMLObjects 
     def __init__(self, new=False, direction=None):
         self.__rootNode = None
         self.__TestXMLObjectList = []
         self.__direction = direction
         
-        # if new is False, create the structure down to the tests node
+        # if new is True, create the structure down to the tests node
         if new:
             self.__initBasicStructure()
             self.__testBedTree = ET.ElementTree(self.__rootNode)
