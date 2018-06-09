@@ -20,9 +20,17 @@ import subprocess
 import uuid
 import Utils
 import ReadConfig
+from datetime import datetime
 
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
+from SIL.FieldWorks.FDO import IFsClosedFeatureRepository
+from SIL.FieldWorks.FDO import IMoInflClassRepository
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+
+TESTBED_CACHE_FILE = 'testbed_cache.txt'
+GRAM_CATS = 'Grammatical Categories:'
+TAGS = 'Tags:'
+WORD_SENSES = 'Word Senses:'
 
 class TestbedValidator():
     def __init__(self, database, report):
@@ -31,17 +39,31 @@ class TestbedValidator():
         self.report = report
         self.mapWordSenses = {}
         self.mapTags = {}
+        self.mapCats = {}
         
-        # If validator cache file exists
+        # If the validator cache file exists
         if self.cacheExists():
             # check if it's out of date
             if self.isCacheOutOfDate() == False:
                 
-                self.loadCache()
+                self.loadFromCache()
+                return
                 
         self.readDatabaseValues()
-        self.createCache()
+        self.saveToCache()
     
+    def isWordSenseValid(self, wordSense):
+        if wordSense in self.mapWordSenses:
+            return True
+        return False
+    def isGramCatValid(self, gramCat):
+        if gramCat in self.mapCats:
+            return True
+        return False
+    def isTagValid(self, tag):
+        if tag in self.mapTags:
+            return True
+        return False
     def isValid(self, lexUnit):
         valid = True
         
@@ -54,18 +76,79 @@ class TestbedValidator():
                 if not self.isTagValid(tag):
                     valid = False
                     break
-            
+        else:
+            valid = False
+                
         return valid
-            
 
     def isCacheOutOfDate(self):
-        pass
-    def createCache(self):
-        pass
-    def loadCache(self):
-        pass
+        
+        # Build a DateTime object with the FLEx DB last modified date
+        flexDate = self.db.GetDateLastModified()
+        dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+        
+        # Get the date of the cache file
+        try:
+            mtime = os.path.getmtime(self.getCacheFilePath())
+        except OSError:
+            mtime = 0
+        cacheFileDateTime = datetime.fromtimestamp(mtime)
+        
+        if dbDateTime > cacheFileDateTime: # FLEx DB is newer
+            return True 
+        else: # cache file is newer
+            return False
+
+    def saveToCache(self):
+        f = open(self.getCacheFilePath(), 'w')
+        
+        # TODO: check encodings
+        f.write(GRAM_CATS+'\n')
+        for cat in sorted(self.mapCats.keys()):
+            f.write(cat.encode('utf-8')+'\n')
+            
+        f.write(TAGS+'\n')
+        for tag in sorted(self.mapTags.keys()):
+            f.write(tag.encode('utf-8')+'\n')
+            
+        f.write(WORD_SENSES+'\n')
+        for wordSense in sorted(self.mapWordSenses.keys()):
+            f.write(wordSense.encode('utf-8')+'\n')
+        
+        f.close()
+            
+    def loadFromCache(self):
+        f = open(self.getCacheFilePath())
+        
+        # start with grammatical categories
+        myMap = self.mapCats
+        
+        # Read each section of the cache file
+        for i,line in enumerate(f):
+            
+            # Skip the first line
+            if i == 0:
+                continue
+            
+            # Next tags. Skip this line
+            if line.rstrip() == TAGS:
+                myMap = self.mapTags
+                continue
+            
+            # Next word senses. Skip this line
+            if line.rstrip() == WORD_SENSES:
+                myMap = self.mapWordSenses
+                continue
+            
+            myMap[unicode(line.rstrip())] = 7 # dummy value
+         
+        f.close()
+           
+    def getCacheFilePath(self):
+        # build the path in the temp dir using project name + testbed_cache.txt
+        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+TESTBED_CACHE_FILE)
     def cacheExists(self):
-        return False
+        return os.path.exists(self.getCacheFilePath())
     def readDatabaseValues(self):
         # Go through the lexicon and save word senses and affixes
         self.readLexicalInfo()
@@ -143,13 +226,22 @@ class TestbedValidator():
         self.mapTags[gloss] = 7 # dummy value
                 
     def readCategoryInfo(self):
-        pass
-    def readOtherInfo(self):
-        pass
-    def isWordSenseValid(self):
-        pass
-    def isGramCatValid(self):
-        pass
-    def isTagValid(self):
-        pass
-    
+        # loop through all categories
+        for pos in self.db.lp.AllPartsOfSpeech:
+
+            # save abbreviation
+            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            self.mapCats[posAbbr] = 7
+            
+    def readOtherInfo(self): 
+        
+        # Get all the inflection feature abbreviations
+        for feature in self.db.ObjectsIn(IFsClosedFeatureRepository):
+            for value in feature.ValuesOC:
+                abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
+                self.mapTags[abbr] = 7
+
+        # Get all the inflection class abbreviations
+        for inflClass in self.db.ObjectsIn(IMoInflClassRepository):
+            abbr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
+            self.mapTags[abbr] = 7
