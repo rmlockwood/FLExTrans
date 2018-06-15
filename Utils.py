@@ -45,12 +45,18 @@ import xml.etree.ElementTree as ET
 import platform
 import subprocess
 import uuid
+from datetime import datetime
+import TestbedValidator
 
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
+FLEXTRANS_TESTBED_RESULTS = 'FLExTransTestbedResults'
+TEST_RESULT = 'testResult' 
+START_DATE_TIME = 'startDateTime' 
+END_DATE_TIME = 'endDateTime' 
 TESTBEDS = 'testbeds' 
 TESTBED = 'testbed' 
 TESTS = 'tests' 
@@ -133,6 +139,17 @@ class LexicalUnit():
         for tag in self.__otherTags:
             ret_str += ' ' + tag
         return ret_str
+    
+    def toApertiumString(self):
+        ret_str = '^' + self.__headWord
+        if self.__gramCat != SENT:
+            ret_str += '.' + self.__senseNum
+        ret_str += '<' + self.__gramCat + '>'
+        for tag in self.__otherTags:
+            ret_str += '<' + tag + '>'
+        ret_str += '$'
+        return ret_str
+    
     def __parse(self):
         if re.search('>', self.__inStr):
             self.__parseApertiumStyle()
@@ -314,6 +331,7 @@ class TestbedTestXMLObject():
         self.__origin = origin
         self.__synthResult = synthResult
         self.__testNode = testNode
+        self.__testChanged = False
         
         # If no lexical unit object list is given, create it
         if luList == None:
@@ -362,6 +380,7 @@ class TestbedTestXMLObject():
         
         targetOutput = ET.SubElement(self.__testNode, TARGET_OUTPUT)
         expectedResult = ET.SubElement(targetOutput, EXPECTED_RESULT)
+        expectedResult.text = self.__synthResult
         ET.SubElement(targetOutput, ACTUAL_RESULT)
     
     def getID(self):
@@ -388,6 +407,14 @@ class TestbedTestXMLObject():
         
         return ret_str.strip()
     
+    def getApertiumString(self):
+        ret_str = ''
+        
+        for lu in self.__luList:
+            ret_str += ' ' + lu.toApertiumString()
+            
+        return ret_str.strip()
+    
     # See if this object is equal to another object in terms of the lexical unit portion
     def equalLexUnits(self, myTestObj):
         localLUString = self.getLUString()
@@ -398,31 +425,76 @@ class TestbedTestXMLObject():
         
         return False 
 
-# Models the testbed XML File        
+    def validate(self, myValidator):
+        markInvalid = False
+        
+        testNode = self.getTestNode()
+
+        if testNode.attrib[IS_VALID] == YES:
+            prevInvalidFlag = True
+        else:
+            prevInvalidFlag = False
+
+        for lu in self.__luList:
+            
+            # any one invalid lexical unit means the test is invalid
+            if myValidator.isValid(lu) == False:
+                markInvalid = True
+                break
+        
+        # See if we have a different value from before
+        if markInvalid == prevInvalidFlag:
+            
+            self.__testChanged = True
+            
+            if markInvalid:
+                testNode.attrib[IS_VALID] = NO
+            else:
+                testNode.attrib[IS_VALID] = YES
+    
+    def didTestChange(self):
+        return self.__testChanged
+            
+    def dump(self, f_out):
+        
+        # each test goes on its own line
+        f_out.write(self.getApertiumString().encode('utf-8')+'\n')
+
+# Models the top-level testbed XML object        
 # It contains a list of TestXMLObjects 
 class FLExTransTestbedXMLObject():
     # You can create this class in two ways:
     # 1) initialize a new one which creates the basic structure without test elements
-    # 2) initialize from an existing XML file which fills out everything including a list of TestXMLObjects 
-    def __init__(self, new=False, direction=None):
-        self.__rootNode = None
+    # 2) initialize from an existing XML node which fills out everything including a list of TestXMLObjects 
+    def __init__(self, root, direction):
+        self.__rootNode = root
         self.__TestXMLObjectList = []
         self.__direction = direction
+        self.__testbedChanged = False
         
-        # if new is True, create the structure down to the tests node
-        if new:
+        # if new (tree==None), create the structure down to the tests node
+        if root == None:
             self.__initBasicStructure()
-            self.__testBedTree = ET.ElementTree(self.__rootNode)
+            
         # else we assume we have a full structure create a list of test nodes
         else:
-            try:
-                self.__testBedTree = ET.parse(TESTBED_FILE_PATH)
-            except:
-                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
-                return
-            self.__rootNode = self.__testBedTree.getroot()
+            self.__direction = self.__rootNode.attrib[SOURCE_DIRECTION] # direction passed in is ignored
             self.__testsNode = self.__getTestsNode()
             self.__createTestXMLObjectList()
+    
+    def __initBasicStructure(self):
+        self.__rootNode = ET.Element(FLEXTRANS_TESTBED)
+        self.__rootNode.attrib[SOURCE_DIRECTION] = self.__direction
+        testbeds = ET.SubElement(self.__rootNode, TESTBEDS)
+        testbed = ET.SubElement(testbeds, TESTBED)
+        testbed.attrib[N_ATTRIB] = DEFAULT
+        self.__testsNode = ET.SubElement(testbed, TESTS)
+    
+    def getRoot(self):
+        return self.__rootNode
+    
+    def getDirection(self):
+        return self.__direction
     
     def addToTestbed(self, newTestObj):
         newNode = newTestObj.getTestNode()
@@ -450,22 +522,176 @@ class FLExTransTestbedXMLObject():
     def getTestXMLObjectList(self):
         return self.__TestXMLObjectList
     
-    def __initBasicStructure(self):
-        self.__rootNode = ET.Element(FLEXTRANS_TESTBED)
-        self.__rootNode.attrib[SOURCE_DIRECTION] = self.__direction
-        testbeds = ET.SubElement(self.__rootNode, TESTBEDS)
-        testbed = ET.SubElement(testbeds, TESTBED)
-        testbed.attrib[N_ATTRIB] = DEFAULT
-        self.__testsNode = ET.SubElement(testbed, TESTS)
-    
     def __createTestXMLObjectList(self):
         # loop through all the tests
         for testNode in list(self.__testsNode):
+            # Initialize a result object and add it to the list
             newTestXMLObj = TestbedTestXMLObject(None, None, None, testNode) # luList=None, origin=None, synthResult=None
             self.__TestXMLObjectList.append(newTestXMLObj)
     
+    def validate(self, DB, report):
+        
+        myValidator = TestbedValidator.TestbedValidator(DB, report)
+        
+        for testXMLObj in self.__TestXMLObjectList:
+            testXMLObj.validate(myValidator)
+            if testXMLObj.didTestChange() == True:
+                self.__testbedChanged = True
+    
+    def didTestbedChange(self):
+        return self.__testbedChanged
+    
+    def dump(self, f_out):
+        
+        for obj in self.__TestXMLObjectList:     
+            obj.dump(f_out)
+        
+        # return the number of tests dumped
+        return(len(self.__TestXMLObjectList))    
+
+# Models the testbed XML file.
+# It creates the XML file if it doesn't exist.
+class FlexTransTestbedFile():
+    def __init__(self, direction):
+        
+        self.__isNew = False
+        
+        # check if the file exists
+        if os.path.exists(TESTBED_FILE_PATH) == False:
+            
+            # we will create it
+            self.__isNew = True
+            self.__XMLObject = FLExTransTestbedXMLObject(None, direction)
+            myRoot = FLExTransTestbedXMLObject.getRoot()
+            self.__testbedTree = ET.ElementTree(myRoot)
+        else:
+            try:
+                self.__testbedTree = ET.parse(TESTBED_FILE_PATH)
+            except:
+                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
+
+            self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
+    
+    def getFLExTransTestbedXMLObject(self):
+        return self.__XMLObject
+    
+    def isNew(self):
+        return self.__isNew
+    
+    def exists(self):
+        return not self.__isNew
+    
+    def validate(self, DB, report):
+        
+        self.__XMLObject.validate(DB, report)
+        
+        # Only rewrite the testbed XML file if there was a change
+        if self.__XMLObject.didTestbedChange() == True:
+            
+            self.write()
+
     def write(self):
-        self.__testBedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+
+# Models the result part of the XML structure for a results log
+# It contains a list of FLExTransTestbedXMLObject's
+class TestbedResultXMLObject():
+    # You can initialize this class in two ways:
+    # 1) Give just a parent element and it creates an empty <result> element for the parent
+    # 2) Give it a <result> XML object (ElementTree.Element) and it initializes the testbed object list from the testbed xml elements.
+    def __init__(self, parentNode, rootNode=None):
+        self.__rootNode = rootNode
+        self.__testbedXMLObjList = []
+        
+        if rootNode == None:
+            self.__rootNode = ET.Element(TEST_RESULT)
+            
+            # The new <result> element alwasy goes at the top
+            parentNode.insert(0, self.__rootNode)
+            
+        else:
+            for testbedNode in list(self.__rootNode):
+                # create a testbed object and add it to the list
+                testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
+                self.__testbedXMLObjList.append(testbedXMLObj)
+    
+    def startTest(self, testbedXMLObj):
+        self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.__rootNode.attrib[END_DATE_TIME] = ''
+        
+        # add the <FLExTransTestbed> element below the <testResult> element
+        self.__rootNode.append(testbedXMLObj.getRoot())
+        
+        # add the testbed object to the internal list
+        self.__testbedXMLObjList.append(testbedXMLObj)
+    
+    def dump(self, f_out):
+        total = 0
+        for obj in self.__testbedXMLObjList:
+            total += obj.dump(f_out)
+        
+        return total
+    
+# Models the testbed results top XML element        
+# It contains a list of TestResultXMLObjects 
+class FLExTransTestbedResultsXMLObject():
+    # You can create this class in two ways:
+    # 1) initialize a new one which creates the basic structure without result elements
+    # 2) initialize from an existing XML node which fills out everything including a list of TestbedResultXMLObjects 
+    def __init__(self, root=None):
+        self.__rootNode = root
+        self.__resultXMLObjList = []
+        if root == None:
+            self.__rootNode = ET.Element(FLEXTRANS_TESTBED_RESULTS)
+        else:
+            self.__createTestbedResultXMLObjectList()
+    
+    def initTestResult(self, testbedXMLObj):
+        
+        # create a new result object and set the start time and give it a blank end time
+        resultXMLObj = TestbedResultXMLObject(self.__rootNode, None)
+        resultXMLObj.startTest(testbedXMLObj)
+        
+        # new results are always put at the top of the list
+        self.__resultXMLObjList.insert(0, resultXMLObj)
+    
+    def getRoot(self):
+        return self.__rootNode
+    
+    def __createTestbedResultXMLObjectList(self):
+        # loop through all the result objects 
+        for resultNode in list(self.__rootNode):
+
+            # initialize a result object and add it to the list
+            newResultXMLObj = TestbedResultXMLObject(None, resultNode)
+            self.__resultXMLObjList.append(newResultXMLObj)
+
+    def dump(self, f_out):
+        # dump the testbed contents from the topmost result object
+        return self.__resultXMLObjList[0].dump(f_out)
+
+# Models the results log XML file.
+# It creates the XML file if it doesn't exist.
+class FlexTransTestbedResultsFile():
+    def __init__(self):
+        if os.path.exists(TESTBED_RESULTS_FILE_PATH) == False:
+            
+            self.__XMLObject = FLExTransTestbedResultsXMLObject()
+            myRoot = self.__XMLObject.getRoot()
+            self.__testbedResultsTree  = ET.ElementTree(myRoot)
+        else:
+            try:
+                self.__testbedResultsTree = ET.parse(TESTBED_RESULTS_FILE_PATH)
+            except:
+                raise ValueError('The testbed results file: ' + TESTBED_RESULTS_FILE_PATH + ' is invalid.')
+
+            self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
+    
+    def getResultsXMLObj(self):
+        return self.__XMLObject
+    
+    def write(self):
+        self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
 
 # Main color of the headwords
 LEMMA_COLOR = '000000' #black
@@ -489,7 +715,7 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 # File and folder names
 OUTPUT_FOLDER = 'Output'
 TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
-TESTBED_LOG_FILE_PATH = OUTPUT_FOLDER + '\\testbed_log.xml'
+TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
@@ -523,8 +749,8 @@ def run_makefile(relPathToBashFile):
     f.close()
     
     cmd = [bash, '-c', full_path]
-    #return subprocess.call(cmd)
-    return 0
+    return subprocess.call(cmd)
+    #return 0
 
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
