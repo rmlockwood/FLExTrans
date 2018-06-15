@@ -5,8 +5,8 @@
 #   SIL International
 #   6/6/2018
 #
-#   Version 1.0 - ??/??/18 - Ron Lockwood
-#    ???
+#   Version 1.0 - 6/9/18 - Ron Lockwood
+#    Initial Version
 #
 #   A Class to validate if a lexical unit is good by checking against the FLEx database.
 
@@ -55,6 +55,8 @@ class TestbedValidator():
     def isWordSenseValid(self, wordSense):
         if wordSense in self.mapWordSenses:
             return True
+        elif wordSense.lower() in self.mapWordSenses:
+            return True
         return False
     def isGramCatValid(self, gramCat):
         if gramCat in self.mapCats:
@@ -67,7 +69,7 @@ class TestbedValidator():
     def isValid(self, lexUnit):
         valid = True
         
-        wordSense = lexUnit.getHeadWord() + '.' + lexUnit.getSensNum()
+        wordSense = lexUnit.getHeadWord() + '.' + lexUnit.getSenseNum()
         if self.isWordSenseValid(wordSense) and self.isGramCatValid(lexUnit.getGramCat()):
             
             # check tags
@@ -140,7 +142,7 @@ class TestbedValidator():
                 myMap = self.mapWordSenses
                 continue
             
-            myMap[unicode(line.rstrip())] = 7 # dummy value
+            myMap[unicode(line.rstrip(), 'utf-8')] = 7 # dummy value
          
         f.close()
            
