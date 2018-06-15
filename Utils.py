@@ -54,7 +54,7 @@ from SIL.FieldWorks.FDO.DomainServices import SegmentServices
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
 FLEXTRANS_TESTBED_RESULTS = 'FLExTransTestbedResults'
-TEST_RESULT = 'testResult' 
+TESTBED_RESULT = 'testbedResult' 
 START_DATE_TIME = 'startDateTime' 
 END_DATE_TIME = 'endDateTime' 
 TESTBEDS = 'testbeds' 
@@ -604,7 +604,7 @@ class TestbedResultXMLObject():
         self.__testbedXMLObjList = []
         
         if rootNode == None:
-            self.__rootNode = ET.Element(TEST_RESULT)
+            self.__rootNode = ET.Element(TESTBED_RESULT)
             
             # The new <result> element alwasy goes at the top
             parentNode.insert(0, self.__rootNode)
