@@ -375,28 +375,17 @@ class Main(QtGui.QMainWindow):
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
         
-        # If no testbed exists, Initialize the XML objects
-        if not os.path.exists(Utils.TESTBED_FILE_PATH):
-            
-            self.createTestbed = True
-            
-            # Set the direction attribute
-            if self.__sent_model.getRTL():
-                direction = Utils.RTL
-            else:
-                direction = Utils.LTR
-            
-            # Initialize an object that models the testbed XML file    
-            testbedObj = Utils.FLExTransTestbedXMLObject(True, direction) # new=True
-            self.ui.editTestbedButton.setEnabled(True)
+        # Set the direction attribute
+        if self.__sent_model.getRTL():
+            direction = Utils.RTL
         else:
-            self.createTestbed = False
-            # Otherwise read the xml file
-            try:
-                testbedObj = Utils.FLExTransTestbedXMLObject()
-            except ValueError as err:
-                QMessageBox.warning(self, 'XML File Problem', "".join(err.args))
-                return
+            direction = Utils.LTR
+
+        fileObj = Utils.FlexTransTestbedFile(direction)
+        testbedObj = fileObj.getFLExTransTestbedXMLObject()
+        
+        if fileObj.isNew():
+            self.ui.editTestbedButton.setEnabled(True)
          
         # Get the current list of tests in the XML testbed    
         testXMLObjList = testbedObj.getTestXMLObjectList()
@@ -412,6 +401,7 @@ class Main(QtGui.QMainWindow):
             luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
             if luObjList == None:
                 return
+
             resultList = synResult.split(' ') # split on space
             
             # Check for an equal amount of lexical units as synthesis results
@@ -434,7 +424,7 @@ class Main(QtGui.QMainWindow):
                     return
                 
                 # If we created a new testbed, just add the new test
-                if self.createTestbed:
+                if fileObj.isNew():
                     testbedObj.addToTestbed(myTestXMLObj)
                     cnt += 1
                 else:    
@@ -474,7 +464,7 @@ class Main(QtGui.QMainWindow):
                 return
             
             # If we created a new testbed, just add the new test
-            if self.createTestbed:
+            if fileObj.isNew():
                 testbedObj.addToTestbed(myTestXMLObj)
                 cnt += 1
             else:
@@ -508,7 +498,7 @@ class Main(QtGui.QMainWindow):
         
         # Write the XML file
         if cnt > 0:
-            testbedObj.write()
+            fileObj.write()
 
     def getExistingTest(self, testXMLObjList, myTestXMLObj):
         
