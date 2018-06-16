@@ -20,7 +20,6 @@ import Utils
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
-
 from FTModuleClass import FlexToolsModuleClass
 
 #----------------------------------------------------------------
@@ -31,7 +30,6 @@ DEBUG = False
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {'moduleName'       : "Start Testbed",
         'moduleVersion'    : "1.0",
         'moduleModifiesDB' : False,
@@ -40,23 +38,6 @@ docs = {'moduleName'       : "Start Testbed",
 u"""
 Initialize the testbed log and create source text from the testbed.
 """ }
-
-
-#----------------------------------------------------------------
-# The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-
-from collections import defaultdict
-from System import Guid
-from System import String
 
 def init_new_result(DB, report):
     
@@ -87,6 +68,8 @@ def init_new_result(DB, report):
     
     return resultsXMLObj
 
+#----------------------------------------------------------------
+# The main processing function
 def MainFunction(DB, report, modifyAllowed):
 
     # Read the configuration file which we assume is in the current directory.
@@ -120,7 +103,6 @@ def MainFunction(DB, report, modifyAllowed):
                
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             
