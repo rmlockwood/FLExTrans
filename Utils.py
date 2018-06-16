@@ -395,6 +395,8 @@ class TestbedTestXMLObject():
         return self.__testNode.find(TARGET_OUTPUT+'/'+EXPECTED_RESULT).text
     def getActualResult(self):
         return self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text
+    def setActualResult(self, myStr):
+        self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
     def getTestNode(self):
         return self.__testNode
     
@@ -460,6 +462,18 @@ class TestbedTestXMLObject():
         # each test goes on its own line
         f_out.write(self.getApertiumString().encode('utf-8')+'\n')
 
+    def extractResults(self, f_out):
+        
+        try:
+            # each test goes on its own line
+            line = f_out.readline()
+        except:
+            raise ValueError('No more lines to read in the synthesis file.')
+        
+        line = unicode(line, 'utf-8').rstrip()
+        self.setActualResult(line)
+        return 1
+    
 # Models the top-level testbed XML object        
 # It contains a list of TestXMLObjects 
 class FLExTransTestbedXMLObject():
@@ -549,6 +563,14 @@ class FLExTransTestbedXMLObject():
         # return the number of tests dumped
         return(len(self.__TestXMLObjectList))    
 
+    def extractResults(self, f_out):
+        total = 0
+        
+        for obj in self.__TestXMLObjectList:     
+            total += obj.extractResults(f_out)
+        
+        return total    
+
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
@@ -615,6 +637,12 @@ class TestbedResultXMLObject():
                 testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
     
+    def getRoot(self):
+        return self.__rootNode
+    
+    def endTest(self):
+        self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     def startTest(self, testbedXMLObj):
         self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.__rootNode.attrib[END_DATE_TIME] = ''
@@ -629,6 +657,13 @@ class TestbedResultXMLObject():
         total = 0
         for obj in self.__testbedXMLObjList:
             total += obj.dump(f_out)
+        
+        return total
+    
+    def extractResults(self, f_out):
+        total = 0
+        for obj in self.__testbedXMLObjList:
+            total += obj.extractResults(f_out)
         
         return total
     
@@ -655,6 +690,10 @@ class FLExTransTestbedResultsXMLObject():
         # new results are always put at the top of the list
         self.__resultXMLObjList.insert(0, resultXMLObj)
     
+    def endTest(self):
+        # get the top result object and set the end time 
+        self.__resultXMLObjList[0].endTest() 
+        
     def getRoot(self):
         return self.__rootNode
     
@@ -669,6 +708,28 @@ class FLExTransTestbedResultsXMLObject():
     def dump(self, f_out):
         # dump the testbed contents from the topmost result object
         return self.__resultXMLObjList[0].dump(f_out)
+
+    def initializedTestMissing(self):
+        
+        # See if there are any results objects
+        if len(self.__resultXMLObjList) < 1:
+            return True
+        
+        resultObj = self.__resultXMLObjList[0]
+        resultNode = resultObj.getRoot()
+        
+        # We expect the end date-time to be '' when a result is ready
+        # to have its actual results filled in
+        if len(resultNode.attrib[END_DATE_TIME]) < 1:
+            return False
+        return True
+    
+    def extractResults(self, f_out):
+        # check that there was a test started
+        if self.initializedTestMissing() == True:
+            return 0
+        else:
+            return self.__resultXMLObjList[0].extractResults(f_out)
 
 # Models the results log XML file.
 # It creates the XML file if it doesn't exist.
