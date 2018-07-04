@@ -338,6 +338,20 @@ class TestbedTestXMLObject():
             self.__createLUListFromXMLStructure()
         else:
             self.__createXMLStructureFromLUList()
+    def getFailedAndInvalid(self):
+        invalidCount = 0
+        failedCount = 0
+        
+        if self.isValid():
+            if self.getExpectedResult() != self.getActualResult():
+                failedCount = 1
+        else:
+            invalidCount = 1
+    
+        return (failedCount, invalidCount)
+    
+    def getLexicalUnitList(self):
+        return self.__luList
     
     def __createLUListFromXMLStructure(self):
         self.__luList = []
@@ -385,7 +399,7 @@ class TestbedTestXMLObject():
     
     def getID(self):
         return self.__testNode.attrib[ID]
-    def isWellFormed(self):
+    def isValid(self):
         if self.__testNode.attrib[IS_VALID] == YES:
             return True
         return False
@@ -399,7 +413,6 @@ class TestbedTestXMLObject():
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
     def getTestNode(self):
         return self.__testNode
-    
     # Convert all the lexical units into one string    
     def getLUString(self):
         ret_str = ''
@@ -504,6 +517,18 @@ class FLExTransTestbedXMLObject():
         testbed.attrib[N_ATTRIB] = DEFAULT
         self.__testsNode = ET.SubElement(testbed, TESTS)
     
+    def getFailedAndInvalid(self):
+        tot_failed = 0
+        tot_invalid = 0
+        for test in self.__TestXMLObjectList:
+            (failed, invalid) = test.getFailedAndInvalid()
+            tot_failed += failed
+            tot_invalid += invalid
+        return (tot_failed, tot_invalid)
+            
+    def getNumTests(self):
+        return len(self.__TestXMLObjectList)
+        
     def getRoot(self):
         return self.__rootNode
     
@@ -637,8 +662,34 @@ class TestbedResultXMLObject():
                 testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
     
+    def getFLExTransTestbedXMLObjectList(self):
+        return self.__testbedXMLObjList
+    
     def getRoot(self):
         return self.__rootNode
+    
+    def getStartDateTime(self):
+        return self.__rootNode.attrib[START_DATE_TIME]
+        
+    def getFailedAndInvalid(self):
+        tot_failed = 0
+        tot_invalid = 0
+        for testbed in self.__testbedXMLObjList:
+            (failed, invalid) = testbed.getFailedAndInvalid()
+            tot_failed += failed
+            tot_invalid += invalid
+        return (tot_failed, tot_invalid)
+    
+    def getNumTests(self):
+        total = 0
+        for testbed in self.__testbedXMLObjList:
+            total += testbed.getNumTests()
+        return total
+    
+    def isIncomplete(self):
+        if self.__rootNode.attrib[END_DATE_TIME] == '':
+            return True
+        return False
     
     def endTest(self):
         self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -680,6 +731,9 @@ class FLExTransTestbedResultsXMLObject():
             self.__rootNode = ET.Element(FLEXTRANS_TESTBED_RESULTS)
         else:
             self.__createTestbedResultXMLObjectList()
+    
+    def getTestbedResultXMLObjectList(self):
+        return self.__resultXMLObjList
     
     def initTestResult(self, testbedXMLObj):
         
