@@ -253,7 +253,7 @@ def do_replacements(configMap, report, fullPathBilingFile):
         left = entry.find('p/l')
         
         # If we can't find it, use the identity text <e> should either have <l> (and <r>) or <i>
-        if not left:
+        if left == None:
             left = entry.find('i')
         
         # See if we have a match for replacing the entry
