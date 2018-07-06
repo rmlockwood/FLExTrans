@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'TestbedLog.ui'
 #
-# Created: Thu Jul 05 13:51:19 2018
+# Created: Fri Jul 06 21:21:03 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(1016, 606)
+        MainWindow.resize(900, 546)
         MainWindow.setDocumentMode(False)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
@@ -47,8 +47,16 @@ class Ui_MainWindow(object):
         self.editTestbedButton = QtGui.QPushButton(self.centralwidget)
         self.editTestbedButton.setObjectName(_fromUtf8("editTestbedButton"))
         self.horizontalLayout_2.addWidget(self.editTestbedButton)
-        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem2 = QtGui.QSpacerItem(80, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem2)
+        self.ZoomLabel = QtGui.QLabel(self.centralwidget)
+        self.ZoomLabel.setObjectName(_fromUtf8("ZoomLabel"))
+        self.horizontalLayout_2.addWidget(self.ZoomLabel)
+        self.fontSizeSpinBox = QtGui.QSpinBox(self.centralwidget)
+        self.fontSizeSpinBox.setObjectName(_fromUtf8("fontSizeSpinBox"))
+        self.horizontalLayout_2.addWidget(self.fontSizeSpinBox)
+        spacerItem3 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem3)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -59,4 +67,5 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Testbed Log", None))
         self.OKButton.setText(_translate("MainWindow", "OK", None))
         self.editTestbedButton.setText(_translate("MainWindow", "Edit Testbed", None))
+        self.ZoomLabel.setText(_translate("MainWindow", "Font Size:", None))
 

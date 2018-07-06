@@ -410,12 +410,12 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         if parentindex.isValid():
             nodeS = parentindex.internalPointer()
             nodeX = nodeS.GetChild(row)
-            node = self.__createIndex(row, column, nodeX)
+            index = self.__createIndex(row, column, nodeX)
         else:
             nodeS = self.rootItem
             nodeX = nodeS.GetChild(row)
-            node = self.__createIndex(row, column, nodeX)
-        return node
+            index = self.__createIndex(row, column, nodeX)
+        return index
 
 
     def __createIndex(self, row, column, node):
@@ -485,7 +485,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         
         return QtCore.QVariant()
                 
-class Main(QtGui.QMainWindow):
+class LogViewerMain(QtGui.QMainWindow):
 
     def __init__(self, resultsXMLObj):
         QtGui.QMainWindow.__init__(self)
@@ -502,9 +502,25 @@ class Main(QtGui.QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.okClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
+        self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
-        #self.ui.logTreeView.header().setResizeMode(1)
+        # Start the font size at 9
+        self.ui.fontSizeSpinBox.setValue(9)
+        
+        # Make the header text bold
+        headerFont = self.ui.logTreeView.header().font()
+        headerFont.setBold(True)
+        self.ui.logTreeView.header().setFont(headerFont)
 
+    def FontSizeSpinBoxClicked(self):
+        myFont = self.ui.logTreeView.font()
+        currentSize = self.ui.fontSizeSpinBox.value()
+        myFont.setPointSize(currentSize)
+        self.ui.logTreeView.setFont(myFont)
+        
+    def getModel(self):
+        return self.__model
+    
     def okClicked(self):
         self.retValue = QtGui.QDialogButtonBox.Ok
         self.close()
@@ -519,8 +535,6 @@ class Main(QtGui.QMainWindow):
     def myResize(self):    
         myWidth = self.ui.logTreeView.width()
         
-        self.ui.logTreeView.header().setResizeMode(1) # Stretch
-
         # Set the width of the columns
         self.ui.logTreeView.setColumnWidth(0, myWidth*5/10-3) # -3 so we don't go over total
         self.ui.logTreeView.setColumnWidth(1, myWidth*3/10-3) # width and get a horizontal
@@ -538,9 +552,12 @@ def MainFunction(DB, report, modify):
 
     app = QtGui.QApplication(sys.argv)
 
-    window = Main(resultsXMLObj)
+    window = LogViewerMain(resultsXMLObj)
     
     window.show()
+    window.myResize()
+    firstIndex = window.getModel().rootItem.children[0].index
+    window.ui.logTreeView.expand(firstIndex)
     exec_val = app.exec_()
     
 #----------------------------------------------------------------
