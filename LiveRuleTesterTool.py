@@ -393,6 +393,9 @@ class Main(QtGui.QMainWindow):
         # Get the synthesis result text
         synResult = unicode(self.ui.SynthTextEdit.toPlainText()).strip()
         
+        # Remove the RTL marker
+        synResult = re.sub(ur'\u200F','', synResult)
+        
         cnt = 0
         
         # Check if add-multiple was selected
@@ -600,7 +603,7 @@ class Main(QtGui.QMainWindow):
             self.ui.addToTestbedButton.setEnabled(True)
 
             # See if we have multiple words, If so, enable the Add Multiple... checkbox
-            if re.search('\w+\s+\w+', synthText):
+            if re.search('\S+\s+\S+', synthText):
                 self.ui.addMultipleCheckBox.setEnabled(True)
             else:
                 self.ui.addMultipleCheckBox.setEnabled(False)
