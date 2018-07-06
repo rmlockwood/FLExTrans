@@ -128,6 +128,7 @@ import ReadConfig
 import CatalogTargetPrefixes
 import ConvertTextToSTAMPformat
 import ExtractTargetLexicon
+#import TestbedLogViewer 
 import os
 import re
 import sys
@@ -266,6 +267,7 @@ class Main(QtGui.QMainWindow):
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
         self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
+        self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
@@ -372,6 +374,9 @@ class Main(QtGui.QMainWindow):
         
         return myObj
     
+    def ViewTestbedLogButtonClicked(self):
+        pass
+        
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
         
