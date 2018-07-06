@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'TestbedLog.ui'
 #
-# Created: Tue Jul 03 13:31:56 2018
+# Created: Thu Jul 05 13:51:19 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -30,16 +30,26 @@ class Ui_MainWindow(object):
         MainWindow.setDocumentMode(False)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.logTreeView = QtGui.QTreeView(self.centralwidget)
         self.logTreeView.setObjectName(_fromUtf8("logTreeView"))
-        self.verticalLayout_2.addWidget(self.logTreeView)
-        self.buttonBox = QtGui.QDialogButtonBox(self.centralwidget)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setCenterButtons(True)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.verticalLayout_2.addWidget(self.buttonBox)
+        self.verticalLayout.addWidget(self.logTreeView)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.OKButton = QtGui.QPushButton(self.centralwidget)
+        self.OKButton.setObjectName(_fromUtf8("OKButton"))
+        self.horizontalLayout_2.addWidget(self.OKButton)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
+        self.editTestbedButton = QtGui.QPushButton(self.centralwidget)
+        self.editTestbedButton.setObjectName(_fromUtf8("editTestbedButton"))
+        self.horizontalLayout_2.addWidget(self.editTestbedButton)
+        spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem2)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -47,4 +57,6 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Testbed Log", None))
+        self.OKButton.setText(_translate("MainWindow", "OK", None))
+        self.editTestbedButton.setText(_translate("MainWindow", "Edit Testbed", None))
 
