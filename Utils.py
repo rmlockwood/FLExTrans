@@ -85,7 +85,8 @@ NA = 'n/a'
 YES = 'yes'
 NO = 'no'
 DEFAULT = 'default'
-
+XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+   
 ## Testbed classes
 # Models a single FLExTrans lexical unit
 # A lexical unit consists of a headword, a sense number, a grammatical category 
@@ -139,6 +140,44 @@ class LexicalUnit():
         for tag in self.__otherTags:
             ret_str += ' ' + tag
         return ret_str
+    
+    def toFormattedString(self, rtl = False):
+        # Create an element
+        p = ET.Element('span')
+        
+        # Split off the homograph_num (if present; sent punctuation won't have it)
+        lemma_parts = re.split('(\d+)', self.__headWord) # last item is empty
+        
+        # Output the lexeme
+        span = output_span(p, LEMMA_COLOR, lemma_parts[0], rtl)
+    
+        # Output the subscript homograph # and sense # (if they exist)
+        if self.__gramCat != SENT:
+            add_subscript(span, lemma_parts[1]+'.'+self.__senseNum)
+        
+        # Check for RTL
+        if rtl == True:
+            # prepend the RTL marker
+            symb = ur'\u200F' + self.__gramCat
+        else:
+            symb = self.__gramCat
+        
+        # output the symbol
+        output_span(p, GRAM_CAT_COLOR, ' '+symb, rtl)
+        
+        for tag in self.__otherTags:
+        
+            # Check for RTL
+            if rtl == True:
+                # prepend the RTL marker
+                symb = ur'\u200F' + tag
+            else:
+                symb = tag
+            
+            # output the symbol
+            output_span(p, AFFIX_COLOR, ' '+symb, rtl)
+        
+        return ET.tostring(p)
     
     def toApertiumString(self):
         ret_str = '^' + self.__headWord
@@ -338,6 +377,7 @@ class TestbedTestXMLObject():
             self.__createLUListFromXMLStructure()
         else:
             self.__createXMLStructureFromLUList()
+            
     def getFailedAndInvalid(self):
         invalidCount = 0
         failedCount = 0
@@ -404,7 +444,7 @@ class TestbedTestXMLObject():
             return True
         return False
     def getOrigin(self):
-        return self.__testNode.find(SOURCE_INPUT).attrib(ORIGIN)
+        return self.__testNode.find(SOURCE_INPUT).attrib[ORIGIN]
     def getExpectedResult(self):
         return self.__testNode.find(TARGET_OUTPUT+'/'+EXPECTED_RESULT).text
     def getActualResult(self):
@@ -419,6 +459,14 @@ class TestbedTestXMLObject():
         
         for lu in self.__luList:
             ret_str += ' ' + lu.toString()
+        
+        return ret_str.strip()
+    # Return colorized html form of all LUs
+    def getFormattedLUString(self, rtl=False):
+        ret_str = ''
+        
+        for lu in self.__luList:
+            ret_str += ' ' + lu.toFormattedString(rtl)
         
         return ret_str.strip()
     
@@ -596,6 +644,12 @@ class FLExTransTestbedXMLObject():
         
         return total    
 
+    def isRTL(self):    
+        
+        if self.getDirection() == RTL:
+            return True
+        return False
+
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
@@ -609,7 +663,7 @@ class FlexTransTestbedFile():
             # we will create it
             self.__isNew = True
             self.__XMLObject = FLExTransTestbedXMLObject(None, direction)
-            myRoot = FLExTransTestbedXMLObject.getRoot()
+            myRoot = self.__XMLObject.getRoot()
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
@@ -671,6 +725,9 @@ class TestbedResultXMLObject():
     def getStartDateTime(self):
         return self.__rootNode.attrib[START_DATE_TIME]
         
+    def getEndDateTime(self):
+        return self.__rootNode.attrib[END_DATE_TIME]
+        
     def getFailedAndInvalid(self):
         tot_failed = 0
         tot_invalid = 0
@@ -690,12 +747,12 @@ class TestbedResultXMLObject():
         if self.__rootNode.attrib[END_DATE_TIME] == '':
             return True
         return False
-    
+   
     def endTest(self):
-        self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
 
     def startTest(self, testbedXMLObj):
-        self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
         self.__rootNode.attrib[END_DATE_TIME] = ''
         
         # add the <FLExTransTestbed> element below the <testResult> element
@@ -717,6 +774,12 @@ class TestbedResultXMLObject():
             total += obj.extractResults(f_out)
         
         return total
+
+    def isRTL(self):    
+        for obj in self.__testbedXMLObjList:
+            if obj.isRTL():
+                return True
+        return False
     
 # Models the testbed results top XML element        
 # It contains a list of TestResultXMLObjects 
@@ -784,6 +847,13 @@ class FLExTransTestbedResultsXMLObject():
             return 0
         else:
             return self.__resultXMLObjList[0].extractResults(f_out)
+        
+    def isRTL(self):
+        
+        for result in self.__resultXMLObjList:
+            if result.isRTL():
+                return True
+        return False
 
 # Models the results log XML file.
 # It creates the XML file if it doesn't exist.
@@ -816,7 +886,7 @@ GRAM_CAT_COLOR = '0070C0' #blue
 AFFIX_COLOR = '00B050' #green
 # The color of non-sentence punctuation. Sentence punctuation will be in its
 # own lexical item with <sent> as the category
-PUNC_COLOR = 'FFC000' #orange
+PUNC_COLOR = 'D0802B' #orange
 # Lemmas that have cat: UNK
 UNKNOWN_LEMMA_COLOR = 'CC0066' #dark pink
 # The color of UNK
@@ -1107,9 +1177,9 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             text_punct = ITsString(analysisOccurance.Analysis.Form).Text
             
             # See if one or more symbols is part of the user-defined sentence punctuation. If so output the
-            # punctuation as part of a data stream along with the symbol/tag <sent>
+            # punctuation as part of the data stream along with the symbol/tag <sent>
             # convert to lists and take the set intersection
-            if set(list(text_punct)).intersection(set(list(sent_punct))):
+            if set(list(text_punct)).intersection(set(list(unicode(sent_punct,'utf-8')))):
                 outStr = "^"+text_punct+"<sent>$"
                 
                 if getSurfaceForm:

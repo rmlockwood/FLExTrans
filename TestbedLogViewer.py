@@ -21,6 +21,7 @@ import unicodedata
 import copy
 import datetime
 import Utils
+import xml.etree.ElementTree as ET
 
 #----------------------------------------------------------------
 # Configurables:
@@ -54,18 +55,64 @@ from SIL.FieldWorks.FDO import IUndoStackManager
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from System import Guid
 from System import String
+from datetime import datetime
  
 from PyQt4 import QtGui, QtCore
 from PyQt4 import QtWebKit
 from TestbedLog import Ui_MainWindow
 
+GREEN_CHECK =     'Light_green_check.png'        
+RED_X =           'Red_x.png'
+YELLOW_TRIANGLE = 'Yellow_triangle.png'
+
+class Stats():
+    def __init__(self, dateTimeStart, dateTimeEnd, totalTests, numFailed, numInvalid):
+        self.dateTimeStart = dateTimeStart
+        self.dateTimeEnd = dateTimeEnd
+        self.totalTests = totalTests
+        self.numFailed = numFailed
+        self.numInvalid = numInvalid
+    
+    def getTestElapsedSeconds(self):
+        try:
+            # Turn the strings into datetime objects
+            startDT = datetime.strptime(self.dateTimeStart, Utils.XML_DATETIME_FORMAT)
+            endDT = datetime.strptime(self.dateTimeEnd, Utils.XML_DATETIME_FORMAT)
+        except:
+            return 0
+        
+        elapsedSecs = endDT - startDT
+        
+        return elapsedSecs.seconds
+        
+    def getTestResultSummary(self):
+        if self.numFailed > 0:
+            myColor = Utils.NOT_FOUND_COLOR
+        elif self.numInvalid > 0:
+            myColor = Utils.PUNC_COLOR
+        else:
+            myColor = Utils.AFFIX_COLOR
+
+        myStr = str(self.totalTests) + ' Tests, ' + str(self.numFailed) + ' Failed, ' + str(self.numInvalid) + ' Invalid'
+
+        p = ET.Element('p')
+        Utils.output_span(p, myColor, myStr, False) #rtl
+        return ET.tostring(p)
+
+    
 # An item that can be used to populate a tree view, knowing it's place in the model
 class BaseTreeItem(object):
     
-    def __init__(self, inParentItem):
+    def __init__(self, inParentItem, rtl):
         self.parent = inParentItem
+        self.rtl = rtl
         self.children = []
-        
+        self.index = None
+        self.widget = [None, None, None]
+    
+    def isRTL(self):
+        return self.rtl
+    
     def AddChild(self, inChild):
         self.children.append(inChild)
     
@@ -91,21 +138,13 @@ class BaseTreeItem(object):
         if self.parent:
             return self.parent.children.index(self)
         return 0
-    
-class Stats():
-    def __init__(self, dateTime, totalTests, numFailed, numInvalid):
-        self.dateTime = dateTime
-        self.totalTests = totalTests
-        self.numFailed = numFailed
-        self.numInvalid = numInvalid
-    
-    def getFormatedResult(self):
-        return str(self.totalTests) + ' Tests, ' + str(self.numFailed) + ' Failed, ' + str(self.numInvalid) + ' Invalid'
+    def createTheWidget(self, col):
+        return QtGui.QLabel()
     
 # Represents the root of the tree    
 class RootTreeItem(BaseTreeItem):
     def __init__(self):
-        super(RootTreeItem, self).__init__(None)
+        super(RootTreeItem, self).__init__(None, False)
         
     def ColumnCount(self):
         return 3
@@ -121,52 +160,189 @@ class RootTreeItem(BaseTreeItem):
         return ""
     
 class TestStatsItem(BaseTreeItem):
-    def __init__(self, inParent, statsObj):
+    def __init__(self, inParent, rtl, statsObj):
         
-        super(TestStatsItem, self).__init__(inParent)
+        super(TestStatsItem, self).__init__(inParent, rtl)
         self.statsObj = statsObj
         
     def ColumnCount(self):
         return 3
     
     def Data(self, inColumn):
+        # Date and time of the test
         if inColumn == 0:
-            return self.statsObj.dateTime
-        elif inColumn == 2:
-            return self.statsObj.getFormatedResult()
+            
+            try:
+                # Reformat the time string
+                startDT = datetime.strptime(self.statsObj.dateTimeStart, Utils.XML_DATETIME_FORMAT)
+                retStr = startDT.strftime('%d %b %Y %H:%M:%S')
+            except:
+                retStr = "Date format error."
+            return retStr
+        # Results summary
+        elif inColumn == 1:
+            return self.statsObj.getTestResultSummary()
         return ''
-    
+
+    def createTheWidget(self, col):
+        myLabel = QtGui.QLabel()
+        myLabel.setText(self.Data(col))
+        if self.isRTL():
+            myLabel.setAlignment(QtCore.Qt.AlignRight)
+        
+        # Create the elapsed time tooltip
+        total_secs = self.statsObj.getTestElapsedSeconds()
+        
+        minutes = total_secs / 60
+        sec = total_secs % 60
+        
+        if minutes == 1:
+            myStr = '1 minute and '
+        elif minutes > 1:
+            myStr = str(minutes) + ' minutes and ' 
+        else:
+            myStr = ''
+            
+        myStr += str(sec) + ' seconds'
+        
+        tipStr = 'Test completed in ' + myStr
+        
+        myLabel.setToolTip(tipStr)
+        
+        return myLabel
+
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, lexicalUnitList, expectedStr, actualStr):
-        super(TestResultItem, self).__init__(inParent)
-        self.lexicalUnitList = lexicalUnitList
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin):
+        super(TestResultItem, self).__init__(inParent, rtl)
+        self.unformattedLexicalUnitsString = LUString
+        self.formattedLexicalUnitsString = formattedLexicalUnitsString
         self.expectedStr = expectedStr
         self.actualStr = actualStr
+        self.invalid = not valid
+        self.origin = origin
+        self.greenCheck = QtGui.QPixmap(GREEN_CHECK)
+        self.redX = QtGui.QPixmap(RED_X)
+        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
         
+    def testFailed(self):
+        if self.expectedStr != self.actualStr:
+            return True
+
+        return False
+        
+    def isInvalid(self):
+        return self.invalid
+    
+    def getFormattedLUString(self):
+        return self.formattedLexicalUnitsString
+    
     def getLUString(self):
-        ret_str = ''
-        
-        for lu in self.lexicalUnitList:
-            ret_str += ' ' + lu.toString()
-        
-        return ret_str.strip()
+        return self.unformattedLexicalUnitsString
     
     def ColumnCount(self):
         return 3
     
     def Data(self, inColumn):
+        # Lexical units
         if inColumn == 0:
-            return self.getLUString()
+            if self.isInvalid():
+                
+                myStr = self.getFormattedLUString()
+                
+                # Change the colors to orange when it's invalid
+                myStr = re.sub('color:#......', 'color:#'+Utils.PUNC_COLOR, myStr)
+                
+                return myStr
+            else:
+                return self.getFormattedLUString() 
+            
+        # Expected results
         elif inColumn == 1:
             return self.expectedStr
+        
+        # Actual results
         elif inColumn == 2:
-            return self.actualStr
+            if self.isInvalid():
+                return 'n/a'
+            elif self.testFailed():
+                p = ET.Element('p')
+                Utils.output_span(p, Utils.NOT_FOUND_COLOR, self.actualStr, False) #rtl
+                return ET.tostring(p)
+            else:
+                retStr = '---'
+                if self.isRTL():
+                    retStr = u'\u200F' + retStr
+                return retStr
         return ''
     
+    def createTheWidget(self, col):
+        
+        # Lexical units
+        if col == 0:
+            myWidget = ITWidget(self.isRTL())
+            myWidget.setText(self.Data(col))
+
+            # Get the appropriate icon
+            if self.isInvalid():
+                myIcon = self.yellowTriangle
+            elif self.testFailed():
+                myIcon = self.redX
+            else:
+                myIcon = self.greenCheck
+
+            myWidget.setIcon(myIcon)
+            myWidget.setToolTip('Source text: ' + self.origin)
+
+        # Expected and actual results
+        else:
+            myWidget = QtGui.QLabel(self.Data(col))
+#             if self.isRTL():
+#                 myWidget.setAlignment(QtCore.Qt.AlignRight)
+            
+        return myWidget
+
+# A widget for an icon and text
+class ITWidget(QtGui.QWidget):
+
+    def __init__(self, rtl):
+        super(ITWidget, self).__init__()
+        self.rtl = rtl
+        self.autoFillBackground()
+        self.__create()
+
+    def __create(self):
+        layout = QtGui.QHBoxLayout()
+        self.iconLabel = QtGui.QLabel()
+        self.textLabel = QtGui.QLabel()
+        
+        if self.rtl:
+            layout.addWidget(self.iconLabel)
+            layout.addWidget(self.textLabel,1)
+            #layout.setDirection(0)
+            #self.iconLabel.setAlignment(QtCore.Qt.AlignRight)
+            #self.textLabel.setAlignment(QtCore.Qt.AlignRight)
+        else:
+            layout.addWidget(self.iconLabel)
+            layout.addWidget(self.textLabel,1)
+        layout.setContentsMargins(0,0,0,0)
+        self.setLayout(layout)
+    
+    def setText(self, myText):
+        self.textLabel.setText(myText)
+        
+    def setIcon(self, myIcon):
+        self.iconLabel.setPixmap(myIcon)
+        
+    def setToolTip(self, myTip):
+        self.textLabel.setToolTip(myTip)
+        
 class TestbedLogModel(QtCore.QAbstractItemModel):
     
     def __init__(self, resultsXMLObj, parent = None):
+
+        self.__view = None
+        self.rtl = resultsXMLObj.isRTL()
         
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
@@ -179,16 +355,23 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         # setup the data
         self.SetupModelData()
     
+    def getRTL(self):
+        return self.rtl
+    
+    def setView(self, view):
+        self.__view = view
+
     def getStats(self, resultObj):
         
-        dateTime = resultObj.getStartDateTime()
+        dateTimeStart = resultObj.getStartDateTime()
+        dateTimeEnd = resultObj.getEndDateTime()
         
         totalTests = resultObj.getNumTests()
         
         (numFailed, numInvalid) = resultObj.getFailedAndInvalid()
         
         # Create a statistics object with the data from this result
-        statsObj = Stats(dateTime, totalTests, numFailed, numInvalid)
+        statsObj = Stats(dateTimeStart, dateTimeEnd, totalTests, numFailed, numInvalid)
         
         return statsObj
         
@@ -203,7 +386,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
             
             # Set the stats branch of the tree
             statsObj = self.getStats(resultObj)
-            statsItem = TestStatsItem(self.rootItem, statsObj)
+            statsItem = TestStatsItem(self.rootItem, self.getRTL(), statsObj)
             
             ## Set the leaves on this branch -- each individual test result
             # Loop through the testbeds
@@ -211,7 +394,9 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                 # Loop through the tests
                 for test in testbed.getTestXMLObjectList():
                     
-                    resultItem = TestResultItem(statsItem, test.getLexicalUnitList(), test.getExpectedResult(), test.getActualResult())
+                    resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), \
+                                                test.getExpectedResult(), test.getActualResult(), \
+                                                test.isValid(), test.getOrigin())
                     
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)
@@ -221,23 +406,30 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
     def index(self, row, column, parentindex): 
         
-        # if the index does not exist, return a default index
-        if not self.hasIndex(row, column, parentindex):
-            return QtCore.QModelIndex()
-        
-        # make sure the parent exists, if not assume it's the root
-        parent_item = None
-        if not parentindex.isValid():
-            parent_item = self.rootItem
+        node = QtCore.QModelIndex()
+        if parentindex.isValid():
+            nodeS = parentindex.internalPointer()
+            nodeX = nodeS.GetChild(row)
+            node = self.__createIndex(row, column, nodeX)
         else:
-            parent_item = parentindex.internalPointer()
-            
-        # get the child from that parent and create an index for it
-        child_item = parent_item.GetChild(row)
-        if child_item:
-            return self.createIndex(row, column, child_item)
-        else:
-            return QtCore.QModelIndex()
+            nodeS = self.rootItem
+            nodeX = nodeS.GetChild(row)
+            node = self.__createIndex(row, column, nodeX)
+        return node
+
+
+    def __createIndex(self, row, column, node):
+        if node.index == None:
+            index = self.createIndex(row, column, node)
+            node.index = index
+        if node.widget[column] is None:
+            # Create the needed widget depending on item type
+            widget = node.createTheWidget(column)
+            node.widget[column] = widget
+            self.__view.setIndexWidget(self.createIndex(row, column, node), widget)
+
+        return node.index
+
     def parent(self, childindex):
 
         if not childindex.isValid():
@@ -275,21 +467,9 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         return parentindex.internalPointer().ColumnCount()
     
     def data(self, index, role):
-        
-        if not index.isValid():
-            return QtCore.QVariant()
-        
-        # get the item out of the index
-        parent_item = index.internalPointer()
-        
-        # Return the data associated with the column
-        if role == QtCore.Qt.DisplayRole:
-            return parent_item.Data(index.column())
-        if role == QtCore.Qt.SizeHintRole:
-            return QtCore.QSize(50,50)
-        
-        # Otherwise return default
-        return QtCore.QVariant()
+
+        # handled in the widgets
+        return None
     
     def headerData(self, column, orientation, role):
         if (orientation == QtCore.Qt.Horizontal and
@@ -299,6 +479,10 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
             except IndexError:
                 pass
 
+        if role == QtCore.Qt.TextAlignmentRole:
+            if self.getRTL():
+                return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
+        
         return QtCore.QVariant()
                 
 class Main(QtGui.QMainWindow):
@@ -310,15 +494,23 @@ class Main(QtGui.QMainWindow):
 
         self.__model = TestbedLogModel(resultsXMLObj)
         self.ui.logTreeView.setModel(self.__model)
-        self.ui.buttonBox.button(QtGui.QDialogButtonBox.Ok).clicked.connect(self.okClicked)
+        self.__model.setView(self.ui.logTreeView)
 
-        #self.makeWebViews()
-        #self.setGeometry(500,500,1200,800)
-        #self.myResize()
+        # check the text direction of the test language
+        if self.__model.getRTL():
+            self.ui.logTreeView.setLayoutDirection(QtCore.Qt.RightToLeft)
+        
+        self.ui.OKButton.clicked.connect(self.okClicked)
+        self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
+
+        #self.ui.logTreeView.header().setResizeMode(1)
 
     def okClicked(self):
         self.retValue = QtGui.QDialogButtonBox.Ok
         self.close()
+
+    def EditTestbedClicked(self):
+        pass
 
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
@@ -327,18 +519,13 @@ class Main(QtGui.QMainWindow):
     def myResize(self):    
         myWidth = self.ui.logTreeView.width()
         
-        # Set the width of the lexical unit to 40%, the other two columns to 30%
-        self.ui.logTreeView.setColumnWidth(0, myWidth*4/10)
-        self.ui.logTreeView.setColumnWidth(1, myWidth*3/10)
-        self.ui.logTreeView.setColumnWidth(2, myWidth*3/10)
+        self.ui.logTreeView.header().setResizeMode(1) # Stretch
+
+        # Set the width of the columns
+        self.ui.logTreeView.setColumnWidth(0, myWidth*5/10-3) # -3 so we don't go over total
+        self.ui.logTreeView.setColumnWidth(1, myWidth*3/10-3) # width and get a horizontal
+        self.ui.logTreeView.setColumnWidth(2, myWidth*2/10-3) # scrollbar
     
-    def makeWebViews(self):
-        
-        myIndex = self.__model.index(2,2, QtCore.QModelIndex())
-        webView = QtWebKit.QWebView()
-        #webView.setGeometry(QtCore.QRect(10, 10, 100, 100))
-        self.ui.logTreeView.setIndexWidget(myIndex, webView)
-        
 def MainFunction(DB, report, modify):
         
     ## Load the testbed results
@@ -346,7 +533,7 @@ def MainFunction(DB, report, modify):
     # Create an object for the testbed results file
     resultsFileObj = Utils.FlexTransTestbedResultsFile()
     
-    # Initialize the testbed run
+    # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
     app = QtGui.QApplication(sys.argv)
