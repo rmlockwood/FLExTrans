@@ -107,6 +107,19 @@ rem SetUp Gramm Categories pieces
 copy SetUpTransferRuleGramCat.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
 copy "FlexTrans Set Up Transfer Rules.ini" Install\FLExTools1.2.4\FLExTools\Collections
 
+rem Testbed pieces
+copy TestbedValidator.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy StartTestbed.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy EndTestbed.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy OverWriteTestDlg.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy OverWriteTestDlg.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy TestbedLogViewer.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy TestbedLog.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy TestbedLog.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
+copy Light_green_check.png Install\FLExTools1.2.4\FLExTool   
+copy Red_x.png             Install\FLExTools1.2.4\FLExTool             
+copy Yellow_triangle.png   Install\FLExTools1.2.4\FLExTool    
+
 cd Install
 "C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
