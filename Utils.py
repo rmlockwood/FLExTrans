@@ -1179,7 +1179,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             # See if one or more symbols is part of the user-defined sentence punctuation. If so output the
             # punctuation as part of the data stream along with the symbol/tag <sent>
             # convert to lists and take the set intersection
-            if set(list(text_punct)).intersection(set(list(unicode(sent_punct,'utf-8')))):
+            if set(list(text_punct)).intersection(set(list(sent_punct))):
                 outStr = "^"+text_punct+"<sent>$"
                 
                 if getSurfaceForm:
