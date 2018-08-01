@@ -53,6 +53,10 @@ class TestbedValidator():
         self.saveToCache()
     
     def isWordSenseValid(self, wordSense):
+        # Change spaces to underscores. Phrases and the like are stored with underscores
+        wordSense = re.sub(' ', '_', wordSense) # change spaces to underscores
+
+        # Accept lower or upper case versions of the word sense.
         if wordSense in self.mapWordSenses:
             return True
         elif wordSense.lower() in self.mapWordSenses:
@@ -68,6 +72,10 @@ class TestbedValidator():
         return False
     def isValid(self, lexUnit):
         valid = True
+        
+        # Sentence punctuation is always valid
+        if lexUnit.getGramCat() == Utils.SENT:
+            return valid
         
         wordSense = lexUnit.getHeadWord() + '.' + lexUnit.getSenseNum()
         if self.isWordSenseValid(wordSense) and self.isGramCatValid(lexUnit.getGramCat()):
@@ -203,6 +211,7 @@ class TestbedValidator():
                                                       
                                 # build the word sense and add it to the map
                                 wordSense = headWord+'.'+str(i+1)
+                                wordSense = re.sub(' ', '_', wordSense) # change spaces to underscores
                                 self.mapWordSenses[wordSense] = 7 # dummy value
 
                     # Now process non-roots
@@ -215,11 +224,13 @@ class TestbedValidator():
                             continue
                         elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                             if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
+                                gloss = re.sub(r'\.', '_', gloss)
                                 self.__saveAffixGloss(gloss)
                             else:
                                 continue # err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
                         elif morphType not in morphNames:
                             if morphType == 'proclitic' or morphType == 'enclitic':
+                                gloss = re.sub(r'\.', '_', gloss)
                                 self.__saveAffixGloss(gloss)
                             else:
                                 continue # err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
@@ -233,6 +244,7 @@ class TestbedValidator():
 
             # save abbreviation
             posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posAbbr = re.sub(' ', '_', posAbbr)
             self.mapCats[posAbbr] = 7
             
     def readOtherInfo(self): 
@@ -241,9 +253,11 @@ class TestbedValidator():
         for feature in self.db.ObjectsIn(IFsClosedFeatureRepository):
             for value in feature.ValuesOC:
                 abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
+                abbr = re.sub(r'\.', '_', abbr)
                 self.mapTags[abbr] = 7
 
         # Get all the inflection class abbreviations
         for inflClass in self.db.ObjectsIn(IMoInflClassRepository):
             abbr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
+            abbr = re.sub(r'\.', '_', abbr)
             self.mapTags[abbr] = 7
