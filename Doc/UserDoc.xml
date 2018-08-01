@@ -1033,6 +1033,10 @@ type="tTool"
 ></secTitle
 ><p
 >Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural statements. This tutorial should help you get used to writing transfer rules.</p
+><p
+><comment
+>Add a section on how spaces and periods are treated in various places.</comment
+></p
 ><section2
 id="sOverview"
 ><secTitle
