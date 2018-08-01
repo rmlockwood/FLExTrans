@@ -181,8 +181,13 @@ class SentenceList(QtCore.QAbstractListModel):
         return True
     def joinTupParts(self, tupList, i):
         ret = ''
-        for t in tupList:
-            ret += ' ' + t[i]
+        for t in tupList: 
+            # don't put a space before sentence punctuation
+            if len(t) > i+1 and re.search(Utils.SENT_TAG, t[i+1]):
+                ret += t[i]
+            else:
+                ret += ' ' + t[i]
+             
         return ret.lstrip()
     
 class OverWriteDlg(QtGui.QDialog):
@@ -685,7 +690,12 @@ class Main(QtGui.QMainWindow):
         for j in range(0,len(tokens)-1,2):
     
             # Save the lexical unit in the saved string
-            # Preserve whitespace that may be between compound elements by adding the j+2 item
+            
+            # if we have <sent> remove the space currently at the end of lexicalUnits
+            if re.search(Utils.SENT_TAG, tokens[j+1]):
+                self.__lexicalUnits = self.__lexicalUnits[:-1]
+                
+            # Preserve whitespace that may be between compound elements by adding the j+2 item 
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
             
             # Turn the lexical unit into color-coded html. 
@@ -1240,7 +1250,7 @@ def MainFunction(DB, report, modify=False):
         return
     
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = unicode(ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report), "utf-8")
     
     if not sent_punct:
         return
