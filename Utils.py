@@ -50,6 +50,32 @@ import TestbedValidator
 
 from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+from __builtin__ import False
+
+## Viewer constants
+# Main color of the headwords
+LEMMA_COLOR = '000000' #black
+# For grammatical category - always the 1st symbol
+GRAM_CAT_COLOR = '0070C0' #blue
+# The color of affixes or other things such as features, classes, etc.
+AFFIX_COLOR = '00B050' #green
+# The color of non-sentence punctuation. Sentence punctuation will be in its
+# own lexical item with <sent> as the category
+PUNC_COLOR = 'D0802B' #orange
+# Lemmas that have cat: UNK
+UNKNOWN_LEMMA_COLOR = 'CC0066' #dark pink
+# The color of UNK
+UNKNOWN_CAT_COLOR = 'FF99FF' #pink
+# The color of a target lemma that is not found (when an @ is there)
+NOT_FOUND_COLOR = 'FF0000' #red
+# The size of the subscript numbers in %. E.g. 50 means the subscripts will be 
+# 50% as big as it normally would be (which is already smaller than normal text)
+SUBSCRIPT_SIZE_PERCENTAGE = '60'
+
+# File and folder names
+OUTPUT_FOLDER = 'Output'
+TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
+TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
@@ -70,6 +96,7 @@ GRAM_CAT = 'grammaticalCategoryTag'
 OTHER_TAGS = 'otherTags'        
 TAG = 'tag'     
 SENT = 'sent'   
+SENT_TAG = '<'+SENT+'>'
 TARGET_OUTPUT = 'targetOutput' 
 EXPECTED_RESULT = 'expectedResult' 
 ACTUAL_RESULT = 'actualResult' 
@@ -120,17 +147,18 @@ class LexicalUnit():
         if self.__badly_formed == True:
             return False
         else:
-            # Do a detailed check of well-formedness
-            if self.__headWord == None or self.__senseNum == None or self.__gramCat == None:
-                return False
-            if len(self.__headWord) < 1 or len(self.__senseNum) < 1 or len(self.__gramCat) < 1:
-                return False
-            # Check homograph #
-            if not self.__headWord[-1].isdigit():
-                return False
-            # Check senseNum
-            if not self.__senseNum.isdigit():
-                return False
+            if self.__gramCat != SENT:
+                # Do a detailed check of well-formedness
+                if self.__headWord == None or self.__senseNum == None or self.__gramCat == None:
+                    return False
+                if len(self.__headWord) < 1 or len(self.__senseNum) < 1 or len(self.__gramCat) < 1:
+                    return False
+                # Check homograph #
+                if not self.__headWord[-1].isdigit():
+                    return False
+                # Check senseNum
+                if not self.__senseNum.isdigit():
+                    return False
             
     def toString(self):
         ret_str = self.__headWord
@@ -474,7 +502,11 @@ class TestbedTestXMLObject():
         ret_str = ''
         
         for lu in self.__luList:
-            ret_str += ' ' + lu.toApertiumString()
+            myStr = lu.toApertiumString()
+            if re.search(SENT_TAG, myStr):
+                ret_str += lu.toApertiumString()
+            else:
+                ret_str += ' ' + lu.toApertiumString()
             
         return ret_str.strip()
     
@@ -520,8 +552,9 @@ class TestbedTestXMLObject():
             
     def dump(self, f_out):
         
-        # each test goes on its own line
-        f_out.write(self.getApertiumString().encode('utf-8')+'\n')
+        # each test goes on its own line. Add a dummy EOL lexical unit so that
+        # transfer rules don't go to the next line unintentially 
+        f_out.write(self.getApertiumString().encode('utf-8')+' ^EOL<eol>$\n')
 
     def extractResults(self, f_out):
         
@@ -531,7 +564,11 @@ class TestbedTestXMLObject():
         except:
             raise ValueError('No more lines to read in the synthesis file.')
         
-        line = unicode(line, 'utf-8').rstrip()
+        line = unicode(line, 'utf-8')
+        
+        # Remove the dummy EOL lexical unit at the end.
+        line = re.sub(' @EOL', '', line)
+        line = line.rstrip()
         self.setActualResult(line)
         return 1
     
@@ -878,30 +915,6 @@ class FlexTransTestbedResultsFile():
     def write(self):
         self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
 
-# Main color of the headwords
-LEMMA_COLOR = '000000' #black
-# For grammatical category - always the 1st symbol
-GRAM_CAT_COLOR = '0070C0' #blue
-# The color of affixes or other things such as features, classes, etc.
-AFFIX_COLOR = '00B050' #green
-# The color of non-sentence punctuation. Sentence punctuation will be in its
-# own lexical item with <sent> as the category
-PUNC_COLOR = 'D0802B' #orange
-# Lemmas that have cat: UNK
-UNKNOWN_LEMMA_COLOR = 'CC0066' #dark pink
-# The color of UNK
-UNKNOWN_CAT_COLOR = 'FF99FF' #pink
-# The color of a target lemma that is not found (when an @ is there)
-NOT_FOUND_COLOR = 'FF0000' #red
-# The size of the subscript numbers in %. E.g. 50 means the subscripts will be 
-# 50% as big as it normally would be (which is already smaller than normal text)
-SUBSCRIPT_SIZE_PERCENTAGE = '60'
-
-# File and folder names
-OUTPUT_FOLDER = 'Output'
-TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
-TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
-
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
@@ -980,7 +993,7 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         lemma_parts[0] = lemma_parts[0][1:]
         
     # if the first symbol is UNK, use a special lemma color
-    elif symbols[0] == 'UNK':
+    elif len(symbols) > 0 and symbols[0] == 'UNK':
         lexeme_color = UNKNOWN_LEMMA_COLOR
     else:
         lexeme_color = LEMMA_COLOR
