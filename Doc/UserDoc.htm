@@ -71,7 +71,7 @@
             </ul>
             <li><a href="#sHowTo">7&nbsp;FLExTrans How To&#8217;s</a></li>
             <ul>
-               <li><a href="#sTransferRuleHowTos">7.1&nbsp;Transfer Rules</a></li>
+               <li><a href="#sTransferRuleHowTos">7.1&nbsp;Transfer Rule How To&#8217;s</a></li>
                <ul>
                   <li><a href="#sCategory">7.1.1&nbsp;How do I use the category element in the transfer rules?</a></li>
                   <li><a href="#sAttribute">7.1.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
@@ -81,7 +81,7 @@
                   <li><a href="#sCondLogic">7.1.6&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</a></li>
                   <li><a href="#sAgreement">7.1.7&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
                </ul>
-               <li><a href="#sOther">7.2&nbsp;Other</a></li>
+               <li><a href="#sOther">7.2&nbsp;Other How To&#8217;s</a></li>
                <ul>
                   <li><a href="#sRepl">7.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
@@ -315,7 +315,7 @@
          We&#8217;ll modify an existing rule to do this.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Navigate to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">'lFlexTools\Output</span> folder in your installation folder.
+         <li>Navigate to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">'FlexTools\Output</span> folder in your installation folder.
          </li>
          <li>Open the file <span style="font-style:italic; ">transfer_rules.t1x</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(6)</a>. This is the transfer rules file that works with the sample projects.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -349,10 +349,10 @@
                </table>
             </div>
          </li>
-         <li>Pick a category that you are going to process. In this example let&#8217;s use noun, abbreviated &#8220;n&#8221;.</li>
+         <li>Pick a category that you are going to process. For this example let&#8217;s use noun, abbreviated &#8220;n&#8221;.</li>
          <li>Change the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">rule</span> comment shown in blue to &#8220;Nouns&#8221;
          </li>
-         <li>Change the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> element to &#8220;c_n&#8221;. This means category noun. This changes the pattern to match nouns. Nouns get defined below.
+         <li>We need to change the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> element so it matches nouns. Change the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> element to &#8220;c_n&#8221;. We will use this to mean: category noun. Category noun gets defined in a later step.
          </li>
          <li>Remove the two <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> elements by clicking on the word &#8220;literal&#8221; and pressing the delete key. The rule should now look like <a href="#xRulesSampleNounRule">(8)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -420,13 +420,14 @@
          </li>
          <li>We are done editing the rule. You can save the file.</li>
       </ol>
-      <p>In brief what this rule does is set up an action to take place when a word is processed by the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> engine that has the &#8220;n&#8221; tag. (Every word coming from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> has the word&#8217;s grammatical category in the form of a tag.)
+      <p>In brief what this rule does is set up an action to take place when a word is processed by the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> engine that has the &#8220;n&#8221; tag. (Every word coming from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> has the word&#8217;s grammatical category in the form of a tag. It's always the first tag.)
       </p>
-      <p>The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the
-         word itself -- the &#8220;lem&#8221; part and the grammatical category -- anything that matches a tag specified by in the &#8220;a_gram_cat&#8221;
-         attribute. No affixes are explicitly outputted. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">target lang.</span> attribute of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> elements in <a href="#xRulesSampleNounRule">(8)</a> above is selected so the target word that corresponds to the input source word is outputted.
+      <p>The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">action</span> that we execute is to strip off any affixes from the word. This is accomplished by outputting the word itself -- the &#8220;lem&#8221;
+         part and the grammatical category -- anything that matches a tag specified by in the &#8220;a_gram_cat&#8221; attribute. No other tags
+         (affixes) are explicitly outputted. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">target lang.</span> attribute of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> elements in <a href="#xRulesSampleNounRule">(8)</a> above is selected so the target word that corresponds to the input source word is outputted.
       </p>
-      <p>The authoritative reference document for transfer rules is found in section 3.5 and appendix 3 of <a href="#rApertium">Forcada et al. (2010)</a>. 
+      <p>See sections&nbsp;&#8220;<a href="#sTransferTutorial">A Tutorial on Writing Transfer Rules</a>&#8221; and &#8220;<a href="#sTransferRuleHowTos">Transfer Rule How To&#8217;s</a>&#8221; for more information on transfer rules. The authoritative reference document for transfer rules is found in section 3.5 and
+         appendix 3 of <a href="#rApertium">Forcada et al. (2010)</a>. 
       </p>
       <p></p>
       <p></p>
@@ -623,6 +624,7 @@
          struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural
          statements. This tutorial should help you get used to writing transfer rules.
       </p>
+      <p></p>
       <h2 style=""><a name="sOverview"></a>6.1&nbsp;Overview
       </h2>
       <p>Here&#8217;s a brief overview:</p>
@@ -1781,7 +1783,7 @@
       </p>
       <h1 style=""><a name="sHowTo"></a>7&nbsp;FLExTrans How To&#8217;s
       </h1>
-      <h2 style=""><a name="sTransferRuleHowTos"></a>7.1&nbsp;Transfer Rules
+      <h2 style=""><a name="sTransferRuleHowTos"></a>7.1&nbsp;Transfer Rule How To&#8217;s
       </h2>
       <h3 style=""><a name="sCategory"></a>7.1.1&nbsp;How do I use the category element in the transfer rules?
       </h3>
@@ -1921,7 +1923,7 @@
       </p>
       <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
       </p>
-      <h2 style=""><a name="sOther"></a>7.2&nbsp;Other
+      <h2 style=""><a name="sOther"></a>7.2&nbsp;Other How To&#8217;s
       </h2>
       <p></p>
       <h3 style=""><a name="sRepl"></a>7.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle

@@ -479,7 +479,7 @@ type="tXMLmindXMLEditor"
 ><li
 >Navigate to the <object
 type="tFoldername"
->'lFlexTools\Output</object
+>'FlexTools\Output</object
 > folder in your installation folder.</li
 ><li
 >Open the file <object
@@ -526,17 +526,20 @@ src="Images/RulesSampleVerbRule.PNG"
 ></example
 ></li
 ><li
->Pick a category that you are going to process. In this example let’s use noun, abbreviated “n”.</li
+>Pick a category that you are going to process. For this example let’s use noun, abbreviated “n”.</li
 ><li
 >Change the <object
 type="tRuleElemInXXE"
 >rule</object
 > comment shown in blue to “Nouns”</li
 ><li
->Change the <object
+>We need to change the <object
+type="tRuleElemInXXE"
+>pattern</object
+> element so it matches nouns. Change the <object
 type="tRuleElemInXXE"
 >item</object
-> element to “c_n”. This means category noun. This changes the pattern to match nouns. Nouns get defined below.</li
+> element to “c_n”. We will use this to mean: category noun. Category noun gets defined in a later step.</li
 ><li
 >Remove the two <object
 type="tRuleElemInXXE"
@@ -632,9 +635,12 @@ type="tTool"
 > engine that has the “n” tag. (Every word coming from <object
 type="tFlexx"
 ></object
-> has the word’s grammatical category in the form of a tag.)</p
+> has the word’s grammatical category in the form of a tag. It's always the first tag.)</p
 ><p
->The action that gets executed is to basically strip off any affixes from the word. This is accomplished by outputting the word itself -- the “lem” part and the grammatical category -- anything that matches a tag specified by in the “a_gram_cat” attribute. No affixes are explicitly outputted. The <object
+>The <object
+type="tRuleElemInXXE"
+>action</object
+> that we execute is to strip off any affixes from the word. This is accomplished by outputting the word itself -- the “lem” part and the grammatical category -- anything that matches a tag specified by in the “a_gram_cat” attribute. No other tags (affixes) are explicitly outputted. The <object
 type="tRuleElemInXXE"
 >target lang.</object
 > attribute of the <object
@@ -646,7 +652,16 @@ num="xRulesSampleNounRule"
 ></exampleRef
 > above is selected so the target word that corresponds to the input source word is outputted.</p
 ><p
->The authoritative reference document for transfer rules is found in section 3.5 and appendix 3 of <citation
+>See <sectionRef
+sec="sTransferTutorial"
+showTitle="full"
+textBefore="plural"
+></sectionRef
+> and <sectionRef
+sec="sTransferRuleHowTos"
+showTitle="full"
+></sectionRef
+> for more information on transfer rules. The authoritative reference document for transfer rules is found in section 3.5 and appendix 3 of <citation
 ref="rApertium"
 ></citation
 >. <comment
@@ -3626,7 +3641,7 @@ id="sHowTo"
 ><section2
 id="sTransferRuleHowTos"
 ><secTitle
->Transfer Rules</secTitle
+>Transfer Rule How To’s</secTitle
 ><section3
 id="sCategory"
 ><secTitle
@@ -3899,7 +3914,7 @@ type="tFilename"
 ><section2
 id="sOther"
 ><secTitle
->Other</secTitle
+>Other How To’s</secTitle
 ><p
 ></p
 ><section3
