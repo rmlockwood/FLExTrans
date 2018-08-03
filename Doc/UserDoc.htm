@@ -77,9 +77,10 @@
                   <li><a href="#sAttribute">7.1.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
                   <li><a href="#sPatternMatch">7.1.3&nbsp;How does pattern matching work?</a></li>
                   <li><a href="#sDeleteWord">7.1.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
-                  <li><a href="#sDeleteAffix">7.1.5&nbsp;How do I delete an affix?</a></li>
-                  <li><a href="#sCondLogic">7.1.6&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</a></li>
-                  <li><a href="#sAgreement">7.1.7&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
+                  <li><a href="#sInsertWord">7.1.5&nbsp;How do I insert a word into the target output? </a></li>
+                  <li><a href="#sDeleteAffix">7.1.6&nbsp;How do I delete an affix?</a></li>
+                  <li><a href="#sCondLogic">7.1.7&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</a></li>
+                  <li><a href="#sAgreement">7.1.8&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
                </ul>
                <li><a href="#sOther">7.2&nbsp;Other How To&#8217;s</a></li>
                <ul>
@@ -1302,7 +1303,7 @@
                      </td>
                   </tr>
                </table>
-            </div>(Note: the statement in <a href="#xLet1">(38)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">7.1.6</a>.<br><br></li>
+            </div>(Note: the statement in <a href="#xLet1">(38)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">7.1.7</a>.<br><br></li>
          <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)
          </li>
       </ol>
@@ -1848,38 +1849,76 @@
       </p>
       <h3 style=""><a name="sPatternMatch"></a>7.1.3&nbsp;How does pattern matching work?
       </h3>
-      <p></p>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you
+         have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns
+         first and then progressively goes to shorter and shorter patterns. This means a five-word pattern would be used before a three-word
+         pattern (assuming a set of words would match both patterns.) When there are multiple patterns of the same length, the first
+         one listed gets precedence. This means in some cases the order of your rules will be important. 
+      </p>
+      <p>The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find
+         a match at some point in a text and then go back earlier in the text. 
+      </p>
+      <p>Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they
+         are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping
+         manner. For example, if you have a rule that matches <span style="font-style:italic; ">determiner-noun</span> and another one that matches <span style="font-style:italic; ">noun-adjective</span>, when a sentence of the form <span style="font-style:italic; ">determiner-noun-adjective</span> is processed. The engine uses the rule that is listed first and then discards the three words and continues on to other words.
+         The second rule does not get applied. Another way to describe it is to say that the engine processes words in distinct chunks.
+      </p>
+      <p>If the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default
+         translation of it according to what is in the bilingual dictionary.
+      </p>
       <h3 style=""><a name="sDeleteWord"></a>7.1.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)
       </h3>
       <p>The short answer is don't output it. In other words, don't declare that it should be outputted into the target data stream.</p>
       <p>When you match two or more words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> section of a transfer rule, you can choose to only list some of the words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section. This is exactly what we did in &#8220;<a href="#step1">Step 1</a>&#8221; of the tutorial. In <a href="#xOutput1">(35)</a> we only declared that the word in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">position</span> 1 should be outputted.
       </p>
-      <h3 style=""><a name="sDeleteAffix"></a>7.1.5&nbsp;How do I delete an affix?
+      <h3 style=""><a name="sInsertWord"></a>7.1.5&nbsp;How do I insert a word into the target output? 
+      </h3>
+      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category.
+         If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn't one in FLEx,
+         use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(68)</a> shows how it might look. 
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xInsertWord">(68)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style="Height:75%" src="Images/InsertWord.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(49)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
+      </p>
+      <h3 style=""><a name="sDeleteAffix"></a>7.1.6&nbsp;How do I delete an affix?
       </h3>
       <p>There are two methods for deleting an affix. You can either set the value for that affix (attribute) to blank or you can not
          declare that the affix (attribute) gets outputted.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute's value to blank. See <a href="#xLetBlank">(68)</a>.
+         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute's value to blank. See <a href="#xLetBlank">(69)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLetBlank">(68)</a></td>
+                     <td valign="top"><a name="xLetBlank">(69)</a></td>
                      <td>
                         <table>
                            <tr>
-                              <td><img style="Height:75%" src="Images/LetBlank.PNG"></td>
+                              <td><img style="Height:63%" src="Images/LetBlank.PNG"></td>
                            </tr>
                         </table>
                      </td>
                   </tr>
                </table>
-            </div>Here we are overriding whatever is in the enclitic attribute (a_encl) with a blank string. Whenever the enclitic affix gets
-            outputted, it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(69)</a> the whole word is outputted with all its attributes.
+            </div>Here we are overriding whatever is in the tense attribute (a_tense) with a blank string. Whenever the tense affix gets outputted,
+            it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(70)</a> the whole word is outputted with all its attributes.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputWhole">(69)</a></td>
+                     <td valign="top"><a name="xOutputWhole">(70)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1896,7 +1935,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutMultAffixes">(70)</a></td>
+                     <td valign="top"><a name="xOutMultAffixes">(71)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1906,15 +1945,15 @@
                      </td>
                   </tr>
                </table>
-            </div>In <a href="#xOutMultAffixes">(70)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
-            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(69)</a> in Method 1, you just have to output the whole word.
+            </div>In <a href="#xOutMultAffixes">(71)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
+            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(70)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
-      <h3 style=""><a name="sCondLogic"></a>7.1.6&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)
+      <h3 style=""><a name="sCondLogic"></a>7.1.7&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)
       </h3>
       <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation.
       </p>
-      <h3 style=""><a name="sAgreement"></a>7.1.7&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
+      <h3 style=""><a name="sAgreement"></a>7.1.8&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
       </h3>
       <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
          transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
@@ -1933,12 +1972,12 @@
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(71)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         lexicon is shown in <a href="#xBilingEntries">(72)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries">(71)</a></td>
+               <td valign="top"><a name="xBilingEntries">(72)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1950,12 +1989,12 @@
          </table>
       </div>
       <p>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file.
-         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(72)</a>.
+         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(73)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xReplacement">(72)</a></td>
+               <td valign="top"><a name="xReplacement">(73)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1970,12 +2009,12 @@
          for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
          dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>.
       </p>
-      <p>Let's say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(71)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(73)</a>.
+      <p>Let's say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(72)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(74)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xRepChanged">(73)</a></td>
+               <td valign="top"><a name="xRepChanged">(74)</a></td>
                <td>
                   <table>
                      <tr>

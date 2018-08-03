@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->28 February 2018</date
+>3 August 2018</date
 ><version
->1.5.1 (Sense Linker 2.2.1, Live Rule Tester 2.2.1, Source/Target Viewer 1.0)</version
+>For FLExTrans 1.6 (Sense Linker 2.2.1, Live Rule Tester 3.1)</version
 ><contents
 showLevel="4"
 ></contents
@@ -3783,7 +3783,28 @@ id="sPatternMatch"
 ><secTitle
 >How does pattern matching work?</secTitle
 ><p
-></p
+>The <object
+type="tTool"
+>Apertium</object
+> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns first and then progressively goes to shorter and shorter patterns. This means a five-word pattern would be used before a three-word pattern (assuming a set of words would match both patterns.) When there are multiple patterns of the same length, the first one listed gets precedence. This means in some cases the order of your rules will be important. </p
+><p
+>The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find a match at some point in a text and then go back earlier in the text. </p
+><p
+>Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping manner. For example, if you have a rule that matches <object
+type="tItalic"
+>determiner-noun</object
+> and another one that matches <object
+type="tItalic"
+>noun-adjective</object
+>, when a sentence of the form <object
+type="tItalic"
+>determiner-noun-adjective</object
+> is processed. The engine uses the rule that is listed first and then discards the three words and continues on to other words. The second rule does not get applied. Another way to describe it is to say that the engine processes words in distinct chunks.</p
+><p
+>If the <object
+type="tTool"
+>Apertium</object
+> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default translation of it according to what is in the bilingual dictionary.</p
 ></section3
 ><section3
 id="sDeleteWord"
@@ -3813,6 +3834,56 @@ type="tRuleElemInXXE"
 > 1 should be outputted.</p
 ></section3
 ><section3
+id="sInsertWord"
+><secTitle
+>How do I insert a word into the target output? </secTitle
+><p
+>Naturally to add something to the target output, we need to add something to the <object
+type="tRuleElemInXXE"
+>output</object
+> part of our transfer rule. And what goes in <object
+type="tRuleElemInXXE"
+>output</object
+> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <object
+type="tRuleElemInXXE"
+>output</object
+> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category. If we are manually outputting a word-sense, we need to use a <object
+type="tRuleElemInXXE"
+>literal string</object
+> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn't one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
+letter="xInsertWord"
+num="xInsertWord"
+></exampleRef
+> shows how it might look. </p
+><example
+num="xInsertWord"
+><chart
+><img
+cssSpecial="Height:75%"
+src="Images/InsertWord.png"
+></img
+></chart
+></example
+><p
+>Of course you can output affixes or clitics as well. These would be additional <object
+type="tRuleElemInXXE"
+>literal string</object
+> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you have a valid word-sense and its corresponding grammatical category, FLExTrans will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.</p
+><p
+>If you have other lexical units that you will be outputting, remember to put a <object
+type="tRuleElemInXXE"
+>blank space</object
+> element so that you get a space between your words. This is shown in <exampleRef
+letter="xLexUnitPron"
+num="xLexUnitPron"
+></exampleRef
+>. <sectionRef
+sec="step4"
+showTitle="full"
+></sectionRef
+> of the transfer rules tutorial shows an example of inserting a word into the target output.</p
+></section3
+><section3
 id="sDeleteAffix"
 ><secTitle
 >How do I delete an affix?</secTitle
@@ -3831,12 +3902,12 @@ num="xLetBlank"
 num="xLetBlank"
 ><chart
 ><img
-cssSpecial="Height:75%"
+cssSpecial="Height:63%"
 src="Images/LetBlank.PNG"
 ></img
 ></chart
 ></example
->Here we are overriding whatever is in the enclitic attribute (a_encl) with a blank string. Whenever the enclitic affix gets outputted, it will be outputted as nothing. As an example, in <exampleRef
+>Here we are overriding whatever is in the tense attribute (a_tense) with a blank string. Whenever the tense affix gets outputted, it will be outputted as nothing. As an example, in <exampleRef
 letter="xOutputWhole"
 num="xOutputWhole"
 ></exampleRef
