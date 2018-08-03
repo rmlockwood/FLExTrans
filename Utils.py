@@ -1136,6 +1136,10 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
+# Convert . (dot) to _ (underscore)
+def underscores(inStr):
+    return re.sub(r'\.', r'_', inStr)
+
 def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm):
     
     prev_pv_list = []
@@ -1282,7 +1286,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                             # See if we have an enclitic or proclitic
                             if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic'):
                                 # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
-                                affixStr += '<' + re.sub(r'\.', r'_',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+                                affixStr += '<' + underscores(ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
                                 
                                 # TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
                                 # Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
@@ -1395,8 +1399,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                         
                                         # Get inflection class abbreviation  
                                         if senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                                            outStr += '<'+ITsString(senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                                  Abbreviation.BestAnalysisAlternative).Text+'>'         
+                                            outStr += '<'+underscores(ITsString(senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                  Abbreviation.BestAnalysisAlternative).Text)+'>'         
 
                                         # Get any features the stem or root might have
                                         if senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA:
@@ -1406,12 +1410,12 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                             
                                             # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                             for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                outStr += '<' + abb + '>'
+                                                outStr += '<' + underscores(abb) + '>'
                                         
                                         # Get any features that come from irregularly inflected forms        
                                         # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                         for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
-                                            outStr += '<' + abb + '>'
+                                            outStr += '<' + underscores(abb) + '>'
                                             
                                         # Add the saved tags from a previous complex form component
                                         outStr += savedTags
@@ -1444,8 +1448,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                         
                                     # Get inflection class abbreviation  
                                     if bundle.MsaRA.InflectionClassRA:
-                                        outStr += '<'+ITsString(bundle.MsaRA.InflectionClassRA.\
-                                                              Abbreviation.BestAnalysisAlternative).Text+'>'         
+                                        outStr += '<'+underscores(ITsString(bundle.MsaRA.InflectionClassRA.\
+                                                              Abbreviation.BestAnalysisAlternative).Text)+'>'         
 
                                     # Get any features the stem or root might have
                                     if bundle.MsaRA.MsFeaturesOA:
@@ -1455,19 +1459,19 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                         
                                         # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                         for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                            outStr += '<' + abb + '>'
+                                            outStr += '<' + underscores(abb) + '>'
                                     
                                     # Get any features that come from irregularly inflected forms        
                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                     for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
-                                        outStr += '<' + abb + '>'
+                                        outStr += '<' + underscores(abb) + '>'
                         else:
                             report.Warning("Morph object is null.")    
                     # We have an affix
                     else:
                         if bundle.SenseRA:
                             # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
-                            affixStr += '<' + re.sub(r'\.', r'_',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+                            affixStr += '<' + underscores(ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
                             
                             # TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
                             # Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
