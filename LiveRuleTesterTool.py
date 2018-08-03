@@ -124,11 +124,11 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from System import Guid
 from System import String
  
+#import TestbedLogViewer
 import ReadConfig
 import CatalogTargetPrefixes
 import ConvertTextToSTAMPformat
 import ExtractTargetLexicon
-#import TestbedLogViewer 
 import os
 import re
 import sys
@@ -357,6 +357,10 @@ class Main(QtGui.QMainWindow):
 
         self.ret_val = True
 
+        # Start out with all rules checked.        
+        self.SelectAllClicked()
+
+
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
         lexParser = Utils.LexicalUnitParser(lexUnitStr)
@@ -380,7 +384,21 @@ class Main(QtGui.QMainWindow):
         return myObj
     
     def ViewTestbedLogButtonClicked(self):
-        pass
+        resultsFileObj = Utils.FlexTransTestbedResultsFile()
+    
+        # Get previous results
+        resultsXMLObj = resultsFileObj.getResultsXMLObj()
+    
+        #app = QtGui.QApplication(sys.argv)
+    
+        window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
+        
+        window.show()
+        window.myResize()
+        firstIndex = window.getModel().rootItem.children[0].index
+        window.ui.logTreeView.expand(firstIndex)
+        #exec_val = app.exec_()
+
         
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
@@ -674,6 +692,9 @@ class Main(QtGui.QMainWindow):
     def RefreshClicked(self):
         self.loadTransferRules()
         self.ui.SynthTextEdit.setPlainText('')
+        self.__ClearStuff()
+        self.SelectAllClicked()
+        
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
