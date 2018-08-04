@@ -20,15 +20,16 @@
 
 action:before
 {
-    display:block;
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " action: ";
 }
 action
 {
     display:block;
-    padding-left:.125in;
-    property-group:isCollapsible(no, 0);
+    padding-left:.175in;
+    collapsible:yes;
+    collapsed:no;
+    not-collapsible-head:1;
 }
 
 and:before
