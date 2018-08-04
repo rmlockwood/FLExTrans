@@ -108,7 +108,7 @@ copy SetUpTransferRuleGramCat.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTr
 copy "FlexTrans Set Up Transfer Rules.ini" Install\FLExTools1.2.4\FLExTools\Collections
 
 rem Testbed pieces
-copy TestbedValidator.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
+copy TestbedValidator.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy StartTestbed.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
 copy EndTestbed.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
 copy OverWriteTestDlg.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
