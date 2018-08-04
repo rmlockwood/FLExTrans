@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.1 - 8/4/18 - Ron Lockwood
+#    Give a warning for affixes or clitics that are duplicate. Also sort the
+#    affixes before outputing to the file.
+#
 #   Version 1.6 - 2/7/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into a another
 #    that can be called by the Live Rule Tester.
@@ -59,7 +63,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.6",
+        'moduleVersion'    : "1.6.1",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         'moduleDescription'   :
@@ -128,6 +132,8 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
+    glossAndTypeList = []
+    
     count = 0
     if report is not None:
         report.ProgressStart(TargetDB.LexiconNumberOfEntries())
@@ -175,13 +181,23 @@ def catalog_affixes(DB, configMap, filePath, report=None):
                     count += 1
                     
                     # Convert dots to underscores in the affix gloss
-                    myGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
-                    myGloss = re.sub(r'\.', r'_', myGloss)
+                    myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
                     
-                    # Write out the gloss and morph type
-                    f_out.write(myGloss +'|'+ morphType)
-                    f_out.write('\n')
+                    # Save the gloss and morph type
+                    glossAndTypeList.append((morphType, myGloss))
+                    
+    seen = set()
     
+    # Sort by type and then by gloss
+    for tupType, tupGloss in sorted(glossAndTypeList):
+        f_out.write(tupGloss +'|'+ tupType + '\n')
+        
+        # Check for duplicates and give a warning.
+        if tupGloss not in seen:
+            seen.add(tupGloss)
+        else:
+            error_list.append(('Found duplicate affix/clitic: ' + tupGloss + ' Use of this affix/clitic could produce unexpected results.', 1))
+
     error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
     return error_list
 
