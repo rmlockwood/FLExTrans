@@ -19,7 +19,7 @@ type="tFlextrans"
 ><version
 >For FLExTrans 1.6 (Sense Linker 2.2.1, Live Rule Tester 3.1)</version
 ><contents
-showLevel="4"
+showLevel="3"
 ></contents
 ><abstract
 ><p
@@ -1032,7 +1032,7 @@ id="nReproducing"
 type="tTool"
 >Apertium</object
 > article <link
-href="wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules"
+href="http://wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules"
 >A long introduction to transfer rules</link
 >. I am mainly modifying it to show the <object
 type="tXMLmindXMLEditor"
@@ -3786,9 +3786,9 @@ id="sPatternMatch"
 >The <object
 type="tTool"
 >Apertium</object
-> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns first and then progressively goes to shorter and shorter patterns. This means a five-word pattern would be used before a three-word pattern (assuming a set of words would match both patterns.) When there are multiple patterns of the same length, the first one listed gets precedence. This means in some cases the order of your rules will be important. </p
+> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns first and then progressively goes to shorter and shorter patterns. This means a five-word pattern would be used before a three-word pattern (assuming a set of words would match both patterns.) When there are multiple patterns of the same length, the first one listed gets precedence. This means in some cases the order of your rules will be important.</p
 ><p
->The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find a match at some point in a text and then go back earlier in the text. </p
+>The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find a match at some point in a text and then go back earlier in the text.</p
 ><p
 >Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping manner. For example, if you have a rule that matches <object
 type="tItalic"
@@ -3836,7 +3836,7 @@ type="tRuleElemInXXE"
 ><section3
 id="sInsertWord"
 ><secTitle
->How do I insert a word into the target output? </secTitle
+>How do I insert a word into the target output?</secTitle
 ><p
 >Naturally to add something to the target output, we need to add something to the <object
 type="tRuleElemInXXE"
@@ -3854,7 +3854,7 @@ type="tRuleElemInXXE"
 letter="xInsertWord"
 num="xInsertWord"
 ></exampleRef
-> shows how it might look. </p
+> shows how it might look.</p
 ><example
 num="xInsertWord"
 ><chart
@@ -3948,7 +3948,10 @@ num="xOutputWhole"
 ><section3
 id="sCondLogic"
 ><secTitle
->How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</secTitle
+>How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)<img
+src="Images/VideoIcon.PNG"
+></img
+></secTitle
 ><p
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
@@ -3956,9 +3959,25 @@ href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
 > for an explanation.</p
 ></section3
 ><section3
+id="sMacro"
+><secTitle
+>How do I use a macro? (How can I repeat rule statements in multiple places?)<img
+src="Images/VideoIcon.PNG"
+></img
+></secTitle
+><p
+>In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this <link
+href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt"
+>video</link
+> for an explanation.</p
+></section3
+><section3
 id="sAgreement"
 ><secTitle
->How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</secTitle
+>How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)<img
+src="Images/VideoIcon.PNG"
+></img
+></secTitle
 ><p
 >One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
 ><p
@@ -3988,6 +4007,31 @@ id="sOther"
 >Other How To’s</secTitle
 ><p
 ></p
+><section3
+id="sViewBiling"
+><secTitle
+>How do I view the bilingual lexicon?</secTitle
+><p
+>You can view the bilingual lexicon by double-clicking on the file <object
+type="tFilename"
+>bilingual.dix</object
+> in the <object
+type="tFoldername"
+>FlexTools\Output</object
+> folder. An example portion of a bilingual lexicon is shown in <exampleRef
+letter="xBilingEntries0"
+num="xBilingEntries0"
+></exampleRef
+>.</p
+><example
+num="xBilingEntries0"
+><chart
+><img
+src="Images/BilingalEntries2.PNG"
+></img
+></chart
+></example
+></section3
 ><section3
 id="sRepl"
 ><secTitle
@@ -4116,7 +4160,10 @@ type="tCourier"
 ><section3
 id="sInflVariantTgt"
 ><secTitle
->How do I handle irregularly inflected variants in the target language?</secTitle
+>How do I handle inflectional variants in the target language?<img
+src="Images/VideoIcon.PNG"
+></img
+></secTitle
 ><p
 >To learn how FT can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
@@ -4136,7 +4183,10 @@ type="tFoldername"
 ><section3
 id="sInflVariantSrc"
 ><secTitle
->How do I handle inflectional variants in the source language?</secTitle
+>How do I handle inflectional variants in the source language?<img
+src="Images/VideoIcon.PNG"
+></img
+></secTitle
 ><p
 >To learn how FT can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"

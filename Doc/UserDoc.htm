@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i>Ronald M. Lockwood</i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>28 February 2018</small></center>
-      <center><small>Version: 1.5.1 (Sense Linker 2.2.1, Live Rule Tester 2.2.1, Source/Target Viewer 1.0)</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>3 August 2018</small></center>
+      <center><small>Version: For FLExTrans 1.6 (Sense Linker 2.2.1, Live Rule Tester 3.1)</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -40,9 +40,6 @@
                   <li><a href="#sFormalities">6.1.1&nbsp;Some Formalities</a></li>
                   <li><a href="#sApproach">6.1.2&nbsp;Approaching the Process of Writing Transfer Rules</a></li>
                   <li><a href="#sLexicalStruct">6.1.3&nbsp;Lexical Transfer and Structural Transfer</a></li>
-                  <ul>
-                     <li><a href="#sLexTransProc">6.1.3.1&nbsp;How Lexical Transfer is Processed</a></li>
-                  </ul>
                   <li><a href="#sPrelim">6.1.4&nbsp;Some Preliminaries</a></li>
                   <li><a href="#sFileOverview">6.1.5&nbsp;Overview of a Transfer File</a></li>
                   <li><a href="#sRulesApplied">6.1.6&nbsp;How Rules are Applied</a></li>
@@ -52,21 +49,7 @@
                   <li><a href="#sTutSetup">6.2.1&nbsp;Getting Set Up</a></li>
                   <li><a href="#sLexicalTransfer">6.2.2&nbsp;Lexical Transfer</a></li>
                   <li><a href="#sThinking">6.2.3&nbsp;Thinking it Through</a></li>
-                  <ul>
-                     <li><a href="#sProc">6.2.3.1&nbsp;Procedures</a></li>
-                     <li><a href="#sDecl">6.2.3.2&nbsp;Declarations</a></li>
-                     <li><a href="#sWorkOrder">6.2.3.3&nbsp;Work Order</a></li>
-                     <li><a href="#sCheatsheet">6.2.3.4&nbsp;Cheat Sheet</a></li>
-                  </ul>
                   <li><a href="#sImplementation">6.2.4&nbsp;Implementation</a></li>
-                  <ul>
-                     <li><a href="#step1">6.2.4.1&nbsp;Step 1</a></li>
-                     <li><a href="#step2">6.2.4.2&nbsp;Step 2</a></li>
-                     <li><a href="#step3">6.2.4.3&nbsp;Step 3</a></li>
-                     <li><a href="#step4">6.2.4.4&nbsp;Step 4</a></li>
-                     <li><a href="#step5">6.2.4.5&nbsp;Step 5</a></li>
-                     <li><a href="#step6">6.2.4.6&nbsp;Step 6</a></li>
-                  </ul>
                </ul>
             </ul>
             <li><a href="#sHowTo">7&nbsp;FLExTrans How To&#8217;s</a></li>
@@ -77,17 +60,19 @@
                   <li><a href="#sAttribute">7.1.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
                   <li><a href="#sPatternMatch">7.1.3&nbsp;How does pattern matching work?</a></li>
                   <li><a href="#sDeleteWord">7.1.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
-                  <li><a href="#sInsertWord">7.1.5&nbsp;How do I insert a word into the target output? </a></li>
+                  <li><a href="#sInsertWord">7.1.5&nbsp;How do I insert a word into the target output?</a></li>
                   <li><a href="#sDeleteAffix">7.1.6&nbsp;How do I delete an affix?</a></li>
                   <li><a href="#sCondLogic">7.1.7&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)</a></li>
-                  <li><a href="#sAgreement">7.1.8&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
+                  <li><a href="#sMacro">7.1.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?)</a></li>
+                  <li><a href="#sAgreement">7.1.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)</a></li>
                </ul>
                <li><a href="#sOther">7.2&nbsp;Other How To&#8217;s</a></li>
                <ul>
-                  <li><a href="#sRepl">7.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+                  <li><a href="#sViewBiling">7.2.1&nbsp;How do I view the bilingual lexicon?</a></li>
+                  <li><a href="#sRepl">7.2.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
-                  <li><a href="#sInflVariantTgt">7.2.2&nbsp;How do I handle irregularly inflected variants in the target language?</a></li>
-                  <li><a href="#sInflVariantSrc">7.2.3&nbsp;How do I handle inflectional variants in the source language?</a></li>
+                  <li><a href="#sInflVariantTgt">7.2.3&nbsp;How do I handle inflectional variants in the target language?</a></li>
+                  <li><a href="#sInflVariantSrc">7.2.4&nbsp;How do I handle inflectional variants in the source language?</a></li>
                </ul>
             </ul>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
@@ -1853,10 +1838,10 @@
          have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns
          first and then progressively goes to shorter and shorter patterns. This means a five-word pattern would be used before a three-word
          pattern (assuming a set of words would match both patterns.) When there are multiple patterns of the same length, the first
-         one listed gets precedence. This means in some cases the order of your rules will be important. 
+         one listed gets precedence. This means in some cases the order of your rules will be important.
       </p>
       <p>The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find
-         a match at some point in a text and then go back earlier in the text. 
+         a match at some point in a text and then go back earlier in the text.
       </p>
       <p>Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they
          are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping
@@ -1871,11 +1856,11 @@
       <p>The short answer is don't output it. In other words, don't declare that it should be outputted into the target data stream.</p>
       <p>When you match two or more words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> section of a transfer rule, you can choose to only list some of the words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section. This is exactly what we did in &#8220;<a href="#step1">Step 1</a>&#8221; of the tutorial. In <a href="#xOutput1">(35)</a> we only declared that the word in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">position</span> 1 should be outputted.
       </p>
-      <h3 style=""><a name="sInsertWord"></a>7.1.5&nbsp;How do I insert a word into the target output? 
+      <h3 style=""><a name="sInsertWord"></a>7.1.5&nbsp;How do I insert a word into the target output?
       </h3>
       <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category.
          If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn't one in FLEx,
-         use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(68)</a> shows how it might look. 
+         use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(68)</a> shows how it might look.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1891,6 +1876,10 @@
             </tr>
          </table>
       </div>
+      <p>Of course you can output affixes or clitics as well. These would be additional <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you
+         have a valid word-sense and its corresponding grammatical category, FLExTrans will look up this word-sense in the target FLEx
+         lexicon and use it in the final synthesis process.
+      </p>
       <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(49)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
       </p>
       <h3 style=""><a name="sDeleteAffix"></a>7.1.6&nbsp;How do I delete an affix?
@@ -1949,12 +1938,14 @@
             method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(70)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
-      <h3 style=""><a name="sCondLogic"></a>7.1.7&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)
-      </h3>
+      <h3 style=""><a name="sCondLogic"></a>7.1.7&nbsp;How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation.
       </p>
-      <h3 style=""><a name="sAgreement"></a>7.1.8&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)
-      </h3>
+      <h3 style=""><a name="sMacro"></a>7.1.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?)<img src="Images/VideoIcon.PNG"></h3>
+      <p>In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this
+         <a href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt">video</a> for an explanation.
+      </p>
+      <h3 style=""><a name="sAgreement"></a>7.1.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)<img src="Images/VideoIcon.PNG"></h3>
       <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
          transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
       </p>
@@ -1965,19 +1956,37 @@
       <h2 style=""><a name="sOther"></a>7.2&nbsp;Other How To&#8217;s
       </h2>
       <p></p>
-      <h3 style=""><a name="sRepl"></a>7.2.1&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+      <h3 style=""><a name="sViewBiling"></a>7.2.1&nbsp;How do I view the bilingual lexicon?
+      </h3>
+      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(72)</a>.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xBilingEntries0">(72)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img src="Images/BilingalEntries2.PNG"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h3 style=""><a name="sRepl"></a>7.2.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
       <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon.
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(72)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         lexicon is shown in <a href="#xBilingEntries">(73)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries">(72)</a></td>
+               <td valign="top"><a name="xBilingEntries">(73)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1989,12 +1998,12 @@
          </table>
       </div>
       <p>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file.
-         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(73)</a>.
+         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(74)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xReplacement">(73)</a></td>
+               <td valign="top"><a name="xReplacement">(74)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2009,12 +2018,12 @@
          for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
          dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>.
       </p>
-      <p>Let's say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(72)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(74)</a>.
+      <p>Let's say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(73)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(75)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xRepChanged">(74)</a></td>
+               <td valign="top"><a name="xRepChanged">(75)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2028,8 +2037,7 @@
       <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
       <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=Output\replace.dix</span></p>
-      <h3 style=""><a name="sInflVariantTgt"></a>7.2.2&nbsp;How do I handle irregularly inflected variants in the target language?
-      </h3>
+      <h3 style=""><a name="sInflVariantTgt"></a>7.2.3&nbsp;How do I handle inflectional variants in the target language?<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2037,8 +2045,7 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
       </p>
-      <h3 style=""><a name="sInflVariantSrc"></a>7.2.3&nbsp;How do I handle inflectional variants in the source language?
-      </h3>
+      <h3 style=""><a name="sInflVariantSrc"></a>7.2.4&nbsp;How do I handle inflectional variants in the source language?<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2083,7 +2090,7 @@
          <tr>
             <td valign="top"><a name="nReproducing">[2]</a></td>
             <td>
-               <p>For this tutorial I am basically reproducing the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> article <a href="wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules">A long introduction to transfer rules</a>. I am mainly modifying it to show the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> method of editing the transfer rules, but also the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> process is assumed instead of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> process.
+               <p>For this tutorial I am basically reproducing the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> article <a href="http://wiki.apertium.org/wiki/A_long_introduction_to_transfer_rules">A long introduction to transfer rules</a>. I am mainly modifying it to show the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> method of editing the transfer rules, but also the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> process is assumed instead of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> process.
                </p>
             </td>
          </tr>
