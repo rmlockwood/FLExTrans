@@ -1136,7 +1136,7 @@ type="tXMLmindXMLEditor"
 ><p
 >A rule-of-thumb is, if the rule applies to all words in a category, it probably wants to be treated in the structural transfer; if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.</p
 ><p
->Lexical transfer looks like <exampleRef
+>Lexical transfer for a three word text looks like <exampleRef
 letter="xLexXfer"
 num="xLexXfer"
 ></exampleRef
@@ -1243,7 +1243,7 @@ type="tluAffix"
 ></single
 ></example
 ><p
->When you are in the structural transfer stage, you have access to both the source and target sides of the translation.</p
+>When you are in the structural transfer stage, you have access to both the source and target sides.</p
 ><section4
 id="sLexTransProc"
 ><secTitle
@@ -1481,7 +1481,11 @@ id="sRulesApplied"
 ><p
 >Rules are applied when a pattern is matched in the source language input data stream. Which patterns are matched in which order goes like this: the longest patterns are attempted first and then successive shorter patterns are attempted. When there is more than one pattern of the same length, the pattern that comes first in the file is attempted first followed by the rest in order.</p
 ><p
->Patterns do not overlap. Once a pattern is matched, the matched words are processed and not considered again for any other patterns. In other words, the source language words are processed sequentially in chunks.</p
+>Patterns do not overlap. Once a pattern is matched, the matched words are processed and not considered again for any other patterns. In other words, the source language words are processed sequentially in chunks. Cf. <sectionRef
+sec="sPatternMatch"
+showTitle="full"
+></sectionRef
+>.</p
 ></section3
 ></section2
 ><section2
@@ -1666,7 +1670,7 @@ type="tButton"
 > button, select <object
 type="tBoldItalic"
 >Croatian-FLExTrans-Sample</object
-> and close the Choose Database box.</li
+> and type the Enter key.</li
 ><li
 >Click the <object
 type="tButton"
@@ -2331,8 +2335,13 @@ type="tButton"
 ><li
 >Double-click on the <object
 type="tCollection"
->FlexTrans Live Rule Tester</object
+>FlexTrans Tools</object
 > collection.</li
+><li
+>Select the <object
+type="tModule"
+>FLExTrans.Live Rule Tester Tool</object
+> module.</li
 ><li
 >Click on the <object
 type="tButton"
@@ -2341,11 +2350,9 @@ type="tButton"
 ><li
 >Check the first two Croatian words.</li
 ><li
->Check the rule “comment goes here”.</li
-><li
 >Click on the <object
 type="tButton"
->Test</object
+>Transfer</object
 > button.</li
 ></ol
 ><p
@@ -2398,7 +2405,7 @@ num="xCheatsheet"
 ></exampleRef
 >.</p
 ><p
->In the green box we have the output data stream after the Past Construction rule is applied.</p
+>In the green box we have the output data stream after the sample rule is applied.</p
 ><example
 num="xStep0Target"
 ><single
@@ -2515,7 +2522,7 @@ lang="lVernacular"
 type="tluAffix"
 >ptcp_f_sg</object
 ></langData
-> followed by any sequence of tags.</p
+>.</p
 ><p
 >Note: we are using the convention of starting all categories with “<object
 type="tBold"
@@ -2557,7 +2564,7 @@ src="Images/RulesTutCatList.PNG"
 ></chart
 ></example
 ><p
->By using this pattern we will detect a participle followed by the auxiliary. Once detected, the rule will run. </p
+>By using this pattern we will detect a participle followed by the auxiliary. Once detected, the rule will run.</p
 ><p
 >Notice that the example rule as written outputs only the first among two lexical units as seen in <exampleRef
 letter="xOutput1"
@@ -2595,14 +2602,12 @@ type="tLiveRuleTester"
 ><li
 >Click the <object
 type="tButton"
->Refresh</object
+>Refresh Rules</object
 > button to reload the modified rule file.</li
-><li
->Check the rule “Past Construction”.</li
 ><li
 >Click on the <object
 type="tButton"
->Test</object
+>Transfer</object
 > button. (This time you will notice some text in the yellow information box. This shows which rules matched which input words.)</li
 ></ol
 ></li
@@ -2832,13 +2837,30 @@ type="tluAffix"
 ></br
 ><br
 ></br
->We have already defined the feature “tense”: the only remaining tag we need to output is the grammatical category, i.e. <langData
+>We have already defined the attribute “tense”: the only remaining tag we need to output is the grammatical category, i.e. <langData
 lang="lVernacular"
 ><object
 type="tluGrammCat"
 >v</object
 ></langData
-> meaning verb. So, make a new attribute element for grammatical category.<example
+> meaning verb. So, make a new attribute element for grammatical category.<endnote
+id="nUseSetUpTxfrRulGramCatTool"
+><p
+>It can be arduous to type in all the grammatical categories that you need for your transfer rules. That's why there is the <object
+type="tFlextrans"
+></object
+> tool called <object
+type="tTool"
+>Set Up Transfer Rule Grammatical Categories</object
+>. This tool will insert all possible source and target categories for the <object
+type="tBold"
+>a_gram_cat</object
+> attribute. See section <sectionRef
+sec="sSetupGramCat"
+></sectionRef
+> for more details.</p
+></endnote
+><example
 num="xAttrGramCat"
 ><chart
 ><img
@@ -2849,11 +2871,11 @@ src="Images/RulesTutAttrGramCat.PNG"
 ></example
 ></li
 ><li
->Declare which features we want to output. <br
+>Declare which attributes we want to output. <br
 ></br
 ><br
 ></br
->So, now that we’ve got our two features defined, let’s change our output statement: <br
+>So, now that we’ve got our two attributes defined, let’s change our output statement: <br
 ></br
 ><br
 ></br
@@ -2875,7 +2897,7 @@ src="Images/RulesTutLexUnit3Clips.PNG"
 ></img
 ></chart
 ></example
->The last two features we know, as we’ve just added them. The “lem” feature is a predefined feature which corresponds to lemma, i.e. the part before the tags. In this example it would be <langData
+>The last two attributes we know, as we’ve just added them. The “lem” attribute is a predefined feature which corresponds to lemma, i.e. the part before the tags. In this example it would be <langData
 lang="lVernacular"
 >leave<object
 type="tSubscript"
@@ -2920,45 +2942,34 @@ type="tluAffix"
 ></langData
 > tag by not specifying that we wanted it. Tag deletion is thus not stated as tag deletion (tag → 0), but by not declaring it.</p
 ><p
->Now we should have a lexical form for “leave” which we can synthesize. Let’s give it a go:</p
-><ol
-><li
->Close the <object
-type="tLiveRuleTester"
-></object
->.</li
-><li
->Go back to the <object
-type="tCollection"
->FlexTrans All Steps</object
-> collection in <object
-type="tFlexxTools"
-></object
->.</li
-><li
->Click the <object
+>Now we should have a lexical form for “leave” which we can synthesize. Let’s give it a go. Click the <object
 type="tButton"
->Run All (Modify)</object
-> button.</li
-><li
->Open the <object
-type="tBold"
->English-FLExTrans-Sample</object
-> <object
-type="tFlexx"
-></object
-> project.</li
-><li
->In the Texts and Words view, refresh the screen and click on the new text.</li
-></ol
+>Synthesize</object
+> button.</p
 ><p
->You should see:</p
+>In the red box you should see:</p
+><example
+num="xOutputStep3a"
+><single
+><langData
+lang="lVernacular"
+>Left</langData
+></single
+></example
+><p
+>And if you click on the rest of the check boxes to select all of the Croatian words and click the <object
+type="tButton"
+>Transfer</object
+> and <object
+type="tButton"
+>Synthesize</object
+> buttons again you should see:</p
 ><example
 num="xOutputStep3"
 ><single
-><gloss
-lang="lGloss"
->Left quietly and without wordgen sg</gloss
+><langData
+lang="lVernacular"
+>Left quietly and without wordgen sg</langData
 ></single
 ></example
 ><p
@@ -2984,7 +2995,10 @@ type="tluAffix"
 > on the variant form of the verb <object
 type="tItalic"
 >leave</object
->.</p
+>. See section <sectionRef
+sec="sInflVariantTgt"
+></sectionRef
+> for more details.</p
 ><p
 >We’re getting there, now let’s move on to the next step.</p
 ></section4
@@ -2993,7 +3007,7 @@ id="step4"
 ><secTitle
 >Step 4</secTitle
 ><p
->To recap, our input is:</p
+>To recap, the input we've been working with is:</p
 ><example
 num="xStep4Input"
 ><single
@@ -3193,7 +3207,7 @@ lang="lVernacular"
 >&gt;.</langData
 ></p
 ></endnote
->. Multiple tags are separated by a period, so in this case two tags we are outputting two tags: <langData
+>. Multiple tags are separated by a period, so in this case we are outputting two tags: <langData
 lang="lVernacular"
 ><object
 type="tluGrammCat"
@@ -3218,7 +3232,7 @@ type="tRuleElemInXXE"
 ></br
 ><br
 ></br
->The next step is to declare the features from the verb “be” to output. To do this we need to again define some features and their possible values. Add this:<example
+>The next step is to declare the features from the verb “be” to output. To do this we need to again define some attributes and their possible values. Add this:<example
 num="xAttrNumPers"
 ><chart
 ><img
@@ -3251,7 +3265,7 @@ lang="lVernacular"
 > or <langData
 lang="lVernacular"
 > 3</langData
->). If we look at the lexical transfer output, that is internally coming from the bilingual dictionary for position 2, this will become clearer:<br
+>). If we look at the lexical transfer output which is internally coming from the bilingual dictionary for position 2, this will become clearer:<br
 ></br
 ><br
 ></br
@@ -3313,7 +3327,13 @@ type="tluAffix"
 >Now test it in the <object
 type="tLiveRuleTester"
 ></object
->.</li
+>. (Go back to having just <object
+type="tItalic"
+>Otišla</object
+> and <object
+type="tItalic"
+>si</object
+> selected.)</li
 ></ol
 ><p
 >The result is:</p
@@ -3344,35 +3364,15 @@ type="tluAffix"
 ></single
 ></example
 ><p
->Run the modules in the <object
-type="tCollection"
->FlexTrans All Steps</object
-> collection to see what our English sentence looks like now.</p
-><p
-><object
-type="tItalic"
->Trick: After the modules have been run, you can see the result without having to open the <object
-type="tBold"
->English-FLExTrans-Sample</object
-> <object
-type="tFlexx"
-></object
-> project. In the <object
-type="tFoldername"
->Output</object
-> folder, open the synthesis file named <object
-type="tNoItalic"
->myText.syn</object
->.</object
-></p
+>Select all the Croatian words and see what our English sentence looks like.</p
 ><p
 >Now we get:</p
 ><example
 num="xOutputStep4"
 ><single
-><gloss
-lang="lGloss"
->you Left quietly and without wordgen sg</gloss
+><langData
+lang="lVernacular"
+>you Left quietly and without wordgen sg</langData
 ></single
 ></example
 ><p
@@ -3467,18 +3467,15 @@ type="tRuleElemInXXE"
 ></li
 ></ol
 ><p
->Run the modules in the <object
-type="tCollection"
->FlexTrans All Steps</object
-> collection again.</p
+>Transfer and Synthesize again.</p
 ><p
 >Now we get:</p
 ><example
 num="xOutputStep4b"
 ><single
-><gloss
-lang="lGloss"
->You left quietly and without wordgen sg</gloss
+><langData
+lang="lVernacular"
+>You left quietly and without wordgen sg</langData
 ></single
 ></example
 ><p
@@ -3583,7 +3580,20 @@ type="tluGrammCat"
 ></single
 ></example
 ><p
->Run the modules in the <object
+>And if we synthesize we get:</p
+><example
+num="xStep5aTarget"
+><single
+><langData
+lang="lVernacular"
+>word </langData
+></single
+></example
+><p
+>Close the <object
+type="tLiveRuleTester"
+></object
+> and run the modules in the <object
 type="tCollection"
 >FlexTrans All Steps</object
 > to see what our English sentence looks like.</p
@@ -3804,7 +3814,11 @@ type="tItalic"
 >If the <object
 type="tTool"
 >Apertium</object
-> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default translation of it according to what is in the bilingual dictionary.</p
+> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default translation of it according to what is in the bilingual dictionary. Cf. <sectionRef
+sec="sRulesApplied"
+showTitle="full"
+></sectionRef
+>.</p
 ></section3
 ><section3
 id="sDeleteWord"
