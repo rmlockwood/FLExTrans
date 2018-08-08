@@ -61,17 +61,21 @@ class TestbedValidator():
             return True
         elif wordSense.lower() in self.mapWordSenses:
             return True
+        self.__invalidReason = 'Word Sense: ' + wordSense + ' not found.'
         return False
     def isGramCatValid(self, gramCat):
         if gramCat in self.mapCats:
             return True
+        self.__invalidReason = 'Grammatical Category: ' + gramCat + ' not found.'
         return False
     def isTagValid(self, tag):
         if tag in self.mapTags:
             return True
+        self.__invalidReason = 'Tag: ' + tag + ' not found.'
         return False
     def isValid(self, lexUnit):
         valid = True
+        self.__invalidReason = ''
         
         # Sentence punctuation is always valid
         if lexUnit.getGramCat() == Utils.SENT:
@@ -91,6 +95,9 @@ class TestbedValidator():
                 
         return valid
 
+    def getInvalidReason(self):
+        return self.__invalidReason
+    
     def isCacheOutOfDate(self):
         
         # Build a DateTime object with the FLEx DB last modified date

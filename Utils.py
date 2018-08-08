@@ -105,6 +105,7 @@ TARGET_DIRECTION = 'target_direction'
 N_ATTRIB = 'n' 
 ID = 'id' 
 IS_VALID = 'is_valid' 
+INVALID_REASON = 'invalidReason'
 ORIGIN = 'origin' 
 RTL = 'rtl' 
 LTR = 'ltr' 
@@ -520,8 +521,15 @@ class TestbedTestXMLObject():
         
         return False 
 
+    def getInvalidReason(self):
+        testNode = self.getTestNode()
+        if INVALID_REASON in testNode.attrib:
+            return testNode.attrib[INVALID_REASON]
+        return ''
+    
     def validate(self, myValidator):
         markInvalid = False
+        reasonChanged = False
         
         testNode = self.getTestNode()
 
@@ -534,18 +542,28 @@ class TestbedTestXMLObject():
             
             # any one invalid lexical unit means the test is invalid
             if myValidator.isValid(lu) == False:
+                
+                # get the reason it was invalid
+                reason = myValidator.getInvalidReason()
+                
+                # see if the reason it was invalid changed
+                if reason != self.getInvalidReason():
+                    reasonChanged = True
+                    
                 markInvalid = True
                 break
         
         # See if we have a different value from before
-        if markInvalid == prevInvalidFlag:
+        if markInvalid == prevInvalidFlag or reasonChanged:
             
             self.__testChanged = True
             
             if markInvalid:
                 testNode.attrib[IS_VALID] = NO
+                testNode.attrib[INVALID_REASON] = reason
             else:
                 testNode.attrib[IS_VALID] = YES
+                testNode.attrib[INVALID_REASON] = ''
     
     def didTestChange(self):
         return self.__testChanged

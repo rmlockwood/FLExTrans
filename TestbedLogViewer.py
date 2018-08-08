@@ -213,7 +213,7 @@ class TestStatsItem(BaseTreeItem):
 
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin):
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason):
         super(TestResultItem, self).__init__(inParent, rtl)
         self.unformattedLexicalUnitsString = LUString
         self.formattedLexicalUnitsString = formattedLexicalUnitsString
@@ -221,6 +221,7 @@ class TestResultItem(BaseTreeItem):
         self.actualStr = actualStr
         self.invalid = not valid
         self.origin = origin
+        self.invalidReason = invalidReason
         self.greenCheck = QtGui.QPixmap(GREEN_CHECK)
         self.redX = QtGui.QPixmap(RED_X)
         self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
@@ -292,7 +293,14 @@ class TestResultItem(BaseTreeItem):
                 myIcon = self.greenCheck
 
             myWidget.setIcon(myIcon)
-            myWidget.setToolTip('Source text: ' + self.origin)
+            
+            # Set the tool tip text
+            tip = 'Source text: ' + self.origin + '.'
+            
+            # if a lexical unit is invalid add the reason it's invalid to the tooltip
+            if self.isInvalid():
+                tip += ' ' + self.invalidReason
+            myWidget.setToolTip(tip)
 
         # Expected and actual results
         else:
@@ -396,7 +404,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                     
                     resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), \
                                                 test.getExpectedResult(), test.getActualResult(), \
-                                                test.isValid(), test.getOrigin())
+                                                test.isValid(), test.getOrigin(), test.getInvalidReason())
                     
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)
