@@ -852,7 +852,7 @@ type="tButton"
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
->Test</object
+>Transfer</object
 > button and you will process the selected words. You will see the results in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
@@ -864,6 +864,14 @@ gref="gDataStream"
 type="tButton"
 >Synthesize</object
 > button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored area.</li
+><li
+>Use the <object
+type="tButton"
+>Add to Testbed</object
+> button to add the input words and synthesized result to the "Testbed". This is essentially a database of expected results for a certain inputs. In another part of <object
+type="tFlextrans"
+></object
+> you can run the Testbed to see if you are still getting the results you expect.</li
 ></ol
 ></section2
 ><section2
@@ -878,12 +886,18 @@ type="tButton"
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
 ><p
->You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically senses) directly in plain text data stream format<endnoteRef
+>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
 ></endnoteRef
->. This might be useful if you want to test a sense that isn’t in your text.</p
+>. This might be useful if you want to test a word-sense that isn’t in a given text.</p
 ><p
->The rules list Interchunk and Postchunk tabs are for use in testing rules in conjunction with the advanced <object
+>The <object
+type="tButton"
+>Interchunk</object
+> and <object
+type="tButton"
+>Postchunk</object
+> tabs are for use in testing rules using the advanced <object
 type="tTool"
 >Apertium</object
 > transfer engine.</p
@@ -891,7 +905,7 @@ type="tTool"
 >You can’t edit the transfer rules in the <object
 type="tLiveRuleTester"
 ></object
-> and even the change of the order of the rules in the tool does not get saved. Make your changes in a separate editor to reload the transfer rules after you have changed them, click on the <object
+> and even when you change the order of the rules in the tool that doesn't change your transfer rules file. Make your changes in a separate editor. To reload the transfer rules after you have changed them, click on the <object
 type="tButton"
 >Refresh Rules</object
 > button.</p
@@ -899,7 +913,21 @@ type="tButton"
 >If you change the target lexicon, click the <object
 type="tButton"
 >Refresh Target Lexicon</object
-> button to reload it.</p
+> button to reload it so that upon synthesis, <object
+type="tFlextrans"
+></object
+> uses the changed lexicon.</p
+><p
+>There is a check box that says <object
+type="tButton"
+>Add multiple words to the testbed word by word</object
+>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you have a "sentence" that runs through a paradigm. When you click <object
+type="tButton"
+>Add to Testbed</object
+>, <object
+type="tFlextrans"
+></object
+> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
 ></section2
 ></section1
 ><section1
@@ -3586,7 +3614,7 @@ num="xStep5aTarget"
 ><single
 ><langData
 lang="lVernacular"
->word </langData
+>word</langData
 ></single
 ></example
 ><p
@@ -3645,9 +3673,192 @@ type="tFoldername"
 ></section2
 ></section1
 ><section1
+id="sTestbed"
+><secTitle
+>The <object
+type="tFlextrans"
+></object
+> <object
+type="tTool"
+>Testbed</object
+></secTitle
+><p
+>The <object
+type="tFlextrans"
+></object
+> <object
+type="tTool"
+>Testbed</object
+> is a system designed to help you maintain the quality of your translations. It not uncommon, as you add new transfer rules to the system or change the lexicons, you mess up the results you were getting before. To help mitigate this, it is very helpful to have a database of expected results for a certain inputs. This is called a testbed. After making significant changes to your translation system, you can rerun the testbed to make sure you are still getting the results you expect for words or sentences that you earlier deemed correct.</p
+><section2
+id="sTestbedWorkflow"
+><secTitle
+>Workflow with the <object
+type="tTool"
+>Testbed</object
+></secTitle
+><p
+>Right now the <object
+type="tTool"
+>Testbed Editor</object
+> is not finished. This is the way you would work with the testbed:</p
+><ol
+><li
+>Make a change to the system, e.g. add a new rule or other changes.</li
+><li
+>Use the <object
+type="tLiveRuleTester"
+></object
+> to verify you are getting the results you expect.</li
+><li
+>Click the <object
+type="tButton"
+>Add to Testbed</object
+> button to add one or more tests that prove source words are correctly translating to the target.</li
+><li
+>Now run the testbed to verify that all your previous tests still give the expected result.<ol
+><li
+>Open the <object
+type="tCollection"
+>FLExTrans Run Testbed</object
+> collection.</li
+><li
+>Click the <object
+type="tButton"
+>Run All</object
+> button to run all the needed modules.</li
+><li
+>Review the <object
+type="tTool"
+>Testbed Log</object
+> which will open at the end and show you the results of running the testbed.</li
+></ol
+></li
+><li
+>Make any adjustments as needed. Repeat</li
+></ol
+></section2
+><section2
+id="sTestbedTools"
+><secTitle
+><object
+type="tTool"
+>Testbed</object
+> Tools</secTitle
+><p
+><object
+type="tFlextrans"
+></object
+> has a collection of tools to help you maintain the testbed, run the testbed and see the results.</p
+><section3
+id="sTestbedLogViewer"
+><secTitle
+><object
+type="tTool"
+>Testbed Log Viewer</object
+></secTitle
+><p
+>This module you will find in both the <object
+type="tCollection"
+>Tools</object
+> and <object
+type="tCollection"
+>FLExTrans Run Testbed</object
+> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see some pop-up text of which <object
+type="tFlexx"
+></object
+> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <object
+type="tFlextrans"
+></object
+> found the test invalid. </p
+><example
+num="xTesterImage"
+><chart
+><img
+XeLaTeXSpecial="scaled='700'"
+cssSpecial=" height:70%"
+src="Images/TestbedLogViewer.PNG"
+></img
+></chart
+></example
+></section3
+><section3
+id="sStartTestbed"
+><secTitle
+><object
+type="tTool"
+>Start Testbed</object
+></secTitle
+><p
+>This module you will find at the top of the <object
+type="tCollection"
+>FLExTrans Run Testbed</object
+> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <object
+type="tFilename"
+>source_text.aper</object
+> file.</p
+></section3
+><section3
+id="sEndTestbed"
+><secTitle
+><object
+type="tTool"
+>End Testbed</object
+></secTitle
+><p
+>This module you will find as the next to last module in the <object
+type="tCollection"
+>FLExTrans Run Testbed</object
+> collection. It takes the results of running the transfer and synthesis processes (the <object
+type="tFilename"
+>source_text.aper</object
+> file) and adds the tests run and whether they passed or not to the testbed log. </p
+></section3
+><section3
+id="sTestbedLRT"
+><secTitle
+><object
+type="tLiveRuleTester"
+></object
+></secTitle
+><p
+>The <object
+type="tLiveRuleTester"
+></object
+> is a good place to add new tests to the testbed. See <sectionRef
+sec="sRuleTester"
+showTitle="full"
+></sectionRef
+> for more details.</p
+></section3
+><section3
+id="sTestbedEditor"
+><secTitle
+><object
+type="tTool"
+>Testbed Editor</object
+></secTitle
+><p
+>This module is under construction. Add new tests to the testbed in the <object
+type="tLiveRuleTester"
+></object
+>. If you need to edit or delete a test, edit the file <object
+type="tFilename"
+>testbed.xml</object
+> in the <object
+type="tFoldername"
+>Output</object
+> folder.</p
+></section3
+></section2
+></section1
+><section1
 id="sHowTo"
 ><secTitle
->FLExTrans How To’s</secTitle
+><object
+type="tFlextrans"
+></object
+> How To’s</secTitle
 ><section2
 id="sTransferRuleHowTos"
 ><secTitle
