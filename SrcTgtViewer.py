@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\SrcTgtViewer.ui'
+# Form implementation generated from reading ui file 'SrcTgtViewer.ui'
 #
-# Created: Mon Jan 01 13:07:00 2018
+# Created: Fri Aug 17 08:57:18 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(891, 702)
+        MainWindow.resize(891, 670)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.webView = QtWebKit.QWebView(self.centralwidget)
@@ -44,26 +44,26 @@ class Ui_MainWindow(object):
         self.FontButton.setGeometry(QtCore.QRect(10, 620, 90, 25))
         self.FontButton.setObjectName(_fromUtf8("FontButton"))
         self.SourceRadio = QtGui.QRadioButton(self.centralwidget)
-        self.SourceRadio.setGeometry(QtCore.QRect(252, 622, 71, 20))
+        self.SourceRadio.setGeometry(QtCore.QRect(242, 622, 71, 20))
         self.SourceRadio.setChecked(True)
         self.SourceRadio.setObjectName(_fromUtf8("SourceRadio"))
         self.TargetRadio = QtGui.QRadioButton(self.centralwidget)
-        self.TargetRadio.setGeometry(QtCore.QRect(325, 622, 71, 20))
+        self.TargetRadio.setGeometry(QtCore.QRect(315, 622, 61, 20))
         self.TargetRadio.setObjectName(_fromUtf8("TargetRadio"))
         self.RTL = QtGui.QCheckBox(self.centralwidget)
-        self.RTL.setGeometry(QtCore.QRect(410, 622, 101, 20))
+        self.RTL.setGeometry(QtCore.QRect(430, 622, 101, 20))
         self.RTL.setObjectName(_fromUtf8("RTL"))
         self.FontNameLabel = QtGui.QLabel(self.centralwidget)
         self.FontNameLabel.setGeometry(QtCore.QRect(114, 622, 110, 20))
         self.FontNameLabel.setObjectName(_fromUtf8("FontNameLabel"))
         self.ZoomIncrease = QtGui.QPushButton(self.centralwidget)
-        self.ZoomIncrease.setGeometry(QtCore.QRect(580, 620, 21, 25))
+        self.ZoomIncrease.setGeometry(QtCore.QRect(590, 620, 21, 25))
         self.ZoomIncrease.setObjectName(_fromUtf8("ZoomIncrease"))
         self.ZoomDecrease = QtGui.QPushButton(self.centralwidget)
-        self.ZoomDecrease.setGeometry(QtCore.QRect(610, 620, 21, 25))
+        self.ZoomDecrease.setGeometry(QtCore.QRect(620, 620, 21, 25))
         self.ZoomDecrease.setObjectName(_fromUtf8("ZoomDecrease"))
         self.ZoomLabel = QtGui.QLabel(self.centralwidget)
-        self.ZoomLabel.setGeometry(QtCore.QRect(530, 622, 41, 20))
+        self.ZoomLabel.setGeometry(QtCore.QRect(540, 622, 41, 20))
         self.ZoomLabel.setObjectName(_fromUtf8("ZoomLabel"))
         self.linkLabel = QtGui.QLabel(self.centralwidget)
         self.linkLabel.setGeometry(QtCore.QRect(660, 622, 101, 20))
@@ -71,14 +71,16 @@ class Ui_MainWindow(object):
         self.linkLabel.setOpenExternalLinks(True)
         self.linkLabel.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
         self.linkLabel.setObjectName(_fromUtf8("linkLabel"))
+        self.targetRadio1 = QtGui.QRadioButton(self.centralwidget)
+        self.targetRadio1.setGeometry(QtCore.QRect(380, 602, 31, 20))
+        self.targetRadio1.setObjectName(_fromUtf8("targetRadio1"))
+        self.targetRadio2 = QtGui.QRadioButton(self.centralwidget)
+        self.targetRadio2.setGeometry(QtCore.QRect(380, 622, 31, 20))
+        self.targetRadio2.setObjectName(_fromUtf8("targetRadio2"))
+        self.targetRadio3 = QtGui.QRadioButton(self.centralwidget)
+        self.targetRadio3.setGeometry(QtCore.QRect(380, 642, 31, 20))
+        self.targetRadio3.setObjectName(_fromUtf8("targetRadio3"))
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 891, 26))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -95,5 +97,8 @@ class Ui_MainWindow(object):
         self.ZoomDecrease.setText(_translate("MainWindow", "–", None))
         self.ZoomLabel.setText(_translate("MainWindow", "Zoom:", None))
         self.linkLabel.setText(_translate("MainWindow", "<a href=\"file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html\">Open in Browser</a>", None))
+        self.targetRadio1.setText(_translate("MainWindow", "1", None))
+        self.targetRadio2.setText(_translate("MainWindow", "2", None))
+        self.targetRadio3.setText(_translate("MainWindow", "3", None))
 
 from PyQt4 import QtWebKit
