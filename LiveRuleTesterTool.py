@@ -248,13 +248,25 @@ class Main(QtGui.QMainWindow):
         self.TRIndex = None
         self.setStatusBar(None)
         self.__lexicalUnits = ''
+        self.__transferHtmlResult = ''
+        self.__transferLexicalUnitsResult = ''
+        self.__tranferPrevSourceHtml = ''
+        self.__tranferPrevSourceLUs = ''
+        self.__interchunkHtmlResult = ''
+        self.__interchunkLexicalUnitsResult = ''
+        self.__interchunkPrevSource = ''
+        self.__interchunkPrevSourceLUs = ''
+        self.__postchunkPrevSource = ''
+        self.__postchunkPrevSourceLUs = ''
+        self.__prevTab = 0
+
         
         # Make sure we are on the 1st tabs
         self.ui.tabRules.setCurrentIndex(0)
         self.ui.tabSource.setCurrentIndex(0)
         
         # Tie controls to functions
-        self.ui.TestButton.clicked.connect(self.TestClicked)
+        self.ui.TestButton.clicked.connect(self.TransferClicked)
         #self.ui.CloseButton.clicked.connect(self.CloseClicked)
         self.ui.listSentences.clicked.connect(self.listSentClicked)
         self.ui.listTransferRules.clicked.connect(self.rulesListClicked)
@@ -263,7 +275,8 @@ class Main(QtGui.QMainWindow):
         self.ui.SentCombo.currentIndexChanged.connect(self.listSentComboClicked)
         self.ui.TransferFileBrowseButton.clicked.connect(self.TransferBrowseClicked)
         self.ui.BilingFileBrowseButton.clicked.connect(self.BilingBrowseClicked)
-        self.ui.tabRules.currentChanged.connect(self.TabClicked)
+        self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
+        self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
         self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
         self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
@@ -357,9 +370,23 @@ class Main(QtGui.QMainWindow):
 
         self.ret_val = True
 
-        # Start out with all rules checked.        
-        self.SelectAllClicked()
-
+        # Start out with all rules checked. 
+        self.checkThemAll()
+        
+    def checkThemAll(self):
+            
+            if self.advancedTransfer:
+                self.__ruleModel = self.__interChunkModel
+                self.__rulesElement = self.__interchunkRulesElement
+                self.SelectAllClicked()
+                self.__ruleModel = self.__postChunkModel
+                self.__rulesElement = self.__postchunkRulesElement
+                self.SelectAllClicked()
+                self.__ruleModel = self.__transferModel
+                self.__rulesElement = self.__transferRulesElement
+                self.SelectAllClicked()
+            else:
+                self.SelectAllClicked()
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
@@ -429,7 +456,7 @@ class Main(QtGui.QMainWindow):
         # Check if add-multiple was selected
         if self.ui.addMultipleCheckBox.isChecked():
             
-            luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
 
@@ -483,7 +510,7 @@ class Main(QtGui.QMainWindow):
                         cnt += 1
                     
         else:
-            luObjList = self.getLexUnitObjsFromString(self.getActiveTextEditVal())
+            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
 
@@ -693,7 +720,7 @@ class Main(QtGui.QMainWindow):
         self.loadTransferRules()
         self.ui.SynthTextEdit.setPlainText('')
         self.__ClearStuff()
-        self.SelectAllClicked()
+        self.checkThemAll()
         
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
@@ -749,6 +776,9 @@ class Main(QtGui.QMainWindow):
         # The text box will turn the html into rich text    
         self.ui.SelectedWordsEdit.setText(val)    
                     
+        # Put the same thing into the manual edit, but in data stream format.
+        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
+
     def listSentClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
@@ -768,15 +798,24 @@ class Main(QtGui.QMainWindow):
         # The text box will turn the html into rich text    
         self.ui.SelectedSentencesEdit.setText(val)
         
+        # Put the same thing into the manual edit, but in data stream format.
+        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
+        
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
-    def getActiveTextEditVal(self):
+    def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
-            #ret = self.ui.SelectedWordsEdit.toPlainText()
             ret = self.__lexicalUnits
         elif self.ui.tabSource.currentIndex() == 1:
-            #ret = self.ui.SelectedSentencesEdit.toPlainText()
             ret = self.__lexicalUnits
+        else:
+            ret = unicode(self.ui.ManualEdit.toPlainText())
+        return ret
+    def getActiveSrcTextEditVal(self):
+        if self.ui.tabSource.currentIndex() == 0:
+            ret = self.ui.SelectedWordsEdit.toHtml()
+        elif self.ui.tabSource.currentIndex() == 1:
+            ret = self.ui.SelectedSentencesEdit.toHtml()
         else:
             ret = unicode(self.ui.ManualEdit.toPlainText())
         return ret
@@ -793,14 +832,20 @@ class Main(QtGui.QMainWindow):
         self.ui.listSentences.setVisible(isVisible)
     def __CopyStuff(self):
         # copy text from results to the source boxes
-        self.ui.SelectedWordsEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
-        self.ui.SelectedSentencesEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
-        self.ui.ManualEdit.setPlainText(self.ui.TargetTextEdit.toPlainText())
+        self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
+        self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
+        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
         self.__ClearStuff()
     def __ClearStuff(self):
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
-    def TabClicked(self):
+    def sourceTabClicked(self):
+#         if self.ui.tabSource.currentIndex() == 0: # check boxes
+#             self.SourceCheckBoxClicked()
+#         elif self.ui.tabSource.currentIndex() == 0: # sentences
+#             self.listSentClicked()
+        pass            
+    def rulesTabClicked(self):
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 self.__ruleModel = self.__transferModel
@@ -812,9 +857,14 @@ class Main(QtGui.QMainWindow):
                 # re-write the check boxes
                 self.SourceCheckBoxClicked()
                 
-                # blank the other two source boxes
-                self.ui.SelectedSentencesEdit.setPlainText('')
-                self.ui.ManualEdit.setPlainText('')
+                if self.ui.tabSource.currentIndex() == 0: # checkboxes with words
+                    self.ui.SelectedWordsEdit.setText(self.__tranferPrevSourceHtml)
+                elif self.ui.tabSource.currentIndex() == 1: # sentences
+                    self.ui.SelectedSentencesEdit.setText(self.__tranferPrevSourceHtml)
+
+                self.__lexicalUnits = self.__tranferPrevSourceLUs
+                    
+                self.ui.ManualEdit.setPlainText(self.__tranferPrevSourceLUs)
     
                 self.__ClearStuff()
                 
@@ -825,9 +875,19 @@ class Main(QtGui.QMainWindow):
                 # hide stuff
                 self.__MakeVisible(False)
                 
-                # copy stuff
-                self.__CopyStuff()
+                if self.__prevTab == 0: # transfer
+                    self.ui.SelectedWordsEdit.setText(self.__transferHtmlResult)
+                    self.ui.SelectedSentencesEdit.setText(self.__transferHtmlResult)
+                    self.ui.ManualEdit.setPlainText(self.__transferLexicalUnitsResult)
+                    self.__lexicalUnits = self.__transferLexicalUnitsResult
+                elif self.__prevTab == 2: # postchunk
+                    self.ui.SelectedWordsEdit.setText(self.__interchunkPrevSource)
+                    self.ui.SelectedSentencesEdit.setText(self.__interchunkPrevSource)
+                    self.ui.ManualEdit.setPlainText(self.__interchunkPrevSourceLUs)
+                    self.__lexicalUnits = self.__interchunkPrevSourceLUs
                 
+                self.__ClearStuff()
+
             else: # postchunk
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
@@ -835,8 +895,15 @@ class Main(QtGui.QMainWindow):
                 # hide stuff
                 self.__MakeVisible(False)
     
-                # copy stuff
-                self.__CopyStuff()
+                self.ui.SelectedWordsEdit.setText(self.__interchunkHtmlResult)
+                self.ui.SelectedSentencesEdit.setText(self.__interchunkHtmlResult)
+                self.ui.ManualEdit.setPlainText(self.__interchunkLexicalUnitsResult)
+                self.__lexicalUnits = self.__interchunkLexicalUnitsResult
+                
+                self.__ClearStuff()
+
+            self.__prevTab = self.ui.tabRules.currentIndex()
+
     def listSentComboClicked(self):
         mySent = self.__sent_model.getCurrentSent()
         space_val = 10
@@ -1012,7 +1079,7 @@ class Main(QtGui.QMainWindow):
 
             else: # postchunk
                 # Set these global variables to the postchunk ones
-                self.__ruleModel = self.__transferModel
+                self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
 
         else:
@@ -1056,9 +1123,13 @@ class Main(QtGui.QMainWindow):
             item.setCheckState(False)
             ruleModel.appendRow(item)
             
-    def TestClicked(self):
+    def TransferClicked(self):
         
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        
+        if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
+            self.__interchunkHtmlResult = ''
+            self.__interchunkLexicalUnitsResult = ''
         
         self.__convertIt = True
         
@@ -1114,7 +1185,7 @@ class Main(QtGui.QMainWindow):
             
         # Save the source text to the tester folder
         sf = open(source_file, 'w')
-        myStr = unicode(self.getActiveTextEditVal())
+        myStr = unicode(self.getActiveLexicalUnits())
         
         sf.write(myStr.encode('utf-8'))
         sf.close()
@@ -1169,25 +1240,118 @@ class Main(QtGui.QMainWindow):
         target_output = unicode(tgtf.read(),'utf-8')
         
         # Create a <p> html element
-        p = ET.Element('p')
+        pElem = ET.Element('p')
 
-        # parse the lexical units. This will give us tokens before, between 
-        # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
-        #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
-        tokens = re.split('\^|\$', target_output)
+        rtl_flag = self.has_RTL_data(target_output)
         
-        # process pairs of tokens (punctuation and lexical unit)
-        # ignore the punctuation (spaces)
-        for i in range(0,len(tokens)-1,2):
-            # Turn the lexical units into color-coded html.            
-            Utils.process_lexical_unit(tokens[i+1]+' ', p, self.has_RTL_data(target_output), True) # last parameter: show UNK categories
-        
+        # Process advanced results differently (which doesn't apply to post chunk, because we get normal data stream in that case)
+        if self.advancedTransfer and self.ui.tabRules.currentIndex() != 2: # 'tab_postchunk_rules'
+            
+            # Split off the advanced stuff that precedes the brace {
+            # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
+            # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
+            tokens = re.split('{|}', target_output)
+            
+            # process pairs of tokens
+            for i in range(0,len(tokens)-1): # skip the last one for now
+                
+                tok = tokens[i]
+            
+                # the even # elements are the advanced stuff
+                if i%2 == 0:
+                    
+                    # remove the $ from the advanced part
+                    tok = re.sub('\$', '', tok)
+                    
+                    # split on ^ and output any punctuation
+                    [punc, chunk] = re.split('\^', tok)
+                    
+                    # don't put out anything when it's a default chunk
+                    if re.search('^default', chunk):
+                        continue
+                    
+                    # TODO: not sure if we have punctuation in the the live rule tester. Might not need a lot of this code
+                    # First, put out the punctuation. If the punctuation is null, put
+                    # out a space. Except if it's the first punctuation and it null.
+                    if len(punc) > 0:
+                        Utils.output_span(pElem, Utils.PUNC_COLOR, punc, rtl_flag)
+                    elif i > 0:
+                        Utils.output_span(pElem, Utils.PUNC_COLOR, ' ', rtl_flag)
+                    
+                    # Now put out the chunk part
+                    Utils.process_chunk_lexical_unit(chunk, pElem, rtl_flag)
+                    
+                    # Put out a [ to surround the normal lex. unit
+                    Utils.output_span(pElem, Utils.CHUNK_LEMMA_COLOR, ' [', rtl_flag)
+
+                # process odd # elements -- the normal stuff (that was within the braces)
+                else:
+                    
+                    # parse the lexical units. This will give us tokens before, between 
+                    # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
+                    #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
+                    subTokens = re.split('\^|\$', tok)
+                    
+                    # process pairs of tokens (punctuation and lexical unit)
+                    for j in range(0,len(subTokens)-1,2):
+                        # First, put out the punctuation. If the punctuation is null, put
+                        # out a space. Except if it's the first punctuation and it null.
+                        if len(subTokens[j]) > 0:
+                            Utils.output_span(pElem, Utils.PUNC_COLOR, subTokens[j], rtl_flag)
+                        else:
+                            # we need a preceding space if we are not within brackets
+                            if re.search('^default', chunk) is None:
+                                myStr = ''
+                            else:
+                                myStr = ' '
+                            Utils.output_span(pElem, Utils.PUNC_COLOR, myStr, rtl_flag)
+                        
+                        # parse the lexical unit and add the elements needed to the list item element
+                        Utils.process_lexical_unit(subTokens[j+1], pElem, rtl_flag, True)
+                        
+                    # process last subtoken for the stuff inside the {}
+                    if len(subTokens[-1]) > 0:
+                        Utils.output_span(pElem, Utils.PUNC_COLOR, subTokens[-1], rtl_flag)
+                    
+                    # Put out a closing ] if it wasn't a default chunk
+                    if re.search('^default', chunk) is None:
+                        Utils.output_span(pElem, Utils.CHUNK_LEMMA_COLOR, ']', rtl_flag)
+            
+        else:
+            # parse the lexical units. This will give us tokens before, between 
+            # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
+            #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
+            tokens = re.split('\^|\$', target_output)
+            
+            # process pairs of tokens (punctuation and lexical unit)
+            # ignore the punctuation (spaces)
+            for i in range(0,len(tokens)-1,2):
+                # Turn the lexical units into color-coded html.            
+                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output), True) # last parameter: show UNK categories
+            
         # The p element now has one or more <span> children, turn them into an html string        
-        val = ET.tostring(p)
+        htmlVal = ET.tostring(pElem)
 
-        self.ui.TargetTextEdit.setText(val)
+        self.ui.TargetTextEdit.setText(htmlVal)
         
         tgtf.close()
+        
+        # Store the actual data stream in __lexicalUnits for use elsewhere when in advanced mode
+        # Store the html in another member
+        if self.advancedTransfer:
+            if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
+                self.__transferHtmlResult = htmlVal
+                self.__transferLexicalUnitsResult = target_output
+                self.__tranferPrevSourceHtml = self.getActiveSrcTextEditVal()
+                self.__tranferPrevSourceLUs = self.getActiveLexicalUnits()
+            elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
+                self.__interchunkHtmlResult = htmlVal
+                self.__interchunkLexicalUnitsResult = target_output
+                self.__interchunkPrevSource = self.getActiveSrcTextEditVal()
+                self.__interchunkPrevSourceLUs = self.getActiveLexicalUnits()
+            else: # 'tab_postchunk_rules':
+                self.__postchunkPrevSource = self.getActiveSrcTextEditVal()
+                self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
         
         # Load the log file
         lf = open(log_file)
