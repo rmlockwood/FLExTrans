@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'LiveRuleTester.ui'
 #
-# Created: Thu May 31 17:58:28 2018
+# Created: Sat Aug 25 21:28:18 2018
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -262,7 +262,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabRules.setCurrentIndex(2)
+        self.tabRules.setCurrentIndex(0)
         self.tabSource.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -270,9 +270,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Live Rule Tester", None))
         self.tabRules.setTabText(self.tabRules.indexOf(self.tab_transfer_rules), _translate("MainWindow", "Transfer", None))
         self.tabRules.setTabText(self.tabRules.indexOf(self.tab_interchunk_rules), _translate("MainWindow", "Interchunk", None))
-        self.tabRules.setTabToolTip(self.tabRules.indexOf(self.tab_interchunk_rules), _translate("MainWindow", "Not Implemented", None))
         self.tabRules.setTabText(self.tabRules.indexOf(self.tab_postchunk_rules), _translate("MainWindow", "Postchunk", None))
-        self.tabRules.setTabToolTip(self.tabRules.indexOf(self.tab_postchunk_rules), _translate("MainWindow", "Not Implemented", None))
         self.label.setText(_translate("MainWindow", "Rules File", None))
         self.TransferFileBrowseButton.setText(_translate("MainWindow", "Browse...", None))
         self.BilingFileBrowseButton.setText(_translate("MainWindow", "Browse...", None))

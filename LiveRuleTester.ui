@@ -33,7 +33,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_transfer_rules">
      <attribute name="title">
@@ -60,9 +60,6 @@
      <attribute name="title">
       <string>Interchunk</string>
      </attribute>
-     <attribute name="toolTip">
-      <string>Not Implemented</string>
-     </attribute>
      <widget class="QListView" name="listInterChunkRules">
       <property name="enabled">
        <bool>true</bool>
@@ -83,9 +80,6 @@
     <widget class="QWidget" name="tab_postchunk_rules">
      <attribute name="title">
       <string>Postchunk</string>
-     </attribute>
-     <attribute name="toolTip">
-      <string>Not Implemented</string>
      </attribute>
      <widget class="QListView" name="listPostChunkRules">
       <property name="geometry">
