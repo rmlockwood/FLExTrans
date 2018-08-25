@@ -55,10 +55,13 @@ from __builtin__ import False
 ## Viewer constants
 # Main color of the headwords
 LEMMA_COLOR = '000000' #black
+CHUNK_LEMMA_COLOR = 'FF00FF' #purple
 # For grammatical category - always the 1st symbol
 GRAM_CAT_COLOR = '0070C0' #blue
+CHUNK_GRAM_CAT_COLOR = '0000FF' #darker blue
 # The color of affixes or other things such as features, classes, etc.
 AFFIX_COLOR = '00B050' #green
+CHUNK_AFFIX_COLOR = '00E000' #darker green
 # The color of non-sentence punctuation. Sentence punctuation will be in its
 # own lexical item with <sent> as the category
 PUNC_COLOR = 'D0802B' #orange
@@ -991,6 +994,42 @@ def add_subscript(span, num):
     span.append(sub)
     sub.text = num
         
+def process_chunk_lexical_unit(lu_str, parent_element, rtl):
+    # Split off the symbols from the lemma in the lexical unit (which is i+1)
+    symbols = re.split('<|>', lu_str)
+    symbols = filter(None, symbols) # filter out the empty strings
+    
+    # Lemma is the first one
+    lemma = symbols.pop(0)
+    
+    # if the first symbol is UNK, use a special lemma color
+    if len(symbols) > 0 and symbols[0] == 'UNK':
+        lexeme_color = UNKNOWN_LEMMA_COLOR
+    else:
+        lexeme_color = CHUNK_LEMMA_COLOR
+    
+    # Output the lexeme
+    output_span(parent_element, lexeme_color, lemma, rtl)
+    
+    # Loop through the symbols
+    for i, symb in enumerate(symbols):
+        # Check for unknown category
+        if symb == 'UNK':
+            symbol_color = UNKNOWN_CAT_COLOR
+        elif i == 0:
+            symbol_color = CHUNK_GRAM_CAT_COLOR
+        else:
+            symbol_color = CHUNK_AFFIX_COLOR
+        
+        # Check for RTL
+        if rtl == True:
+            # prepend the RTL marker
+            symb = ur'\u200F' + symb
+        
+        # output the symbol
+        output_span(parent_element, symbol_color, ' '+symb, rtl)
+
+# Split a compound from one lexical unit containing multiple words to multiple
 def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
@@ -1045,7 +1084,6 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
-# Split a compound from one lexical unit containing multiple words to multiple
 # lexical units, 
 def split_compounds(outStr):
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
