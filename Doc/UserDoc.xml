@@ -3770,9 +3770,9 @@ type="tFlexx"
 > source text the words came from. If the rule was invalid, the pop-up text will also tell you why <object
 type="tFlextrans"
 ></object
-> found the test invalid. </p
+> found the test invalid.</p
 ><example
-num="xTesterImage"
+num="xViewerImage"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='700'"
@@ -3812,7 +3812,7 @@ type="tCollection"
 > collection. It takes the results of running the transfer and synthesis processes (the <object
 type="tFilename"
 >source_text.aper</object
-> file) and adds the tests run and whether they passed or not to the testbed log. </p
+> file) and adds the tests run and whether they passed or not to the testbed log.</p
 ></section3
 ><section3
 id="sTestbedLRT"
