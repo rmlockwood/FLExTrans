@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.1 - 3/27/19 - Ron Lockwood
+#    Bugfix in removing periods from the POS in the AnaInfo class.
+#
 #   Version 1.6 - 3/30/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into a another
 #    that can be called by the Live Rule Tester.
@@ -147,7 +150,7 @@ from System import String
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
     def __init__(self, pfxList=None, sfxList=None, pos=None, root=None, infxList=None):
-        # If root is given, intialize with all the stuff.
+        # If root is given, initialize with all the stuff.
         if root:
             # Treat the infixes as additional prefixes.
             # (I believe we could put them either before or after the root)
@@ -204,8 +207,8 @@ class ANAInfo(object):
         # change spaces to underscores in the POS:
         myPos = self.addUnderscores(pos)
         
-        # remove periods in the POS: (probably not needed since periods get removed in POSs in the bilingual dictionary)
-        myPos = self.removePeriods(pos)
+        # remove periods in the POS
+        myPos = self.removePeriods(myPos)
         
         # if it's an unknown word, don't change the case, otherwise we always store lower case
         if pos != 'UNK': 

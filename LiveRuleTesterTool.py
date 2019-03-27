@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.1 - 3/27/19 - Ron Lockwood
+#    Handle errors coming from various calls as coming in triplets instead of twos.
+#    The last is a url that gets ignored. RTL fixes.
+#
 #   Version 3.1 - 3/30/18 - Ron Lockwood
 #    Add lexical units and synthesis results to the testbed. There is an option
 #    to add multiple lexical units and synthesis results if they match in number
@@ -334,7 +338,6 @@ class Main(QtGui.QMainWindow):
         
         if found_rtl:
             # this doesn't seem to be working
-            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
             self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
             
         self.ui.listSentences.setModel(self.__sent_model)
@@ -593,8 +596,9 @@ class Main(QtGui.QMainWindow):
         if self.__doCatalog:
             
             error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
-            for msg, code in error_list:
-                if code == 2:
+            for triplet in error_list:
+                if triplet[1] == 2: # error code
+                    msg = triplet[0]
                     QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
                     return
                 
@@ -606,8 +610,9 @@ class Main(QtGui.QMainWindow):
             
             # Convert the target text to .ana format (for STAMP)
             error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, TARGET_ANA_PATH, AFFIX_GLOSS_PATH, TRANFER_RESULTS_PATH)
-            for msg, code in error_list:
-                if code == 2:
+            for triplet in error_list:
+                if triplet[1] == 2: # error code
+                    msg = triplet[0]
                     QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
                     return
             
@@ -619,22 +624,24 @@ class Main(QtGui.QMainWindow):
             
             # Redo the catalog of prefixes in case the user changed an affix
             error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
-            for msg, code in error_list:
-                if code == 2:
-                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
-                    return
+            if triplet[1] == 2: # error code
+                msg = triplet[0]
+                QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                return
             
             # Extract the lexicon        
             error_list = ExtractTargetLexicon.extract_target_lex(self.__DB, self.__configMap)
-            for msg, code in error_list:
-                    if code == 2:
-                        QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
-                        return
+            for triplet in error_list:
+                if triplet[1] == 2: # error code
+                    msg = triplet[0]
+                    QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                    return
         
         ## SYNTHESIZE
         error_list = ExtractTargetLexicon.synthesize(self.__configMap, TARGET_ANA_PATH, SYNTHESIS_FILE_PATH) 
-        for msg, code in error_list:
-            if code == 2:
+        for triplet in error_list:
+            if triplet[1] == 2: # error code
+                msg = triplet[0]
                 QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
                 return
                     
@@ -647,6 +654,12 @@ class Main(QtGui.QMainWindow):
             synthText = ur'\u200F' + synthText
             
         self.ui.SynthTextEdit.setPlainText(synthText)
+        
+        if self.has_RTL_data(synthText):
+            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
+        else:
+            self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
+
         lf.close()
 
         # Set a flag so that we don't extract the dictionary next time

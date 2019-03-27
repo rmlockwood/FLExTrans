@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.2.2 - 2/27/19 - Ron Lockwood
+#    Skip empty MSAs
+#
 #   Version 2.2.1 - 1/15/18 - Marc Penner
 #    Wrapped calls to resetInternalData with beginResetModel and end.. so that 
 #    blank lines get removed.
@@ -510,6 +513,10 @@ def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, sca
         
             # Loop through senses
             for senseNum, mySense in enumerate(e.SensesOS):
+                # Skip empty MSAs
+                if mySense.MorphoSyntaxAnalysisRA == None:
+                    continue
+                
                 # Get headword, POS, gloss
                 headword = ITsString(e.HeadWord).Text
                 if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:

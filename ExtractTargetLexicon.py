@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.1 - 3/27/19 - Ron Lockwood
+#    Bugfix for null MSA and for null PartOfSpeech. Give sensible errors in these
+#    situations and skip the sense. 
+#
 #   Version 1.6 - 3/30/18 - Ron Lockwood
 #    Made the main function minimal and separated the main logic into two main functions 
 #    one for extracting the target lexicon and one for running the synthesis. Also 
@@ -435,20 +439,27 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     # change spaces to underscores
                     headWord = re.sub('\s', '_', headWord)
 
-                    # Get the POS abbreviation for the current sense, assuming we have a stem
-                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                    if mySense.MorphoSyntaxAnalysisRA:
                         
-                        if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
-                            abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                  Abbreviation.BestAnalysisAlternative).Text
+                        # Get the POS abbreviation for the current sense, assuming we have a stem
+                        if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                            
+                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
+                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                      Abbreviation.BestAnalysisAlternative).Text
+                            else:
+                                err_list.append(('Skipping sense because the POS is unknown: '+\
+                                               ' while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                                continue
+                                                      
                         else:
-                            err_list.append(('Skipping sense because the POS is unknown: '+\
-                                           ' while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                             continue
-                                                  
                     else:
-                        err_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                       ' for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append(('Skipping sense that has no Morpho-syntax analysis.'+\
+                                       ' Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        continue
     
                     # Write out morphname field
                     f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1)+'\n')

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.6.1 - 3/27/19 - Ron Lockwood
+#    Limit the number of warnings shown for pos abbreviations in the wrong format.
+#
 #   Version 1.6 - 5/23/18 - Ron Lockwood
 #    Bump the version number.
 #
@@ -439,6 +442,8 @@ def MainFunction(DB, report, modifyAllowed):
             report.Error("The source abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
             abbrevError = True
     
+    spaceErrors = 0
+    periodErrors = 0
     # loop through all target categories
     for pos in TargetDB.lp.AllPartsOfSpeech:
 
@@ -448,14 +453,21 @@ def MainFunction(DB, report, modifyAllowed):
         # DONE: allow spaces in POS abbreviations
         # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
         if re.search(r'\s', posAbbr):
-            report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
+            if spaceErrors < 3:
+                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
+            if spaceErrors == 2:
+                report.Warning("Suppressing further errors of this type.")
             posAbbr = re.sub(r'\s', '_', posAbbr)
-        #    abbrevError = True
+            spaceErrors += 1
             
         # give a warning if there is a period in the target category. Remove them.
         if re.search(r'\.', posAbbr):
-            report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
+            if periodErrors < 3:
+                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
+            if periodErrors == 2:
+                report.Warning("Suppressing further errors of this type.")
             posAbbr = re.sub(r'\.', '', posAbbr)
+            periodErrors += 1
 
         if posAbbr not in posMap:
             posMap[posAbbr] = pos.ToString()

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.6.1 - 3/27/19 - Ron Lockwood
+#    New methods in the TestbedTestXMLObject: getTest, getTestsList. Compile a
+#    RegEx at the beginning.
+#
 #   Version 1.6 - 5/23/18 - Ron Lockwood
 #    Bump the version number.
 #
@@ -117,6 +121,8 @@ YES = 'yes'
 NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+reObjAddOne = re.compile('\d$')
    
 ## Testbed classes
 # Models a single FLExTrans lexical unit
@@ -570,7 +576,14 @@ class TestbedTestXMLObject():
     
     def didTestChange(self):
         return self.__testChanged
-            
+       
+    def getTest(self):
+        
+        LUStr = self.getLUString()
+        ResultStr = self.getExpectedResult()
+        
+        return [LUStr, ResultStr]
+             
     def dump(self, f_out):
         
         # each test goes on its own line. Add a dummy EOL lexical unit so that
@@ -693,6 +706,17 @@ class FLExTransTestbedXMLObject():
         
         # return the number of tests dumped
         return(len(self.__TestXMLObjectList))    
+
+    def getTestsList(self):
+        
+        myTestsList = []
+        
+        for obj in self.__TestXMLObjectList:     
+            test = obj.getTest()
+            myTestsList.append(test)
+        
+        # return the list
+        return(myTestsList)    
 
     def extractResults(self, f_out):
         total = 0
@@ -1115,10 +1139,9 @@ def build_path_default_to_temp(config_path):
         ret_path = os.path.join(tempfile.gettempdir(), config_path)
     return ret_path
 
-
 # Append '1' to the headWord if there is no homograph #
 def add_one(headWord): 
-    if not re.search('(\d$)', headWord):
+    if not reObjAddOne.search(headWord):
         return (headWord + '1')
     else:
         return headWord 
