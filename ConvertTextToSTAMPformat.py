@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.2 - 4/3/19 - Ron Lockwood
+#    Cache complex forms and inflectional variants for better performance. Refresh the
+#    cache when the target database has changed.
+#
 #   Version 1.6.1 - 3/27/19 - Ron Lockwood
 #    Bugfix in removing periods from the POS in the AnaInfo class.
 #
@@ -106,6 +110,7 @@ import os
 import tempfile
 import ReadConfig
 import Utils
+from datetime import datetime
 
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
@@ -542,6 +547,7 @@ def get_ana_data_from_entry(comp_e):
 # This is a recursive function
 def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list):
     # Get the entry that has components
+    # TODO: Handle roots that have more than one complex entry associated with it
     e = complex_map[root]
     
     # loop through all entryRefs (we'll use just the complex form one)
@@ -693,6 +699,250 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
 
+COMPLEX_FORMS = 'COMPLEX FORMS'
+IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
+CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+
+class ConversionData():
+    def __init__(self, database, report, complexFormTypeMap):
+        
+        self.db = database
+        self.report = report
+        self.complex_map = {}
+        self.irr_infl_var_map = {}
+        self.complexFormTypeMap = complexFormTypeMap
+        self.complexFormTypeMap
+        
+        # If the validator cache file exists
+        if self.cacheExists():
+            # check if it's out of date
+            if self.isCacheOutOfDate() == False:
+                
+                self.loadFromCache()
+                return
+                
+        self.readDatabaseValues()
+        self.saveToCache()
+    
+    def getData(self):
+        return (self.complex_map, self.irr_infl_var_map)
+    
+    def isCacheOutOfDate(self):
+        
+        # Build a DateTime object with the FLEx DB last modified date
+        flexDate = self.db.GetDateLastModified()
+        dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+        
+        # Get the date of the cache file
+        try:
+            mtime = os.path.getmtime(self.getCacheFilePath())
+        except OSError:
+            mtime = 0
+        cacheFileDateTime = datetime.fromtimestamp(mtime)
+        
+        if dbDateTime > cacheFileDateTime: # FLEx DB is newer
+            return True 
+        else: # cache file is newer
+            return False
+
+    def writeEntry(self, f, e):
+        guid = e.Guid.ToString()
+        f.write(guid+'\n')
+    
+    def writeAbbrList(self, f, abbList):
+        # Write out the number of abbreviations we have
+        f.write(str(len(abbList))+'\n')
+        
+        for (featGrpName, abbValue) in abbList:
+            # Write out the feature name and the value
+            f.write(featGrpName.encode('utf-8')+'\n')
+            f.write(abbValue.encode('utf-8')+'\n')
+            
+    def saveToCache(self):
+        f = open(self.getCacheFilePath(), 'w')
+        
+        # TODO: HANDLE writing all forms for each headword
+        f.write(COMPLEX_FORMS+'\n')
+        for headWord in sorted(self.complex_map.keys()):
+            # output head word
+            f.write(headWord.encode('utf-8')+'\n')
+
+            # output the entry guid
+            self.writeEntry(f, self.complex_map[headWord])
+            
+        f.write(IRR_INFL_VARIANTS+'\n')
+        for headWord in sorted(self.irr_infl_var_map.keys()):
+            
+            # output head word
+            f.write(headWord.encode('utf-8')+'\n')
+
+            myList = self.irr_infl_var_map[headWord]
+
+            # output the number of # of variants for this head word
+            f.write(str(len(myList))+'\n')
+                        
+            for (varEntry, abbr_list) in myList:
+                
+                # two parts to the tuple a variant form and an abbreviation list
+                self.writeEntry(f, varEntry)
+                self.writeAbbrList(f, abbr_list)
+            
+        f.close()
+        
+    def getAbbrList(self, indx, lines):
+        a_list = []
+        
+        # Get number of abbreviations to read in
+        num_abbr = int(lines[indx].rstrip())
+        indx += 1
+        
+        # read in the name value pairs in consecutive lines
+        for i in range(0, num_abbr):
+            name = lines[indx].rstrip()
+            val = lines[indx+1].rstrip()
+            indx += 2
+            
+            # Add them to the list
+            a_list.append((name, val))
+        
+        return a_list
+            
+    def getEntry(self, guid):
+        
+        repo = self.db.db.ServiceLocator.GetInstance(ILexEntryRepository)
+        flex_guid = Guid(String(guid))
+        
+        try:
+            e = repo.GetObject(flex_guid)
+        except:
+            self.report.Error('Bad guid?')
+            
+        return e
+    
+    def loadFromCache(self):
+        f = open(self.getCacheFilePath())
+        
+        complex_lines = []
+        infl_lines = []
+        
+        # start with complex forms
+        doingComplexForms = True
+        
+        # Read each section of the cache file
+        for i,line in enumerate(f):
+            
+            # Skip the first line
+            if i == 0:
+                continue
+            
+            # Next read the irregular forms. Skip this line
+            if line.rstrip() == IRR_INFL_VARIANTS:
+                doingComplexForms = False
+                continue
+
+            if doingComplexForms == True:
+                complex_lines.append(line)      
+            else: # variant forms
+                infl_lines.append(line)
+         
+        # Process complex forms
+        i = 0
+        t = len(complex_lines)
+        while i < t:
+            headWord = complex_lines[i].rstrip()
+            guid = complex_lines[i+1].rstrip()
+            
+            e = self.getEntry(guid)
+            self.complex_map[headWord] = e
+            i += 2
+            
+        # Process irregular forms
+        i = 0
+        t = len(infl_lines)
+        while i < t:
+            headWord = infl_lines[i].rstrip()
+            
+            num_variants = int(infl_lines[i+1].rstrip())
+            i += 2
+            var_list = []
+            
+            for j in range(0, num_variants):
+                guid = infl_lines[i].rstrip()
+                e = self.getEntry(guid)
+                i += 1
+                abbr_list = self.getAbbrList(i, infl_lines)
+                
+                # move the i index past all the abbreviations. Length x2 since each abbr. has two lines (name, val)
+                # 1 more for the num of abbreviations at the start of the abbrev. block
+                i += len(abbr_list)*2 + 1 
+                var_list.append((e, abbr_list))
+            
+            self.irr_infl_var_map[headWord] = var_list
+        
+        f.close()
+           
+    def getCacheFilePath(self):
+        # build the path in the temp dir using project name + testbed_cache.txt
+        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+CONVERSION_TO_STAMP_CACHE_FILE)
+    
+    def cacheExists(self):
+        return os.path.exists(self.getCacheFilePath())
+
+    def readDatabaseValues(self):
+
+        if self.report is not None:
+            self.report.ProgressStart(self.db.LexiconNumberOfEntries())
+      
+        # Loop through all the entries in the lexicon 
+        for i,e in enumerate(self.db.LexiconAllEntries()):
+        
+            if self.report is not None:
+                self.report.ProgressUpdate(i)
+            
+            # Set the headword value and the homograph #
+            headWord = ITsString(e.HeadWord).Text
+            
+            # If there is not a homograph # at the end, make it 1
+            # Also make it lower case. All ANA "roots" are lower case so we need to match them that way
+            headWord = Utils.add_one(headWord).lower()
+                                    
+            # Store all the complex entries by creating a map from headword to the complex entry
+            if e.EntryRefsOS.Count > 0: # only process complex forms
+                for entryRef in e.EntryRefsOS:
+                    if entryRef.ComponentLexemesRS and \
+                       entryRef.ComponentLexemesRS.Count > 1 and \
+                       entryRef.RefType == 1: # 1=complex form, 0=variant # At least 2 components
+                        if entryRef.ComplexEntryTypesRS:
+                            # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
+                            # just see if one of them is Phrasal Verb
+                            for complexType in entryRef.ComplexEntryTypesRS:
+                                if ITsString(complexType.Name.BestAnalysisAlternative).Text in self.complexFormTypeMap:
+            
+                                    self.complex_map[headWord] = e
+                                    break
+                            break # if we found a complex form, there won't be any more
+            
+            # Store all the entries that have inflectional variants with features assigned
+            if e.VariantFormEntries.Count > 0:
+                for variantForm in e.VariantFormEntries:
+                    for entryRef in variantForm.EntryRefsOS:
+                        if entryRef.RefType == 0: # we have a variant
+                            
+                            # Collect any inflection features that are assigned to the special
+                            # variant types called Irregularly Inflected Form
+                            for varType in entryRef.VariantEntryTypesRS:
+                                if varType.ClassName == "LexEntryInflType":
+                                    if varType.InflFeatsOA:
+                                        my_feat_abbr_list = []
+                                        # The features might be complex, make a recursive function call to find all features
+                                        get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
+                                        if len(my_feat_abbr_list) > 0:
+                                            myTuple = (variantForm, my_feat_abbr_list)
+                                            if headWord not in self.irr_infl_var_map:
+                                                self.irr_infl_var_map[headWord] = [myTuple]
+                                            else:
+                                                self.irr_infl_var_map[headWord].append(myTuple)
+
 def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
     error_list = []
     
@@ -750,62 +1000,12 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         error_list.extend(err_list)
         return error_list
 
-    complex_map = {}
-    irr_infl_var_map = {}
+    # Get the complex forms and inflectional variants
+    # This may be slow if the data is not in the cache
+    convData = ConversionData(TargetDB, report, complexFormTypeMap)
     
-    if report is not None:
-        report.ProgressStart(TargetDB.LexiconNumberOfEntries())
-  
-    # Loop through all the entries in the lexicon 
-    for i,e in enumerate(TargetDB.LexiconAllEntries()):
-    
-        if report is not None:
-            report.ProgressUpdate(i)
+    (complex_map, irr_infl_var_map) = convData.getData()
         
-        # Set the headword value and the homograph #
-        headWord = ITsString(e.HeadWord).Text
-        
-        # If there is not a homograph # at the end, make it 1
-        # Also make it lower case. All ANA "roots" are lower case so we need to match them that way
-        headWord = Utils.add_one(headWord).lower()
-                                
-        # Store all the complex entries by creating a map from headword to the the complex entry
-        if e.EntryRefsOS.Count > 0: # only process complex forms
-            for entryRef in e.EntryRefsOS:
-                if entryRef.ComponentLexemesRS and \
-                   entryRef.ComponentLexemesRS.Count > 1 and \
-                   entryRef.RefType == 1: # 1=complex form, 0=variant # At least 2 components
-                    if entryRef.ComplexEntryTypesRS:
-                        # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
-                        # just see if one of them is Phrasal Verb
-                        for complexType in entryRef.ComplexEntryTypesRS:
-                            if ITsString(complexType.Name.BestAnalysisAlternative).Text in complexFormTypeMap:
-        
-                                complex_map[headWord] = e
-                                break
-                        break # if we found a complex form, there won't be any more
-        
-        # Store all the entries that have inflectional variants with features assigned
-        if e.VariantFormEntries.Count > 0:
-            for variantForm in e.VariantFormEntries:
-                for entryRef in variantForm.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        
-                        # Collect any inflection features that are assigned to the special
-                        # variant types called Irregularly Inflected Form
-                        for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType":
-                                if varType.InflFeatsOA:
-                                    my_feat_abbr_list = []
-                                    # The features might be complex, make a recursive function call to find all features
-                                    get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
-                                    if len(my_feat_abbr_list) > 0:
-                                        myTuple = (variantForm, my_feat_abbr_list)
-                                        if headWord not in irr_infl_var_map:
-                                            irr_infl_var_map[headWord] = [myTuple]
-                                        else:
-                                            irr_infl_var_map[headWord].append(myTuple)
-                            
     # Now we are going to re-process the ANA file breaking down each complex form
     # into separate ANA records if needed. This is needed for instance if a source word
     # maps to multiple words in the target language. The multi-word ANA record needs to
