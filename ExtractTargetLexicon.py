@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.2 - 4/4/19 - Ron Lockwood
+#    Check for the root lexicon file being out of date compared to the target database
+#    before going through all target entries. This improves performance.
+#
 #   Version 1.6.1 - 3/27/19 - Ron Lockwood
 #    Bugfix for null MSA and for null PartOfSpeech. Give sensible errors in these
 #    situations and skip the sense. 
@@ -135,6 +139,25 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from collections import defaultdict
 from System import Guid
 from System import String
+from datetime import datetime
+
+def is_root_file_out_of_date(DB, rootFile):
+    
+    # Build a DateTime object with the FLEx DB last modified date
+    flexDate = DB.GetDateLastModified()
+    dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    
+    # Get the date of the cache file
+    try:
+        mtime = os.path.getmtime(rootFile)
+    except OSError:
+        mtime = 0
+    rootFileDateTime = datetime.fromtimestamp(mtime)
+    
+    if dbDateTime > rootFileDateTime: # FLEx DB is newer
+        return True 
+    else: # affix file is newer
+        return False
 
 def is_number(s):
     try:
@@ -557,8 +580,15 @@ def extract_target_lex(DB, configMap, report=None):
         error_list.append(('Configuration file problem.', 2))
         return error_list
     
-    # Create the dictionary files in a temp folder
+    # Create a path to the temporary folder + project name
     partPath = os.path.join(tempfile.gettempdir(), targetProject)
+
+    # If the target database hasn't changed since we created the root databse file, don't do anything.
+    if is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
+        error_list.append(('Target lexicon files are up to date.', 0))
+        return error_list
+
+    # Create the dictionary files in a temp folder
     (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
 
     # Output category info.
