@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.2 - 4/3/19 - Ron Lockwood
+#    Check for the affix file being out of date compared to the target database
+#    before going through all target entries. This improves performance.
+#
 #   Version 1.6.1 - 8/4/18 - Ron Lockwood
 #    Give a warning for affixes or clitics that are duplicate. Also sort the
 #    affixes before outputing to the file.
@@ -90,6 +94,7 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from collections import defaultdict
 from System import Guid
 from System import String
+from datetime import datetime
 
 def is_number(s):
     try:
@@ -97,7 +102,25 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def is_affix_file_out_of_date(DB, affixFile):
     
+    # Build a DateTime object with the FLEx DB last modified date
+    flexDate = DB.GetDateLastModified()
+    dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    
+    # Get the date of the cache file
+    try:
+        mtime = os.path.getmtime(affixFile)
+    except OSError:
+        mtime = 0
+    affixFileDateTime = datetime.fromtimestamp(mtime)
+    
+    if dbDateTime > affixFileDateTime: # FLEx DB is newer
+        return True 
+    else: # affix file is newer
+        return False
+
 def catalog_affixes(DB, configMap, filePath, report=None):
     
     error_list = []
@@ -106,14 +129,6 @@ def catalog_affixes(DB, configMap, filePath, report=None):
 
     if not morphNames:
         error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
-        return error_list
-    
-    # Allow the affix file to not be in the temp folder if a slash is present
-    myPath = Utils.build_path_default_to_temp(filePath)
-    try:
-        f_out = open(myPath, 'w') 
-    except IOError as e:
-        error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
         return error_list
     
     TargetDB = FLExDBAccess()
@@ -132,6 +147,21 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
+    # Allow the affix file to not be in the temp folder if a slash is present
+    myPath = Utils.build_path_default_to_temp(filePath)
+
+    # If the target database hasn't changed since we created the affix file, don't do anything.
+    if is_affix_file_out_of_date(TargetDB, myPath) == False:
+        error_list.append(('Affix list is up to date.', 0))
+        return error_list
+    
+    # Open the file for writing.
+    try:
+        f_out = open(myPath, 'w') 
+    except IOError as e:
+        error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
+        return error_list
+    
     glossAndTypeList = []
     
     count = 0
