@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.6.3 - 4/5/19 - Ron Lockwood
+#    Fixed bug where we didn't read in cache data as unicode.
+#
 #   Version 1.6.2 - 4/3/19 - Ron Lockwood
 #    Cache complex forms and inflectional variants for better performance. Refresh the
 #    cache when the target database has changed.
@@ -841,9 +844,9 @@ class ConversionData():
                 continue
 
             if doingComplexForms == True:
-                complex_lines.append(line)      
+                complex_lines.append(unicode(line.rstrip(), 'utf-8'))      
             else: # variant forms
-                infl_lines.append(line)
+                infl_lines.append(unicode(line.rstrip(), 'utf-8'))
          
         # Process complex forms
         i = 0
