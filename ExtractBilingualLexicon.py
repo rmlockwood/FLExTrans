@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.6.2 - 4/5/19 - Ron Lockwood
+#    Check if the bilingual dictionary is out of date in respect to the source 
+#    and target databases. If not, just process the replacement file. Don't do
+#    anything else. This helps performance.
+#
 #   Version 1.6.1 - 3/27/19 - Ron Lockwood
 #    Limit the number of warnings shown for pos abbreviations in the wrong format.
 #
@@ -86,6 +91,7 @@ import ReadConfig
 from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 from FTModuleClass import FlexToolsModuleClass
 
@@ -154,6 +160,28 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 from collections import defaultdict
 from System import Guid
 from System import String
+
+def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
+    
+    # Build a DateTime object with the FLEx DB last modified date
+    flexDate = sourceDB.GetDateLastModified()
+    srcDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    
+    # Build a DateTime object with the FLEx DB last modified date
+    flexDate = targetDB.GetDateLastModified()
+    tgtDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    
+    # Get the date of the cache file
+    try:
+        mtime = os.path.getmtime(bilingFile)
+    except OSError:
+        mtime = 0
+    bilingFileDateTime = datetime.fromtimestamp(mtime)
+    
+    if srcDbDateTime > bilingFileDateTime or tgtDbDateTime > bilingFileDateTime: # FLEx DB is newer
+        return True 
+    else: # affix file is newer
+        return False
 
 def is_number(s):
     try:
@@ -412,310 +440,316 @@ def MainFunction(DB, report, modifyAllowed):
     fullPathBilingFile = bilingFile
     #fullPathBilingFile = os.path.join(tempfile.gettempdir(), bilingFile)
     #f_out = open(fullPathBilingFile, 'w')
-    
-    try:
-        f_out = open(fullPathBilingFile, 'w')
-    except IOError as e:
-        report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
 
-    report.Info("Outputing category information...")
     
-    f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
-    f_out.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-    f_out.write('<dictionary>\n')
-    f_out.write('  <alphabet/>\n')
-    f_out.write('  <sdefs>\n')
-    f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
-    
-    posMap = {}
-    abbrevError = False
-    
-    # loop through all source categories
-    for pos in DB.lp.AllPartsOfSpeech:
-
-        # save abbreviation
-        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-        posMap[posAbbr] = pos.ToString()
+    # If the target database hasn't changed since we created the affix file, don't do anything.
+    if biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
+        report.Info('Bilingual dictionary is up to date.')
         
-        # give an error if there is a space in the category abbreviation, STAMP can't handle it.
-        if re.search(r'\s', posAbbr):
-            report.Error("The source abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
-            abbrevError = True
+    else: # build the file
+        try:
+            f_out = open(fullPathBilingFile, 'w')
+        except IOError as e:
+            report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
     
-    spaceErrors = 0
-    periodErrors = 0
-    # loop through all target categories
-    for pos in TargetDB.lp.AllPartsOfSpeech:
-
-        # save abbreviation
-        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-
-        # DONE: allow spaces in POS abbreviations
-        # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
-        if re.search(r'\s', posAbbr):
-            if spaceErrors < 3:
-                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
-            if spaceErrors == 2:
-                report.Warning("Suppressing further errors of this type.")
-            posAbbr = re.sub(r'\s', '_', posAbbr)
-            spaceErrors += 1
-            
-        # give a warning if there is a period in the target category. Remove them.
-        if re.search(r'\.', posAbbr):
-            if periodErrors < 3:
-                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
-            if periodErrors == 2:
-                report.Warning("Suppressing further errors of this type.")
-            posAbbr = re.sub(r'\.', '', posAbbr)
-            periodErrors += 1
-
-        if posAbbr not in posMap:
+        report.Info("Outputing category information...")
+        
+        f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
+        f_out.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+        f_out.write('<dictionary>\n')
+        f_out.write('  <alphabet/>\n')
+        f_out.write('  <sdefs>\n')
+        f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
+        
+        posMap = {}
+        abbrevError = False
+        
+        # loop through all source categories
+        for pos in DB.lp.AllPartsOfSpeech:
+    
+            # save abbreviation
+            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             posMap[posAbbr] = pos.ToString()
-        else:
-            # If we already have the abbreviation in the map and the full category name
-            # is not the same as the source one, append the target one to the source one
-            if posMap[posAbbr] != pos.ToString():
-                posMap[posAbbr] += ' / ' + pos.ToString()
-
-        # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
-        if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray())>0:
-            AN_list = get_sub_ics(pos.InflectionClassesOC)
-            for icAbbr, icName in AN_list:
-                posMap[icAbbr] = icName
-    
-    # Exit after showing all abbreviation errors            
-    if abbrevError:
-        return
-    
-    # save target features so they can go in the symbol definition section
-    for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
-        if feat.ClassID == 50: # FsClosedFeature
-            for val in feat.ValuesOC:
-                featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
-                featName = ITsString(val.Name.BestAnalysisAlternative).Text
-                posMap[featAbbr] = featName
             
-    # build string for the xml pos section
-    for pos_abbr, pos_name in sorted(posMap.items(), key=lambda(k, v): (k.lower(),v)):
-        cat_str = '    <sdef n="'
-        # output abbreviation
-        cat_str += pos_abbr
-        cat_str += '" c="'
+            # give an error if there is a space in the category abbreviation, STAMP can't handle it.
+            if re.search(r'\s', posAbbr):
+                report.Error("The source abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
+                abbrevError = True
         
-        # output full category name
-        cat_str += pos_name
-        cat_str += '"/>\n'
-        f_out.write(cat_str.encode('utf-8'))
+        spaceErrors = 0
+        periodErrors = 0
+        # loop through all target categories
+        for pos in TargetDB.lp.AllPartsOfSpeech:
     
-    f_out.write('  </sdefs>\n\n')
-    f_out.write('  <section id="main" type="standard">\n')
+            # save abbreviation
+            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
     
-    report.Info("Building the bilingual dictionary...")
-    records_dumped_cnt = 0
-    report.ProgressStart(DB.LexiconNumberOfEntries())
-  
-    # Loop through all the entries
-    for entry_cnt,e in enumerate(DB.LexiconAllEntries()):
+            # DONE: allow spaces in POS abbreviations
+            # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
+            if re.search(r'\s', posAbbr):
+                if spaceErrors < 3:
+                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
+                if spaceErrors == 2:
+                    report.Warning("Suppressing further errors of this type.")
+                posAbbr = re.sub(r'\s', '_', posAbbr)
+                spaceErrors += 1
+                
+            # give a warning if there is a period in the target category. Remove them.
+            if re.search(r'\.', posAbbr):
+                if periodErrors < 3:
+                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
+                if periodErrors == 2:
+                    report.Warning("Suppressing further errors of this type.")
+                posAbbr = re.sub(r'\.', '', posAbbr)
+                periodErrors += 1
     
-        report.ProgressUpdate(entry_cnt)
+            if posAbbr not in posMap:
+                posMap[posAbbr] = pos.ToString()
+            else:
+                # If we already have the abbreviation in the map and the full category name
+                # is not the same as the source one, append the target one to the source one
+                if posMap[posAbbr] != pos.ToString():
+                    posMap[posAbbr] += ' / ' + pos.ToString()
+    
+            # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
+            if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray())>0:
+                AN_list = get_sub_ics(pos.InflectionClassesOC)
+                for icAbbr, icName in AN_list:
+                    posMap[icAbbr] = icName
         
-        # Don't process affixes, clitics
-        if e.LexemeFormOA and \
-           e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
-           MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
+        # Exit after showing all abbreviation errors            
+        if abbrevError:
+            return
         
-            # Set the headword value and the homograph #
-            headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
+        # save target features so they can go in the symbol definition section
+        for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
+            if feat.ClassID == 50: # FsClosedFeature
+                for val in feat.ValuesOC:
+                    featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
+                    featName = ITsString(val.Name.BestAnalysisAlternative).Text
+                    posMap[featAbbr] = featName
+                
+        # build string for the xml pos section
+        for pos_abbr, pos_name in sorted(posMap.items(), key=lambda(k, v): (k.lower(),v)):
+            cat_str = '    <sdef n="'
+            # output abbreviation
+            cat_str += pos_abbr
+            cat_str += '" c="'
             
-            # If there is not a homograph # at the end, make it 1
-            if not re.search('(\d$)', headWord):
-                headWord += '1'
+            # output full category name
+            cat_str += pos_name
+            cat_str += '"/>\n'
+            f_out.write(cat_str.encode('utf-8'))
+        
+        f_out.write('  </sdefs>\n\n')
+        f_out.write('  <section id="main" type="standard">\n')
+        
+        report.Info("Building the bilingual dictionary...")
+        records_dumped_cnt = 0
+        report.ProgressStart(DB.LexiconNumberOfEntries())
+      
+        # Loop through all the entries
+        for entry_cnt,e in enumerate(DB.LexiconAllEntries()):
+        
+            report.ProgressUpdate(entry_cnt)
             
-            # Loop through senses
-            for i, mySense in enumerate(e.SensesOS):
+            # Don't process affixes, clitics
+            if e.LexemeFormOA and \
+               e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+               e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
+               MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
+            
+                # Set the headword value and the homograph #
+                headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
                 
-                trgtFound = False
+                # If there is not a homograph # at the end, make it 1
+                if not re.search('(\d$)', headWord):
+                    headWord += '1'
                 
-                # Make sure we have a valid analysis object
-                if mySense.MorphoSyntaxAnalysisRA:
-                
-                    # Get the POS abbreviation for the current sense, assuming we have a stem
-                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                        
-                        if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
-                            abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                  Abbreviation.BestAnalysisAlternative).Text
-                        else:
-                            report.Warning('Skipping sense because the POS is unknown: '+\
-                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                            #abbrev = 'unk'
-                                                  
-                        # If we have a link to a target entry, process it
-                        equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-                        if equiv != None:
+                # Loop through senses
+                for i, mySense in enumerate(e.SensesOS):
+                    
+                    trgtFound = False
+                    
+                    # Make sure we have a valid analysis object
+                    if mySense.MorphoSyntaxAnalysisRA:
+                    
+                        # Get the POS abbreviation for the current sense, assuming we have a stem
+                        if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                             
-                            # Parse the link to get the guid
-                            u = equiv.index('guid')
-                            myGuid = equiv[u+7:u+7+36]
-                            
-                            # Look up the entry in the trgt project
-                            repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
-                            guid = Guid(String(myGuid))
-    
-                            try:
-                                targetEntry = repo.GetObject(guid)
-                            except:
-                                report.Error('Skipping sense because the link to the target entry is invalid: '+\
-                                             ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                continue
-                            
-                            if targetEntry:
+                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
+                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                      Abbreviation.BestAnalysisAlternative).Text
+                            else:
+                                report.Warning('Skipping sense because the POS is unknown: '+\
+                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                #abbrev = 'unk'
+                                                      
+                            # If we have a link to a target entry, process it
+                            equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
+                            if equiv != None:
                                 
-                                # Set the target headword value and the homograph #
-                                targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
+                                # Parse the link to get the guid
+                                u = equiv.index('guid')
+                                myGuid = equiv[u+7:u+7+36]
                                 
-                                # If there is not a homograph # at the end, make it 1
-                                if not re.search('(\d$)', targetHeadWord):
-                                    targetHeadWord += '1'
+                                # Look up the entry in the trgt project
+                                repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
+                                guid = Guid(String(myGuid))
+        
+                                try:
+                                    targetEntry = repo.GetObject(guid)
+                                except:
+                                    report.Error('Skipping sense because the link to the target entry is invalid: '+\
+                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    continue
                                 
-                                # An empty sense number means default to sense 1
-                                senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
-                                if senseNum == None:
-                                    trgtSense = 1
-                                elif is_number(senseNum):
-                                    trgtSense = int(senseNum)
-                                else:
-                                    report.Warning('Sense number: '+trgtSense+\
-                                                   ' is not valid for target headword: '+\
-                                                   ITsString(targetEntry.HeadWord).Text+\
-                                                   ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                
-                                # Make sure that sense number is valid    
-                                if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
-                                
-                                    # Get the POS abbreviation for the target sense, assuming we have a stem
-                                    targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
-                                    if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                                        
-                                        if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                                            trgtFound = True
-                                            # Get target pos abbreviation
-                                            trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                                  Abbreviation.BestAnalysisAlternative).Text
-                                            
-                                            # Convert spaces to underscores and remove periods
-                                            trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
-                                            trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
-                                            
-                                            # Get target inflection class
-                                            trgtInflCls =''
-                                            if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                                                trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                                      Abbreviation.BestAnalysisAlternative).Text+s4a         
-                                            
-                                            # Get target features                                                     
-                                            featStr = ''
-                                            if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                                                feat_abbr_list = []
-                                                # The features might be complex, make a recursive function call to find all leaf features
-                                                get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
-                                                
-                                                # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                                for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                    featStr += s2 + abb + s4a
-                                            
-                                            # output the bilingual dictionary line (the sX is xml stuff)
-                                            out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
-                                                      str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                            f_out.write(out_str.encode('utf-8'))
-                                            records_dumped_cnt += 1
+                                if targetEntry:
                                     
+                                    # Set the target headword value and the homograph #
+                                    targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
+                                    
+                                    # If there is not a homograph # at the end, make it 1
+                                    if not re.search('(\d$)', targetHeadWord):
+                                        targetHeadWord += '1'
+                                    
+                                    # An empty sense number means default to sense 1
+                                    senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
+                                    if senseNum == None:
+                                        trgtSense = 1
+                                    elif is_number(senseNum):
+                                        trgtSense = int(senseNum)
+                                    else:
+                                        report.Warning('Sense number: '+trgtSense+\
+                                                       ' is not valid for target headword: '+\
+                                                       ITsString(targetEntry.HeadWord).Text+\
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    
+                                    # Make sure that sense number is valid    
+                                    if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
+                                    
+                                        # Get the POS abbreviation for the target sense, assuming we have a stem
+                                        targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
+                                        if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                                            
+                                            if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+                                                trgtFound = True
+                                                # Get target pos abbreviation
+                                                trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                                                      Abbreviation.BestAnalysisAlternative).Text
+                                                
+                                                # Convert spaces to underscores and remove periods
+                                                trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
+                                                trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
+                                                
+                                                # Get target inflection class
+                                                trgtInflCls =''
+                                                if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                                    trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                          Abbreviation.BestAnalysisAlternative).Text+s4a         
+                                                
+                                                # Get target features                                                     
+                                                featStr = ''
+                                                if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                                                    feat_abbr_list = []
+                                                    # The features might be complex, make a recursive function call to find all leaf features
+                                                    get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                                    
+                                                    # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                                    for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                        featStr += s2 + abb + s4a
+                                                
+                                                # output the bilingual dictionary line (the sX is xml stuff)
+                                                out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
+                                                          str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
+                                                f_out.write(out_str.encode('utf-8'))
+                                                records_dumped_cnt += 1
+                                        
+                                            else:
+                                                report.Warning('Skipping sense because the target POS is undefined '+\
+                                                               ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                                         else:
-                                            report.Warning('Skipping sense because the target POS is undefined '+\
+                                            report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
                                                            ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
                                                            ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                                     else:
-                                        report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
-                                                       ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                        if targetEntry.SensesOS == None:
+                                            report.Warning('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                        elif trgtSense > targetEntry.SensesOS.Count:
+                                            report.Warning('Sense number: '+str(trgtSense)+\
+                                                           ' is not valid. That many senses do not exist for target headword: '+\
+                                                           ITsString(targetEntry.HeadWord).Text+\
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                                 else:
-                                    if targetEntry.SensesOS == None:
-                                        report.Warning('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                    elif trgtSense > targetEntry.SensesOS.Count:
-                                        report.Warning('Sense number: '+str(trgtSense)+\
-                                                       ' is not valid. That many senses do not exist for target headword: '+\
-                                                       ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    report.Warning('Target entry not found. This target GUID does not exist: '+myGuid+\
+                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                             else:
-                                report.Warning('Target entry not found. This target GUID does not exist: '+myGuid+\
-                                               ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                pass
+                                # Don't report this. Most of the time the equivalent field will be empty.
+                                #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
                         else:
-                            pass
-                            # Don't report this. Most of the time the equivalent field will be empty.
-                            #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
+                            report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
                     else:
-                        report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                       ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                else:
-                    report.Warning('Skipping sense, no analysis object'\
-                                       ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                if not trgtFound:
-                    # output the bilingual dictionary line -- source and target are the same
-                    
-                    # do substitutions of categories. This is for standard substitutions where 
-                    # the target category name is different even though essentially the categories are equivalent.
-                    out_str = ''
-                    for tup in catSubList:
-                        if tup[0] == abbrev:
-                            temp_str = headWord + '.'+str(i+1)
-                            out_str = s1+temp_str+s2+tup[0]+s3+temp_str+s2+tup[1]+s4+'\n'
-                            break
+                        report.Warning('Skipping sense, no analysis object'\
+                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                    if not trgtFound:
+                        # output the bilingual dictionary line -- source and target are the same
                         
-                    if out_str == '':
-                        out_str = headWord+'.'+str(i+1)+s2+abbrev        
-                        out_str = s1i+out_str+s4i+'\n'
+                        # do substitutions of categories. This is for standard substitutions where 
+                        # the target category name is different even though essentially the categories are equivalent.
+                        out_str = ''
+                        for tup in catSubList:
+                            if tup[0] == abbrev:
+                                temp_str = headWord + '.'+str(i+1)
+                                out_str = s1+temp_str+s2+tup[0]+s3+temp_str+s2+tup[1]+s4+'\n'
+                                break
+                            
+                        if out_str == '':
+                            out_str = headWord+'.'+str(i+1)+s2+abbrev        
+                            out_str = s1i+out_str+s4i+'\n'
+                            
+                        f_out.write(out_str.encode('utf-8')) 
+                        records_dumped_cnt += 1   
                         
-                    f_out.write(out_str.encode('utf-8')) 
-                    records_dumped_cnt += 1   
-                    
-        else:
-            if e.LexemeFormOA == None:
-                report.Warning('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-            elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
-                # We've documented that affixes are skipped. Don't report this
-                #report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName)
-                pass
-            elif e.LexemeFormOA.MorphTypeRA == None:
-                report.Warning('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e))
-            elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
-                # Don't report this. We've documented it.
-                #report.Warning('Skipping entry because the morph type is: '+\
-                               #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
-                pass
-       
-    f_out.write('    <!-- SECTION: Punctuation -->\n')
+            else:
+                if e.LexemeFormOA == None:
+                    report.Warning('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                    # We've documented that affixes are skipped. Don't report this
+                    #report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName)
+                    pass
+                elif e.LexemeFormOA.MorphTypeRA == None:
+                    report.Warning('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e))
+                elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
+                    # Don't report this. We've documented it.
+                    #report.Warning('Skipping entry because the morph type is: '+\
+                                   #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
+                    pass
+           
+        f_out.write('    <!-- SECTION: Punctuation -->\n')
+        
+        # Create a regular expression string for the punctuation characters
+        # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
+        reStr = re.sub(r'([+?|*])',r'\\\1',sentPunct)
+        reStr = '['+reStr+']+'
+        
+        # This notation in Apertium basically means that any combination of the given punctuation characters
+        # with the tag <sent> will be substituted with the same thing plus the <sent> tag.
+        f_out.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
+        f_out.write('  </section>\n')
+        f_out.write('</dictionary>\n')
+        f_out.close()
     
-    # Create a regular expression string for the punctuation characters
-    # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
-    reStr = re.sub(r'([+?|*])',r'\\\1',sentPunct)
-    reStr = '['+reStr+']+'
-    
-    # This notation in Apertium basically means that any combination of the given punctuation characters
-    # with the tag <sent> will be substituted with the same thing plus the <sent> tag.
-    f_out.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
-    f_out.write('  </section>\n')
-    f_out.write('</dictionary>\n')
-    f_out.close()
-    
+        report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
+        report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
+        
     # As a last step, replace certain parts of the bilingual dictionary
     if do_replacements(configMap, report, fullPathBilingFile) == False:
         return
         
-    report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
-    report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
-    
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
