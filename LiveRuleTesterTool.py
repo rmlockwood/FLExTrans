@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.2 - 4/5/19 - Ron Lockwood
+#    Make the synthesis text box RTL only if the text going in there is RTL.
+#
 #   Version 3.1.1 - 3/27/19 - Ron Lockwood
 #    Handle errors coming from various calls as coming in triplets instead of twos.
 #    The last is a url that gets ignored. RTL fixes.
@@ -650,7 +653,7 @@ class Main(QtGui.QMainWindow):
         synthText = unicode(lf.read(),'utf-8')
         
         # if RTL text, prepend the RTL mark
-        if self.__sent_model.getRTL():
+        if self.has_RTL_data(synthText):
             synthText = ur'\u200F' + synthText
             
         self.ui.SynthTextEdit.setPlainText(synthText)
