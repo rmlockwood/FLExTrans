@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'Linker.ui'
 #
-# Created: Fri Jan 06 16:28:53 2017
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Fri Apr 05 18:06:07 2019
+#      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -38,6 +38,7 @@ class Ui_MainWindow(object):
         self.tableView = MyTableView.MyTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 835, 351))
         font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Arial"))
         font.setPointSize(10)
         self.tableView.setFont(font)
         self.tableView.setObjectName(_fromUtf8("tableView"))
@@ -62,7 +63,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName(_fromUtf8("label"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
