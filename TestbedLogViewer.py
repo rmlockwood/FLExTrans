@@ -22,6 +22,7 @@ import copy
 import datetime
 import Utils
 import xml.etree.ElementTree as ET
+import unicodedata
 
 #----------------------------------------------------------------
 # Configurables:
@@ -272,7 +273,9 @@ class TestResultItem(BaseTreeItem):
                 return ET.tostring(p)
             else:
                 retStr = '---'
-                if self.isRTL():
+                # keep ltr unless the expected data is rtl
+                if unicodedata.bidirectional(self.expectedStr[0]) in (u'R', u'AL'):
+                #if self.isRTL():
                     retStr = u'\u200F' + retStr
                 return retStr
         return ''
