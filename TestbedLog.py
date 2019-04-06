@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'TestbedLog.ui'
 #
-# Created: Fri Jul 06 21:21:03 2018
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Fri Apr 05 17:54:14 2019
+#      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -33,6 +33,9 @@ class Ui_MainWindow(object):
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.logTreeView = QtGui.QTreeView(self.centralwidget)
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Arial"))
+        self.logTreeView.setFont(font)
         self.logTreeView.setObjectName(_fromUtf8("logTreeView"))
         self.verticalLayout.addWidget(self.logTreeView)
         self.horizontalLayout_2 = QtGui.QHBoxLayout()
