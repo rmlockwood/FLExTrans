@@ -70,7 +70,6 @@ import tempfile
 import sys
 import unicodedata
 from fuzzywuzzy import fuzz
-from PyQt4 import QtGui, QtCore
 import copy
 
 #----------------------------------------------------------------
@@ -161,13 +160,6 @@ class HPG(object):
         return self.__gloss
     def getSenseNum(self):
         return self.__senseNum
-    def matches(self, hpg):
-        return (self.getSense() == hpg.getSense()) and \
-               (self.getHeadword() == hpg.getHeadword()) and \
-               (self.getPOS() == hpg.getPOS()) and \
-               (self.getGloss() == hpg.getGloss()) and \
-               (self.getSenseNum() == hpg.getSenseNum())
-
     
 # model the information having to do with a link from a source sense
 # to a target sense
@@ -247,49 +239,16 @@ class LinkerCombo(QtCore.QAbstractListModel):
         myHPG = self.__localData[row]
         
         if role == QtCore.Qt.DisplayRole:
-            if myHPG.getHeadword() != '':
-                if self.getRTL():
-                    value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
-                else:
-                    value = myHPG.getHeadword() + u' (' + myHPG.getPOS() + u') ' + myHPG.getGloss()
+            if self.getRTL():
+                value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
             else:
-                value = ''
-            self.__currentHPG = myHPG
-
+                value = myHPG.getHeadword() + u' (' + myHPG.getPOS() + u') ' + myHPG.getGloss()
+            self.__currentHPG = myHPG    
             return QtCore.QString(value)
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
-
-    def getSourceData(self):
-        return self.__localData
-
-# class ComboDelegate(QItemDelegate):
-#     comboItems=['Combo_Zero', 'Combo_One','Combo_Two']
-#     def __init__(self, myData = [], parent = None):
-#         QtCore.QAbstractListModel.__init__(self, parent)
-#         self.__localData = myData
-#         self.__currentHPG = myData[0] # start out on the first one
-#         self.__RTL = False
-#
-#     def createEditor(self, parent, option, proxyModelIndex):
-#         combo = QComboBox(parent)
-#         combo.addItems(self.comboItems)
-#         # combo.setEditable(True)
-#         self.connect(combo, SIGNAL("currentIndexChanged(int)"), self, SLOT("currentIndexChanged()"))
-#         return combo
-#
-#     def setModelData(self, combo, model, index):
-#         comboIndex=combo.currentIndex()
-#         text=self.comboItems[comboIndex]
-#         model.setData(index, text)
-#         print '\t\t\t ...setModelData() 1', text
-#
-#     @pyqtSlot()
-#     def currentIndexChanged(self):
-#         self.commitData.emit(self.sender())
-
-
+            
 class LinkerTable(QtCore.QAbstractTableModel):
     
     def __init__(self, myData = [[]], headerData = [], parent = None):
@@ -357,33 +316,24 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 # Not working because painting is handled in the delegate class
                 # Mark in yellow the first column cells for the rows to be linked
                 if col == 0 and self.__localData[row].linkIt == True:
-                    colorString = 'yellow';
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
                 # Modified rows get a color just for the target columns
                 elif self.__localData[row].modified == True and col >= 4 and col <= 6:
-                        colorString = '#98fb98'
                         qColor = QtGui.QColor(152, 251, 152) # pale green
                 # Suggested links
                 elif self.__localData[row].suggestion == True:
                     # Exact match
                     if self.__localData[row].get_srcGloss() == self.__localData[row].get_tgtGloss():
-                        colorString = '#b0ffff'
                         qColor = QtGui.QColor(176, 255, 255) # medium cyan?
                     else:
-                        colorString = '#e0ffff'
                         qColor = QtGui.QColor(224, 255, 255) # light cyan
                 # No links
                 elif self.__localData[row].unlinked == True or self.__localData[row].initiallyUnlinked == True:
                     self.__localData[row].initiallyUnlinked = True
-                    colorString = '#ffc0cb'
                     qColor = QtGui.QColor(255, 192, 203) # pink
                 else:
-                    colorString = 'white'
                     qColor = QtGui.QColor(QtCore.Qt.white)
-                #qBrush = QtGui.QBrush(qColor)
-                if self.__cellComboBoxList != None:
-                        self.__cellComboBoxList[row].setStyleSheet("QComboBox { background: " + colorString + "; border: 0px; } ")
-
+                #qBrush = QtGui.QBrush(qColor) 
                 return qColor
         
         if role == QtCore.Qt.DisplayRole:
@@ -421,36 +371,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             if col == 0:
                 self.__localData[row].linkIt = value
         return True
-
-    def setTgtHPG(self, row, tgtHPG):
-        self.__selectedHPG = tgtHPG
-        self.__localData[row].set_tgtHPG(self.__selectedHPG)
-        self.__localData[row].linkIt = True
-        self.__localData[row].modified = True
-        self.dataChanged.emit(self.index(row, 4),self.index(row, 6))
-
-    def setCellComboBoxList(self, cellComboBoxList):
-        self.__cellComboBoxList = cellComboBoxList
-
-
-class CellComboBox(QtGui.QComboBox):
-    def __init__(self, row, tableModel, targetList, parent=None):
-        QtGui.QComboBox.__init__(self, parent)
-        self.__row = row
-        self.__tableModel = tableModel
-        self.__targetList = targetList
-
-    def setInitialIndex (self, index):
-        QtGui.QComboBox.setCurrentIndex(self, index)
-
-    def onCurrentIndexChanged(self):
-
-        index = self.currentIndex()
-        self.__tableModel.setTgtHPG(self.__row, self.__targetList[index])
-
-
-
-
+            
 class Main(QtGui.QMainWindow):
 
     def __init__(self, myData, headerData, comboData):
@@ -464,19 +385,11 @@ class Main(QtGui.QMainWindow):
         # Prepare the checkbox column
         for row in range(0, self.__model.rowCount(self)):
             self.ui.tableView.openPersistentEditor(self.__model.index(row, 0))
-
-        blankHPG = HPG('','','','')
-
-        comboData.insert(0,blankHPG)
-
         self.__combo_model = LinkerCombo(comboData)
-
-        self.makeTargetComboBoxes()
-
-        #self.ui.targetLexCombo.setModel(self.__combo_model)
+        self.ui.targetLexCombo.setModel(self.__combo_model)
         self.ret_val = 0
         self.cols = 7
-        #self.ui.targetLexCombo.currentIndexChanged.connect(self.ComboClicked)
+        self.ui.targetLexCombo.currentIndexChanged.connect(self.ComboClicked)
         self.ui.FilterCheckBox.clicked.connect(self.FilterClicked)
         self.ComboClicked()
         
@@ -485,21 +398,10 @@ class Main(QtGui.QMainWindow):
         # Check for right to left data and set the combobox direction if needed
         for i in range(0, len(myHeadword)):
             if unicodedata.bidirectional(myHeadword[i]) in (u'R', u'AL'):
-                #self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                 self.__combo_model.setRTL(True)
                 break
-
-    def on_targetComboChanged(self):
-        comboData = self.__combo_model.getSourceData()
-        self.__model.setTgtHPG(3, comboData[5])
-
-    def findTarget(self, hpgList, targetHPG):
-
-        for i in range(0, len(hpgList)):
-            currentTargetHPG = hpgList[i]
-            if (currentTargetHPG != None) and (currentTargetHPG.matches(targetHPG)):
-                return i
-
+        
     def resizeEvent(self, event):
         QtGui.QMainWindow.resizeEvent(self, event)
         
@@ -551,9 +453,6 @@ class Main(QtGui.QMainWindow):
         self.__model.setInternalData(filteredData)
         self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
-
-        self.makeTargetComboBoxes()
-
         #self.__model.modelReset() # causes crash
         # crude way to cause a repaint
         tv = self.ui.tableView
@@ -566,39 +465,13 @@ class Main(QtGui.QMainWindow):
         self.__model.beginResetModel();
         self.__model.setInternalData(self.__fullData)
         self.__model.endResetModel();
-
-        self.makeTargetComboBoxes()
-
         # crude way to cause a repaint
         tv = self.ui.tableView
         tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
         tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
         self.ui.tableView.update()
         return
-
-    def makeTargetComboBoxes(self):
-        comboData = self.__combo_model.getSourceData()
-
-        cellComboBoxList = []
-        # Make the target a combobox
-        for row in range(0, self.__model.rowCount(self)):
-            c = CellComboBox(row, self.__model, comboData)
-            cellComboBoxList.append(c)
-            c.setModel(LinkerCombo(comboData))
-            tgtHPG = self.__model.getInternalData()[row].get_tgtHPG()
-            if (tgtHPG != None):
-                tgtIndex = self.findTarget(comboData, tgtHPG)
-                c.setInitialIndex(tgtIndex)
-
-            # for some reason this has to be done outside of the CellComboBox class
-            c.currentIndexChanged.connect(c.onCurrentIndexChanged)
-
-            c.setStyleSheet("QComboBox { border: 0px; } ")
-            i = self.__model.index(row, 4)
-            self.ui.tableView.setIndexWidget(i, c)
-
-        self.__model.setCellComboBoxList(cellComboBoxList)
-
+        
 def GetEntryWithSense(e):
     # If the entry is a variant and it has no senses, loop through its references 
     # until we get to an entry that has a sense
@@ -962,7 +835,6 @@ def MainFunction(DB, report, modify=True):
         exec_val = app.exec_()
         
         cnt = 0
-        unlinkCount = 0
         # Update the source database with the correct links
         if window.ret_val: # True = make the changes
             
@@ -973,7 +845,7 @@ def MainFunction(DB, report, modify=True):
                 currSense = currLink.get_srcSense()
                 if currSense not in updated_senses:
                     # Create a link if the user marked it for linking
-                    if (currLink.linkIt == True) and (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() != ''):
+                    if currLink.linkIt == True:
                         cnt += 1
                         # Build target link from saved url path plus guid string for this target sense
                         text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
@@ -986,26 +858,12 @@ def MainFunction(DB, report, modify=True):
                             DB.LexiconSetFieldText(currSense, senseNumField, str(currLink.get_tgtSenseNum()))
                     
                         updated_senses[currSense] = 1
-
-                    elif (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() == ''):
-
-                        unlinkCount += 1
-                        # Clear the target field
-                        DB.LexiconSetFieldText(currSense, senseEquivField, '')
-                        DB.LexiconSetFieldText(currSense, senseNumField, '')
-
-                        updated_senses[currSense] = 1
-
+                    
         if cnt == 1:
             report.Info(str(cnt)+' link created.')
         else:
             report.Info(str(cnt)+' links created.')
-        if unlinkCount == 1:
-            report.Info('1 link removed')
-        elif unlinkCount > 1:
-            report.Info(str(unlinkCount) + ' links removed')
-
-                #exit(exec_val)
+    #exit(exec_val)
  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
