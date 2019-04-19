@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.2.2 - 2/27/19 - Ron Lockwood
+#    Skip empty MSAs
+#
 #   Version 2.2.1 - 1/15/18 - Marc Penner
 #    Wrapped calls to resetInternalData with beginResetModel and end.. so that 
 #    blank lines get removed.
@@ -510,6 +513,10 @@ def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, sca
         
             # Loop through senses
             for senseNum, mySense in enumerate(e.SensesOS):
+                # Skip empty MSAs
+                if mySense.MorphoSyntaxAnalysisRA == None:
+                    continue
+                
                 # Get headword, POS, gloss
                 headword = ITsString(e.HeadWord).Text
                 if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
@@ -835,6 +842,8 @@ def MainFunction(DB, report, modify=True):
         exec_val = app.exec_()
         
         cnt = 0
+        unlinkCount = 0
+        
         # Update the source database with the correct links
         if window.ret_val: # True = make the changes
             
@@ -845,7 +854,7 @@ def MainFunction(DB, report, modify=True):
                 currSense = currLink.get_srcSense()
                 if currSense not in updated_senses:
                     # Create a link if the user marked it for linking
-                    if currLink.linkIt == True:
+                    if (currLink.linkIt == True) and (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() != ''):
                         cnt += 1
                         # Build target link from saved url path plus guid string for this target sense
                         text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
@@ -859,10 +868,25 @@ def MainFunction(DB, report, modify=True):
                     
                         updated_senses[currSense] = 1
                     
+                    elif (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() == ''):
+
+                        unlinkCount += 1
+                        # Clear the target field
+                        DB.LexiconSetFieldText(currSense, senseEquivField, '')
+                        DB.LexiconSetFieldText(currSense, senseNumField, '')
+
+                        updated_senses[currSense] = 1
+                    
         if cnt == 1:
             report.Info(str(cnt)+' link created.')
         else:
             report.Info(str(cnt)+' links created.')
+
+        if unlinkCount == 1:
+            report.Info('1 link removed')
+        elif unlinkCount > 1:
+            report.Info(str(unlinkCount) + ' links removed')  
+                      
     #exit(exec_val)
  
 #----------------------------------------------------------------
