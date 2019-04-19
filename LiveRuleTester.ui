@@ -700,6 +700,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="editTestbedButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>754</x>
@@ -713,6 +716,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="viewTestbedLogButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>940</x>

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'TestbedLog.ui'
 #
-# Created: Fri Apr 05 17:54:14 2019
-#      by: PyQt4 UI code generator 4.10
+# Created: Fri Apr 19 17:46:31 2019
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -48,6 +48,7 @@ class Ui_MainWindow(object):
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.editTestbedButton = QtGui.QPushButton(self.centralwidget)
+        self.editTestbedButton.setEnabled(False)
         self.editTestbedButton.setObjectName(_fromUtf8("editTestbedButton"))
         self.horizontalLayout_2.addWidget(self.editTestbedButton)
         spacerItem2 = QtGui.QSpacerItem(80, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
