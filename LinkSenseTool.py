@@ -842,6 +842,8 @@ def MainFunction(DB, report, modify=True):
         exec_val = app.exec_()
         
         cnt = 0
+        unlinkCount = 0
+        
         # Update the source database with the correct links
         if window.ret_val: # True = make the changes
             
@@ -852,7 +854,7 @@ def MainFunction(DB, report, modify=True):
                 currSense = currLink.get_srcSense()
                 if currSense not in updated_senses:
                     # Create a link if the user marked it for linking
-                    if currLink.linkIt == True:
+                    if (currLink.linkIt == True) and (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() != ''):
                         cnt += 1
                         # Build target link from saved url path plus guid string for this target sense
                         text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
@@ -866,10 +868,25 @@ def MainFunction(DB, report, modify=True):
                     
                         updated_senses[currSense] = 1
                     
+                    elif (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() == ''):
+
+                        unlinkCount += 1
+                        # Clear the target field
+                        DB.LexiconSetFieldText(currSense, senseEquivField, '')
+                        DB.LexiconSetFieldText(currSense, senseNumField, '')
+
+                        updated_senses[currSense] = 1
+                    
         if cnt == 1:
             report.Info(str(cnt)+' link created.')
         else:
             report.Info(str(cnt)+' links created.')
+
+        if unlinkCount == 1:
+            report.Info('1 link removed')
+        elif unlinkCount > 1:
+            report.Info(str(unlinkCount) + ' links removed')  
+                      
     #exit(exec_val)
  
 #----------------------------------------------------------------
