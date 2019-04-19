@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6.3 - 4/5/19 - Ron Lockwood
 #    Fixed bug where we didn't read in cache data as unicode.
 #
@@ -130,7 +133,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.6",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Create a text file in STAMP format",
         'moduleDescription'   :

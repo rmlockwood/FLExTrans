@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6 - 5/23/18 - Ron Lockwood
 #    Bump the version number.
 #

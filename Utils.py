@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6.1 - 3/27/19 - Ron Lockwood
 #    New methods in the TestbedTestXMLObject: getTest, getTestsList. Compile a
 #    RegEx at the beginning.

@@ -97,7 +97,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "3.1",
+        'moduleVersion'    : "3.1.2",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Test transfer rules and synthesis live against specific words.",
         'moduleDescription'   :

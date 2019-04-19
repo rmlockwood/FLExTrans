@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6.2 - 4/4/19 - Ron Lockwood
 #    Check for the root lexicon file being out of date compared to the target database
 #    before going through all target entries. This improves performance.
@@ -106,7 +109,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.6",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         'moduleDescription'   :

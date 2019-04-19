@@ -5,7 +5,10 @@
 #   SIL International
 #   6/22/18
 #
-#   Version 1.0 - ??/??/18 - Ron Lockwood
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
+#   Version 1.0 - 4/19/2019 - Ron Lockwood
 #
 #   Show the testbed log which shows the results of tests run for a certain
 #   date/time.
@@ -31,7 +34,7 @@ import xml.etree.ElementTree as ET
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Testbed Log Viewer",
-        'moduleVersion'    : "1.0",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "View testbed run results.",
         'moduleDescription'   :
@@ -552,6 +555,14 @@ class LogViewerMain(QtGui.QMainWindow):
     
 def MainFunction(DB, report, modify):
         
+    # Create an object for the testbed file
+    testbedFileObj = Utils.FlexTransTestbedFile(None)
+
+    # We can't do anything if there is no testbed
+    if testbedFileObj.exists() == False:
+        report.Error('Testbed does not exist. Please add tests to the testbed.')
+        return None
+    
     ## Load the testbed results
     
     # Create an object for the testbed results file

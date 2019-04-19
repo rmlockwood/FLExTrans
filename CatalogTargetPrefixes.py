@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6.2 - 4/3/19 - Ron Lockwood
 #    Check for the affix file being out of date compared to the target database
 #    before going through all target entries. This improves performance.
@@ -67,7 +70,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.6.1",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         'moduleDescription'   :

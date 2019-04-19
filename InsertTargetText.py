@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.6 - 5/23/18 - Ron Lockwood
 #    Bump the version number.
 #
@@ -36,7 +39,7 @@ import tempfile
 # Documentation that the user sees:
 
 docs = {'moduleName'       : "Insert Target Text",
-        'moduleVersion'    : "1.6",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : True,
         'moduleSynopsis'   : "Insert a translated text into the target FLEx project.",
         'moduleDescription'   :

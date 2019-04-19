@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 1.7 - 4/19/19 - Ron Lockwood
+#    Bump the version number.
+#
 #   Version 1.0 - 6/15/18 - Ron Lockwood
 #    Initial version.
 #
@@ -31,7 +34,7 @@ DEBUG = False
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {'moduleName'       : "Start Testbed",
-        'moduleVersion'    : "1.0",
+        'moduleVersion'    : "1.7",
         'moduleModifiesDB' : False,
         'moduleSynopsis'   : "Initialize the testbed log and create source text from the testbed.",
         'moduleDescription'   :
