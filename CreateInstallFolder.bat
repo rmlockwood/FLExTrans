@@ -23,7 +23,7 @@ copy *.t1x Install
 copy replace.dix Install
 copy stamp32.exe Install
 cd Install
-"C:\Program Files (x86)\7-Zip\7z" a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
+"%SEVENZ_PATH%"\7z a FlexTrans.zip Modules Collections *.config *.ini *.t1x *.dix stamp32.exe
 copy /Y FlexTrans.zip ..
 cd ..
 
@@ -121,7 +121,7 @@ copy Red_x.png             Install\FLExTools1.2.4\FLExTool
 copy Yellow_triangle.png   Install\FLExTools1.2.4\FLExTool    
 
 cd Install
-"C:\Program Files (x86)\7-Zip\7z" a FLExToolsWithFLExTrans.zip FLExTools1.2.4
+"%SEVENZ_PATH%"\7z a FLExToolsWithFLExTrans.zip FLExTools1.2.4
 copy /Y FLExToolsWithFLExTrans.zip ..
 cd ..
 
