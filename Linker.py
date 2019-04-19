@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'Linker.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created: Fri Apr 05 18:06:07 2019
+#      by: PyQt4 UI code generator 4.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -47,9 +48,19 @@ class Ui_MainWindow(object):
         self.CancelButton = QtGui.QPushButton(self.centralwidget)
         self.CancelButton.setGeometry(QtCore.QRect(390, 400, 90, 25))
         self.CancelButton.setObjectName(_fromUtf8("CancelButton"))
+        self.targetLexCombo = QtGui.QComboBox(self.centralwidget)
+        self.targetLexCombo.setGeometry(QtCore.QRect(160, 10, 361, 29))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.targetLexCombo.setFont(font)
+        self.targetLexCombo.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.targetLexCombo.setObjectName(_fromUtf8("targetLexCombo"))
         self.FilterCheckBox = QtGui.QCheckBox(self.centralwidget)
         self.FilterCheckBox.setGeometry(QtCore.QRect(550, 10, 221, 27))
         self.FilterCheckBox.setObjectName(_fromUtf8("FilterCheckBox"))
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 151, 23))
+        self.label.setObjectName(_fromUtf8("label"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 21))
@@ -66,5 +77,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Sense Linker Tool", None))
         self.OKButton.setText(_translate("MainWindow", "OK", None))
         self.CancelButton.setText(_translate("MainWindow", "Cancel", None))
+        self.targetLexCombo.setToolTip(_translate("MainWindow", "After selecting the desired sense here, double-click in the target head word column for the desired row to copy it.", None))
         self.FilterCheckBox.setText(_translate("MainWindow", "Show Only Unlinked", None))
+        self.label.setText(_translate("MainWindow", "All Target Senses:", None))
 
