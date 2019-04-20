@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->3 August 2018</date
+>20 April 2019</date
 ><version
->For FLExTrans 1.6 (Sense Linker 2.2.1, Live Rule Tester 3.1)</version
+>For FLExTrans 1.7 (Sense Linker 2.2.1, Live Rule Tester 3.1.2)</version
 ><contents
 showLevel="3"
 ></contents
@@ -4772,6 +4772,11 @@ types="tBold"
 ><type
 after="Sense Linker Tool"
 id="tSenseLinker"
+types="tTool"
+></type
+><type
+after="Testbed"
+id="tTestbed"
 types="tTool"
 ></type
 ><type
