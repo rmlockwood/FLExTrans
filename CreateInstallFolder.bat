@@ -86,9 +86,9 @@ copy OverWriteTestDlg.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy TestbedLogViewer.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans
 copy TestbedLog.py Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
 copy TestbedLog.ui Install\FLExTools1.2.4\FLExTools\Modules\FLExTrans\Lib
-copy Light_green_check.png Install\FLExTools1.2.4\FLExTool   
-copy Red_x.png             Install\FLExTools1.2.4\FLExTool             
-copy Yellow_triangle.png   Install\FLExTools1.2.4\FLExTool    
+copy Light_green_check.png Install\FLExTools1.2.4\FLExTools   
+copy Red_x.png             Install\FLExTools1.2.4\FLExTools             
+copy Yellow_triangle.png   Install\FLExTools1.2.4\FLExTools    
 
 cd Install
 "%SEVENZ_PATH%"\7z a FLExToolsWithFLExTrans.zip FLExTools1.2.4
