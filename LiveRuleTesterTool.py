@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.3 - 4/22/19 - Ron Lockwood
+#    Look at first half of text box strings to determine rtl. This prevents the
+#    whole thing from being right aligned when there is just an rtl punctuation
+#    mark at the end.
+#
 #   Version 3.1.2 - 4/5/19 - Ron Lockwood
 #    Make the synthesis text box RTL only if the text going in there is RTL.
 #
@@ -653,12 +658,12 @@ class Main(QtGui.QMainWindow):
         synthText = unicode(lf.read(),'utf-8')
         
         # if RTL text, prepend the RTL mark
-        if self.has_RTL_data(synthText):
+        if self.has_RTL_data(synthText[:len(synthText)/2]): # just check the 1st half of the string.
             synthText = ur'\u200F' + synthText
             
         self.ui.SynthTextEdit.setPlainText(synthText)
         
-        if self.has_RTL_data(synthText):
+        if self.has_RTL_data(synthText[:len(synthText)/2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -1258,7 +1263,7 @@ class Main(QtGui.QMainWindow):
         # Create a <p> html element
         pElem = ET.Element('p')
 
-        rtl_flag = self.has_RTL_data(target_output)
+        rtl_flag = self.has_RTL_data(target_output[:len(target_output)/2])
         
         # Process advanced results differently (which doesn't apply to post chunk, because we get normal data stream in that case)
         if self.advancedTransfer and self.ui.tabRules.currentIndex() != 2: # 'tab_postchunk_rules'
@@ -1343,7 +1348,7 @@ class Main(QtGui.QMainWindow):
             # ignore the punctuation (spaces)
             for i in range(0,len(tokens)-1,2):
                 # Turn the lexical units into color-coded html.            
-                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output), True) # last parameter: show UNK categories
+                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)/2]), True) # last parameter: show UNK categories
             
         # The p element now has one or more <span> children, turn them into an html string        
         htmlVal = ET.tostring(pElem)
