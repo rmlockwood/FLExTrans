@@ -5,6 +5,14 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 1.7.1 - 4/22/19 - Ron Lockwood
+#    Fixed bug where two entries that occur together but were not part of the 
+#    same complex form cause the 2nd one to be ignored. E.g. dust enteqad kon
+#    the code saw dust was part of a complex form, when it got to enteqad it saw
+#    it too was part of a complex form, but it wasn't in the right position so it
+#    ignored it and the complex form enteqad kon didn't get recognized. Now when
+#    enteqad is reached, the counter starts over for looking for new complex forms.
+#
 #   Version 1.7 - 4/19/19 - Ron Lockwood
 #    Bump the version number.
 #
@@ -1378,7 +1386,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                             else:
                                 pv_list = []
                                 shared_complex_e = None
-                                
+                                foundAtLeastOneMatch = startOfNewList = False
                                 # Check for adjacent words that point to the same complex form
                                 # If the form is a phrasal verb use it as the headword to output
                                 if e.ComplexFormEntries.Count > 0:
@@ -1390,19 +1398,35 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                                 if entryRef.RefType == 1: # 1=complex form, 0=variant
                                                     if entryRef.ComplexEntryTypesRS:
                                                         # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
-                                                        # just see if one of them is Phrasal Verb
+                                                        # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
                                                         for complexType in entryRef.ComplexEntryTypesRS:
                                                             if ITsString(complexType.Name.BestAnalysisAlternative).Text in typesList:
                                                                 pos_in_list = get_position_in_component_list(e, complex_e)
                                                                 # The entry we are on has to be at the right position in the complex form's component list
+                                                                # if we match the current component count this means we have a part of a complex form that is
+                                                                # in the right position. Add the complex entry to the list.
                                                                 if pos_in_list == ccc:
+                                                                    foundAtLeastOneMatch = True
                                                                     pv_list.append(complex_e)
                                                                     break;
+                                                                # if we didn't match a currently going complex search and the position in the list is 0, 
+                                                                # it could be this is the start of a new complex form
+                                                                elif pos_in_list == 0 and ccc > 0:
+                                                                    startOfNewList = True
+                                                                    pv_list.append(complex_e)
+                                                                    break;
+                                                                    
                                     # See if we ended up with any phrasal verbs
                                     if len(pv_list) == 0: # no phrasal verbs
                                         prev_pv_list = []
                                         ccc = 0
                                     else: # yes, we have phrasal verbs
+                                        # It could happen that we find a word that is the beginning of one complex form and at the same time
+                                        # a non-initial part of another. In this case we go with the non-initial match and we don't reset the ccc to 0
+                                        # Only reset it if we only find this entry to be the start of a new complex entry.
+                                        if foundAtLeastOneMatch == False and startOfNewList == True:
+                                            prev_pv_list = []
+                                            ccc = 0
                                         if ccc == 0:
                                             saved1stbaselineWord = ITsString(analysisOccurance.BaselineText).Text
                                         ccc += 1
