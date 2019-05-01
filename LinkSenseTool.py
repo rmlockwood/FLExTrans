@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 2.2.3 - 2/27/19 - Ron Lockwood
+#    Fixed bug where a 2nd occurrence of a src word that had multiple target suggestions
+#    only gave the last suggestion.
+#
 #   Version 2.2.2 - 2/27/19 - Ron Lockwood
 #    Skip empty MSAs
 #
@@ -795,7 +799,7 @@ def MainFunction(DB, report, modify=True):
                                 # Set the target part of the Link object and add it to the list
                                 myLink.set_tgtHPG(tgtHPG)
                                 myData.append(myLink)
-                                processed_map[mySense] = myLink
+                                processed_map[mySense] = [myLink]
                                 
                             else: # no link url present
                                 # Find matches for the current gloss using fuzzy compare if needed
@@ -813,15 +817,25 @@ def MainFunction(DB, report, modify=True):
                                             matchLink = Link(myHPG, matchHPG)
                                         matchLink.suggestion = True
                                         myData.append(matchLink)
-                                        processed_map[mySense] = matchLink
+                                        
+                                        # store all the matched targets in a processed map. If there's only one 
+                                        # it will be a list with one element
+                                        if mySense not in processed_map:
+                                            processed_map[mySense] = [matchLink]
+                                        else:
+                                            myMatchLinkList = processed_map[mySense]
+                                            myMatchLinkList.append(matchLink)
                                 # No matches
                                 else:
                                     # add a Link object that has no target information
                                     myData.append(myLink)
                                     processed_map[mySense] = myLink
                         else: # we've processed this sense before, add it to the list again
-                            myLink = processed_map[mySense]
-                            myData.append(myLink)
+                            myMatchLinkList = processed_map[mySense]
+                            
+                            # Loop through all targets for this src
+                            for aLink in myMatchLinkList:
+                                myData.append(aLink)
                                     
     # Check to see if there is any data to link
     if len(myData) == 0:
