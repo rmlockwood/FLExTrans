@@ -188,6 +188,25 @@ def MainFunction(DB, report, modifyAllowed):
     if not sent_punct:
         return
     
+    # Check if we are using TreeTran for sorting the text output
+    treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+    
+    if not treeTranResultFile:
+        TreeTranSort = False
+    else:
+        TreeTranSort = True
+    
+    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
+    if TreeTranSort:
+        try:
+            f_treeTranResultFile = open(treeTranResultFile)
+        except:
+            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            return
+        
+        # get the list of guids from the tree tran results file
+        guidIDList = get_guids(f_treeTranResultFile)
+            
     # Process the text
     report.Info("Exporting analyses...")
 
@@ -198,18 +217,33 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     getSurfaceForm = False
-    outputStrList = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
+    retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
 
     report.Info("Export of " + text_desired_eng + " complete.")
-    # Write out all the words
-    for outStr in outputStrList:
-        # Split compound words
-        outStr = Utils.split_compounds(outStr)
-        f_out.write(outStr.encode('utf-8'))
+    
+    if TreeTranSort:
+        for myID in guidIDList:
+            if myID not in retObject:
+                continue
+            else:
+                outStr = retObject[myID]
+                # Split compound words
+                outStr = Utils.split_compounds(outStr)
+                f_out.write(outStr.encode('utf-8'))
+    else:
+        # Write out all the words
+        for outStr in retObject:
+            # Split compound words
+            outStr = Utils.split_compounds(outStr)
+            f_out.write(outStr.encode('utf-8'))
 
     f_out.close()
 
-
+def get_guids(f_input):
+    
+    guid_list = {}
+    
+    return guid_list
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
