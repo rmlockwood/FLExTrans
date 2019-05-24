@@ -88,10 +88,19 @@
 #   Makefile in the LiveRuleTester folder every 3 seconds. The Makefile builds
 #   the necessary files to create the target text file.
 #
+
+from System import Guid
+from System import String
 import Utils
+
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 #----------------------------------------------------------------
 # Configurables:
+
 TESTER_FOLDER = Utils.OUTPUT_FOLDER+'\\LiveRuleTester'
 AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
 TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
@@ -101,11 +110,12 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Live Rule Tester Tool",
-        'moduleVersion'    : "3.1.2",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Test transfer rules and synthesis live against specific words.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Live Rule Tester Tool",
+        FTM_Version    : "3.1.2",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
+        FTM_Help   : "",
+        FTM_Description:
 u"""
 The Live Rule Tester Tool is a tool that allows you to test source words or 
 sentences live against transfer rules. This tool is especially helpful for 
@@ -121,21 +131,6 @@ You can run the testbed to check that you are getting the results you expect.
 #----------------------------------------------------------------
 # The main processing function
 
-from FTModuleClass import FlexToolsModuleClass
-from SIL.FieldWorks.FDO import ILexPronunciation
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IScrSectionRepository
-from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
-from SIL.FieldWorks.FDO import ILexEntryRepository
-from SIL.FieldWorks.FDO import ILexEntry, ILexSense
-from SIL.FieldWorks.FDO import SpecialWritingSystemCodes
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import IUndoStackManager
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-from System import Guid
-from System import String
- 
 #import TestbedLogViewer
 import ReadConfig
 import CatalogTargetPrefixes

@@ -86,10 +86,12 @@ import copy
 import ReadConfig
 import Utils
 
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
+from FTModuleClass import *
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 
-from FTModuleClass import FlexToolsModuleClass
+from collections import defaultdict
+from types import *
 
 #----------------------------------------------------------------
 # Configurables:
@@ -100,11 +102,12 @@ DEBUG = False
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Extract Source Text",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Extracts an Analyzed FLEx Text into Apertium format.",
-        'moduleDescription':
+docs = {FTM_Name       : "Extract Source Text",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB: False,
+        FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
+        FTM_Help : '',
+        FTM_Description :
 u"""
 The source database should be chosen for this module. This module will first check 
 to see if each word in the selected text is
@@ -121,21 +124,6 @@ This Module assumes the file FlexTrans.config is in the FlexTools folder.
 
 #----------------------------------------------------------------
 # The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IScrSectionRepository
-from SIL.FieldWorks.FDO import ITextFactory
-from SIL.FieldWorks.FDO import IStTextFactory
-from SIL.FieldWorks.FDO import IStTxtParaFactory
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.Common.COMInterfaces import ITsString, ITsStrBldr
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-from collections import defaultdict
-from System import Guid
-from System import String
 
 def MainFunction(DB, report, modifyAllowed):
     
@@ -188,6 +176,25 @@ def MainFunction(DB, report, modifyAllowed):
     if not sent_punct:
         return
     
+    # Check if we are using TreeTran for sorting the text output
+#     treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+#     
+#     if not treeTranResultFile:
+#         TreeTranSort = False
+#     else:
+#         TreeTranSort = True
+    
+    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
+#     if TreeTranSort:
+#         try:
+#             f_treeTranResultFile = open(treeTranResultFile)
+#         except:
+#             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+#             return
+#         
+#         # get the list of guids from the tree tran results file
+#         guidIDList = get_guids(f_treeTranResultFile)
+            
     # Process the text
     report.Info("Exporting analyses...")
 
@@ -198,18 +205,38 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     getSurfaceForm = False
-    outputStrList = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
+    retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)#, TreeTranSort)
 
     report.Info("Export of " + text_desired_eng + " complete.")
-    # Write out all the words
-    for outStr in outputStrList:
+    
+#     if TreeTranSort:
+#         for myID in guidIDList:
+#             if myID not in retObject:
+#                 continue
+#             else:
+#                 outStr = retObject[myID]
+#                 # Split compound words
+#                 outStr = Utils.split_compounds(outStr)
+#                 f_out.write(outStr.encode('utf-8'))
+#     else:
+#         # Write out all the words
+#         for outStr in retObject:
+#             # Split compound words
+#             outStr = Utils.split_compounds(outStr)
+#             f_out.write(outStr.encode('utf-8'))
+
+    for outStr in retObject:
         # Split compound words
         outStr = Utils.split_compounds(outStr)
         f_out.write(outStr.encode('utf-8'))
 
     f_out.close()
 
-
+def get_guids(f_input):
+    
+    guid_list = {}
+    
+    return guid_list
 #----------------------------------------------------------------
 # define the FlexToolsModule
 

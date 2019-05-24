@@ -22,10 +22,8 @@ import Utils
 import ReadConfig
 from datetime import datetime
 
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import IFsClosedFeatureRepository
-from SIL.FieldWorks.FDO import IMoInflClassRepository
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 
 TESTBED_CACHE_FILE = 'testbed_cache.txt'
 GRAM_CATS = 'Grammatical Categories:'

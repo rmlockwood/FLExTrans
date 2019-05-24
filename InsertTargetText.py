@@ -25,11 +25,15 @@
 #   give it a new unique name.
 #
 
-from FTModuleClass import FlexToolsModuleClass
-import ReadConfig
-import Utils
 import os
 import tempfile
+import ReadConfig
+import Utils
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.Text import TsStringUtils
 
 #----------------------------------------------------------------
 # Configurables:
@@ -38,11 +42,12 @@ import tempfile
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Insert Target Text",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : True,
-        'moduleSynopsis'   : "Insert a translated text into the target FLEx project.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Insert Target Text",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : True,
+        FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
+        FTM_Help       : "",
+        FTM_Description:
 u"""
 The target database set in the configuration file will be used. This module will take
 the results of the synthesis process (Create Target Dictionaries and Synthesize module)
@@ -54,15 +59,6 @@ will only change the target database as specified in the configuration file.
                  
 #----------------------------------------------------------------
 # The main processing function
-
-from SIL.FieldWorks.FDO import ILexPronunciation
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
-from SIL.FieldWorks.FDO import ILexEntry, ILexSense
-from SIL.FieldWorks.FDO import SpecialWritingSystemCodes
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import IUndoStackManager
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 
 textNameList = []
 
@@ -92,19 +88,19 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
             return
-        TargetDB.OpenDatabase(targetProj, modify, verbose = True)
-    except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
+        #TargetDB.OpenDatabase(targetProj, verbose = True)
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+        raise
 
     report.Info('Using: '+targetProj+' as the target database.')
 
@@ -136,9 +132,9 @@ def MainFunction(DB, report, modify=True):
                 i += 1
  
     # Create the text objects
-    m_textFactory = TargetDB.db.ServiceLocator.GetInstance(ITextFactory)
-    m_stTextFactory = TargetDB.db.ServiceLocator.GetInstance(IStTextFactory)
-    m_stTxtParaFactory = TargetDB.db.ServiceLocator.GetInstance(IStTxtParaFactory)
+    m_textFactory = TargetDB.project.ServiceLocator.GetInstance(ITextFactory)
+    m_stTextFactory = TargetDB.project.ServiceLocator.GetInstance(IStTextFactory)
+    m_stTxtParaFactory = TargetDB.project.ServiceLocator.GetInstance(IStTxtParaFactory)
 
     # Start an Undo Task
 #    TargetDB.db.MainCacheAccessor.BeginNonUndoableTask()  
@@ -159,13 +155,13 @@ def MainFunction(DB, report, modify=True):
         stText.ParagraphsOS.Add(stTxtPara)       
         
         # Create a TS String to hold the line of text. Use the default vern. writing system
-        tss = TargetDB.db.TsStrFactory.MakeString(unicode(line,'utf-8'), TargetDB.db.DefaultVernWs)
+        tss = TsStringUtils.MakeString(unicode(line,'utf-8'), TargetDB.project.DefaultVernWs)
         
         # Set the paragraph contents to the TS String
         stTxtPara.Contents = tss             
     
     # Set the title of the text
-    tss = TargetDB.db.TsStrFactory.MakeString(sourceTextName, TargetDB.db.DefaultAnalWs)
+    tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
     
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')

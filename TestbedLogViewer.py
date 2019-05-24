@@ -14,8 +14,6 @@
 #   date/time.
 #
 
-from FTModuleClass import FlexToolsModuleClass
-import ReadConfig
 import os
 import re
 import tempfile
@@ -23,46 +21,36 @@ import sys
 import unicodedata
 import copy
 import datetime
-import Utils
 import xml.etree.ElementTree as ET
+from System import Guid
+from System import String
+from datetime import datetime
+from PyQt4 import QtGui, QtCore
+from PyQt4 import QtWebKit
+import ReadConfig
+import Utils
 
-#----------------------------------------------------------------
-# Configurables:
-
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+ 
+from TestbedLog import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Testbed Log Viewer",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "View testbed run results.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Testbed Log Viewer",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "View testbed run results.",
+        FTM_Help   : "", 
+        FTM_Description:  
 u"""
 View testbed run results.
 """ }
                  
 #----------------------------------------------------------------
-# The main processing function
-
-from SIL.FieldWorks.FDO import ILexPronunciation
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
-from SIL.FieldWorks.FDO import ILexEntryRepository
-from SIL.FieldWorks.FDO import ILexSenseRepository
-from SIL.FieldWorks.FDO import ILexEntry, ILexSense
-from SIL.FieldWorks.FDO import SpecialWritingSystemCodes
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import IUndoStackManager
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-from System import Guid
-from System import String
-from datetime import datetime
- 
-from PyQt4 import QtGui, QtCore
-from PyQt4 import QtWebKit
-from TestbedLog import Ui_MainWindow
 
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'

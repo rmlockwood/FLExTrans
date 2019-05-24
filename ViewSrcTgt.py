@@ -33,18 +33,17 @@ import tempfile
 import sys
 import shutil
 import unicodedata
-
-#----------------------------------------------------------------
-# Configurables:
+from FTModuleClass import *                                                 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "View Source/Target Apertium Text Tool",
-        'moduleVersion'    : "1.1",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "View a more readable source or target text file.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
+        FTM_Version    : "1.1",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "View a more readable source or target text file.",    
+        FTM_Help   : "",
+        FTM_Description: 
 u"""
 This module will display a more readable view of the Apertium source or target 
 file. The lexical unit (^$) and symbol (<>) notation is removed and parts of 

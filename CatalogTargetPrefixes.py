@@ -52,28 +52,28 @@
 import sys
 import re 
 import os
+from collections import defaultdict
+from System import Guid
+from System import String
+from datetime import datetime
+
 import ReadConfig
 import Utils
 
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
-
-from FTModuleClass import FlexToolsModuleClass
-
-#----------------------------------------------------------------
-# Configurables:
-
-# Debugging for this module
-DEBUG = False
+from flexlibs.FLExDBAccess import *
+from FTModuleClass import *
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Catalog Target Prefixes",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Catalog Target Prefixes",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
+        FTM_Help  : "",
+        FTM_Description:
 u"""
 The target database set in the configuration file will be used. This module will output all 
 the gloss and morphtype fields for the best analysis writing system for all affixes. 
@@ -83,21 +83,6 @@ as being used. Actually the target database is being used.
 
 
 #----------------------------------------------------------------
-# The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-
-from collections import defaultdict
-from System import Guid
-from System import String
-from datetime import datetime
 
 def is_number(s):
     try:
@@ -134,19 +119,26 @@ def catalog_affixes(DB, configMap, filePath, report=None):
         error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
         return error_list
     
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
+    # See if the target project is a valid database name.
+    if TargetDB not in DB.GetProjectNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+    
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
-        TargetDB.OpenDatabase(targetProj, verbose = True)
-    except FDA_DatabaseError, e:
-        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-        error_list.append((e.message, 2))
-        return error_list
+        #TargetDB.OpenDatabase(targetProj, verbose = True)
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+#         return error_list
+        raise
     
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 

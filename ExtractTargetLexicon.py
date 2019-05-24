@@ -90,14 +90,21 @@ import os
 import tempfile
 import ReadConfig
 import Utils
+from collections import defaultdict
+from System import Guid
+from System import String
+from datetime import datetime
 
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
 from subprocess import call
-from FTModuleClass import FlexToolsModuleClass
 import os
 import platform
 import subprocess
+
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from __builtin__ import True
 
 #----------------------------------------------------------------
 # Configurables:
@@ -108,11 +115,12 @@ DEBUG = False
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Extract Target Lexicon",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Extract Target Lexicon",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
+        FTM_Help       :"",
+        FTM_Description:  
 u"""
 The target database set in the configuration file will be used. This module will create a three target language lexicons. One for
 roots, one for prefixes and one for suffixes. They are in the CARLA style
@@ -126,25 +134,13 @@ synthesized text. NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
 
-
+DONT_CACHE = True
 #----------------------------------------------------------------
-# The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-
-from collections import defaultdict
-from System import Guid
-from System import String
-from datetime import datetime
 
 def is_root_file_out_of_date(DB, rootFile):
+    
+    if DONT_CACHE == True:
+        return True
     
     # Build a DateTime object with the FLEx DB last modified date
     flexDate = DB.GetDateLastModified()
@@ -488,7 +484,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         continue
     
                     # Write out morphname field
-                    f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1)+'\n')
+                    f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1).encode('utf-8')+'\n')
                     
                     # change spaces to underscores
                     abbrev = re.sub('\s', '_', abbrev)
@@ -551,7 +547,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
 def extract_target_lex(DB, configMap, report=None):
     error_list = []
         
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
     # Open the target database
     targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
@@ -560,20 +556,20 @@ def extract_target_lex(DB, configMap, report=None):
         return error_list
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetDatabaseNames():
+    if targetProj not in DB.GetProjectNames():
         error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
         return error_list
 
     try:
         # Open the target database
-        TargetDB.OpenDatabase(targetProj, verbose = True)
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
-    except FDA_DatabaseError, e:
-        error_list.append((e.message, 2))
-        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-        return error_list
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+        raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 

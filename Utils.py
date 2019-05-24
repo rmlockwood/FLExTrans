@@ -63,8 +63,8 @@ import uuid
 from datetime import datetime
 import TestbedValidator
 
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from __builtin__ import False
 
 ## Viewer constants
@@ -1230,13 +1230,14 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
 
-def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm):
+def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
     
     prev_pv_list = []
     prev_e = None
     ccc = 0 # current_complex_component
     segment_list = []
     outputStrList = []
+    BundleGuidMap = {}
     curr_SegNum = 0
     prevEndOffset = 0
 
@@ -1251,7 +1252,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     else:
         report.ProgressStart(obj_cnt+1)
     
-    prevOutStr = ''    
+    prevOutStr = ''
+    prevGuid = ''    
     unknownWordList = []
     multiple_unknown_words = False
     ss = SegmentServices.StTextAnnotationNavigator(contents)
@@ -1259,6 +1261,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
        
         report.ProgressUpdate(prog_cnt)
         outStr = affixStr = ''
+        bundleGuid = ''
         
         if getSurfaceForm:
             
@@ -1273,9 +1276,15 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             if prevEndOffset > 0:
                 numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
                 if numSpaces > 0:
-                    outputStrList.append(' '*numSpaces)
+                    if TreeTranSort:
+                        BundleGuidMap[prevGuid] =  BundleGuidMap[prevGuid] + ' '*numSpaces
+                    else:
+                        outputStrList.append(' '*numSpaces)
                 elif numSpaces < 0: # new paragraph
-                    outputStrList.append('\n')
+                    if TreeTranSort:
+                        BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + '\n'
+                    else:
+                        outputStrList.append('\n')
             
             prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
                 
@@ -1297,7 +1306,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 outStr = text_punct
             
             if not getSurfaceForm:
-                outputStrList.append(outStr)     
+                if TreeTranSort:
+                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
+                else:
+                    outputStrList.append(outStr)     
             continue
         
         if getSurfaceForm:
@@ -1338,11 +1350,15 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 
             prevOutStr = outStr
             outStr += '<UNK>'
+            outStr = '^'+outStr+'$'
             
             if getSurfaceForm:
-                bundle_list.append((surfaceForm, '^'+outStr+'$'))
+                bundle_list.append((surfaceForm, outStr))
             else:
-                outputStrList.append('^'+outStr+'$')
+                if TreeTranSort:
+                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
+                else:
+                    outputStrList.append(outStr)
             
             continue
         else:
@@ -1350,6 +1366,9 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             
         # Go through each morpheme in the word (i.e. bundle)
         for bundle in wfiAnalysis.MorphBundlesOS:
+            
+            bundleGuid = prevGuid = bundle.Guid # identifies a bundle for matching with TreeTran output
+            
             if bundle.SenseRA:
                 if bundle.MsaRA and bundle.MorphRA:
                     # Get the LexEntry object
@@ -1462,10 +1481,12 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                                     
                                                     # Save the data stream part
                                                     saveStr = myTup[1]
+                                                    
+                                                    # TODO: figure out what to do with the guid list if we are using tree tran sort.
                                                 else:
                                                     # remove n/adj/... and it's tag from being output
                                                     saveStr = outputStrList.pop()
-                                                    # first pop may have just popped punctuation of spacing
+                                                    # first pop may have just popped punctuation or spacing
                                                     if len(outputStrList) > 0:
                                                         saveStr = outputStrList.pop() 
                                                     
@@ -1597,12 +1618,18 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 outStr += '<UNK>'
                 break # go on to the next word    
         outStr += affixStr
+        outStr = '^'+outStr+'$' #  apertium-style lexical unit
         
         if getSurfaceForm:
             # The bundle list is a tuple of surface form and apertium-style lexical unit
-            bundle_list.append((surfaceForm,'^'+outStr+'$'))
+            bundle_list.append((surfaceForm,outStr))
         else:
-            outputStrList.append('^'+outStr+'$')
+            # If we will sort the output by the TreeTran output order, i.e. the syntax tree rearranged, build a map of this 
+            # bundle Guid to the lexical unit output that goes with it
+            if TreeTranSort:
+                BundleGuidMap[bundleGuid] = outStr
+            else:
+                outputStrList.append(outStr)
     
     if multiple_unknown_words:
         report.Warning('One or more unknown words occurred multiple times.')
@@ -1611,4 +1638,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         return segment_list
     else:
         report.Info('Export of '+str(obj_cnt+1)+' analyses complete.')
-        return outputStrList
+
+        if TreeTranSort:
+            return BundleGuidMap
+        else:
+            return outputStrList
