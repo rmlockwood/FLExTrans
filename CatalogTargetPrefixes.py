@@ -121,11 +121,6 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     
     TargetDB = FLExProject()
 
-    # See if the target project is a valid database name.
-    if TargetDB not in DB.GetProjectNames():
-        report.Error('The Target Database does not exist. Please check the configuration file.')
-        return
-    
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)

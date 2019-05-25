@@ -82,6 +82,7 @@ from flexlibs.FLExDBAccess import *
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.DomainServices import SegmentServices
 
 from Linker import Ui_MainWindow
 

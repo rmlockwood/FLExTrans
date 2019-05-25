@@ -107,12 +107,6 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from __builtin__ import True
 
 #----------------------------------------------------------------
-# Configurables:
-
-# Debugging for this module
-DEBUG = False
-
-#----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
@@ -134,7 +128,8 @@ synthesized text. NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
 
-DONT_CACHE = True
+DONT_CACHE = False
+
 #----------------------------------------------------------------
 
 def is_root_file_out_of_date(DB, rootFile):

@@ -125,7 +125,7 @@ def MainFunction(DB, report, modify=True):
             done = False
             i = 2
             while not done: 
-                tryName = sourceTextName + ' (' + str(i) + ')'
+                tryName = sourceTextName + ' (' + bytes(str(i)) + ')'
                 if not findTextName(TargetDB, tryName): 
                     sourceTextName = tryName
                     done = True 

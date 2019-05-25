@@ -65,6 +65,7 @@ import TestbedValidator
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+from SIL.LCModel.DomainServices import SegmentServices
 from __builtin__ import False
 
 ## Viewer constants
@@ -1408,7 +1409,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                 foundAtLeastOneMatch = startOfNewList = False
                                 # Check for adjacent words that point to the same complex form
                                 # If the form is a phrasal verb use it as the headword to output
-                                if e.ComplexFormEntries.Count > 0:
+                                if len(e.ComplexFormEntries) > 0:
                                     # each word could be part of multiple complex forms (e.g. ra -> char ra, ra raftan
                                     for complex_e in e.ComplexFormEntries:
                                         if complex_e.EntryRefsOS:
