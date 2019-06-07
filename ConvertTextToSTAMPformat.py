@@ -117,6 +117,8 @@ import tempfile
 import ReadConfig
 import Utils
 from datetime import datetime
+from System import Guid
+from System import String
 
 from flexlibs.FLExDBAccess import *                                         
 from FTModuleClass import *                                                 
