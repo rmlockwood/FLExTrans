@@ -82,6 +82,9 @@ import os
 import re 
 import tempfile
 import copy
+import xml.etree.ElementTree as ET
+from System import Guid
+from System import String
 
 import ReadConfig
 import Utils
@@ -90,6 +93,10 @@ from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
 import FTReport
 
 from FTModuleClass import FlexToolsModuleClass
+from collections import defaultdict
+from types import *
+from future.backports.test.pystone import FALSE, TRUE
+from __builtin__ import True
 
 #----------------------------------------------------------------
 # Configurables:
@@ -196,16 +203,22 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         TreeTranSort = True
     
+    #TreeTranSort = False
+    
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
             f_treeTranResultFile = open(treeTranResultFile)
+            f_treeTranResultFile.close()
         except:
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
             return
         
         # get the list of guids from the tree tran results file
-        guidIDList = get_guids(f_treeTranResultFile)
+        treeSentList = getTreeSents(treeTranResultFile)
+        
+        # get log info. that tells us which sentences have a syntax parse and # words per sent
+        logInfo = importGoodParsesLog()
             
     # Process the text
     report.Info("Exporting analyses...")
@@ -222,15 +235,47 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info("Export of " + text_desired_eng + " complete.")
     
     if TreeTranSort:
-        for myID in guidIDList:
-            if myID not in retObject:
-                continue
+        (guidMap, outputStringList) = retObject
+        index = 0
+        p = 0
+        
+        # Loop through each sent
+        for sentNum, (numWords, parsed) in enumerate(logInfo):
+            
+            if parsed == True:
+                mySent = treeSentList[p]
+                
+                # Loop through each word in the sentence and get the Guids
+                for x in range(0,mySent.getLength()):
+                    myGuid = mySent.getNextGuid()
+                    
+                    if myGuid == None:
+                        break
+                    
+                    myGuid = (sentNum, myGuid) # new index is sent. # + Guid
+                    if myGuid not in guidMap:
+                        report.Error('Could not find the desired Guid')
+                    else:
+                        outStr = guidMap[myGuid]
+                        # Split compound words
+                        outStr = Utils.split_compounds(outStr)
+                        f_out.write(outStr.encode('utf-8'))
+                p += 1
+                
+            # no syntax parse put words out in their default order                        
             else:
-                outStr = retObject[myID]
-                # Split compound words
-                outStr = Utils.split_compounds(outStr)
-                f_out.write(outStr.encode('utf-8'))
+                j = index
+                for i in range (j, j+numWords):
+                    outStr = outputStringList[i*2] # *2 because there's always a punct string between every lexical unit string
+                    outStrPunct = outputStringList[i*2+1] # punctuation
+                    # Split compound words
+                    outStr = Utils.split_compounds(outStr)
+                    f_out.write(outStr.encode('utf-8'))
+                    f_out.write(outStrPunct.encode('utf-8'))
+            
+            index += numWords
     else:
+        # retObject is a list
         # Write out all the words
         for outStr in retObject:
             # Split compound words
@@ -239,11 +284,78 @@ def MainFunction(DB, report, modifyAllowed):
 
     f_out.close()
 
-def get_guids(f_input):
+def importGoodParsesLog():
+    logList = []
     
-    guid_list = {}
+    f = open(os.path.join(tempfile.gettempdir(), Utils.GOOD_PARSES_LOG))
     
-    return guid_list
+    for line in f:
+        (numWordsStr, flagStr) = line.rstrip().split(',')
+        
+        if flagStr == '1':
+            parsed = True
+        else:
+            parsed = False
+    
+        logList.append((int(numWordsStr), parsed))
+    
+    return logList
+    
+class treeTranSent():
+    def __init__(self):
+        self._singleTree = True
+        self._guidList = []
+        self._index = 0
+    def getSingleTree(self):
+        return self._singleTree
+    def setSingleTree(self, val):
+        self._singleTree = val
+    def addGuid(self, myGuid):
+        self._guidList.append(myGuid)
+    def getNextGuid(self):
+        if self._index >= len(self._guidList):
+            return None
+        g = self._guidList[self._index]    
+        self._index += 1
+        return g
+    def getLength(self):
+        return len(self._guidList)
+        
+def getTreeSents(inputFilename):
+    
+    obj_list = []
+
+    try:
+        myETree = ET.parse(inputFilename)
+    except:
+        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
+    
+    myRoot = myETree.getroot()
+    
+    newSent = True
+    myTreeSent = None
+    # Loop through the anaRec's 
+    for anaRec in myRoot:
+        # Create a new tree tran sentence object
+        if newSent == True:
+            myTreeSent = treeTranSent()
+            obj_list.append(myTreeSent) # add it to the list
+            newSent = False
+            
+        # See if this word has multiple parses which means it wasn't syntax-parsed
+        mparses = anaRec.findall('mparse')
+        if len(mparses) > 1:
+            myTreeSent.setSingleTree(False)
+        
+        pNode = anaRec.find('./mparse/a/root/p')
+        currGuid = Guid(String(pNode.text))
+        analysisNode = anaRec.find('Analysis')
+        if analysisNode != None:
+            newSent = True
+        
+        myTreeSent.addGuid(currGuid)
+    
+    return obj_list
 #----------------------------------------------------------------
 # define the FlexToolsModule
 

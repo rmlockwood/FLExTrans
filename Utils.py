@@ -67,6 +67,9 @@ from SIL.FieldWorks.Common.COMInterfaces import ITsString
 from SIL.FieldWorks.FDO.DomainServices import SegmentServices
 from __builtin__ import False
 
+## For TreeTran
+GOOD_PARSES_LOG = 'good_parses.log'
+
 ## Viewer constants
 # Main color of the headwords
 LEMMA_COLOR = '000000' #black
@@ -1240,6 +1243,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     BundleGuidMap = {}
     curr_SegNum = 0
     prevEndOffset = 0
+    sentNum = 0
 
     # count analysis objects
     obj_cnt = -1
@@ -1253,7 +1257,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         report.ProgressStart(obj_cnt+1)
     
     prevOutStr = ''
-    prevGuid = ''    
+    prevGuid = None 
     unknownWordList = []
     multiple_unknown_words = False
     ss = SegmentServices.StTextAnnotationNavigator(contents)
@@ -1261,8 +1265,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
        
         report.ProgressUpdate(prog_cnt)
         outStr = affixStr = ''
-        bundleGuid = ''
-        
+        bundleGuid = None        
         if getSurfaceForm:
             
             # If we are on a different segment, start a new list (if the last one was non-empty)
@@ -1278,13 +1281,11 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 if numSpaces > 0:
                     if TreeTranSort:
                         BundleGuidMap[prevGuid] =  BundleGuidMap[prevGuid] + ' '*numSpaces
-                    else:
-                        outputStrList.append(' '*numSpaces)
+                    outputStrList.append(' '*numSpaces)
                 elif numSpaces < 0: # new paragraph
                     if TreeTranSort:
                         BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + '\n'
-                    else:
-                        outputStrList.append('\n')
+                    outputStrList[len(outputStrList)-1] += '\n'
             
             prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
                 
@@ -1298,6 +1299,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             if set(list(text_punct)).intersection(set(list(sent_punct))):
                 outStr = "^"+text_punct+"<sent>$"
                 
+                sentNum += 1
+                
                 if getSurfaceForm:
                     bundle_list.append((text_punct,outStr))
                 
@@ -1308,8 +1311,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             if not getSurfaceForm:
                 if TreeTranSort:
                     BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
-                else:
-                    outputStrList.append(outStr)     
+                outputStrList.append(outStr)     
             continue
         
         if getSurfaceForm:
@@ -1357,8 +1359,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             else:
                 if TreeTranSort:
                     BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
-                else:
-                    outputStrList.append(outStr)
+                outputStrList.append(outStr)
             
             continue
         else:
@@ -1366,8 +1367,6 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             
         # Go through each morpheme in the word (i.e. bundle)
         for bundle in wfiAnalysis.MorphBundlesOS:
-            
-            bundleGuid = prevGuid = bundle.Guid # identifies a bundle for matching with TreeTran output
             
             if bundle.SenseRA:
                 if bundle.MsaRA and bundle.MorphRA:
@@ -1377,6 +1376,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                     # For a stem we just want the headword and it's POS
                     if bundle.MsaRA.ClassName == 'MoStemMsa':
                         
+                        # Just save the the guid for the first root in the bundle
+                        if bundleGuid == None:
+                            bundleGuid = prevGuid = (sentNum, bundle.Guid) # identifies a bundle for matching with TreeTran output
+            
                         # Check for valid POS
                         if not bundle.MsaRA.PartOfSpeechRA:
                             outStr = ITsString(wfiAnalysis.Owner.Form.BestVernacularAlternative).Text
@@ -1490,6 +1493,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                                     if len(outputStrList) > 0:
                                                         saveStr = outputStrList.pop() 
                                                     
+                                                    # TODO: if TreeTran remove the previous word from the Guid Map
                                                 
                                                 # The first component(s) could have tags (from affixes or inflection info.)
                                                 # Save these tags so they can be put on the end of the complex form.
@@ -1628,8 +1632,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             # bundle Guid to the lexical unit output that goes with it
             if TreeTranSort:
                 BundleGuidMap[bundleGuid] = outStr
-            else:
-                outputStrList.append(outStr)
+            outputStrList.append(outStr)
     
     if multiple_unknown_words:
         report.Warning('One or more unknown words occurred multiple times.')
@@ -1640,6 +1643,6 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         report.Info('Export of '+str(obj_cnt+1)+' analyses complete.')
 
         if TreeTranSort:
-            return BundleGuidMap
+            return (BundleGuidMap, outputStrList)
         else:
             return outputStrList
