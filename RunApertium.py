@@ -22,25 +22,24 @@
 
 import time
 from subprocess import call
-from FTModuleClass import FlexToolsModuleClass
 import os
 import platform
 import subprocess
 import re
 import Utils
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
+from flexlibs.FLExDBAccess import *
+from FTModuleClass import *
 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Run Apertium commands."
-docs = {'moduleName'       : "Run Apertium",
-        'moduleVersion'    : '1.7',
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : descr,
-        'moduleDescription': descr}
-                 
+docs = {FTM_Name       : "Run Apertium",
+        FTM_Version    : '1.7',
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : descr,
+        FTM_Help  : "",  
+        FTM_Description:    descr}     
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):

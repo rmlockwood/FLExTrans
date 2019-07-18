@@ -117,26 +117,23 @@ import tempfile
 import ReadConfig
 import Utils
 from datetime import datetime
+from System import Guid
+from System import String
 
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
-
-from FTModuleClass import FlexToolsModuleClass, FTM_ModuleError
-
-#----------------------------------------------------------------
-# Configurables:
-
-# Debugging for this module
-DEBUG = False
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Convert Text to STAMP Format",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Create a text file in STAMP format",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Convert Text to STAMP Format",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Create a text file in STAMP format",
+        FTM_Help  : "", 
+        FTM_Description:  
 u"""
 The target database set in the configuration file will be used. This module will 
 create a text file in STAMP format using the Apertium transfer results. 
@@ -146,17 +143,6 @@ as being used. Actually the target database is being used.
 
 
 #----------------------------------------------------------------
-# The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-from collections import defaultdict
-from System import Guid
-from System import String
 
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
@@ -712,7 +698,7 @@ CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
 class ConversionData():
     def __init__(self, database, report, complexFormTypeMap):
         
-        self.db = database
+        self.project = database
         self.report = report
         self.complex_map = {}
         self.irr_infl_var_map = {}
@@ -736,7 +722,7 @@ class ConversionData():
     def isCacheOutOfDate(self):
         
         # Build a DateTime object with the FLEx DB last modified date
-        flexDate = self.db.GetDateLastModified()
+        flexDate = self.project.GetDateLastModified()
         dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
         
         # Get the date of the cache file
@@ -815,7 +801,7 @@ class ConversionData():
             
     def getEntry(self, guid):
         
-        repo = self.db.db.ServiceLocator.GetInstance(ILexEntryRepository)
+        repo = self.project.project.ServiceLocator.GetInstance(ILexEntryRepository)
         flex_guid = Guid(String(guid))
         
         try:
@@ -889,7 +875,7 @@ class ConversionData():
            
     def getCacheFilePath(self):
         # build the path in the temp dir using project name + testbed_cache.txt
-        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+CONVERSION_TO_STAMP_CACHE_FILE)
+        return os.path.join(tempfile.gettempdir(), str(self.project.lp)+'_'+CONVERSION_TO_STAMP_CACHE_FILE)
     
     def cacheExists(self):
         return os.path.exists(self.getCacheFilePath())
@@ -897,10 +883,10 @@ class ConversionData():
     def readDatabaseValues(self):
 
         if self.report is not None:
-            self.report.ProgressStart(self.db.LexiconNumberOfEntries())
+            self.report.ProgressStart(self.project.LexiconNumberOfEntries())
       
         # Loop through all the entries in the lexicon 
-        for i,e in enumerate(self.db.LexiconAllEntries()):
+        for i,e in enumerate(self.project.LexiconAllEntries()):
         
             if self.report is not None:
                 self.report.ProgressUpdate(i)
@@ -970,7 +956,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
     try:
         # Open the target database
@@ -978,11 +964,12 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
-        TargetDB.OpenDatabase(targetProj, verbose = True)
-    except FDA_DatabaseError, e:
-        error_list.append((e.message, 2))
-        error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-        return error_list
+        #TargetDB.OpenDatabase(targetProj, verbose = True)
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+        raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 

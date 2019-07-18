@@ -89,29 +89,27 @@ import re
 import os
 import tempfile
 import shutil
-import ReadConfig
-
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from collections import defaultdict
+from System import Guid
+from System import String
+import ReadConfig
 
-from FTModuleClass import FlexToolsModuleClass
-
-#----------------------------------------------------------------
-# Configurables:
-
-# Debugging for this module
-DEBUG = False
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Extract Bilingual Lexicon",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Creates an Apertium-style bilingual lexicon.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Extract Bilingual Lexicon",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
+        FTM_Help   : "",
+        FTM_Description:
 u"""
 The source database should be chosen for this module. This module will create a bilingual 
 lexicon for two projects. The
@@ -149,20 +147,6 @@ in the file named according to the BilingualDictReplacementFile property plus ".
 """ }
 
 #----------------------------------------------------------------
-# The main processing function
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import IStText
-from SIL.FieldWorks.FDO import IWfiGloss, IWfiWordform, IWfiAnalysis
-from SIL.FieldWorks.FDO import ILexEntryRepository
-
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-
-from collections import defaultdict
-from System import Guid
-from System import String
 
 def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
     
@@ -402,7 +386,7 @@ def MainFunction(DB, report, modifyAllowed):
             report.Error('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.')
             return
         
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
     # Open the target database
     targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
@@ -410,17 +394,17 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetDatabaseNames():
+    if targetProj not in DB.GetProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
         return
     
     try:
-        TargetDB.OpenDatabase(targetProj, verbose = True)
-    except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
+        #TargetDB.OpenDatabase(targetProj, verbose = True)
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+        raise
 
     report.Info('Using: '+targetProj+' as the target database.')
 
@@ -597,7 +581,7 @@ def MainFunction(DB, report, modifyAllowed):
                                 myGuid = equiv[u+7:u+7+36]
                                 
                                 # Look up the entry in the trgt project
-                                repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
+                                repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
                                 guid = Guid(String(myGuid))
         
                                 try:
