@@ -479,7 +479,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         continue
     
                     # Write out morphname field
-                    f_rt.write('\\m '+headWord.encode('utf-8')+'.'+str(i+1).encode('utf-8')+'\n')
+                    f_rt.write('\\m '+headWord.encode('utf-8')+'.'+unicode(i+1).encode('utf-8')+'\n')
                     
                     # change spaces to underscores
                     abbrev = re.sub('\s', '_', abbrev)
@@ -532,10 +532,10 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
     
     err_list.append(('STAMP dictionaries created.', 0))
-    err_list.append((str(pf_cnt)+' prefixes in the prefix dictionary.', 0))
-    err_list.append((str(sf_cnt)+' suffixes in the suffix dictionary.', 0))
-    err_list.append((str(if_cnt)+' infixes in the infix dictionary.', 0))
-    err_list.append((str(rt_cnt)+' roots in the root dictionary.', 0))
+    err_list.append((unicode(pf_cnt)+' prefixes in the prefix dictionary.', 0))
+    err_list.append((unicode(sf_cnt)+' suffixes in the suffix dictionary.', 0))
+    err_list.append((unicode(if_cnt)+' infixes in the infix dictionary.', 0))
+    err_list.append((unicode(rt_cnt)+' roots in the root dictionary.', 0))
 
     return err_list
     

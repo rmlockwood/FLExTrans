@@ -1638,10 +1638,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     if multiple_unknown_words:
         report.Warning('One or more unknown words occurred multiple times.')
     if getSurfaceForm:
-        report.Info('Processed '+str(obj_cnt+1)+' analyses.')
+        report.Info('Processed '+unicode(obj_cnt+1)+' analyses.')
         return segment_list
     else:
-        report.Info('Export of '+str(obj_cnt+1)+' analyses complete.')
+        report.Info('Export of '+unicode(obj_cnt+1)+' analyses complete.')
 
         if TreeTranSort:
             return (BundleGuidMap, outputStrList)

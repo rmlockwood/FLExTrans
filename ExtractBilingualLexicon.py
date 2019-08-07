@@ -731,7 +731,7 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.close()
     
         report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
-        report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
+        report.Info(unicode(records_dumped_cnt)+' records created in the bilingual dictionary.')
         
     # As a last step, replace certain parts of the bilingual dictionary
     if do_replacements(configMap, report, fullPathBilingFile) == False:

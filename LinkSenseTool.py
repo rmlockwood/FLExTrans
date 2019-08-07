@@ -103,7 +103,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "2.2.1",
+        FTM_Version    : "2.2.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -857,7 +857,8 @@ def MainFunction(DB, report, modify=True):
                     
                         # Set the sense number if necessary
                         if currLink.get_tgtSenseNum() > 1:
-                            DB.LexiconSetFieldText(currSense, senseNumField, str(currLink.get_tgtSenseNum()))
+                            numStr = unicode(currLink.get_tgtSenseNum())
+                            DB.LexiconSetFieldText(currSense, senseNumField, numStr)
                     
                         updated_senses[currSense] = 1
                     
@@ -871,14 +872,14 @@ def MainFunction(DB, report, modify=True):
                         updated_senses[currSense] = 1
                     
         if cnt == 1:
-            report.Info(str(cnt)+' link created.')
+            report.Info(unicode(cnt)+' link created.')
         else:
-            report.Info(str(cnt)+' links created.')
+            report.Info(unicode(cnt)+' links created.')
 
         if unlinkCount == 1:
             report.Info('1 link removed')
         elif unlinkCount > 1:
-            report.Info(str(unlinkCount) + ' links removed')  
+            report.Info(unicode(unlinkCount) + ' links removed')  
                       
     #exit(exec_val)
  

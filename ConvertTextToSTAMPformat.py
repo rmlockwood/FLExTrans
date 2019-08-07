@@ -1032,7 +1032,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         
         count += 1
     
-    error_list.append((str(count)+' records exported in ANA format.', 0))
+    error_list.append((unicode(count)+' records exported in ANA format.', 0))
     f_ana.close()
     
     return error_list
