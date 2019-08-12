@@ -599,21 +599,32 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                 break
         break
     
-def write_components(comp_list, f_ana, anaInfo):
+def write_non_complex(myAnaInfo, irrInflVarMap, fAna):
+    
+    root = myAnaInfo.getPreDotRoot()
+    
+    if root in irrInflVarMap: 
+        # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
+        change_to_variant(myAnaInfo, irrInflVarMap)
+                
+    myAnaInfo.write(fAna)
         
-    for i, listAnaInfo in enumerate(comp_list):
+def write_components(componentList, anaFile, theAnaInfo, myInflVarMap):
+        
+    for i, listAnaInfo in enumerate(componentList):
         
         # Give this object pre-punctuation if it's the first component
         if i == 0:
-            listAnaInfo.setBeforePunc(anaInfo.getBeforePunc())
+            listAnaInfo.setBeforePunc(theAnaInfo.getBeforePunc())
             # Change the case as necessary
-            anaInfo.setCapitalization(anaInfo.calcCase(anaInfo.getAnalysisRoot()))
+            theAnaInfo.setCapitalization(theAnaInfo.calcCase(theAnaInfo.getAnalysisRoot()))
                 
         # Give this object post-punctuation if it's the last component
-        if i == len(comp_list)-1:
-            listAnaInfo.setAfterPunc(anaInfo.getAfterPunc())
+        if i == len(componentList)-1:
+            listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
         
-        listAnaInfo.write(f_ana)    
+        # This also converts variant forms if needed
+        write_non_complex(listAnaInfo, myInflVarMap, anaFile)    
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -1021,14 +1032,12 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         if root in complex_map:
             comp_list = []
             gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
-            write_components(comp_list, f_ana, anaInfo)
+            write_components(comp_list, f_ana, anaInfo, irr_infl_var_map)
             
         else: # write it out as normal
-            if root in irr_infl_var_map: # assume an entry can't be complex and an inflectional variant
-                # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
-                change_to_variant(anaInfo, irr_infl_var_map)
-                
-            anaInfo.write(f_ana)
+            
+            # This also converts variant forms if needed
+            write_non_complex(anaInfo, irr_infl_var_map, f_ana)
         
         count += 1
     
