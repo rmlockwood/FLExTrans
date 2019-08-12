@@ -219,8 +219,6 @@ def MainFunction(DB, report, modifyAllowed):
     getSurfaceForm = False
     retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
 
-    report.Info("Export of " + text_desired_eng + " complete.")
-    
     if TreeTranSort:
         (guidMap, outputStringList) = retObject
         index = 0
@@ -271,6 +269,8 @@ def MainFunction(DB, report, modifyAllowed):
 
     f_out.close()
 
+    report.Info("Export of " + text_desired_eng + " complete.")
+    
 def importGoodParsesLog():
     logList = []
     
