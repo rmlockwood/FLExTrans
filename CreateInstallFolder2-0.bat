@@ -5,6 +5,7 @@ for /d %%i in (Install2.0\*) do @rmdir /s /q "%%i"
 rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker all in one file
 mkdir Install2.0\FlexTools2.0\FlexTools\Collections
 mkdir Install2.0\FlexTools2.0\FlexTools\Output
+mkdir Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 mkdir Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 xcopy /s FlexTools2.0 Install2.0\FlexTools2.0 
 copy CatalogTargetPrefixes.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans

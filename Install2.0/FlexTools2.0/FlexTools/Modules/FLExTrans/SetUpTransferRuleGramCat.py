@@ -18,29 +18,30 @@
 #   both the source and target lexicons.
 #
 
-#----------------------------------------------------------------
-# Configurables:
+import shutil
+import codecs
+import ReadConfig
+import xml.etree.ElementTree as ET
+from flexlibs.FLExDBAccess import *                                  
+from FTModuleClass import *                                          
+from SIL.LCModel import *                                            
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr  
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {'moduleName'       : "Set Up Transfer Rule Grammatical Categories",
-        'moduleVersion'    : '1.0.1',
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : 'Set up the transfer rule file with all grammatical categories needed.' ,
-        'moduleDescription': 
+
+docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
+        FTM_Version    : '1.0.1',
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
+        FTM_Help   : "",
+        FTM_Description: 
 """
 This module requires that the bilingual dictionary has already been created by the 
 Extract Bilingual Lexicon module. This module will take the symbols from the bilingual
 lexicon, which represent all the grammatical categories in both the source and target
 lexicons and put them under an attribute called a_gram_cat in the transfer rule file.
 """}
-
-from FTModuleClass import FlexToolsModuleClass
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import shutil
-import codecs
-import ReadConfig
-import xml.etree.ElementTree as ET
 
 #----------------------------------------------------------------
 # The main processing function

@@ -21,23 +21,19 @@ import os
 import ReadConfig
 import Utils
 
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-import FTReport
-from FTModuleClass import FlexToolsModuleClass
-
-#----------------------------------------------------------------
-# Configurables:
-
-# Debugging for this module
-DEBUG = False
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {'moduleName'       : "Start Testbed",
-        'moduleVersion'    : "1.7",
-        'moduleModifiesDB' : False,
-        'moduleSynopsis'   : "Initialize the testbed log and create source text from the testbed.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Start Testbed",
+        FTM_Version    : "1.7",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
+        FTM_Help   : "",
+        FTM_Description:  
 u"""
 Initialize the testbed log and create source text from the testbed.
 """ }

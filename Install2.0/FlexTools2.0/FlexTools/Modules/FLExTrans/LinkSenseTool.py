@@ -5,10 +5,6 @@
 #   SIL International
 #   7/18/15
 #
-#   Version 2.2.3 - 2/27/19 - Ron Lockwood
-#    Fixed bug where a 2nd occurrence of a src word that had multiple target suggestions
-#    only gave the last suggestion.
-#
 #   Version 2.2.2 - 2/27/19 - Ron Lockwood
 #    Skip empty MSAs
 #
@@ -78,6 +74,17 @@ import sys
 import unicodedata
 from fuzzywuzzy import fuzz
 import copy
+from System import Guid
+from System import String
+from PyQt4 import QtGui, QtCore
+
+from flexlibs.FLExDBAccess import *                                         
+from FTModuleClass import *                                                 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.DomainServices import SegmentServices
+
+from Linker import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Configurables:
@@ -92,15 +99,15 @@ MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
 # order to be outputted as a possible match. 
 FUZZ_THRESHOLD = 74
 
-
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {'moduleName'       : "Sense Linker Tool",
-        'moduleVersion'    : "2.2.1",
-        'moduleModifiesDB' : True,
-        'moduleSynopsis'   : "Link source and target senses.",
-        'moduleDescription'   :
+docs = {FTM_Name       : "Sense Linker Tool",
+        FTM_Version    : "2.2.2",
+        FTM_ModifiesDB : True,
+        FTM_Synopsis   : "Link source and target senses.",
+        FTM_Help   : "",
+        FTM_Description:  
 u"""
 The source database should be chosen for this module. This module will create links 
 in the source project to senses in the target project. This module will show a window
@@ -129,24 +136,6 @@ will be set to the corresponding sense number.
 """ }
                  
 #----------------------------------------------------------------
-# The main processing function
-
-from SIL.FieldWorks.FDO import ILexPronunciation
-from SIL.FieldWorks.FDO import ITextRepository
-from SIL.FieldWorks.FDO import ITextFactory, IStTextFactory, IStTxtParaFactory
-from SIL.FieldWorks.FDO import ILexEntryRepository
-from SIL.FieldWorks.FDO import ILexSenseRepository
-from SIL.FieldWorks.FDO import ILexEntry, ILexSense
-from SIL.FieldWorks.FDO import SpecialWritingSystemCodes
-from SIL.FieldWorks.FDO.DomainServices import SegmentServices
-from SIL.FieldWorks.Common.COMInterfaces import ITsString
-from SIL.FieldWorks.FDO import IUndoStackManager
-from FLExDBAccess import FLExDBAccess, FDA_DatabaseError
-from System import Guid
-from System import String
- 
-from PyQt4 import QtGui, QtCore
-from Linker import Ui_MainWindow
 
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
@@ -553,7 +542,7 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
     ret = None
           
     # Look up the entry in the trgt project by guid
-    repo = TargetDB.db.ServiceLocator.GetInstance(ILexEntryRepository)
+    repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
     guid = Guid(String(myGuid))
 
     try:
@@ -658,7 +647,7 @@ def MainFunction(DB, report, modify=True):
     if not (senseEquivField and senseNumField):
         return
 
-    TargetDB = FLExDBAccess()
+    TargetDB = FLExProject()
 
     # Open the target database
     targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
@@ -666,19 +655,19 @@ def MainFunction(DB, report, modify=True):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetDatabaseNames():
+    if targetProj not in DB.GetProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
         return
 
     report.Info('Opening: '+targetProj+' as the target database.')
 
     try:
-        TargetDB.OpenDatabase(targetProj, modify, verbose = True)
-    except FDA_DatabaseError, e:
-        report.Error(e.message)
-        print "FDO Cache Create failed!"
-        print e.message
-        return
+        #TargetDB.OpenDatabase(targetProj, verbose = True)
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
+#         error_list.append((e.message, 2))
+        raise
 
     preGuidStr = 'silfw://localhost/link?app%3dflex%26database%3d'
     preGuidStr += re.sub('\s','+', targetProj)
@@ -799,7 +788,7 @@ def MainFunction(DB, report, modify=True):
                                 # Set the target part of the Link object and add it to the list
                                 myLink.set_tgtHPG(tgtHPG)
                                 myData.append(myLink)
-                                processed_map[mySense] = [myLink]
+                                processed_map[mySense] = myLink
                                 
                             else: # no link url present
                                 # Find matches for the current gloss using fuzzy compare if needed
@@ -817,25 +806,15 @@ def MainFunction(DB, report, modify=True):
                                             matchLink = Link(myHPG, matchHPG)
                                         matchLink.suggestion = True
                                         myData.append(matchLink)
-                                        
-                                        # store all the matched targets in a processed map. If there's only one 
-                                        # it will be a list with one element
-                                        if mySense not in processed_map:
-                                            processed_map[mySense] = [matchLink]
-                                        else:
-                                            myMatchLinkList = processed_map[mySense]
-                                            myMatchLinkList.append(matchLink)
+                                        processed_map[mySense] = matchLink
                                 # No matches
                                 else:
                                     # add a Link object that has no target information
                                     myData.append(myLink)
                                     processed_map[mySense] = myLink
                         else: # we've processed this sense before, add it to the list again
-                            myMatchLinkList = processed_map[mySense]
-                            
-                            # Loop through all targets for this src
-                            for aLink in myMatchLinkList:
-                                myData.append(aLink)
+                            myLink = processed_map[mySense]
+                            myData.append(myLink)
                                     
     # Check to see if there is any data to link
     if len(myData) == 0:
@@ -878,7 +857,8 @@ def MainFunction(DB, report, modify=True):
                     
                         # Set the sense number if necessary
                         if currLink.get_tgtSenseNum() > 1:
-                            DB.LexiconSetFieldText(currSense, senseNumField, str(currLink.get_tgtSenseNum()))
+                            numStr = unicode(currLink.get_tgtSenseNum())
+                            DB.LexiconSetFieldText(currSense, senseNumField, numStr)
                     
                         updated_senses[currSense] = 1
                     
@@ -892,14 +872,14 @@ def MainFunction(DB, report, modify=True):
                         updated_senses[currSense] = 1
                     
         if cnt == 1:
-            report.Info(str(cnt)+' link created.')
+            report.Info(unicode(cnt)+' link created.')
         else:
-            report.Info(str(cnt)+' links created.')
+            report.Info(unicode(cnt)+' links created.')
 
         if unlinkCount == 1:
             report.Info('1 link removed')
         elif unlinkCount > 1:
-            report.Info(str(unlinkCount) + ' links removed')  
+            report.Info(unicode(unlinkCount) + ' links removed')  
                       
     #exit(exec_val)
  
