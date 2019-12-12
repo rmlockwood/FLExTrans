@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 2.0 - 12/2/19 - Ron Lockwood
+#    Bump version number for FlexTools 2.0
+#
 #   Version 1.0.1 - 2/28/18 - Ron Lockwood
 #    Write the DOCTYPE.
 #

@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 2.0 - 12/2/19 - Ron Lockwood
+#    Bump version number for FlexTools 2.0
+#
 #   Version 1.7 - 4/19/19 - Ron Lockwood
 #    Bump the version number.
 #

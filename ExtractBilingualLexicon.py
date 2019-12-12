@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 2.0 - 12/2/19 - Ron Lockwood
+#    Bump version number for FlexTools 2.0
+#
 #   Version 1.7 - 12/2/19 - Ron Lockwood
 #    Import FlexProject instead of DBAcess
 #
