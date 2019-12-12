@@ -68,7 +68,9 @@ class FTReporter(object):
 
     def ProgressUpdate(self, value):
         if self.__progressHandler:
-            self.__progressHandler(value+1, self.progressMax, self.progressMessage)
+            self.__progressHandler(value+1, 
+                                   self.progressMax, 
+                                   self.progressMessage)
 
     def ProgressStart(self, max, msg=None):
         self.progressMax = max
@@ -87,6 +89,6 @@ if __name__ == '__main__':
     f.Blank()
     f.Warning("Cows crossing")
     f.Error("Bad bad news!")
-    print f.messageCounts
-    print f.messages
+    print(f.messageCounts)
+    print(f.messages)
     

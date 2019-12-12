@@ -22,7 +22,6 @@ import shutil
 import codecs
 import ReadConfig
 import xml.etree.ElementTree as ET
-from flexlibs.FLExDBAccess import *                                  
 from FTModuleClass import *                                          
 from SIL.LCModel import *                                            
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr  

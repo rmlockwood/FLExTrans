@@ -5,8 +5,8 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
+#   Version 1.7 - 12/2/19 - Ron Lockwood
+#    Import FlexProject instead of DBAcess
 #
 #   Version 1.6.2 - 4/4/19 - Ron Lockwood
 #    Check for the root lexicon file being out of date compared to the target database
@@ -100,10 +100,10 @@ import os
 import platform
 import subprocess
 
-from flexlibs.FLExDBAccess import *                                         
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from flexlibs.FLExProject import FLExProject, GetProjectNames
 from __builtin__ import True
 
 #----------------------------------------------------------------
@@ -551,7 +551,7 @@ def extract_target_lex(DB, configMap, report=None):
         return error_list
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetProjectNames():
+    if targetProj not in GetProjectNames():
         error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
         return error_list
 

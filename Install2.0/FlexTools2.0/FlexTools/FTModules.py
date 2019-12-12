@@ -1,4 +1,3 @@
-
 #
 #   Project: FlexTools
 #   Module:  FTModules
@@ -14,16 +13,16 @@
 #
 #
 
+from builtins import str
 
 import os
 import sys
 import imp
-import exceptions
 import traceback
 
 import Version
 import FTReport
-from flexlibs.FLExDBAccess import *
+from flexlibs.FLExProject import *
 from FTModuleClass import *
 
 # Loads .pth files from Modules\
@@ -32,21 +31,24 @@ import site
 site.addsitedir(MODULES_PATH)
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 # ------------------------------------------------------------------
 
 class ModuleManager (object):
 
-    def __always_import(self, name, path):
-        # From Python 2.5 Help section 29.1.1,
-        # but skipping the check for the module already being in sys.modules
+    def __always_import(self, path, name):
+        # This code is from Python 2.5 Help section 29.1.1, but skipping
+        # the check for the module already being in sys.modules.
         # This allows us to have more than one .py Module file with the same
-        # name (but in different directories).
+        # name, but in different directories.
 
         fp, pathname, description = imp.find_module(name, [path])
 
         try:
             return imp.load_module(name, fp, pathname, description)
-        except FTM_ModuleError, e:
+        except FTM_ModuleError as e:
             msg = "%s\\%s:\n%s" % (path, name, e.message)
             self.__errors.append(msg)
             return None
@@ -60,25 +62,26 @@ class ModuleManager (object):
                 fp.close()
 
     def __openProject(self, dbName, modifyDB):
-        #print "__openProject", dbName
-        self.db = FLExProject()
+        #logger.debug("__openProject %s" % dbName)
+        self.project = FLExProject()
 
         try:
-            self.db.OpenProject(dbName,
+            self.project.OpenProject(dbName,
                                 writeEnabled = modifyDB)
         except:
-            #print ">>Failed"
-            del self.db
+            logger.error("Project failed to open: %s" % dbName)
+            del self.project
             raise
-        #print ">>Success"
+        logger.info("Project opened: %s" % dbName)
 
     def __closeProject(self):
-        #print "__closeProject", self.db
-        if self.db:
-            del self.db     # Free the FDO Cache to get fresh data next time
+        #logger.debug("__closeProject %s" % repr(self.project))
+        if self.project:
+            # Free the LCM Cache to get fresh data next time
+            del self.project
 
     def __buildExceptionMessages(self, e, msg):
-        __copyMessage = u"Use Ctrl-C to copy this report to the clipboard to see more information."
+        __copyMessage = "Use Ctrl-C to copy this report to the clipboard to see more information."
         eName = details = ""
         # Test for .NET Exception first, since they are also Python Exceptions.
         if isinstance(e, System.Exception): #.NET
@@ -96,12 +99,12 @@ class ModuleManager (object):
     # --- Public methods ---
 
     def LoadAll(self):
-        self.db = None
+        self.project = None
         self.__modules = {}
         self.__errors = []
 
         libNames = [l for l in os.listdir(MODULES_PATH) \
-                       if os.path.isdir(MODULES_PATH + os.sep + l)] \
+                       if os.path.isdir(os.path.join(MODULES_PATH,l))] \
                    + [""]
 
         for library in libNames:
@@ -109,23 +112,24 @@ class ModuleManager (object):
 
             modNames = [m[:-3] for m in os.listdir(libPath)
                                         if m.endswith(".py")]
-            #print "From library", library, ":", modNames
+            logger.info("From library %s: %s" % (library, repr(modNames)))
 
             for moduleFileName in modNames:
-                # Don't try to directly import python files starting with double underscore.
+                # Don't try to directly import python files starting with
+                # double underscore.
                 if moduleFileName.startswith("__"):
                     continue
 
                 # Import named Python module from libPath
-                module = self.__always_import(moduleFileName, libPath)
+                module = self.__always_import(libPath, moduleFileName)
 
                 if not module:
-                    print "Warning: FlexToolsModule import failure %s." % moduleFileName
+                    logger.warning("Warning: FlexToolsModule import failure %s." % moduleFileName)
                     continue
                 try:
                     ftm = module.FlexToolsModule
                 except AttributeError:
-                    print "Warning: FlexToolsModule not found in %s." % moduleFileName
+                    logger.warning("Warning: FlexToolsModule not found in %s." % moduleFileName)
                     continue
 
                 if library:
@@ -167,14 +171,14 @@ class ModuleManager (object):
         if not dbName:
             return False
 
-        reporter.Info(u"Opening project %s..." % dbName)
+        reporter.Info("Opening project %s..." % dbName)
         try:
             self.__openProject(dbName, modifyDB)
-        except FDA_ProjectError, e:
-            reporter.Error(u"Error opening project: %s"
+        except FP_ProjectError as e:
+            reporter.Error("Error opening project: %s"
                            % e.message, e.message)
             return False
-        except Exception, e:
+        except Exception as e:
             msg, details = self.__buildExceptionMessages(e, "OpenProject failed with exception {}!")
             reporter.Error(msg, details)
             return False
@@ -185,21 +189,21 @@ class ModuleManager (object):
                 continue
 
             reporter.Blank()
-            reporter.Info(u"Running %s (version %s)..." %
+            reporter.Info("Running %s (version %s)..." %
                           (moduleName,
                            str(self.__modules[moduleName].docs[FTM_Version])))
 
             try:
-                self.__modules[moduleName].Run(self.db,
+                self.__modules[moduleName].Run(self.project,
                                                reporter,
                                                modify=modifyDB)
-            except FDA_RuntimeError, e:
+            except FP_RuntimeError as e:
                 msg, details = self.__buildExceptionMessages(e, "Module failed with a programming error!")
                 reporter.Error(msg, details)
-            except Exception, e:
+            except Exception as e:
                 msg, details = self.__buildExceptionMessages(e, "Module failed with exception {}!")
                 reporter.Error(msg, details)
-                
+
         numErrors   = reporter.messageCounts[reporter.ERROR]
         numWarnings = reporter.messageCounts[reporter.WARNING]
         reporter.Info("Processing completed with %d error%s and %d warning%s" \
@@ -216,12 +220,12 @@ if __name__ == '__main__':
     mm = ModuleManager()
     errList = mm.LoadAll()
     if errList:
-        print ">>>> Errors <<<<"
-        print "\n".join(errList)
+        print(">>>> Errors <<<<")
+        print("\n".join(errList))
 
     names =  mm.ListOfNames()
     for n in names:
-        print ">>>> %s <<<<" % n
-        print mm.GetDocs(n)
-        print mm.GetConfigurables(n)
-        print
+        print(">>>> %s <<<<" % n)
+        print(mm.GetDocs(n))
+        print(mm.GetConfigurables(n))
+        print()

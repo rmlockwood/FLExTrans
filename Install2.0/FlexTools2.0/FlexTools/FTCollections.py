@@ -12,9 +12,12 @@
 #   v0.01
 #
 
+from __future__ import unicode_literals
+from builtins import str
+
 import os
 
-from ConfigParser import RawConfigParser as ConfigParser
+from configparser import ConfigParser
 
 from FTPaths import COLLECTIONS_PATH
 
@@ -75,25 +78,29 @@ class CollectionsManager(object):
         self.collectionsConfig = {}
 
         for collectionName in collectionNames:
-            cp = ConfigParser()
+            cp = ConfigParser(interpolation=None)
             if cp.read(os.path.join(COLLECTIONS_PATH, collectionName)):
                 self.collectionsConfig[collectionName[:-4]] = cp # Strip '.ini'
             else:
-                print "Failed to read", collectionName
+                print("Failed to read", collectionName)
 
     # ---- Access ----
 
     def Names(self):
-        return (self.collectionsConfig.keys())
+        return (list(self.collectionsConfig.keys()))
 
     def ListOfModules(self, collectionName):
-        if collectionName not in self.collectionsConfig.keys():
+        if collectionName not in self.collectionsConfig:
             raise FTC_NameError("Bad collection name '%s'" % collectionName)
         cp = self.collectionsConfig[collectionName]
         modules = cp.sections()
         sortedModules = [0] * len(modules)
         for moduleName in modules:
-            order = cp.getint(moduleName, self.ORDER_OPTION)
+            try:
+                order = cp.getint(moduleName, self.ORDER_OPTION)
+            except:
+                # Error in collections file; skip this entry
+                continue
             sortedModules[order-1] = moduleName
         return (sortedModules)
 
@@ -105,7 +112,7 @@ class CollectionsManager(object):
     def Add(self, collectionName):
         if collectionName in self.collectionsConfig:
             raise FTC_ExistsError(collectionName + " already exists.")
-        cp = ConfigParser()
+        cp = ConfigParser(interpolation=None)
         self.collectionsConfig[collectionName] = cp
         self.WriteOne(collectionName, cp)
         return
@@ -143,7 +150,7 @@ class CollectionsManager(object):
         if cp.has_section(moduleName):
             raise FTC_ExistsError(moduleName + " already exists.")
         cp.add_section(moduleName)
-        cp.set(moduleName, self.ORDER_OPTION, len(cp.sections()))
+        cp.set(moduleName, self.ORDER_OPTION, str(len(cp.sections())))
         for configItem in configuration:
             cp.set(moduleName, configItem.Name, configItem.Default)
         return
@@ -155,7 +162,7 @@ class CollectionsManager(object):
         for m in cp.sections():
             this_order = cp.getint(m, self.ORDER_OPTION)
             if  this_order > order:
-                cp.set(m, self.ORDER_OPTION, this_order - 1)
+                cp.set(m, self.ORDER_OPTION, str(this_order - 1))
 
     def MoveModuleUp(self, collectionName, moduleName):
         cp = self.collectionsConfig[collectionName]
@@ -164,8 +171,8 @@ class CollectionsManager(object):
             for m in cp.sections():
                 this_order = cp.getint(m, self.ORDER_OPTION)
                 if this_order == order - 1:
-                    cp.set(m, self.ORDER_OPTION, order)
-            cp.set(moduleName, self.ORDER_OPTION, order - 1)
+                    cp.set(m, self.ORDER_OPTION, str(order))
+            cp.set(moduleName, self.ORDER_OPTION, str(order - 1))
 
     def MoveModuleDown(self, collectionName, moduleName):
         cp = self.collectionsConfig[collectionName]
@@ -174,13 +181,13 @@ class CollectionsManager(object):
             for m in cp.sections():
                 this_order = cp.getint(m, self.ORDER_OPTION)
                 if this_order == order + 1:
-                    cp.set(m, self.ORDER_OPTION, order)
-            cp.set(moduleName, self.ORDER_OPTION, order + 1)
+                    cp.set(m, self.ORDER_OPTION, str(order))
+            cp.set(moduleName, self.ORDER_OPTION, str(order + 1))
 
     # ---------
 
     def WriteAll(self):
-        for name, cp in self.collectionsConfig.items():
+        for (name, cp) in self.collectionsConfig.items():
             self.WriteOne(name, cp)
 
     def WriteOne(self, name, cp):

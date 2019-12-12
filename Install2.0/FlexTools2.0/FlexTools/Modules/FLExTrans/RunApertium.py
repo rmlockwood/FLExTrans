@@ -27,7 +27,6 @@ import platform
 import subprocess
 import re
 import Utils
-from flexlibs.FLExDBAccess import *
 from FTModuleClass import *
 
 

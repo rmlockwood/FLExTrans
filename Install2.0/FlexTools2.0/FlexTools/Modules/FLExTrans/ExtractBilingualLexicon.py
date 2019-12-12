@@ -96,10 +96,10 @@ from System import Guid
 from System import String
 import ReadConfig
 
-from flexlibs.FLExDBAccess import *                                         
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -394,7 +394,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetProjectNames():
+    if targetProj not in GetProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
         return
     

@@ -60,10 +60,10 @@ from datetime import datetime
 import ReadConfig
 import Utils
 
-from flexlibs.FLExDBAccess import *
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+from flexlibs.FLExProject import FLExProject
 
 #----------------------------------------------------------------
 # Documentation that the user sees:

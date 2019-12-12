@@ -1,5 +1,5 @@
 @echo off
 
-call FlexTools.bat
+call FlexTools.bat DEBUG
 
-notepad error.log
+notepad flextools.log

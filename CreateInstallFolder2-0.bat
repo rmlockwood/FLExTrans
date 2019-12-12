@@ -1,13 +1,23 @@
 rem Delete everything in Install2.0
-del /S /Q /F Install2.0\* >nul
-for /d %%i in (Install2.0\*) do @rmdir /s /q "%%i"
+rd /s /q Install2.0
+
+rem Delete everything in Install2.0
+rd /s /q Install2.0
 
 rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker all in one file
 mkdir Install2.0\FlexTools2.0\FlexTools\Collections
 mkdir Install2.0\FlexTools2.0\FlexTools\Output
+mkdir Install2.0\FlexTools2.0\FlexTools\__icons
 mkdir Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 mkdir Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
-xcopy /s FlexTools2.0 Install2.0\FlexTools2.0 
+
+xcopy FlexTools2.0\* Install2.0\FlexTools2.0 
+xcopy FlexTools2.0\FlexTools\* Install2.0\FlexTools2.0\FlexTools 
+xcopy /s FlexTools2.0\FlexTools\__icons\* Install2.0\FlexTools2.0\FlexTools\__icons
+echo fuzzywuzzy >> Install2.0\FlexTools2.0\requirements.txt
+copy install_flextools_libs.bat Install2.0\FlexTools2.0
+
+rem core models
 copy CatalogTargetPrefixes.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy ConvertTextToSTAMPformat.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy ExtractBilingualLexicon.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
@@ -15,9 +25,13 @@ copy ExtractSourceText.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy ExtractTargetLexicon.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy InsertTargetText.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy RunApertium.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
+
+rem libraries
 copy readconfig.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 copy Utils.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 copy MyTableView.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
+
+rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
 copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
 copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections

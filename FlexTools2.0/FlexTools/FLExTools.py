@@ -4,18 +4,38 @@
 #   Platform: .NET v2 Windows.Forms (Python.NET 2.7)
 #
 #   Main FLexTools UI:
-#    - loads straight into configured project and collection.
 #    - A split panel with Collections list above and Report results below.
 #
 #
-#   Copyright Craig Farrow, 2010 - 2018
+#   Copyright Craig Farrow, 2010 - 2019
 #
+
+from __future__ import unicode_literals
+from builtins import str
 
 import codecs
 import sys
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
+
 import os
 import traceback
+
+
+# -----------------------------------------------------------
+import logging
+
+if len(sys.argv) > 1 and (sys.argv[1] == "DEBUG"):
+    loggingLevel = logging.DEBUG 
+else:
+    loggingLevel = logging.INFO
+
+logging.basicConfig(filename='flextools.log', 
+                    filemode='w', 
+                    level=loggingLevel)
+
+logger = logging.getLogger(__name__)
+# -----------------------------------------------------------
+
 
 # This call is required to initialise the threading mode for COM calls
 # (e.g. using the clipboard) It must be made before clr is imported.
@@ -55,26 +75,25 @@ from System.Threading import Thread, ThreadStart, ApartmentState
 import FTPaths
 import Version
 
-from flexlibs import FLExInit
-
 try:
-    import UIGlobal
-    import UICollections, FTCollections
-    import UIModulesList, UIReport, UIModuleBrowser
-    import UIDbChooser
-    import FTModules
-    import Help
+    from flexlibs import FLExInit
 
-# FW9 TODO - test this error handling still works/applies
-except Exception, e:
+except Exception as e:
     MessageBox.Show("Error interfacing with Fieldworks:\n%s\n(This version of FLExTools has been tested with Fieldworks versions %s - %s.)\nSee error.log for more details."
                     % (e.message, Version.MinFWVersion, Version.MaxFWVersion),
                     "FLExTools: Fatal Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation)
-    print "Fatal exception during imports:\n%s" % traceback.format_exc()
-    print "FLExTools %s" % Version.number
+    print("Fatal exception importing flexlibs:\n%s" % traceback.format_exc())
+    print("FLExTools %s" % Version.number)
     sys.exit(1)
+
+import UIGlobal
+import UICollections, FTCollections
+import UIModulesList, UIReport, UIModuleBrowser
+from UIProjectChooser import ProjectChooser
+import FTModules
+import Help
 
 from cdfutils.DotNet import CustomMainMenu, CustomToolBar
 from cdfutils.Config import ConfigStore
@@ -94,8 +113,7 @@ class FTPanel(Panel):
                        "Collections",
                        "copy",
                        "Manage and select a collection of modules"),
-                      None, # Separator
-                      (self.__ShowInfo,
+                      (self.ModuleInfo,
                        "Module Info",
                        "documents",
                        "Show the full module documentation"),
@@ -147,6 +165,8 @@ class FTPanel(Panel):
 
         self.reportWindow = UIReport.ReportWindow()
 
+        self.startupToolTip = None
+
         startupTips = []
         if projectName:
             self.UpdateProjectName(projectName)
@@ -155,7 +175,7 @@ class FTPanel(Panel):
             startupTips.append(msg)
 
         if not self.listOfModules:
-            msg = "Choose or create a collection by clicking the  collections button in the toolbar."
+            msg = "Choose or create a collection by clicking the Collections button in the toolbar."
             startupTips.append(msg)
 
         for msg in startupTips:
@@ -164,14 +184,12 @@ class FTPanel(Panel):
         self.reportWindow.Report("Use the Run buttons to run modules.")
 
         if startupTips:
-            self.startupTip = ToolTip()
-            self.startupTip.IsBalloon = True
-            self.startupTip.ToolTipTitle = "Getting started"
-            self.startupTip.InitialDelay = 0
-            self.startupTip.AutoPopDelay = 20000
-            self.startupTip.SetToolTip(self.modulesList, "\n".join(startupTips))
-        else:
-            self.startupTip = None
+            self.startupToolTip = ToolTip()
+            self.startupToolTip.IsBalloon = True
+            self.startupToolTip.ToolTipTitle = "Getting started"
+            self.startupToolTip.InitialDelay = 0
+            self.startupToolTip.AutoPopDelay = 20000
+            self.startupToolTip.SetToolTip(self.modulesList, "\n".join(startupTips))
 
 
         self.reportWindow.Reporter.RegisterProgressHandler(progressFunction)
@@ -195,27 +213,12 @@ class FTPanel(Panel):
     # ---- Toolbar button handlers ----
 
     def __EditCollections(self):
-        if self.startupTip:
-            self.startupTip.RemoveAll()
-
         if self.__EditCollectionsHandler:
             self.__EditCollectionsHandler()
 
     def __ChooseProject(self):
-        if self.startupTip:
-            self.startupTip.RemoveAll()
-
         if self.__ChooseProjectHandler:
             self.__ChooseProjectHandler()
-
-    def __ShowInfo(self):
-        if self.modulesList.SelectedIndex >= 0:
-            module = self.listOfModules[self.modulesList.SelectedIndex]
-            moduleDocs = self.moduleManager.GetDocs(module)
-            if moduleDocs:
-                infoDialog = UIModuleBrowser.ModuleInfoDialog(moduleDocs)
-                infoDialog.ShowDialog()
-
 
     def __Run(self, message, modules, modifyDB = False):
         # Reload the modules to make sure we're using the latest code.
@@ -232,7 +235,7 @@ class FTPanel(Panel):
 
         if modifyDB:
             dlgmsg = "Are you sure you want to make changes to the '%s' project? "\
-                      "(Please back up the project first.)"
+                      "Please back up the project first."
             title = "Confirm allow changes"
             result = MessageBox.Show(dlgmsg % self.projectName, title,
                                      MessageBoxButtons.YesNo,
@@ -278,14 +281,33 @@ class FTPanel(Panel):
         self.__EditCollectionsHandler = handler
 
     def UpdateModuleList(self, collectionName, listOfModules):
+        if self.startupToolTip:
+            self.startupToolTip.RemoveAll()
         self.listOfModules = listOfModules
         self.modulesList.UpdateAllItems(self.listOfModules)
         self.reportWindow.Report("Collection '%s' selected." % collectionName)
 
     def UpdateProjectName(self, newProjectName):
+        if self.startupToolTip:
+            self.startupToolTip.RemoveAll()
         self.projectName = newProjectName
         self.reportWindow.Report("Project '%s' selected." % self.projectName)
         self.toolbar.UpdateButtonText(0, self.projectName)
+
+    def ModuleInfo(self):
+        if self.modulesList.SelectedIndex >= 0:
+            module = self.listOfModules[self.modulesList.SelectedIndex]
+            moduleDocs = self.moduleManager.GetDocs(module)
+            if moduleDocs:
+                infoDialog = UIModuleBrowser.ModuleInfoDialog(moduleDocs)
+                infoDialog.ShowDialog()
+
+
+    def CopyReportToClipboard(self):
+        self.reportWindow.CopyToClipboard()
+
+    def ClearReport(self):
+        self.reportWindow.Clear()
 
     def RefreshModules(self):
         self.modulesList.UpdateAllItems(self.listOfModules,
@@ -308,11 +330,15 @@ class FTMainForm (Form):
                           "Collections...",
                           Shortcut.CtrlL,
                           "Manage and select a collection of modules"),
+                         (self.ModuleInfo,
+                          "Module Information",
+                          Shortcut.CtrlI,
+                          "Show help information on the selected module"),
                          (self.ReloadModules,
                           "Re-load Modules",
                           Shortcut.F5,
                           "Re-import all modules"),
-                         ## (None, "Preferences", Shortcut.CtrlP, None),
+                         ## (TODO, "Preferences", Shortcut.CtrlP, None),
                          (self.Exit,  "Exit", Shortcut.CtrlQ, None)]
 
         RunMenu =       [(self.RunOne,
@@ -332,11 +358,15 @@ class FTMainForm (Form):
                           Shortcut.CtrlShiftA,
                           "Run all modules allowing database changes"),]
 
-        ReportMenu =    [(self.CopyToClipboard, "Copy to Clipboard", Shortcut.CtrlC,
+        ReportMenu =    [(self.CopyToClipboard, 
+                          "Copy to Clipboard", 
+                          Shortcut.CtrlC,
                           "Copy the report contents to the clipboard"),
-                         #(None, "Save...", Shortcut.CtrlS,
+                         #(TODO, "Save...", Shortcut.CtrlS,
                          # "Save the current report to a file"),
-                         (self.ClearReport, "Clear", Shortcut.CtrlX,
+                         (self.ClearReport, 
+                          "Clear", 
+                          Shortcut.CtrlX,
                           "Clear the current report")]
 
         HelpMenu =      [(Help.GeneralHelp,
@@ -345,21 +375,21 @@ class FTMainForm (Form):
                             "Help on using FlexTools"),
                          (Help.ProgrammingHelp,
                             "Programming Help",
-                            Shortcut.None,
+                            None,
                             "Help on how to program a FlexTools module"),
                          (Help.APIHelp,
                             "API Help",
-                            Shortcut.None,
+                            None,
                             "Help on the Programming Interface"),
                          None,     # Separator
                          (Help.LaunchLCMBrowser,
                             "Launch LCMBrowser",
-                            Shortcut.None,
+                            None,
                             "Open the Fieldworks LCMBrowser application"),
                          None,     # Separator
                          (Help.About,
                             "About",
-                            Shortcut.None,
+                            None,
                             None)
                          ]
 
@@ -374,6 +404,7 @@ class FTMainForm (Form):
 
 
     def __LoadModules(self):
+        logger.debug("Loading modules")
         if not hasattr(self, "moduleManager"):
             self.moduleManager = FTModules.ModuleManager()
         errorList = self.moduleManager.LoadAll()
@@ -388,9 +419,10 @@ class FTMainForm (Form):
         self.Text = "FLExTools " + Version.number
 
         ## Get configurables - current DB, current collection
+        logger.debug("Reading configuration")
         self.configuration = ConfigStore(FTPaths.CONFIG_PATH)
         if not self.configuration.currentCollection:
-            self.configuration.currentCollection = u"Examples"
+            self.configuration.currentCollection = "Examples"
 
         self.collectionsManager = FTCollections.CollectionsManager()
 
@@ -438,24 +470,26 @@ class FTMainForm (Form):
             progressText = "[%s: %i%%]" % (msg, self.progressPercent)
         else:
             progressText = ""
-        self.StatusBar.Text = "Collection: '%s'   Project: '%s'   %s" %\
+        newText = "Collection: '%s'   Project: '%s'   %s" %\
              (self.configuration.currentCollection,
               #self.configuration.currentServer
               self.configuration.currentProject,
               progressText)
+        if self.StatusBar.Text != newText:
+            self.StatusBar.Text = newText
 
     def __ProgressBar(self, val, max, msg=None):
         if max == 0: # Clear progress bar
-            if self.progressPercent <> -1:
+            if self.progressPercent != -1:
                 self.progressPercent = -1
                 self.__UpdateStatusBar()
             return
 
         newPercent = (val * 100) / max          # val = [0...max]
         refresh = False
-        if msg <> self.progressMessage:
+        if msg != self.progressMessage:
             refresh = True
-        elif newPercent <> self.progressPercent:
+        elif newPercent != self.progressPercent:
             refresh = True
         if refresh:
             self.progressPercent = newPercent
@@ -491,9 +525,9 @@ class FTMainForm (Form):
                                       listOfModules)
 
     def ChooseProject(self, sender=None, event=None):
-        dlg = UIDbChooser.ProjectChooser(self.configuration.currentProject)
+        dlg = ProjectChooser(self.configuration.currentProject)
         dlg.ShowDialog()
-        if dlg.projectName <> self.configuration.currentProject:
+        if dlg.projectName != self.configuration.currentProject:
             self.configuration.currentProject = dlg.projectName
             self.UIPanel.UpdateProjectName(dlg.projectName)
             self.__UpdateStatusBar()
@@ -515,10 +549,13 @@ class FTMainForm (Form):
 ##            self.__UpdateStatusBar()
 
     def CopyToClipboard(self, sender, event):
-        self.UIPanel.reportWindow.CopyToClipboard()
+        self.UIPanel.CopyReportToClipboard()
 
     def ClearReport(self, sender, event):
-        self.UIPanel.reportWindow.Clear()
+        self.UIPanel.ClearReport()
+
+    def ModuleInfo(self, sender, event):
+        self.UIPanel.ModuleInfo()
 
     def ReloadModules(self, sender, event):
         self.__LoadModules()
@@ -536,7 +573,9 @@ class FTMainForm (Form):
 def main():
     FLExInit.Initialize()
 
+    logger.debug("Creating MainForm")
     form = FTMainForm()
+    logger.debug("Launching WinForms Application")
     Application.Run(form)
 
     FLExInit.Cleanup()

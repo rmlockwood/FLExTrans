@@ -5,8 +5,8 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
+#   Version 1.7 - 12/2/19 - Ron Lockwood
+#    Import FlexProject instead of DBAcess
 #
 #   Version 1.6.2 - 4/5/19 - Ron Lockwood
 #    Check if the bilingual dictionary is out of date in respect to the source 
@@ -96,10 +96,10 @@ from System import Guid
 from System import String
 import ReadConfig
 
-from flexlibs.FLExDBAccess import *                                         
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -394,7 +394,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in DB.GetProjectNames():
+    if targetProj not in GetProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
         return
     

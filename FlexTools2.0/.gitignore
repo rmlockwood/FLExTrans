@@ -1,10 +1,10 @@
-FlexTools/Modules-User
-FlexTools/Modules-Dev
+FlexTools/Modules-*
 
 # Temp files
 *.tmp
 *.~*
 *.ini
+*.bak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
