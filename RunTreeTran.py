@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Updated comments and documentation.
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -12,6 +15,13 @@
 #    Initial version.
 #
 # This module runs the TreeTran program which modifies a syntax tree. 
+# See if we have a file for TreeTran output set in the configuration file. If not, 
+# don't do anything. Then open Invoker.xml in the temp folder. It's possible that
+# not all of the sentences were able to be parsed. So we need to filter out the
+# sentences to just those that have a parse. Store the filtered file also in the
+# temp folder.  Then run the treetran.exe program which lives in the FlexTools 
+# folder giving it the rules file, the file with the sentences with valid parses
+# and the output filename (from the config file) as parameters.
 
 
 import Utils
@@ -40,13 +50,17 @@ u"""
 This module will run the TreeTran program to modify a syntax tree. The resulting
 file is placed in the Output folder which is then used by the ExtractSourceText
 module to modify the word order of the sentence according to the TreeTran rules
-file. The TreeTran Rules file is in the Output folder also.
+file. The TreeTran Rules file is in the Output folder also. This module assumes
+that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
+This file gets created by the PC-PATR with FLEx program when the tree toolbar
+button is used. 
 """ }
                  
 TREE_TRAN_RULES = 'tree_tran_rules.xml'
 INVOKER_FILE = 'Invoker.xml'   
 VALID_PARSES_FILE = 'valid_parses_for_tree_tran.xml'
 
+# Filter the invoker file down to just the sentences that have a syntax parse
 def filterAndLogInvokerParses(inputFilename):
     
     recsInSent = []
@@ -112,6 +126,8 @@ def MainFunction(DB, report, modify=True):
         return
 
     # Check if we are using TreeTran for sorting the text output
+    # If TreeTran is not being used the config file will have AnalyzedTextTreeTranOutputFile=
+    # i.e. set to nothing
     treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
     if not treeTranResultFile:
         return 
@@ -122,7 +138,7 @@ def MainFunction(DB, report, modify=True):
     # Filter the invoker file down to just the sentences that have a syntax parse
     filteredFile = filterAndLogInvokerParses(invokerFile)
     
-    # verify the invoker file exists
+    # verify the filtered file exists
     if os.path.exists(filteredFile) == False:
         report.Error('There is a problem with the TreeTran input file: '+filteredFile+'. Has the PC-PATR with FLEx program been run correctly?')
         return
