@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Only do replacement file if the dictionary is out of date.
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -735,10 +738,11 @@ def MainFunction(DB, report, modifyAllowed):
     
         report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
         report.Info(unicode(records_dumped_cnt)+' records created in the bilingual dictionary.')
-        
-    # As a last step, replace certain parts of the bilingual dictionary
-    if do_replacements(configMap, report, fullPathBilingFile) == False:
-        return
+
+        # TODO: Check if the replacement file is out of date        
+        # As a last step, replace certain parts of the bilingual dictionary
+        if do_replacements(configMap, report, fullPathBilingFile) == False:
+            return
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
