@@ -25,6 +25,7 @@ copy ExtractSourceText.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy ExtractTargetLexicon.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy InsertTargetText.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 copy RunApertium.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
+copy RunTreeTran.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
 
 rem libraries
 copy readconfig.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
