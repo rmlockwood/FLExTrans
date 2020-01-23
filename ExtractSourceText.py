@@ -8,6 +8,12 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Use a sentence list from the get_interlinear function to use when there is not
+#    a parse available from TreeTran. This fixes the problem where a phrasal verb
+#    was reducing the word count and causing the non-parsed sentence to be off by
+#    one.
+# 
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -204,7 +210,7 @@ def MainFunction(DB, report, modifyAllowed):
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
             return
         
-        # get the list of guids from the tree tran results file
+        # get the list of guids from the TreeTran results file
         treeSentList = getTreeSents(treeTranResultFile)
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
@@ -220,48 +226,56 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     getSurfaceForm = False
+    
+    # Get the morphemes from the interlinear text in FLEx
     retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
 
     if TreeTranSort:
-        (guidMap, outputStringList) = retObject
-        index = 0
+        (guidMap, outputStringList, sentList) = retObject
         p = 0
         
         # Loop through each sent
         for sentNum, (numWords, parsed) in enumerate(logInfo):
             
+            # If we have a parse for a sentence, TreeTran may have rearranged the words.
+            # We need to put them out in the new TreeTran order.
             if parsed == True:
                 mySent = treeSentList[p]
                 
                 # Loop through each word in the sentence and get the Guids
-                for x in range(0,mySent.getLength()):
+                for x in range(0, mySent.getLength()):
                     myGuid = mySent.getNextGuid()
                     
                     if myGuid == None:
                         break
                     
                     myGuid = (sentNum, myGuid) # new index is sent. # + Guid
+                    
                     if myGuid not in guidMap:
-                        report.Error('Could not find the desired Guid')
+                        report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(x+1))
                     else:
                         outStr = guidMap[myGuid]
+                        
                         # Split compound words
                         outStr = Utils.split_compounds(outStr)
                         f_out.write(outStr.encode('utf-8'))
                 p += 1
                 
-            # no syntax parse put words out in their default order                        
+            # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
             else:
-                j = index
-                for i in range (j, j+numWords):
-                    outStr = outputStringList[i*2] # *2 because there's always a punct string between every lexical unit string
-                    outStrPunct = outputStringList[i*2+1] # punctuation
+                # Get the sentence in question
+                sent = sentList[sentNum]
+                
+                # Output each part of the sentence    
+                for i in range(0, len(sent), 2):
+                
+                    outStr = sent[i]
+                    outStrPunct = sent[i+1]
+                    
                     # Split compound words
                     outStr = Utils.split_compounds(outStr)
                     f_out.write(outStr.encode('utf-8'))
                     f_out.write(outStrPunct.encode('utf-8'))
-            
-            index += numWords
     else:
         # retObject is a list
         # Write out all the words
@@ -324,9 +338,10 @@ def getTreeSents(inputFilename):
     
     newSent = True
     myTreeSent = None
+    
     # Loop through the anaRec's 
     for anaRec in myRoot:
-        # Create a new tree tran sentence object
+        # Create a new treeTranSent object
         if newSent == True:
             myTreeSent = treeTranSent()
             obj_list.append(myTreeSent) # add it to the list

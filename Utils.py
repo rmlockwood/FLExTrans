@@ -5,6 +5,13 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Add a new return object from get_interlinear that is a list of sentences
+#    each sentence contains two items for each word, the lexical item in data stream 
+#    format and the spacing or punctuation afterwards. Also fixed the Guid list use;
+#    in the case of phrasal verbs, the first element of the compound wasn't getting
+#    deleted from the Guid list.
+#
 #   Version 1.7.1 - 4/22/19 - Ron Lockwood
 #    Fixed bug where two entries that occur together but were not part of the 
 #    same complex form cause the 2nd one to be ignored. E.g. dust enteqad kon
@@ -1190,7 +1197,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
         if spec.ClassID == 53: # FsComplexValue
-            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+            get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
             
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
@@ -1240,11 +1247,14 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     prev_e = None
     ccc = 0 # current_complex_component
     segment_list = []
+    sent_list = []
     outputStrList = []
     BundleGuidMap = {}
     curr_SegNum = 0
     prevEndOffset = 0
     sentNum = 0
+    begSentIndex = 0
+    itemCount = 0
 
     # count analysis objects
     obj_cnt = -1
@@ -1283,6 +1293,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                     if TreeTranSort:
                         BundleGuidMap[prevGuid] =  BundleGuidMap[prevGuid] + ' '*numSpaces
                     outputStrList.append(' '*numSpaces)
+                    itemCount += 1
                 elif numSpaces < 0: # new paragraph
                     if TreeTranSort:
                         BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + '\n'
@@ -1304,7 +1315,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 
                 if getSurfaceForm:
                     bundle_list.append((text_punct,outStr))
-                
+                    
             # If not, assume this is non-sentence punctuation and just output the punctuation without a "symbol" e.g. <xxx>
             else:
                 outStr = text_punct
@@ -1312,7 +1323,17 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             if not getSurfaceForm:
                 if TreeTranSort:
                     BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
-                outputStrList.append(outStr)     
+
+                outputStrList.append(outStr)
+                itemCount += 1
+                     
+                if TreeTranSort:
+                    # Since we are on new sentence. Append the last one and start a new one.
+                    if TreeTranSort:
+                        sent = outputStrList[begSentIndex:]
+                        sent_list.append(sent)
+                        begSentIndex = itemCount
+                    
             continue
         
         if getSurfaceForm:
@@ -1361,7 +1382,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 if TreeTranSort:
                     BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
                 outputStrList.append(outStr)
-            
+                itemCount += 1
+                
             continue
         else:
             wfiAnalysis = None
@@ -1372,14 +1394,14 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             if bundle.SenseRA:
                 if bundle.MsaRA and bundle.MorphRA:
                     # Get the LexEntry object
-                    e = bundleEntry = bundle.MorphRA.Owner
+                    e = bundle.MorphRA.Owner
                         
                     # For a stem we just want the headword and it's POS
                     if bundle.MsaRA.ClassName == 'MoStemMsa':
                         
                         # Just save the the guid for the first root in the bundle
                         if bundleGuid == None:
-                            bundleGuid = prevGuid = (sentNum, bundle.Guid) # identifies a bundle for matching with TreeTran output
+                            bundleGuid = (sentNum, bundle.Guid) # identifies a bundle for matching with TreeTran output
             
                         # Check for valid POS
                         if not bundle.MsaRA.PartOfSpeechRA:
@@ -1485,16 +1507,19 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                                     
                                                     # Save the data stream part
                                                     saveStr = myTup[1]
-                                                    
-                                                    # TODO: figure out what to do with the guid list if we are using tree tran sort.
                                                 else:
-                                                    # remove n/adj/... and it's tag from being output
+                                                    # remove 2 things, the n/adj/... and it's tag from being output
                                                     saveStr = outputStrList.pop()
-                                                    # first pop may have just popped punctuation or spacing
+                                                    # very first pop may have just popped punctuation or spacing, if so don't pop again
                                                     if len(outputStrList) > 0:
                                                         saveStr = outputStrList.pop() 
                                                     
-                                                    # TODO: if TreeTran remove the previous word from the Guid Map
+                                                    # If TreeTran remove the previous word from the Guid Map
+                                                    if TreeTranSort:
+                                                        BundleGuidMap.pop(prevGuid, None) # if not found None is returned
+                                                        # itemCount is used to track the beginning of each sentence. Since we removed two 
+                                                        # items from the output string list, we reduce the item count by 2.
+                                                        itemCount -= 2 
                                                 
                                                 # The first component(s) could have tags (from affixes or inflection info.)
                                                 # Save these tags so they can be put on the end of the complex form.
@@ -1633,8 +1658,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             # bundle Guid to the lexical unit output that goes with it
             if TreeTranSort:
                 BundleGuidMap[bundleGuid] = outStr
+                prevGuid = bundleGuid
             outputStrList.append(outStr)
-    
+            itemCount += 1
+
     if multiple_unknown_words:
         report.Warning('One or more unknown words occurred multiple times.')
     if getSurfaceForm:
@@ -1644,6 +1671,6 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         report.Info('Export of '+unicode(obj_cnt+1)+' analyses complete.')
 
         if TreeTranSort:
-            return (BundleGuidMap, outputStrList)
+            return (BundleGuidMap, outputStrList, sent_list)
         else:
             return outputStrList
