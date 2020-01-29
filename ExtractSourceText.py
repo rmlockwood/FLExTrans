@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.0.2 - 1/29/20 - Ron Lockwood
+#    Write a newline after a sentence that didn't have a parse. Also put out a 
+#    warning with the # of unparsed sentences.
+# 
 #   Version 2.0.1 - 1/22/20 - Ron Lockwood
 #    Use a sentence list from the get_interlinear function to use when there is not
 #    a parse available from TreeTran. This fixes the problem where a phrasal verb
@@ -234,6 +238,8 @@ def MainFunction(DB, report, modifyAllowed):
         (guidMap, outputStringList, sentList) = retObject
         p = 0
         
+        noParseSentCount = 0
+        
         # Loop through each sent
         for sentNum, (numWords, parsed) in enumerate(logInfo):
             
@@ -263,6 +269,8 @@ def MainFunction(DB, report, modifyAllowed):
                 
             # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
             else:
+                noParseSentCount += 1
+                
                 # Get the sentence in question
                 sent = sentList[sentNum]
                 
@@ -276,6 +284,12 @@ def MainFunction(DB, report, modifyAllowed):
                     outStr = Utils.split_compounds(outStr)
                     f_out.write(outStr.encode('utf-8'))
                     f_out.write(outStrPunct.encode('utf-8'))
+                
+                f_out.write('\n'.encode('utf-8'))
+
+        if noParseSentCount > 0:
+            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+
     else:
         # retObject is a list
         # Write out all the words
