@@ -72,7 +72,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",

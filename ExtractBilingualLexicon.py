@@ -111,7 +111,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",

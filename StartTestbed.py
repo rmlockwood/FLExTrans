@@ -31,7 +31,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",

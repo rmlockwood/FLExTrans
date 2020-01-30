@@ -132,7 +132,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 

@@ -42,7 +42,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "1.1",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a more readable source or target text file.",    
         FTM_Help   : "",

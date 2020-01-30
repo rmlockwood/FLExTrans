@@ -113,7 +113,7 @@ from __builtin__ import True
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",

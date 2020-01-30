@@ -33,7 +33,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : '1.0.1',
+        FTM_Version    : '2.0',
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",

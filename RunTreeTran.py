@@ -41,7 +41,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "1.0",
+        FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",

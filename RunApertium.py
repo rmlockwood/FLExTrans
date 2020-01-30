@@ -37,7 +37,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : '1.7',
+        FTM_Version    : '2.0',
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  
