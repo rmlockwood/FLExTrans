@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.4 - 1/30/20 - Ron Lockwood
+#    On Synthesize catch if the Target DB is locked. 
+# 
 #   Version 3.1.3 - 4/22/19 - Ron Lockwood
 #    Look at first half of text box strings to determine rtl. This prevents the
 #    whole thing from being right aligned when there is just an rtl punctuation
@@ -110,7 +113,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.1.2",
+        FTM_Version    : "3.1.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -597,7 +600,12 @@ class Main(QtGui.QMainWindow):
         # We only need to do this once, until the user requests to refresh the lexicon
         if self.__doCatalog:
             
-            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            try:
+                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            except:
+                QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                return
+
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
