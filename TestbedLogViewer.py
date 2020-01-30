@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 2.0.1 - 1/30/20 - Ron Lockwood
+#    Start with a font size of 12 
+# 
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -43,7 +46,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "1.7",
+        FTM_Version    : "2.0.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -507,8 +510,8 @@ class LogViewerMain(QtGui.QMainWindow):
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
-        # Start the font size at 9
-        self.ui.fontSizeSpinBox.setValue(9)
+        # Start the font size at 12
+        self.ui.fontSizeSpinBox.setValue(12)
         
         # Make the header text bold
         headerFont = self.ui.logTreeView.header().font()
