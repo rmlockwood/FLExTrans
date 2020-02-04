@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 2.0.2 - 2/4/20 - Ron Lockwood
+#    give an error when the target db open fails.
+#
 #   Version 2.0.1 - 1/22/20 - Ron Lockwood
 #    Only do replacement file if the dictionary is out of date.
 #
@@ -408,9 +411,9 @@ def MainFunction(DB, report, modifyAllowed):
         #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
-        raise
+        report.Error('There was an error opening target database: '+targetProj+'.')
+        #error_list.append((e.message, 2))
+        return
 
     report.Info('Using: '+targetProj+' as the target database.')
 
