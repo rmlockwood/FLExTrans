@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.0.2 - 2/4/20 - Ron Lockwood
+#    Fixed bug where prev_e not being set in the correct loop.
+#
 #   Version 2.0.1 - 1/22/20 - Ron Lockwood
 #    Add a new return object from get_interlinear that is a list of sentences
 #    each sentence contains two items for each word, the lexical item in data stream 
@@ -1255,6 +1258,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     sentNum = 0
     begSentIndex = 0
     itemCount = 0
+    savedTags = ''
 
     # count analysis objects
     obj_cnt = -1
@@ -1475,7 +1479,9 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                         if ccc == 0:
                                             saved1stbaselineWord = ITsString(analysisOccurance.BaselineText).Text
                                         ccc += 1
-                                        # First make sure that the entry of the last word isn't the same as this word. In that case, of course there are going to be shared complex forms, but we are only interested in different entries forming a phrasal verb.
+                                        # First make sure that the entry of the last word isn't the same as this word, i.e. a word doubled. In that case, 
+                                        # of course there are going to be shared complex forms, but we are only interested in different entries forming 
+                                        # a phrasal verb.
                                         # See if the previous word had a link to a complex phrasal verb
                                         if prev_e != e and len(prev_pv_list) > 0:
                                             found = False
@@ -1528,9 +1534,6 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                                 g = re.search(r'.+?<\w+>(<.+>)', saveStr)
                                                 if (g): 
                                                     savedTags += g.group(1)
-                                                
-                                        prev_pv_list = copy.copy(pv_list) 
-                                        prev_e = e
                                 else:
                                     ccc = 0
                                     
@@ -1622,6 +1625,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                     for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
                                         outStr += '<' + underscores(abb) + '>'
+                            prev_pv_list = copy.copy(pv_list) 
+                            prev_e = e            
                         else:
                             report.Warning("Morph object is null.")    
                     # We have an affix
@@ -1671,6 +1676,6 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
         report.Info('Export of '+unicode(obj_cnt+1)+' analyses complete.')
 
         if TreeTranSort:
-            return (BundleGuidMap, outputStrList, sent_list)
+            return (BundleGuidMap, sent_list)
         else:
             return outputStrList
