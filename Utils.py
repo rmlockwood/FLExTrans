@@ -1259,7 +1259,10 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     begSentIndex = 0
     itemCount = 0
     savedTags = ''
-
+    bundle_list = []
+    surfaceForm = ''
+    saved1stbaselineWord = ''
+        
     # count analysis objects
     obj_cnt = -1
     ss = SegmentServices.StTextAnnotationNavigator(contents)
@@ -1275,6 +1278,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
     prevGuid = None 
     unknownWordList = []
     multiple_unknown_words = False
+    
+    # Loop through each segment
     ss = SegmentServices.StTextAnnotationNavigator(contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
@@ -1403,6 +1408,8 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                     # For a stem we just want the headword and it's POS
                     if bundle.MsaRA.ClassName == 'MoStemMsa':
                         
+                        #report.Info(ITsString(e.HeadWord).Text)
+                        
                         # Just save the the guid for the first root in the bundle
                         if bundleGuid == None:
                             bundleGuid = (sentNum, bundle.Guid) # identifies a bundle for matching with TreeTran output
@@ -1439,148 +1446,22 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                                 # Check for adjacent words that point to the same complex form
                                 # If the form is a phrasal verb use it as the headword to output
                                 if len(e.ComplexFormEntries) > 0:
-                                    # each word could be part of multiple complex forms (e.g. ra -> char ra, ra raftan
-                                    for complex_e in e.ComplexFormEntries:
-                                        if complex_e.EntryRefsOS:
-                                            # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
-                                            for entryRef in complex_e.EntryRefsOS:
-                                                if entryRef.RefType == 1: # 1=complex form, 0=variant
-                                                    if entryRef.ComplexEntryTypesRS:
-                                                        # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
-                                                        # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
-                                                        for complexType in entryRef.ComplexEntryTypesRS:
-                                                            if ITsString(complexType.Name.BestAnalysisAlternative).Text in typesList:
-                                                                pos_in_list = get_position_in_component_list(e, complex_e)
-                                                                # The entry we are on has to be at the right position in the complex form's component list
-                                                                # if we match the current component count this means we have a part of a complex form that is
-                                                                # in the right position. Add the complex entry to the list.
-                                                                if pos_in_list == ccc:
-                                                                    foundAtLeastOneMatch = True
-                                                                    pv_list.append(complex_e)
-                                                                    break;
-                                                                # if we didn't match a currently going complex search and the position in the list is 0, 
-                                                                # it could be this is the start of a new complex form
-                                                                elif pos_in_list == 0 and ccc > 0:
-                                                                    startOfNewList = True
-                                                                    pv_list.append(complex_e)
-                                                                    break;
+                                    
+                                    # Get a list of complex forms that match our criteria
+                                    (pv_list, ccc, foundAtLeastOneMatch, startOfNewList) = getComplexForms(e, e.ComplexFormEntries, pv_list, ccc, typesList, foundAtLeastOneMatch, startOfNewList)
                                                                     
                                     # See if we ended up with any phrasal verbs
-                                    if len(pv_list) == 0: # no phrasal verbs
-                                        prev_pv_list = []
-                                        ccc = 0
-                                    else: # yes, we have phrasal verbs
-                                        # It could happen that we find a word that is the beginning of one complex form and at the same time
-                                        # a non-initial part of another. In this case we go with the non-initial match and we don't reset the ccc to 0
-                                        # Only reset it if we only find this entry to be the start of a new complex entry.
-                                        if foundAtLeastOneMatch == False and startOfNewList == True:
-                                            prev_pv_list = []
-                                            ccc = 0
-                                        if ccc == 0:
-                                            saved1stbaselineWord = ITsString(analysisOccurance.BaselineText).Text
-                                        ccc += 1
-                                        # First make sure that the entry of the last word isn't the same as this word, i.e. a word doubled. In that case, 
-                                        # of course there are going to be shared complex forms, but we are only interested in different entries forming 
-                                        # a phrasal verb.
-                                        # See if the previous word had a link to a complex phrasal verb
-                                        if prev_e != e and len(prev_pv_list) > 0:
-                                            found = False
-                                            # See if there is a match between something on the list for the
-                                            # previous word and this word.
-                                            for i in range(0, len(prev_pv_list)):
-                                                for j in range(0, len(pv_list)):
-                                                    if prev_pv_list[i].Guid == pv_list[j].Guid:
-                                                        shared_complex_e = pv_list[j]
-                                                        found = True
-                                                        break
-                                                if found:
-                                                    break
-                                            # If we found a match, we remove the previous word from the output and use the complex form
-                                            if found:
-                                                component_count = get_component_count(shared_complex_e)
-                                                if ccc == component_count:
-                                                    ccc = 0
-                                                    savedTags = ''
-                                                    pv_list = []
-                                                
-                                                if getSurfaceForm:    
-                                                    # We need to show both surface forms with one data stream for the complex form
-                                                    # Get previous tuple from the bundle list and remove it
-                                                    myTup = bundle_list.pop()
-                                                    
-                                                    # Add the previous surface form before the current surface form
-                                                    surfaceForm = myTup[0] + ' ' + surfaceForm
-                                                    
-                                                    # Save the data stream part
-                                                    saveStr = myTup[1]
-                                                else:
-                                                    # remove 2 things, the n/adj/... and it's tag from being output
-                                                    saveStr = outputStrList.pop()
-                                                    # very first pop may have just popped punctuation or spacing, if so don't pop again
-                                                    if len(outputStrList) > 0:
-                                                        saveStr = outputStrList.pop() 
-                                                    
-                                                    # If TreeTran remove the previous word from the Guid Map
-                                                    if TreeTranSort:
-                                                        BundleGuidMap.pop(prevGuid, None) # if not found None is returned
-                                                        # itemCount is used to track the beginning of each sentence. Since we removed two 
-                                                        # items from the output string list, we reduce the item count by 2.
-                                                        itemCount -= 2 
-                                                
-                                                # The first component(s) could have tags (from affixes or inflection info.)
-                                                # Save these tags so they can be put on the end of the complex form.
-                                                # This kind of assumes that inflection isn't happening on multiple components
-                                                # because that might give a mess when it's all duplicated on the complex form.
-                                                g = re.search(r'.+?<\w+>(<.+>)', saveStr)
-                                                if (g): 
-                                                    savedTags += g.group(1)
+                                    (prev_pv_list, ccc, surfaceForm, outputStrList, BundleGuidMap, itemCount, saved1stbaselineWord, shared_complex_e) = \
+                                    collectPhrasalVerbs(e, pv_list, ccc, foundAtLeastOneMatch, startOfNewList, analysisOccurance, prev_e, getSurfaceForm, bundle_list, \
+                                                        outputStrList, TreeTranSort, prevGuid, BundleGuidMap, itemCount, savedTags, shared_complex_e, prev_pv_list, saved1stbaselineWord)
+                                    
                                 else:
                                     ccc = 0
                                     
                                 if shared_complex_e:
                                     
-                                    if shared_complex_e.SensesOS:
-                                        senseNum = 0 # require only one sense for a complex form
-                                        
-                                        # Get headword and set homograph # if necessary
-                                        headWord = ITsString(shared_complex_e.HeadWord).Text
-                                        headWord = do_capitalization(headWord, saved1stbaselineWord)
-                                        headWord = add_one(headWord)
-                                                                    
-                                        outStr += headWord + '.' + str(senseNum+1)
-                                        
-                                        senseOne = shared_complex_e.SensesOS.ToArray()[0]
-                                        
-                                        # Get the POS
-                                        if senseOne.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                                            outStr += '<' + ITsString(senseOne.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text + '>'
-                                        else:
-                                            report.Warning("PartOfSpeech object is null.")
-                                        
-                                        # Get inflection class abbreviation  
-                                        if senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                                            outStr += '<'+underscores(ITsString(senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                                  Abbreviation.BestAnalysisAlternative).Text)+'>'         
-
-                                        # Get any features the stem or root might have
-                                        if senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                                            feat_abbr_list = []
-                                            # The features might be complex, make a recursive function call to find all features
-                                            get_feat_abbr_list(senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
-                                            
-                                            # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                            for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                outStr += '<' + underscores(abb) + '>'
-                                        
-                                        # Get any features that come from irregularly inflected forms        
-                                        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                        for grpName, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
-                                            outStr += '<' + underscores(abb) + '>'
-                                            
-                                        # Add the saved tags from a previous complex form component
-                                        outStr += savedTags
-                                    else:
-                                        report.Warning("No senses found for the complex form.")
+                                    outStr = processSharedComplexForm(shared_complex_e, saved1stbaselineWord, outStr, report, inflFeatAbbrevs, savedTags)
+                                    
                                 else:
                                     # Go through each sense and identify which sense number we have
                                     foundSense = False
@@ -1679,3 +1560,162 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
             return (BundleGuidMap, sent_list)
         else:
             return outputStrList
+
+# Loop through all the complex entries that are 1) complex form type and 2) in our
+# list of complex types we care about (from the config file) 3) in the right position.
+# If these are true, add the complex form to our list.        
+def getComplexForms(e, complexEntriesList, pv_list, currentComplexCount, typesList, foundAtLeastOneMatch, startOfNewList):
+    
+    # each word could be part of multiple complex forms (e.g. ra -> char ra, ra raftan
+    for complex_e in complexEntriesList:
+        if complex_e.EntryRefsOS:
+            
+            # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
+            for entryRef in complex_e.EntryRefsOS:
+                if entryRef.RefType == 1: # 1=complex form, 0=variant
+                    if entryRef.ComplexEntryTypesRS:
+                        
+                        # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
+                        # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
+                        for complexType in entryRef.ComplexEntryTypesRS:
+                            if ITsString(complexType.Name.BestAnalysisAlternative).Text in typesList:
+                                pos_in_list = get_position_in_component_list(e, complex_e)
+                                
+                                # The entry we are on has to be at the right position in the complex form's component list
+                                # if we match the current component count this means we have a part of a complex form that is
+                                # in the right position. Add the complex entry to the list.
+                                if pos_in_list == currentComplexCount:
+                                    foundAtLeastOneMatch = True
+                                    pv_list.append(complex_e)
+                                    break;
+                                
+                                # if we didn't match a currently going complex search and the position in the list is 0, 
+                                # it could be this is the start of a new complex form
+                                elif pos_in_list == 0 and currentComplexCount > 0:
+                                    startOfNewList = True
+                                    pv_list.append(complex_e)
+                                    break;
+                                    
+    return (pv_list, currentComplexCount, foundAtLeastOneMatch, startOfNewList)
+
+def collectPhrasalVerbs(e, pv_list, ccc, foundAtLeastOneMatch, startOfNewList, analysisOccurance, prev_e, getSurfaceForm, bundle_list, outputStrList, TreeTranSort, \
+                        prevGuid, BundleGuidMap, itemCount, savedTags, shared_complex_e, prev_pv_list, saved1stbaselineWord):
+    surfaceForm = ''
+    
+    if len(pv_list) == 0: # no phrasal verbs
+        prev_pv_list = []
+        ccc = 0
+    else: # yes, we have phrasal verbs
+        # It could happen that we find a word that is the beginning of one complex form and at the same time
+        # a non-initial part of another. In this case we go with the non-initial match and we don't reset the ccc to 0
+        # Only reset it if we only find this entry to be the start of a new complex entry.
+        if foundAtLeastOneMatch == False and startOfNewList == True:
+            prev_pv_list = []
+            ccc = 0
+        if ccc == 0:
+            saved1stbaselineWord = ITsString(analysisOccurance.BaselineText).Text
+        ccc += 1
+        # First make sure that the entry of the last word isn't the same as this word, i.e. a word doubled. In that case, 
+        # of course there are going to be shared complex forms, but we are only interested in different entries forming 
+        # a phrasal verb.
+        # See if the previous word had a link to a complex phrasal verb
+        if prev_e != e and len(prev_pv_list) > 0:
+            found = False
+            # See if there is a match between something on the list for the
+            # previous word and this word.
+            for i in range(0, len(prev_pv_list)):
+                for j in range(0, len(pv_list)):
+                    if prev_pv_list[i].Guid == pv_list[j].Guid:
+                        shared_complex_e = pv_list[j]
+                        found = True
+                        break
+                if found:
+                    break
+            # If we found a match, we remove the previous word from the output and use the complex form
+            if found:
+                component_count = get_component_count(shared_complex_e)
+                if ccc == component_count:
+                    ccc = 0
+                    savedTags = ''
+                    pv_list = []
+                
+                if getSurfaceForm:    
+                    # We need to show both surface forms with one data stream for the complex form
+                    # Get previous tuple from the bundle list and remove it
+                    myTup = bundle_list.pop()
+                    
+                    # Add the previous surface form before the current surface form
+                    surfaceForm = myTup[0] + ' ' + surfaceForm
+                    
+                    # Save the data stream part
+                    saveStr = myTup[1]
+                else:
+                    # remove 2 things, the n/adj/... and it's tag from being output
+                    saveStr = outputStrList.pop()
+                    # very first pop may have just popped punctuation or spacing, if so don't pop again
+                    if len(outputStrList) > 0:
+                        saveStr = outputStrList.pop() 
+                    
+                    # If TreeTran remove the previous word from the Guid Map
+                    if TreeTranSort:
+                        BundleGuidMap.pop(prevGuid, None) # if not found None is returned
+                        # itemCount is used to track the beginning of each sentence. Since we removed two 
+                        # items from the output string list, we reduce the item count by 2.
+                        itemCount -= 2 
+                
+                # The first component(s) could have tags (from affixes or inflection info.)
+                # Save these tags so they can be put on the end of the complex form.
+                # This kind of assumes that inflection isn't happening on multiple components
+                # because that might give a mess when it's all duplicated on the complex form.
+                g = re.search(r'.+?<\w+>(<.+>)', saveStr)
+                if (g): 
+                    savedTags += g.group(1)
+                    
+    return (prev_pv_list, ccc, surfaceForm, outputStrList, BundleGuidMap, itemCount, saved1stbaselineWord, shared_complex_e)
+
+def processSharedComplexForm(shared_complex_e, saved1stbaselineWord, outStr, report, inflFeatAbbrevs, savedTags):
+
+    if shared_complex_e.SensesOS:
+        senseNum = 0 # require only one sense for a complex form
+        
+        # Get headword and set homograph # if necessary
+        headWord = ITsString(shared_complex_e.HeadWord).Text
+        headWord = do_capitalization(headWord, saved1stbaselineWord)
+        headWord = add_one(headWord)
+                                    
+        outStr += headWord + '.' + str(senseNum+1)
+        
+        senseOne = shared_complex_e.SensesOS.ToArray()[0]
+        
+        # Get the POS
+        if senseOne.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+            outStr += '<' + ITsString(senseOne.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text + '>'
+        else:
+            report.Warning("PartOfSpeech object is null.")
+        
+        # Get inflection class abbreviation  
+        if senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA:
+            outStr += '<'+underscores(ITsString(senseOne.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                  Abbreviation.BestAnalysisAlternative).Text)+'>'         
+
+        # Get any features the stem or root might have
+        if senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+            feat_abbr_list = []
+            # The features might be complex, make a recursive function call to find all features
+            get_feat_abbr_list(senseOne.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+            
+            # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+            for _, abb in sorted(feat_abbr_list, key=lambda x: x[0]): # 1st item group name
+                outStr += '<' + underscores(abb) + '>'
+        
+        # Get any features that come from irregularly inflected forms        
+        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+        for _, abb in sorted(inflFeatAbbrevs, key=lambda x: x[0]):
+            outStr += '<' + underscores(abb) + '>'
+            
+        # Add the saved tags from a previous complex form component
+        outStr += savedTags
+    else:
+        report.Warning("No senses found for the complex form.")
+
+    return outStr
