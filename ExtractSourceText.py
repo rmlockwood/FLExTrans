@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.0.3 - 2/4/20 - Ron Lockwood
+#    Only a tuple of two now coming back from get_interlin.
+# 
 #   Version 2.0.2 - 1/29/20 - Ron Lockwood
 #    Write a newline after a sentence that didn't have a parse. Also put out a 
 #    warning with the # of unparsed sentences.
@@ -122,7 +125,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.0.2",
+        FTM_Version    : "2.0.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -235,13 +238,13 @@ def MainFunction(DB, report, modifyAllowed):
     retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
 
     if TreeTranSort:
-        (guidMap, outputStringList, sentList) = retObject
+        (guidMap, sentList) = retObject
         p = 0
         
         noParseSentCount = 0
         
         # Loop through each sent
-        for sentNum, (numWords, parsed) in enumerate(logInfo):
+        for sentNum, (_, parsed) in enumerate(logInfo):
             
             # If we have a parse for a sentence, TreeTran may have rearranged the words.
             # We need to put them out in the new TreeTran order.
