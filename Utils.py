@@ -76,7 +76,8 @@ import TestbedValidator
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from __builtin__ import False
+from __builtin__ import False, None
+from pickle import NONE
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -1244,6 +1245,178 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
 
+class TextParagraph():
+    def __init__(self):
+        self.__sentList = []
+    def addSentence(self, TextSent):
+        self.__sentList.append(TextSent)
+    def getSentences(self):
+        return self.__sentList
+    
+class TextSentence():
+    def __init__(self):
+        self.__wordList = []
+    def addWord(self, Word):
+        self.__wordList.append(Word)
+    def getWordList(self):
+        return self.__wordList
+    
+class TextWord():
+    def __init__(self):
+        initPunc = ''
+        finalPunc = ''
+        surfaceForm = ''
+        e = None
+        affixList = []
+        cliticList = []
+        guid = None
+        sentNum = 0
+
+def initProgress(contents, report): 
+           
+    # count analysis objects
+    obj_cnt = -1
+    ss = SegmentServices.StTextAnnotationNavigator(contents)
+    for obj_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
+        pass
+    
+    if obj_cnt == -1:
+        report.Warning('No analyses found.')
+    else:
+        report.ProgressStart(obj_cnt+1)
+
+def get_interlin_data2(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
+    
+    paragraphList = []
+    prevEndOffset = 0
+    
+    initProgress(contents, report)
+    
+    myWord = TextWord()
+    mySent = TextSentence()
+    mySent.addWord(myWord)
+    myPar = TextParagraph()
+    myPar.addSentence(mySent)
+    paragraphList.append(myPar)
+    
+    # Loop through each thing in the text
+    ss = SegmentServices.StTextAnnotationNavigator(contents)
+    for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
+       
+        report.ProgressUpdate(prog_cnt)
+        
+        if prevEndOffset > 0:
+            numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
+            if numSpaces > 0:
+                if TreeTranSort:
+                    BundleGuidMap[prevGuid] =  BundleGuidMap[prevGuid] + ' '*numSpaces
+                outputStrList.append(' '*numSpaces)
+                itemCount += 1
+            elif numSpaces < 0: # new paragraph
+                if TreeTranSort:
+                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + '\n'
+                outputStrList[len(outputStrList)-1] += '\n'
+        
+        prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
+        
+        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
+            
+            text_punct = ITsString(analysisOccurance.Analysis.Form).Text
+            
+            # See if one or more symbols is part of the user-defined sentence punctuation. If so output the
+            # punctuation as part of the data stream along with the symbol/tag <sent>
+            # convert to lists and take the set intersection
+            if set(list(text_punct)).intersection(set(list(sent_punct))):
+                outStr = "^"+text_punct+"<sent>$"
+                
+                sentNum += 1
+                
+                if getSurfaceForm:
+                    bundle_list.append((text_punct,outStr))
+                    
+            # If not, assume this is non-sentence punctuation and just output the punctuation without a "symbol" e.g. <xxx>
+            else:
+                outStr = text_punct
+            
+            if not getSurfaceForm:
+                if TreeTranSort and prevGuid != None:
+                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
+
+                outputStrList.append(outStr)
+                itemCount += 1
+                     
+                if TreeTranSort:
+                    # Since we are on new sentence. Append the last one and start a new one.
+                    if TreeTranSort:
+                        sent = outputStrList[begSentIndex:]
+                        sent_list.append(sent)
+                        begSentIndex = itemCount
+                    
+            continue
+        
+        beg = analysisOccurance.GetMyBeginOffsetInPara()
+        end = analysisOccurance.GetMyEndOffsetInPara()
+        surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[beg:end]
+        myWord.setSurfaceForm(surfaceForm)
+
+        if analysisOccurance.Analysis.ClassName == "WfiGloss":
+            wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
+        elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
+            wfiAnalysis = analysisOccurance.Analysis
+        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
+        elif analysisOccurance.Analysis.ClassName == "WfiWordform":
+            outStr = ITsString(analysisOccurance.Analysis.Form.BestVernacularAlternative).Text
+            
+            if getSurfaceForm:
+                surfaceForm = outStr
+            
+            # Don't give the warning if it's an sfm marker or a number following a \v or \c
+            if outStr[0] == '\\':
+                pass
+            elif (prevOutStr == '\\v' or prevOutStr == '\\c') and outStr.isdigit():
+                pass
+            # or anything after \f or \fr
+            elif prevOutStr == '\\f' or prevOutStr == '\\fr':
+                pass
+            # Don't warn on the second time an unknown word is encountered
+            elif outStr in unknownWordList:
+                multiple_unknown_words = True
+                pass
+            else:
+                report.Warning('No analysis found for the word: '+ outStr + ' Treating this is an unknown word.')
+                
+                # Check if we've had this unknown word already
+                if outStr not in unknownWordList:
+                    # Add this word to the unknown word list
+                    unknownWordList.append(outStr)
+                
+            prevOutStr = outStr
+            outStr += '<UNK>'
+            outStr = '^'+outStr+'$'
+            
+            if getSurfaceForm:
+                bundle_list.append((surfaceForm, outStr))
+            else:
+                if TreeTranSort:
+                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
+                outputStrList.append(outStr)
+                itemCount += 1
+                
+            continue
+        else:
+            wfiAnalysis = None
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
     
     prev_pv_list = []
@@ -1330,7 +1503,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                 outStr = text_punct
             
             if not getSurfaceForm:
-                if TreeTranSort:
+                if TreeTranSort and prevGuid != None:
                     BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
 
                 outputStrList.append(outStr)
