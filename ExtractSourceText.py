@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.0.4 - 2/12/20 - Ron Lockwood
+#    Don't use sentence number as part of the guid map key.
+# 
 #   Version 2.0.3 - 2/4/20 - Ron Lockwood
 #    Only a tuple of two now coming back from get_interlin.
 # 
@@ -125,7 +128,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.0.3",
+        FTM_Version    : "2.0.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -257,8 +260,6 @@ def MainFunction(DB, report, modifyAllowed):
                     
                     if myGuid == None:
                         break
-                    
-                    myGuid = (sentNum, myGuid) # new index is sent. # + Guid
                     
                     if myGuid not in guidMap:
                         report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(x+1))

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.0.3 - 2/12/20 - Ron Lockwood
+#    Don't use sentence number as part of the guid map key.
+# 
 #   Version 2.0.2 - 2/4/20 - Ron Lockwood
 #    Fixed bug where prev_e not being set in the correct loop.
 #
@@ -76,8 +79,7 @@ import TestbedValidator
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from __builtin__ import False, None
-from pickle import NONE
+from __builtin__ import False
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -1270,7 +1272,6 @@ class TextWord():
         affixList = []
         cliticList = []
         guid = None
-        sentNum = 0
 
 def initProgress(contents, report): 
            
@@ -1328,8 +1329,6 @@ def get_interlin_data2(DB, report, sent_punct, contents, typesList, getSurfaceFo
             # convert to lists and take the set intersection
             if set(list(text_punct)).intersection(set(list(sent_punct))):
                 outStr = "^"+text_punct+"<sent>$"
-                
-                sentNum += 1
                 
                 if getSurfaceForm:
                     bundle_list.append((text_punct,outStr))
@@ -1585,7 +1584,7 @@ def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceFor
                         
                         # Just save the the guid for the first root in the bundle
                         if bundleGuid == None:
-                            bundleGuid = (sentNum, bundle.Guid) # identifies a bundle for matching with TreeTran output
+                            bundleGuid = bundle.Guid # identifies a bundle for matching with TreeTran output
             
                         # Check for valid POS
                         if not bundle.MsaRA.PartOfSpeechRA:
