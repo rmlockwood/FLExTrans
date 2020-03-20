@@ -19,6 +19,7 @@ import os
 import sys
 import imp
 import traceback
+import exceptions
 
 import Version
 import FTReport
