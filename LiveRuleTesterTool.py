@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.5 - 3/20/20 - Ron Lockwood
+#    Use new getInterlinData function.
+#
 #   Version 3.1.4 - 1/30/20 - Ron Lockwood
 #    On Synthesize catch if the Target DB is locked. 
 # 
@@ -1490,11 +1493,20 @@ def MainFunction(DB, report, modify=False):
             report.Error('The text named: '+text_desired_eng+' not found.')
             return
 
-    getSurfaceForm = True
-    segment_list = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
+    # NEW CODE
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
+
+    #DELETE
+    #getSurfaceForm = True
+    #segment_list = Utils.get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm)
     
+    # NEW CODE
+    if myText.haveData() == True:
+        segment_list = myText.getSurfaceAndDataTupleListBySent()
+        
+    #DELETE
     # See if we have any data to show
-    if len(segment_list) > 0:
+    #if len(segment_list) > 0:
                 
         # Create the qt app
         app = QtGui.QApplication(sys.argv)

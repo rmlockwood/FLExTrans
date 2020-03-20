@@ -8,6 +8,8 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.1 - 3/20/20 - Ron Lockwood
+#    Use new getInterlinData function and text and sentence objects we get back.
 #   Version 2.0.4 - 2/12/20 - Ron Lockwood
 #    Don't use sentence number as part of the guid map key.
 # 
@@ -235,15 +237,23 @@ def MainFunction(DB, report, modifyAllowed):
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
         return
 
-    getSurfaceForm = False
-    
+    # NEW CODE
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
+        
+    #DELETE
     # Get the morphemes from the interlinear text in FLEx
-    retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
+    #getSurfaceForm = False
+    #retObject = Utils.get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
 
     if TreeTranSort:
-        (guidMap, sentList) = retObject
-        p = 0
         
+        #DELETE
+        #(guidMap, sentList) = retObject
+        
+        # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
+        myText.createGuidMaps()
+        
+        p = 0
         noParseSentCount = 0
         
         # Loop through each sent
@@ -252,55 +262,95 @@ def MainFunction(DB, report, modifyAllowed):
             # If we have a parse for a sentence, TreeTran may have rearranged the words.
             # We need to put them out in the new TreeTran order.
             if parsed == True:
-                mySent = treeSentList[p]
+                myTreeSent = treeSentList[p]
+                
+                # NEW CODE
+                myFLExSent = myText.getSent(sentNum)
+                isLastSent = myText.isLastSentInParagraph(sentNum)
                 
                 # Loop through each word in the sentence and get the Guids
-                for x in range(0, mySent.getLength()):
-                    myGuid = mySent.getNextGuid()
+                for wrdNum in range(0, myTreeSent.getLength()):
+                    myGuid = myTreeSent.getNextGuidAndIncrement()
                     
                     if myGuid == None:
                         break
                     
-                    if myGuid not in guidMap:
-                        report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(x+1))
+                    # NEW CODE
+                    # If we couldn't find the guid, see if there's a reason
+                    if myFLExSent.haveGuid(myGuid) == False:
+                        # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
+                        nextGuid = myTreeSent.getNextGuid()
+                        if myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                    #DELETE
+                    #if myGuid not in guidMap:
+                    #    report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                    
+                    # NEW CODE
                     else:
-                        outStr = guidMap[myGuid]
+                        myFLExSent.writeThisGuid(f_out, myGuid)
+                    
+                    #DELETE
+                    #else:
+                        #DELETE
+                        #outStr = guidMap[myGuid]
                         
                         # Split compound words
-                        outStr = Utils.split_compounds(outStr)
-                        f_out.write(outStr.encode('utf-8'))
+                        #DELETE
+                        #outStr = Utils.split_compounds(outStr)
+                        #f_out.write(outStr.encode('utf-8'))
+
+                if isLastSent:
+                    f_out.write('\n')
+
                 p += 1
                 
             # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
             else:
                 noParseSentCount += 1
                 
+                # NEW CODE
                 # Get the sentence in question
-                sent = sentList[sentNum]
-                
-                # Output each part of the sentence    
-                for i in range(0, len(sent), 2):
-                
-                    outStr = sent[i]
-                    outStrPunct = sent[i+1]
-                    
-                    # Split compound words
-                    outStr = Utils.split_compounds(outStr)
-                    f_out.write(outStr.encode('utf-8'))
-                    f_out.write(outStrPunct.encode('utf-8'))
-                
+                myFLExSent = myText.getSent(sentNum)
+                myFLExSent.write(f_out)
                 f_out.write('\n'.encode('utf-8'))
+                
+                # Get the sentence in question
+                #DELETE
+                #sent = sentList[sentNum]
+                
+                # Output each part of the sentence   
+                #DELETE 
+#                 for i in range(0, len(sent), 2):
+#                 
+#                     outStr = sent[i]
+#                     outStrPunct = sent[i+1]
+#                     
+#                     # Split compound words
+#                     outStr = Utils.split_compounds(outStr)
+#                     f_out.write(outStr.encode('utf-8'))
+#                     f_out.write(outStrPunct.encode('utf-8'))
+#                 #DELETE
+#                 f_out.write('\n'.encode('utf-8'))
 
+        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        
         if noParseSentCount > 0:
             report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
 
     else:
-        # retObject is a list
+        # NEW CODE
         # Write out all the words
-        for outStr in retObject:
+        myText.write(f_out)
+        
+        report.Info("Exported: " + str(myText.getSentCount()) + " sentence(s).")
+        
+        #DELETE
+        # retObject is a list
+        #for outStr in retObject:
             # Split compound words
-            outStr = Utils.split_compounds(outStr)
-            f_out.write(outStr.encode('utf-8'))
+            #outStr = Utils.split_compounds(outStr)
+            #f_out.write(outStr.encode('utf-8'))
 
     f_out.close()
 
@@ -325,23 +375,27 @@ def importGoodParsesLog():
     
 class treeTranSent():
     def __init__(self):
-        self._singleTree = True
-        self._guidList = []
-        self._index = 0
+        self.__singleTree = True
+        self.__guidList = []
+        self.__index = 0
     def getSingleTree(self):
-        return self._singleTree
+        return self.__singleTree
     def setSingleTree(self, val):
-        self._singleTree = val
+        self.__singleTree = val
     def addGuid(self, myGuid):
-        self._guidList.append(myGuid)
+        self.__guidList.append(myGuid)
     def getNextGuid(self):
-        if self._index >= len(self._guidList):
+        if self.__index >= len(self.__guidList):
             return None
-        g = self._guidList[self._index]    
-        self._index += 1
+        return self.__guidList[self.__index]
+    def getNextGuidAndIncrement(self):
+        if self.__index >= len(self.__guidList):
+            return None
+        g = self.__guidList[self.__index]    
+        self.__index += 1
         return g
     def getLength(self):
-        return len(self._guidList)
+        return len(self.__guidList)
         
 def getTreeSents(inputFilename):
     

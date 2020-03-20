@@ -5,6 +5,14 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1 - 3/20/20 - Ron Lockwood
+#    Total rewrite of getInterlinData. Added a bunch of new classes that 
+#    encapsulate texts, paragraphs, sentences, and words. Greatly reduced the
+#    basic loop that goes through all analysis bundles and the elements of each
+#    bundle. Now all the data is stored in the objects with the word object holding
+#    most of it. The handling of complex forms is now done after we have gathered
+#    all of the data. We also create the guid map only when needed for TreeTran.
+# 
 #   Version 2.0.3 - 2/12/20 - Ron Lockwood
 #    Don't use sentence number as part of the guid map key.
 # 
@@ -79,7 +87,8 @@ import TestbedValidator
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from __builtin__ import False
+from __builtin__ import False, True
+from future.backports.test.pystone import FALSE, TRUE
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -151,7 +160,7 @@ DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 reObjAddOne = re.compile('\d$')
-   
+reDataStream = re.compile('(>[^$<])')   
 ## Testbed classes
 # Models a single FLExTrans lexical unit
 # A lexical unit consists of a headword, a sense number, a grammatical category 
@@ -1136,11 +1145,11 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
-# lexical units, 
+# Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
-    toks = re.split('(>[^$<])', outStr)
+    toks = reDataStream.split(outStr)
     
     # If there is only one token return from the split, we don't have multiple words just
     # return the input string
@@ -1171,8 +1180,7 @@ def build_path_default_to_temp(config_path):
 def add_one(headWord): 
     if not reObjAddOne.search(headWord):
         return (headWord + '1')
-    else:
-        return headWord 
+    return headWord 
 
 # Duplicate the capitalization of the model word on the input word
 def do_capitalization(wordToChange, modelWord):
@@ -1181,15 +1189,16 @@ def do_capitalization(wordToChange, modelWord):
             return wordToChange.upper()
         elif modelWord[0].isupper():
             return wordToChange[0].upper()+wordToChange[1:]
-        else:
-            return wordToChange
+    return wordToChange
 
+# OLD CODE -- TO BE DELETED        
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
         if entryRef.RefType == 1: # 1=complex form, 0=variant
             return entryRef.ComponentLexemesRS.Count
-        
+
+# OLD CODE -- TO BE DELETED        
 def get_position_in_component_list(e, complex_e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in complex_e.EntryRefsOS:
@@ -1247,38 +1256,431 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
 
+# The whole text from FLEx
+class TextEntirety():
+    def __init__(self):
+        self.__parList = []
+        self.__cmplxFormMap = {}
+    def addParagraph(self, textPar):
+        self.__parList.append(textPar)
+    def createGuidMaps(self):
+        for par in self.__parList:
+            par.createGuidMaps()
+    def getParagraphs(self):
+        return self.__parList
+    def getParAndSentIndex(self, sentNum):
+        count = 0
+        # Find the paragraph that holds this sentence
+        for par in self.__parList:
+            count += len(par.getSentences())
+            if sentNum < count:
+                break
+        return (count, par)
+    # determine which par and index into it to return the right sentence
+    def getSent(self, sentNum):
+        (count, par) = self.getParAndSentIndex(sentNum)
+        return par.getSent(sentNum-(count-len(par.getSentences())))
+    def getSentCount(self):
+        return sum([x.getSentCount() for x in self.__parList])
+    def getSurfaceAndDataTupleListBySent(self):
+        tupBySentList = []
+        for par in self.__parList:
+            par.getSurfaceAndDataTupleListBySent(tupBySentList)
+        return tupBySentList
+    def hasMultipleUnknownWords(self):
+        return self.__multipleUnknownWords
+    def haveData(self):
+        if len(self.__parList) > 0:
+            return True
+        return False
+    def isLastSentInParagraph(self, sentNum):
+        (count, _) = self.getParAndSentIndex(sentNum)
+        if sentNum == count-1:
+            return True
+        return False
+    def processComplexForms(self, typesList):
+        for par in self.__parList:
+            par.findComplexForms(self.__cmplxFormMap, typesList)
+        for par in self.__parList:
+            par.substituteComplexForms(self.__cmplxFormMap)
+    def warnForUnknownWords(self):
+        multipleUnknownWords = False
+        for par in self.__parList:
+            if par.warnForUnknownWords() == True:
+                multipleUnknownWords = True
+        return multipleUnknownWords
+    def write(self, fOut):
+        for par in self.__parList:
+            par.write(fOut)
+            
+# A paragraph within a FLEx text       
 class TextParagraph():
     def __init__(self):
         self.__sentList = []
-    def addSentence(self, TextSent):
-        self.__sentList.append(TextSent)
+    def addSentence(self, textSent):
+        self.__sentList.append(textSent)
+    def createGuidMaps(self):
+        for sent in self.__sentList:
+            sent.createGuidMap()
+    def findComplexForms(self, cmplxFormMap, typesList):
+        for sent in self.__sentList:
+            sent.findComplexForms(cmplxFormMap, typesList)
+    def getSent(self, sentNum):
+        return self.__sentList[sentNum]
+    def getSentCount(self):
+        return len(self.__sentList)
     def getSentences(self):
         return self.__sentList
-    
+    def getSurfaceAndDataTupleListBySent(self, tupBySentList):
+        for sent in self.__sentList:
+            tupList = []
+            sent.getSurfaceAndDataTupleList(tupList)
+            tupBySentList.append(tupList)
+    def substituteComplexForms(self, cmplxFormMap):
+        for sent in self.__sentList:
+            sent.substituteComplexForms(cmplxFormMap)
+    def warnForUnknownWords(self):
+        multipleUnknownWords = False
+        for sent in self.__sentList:
+            if sent.warnForUnknownWords() == True:
+                multipleUnknownWords = True
+        return multipleUnknownWords
+    def write(self, fOut):
+        for sent in self.__sentList:
+            sent.write(fOut)
+        fOut.write('\n')
+            
+# A sentence within a FLex text paragraph which includes everything FLEx
+# considers to be within one segment.
 class TextSentence():
-    def __init__(self):
+    def __init__(self, report):
+        self.__report = report
         self.__wordList = []
-    def addWord(self, Word):
-        self.__wordList.append(Word)
+        self.__unknownWordMap = {}
+        self.__guidMap = {}
+    def addWord(self, textWord):
+        self.__wordList.append(textWord)
+    def createGuidMap(self):
+        for word in self.__wordList:
+            self.__guidMap[word.getGuid()] = word
+    def getSurfaceAndDataTupleList(self, tupList):
+        for word in self.__wordList:
+            tupList.append((word.getSurfaceForm(), word.outputDataStream()))
+    def getWordCount(self):
+        return len(self.__wordList)
     def getWordList(self):
         return self.__wordList
+    def haveGuid(self, myGuid):
+        return myGuid in self.__guidMap
+    # See if a bundle is not part of a neighboring complex form
+    def notPartOfAdjacentComplexForm(self, currGuid, nextGuid):
+        # Get the next word object
+        nextWrd = self.__guidMap[nextGuid]
+        
+        # Check if the current word's bundle guid matches the first component of the next word
+        if nextWrd.hasComponents():
+            guidFirstComponent = nextWrd.getComponent(0).getGuid()
+            if guidFirstComponent == currGuid:
+                return False
+        return True
+    def write(self, fOut):
+        for word in self.__wordList:
+            word.write(fOut)
+    def writeThisGuid(self, fOut, myGuid):
+        self.__guidMap[myGuid].write(fOut)
     
-class TextWord():
-    def __init__(self):
-        initPunc = ''
-        finalPunc = ''
-        surfaceForm = ''
-        e = None
-        affixList = []
-        cliticList = []
-        guid = None
+    ### Long methods - in alphabetical order
+    def findComplexForms(self, cmplxFormMap, typesList):
+        # Loop through the word list
+        for wrd in self.__wordList:
+            if wrd.getEntry() is not None:
+                # Check if we have already found complex forms for this word and cached them
+                if wrd.getEntryHandle() not in cmplxFormMap:
+                    cmplxEntryTupList = []
 
+                    # Loop through the complex entries for this word
+                    for cmplxEntry in wrd.getEntry().ComplexFormEntries:
+                        # Make sure we have entry references of the right type
+                        if cmplxEntry.EntryRefsOS:
+                            # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
+                            for entryRef in cmplxEntry.EntryRefsOS:
+                                if entryRef.RefType == 1 and entryRef.ComplexEntryTypesRS: # 1=complex form, 0=variant
+
+                                    # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
+                                    # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
+                                    for complexType in entryRef.ComplexEntryTypesRS:
+                                        if ITsString(complexType.Name.BestAnalysisAlternative).Text in typesList:
+                                            
+                                            # get the component entries
+                                            componentEs = []
+                                            for cE in entryRef.ComponentLexemesRS:
+                                                componentEs.append(cE)
+                                            
+                                            # add the complex entry and its components to the list
+                                            cmplxEntryTupList.append((cmplxEntry, componentEs))
+                    
+                    # Map from an entry's handle # to the complex entry/components tuple                        
+                    cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
+                                            
+    def modifyList(self, i, count, complexEn):
+        componentList = []
+        
+        # Loop through the part of the word list that we will remove. Save the components in a list that we will add to the new word.
+        for _ in range(0, count):
+            componentList.append(self.__wordList.pop(i)) # don't increment the next one is in position i after the previous pop
+        
+        # New object
+        newWord = TextWord(self.__report)
+        
+        # Initialize it with the complex entry being the main entry of the word. Other attributes are drawn from the last
+        # matching component. Tags will also transferred as needed
+        newWord.initWithComplex(complexEn, componentList)
+        
+        # Insert the new word into the word list
+        self.__wordList.insert(i, newWord)
+        
+        # Update the guid map
+        self.__guidMap[newWord.getGuid()] = newWord
+        
+    def substituteComplexForms(self, cmplxFormMap):
+        i = 0
+        # Loop through the word list
+        while i < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
+            wrd = self.__wordList[i]
+
+            # Process words that have complex entries
+            if wrd.getEntryHandle() in cmplxFormMap:
+                
+                cmplxEnList = cmplxFormMap[wrd.getEntryHandle()]
+                
+                # We only need to deal with the list that is non-empty
+                if len(cmplxEnList) > 0:
+                    
+                    # Sort the list from most components to least components
+                    # each list item is a tuple. See below. We want the length of the component list.
+                    cmplxEnList.sort(key=lambda x: len(x[1]), reverse=True)
+                    
+                    # Loop through the complex entries tuples (cmplxEntry, componentEntryList)
+                    for cmplxEn, componentEList in cmplxEnList:
+                        match = False
+                        
+                        count = len(componentEList)
+
+                        # A complex form with only one component doesn't make sense to process
+                        if count > 1:
+                            # Only continue if we won't go off the end of the list
+                            if i + count - 1 < len(self.__wordList):
+                                
+                                # All components have to match
+                                for j in range(0, count):
+                                    
+                                    # Check if we have a match
+                                    if self.__wordList[i+j].getEntry() == componentEList[j]: # jth component in the list
+                                        match = True
+                                    else:
+                                        match = False
+                                        break
+                                # break out of the outer loop
+                                if match == True:
+                                    break
+                    if match == True:
+                        # pop the matching words from the list and insert the complex word
+                        self.modifyList(i, count, cmplxEn)
+            i += 1
+            
+    def warnForUnknownWords(self):
+        multipleUnknownWords = False
+        for i, word in enumerate(self.__wordList):
+            # See if we have an uninitialized word which indicates it's unknown
+            if word.IsInitialized() == False:
+                # Allow some unknown "words" without warning, such as sfm markers
+                if word.getLemma()[0] == '\\':
+                    pass
+                elif i > 0 and word.getLemma().isdigit() and (self.__wordList[i-1] == '\\v' or self.__wordList[i-1] == '\\c'):
+                    pass
+                elif i > 0 and (self.__wordList[i-1] == '\\f' or self.__wordList[i-1] == '\\fr'):
+                    pass
+                # Don't warn on the second time an unknown word is encountered
+                elif word.getLemma() in self.__unknownWordMap:
+                    multipleUnknownWords = True
+                else:
+                    self.__report.Warning('No analysis found for the word: '+ word.getLemma() + ' Treating this is an unknown word.')
+                    
+                    # Check if we've had this unknown word already
+                    if word.getLemma() not in self.__unknownWordMap:
+                        # Add this word to the unknown word map
+                        self.__unknownWordMap[word.getLemma()] = 1
+                        
+        return multipleUnknownWords
+    
+# TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
+# Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
+#affixStr += '<' + re.sub(r'\.', r'><',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+
+# A word within a sentence in a FLEx text    
+class TextWord():
+    def __init__(self, report):
+        self.__report = report
+        self.__initPunc = ''
+        self.__finalPunc = ''
+        self.__surfaceForm = ''
+        self.__lemma = ''
+        self.__e = None # entry object
+        self.__affixList = []
+        self.__componentList = []
+        self.__guid = None
+        self.__sense = None
+        self.__inflFeatAbbrevs = []
+        self.__stemFeatAbbrList = []
+    def addAffix(self, myObj):
+        self.addPlainTextAffix(ITsString(myObj.BestAnalysisAlternative).Text)
+    def addAffixesFromList(self, strList):
+        self.__affixList += strList
+    def addFinalPunc(self, myStr):
+        self.__finalPunc += myStr
+    def addInitialPunc(self, myStr):
+        self.__initPunc += myStr
+    def addPlainTextAffix(self, myStr):
+        self.__affixList.append(myStr)
+    def addUnknownAffix(self):
+        self.addPlainTextAffix('UNK')
+    def buildLemma(self, baseStr, senseNum):
+        if type(baseStr) == str or type(baseStr) == unicode:
+            myStr = baseStr 
+        else:
+            myStr = ITsString(baseStr).Text
+        lem = do_capitalization(self.getHeadwordStr(), myStr)
+        self.__lemma = add_one(lem) + '.' + str(senseNum+1)
+    def componentMatch(self, wrd):
+        for c in self.__componentList:
+            if c.getEntry() == wrd.getEntry():
+                return True
+        return False
+    
+    def getComponent(self, index):
+        if index < len(self.__componentList):
+            return self.__componentList[index]
+        return None
+    def getEntry(self):
+        return self.__e
+    def getEntryHandle(self):
+        if self.__e:
+            return self.__e.Hvo
+        return 0
+    def getDataStreamSymbols(self):
+        symbols = []
+        
+        # Start with POS. <sent> words are special, no POS
+        if not self.isSentPunctutationWord():
+            symbols = [self.getPOS()]
+        # Then inflection class
+        symbols += self.getInflClass()
+        # Then stem features
+        symbols += self.getStemFeatures()
+        # Then features from irregularly inflected forms
+        if len(self.__inflFeatAbbrevs) > 0:
+            symbols += self.getInflFeatures()
+        # Then affixes
+        symbols += self.__affixList
+        
+        # Put each symbol in angle brackets e.g. <sbjv>. Also _ for .
+        return '<'+'><'.join(underscores(x) for x in symbols)+'>'
+    
+    def getFeatures(self, featList):
+        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+        return [abb for _, abb in sorted(featList, key=lambda x: x[0])]
+    def getGuid(self):
+        return self.__guid
+    def getHeadwordStr(self):
+        return ITsString(self.__e.HeadWord).Text
+    def getInflClass(self):
+        if self.__sense and self.__sense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+            return [ITsString(self.__sense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
+        return []
+    def getInflFeatures(self):
+        # Get any features that come from irregularly inflected forms   
+        return self.getFeatures(self.__inflFeatAbbrevs)
+    def getLemma(self):
+        return self.__lemma
+    def getNonPOSSymbols(self):
+        return self.getInflClass() + self.getStemFeatures() + self.getInflFeatures() + self.__affixList
+    def getPOS(self):
+        if self.__sense is None or self.__sense.MorphoSyntaxAnalysisRA.PartOfSpeechRA is None:
+            return self.getUnknownPOS()
+        return ITsString(self.__sense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+    def getStemFeatures(self):
+        if self.__sense and self.__sense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+            # The features might be complex, make a recursive function call to find all features
+            get_feat_abbr_list(self.__sense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+            return self.getFeatures(self.__stemFeatAbbrList)
+        return []
+    def getSurfaceForm(self):
+        return self.__surfaceForm
+    def getUnknownPOS(self):
+        return 'UNK'
+    def hasComponents(self):
+        if len(self.__componentList) > 0:
+            return True
+        return False
+    def isEnclitic(self, myEntry):
+        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
+    def isSentPunctutationWord(self):
+        if len(self.__affixList) > 0 and self.__affixList[0] == 'sent':
+            return True
+        return False
+    def IsInitialized(self):
+        if self.__sense == None and len(self.__affixList) == 0:
+            return False
+        return True
+    def initWithComplex(self, cmplxE, componentList):
+        self.setEntry(cmplxE)
+        self.setComponentList(componentList)
+        
+        # set the surface form as the concatenation of all the component's surface forms
+        self.setSurfaceForm(' '.join(w.getSurfaceForm() for w in componentList))
+        
+        # build the lemma. For capitalization check use first surface form
+        self.buildLemma(componentList[0].getSurfaceForm(), 0) # we are going to just use sense 1 for complex forms
+
+        # set the POS
+        self.setSense(cmplxE.SensesOS.ToArray()[0])
+        
+        # use the bundle guid from the last component as this word's guid
+        lastComponent = componentList[-1]
+        self.setGuid(lastComponent.getGuid())
+        
+        # Transfer tags from one component to our new word
+        # TODO: allow the user to specify taking affixes and features from last element
+        x = componentList[-1].getNonPOSSymbols()
+        self.addAffixesFromList(x)
+        
+    def outputDataStream(self):
+        retStr = self.__initPunc+'^'+self.getLemma()+self.getDataStreamSymbols()+'$'+self.__finalPunc
+        return retStr
+    def setComponentList(self, cList):
+        self.__componentList = cList
+    def setEntry(self, e):
+        self.__e = e
+    def setGuid(self, myGuid):
+        self.__guid = myGuid
+    def setInflFeatures(self, inflFeatAbbrevs):
+        self.__inflFeatAbbrevs = inflFeatAbbrevs
+    def setLemma(self, lemma):
+        self.__lemma = lemma
+    def setLemmaFromObj(self, myObj):
+        self.__lemma = ITsString(myObj.Form.BestVernacularAlternative).Text
+    def setSense(self, sense):
+        self.__sense = sense
+    def setSurfaceForm(self, myStr):
+        self.__surfaceForm = myStr
+    def write(self, fOut):
+        fOut.write(split_compounds(self.outputDataStream()).encode('utf-8'))
+        
 def initProgress(contents, report): 
-           
     # count analysis objects
     obj_cnt = -1
     ss = SegmentServices.StTextAnnotationNavigator(contents)
-    for obj_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
+    for obj_cnt, _ in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
         pass
     
     if obj_cnt == -1:
@@ -1286,19 +1688,31 @@ def initProgress(contents, report):
     else:
         report.ProgressStart(obj_cnt+1)
 
-def get_interlin_data2(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
+# This is a key function used by the ExtractSourceText and LiveRuleTesterTool modules
+# Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
+# the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
+# The FLEx text is organized into paragraphs and paragraphs are organized into segments. Segments
+# contain word bundles. We collect words and associated data into Word objects which are containted in
+# Sentence objects (corresponding to Segments) which are contained in Paragraph objectes which are 
+# containted in a Text object. The text object is returned to the calling module.
+# Punctuation is interspersed between word bundles as they occur. We associate punctuation with a Word
+# object except for special sentence ending punctuation which is given in the sentPuct parameter. This
+# kind of punctuation becomes its own Word object since eventually we want to output it as its own thing.
+# At the end of the function we figure out appropriate warnings for unknown words and we process 
+# complex forms which basically is substituting complex forms when we find contiguous words that match
+# the complex form's components.
+def getInterlinData(DB, report, sentPunct, contents, typesList):
     
-    paragraphList = []
     prevEndOffset = 0
+    currSegNum = 0
+    myWord = None
+    savedPrePunc = ''
     
     initProgress(contents, report)
     
-    myWord = TextWord()
-    mySent = TextSentence()
-    mySent.addWord(myWord)
+    # Initialize the text and the first paragraph object
+    myText = TextEntirety()
     myPar = TextParagraph()
-    myPar.addSentence(mySent)
-    paragraphList.append(myPar)
     
     # Loop through each thing in the text
     ss = SegmentServices.StTextAnnotationNavigator(contents)
@@ -1306,117 +1720,167 @@ def get_interlin_data2(DB, report, sent_punct, contents, typesList, getSurfaceFo
        
         report.ProgressUpdate(prog_cnt)
         
-        if prevEndOffset > 0:
-            numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
-            if numSpaces > 0:
-                if TreeTranSort:
-                    BundleGuidMap[prevGuid] =  BundleGuidMap[prevGuid] + ' '*numSpaces
-                outputStrList.append(' '*numSpaces)
-                itemCount += 1
-            elif numSpaces < 0: # new paragraph
-                if TreeTranSort:
-                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + '\n'
-                outputStrList[len(outputStrList)-1] += '\n'
+        # Always create a new word to start with
+        myWord = TextWord(report)
+
+        # Get the number of spaces between words        
+        numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
+        myPunc = ' '*numSpaces
         
+        # If we are on a different segment, it's a new sentence.
+        if analysisOccurance.Segment.Hvo <> currSegNum:
+            
+            # Create a new sentence object and add it to the paragraph
+            mySent = TextSentence(report)
+
+            # If we have a negative number, it's new paragraph
+            if numSpaces < 0 or prog_cnt == 0: # or first time through 
+                myPar = TextParagraph()
+                myText.addParagraph(myPar)
+            
+            # Add the sentence to the paragraph
+            myPar.addSentence(mySent)
+            
+        # Add the word to the current sentence
+        mySent.addWord(myWord)
+        
+        # Save where we are    
         prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
-        
+        currSegNum = analysisOccurance.Segment.Hvo
+                
+        # Deal with different Analysis classes differently
         if analysisOccurance.Analysis.ClassName == "PunctuationForm":
             
-            text_punct = ITsString(analysisOccurance.Analysis.Form).Text
+            textPunct = ITsString(analysisOccurance.Analysis.Form).Text
             
-            # See if one or more symbols is part of the user-defined sentence punctuation. If so output the
-            # punctuation as part of the data stream along with the symbol/tag <sent>
-            # convert to lists and take the set intersection
-            if set(list(text_punct)).intersection(set(list(sent_punct))):
-                outStr = "^"+text_punct+"<sent>$"
+            # See if one or more symbols is part of the user-defined sentence punctuation. 
+            # if so, save the punctuation as if it is its own word. E.g. ^.<sent>$
+            if set(list(textPunct)).intersection(set(list(sentPunct))):
+                myWord.setLemma(textPunct)
+                myWord.addPlainTextAffix('sent')
                 
-                if getSurfaceForm:
-                    bundle_list.append((text_punct,outStr))
-                    
-            # If not, assume this is non-sentence punctuation and just output the punctuation without a "symbol" e.g. <xxx>
+            # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current word.
             else:
-                outStr = text_punct
-            
-            if not getSurfaceForm:
-                if TreeTranSort and prevGuid != None:
-                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
-
-                outputStrList.append(outStr)
-                itemCount += 1
-                     
-                if TreeTranSort:
-                    # Since we are on new sentence. Append the last one and start a new one.
-                    if TreeTranSort:
-                        sent = outputStrList[begSentIndex:]
-                        sent_list.append(sent)
-                        begSentIndex = itemCount
-                    
+                # If we have spaces at the beginning of a sentence, save them for later
+                if mySent.getWordCount() == 0:
+                    savedPrePunc = myPunc
+                else:
+                    myWord.addFinalPunc(myPunc)
+                    savedPrePunc = ''
             continue
         
+        ## Now we know we have something other than punctuation
+        # See if we have any pre-punctuation
+        if len(savedPrePunc) > 0:
+            myWord.addInitialPunc(savedPrePunc)
+            
+        # Figure out the surface form and set it.
         beg = analysisOccurance.GetMyBeginOffsetInPara()
         end = analysisOccurance.GetMyEndOffsetInPara()
         surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[beg:end]
+        
+        # Set lemma to surfaceForm initially
+        myWord.lemma = surfaceForm
         myWord.setSurfaceForm(surfaceForm)
 
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
             wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
+            
         elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
             wfiAnalysis = analysisOccurance.Analysis
-        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
+            
+        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted. 
         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
-            outStr = ITsString(analysisOccurance.Analysis.Form.BestVernacularAlternative).Text
             
-            if getSurfaceForm:
-                surfaceForm = outStr
-            
-            # Don't give the warning if it's an sfm marker or a number following a \v or \c
-            if outStr[0] == '\\':
-                pass
-            elif (prevOutStr == '\\v' or prevOutStr == '\\c') and outStr.isdigit():
-                pass
-            # or anything after \f or \fr
-            elif prevOutStr == '\\f' or prevOutStr == '\\fr':
-                pass
-            # Don't warn on the second time an unknown word is encountered
-            elif outStr in unknownWordList:
-                multiple_unknown_words = True
-                pass
-            else:
-                report.Warning('No analysis found for the word: '+ outStr + ' Treating this is an unknown word.')
-                
-                # Check if we've had this unknown word already
-                if outStr not in unknownWordList:
-                    # Add this word to the unknown word list
-                    unknownWordList.append(outStr)
-                
-            prevOutStr = outStr
-            outStr += '<UNK>'
-            outStr = '^'+outStr+'$'
-            
-            if getSurfaceForm:
-                bundle_list.append((surfaceForm, outStr))
-            else:
-                if TreeTranSort:
-                    BundleGuidMap[prevGuid] = BundleGuidMap[prevGuid] + outStr
-                outputStrList.append(outStr)
-                itemCount += 1
-                
+            # Lemma will be the same as the surface form, I think
+            myWord.setLemmaFromObj(analysisOccurance.Analysis)
             continue
+        
+        # Don't know when we ever would get here
         else:
             wfiAnalysis = None
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-def get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
+        # Go through each morpheme bundle in the word
+        for bundle in wfiAnalysis.MorphBundlesOS:
+            
+            if bundle.SenseRA:
+                if bundle.MsaRA and bundle.MorphRA:
+                        
+                    tempEntry = bundle.MorphRA.Owner
+                    
+                    # We have a stem. We just want the headword and it's POS
+                    if bundle.MsaRA.ClassName == 'MoStemMsa':
+                        
+                        # Just save the the guid for the first root in the bundle
+                        if myWord.getGuid() == None:
+                            myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
+            
+                        # If we have an invalid POS, give a warning
+                        if not bundle.MsaRA.PartOfSpeechRA:
+                            
+                            myWord.setLemmaFromObj(wfiAnalysis.Owner)
+                            report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                            break
+                        
+                        if bundle.MorphRA:
+                            # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
+                            # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
+                            inflFeatAbbrevs = []
+                            tempEntry = GetEntryWithSense(tempEntry, inflFeatAbbrevs)
+                            
+                            # See if we have an enclitic or proclitic
+                            if myWord.isEnclitic(tempEntry) == True:
+                                # Get the clitic gloss.
+                                myWord.addAffix(bundle.SenseRA.Gloss)
+                                
+                            # Otherwise we have a root or stem or phrase
+                            else:
+                                myWord.setEntry(tempEntry)
+                                myWord.setInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
+                                
+                                # Go through each sense and identify which sense number we have
+                                foundSense = False
+                                for senseNum, mySense in enumerate(myWord.getEntry().SensesOS):
+                                    if mySense.Guid == bundle.SenseRA.Guid:
+                                        myWord.setSense(mySense)
+                                        foundSense = True
+                                        break
+                                if foundSense:
+                                    # Construct and set the lemma
+                                    myWord.buildLemma(analysisOccurance.BaselineText, senseNum)
+                                else:
+                                    report.Warning("Couldn't find the sense for headword: "+myWord.GetHeadwordStr())    
+                        else:
+                            report.Warning("Morph object is null.")    
+
+                    # We have an affix
+                    else:
+                        if bundle.SenseRA:
+                            # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
+                            myWord.addAffix(bundle.SenseRA.Gloss)
+                        else:
+                            report.Warning("Sense object for affix is null.")
+                else:
+                    myWord.setLemmaFromObj(wfiAnalysis.Owner)
+                    report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getLemma())
+                    break # go on to the next word    
+            else:
+                # Part of the word has not been tied to a lexical entry-sense
+                myWord.setLemmaFromObj(wfiAnalysis.Owner)
+                report.Warning('No sense found for some part of the word: '+ myWord.getLemma())
+                break # go on to the next word    
+    
+    # Don't warn for sfm markers, but warn once for others        
+    if myText.warnForUnknownWords() == True:
+        report.Warning('One or more unknown words occurred multiple times.')
+
+    # substitute a complex form when its components are found contiguous in the text      
+    myText.processComplexForms(typesList) 
+    
+    return myText
+
+# Old function to get interlinear data        
+def get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
     
     prev_pv_list = []
     prev_e = None
