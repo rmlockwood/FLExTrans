@@ -5,6 +5,14 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.1 - 3/21/20 - Ron Lockwood
+#    Rewrote the TextWord class to handle multiple entries with associated lemmas
+#    affix sets, etc. This was needed to handle compound words where more than one
+#    root or stem is present in a 'word'. Calling functions were changed to 
+#    accommodate the class changes. Also we rewrote the logic for doing punctuation.
+#    Also corrected the logic for letting certain unknown words pass without
+#    warning and pass down a text-wide unknown words map.
+#
 #   Version 2.1 - 3/20/20 - Ron Lockwood
 #    Total rewrite of getInterlinData. Added a bunch of new classes that 
 #    encapsulate texts, paragraphs, sentences, and words. Greatly reduced the
@@ -1220,6 +1228,9 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
+def getHeadwordStr(e):
+    return ITsString(e.HeadWord).Text
+    
 def GetEntryWithSense(e, inflFeatAbbrevs):
     # If the entry is a variant and it has no senses, loop through its references 
     # until we get to an entry that has a sense
@@ -1261,6 +1272,7 @@ class TextEntirety():
     def __init__(self):
         self.__parList = []
         self.__cmplxFormMap = {}
+        self.__unknownWordMap = {}
     def addParagraph(self, textPar):
         self.__parList.append(textPar)
     def createGuidMaps(self):
@@ -1306,7 +1318,7 @@ class TextEntirety():
     def warnForUnknownWords(self):
         multipleUnknownWords = False
         for par in self.__parList:
-            if par.warnForUnknownWords() == True:
+            if par.warnForUnknownWords(self.__unknownWordMap) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -1339,10 +1351,10 @@ class TextParagraph():
     def substituteComplexForms(self, cmplxFormMap):
         for sent in self.__sentList:
             sent.substituteComplexForms(cmplxFormMap)
-    def warnForUnknownWords(self):
+    def warnForUnknownWords(self, unknownWordMap):
         multipleUnknownWords = False
         for sent in self.__sentList:
-            if sent.warnForUnknownWords() == True:
+            if sent.warnForUnknownWords(unknownWordMap) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -1356,7 +1368,6 @@ class TextSentence():
     def __init__(self, report):
         self.__report = report
         self.__wordList = []
-        self.__unknownWordMap = {}
         self.__guidMap = {}
     def addWord(self, textWord):
         self.__wordList.append(textWord)
@@ -1393,13 +1404,13 @@ class TextSentence():
     def findComplexForms(self, cmplxFormMap, typesList):
         # Loop through the word list
         for wrd in self.__wordList:
-            if wrd.getEntry() is not None:
+            if wrd.hasEntries() and wrd.notCompound():
                 # Check if we have already found complex forms for this word and cached them
                 if wrd.getEntryHandle() not in cmplxFormMap:
                     cmplxEntryTupList = []
 
                     # Loop through the complex entries for this word
-                    for cmplxEntry in wrd.getEntry().ComplexFormEntries:
+                    for cmplxEntry in wrd.getComplexFormEntries():
                         # Make sure we have entry references of the right type
                         if cmplxEntry.EntryRefsOS:
                             # find the complex entry ref (there could be one or more variant entry refs listed along side the complex entry)
@@ -1474,8 +1485,8 @@ class TextSentence():
                                 # All components have to match
                                 for j in range(0, count):
                                     
-                                    # Check if we have a match
-                                    if self.__wordList[i+j].getEntry() == componentEList[j]: # jth component in the list
+                                    # Check if we have a match  
+                                    if self.__wordList[i+j].getFirstEntry() == componentEList[j]: # jth component in the list
                                         match = True
                                     else:
                                         match = False
@@ -1488,28 +1499,33 @@ class TextSentence():
                         self.modifyList(i, count, cmplxEn)
             i += 1
             
-    def warnForUnknownWords(self):
+    def warnForUnknownWords(self, unknownWordMap):
         multipleUnknownWords = False
         for i, word in enumerate(self.__wordList):
             # See if we have an uninitialized word which indicates it's unknown
-            if word.IsInitialized() == False:
+            if word.isInitialized() == False:
                 # Allow some unknown "words" without warning, such as sfm markers
-                if word.getLemma()[0] == '\\':
-                    pass
-                elif i > 0 and word.getLemma().isdigit() and (self.__wordList[i-1] == '\\v' or self.__wordList[i-1] == '\\c'):
-                    pass
-                elif i > 0 and (self.__wordList[i-1] == '\\f' or self.__wordList[i-1] == '\\fr'):
-                    pass
+                if len(word.getInitialPunc()) > 0 and word.getInitialPunc()[0] == '\\':
+                    continue
+                if i > 0:
+                    prvWrd = self.__wordList[i-1]
+                    if word.getSurfaceForm().isdigit():
+                        if prvWrd.getInitialPunc() == '\\':
+                            if prvWrd.getSurfaceForm() == 'v' or prvWrd.getSurfaceForm() == 'c':
+                                continue  
+                    if prvWrd.getInitialPunc() == '\\':
+                        if prvWrd.getSurfaceForm() == 'f' or prvWrd.getSurfaceForm() == 'fr':
+                            continue
                 # Don't warn on the second time an unknown word is encountered
-                elif word.getLemma() in self.__unknownWordMap:
+                if word.getSurfaceForm() in unknownWordMap:
                     multipleUnknownWords = True
                 else:
-                    self.__report.Warning('No analysis found for the word: '+ word.getLemma() + ' Treating this is an unknown word.')
+                    self.__report.Warning('No analysis found for the word: '+ word.getSurfaceForm() + ' Treating this is an unknown word.')
                     
                     # Check if we've had this unknown word already
-                    if word.getLemma() not in self.__unknownWordMap:
+                    if word.getSurfaceForm() not in unknownWordMap:
                         # Add this word to the unknown word map
-                        self.__unknownWordMap[word.getLemma()] = 1
+                        unknownWordMap[word.getSurfaceForm()] = 1
                         
         return multipleUnknownWords
     
@@ -1524,64 +1540,85 @@ class TextWord():
         self.__initPunc = ''
         self.__finalPunc = ''
         self.__surfaceForm = ''
-        self.__lemma = ''
-        self.__e = None # entry object
-        self.__affixList = []
+        self.__lemmaList = []
+        self.__eList = [] # entry object list
+        self.__affixLists = [] # a list of lists
         self.__componentList = []
         self.__guid = None
-        self.__sense = None
-        self.__inflFeatAbbrevs = []
+        self.__senseList = []
+        self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
     def addAffix(self, myObj):
         self.addPlainTextAffix(ITsString(myObj.BestAnalysisAlternative).Text)
     def addAffixesFromList(self, strList):
-        self.__affixList += strList
+        # assume we don't have two or more entries, i.e. compound
+        self.__affixLists[0] += strList
+    def addEntry(self, e):
+        self.__eList.append(e)
+        self.__affixLists.append([]) # create an empty list
+        self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
         self.__finalPunc += myStr
+    def addInflFeatures(self, inflFeatAbbrevs):
+        self.__inflFeatAbbrevsList.append(inflFeatAbbrevs)
     def addInitialPunc(self, myStr):
         self.__initPunc += myStr
+    def addLemma(self, lemma):
+        self.__lemmaList.append(lemma)
+    def addLemmaFromObj(self, myObj):
+        self.__lemmaList.append(ITsString(myObj.Form.BestVernacularAlternative).Text)
     def addPlainTextAffix(self, myStr):
-        self.__affixList.append(myStr)
+        # if there's no affix lists yet, create one with this string
+        if self.isInitialized() == False:
+            self.__affixLists.append([myStr])
+        else:
+            # Add the affix to the slot that matches the last entry
+            maxIndex = len(self.__eList)-1
+            self.__affixLists[maxIndex].append(myStr)
+    def addSense(self, sense):
+        self.__senseList.append(sense)
     def addUnknownAffix(self):
         self.addPlainTextAffix('UNK')
-    def buildLemma(self, baseStr, senseNum):
+    def buildLemmaAndAdd(self, baseStr, senseNum):
         if type(baseStr) == str or type(baseStr) == unicode:
             myStr = baseStr 
         else:
             myStr = ITsString(baseStr).Text
-        lem = do_capitalization(self.getHeadwordStr(), myStr)
-        self.__lemma = add_one(lem) + '.' + str(senseNum+1)
-    def componentMatch(self, wrd):
-        for c in self.__componentList:
-            if c.getEntry() == wrd.getEntry():
-                return True
-        return False
-    
+                                
+        lem = do_capitalization(getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
+        self.addLemma(add_one(lem) + '.' + str(senseNum+1))
+    def getComplexFormEntries(self):
+        if self.hasEntries():
+            return self.__eList[0].ComplexFormEntries
     def getComponent(self, index):
+        # assume no compound roots for this word
         if index < len(self.__componentList):
             return self.__componentList[index]
         return None
-    def getEntry(self):
-        return self.__e
     def getEntryHandle(self):
-        if self.__e:
-            return self.__e.Hvo
+        # assume no compound roots for this word
+        if self.hasEntries():
+            return self.__eList[0].Hvo
         return 0
-    def getDataStreamSymbols(self):
+    def getFirstEntry(self):
+        if self.hasEntries():
+            return self.__eList[0]
+        return None
+    def getDataStreamSymbols(self, i):
         symbols = []
         
         # Start with POS. <sent> words are special, no POS
         if not self.isSentPunctutationWord():
-            symbols = [self.getPOS()]
+            symbols = [self.getPOS(i)]
         # Then inflection class
-        symbols += self.getInflClass()
+        symbols += self.getInflClass(i)
         # Then stem features
-        symbols += self.getStemFeatures()
+        symbols += self.getStemFeatures(i)
         # Then features from irregularly inflected forms
-        if len(self.__inflFeatAbbrevs) > 0:
-            symbols += self.getInflFeatures()
+        symbols += self.getInflFeatures(i)
         # Then affixes
-        symbols += self.__affixList
+        if i < len(self.__affixLists):
+            symbols += self.__affixLists[i]
         
         # Put each symbol in angle brackets e.g. <sbjv>. Also _ for .
         return '<'+'><'.join(underscores(x) for x in symbols)+'>'
@@ -1589,30 +1626,48 @@ class TextWord():
     def getFeatures(self, featList):
         # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
         return [abb for _, abb in sorted(featList, key=lambda x: x[0])]
+    def getFinalPunc(self):
+        return self.__finalPunc
     def getGuid(self):
         return self.__guid
-    def getHeadwordStr(self):
-        return ITsString(self.__e.HeadWord).Text
-    def getInflClass(self):
-        if self.__sense and self.__sense.MorphoSyntaxAnalysisRA.InflectionClassRA:
-            return [ITsString(self.__sense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
+    def getEntryIndex(self, e):
+        for i, myE in enumerate(self.__eList):
+            if myE == e:
+                return i
+        return None
+    def getInflClass(self, i):
+        if self.hasSenses():
+            mySense = self.__senseList[i]
+            if mySense and mySense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                return [ITsString(mySense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
         return []
-    def getInflFeatures(self):
+    def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
-        return self.getFeatures(self.__inflFeatAbbrevs)
-    def getLemma(self):
-        return self.__lemma
-    def getNonPOSSymbols(self):
-        return self.getInflClass() + self.getStemFeatures() + self.getInflFeatures() + self.__affixList
-    def getPOS(self):
-        if self.__sense is None or self.__sense.MorphoSyntaxAnalysisRA.PartOfSpeechRA is None:
-            return self.getUnknownPOS()
-        return ITsString(self.__sense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-    def getStemFeatures(self):
-        if self.__sense and self.__sense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-            # The features might be complex, make a recursive function call to find all features
-            get_feat_abbr_list(self.__sense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
-            return self.getFeatures(self.__stemFeatAbbrList)
+        if i < len(self.__inflFeatAbbrevsList):
+            return self.getFeatures(self.__inflFeatAbbrevsList[i])
+        return []
+    def getInitialPunc(self):
+        return self.__initPunc
+    def getLemma(self, i):
+        if i < len(self.__lemmaList):
+            return self.__lemmaList[i]
+        return ''
+    def getAffixSymbols(self):
+        # assume no compound roots for this word
+        return self.__affixLists[0]
+    def getPOS(self, i):
+        if self.hasSenses():
+            mySense = self.__senseList[i]
+            if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+                return ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+        return self.getUnknownPOS()
+    def getStemFeatures(self, i):
+        if self.hasSenses():
+            mySense = self.__senseList[i]
+            if mySense and mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                get_feat_abbr_list(mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                return self.getFeatures(self.__stemFeatAbbrList)
         return []
     def getSurfaceForm(self):
         return self.__surfaceForm
@@ -1622,55 +1677,75 @@ class TextWord():
         if len(self.__componentList) > 0:
             return True
         return False
+    def hasEntries(self):
+        if len(self.__eList) > 0:
+            return True
+        return False
+    def hasSenses(self):
+        if len(self.__senseList) > 0:
+            return True
+        return False
     def isEnclitic(self, myEntry):
         return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
     def isSentPunctutationWord(self):
-        if len(self.__affixList) > 0 and self.__affixList[0] == 'sent':
-            return True
+        # assume no compound roots for this word
+        if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:
+            if self.__affixLists[0][0] == 'sent':
+                return True
         return False
-    def IsInitialized(self):
-        if self.__sense == None and len(self.__affixList) == 0:
+    def isInitialized(self):
+        if self.hasSenses() == False and len(self.__affixLists) == 0:
             return False
         return True
     def initWithComplex(self, cmplxE, componentList):
-        self.setEntry(cmplxE)
+        self.addEntry(cmplxE)
         self.setComponentList(componentList)
         
         # set the surface form as the concatenation of all the component's surface forms
         self.setSurfaceForm(' '.join(w.getSurfaceForm() for w in componentList))
         
         # build the lemma. For capitalization check use first surface form
-        self.buildLemma(componentList[0].getSurfaceForm(), 0) # we are going to just use sense 1 for complex forms
+        self.buildLemmaAndAdd(componentList[0].getSurfaceForm(), 0) # we are going to just use sense 1 for complex forms
 
-        # set the POS
-        self.setSense(cmplxE.SensesOS.ToArray()[0])
+        # add the sense
+        self.addSense(cmplxE.SensesOS.ToArray()[0])
         
         # use the bundle guid from the last component as this word's guid
         lastComponent = componentList[-1]
         self.setGuid(lastComponent.getGuid())
         
         # Transfer tags from one component to our new word
-        # TODO: allow the user to specify taking affixes and features from last element
-        x = componentList[-1].getNonPOSSymbols()
-        self.addAffixesFromList(x)
+        # TODO: allow the user to specify taking affixes and features from first or last element
+        affixList = lastComponent.getAffixSymbols()
+        self.addAffixesFromList(affixList)
         
+        # Transfer begin punctuation from the first component
+        firstComponent = componentList[0]
+        self.addInitialPunc(firstComponent.getInitialPunc())
+        
+        # Transfer end punctuation from the last component
+        self.addFinalPunc(lastComponent.getFinalPunc())
+        
+    def notCompound(self):
+        if len(self.__eList) > 1:
+            return False # we have a compound of 2 or more entries
+        return True
+    def outputDataForAllRoots(self):
+        retStr = ''
+        if self.isSentPunctutationWord():
+            return self.getLemma(0) + self.getDataStreamSymbols(0)
+        else:
+            for i, _ in enumerate(self.__lemmaList):
+                retStr += self.getLemma(i)
+                retStr += self.getDataStreamSymbols(i)
+        return retStr
     def outputDataStream(self):
-        retStr = self.__initPunc+'^'+self.getLemma()+self.getDataStreamSymbols()+'$'+self.__finalPunc
+        retStr = self.__initPunc+'^'+self.outputDataForAllRoots()+'$'+self.__finalPunc
         return retStr
     def setComponentList(self, cList):
         self.__componentList = cList
-    def setEntry(self, e):
-        self.__e = e
     def setGuid(self, myGuid):
         self.__guid = myGuid
-    def setInflFeatures(self, inflFeatAbbrevs):
-        self.__inflFeatAbbrevs = inflFeatAbbrevs
-    def setLemma(self, lemma):
-        self.__lemma = lemma
-    def setLemmaFromObj(self, myObj):
-        self.__lemma = ITsString(myObj.Form.BestVernacularAlternative).Text
-    def setSense(self, sense):
-        self.__sense = sense
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
@@ -1707,6 +1782,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     currSegNum = 0
     myWord = None
     savedPrePunc = ''
+    newParagraph = False
     
     initProgress(contents, report)
     
@@ -1714,29 +1790,82 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     myText = TextEntirety()
     myPar = TextParagraph()
     
+    # Add the first paragraph
+    myText.addParagraph(myPar)
+    
     # Loop through each thing in the text
     ss = SegmentServices.StTextAnnotationNavigator(contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
-        report.ProgressUpdate(prog_cnt)
-        
-        # Always create a new word to start with
-        myWord = TextWord(report)
-
-        # Get the number of spaces between words        
-        numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
-        myPunc = ' '*numSpaces
+        wordCreated = False
+        newSentence = False
         
         # If we are on a different segment, it's a new sentence.
         if analysisOccurance.Segment.Hvo <> currSegNum:
+            newSentence = True
+            
+        report.ProgressUpdate(prog_cnt)
+        
+        # Get the number of spaces between words. This becomes initial spaces for the next word        
+        numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
+        spacesStr = ' '*numSpaces
+
+        # See if we are on a new paragraph (numSpaces is negative)
+        if numSpaces < 0:
+            newParagraph = True
+            
+        # Save end offset
+        prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
+        
+        # Deal with punctuation first
+        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
+            
+            textPunct = ITsString(analysisOccurance.Analysis.Form).Text
+            
+            # See if one or more symbols is part of the user-defined sentence punctuation. If so, save the punctuation as if it is its own word. E.g. ^.<sent>$
+            if set(list(textPunct)).intersection(set(list(sentPunct))):
+                
+                # create a new word object
+                myWord = TextWord(report)
+                
+                # initialize it with the puctuation and sent as the "POS"
+                myWord.addLemma(textPunct)
+                myWord.addPlainTextAffix('sent')
+                
+                # add any initial spaces
+                myWord.addInitialPunc(spacesStr)
+                
+                wordCreated = True
+                
+            # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
+            else:
+                # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
+                if myWord != None and not newSentence:
+                    
+                    myWord.addFinalPunc(spacesStr + textPunct) 
+                    currSegNum = analysisOccurance.Segment.Hvo
+                else:
+                    # Save this punctuation for the next word
+                    savedPrePunc += spacesStr + textPunct
+                    # Note: we don't save the segment # so below we will go to a new sentence if needed.
+                # We are done. 
+                continue
+        
+        # if we didn't create a special sentence-ending punctuation word, create a word for normal use            
+        if wordCreated == False:
+            
+            myWord = TextWord(report)
+
+        if newSentence:
             
             # Create a new sentence object and add it to the paragraph
             mySent = TextSentence(report)
 
-            # If we have a negative number, it's new paragraph
-            if numSpaces < 0 or prog_cnt == 0: # or first time through 
+            # If we have a new paragraph, create the paragraph and add it to the text
+            if newParagraph:
                 myPar = TextParagraph()
                 myText.addParagraph(myPar)
+                newParagraph = False
             
             # Add the sentence to the paragraph
             myPar.addSentence(mySent)
@@ -1745,34 +1874,21 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
         mySent.addWord(myWord)
         
         # Save where we are    
-        prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
         currSegNum = analysisOccurance.Segment.Hvo
-                
-        # Deal with different Analysis classes differently
-        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
-            
-            textPunct = ITsString(analysisOccurance.Analysis.Form).Text
-            
-            # See if one or more symbols is part of the user-defined sentence punctuation. 
-            # if so, save the punctuation as if it is its own word. E.g. ^.<sent>$
-            if set(list(textPunct)).intersection(set(list(sentPunct))):
-                myWord.setLemma(textPunct)
-                myWord.addPlainTextAffix('sent')
-                
-            # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current word.
-            else:
-                # If we have spaces at the beginning of a sentence, save them for later
-                if mySent.getWordCount() == 0:
-                    savedPrePunc = myPunc
-                else:
-                    myWord.addFinalPunc(myPunc)
-                    savedPrePunc = ''
+        
+        # If we processed punctuation above, we are done        
+        if analysisOccurance.Analysis.ClassName == "PunctuationForm": 
             continue
         
         ## Now we know we have something other than punctuation
+        
+        # Add initial spaces
+        myWord.addInitialPunc(spacesStr)
+        
         # See if we have any pre-punctuation
         if len(savedPrePunc) > 0:
             myWord.addInitialPunc(savedPrePunc)
+            savedPrePunc = ""
             
         # Figure out the surface form and set it.
         beg = analysisOccurance.GetMyBeginOffsetInPara()
@@ -1780,7 +1896,6 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
         surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[beg:end]
         
         # Set lemma to surfaceForm initially
-        myWord.lemma = surfaceForm
         myWord.setSurfaceForm(surfaceForm)
 
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
@@ -1793,7 +1908,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
             
             # Lemma will be the same as the surface form, I think
-            myWord.setLemmaFromObj(analysisOccurance.Analysis)
+            myWord.addLemmaFromObj(analysisOccurance.Analysis)
             continue
         
         # Don't know when we ever would get here
@@ -1811,14 +1926,14 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                     # We have a stem. We just want the headword and it's POS
                     if bundle.MsaRA.ClassName == 'MoStemMsa':
                         
-                        # Just save the the guid for the first root in the bundle
+                        # Just save the the bundle guid for the first root in the bundle
                         if myWord.getGuid() == None:
                             myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
             
                         # If we have an invalid POS, give a warning
                         if not bundle.MsaRA.PartOfSpeechRA:
                             
-                            myWord.setLemmaFromObj(wfiAnalysis.Owner)
+                            myWord.addLemmaFromObj(wfiAnalysis.Owner)
                             report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
                         
@@ -1835,21 +1950,22 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                                 
                             # Otherwise we have a root or stem or phrase
                             else:
-                                myWord.setEntry(tempEntry)
-                                myWord.setInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
+                                myWord.addEntry(tempEntry)
+                                myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
                                 
                                 # Go through each sense and identify which sense number we have
                                 foundSense = False
-                                for senseNum, mySense in enumerate(myWord.getEntry().SensesOS):
+                                for senseNum, mySense in enumerate(tempEntry.SensesOS):
                                     if mySense.Guid == bundle.SenseRA.Guid:
-                                        myWord.setSense(mySense)
+                                        myWord.addSense(mySense)
                                         foundSense = True
                                         break
                                 if foundSense:
                                     # Construct and set the lemma
-                                    myWord.buildLemma(analysisOccurance.BaselineText, senseNum)
+                                    myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                                 else:
-                                    report.Warning("Couldn't find the sense for headword: "+myWord.GetHeadwordStr())    
+                                    myWord.addSense(None)
+                                    report.Warning("Couldn't find the sense for headword: "+getHeadwordStr(tempEntry))    
                         else:
                             report.Warning("Morph object is null.")    
 
@@ -1861,13 +1977,13 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                         else:
                             report.Warning("Sense object for affix is null.")
                 else:
-                    myWord.setLemmaFromObj(wfiAnalysis.Owner)
-                    report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getLemma())
+                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getSurfaceForm())
                     break # go on to the next word    
             else:
                 # Part of the word has not been tied to a lexical entry-sense
-                myWord.setLemmaFromObj(wfiAnalysis.Owner)
-                report.Warning('No sense found for some part of the word: '+ myWord.getLemma())
+                myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
                 break # go on to the next word    
     
     # Don't warn for sfm markers, but warn once for others        
