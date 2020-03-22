@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.2 - 3/22/20 - Ron Lockwood
+#    Reorganized the punctuation part. Put the check for new sentence and
+#    paragraph into a function. The logic is more linear now.
+#
 #   Version 2.1.1 - 3/21/20 - Ron Lockwood
 #    Rewrote the TextWord class to handle multiple entries with associated lemmas
 #    affix sets, etc. This was needed to handle compound words where more than one
@@ -1763,6 +1767,30 @@ def initProgress(contents, report):
     else:
         report.ProgressStart(obj_cnt+1)
 
+def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr):
+    if newSentence:
+        
+        # Create a new sentence object and add it to the paragraph
+        mySent = TextSentence(report)
+        newSentence = False
+        
+        # If we have a new paragraph, create the paragraph and add it to the text
+        if newParagraph:
+            myPar = TextParagraph()
+            myText.addParagraph(myPar)
+            newParagraph = False
+        
+        # Add the sentence to the paragraph
+        myPar.addSentence(mySent)
+        
+    # Add the word to the current sentence
+    mySent.addWord(myWord)
+    
+    # Add initial spaces
+    myWord.addInitialPunc(spacesStr)
+    
+    return newSentence, newParagraph, mySent, myPar
+
 # This is a key function used by the ExtractSourceText and LiveRuleTesterTool modules
 # Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
 # the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
@@ -1781,8 +1809,10 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     prevEndOffset = 0
     currSegNum = 0
     myWord = None
+    mySent = None
     savedPrePunc = ''
     newParagraph = False
+    newSentence = False
     
     initProgress(contents, report)
     
@@ -1797,13 +1827,6 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     ss = SegmentServices.StTextAnnotationNavigator(contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
-        wordCreated = False
-        newSentence = False
-        
-        # If we are on a different segment, it's a new sentence.
-        if analysisOccurance.Segment.Hvo <> currSegNum:
-            newSentence = True
-            
         report.ProgressUpdate(prog_cnt)
         
         # Get the number of spaces between words. This becomes initial spaces for the next word        
@@ -1814,7 +1837,12 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
         if numSpaces < 0:
             newParagraph = True
             
-        # Save end offset
+        # If we are on a different segment, it's a new sentence.
+        if analysisOccurance.Segment.Hvo <> currSegNum:
+            newSentence = True
+            
+        # Save where we are    
+        currSegNum = analysisOccurance.Segment.Hvo
         prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
         
         # Deal with punctuation first
@@ -1832,10 +1860,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                 myWord.addLemma(textPunct)
                 myWord.addPlainTextAffix('sent')
                 
-                # add any initial spaces
-                myWord.addInitialPunc(spacesStr)
-                
-                wordCreated = True
+                # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
+                newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
                 
             # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
             else:
@@ -1843,47 +1869,19 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                 if myWord != None and not newSentence:
                     
                     myWord.addFinalPunc(spacesStr + textPunct) 
-                    currSegNum = analysisOccurance.Segment.Hvo
                 else:
-                    # Save this punctuation for the next word
+                    # Save this punctuation for initial punctuation on the next word
                     savedPrePunc += spacesStr + textPunct
-                    # Note: we don't save the segment # so below we will go to a new sentence if needed.
-                # We are done. 
-                continue
         
-        # if we didn't create a special sentence-ending punctuation word, create a word for normal use            
-        if wordCreated == False:
-            
-            myWord = TextWord(report)
-
-        if newSentence:
-            
-            # Create a new sentence object and add it to the paragraph
-            mySent = TextSentence(report)
-
-            # If we have a new paragraph, create the paragraph and add it to the text
-            if newParagraph:
-                myPar = TextParagraph()
-                myText.addParagraph(myPar)
-                newParagraph = False
-            
-            # Add the sentence to the paragraph
-            myPar.addSentence(mySent)
-            
-        # Add the word to the current sentence
-        mySent.addWord(myWord)
-        
-        # Save where we are    
-        currSegNum = analysisOccurance.Segment.Hvo
-        
-        # If we processed punctuation above, we are done        
-        if analysisOccurance.Analysis.ClassName == "PunctuationForm": 
             continue
         
         ## Now we know we have something other than punctuation
         
-        # Add initial spaces
-        myWord.addInitialPunc(spacesStr)
+        # Start with a new word
+        myWord = TextWord(report)
+        
+        # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
+        newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
         
         # See if we have any pre-punctuation
         if len(savedPrePunc) > 0:
