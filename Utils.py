@@ -1387,17 +1387,6 @@ class TextSentence():
         return self.__wordList
     def haveGuid(self, myGuid):
         return myGuid in self.__guidMap
-    # See if a bundle is not part of a neighboring complex form
-    def notPartOfAdjacentComplexForm(self, currGuid, nextGuid):
-        # Get the next word object
-        nextWrd = self.__guidMap[nextGuid]
-        
-        # Check if the current word's bundle guid matches the first component of the next word
-        if nextWrd.hasComponents():
-            guidFirstComponent = nextWrd.getComponent(0).getGuid()
-            if guidFirstComponent == currGuid:
-                return False
-        return True
     def write(self, fOut):
         for word in self.__wordList:
             word.write(fOut)
@@ -1457,6 +1446,18 @@ class TextSentence():
         # Update the guid map
         self.__guidMap[newWord.getGuid()] = newWord
         
+    # See if a bundle is not part of a neighboring complex form
+    def notPartOfAdjacentComplexForm(self, currGuid, nextGuid):
+        # Get the next word object
+        nextWrd = self.__guidMap[nextGuid]
+        
+        # Check if the current word's bundle guid matches the first component of the next word
+        if nextWrd.hasComponents():
+            guidFirstComponent = nextWrd.getComponent(0).getGuid()
+            if guidFirstComponent == currGuid:
+                return False
+        return True
+
     def substituteComplexForms(self, cmplxFormMap):
         i = 0
         # Loop through the word list
@@ -1564,7 +1565,8 @@ class TextWord():
     def addFinalPunc(self, myStr):
         self.__finalPunc += myStr
     def addInflFeatures(self, inflFeatAbbrevs):
-        self.__inflFeatAbbrevsList.append(inflFeatAbbrevs)
+        self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
+        i = 1
     def addInitialPunc(self, myStr):
         self.__initPunc += myStr
     def addLemma(self, lemma):

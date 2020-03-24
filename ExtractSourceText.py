@@ -10,6 +10,7 @@
 #
 #   Version 2.1 - 3/20/20 - Ron Lockwood
 #    Use new getInterlinData function and text and sentence objects we get back.
+#
 #   Version 2.0.4 - 2/12/20 - Ron Lockwood
 #    Don't use sentence number as part of the guid map key.
 # 
@@ -130,7 +131,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.0.4",
+        FTM_Version    : "2.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
