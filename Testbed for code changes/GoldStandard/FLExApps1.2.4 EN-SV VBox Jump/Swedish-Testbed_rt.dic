@@ -1,0 +1,5578 @@
+
+
+\m för_att1.1
+\c coordconn
+\g so.that
+\a för_att 
+
+\m kaffe1.1
+\c n
+\g coffee
+\a kaffe 
+
+\m universitet1.1
+\c n
+\g university
+\a universitet 
+
+\m explodera1.1
+\c v
+\g explode
+\a exploder 
+
+\m tröja1.1
+\c n
+\g sweater
+\a tröj 
+
+\m slåss1.1
+\c n
+\g fight
+\a slåss 
+
+\m dö1.1
+\c v
+\g die
+\a dö 
+
+\m under1.1
+\c prep
+\g under
+\a under 
+
+\m bröd1.1
+\c n
+\g bread
+\a bröd 
+
+\m vardagsrum1.1
+\c n
+\g living.room
+\a vardagsrumm / _ e 
+\a vardagsrum ~/ _ e 
+
+\m spel1.1
+\c n
+\g game
+\a spel 
+
+\m nummer1.1
+\c n
+\g number
+\a numr 
+\a nummer 
+
+\m medlem1.1
+\c n
+\g member
+\a medlem 
+
+\m plats1.1
+\c n
+\g place
+\a plats 
+
+\m där1.1
+\c n
+\g there
+\a där 
+
+\m match1.1
+\c n
+\g match
+\a match 
+
+\m historia1.1
+\c n
+\g history
+\a historia 
+
+\m begravning1.1
+\c n
+\g funeral
+\a begravning 
+
+\m svenska1.1
+\c nprop
+\g Swedish
+\a svenska 
+
+\m biljett1.1
+\c n
+\g ticket
+\a biljett 
+
+\m somna1.1
+\c v
+\g fall.asleep
+\a somn 
+
+\m bord1.1
+\c n
+\g table
+\a bord 
+
+\m gammal1.1
+\c adj
+\g old
+\a gaml / _ a 
+\a gammal ~/ _ a 
+
+\m födelsedag1.1
+\c n
+\g birthday
+\a födelsedag 
+
+\m strand1.1
+\c n
+\g beach
+\a strand 
+
+\m årstid1.1
+\c n
+\g season
+\a årstider 
+\a årstid 
+
+\m sjunga1.1
+\c v
+\g sing
+\a sjung 
+
+\m morgon1.1
+\c n
+\g morning
+\a morgon 
+
+\m morgon1.2
+\c adv
+\g tomorrow
+\a morgon 
+
+\m spara1.1
+\c v
+\g save (money)
+\a spar 
+
+\m fjärde1.1
+\c ordnum
+\g fourth
+\a fjärde 
+
+\m fyra1.1
+\c cardnum
+\g four
+\a fyra 
+
+\m åttio1.1
+\c cardnum
+\g eighty
+\a åttio 
+
+\m fryser1.1
+\c adj
+\g cold
+\a fryser 
+
+\m golf1.1
+\c n
+\g golf
+\a golf 
+
+\m ursäkta1.1
+\c interj
+\g excuse.me
+\a ursäkta 
+
+\m fick1
+\c _variant_
+\g 
+\a fick 
+
+\m gott1.1
+\c adv
+\g good
+\a gott 
+
+\m jag_kan_inte_tala_'svenska'_så_bra1.1
+\c phr
+\g I can't speak Swedish well.
+\a Jag_kan_inte_tala_'svenska'_så_bra 
+
+\m bra1.1
+\c adj
+\g good
+\a bra 
+
+\m hota1.1
+\c v
+\g threaten
+\a hot 
+
+\m femton1.1
+\c cardnum
+\g fifteen
+\a femton 
+
+\m äta1.1
+\c v
+\g eat
+\a ät 
+
+\m därför_att1.1
+\c subordconn
+\g because
+\a därför_att 
+
+\m byxor1.1
+\c n
+\g pants
+\a byxor 
+
+\m hur_dags1.1
+\c interrog
+\g what time
+\a hur_dags 
+
+\m rädda1.1
+\c v
+\g save
+\a rädd 
+
+\m besviken1.1
+\c adj
+\g disappointed
+\a besvikn 
+\a besviken 
+
+\m lik1.1
+\c deg
+\g like
+\a lik 
+
+\m smäll1.1
+\c n
+\g blast
+\a smäll 
+
+\m slut1.1
+\c adj
+\g finished
+\a slut 
+
+\m föräldrar1.1
+\c n
+\g parents
+\a föräldrar 
+
+\m segla1.1
+\c v
+\g sail
+\a segl 
+
+\m tälta1.1
+\c v
+\g tent
+\a tält 
+
+\m säga1.1
+\c v
+\g say
+\a säg 
+
+\m för1.1
+\c quant
+\g too
+\a för 
+
+\m för1.2
+\c prep
+\g for
+\a för 
+
+\m blå1.1
+\c adj
+\g blue
+\a blå 
+
+\m paris1.1
+\c nprop
+\g Paris
+\a Paris 
+
+\m snö1.1
+\c n
+\g snow
+\a snö 
+
+\m långt1.1
+\c prep
+\g far
+\a långt 
+
+\m bort1.1
+\c adv
+\g away
+\a bort 
+
+\m tillräcklig1.1
+\c adj
+\g enough
+\a tillräcklig 
+
+\m berg1.1
+\c n
+\g mountain
+\a berg 
+
+\m hennes1.1
+\c pro-adj
+\g 3SG.F.POSS
+\a hennes 
+
+\m studera1.1
+\c v
+\g study
+\a studer 
+
+\m människa1.1
+\c n
+\g human.being
+\a människa 
+
+\m söndag1.1
+\c nprop
+\g Sunday
+\a söndag 
+
+\m lagerhus1.1
+\c n
+\g warehouse
+\a lagerhus 
+
+\m stängd1.1
+\c adj
+\g closed
+\a stängd 
+
+\m sexton1.1
+\c cardnum
+\g sixteen
+\a sexton 
+
+\m fungera1.1
+\c v
+\g function
+\a funger 
+
+\m bror1.1
+\c n
+\g brother
+\a bröd / _ e 
+\a bror ~/ _ e 
+
+\m här1.1
+\c adv
+\g here
+\a här 
+
+\m medicin1.1
+\c n
+\g medicine
+\a medicin 
+
+\m diskho1.1
+\c n
+\g kitchen sink
+\a diskho 
+
+\m deras2
+\c _variant_
+\g 
+\a deras 
+
+\m gömma1.1
+\c v
+\g hide
+\a göm 
+
+\m fött1
+\c _variant_
+\g 
+\a fött 
+
+\m tält1.1
+\c n
+\g tent
+\a tält 
+
+\m anställd1.1
+\c adj
+\g employee
+\a anställd 
+
+\m somras1.1
+\c n
+\g last.summer
+\a somras 
+
+\m öppen1.1
+\c adj
+\g open
+\a öppen 
+
+\m skjorta1.1
+\c n
+\g shirt
+\a skjort 
+
+\m så1.1
+\c adv
+\g so
+\a så 
+
+\m kasta1.1
+\c v
+\g throw
+\a kast 
+
+\m svimm1.1
+\c v
+\g faint
+\a svimm 
+
+\m arbete1.1
+\c n
+\g work
+\a arbete 
+
+\m klia1.1
+\c v
+\g scratch v.
+\a kli 
+
+\m det_där1.1
+\c dem
+\g that.N
+\a det_där 
+
+\m små1.1
+\c adj
+\g small
+\a små 
+
+\m femtio1.1
+\c ordnum
+\g fifty
+\a femti 
+\a femtio 
+
+\m december1.1
+\c nprop
+\g December
+\a december 
+
+\m dator1.1
+\c n
+\g computer
+\a dator 
+
+\m full1.1
+\c adj
+\g full
+\a full 
+
+\m måne1.1
+\c n
+\g moon
+\a måne 
+
+\m treton1.1
+\c cardnum
+\g thirteen
+\a treton 
+
+\m vilse1.1
+\c adj
+\g lost
+\a vilse 
+
+\m enligt1.1
+\c prep
+\g according
+\a enligt 
+
+\m olj1.1
+\c n
+\g oil
+\a olj 
+
+\m inomhus1.1
+\c adv
+\g inside
+\a inomhus 
+
+\m hon1.1
+\c pro
+\g 3SG.F
+\a hon 
+
+\m från1.1
+\c prep
+\g from
+\a från 
+
+\m regn1.1
+\c n
+\g rain
+\a regn 
+
+\m sa1
+\c _variant_
+\g 
+\a sa 
+
+\m foto1.1
+\c n
+\g photo
+\a foto 
+
+\m juli1.1
+\c nprop
+\g July
+\a juli 
+
+\m i_tid1.1
+\c adv
+\g on.time
+\a i_tid 
+
+\m minut1.1
+\c n
+\g minute
+\a minut 
+
+\m farmor1.1
+\c n
+\g pat.grandmother
+\a farmor 
+
+\m dusch1.1
+\c n
+\g shower
+\a dusch 
+
+\m kanske1.1
+\c adv
+\g maybe
+\a kanske 
+
+\m prata1.1
+\c v
+\g talk
+\a prat 
+
+\m näsa1.1
+\c n
+\g nose
+\a näsa 
+
+\m tung1.1
+\c adj
+\g heavy
+\a tung 
+
+\m inte1.1
+\c prt
+\g not
+\a inte 
+
+\m idrottsplats1.1
+\c n
+\g sports.area
+\a idrottsplats 
+
+\m sjukhus1.1
+\c n
+\g hospital
+\a sjukhus 
+
+\m finger1.1
+\c n
+\g finger
+\a fingr 
+\a finger 
+
+\m säng1.1
+\c n
+\g bed
+\a säng 
+
+\m sent1.1
+\c adv
+\g late
+\a sent 
+
+\m känna1.1
+\c v
+\g know
+\a känn 
+
+\m kort1.1
+\c adj
+\g short
+\a kort 
+
+\m flaska1.1
+\c n
+\g bottle
+\a flask 
+
+\m grå1.1
+\c adj
+\g gray
+\a grå 
+
+\m ko1.1
+\c n
+\g cow
+\a ko 
+
+\m norr1.1
+\c adj
+\g north
+\a norr 
+
+\m natur1.1
+\c n
+\g nature
+\a natur 
+
+\m matematik1.1
+\c n
+\g math
+\a matematik 
+
+\m mig1.1
+\c pro
+\g 1SG.OBJ
+\a mig 
+
+\m mig1.2
+\c pro
+\g 1SG.REFL
+\a mig 
+
+\m julafton1.1
+\c nprop
+\g Christmas Eve
+\a julafton 
+
+\m bröllop1.1
+\c n
+\g wedding
+\a bröllop 
+
+\m men1.1
+\c coordconn
+\g but
+\a men 
+
+\m sallad1.1
+\c n
+\g salad
+\a sallad 
+
+\m inga1.1
+\c quant
+\g none
+\a inga 
+
+\m man1.1
+\c n
+\g man
+\a mann / _ en 
+\a man ~/ _ en 
+
+\m man1.2
+\c n
+\g husband
+\a mann / _ en 
+\a man ~/ _ en 
+
+\m man1.3
+\c n
+\g one
+\a mann / _ en 
+\a man ~/ _ en 
+
+\m grad1.1
+\c n
+\g degree
+\a grad 
+
+\m konst1.1
+\c n
+\g art
+\a konst 
+
+\m känd1.1
+\c adj
+\g well-known
+\a känd 
+
+\m nästa1.1
+\c adj
+\g next
+\a nästa 
+
+\m färre1.1
+\c quant
+\g fewer
+\a färre 
+
+\m ja1.1
+\c interj
+\g yes
+\a ja 
+
+\m buss1.1
+\c n
+\g bus
+\a buss 
+
+\m tom1.1
+\c adj
+\g empty
+\a tom 
+
+\m krist1.1
+\c nprop
+\g Christian
+\a krist 
+
+\m skog1.1
+\c n
+\g forest
+\a skog 
+
+\m träna1.1
+\c v
+\g train
+\a trän 
+
+\m minns1.1
+\c v
+\g remember
+\a minns 
+
+\m rik1.1
+\c adj
+\g rich
+\a rik 
+
+\m italien1.1
+\c nprop
+\g Italy
+\a Italien 
+
+\m gick1
+\c _variant_
+\g 
+\a gick 
+
+\m snygg1.1
+\c adj
+\g good-looking
+\a snygg 
+
+\m oss1.1
+\c pro
+\g 1PL.OBJ
+\a oss 
+
+\m stark1.1
+\c adj
+\g strong
+\a stark 
+
+\m utan1.1
+\c prep
+\g without
+\a utan 
+
+\m utan1.2
+\c coordconn
+\g but
+\a utan 
+
+\m köra1.1
+\c v
+\g drive
+\a kör 
+
+\m höna1.1
+\c n
+\g hen
+\a hön 
+
+\m söt1.1
+\c adj
+\g sweet
+\a söt 
+
+\m afrika1.1
+\c nprop
+\g Africa
+\a Afrika 
+
+\m tiger1.1
+\c n
+\g tiger
+\a tiger 
+
+\m bättre1.1
+\c adj
+\g better
+\a bättre 
+
+\m tidigare1.1
+\c adv
+\g previously
+\a tidigare 
+
+\m november1.1
+\c nprop
+\g November
+\a november 
+
+\m ben1.1
+\c n
+\g leg
+\a ben 
+
+\m radio1.1
+\c n
+\g radio
+\a radio 
+
+\m le1.1
+\c v
+\g smile
+\a le 
+
+\m bomb1.1
+\c n
+\g bomb
+\a bomb 
+
+\m försiktig1.1
+\c adj
+\g careful
+\a försiktig 
+
+\m kött1.1
+\c n
+\g meat
+\a kött 
+
+\m peppar1.1
+\c n
+\g pepper
+\a peppar 
+
+\m simma1.1
+\c v
+\g swim
+\a simm 
+
+\m under2.1
+\c prep
+\g during
+\a under 
+
+\m springa1.1
+\c v
+\g run
+\a spring 
+
+\m svart1.1
+\c adj
+\g black
+\a svart 
+
+\m samma1.1
+\c adj
+\g same
+\a samma 
+
+\m handfatet1.1
+\c n
+\g hand.basin
+\a handfatet 
+
+\m tala1.1
+\c v
+\g speak
+\a tal 
+
+\m pappa1.1
+\c n
+\g father
+\a papp 
+
+\m strumpa1.1
+\c n
+\g sock
+\a strump 
+
+\m affär1.1
+\c n
+\g shop
+\a affär 
+
+\m lägenhet1.1
+\c n
+\g apartment
+\a lägenhet 
+
+\m popularitet1.1
+\c n
+\g popularity
+\a popularitet 
+
+\m grundskola1.1
+\c n
+\g elementary.school
+\a grundskola 
+
+\m sprängämne1.1
+\c n
+\g explosive
+\a sprängämne 
+
+\m minst1.1
+\c adj
+\g smallest
+\a minst 
+
+\m minst1.2
+\c adv
+\g at.least
+\a minst 
+
+\m citron1.1
+\c n
+\g lemon
+\a citron 
+
+\m vem1.1
+\c interrog
+\g who
+\a vem 
+
+\m tandborste1.1
+\c n
+\g toothbrush
+\a tandborste 
+
+\m reparera1.1
+\c v
+\g repair
+\a reparer 
+
+\m er1.1
+\c pro-adj
+\g 2PL.POSS
+\a er 
+
+\m er1.2
+\c pro
+\g 2PL.OBJ
+\a er 
+
+\m er1.3
+\c refl
+\g 2PL.REFL
+\a er 
+
+\m förstöra1.1
+\c v
+\g destroy
+\a förstör 
+
+\m tio1.1
+\c cardnum
+\g ten
+\a tio 
+
+\m ögon1
+\c _variant_
+\g 
+\a ögon 
+
+\m svara1.1
+\c v
+\g reply
+\a svar 
+
+\m bakom1.1
+\c prep
+\g behind
+\a bakom 
+
+\m mun1.1
+\c n
+\g mouth
+\a mun 
+
+\m efteråt1.1
+\c adv
+\g afterwards
+\a efteråt 
+
+\m till_sisst1.1
+\c adv
+\g finally
+\a till_sisst 
+
+\m timma1.1
+\c n
+\g hour
+\a timma 
+
+\m dag1.1
+\c n
+\g day
+\a dag 
+
+\m mindre1.1
+\c quant
+\g less
+\a mindre 
+
+\m mindre1.2
+\c adj
+\g smaller
+\a mindre 
+
+\m svänga1.1
+\c v
+\g turn
+\a sväng 
+
+\m kille1.1
+\c n
+\g guy
+\a kill 
+
+\m soldat1.1
+\c n
+\g soldier
+\a soldat 
+
+\m atarktis1.1
+\c nprop
+\g Antarctica
+\a Atarktis 
+
+\m brev1.1
+\c n
+\g letter
+\a brev 
+
+\m bada1.1
+\c v
+\g bathe
+\a bad 
+
+\m sätt1.1
+\c n
+\g way
+\a sätt 
+
+\m sjuk1.1
+\c adj
+\g sick
+\a sjuk 
+
+\m björn1.1
+\c n
+\g bear
+\a björn 
+
+\m halv1.1
+\c quant
+\g half
+\a halv 
+
+\m hans1.1
+\c pro-adj
+\g 3SG.M.POSS
+\a hans 
+
+\m arg1.1
+\c adj
+\g angry
+\a arg 
+
+\m hoppas1.1
+\c v
+\g hope
+\a hoppas 
+
+\m öra1.1
+\c n
+\g ear
+\a öra 
+
+\m krama1.1
+\c v
+\g hug
+\a kram 
+
+\m vid1.1
+\c prep
+\g at
+\a vid 
+
+\m bro1.1
+\c n
+\g bridge
+\a bro 
+
+\m göra1.1
+\c v
+\g do
+\a gör 
+
+\m göra1.2
+\c v
+\g make
+\a gör 
+
+\m gilla1.1
+\c v
+\g like (love)
+\a gill 
+
+\m hjälpa1.1
+\c v
+\g help
+\a hjälp 
+
+\m skol1.1
+\c n
+\g school
+\a skol 
+
+\m station1.1
+\c n
+\g train.station
+\a station 
+
+\m skada1.1
+\c v
+\g injure
+\a skad 
+
+\m årskurs1.1
+\c n
+\g grade
+\a årskurs 
+
+\m till1.1
+\c prep
+\g to
+\a till 
+
+\m honom1.1
+\c pro
+\g 3SG.M.OBJ
+\a honom 
+
+\m terrorist1.1
+\c n
+\g terrorist
+\a terrorist 
+
+\m *buske1.1
+\c n
+\g bush
+\a busk 
+
+\m tjej1.1
+\c n
+\g girl (slang)
+\a tjej 
+
+\m metall1.1
+\c n
+\g metal
+\a metall 
+
+\m trettioett1.1
+\c cardnum
+\g 31
+\a trettioett 
+
+\m juice1.1
+\c n
+\g juice
+\a juice 
+
+\m ägg1.1
+\c n
+\g egg
+\a ägg 
+
+\m träffa1.1
+\c v
+\g meet
+\a träff 
+
+\m asien1.1
+\c nprop
+\g Asia
+\a Asien 
+
+\m ansikte1.1
+\c n
+\g face
+\a ansikte 
+
+\m många1.1
+\c quant
+\g many
+\a många 
+
+\m *sluta1.1
+\c v
+\g end
+\a slut 
+
+\m dog1
+\c _variant_
+\g 
+\a dog 
+
+\m flicka1.1
+\c n
+\g girl
+\a flick 
+
+\m lite1.1
+\c adj
+\g little
+\a lite 
+
+\m stor1.1
+\c adj
+\g big
+\a stor 
+
+\m dubbel1.1
+\c adj
+\g double
+\a dubbel 
+
+\m gratulera1.1
+\c v
+\g congratulate
+\a gratuler 
+
+\m illa1.1
+\c adv
+\g bad
+\a illa 
+
+\m tagit1
+\c _variant_
+\g 
+\a tagit 
+
+\m check1.1
+\c n
+\g check
+\a check 
+
+\m andra1.1
+\c ordnum
+\g second
+\a andra 
+
+\m andra1.2
+\c adj
+\g other
+\a andra 
+
+\m demonstration1.1
+\c n
+\g demonstration
+\a demonstration 
+
+\m hemlös1.1
+\c adj
+\g homeless
+\a hemlös 
+
+\m var2
+\c _variant_
+\g 
+\a var 
+
+\m tallrik1.1
+\c n
+\g plate
+\a tallrik 
+
+\m evig1.1
+\c adj
+\g eternal
+\a evig 
+
+\m annars1.1
+\c adv
+\g otherwise
+\a annars 
+
+\m herr1.1
+\c nprop
+\g Lord
+\a Herr 
+
+\m gjor1.1
+\c adj
+\g made.of
+\a gjor 
+
+\m skratta1.1
+\c v
+\g laugh
+\a skratt 
+
+\m ju1.1
+\c adv
+\g of course
+\a ju 
+
+\m tidning1.1
+\c n
+\g newspaper
+\a tidning 
+
+\m september1.1
+\c nprop
+\g September
+\a september 
+
+\m rosa1.1
+\c adj
+\g pink
+\a rosa 
+
+\m kalas1.1
+\c n
+\g party (birthday)
+\a kalas 
+
+\m besöka1.1
+\c v
+\g visit
+\a besök 
+
+\m gyllene1.1
+\c adj
+\g golden
+\a gyllene 
+
+\m läsa1.1
+\c v
+\g read
+\a läs 
+
+\m vin1.1
+\c n
+\g wine
+\a vin 
+
+\m spränga,_spränger1.1
+\c v
+\g blow.up
+\a spräng 
+
+\m stege1.1
+\c n
+\g ladder
+\a stege 
+
+\m fru1.1
+\c n
+\g wife
+\a fru 
+
+\m apa1.1
+\c n
+\g ape
+\a ap 
+
+\m hyra1.1
+\c v
+\g hire
+\a hy 
+
+\m tidigt1.1
+\c adv
+\g early
+\a tidigt 
+
+\m vittne1.1
+\c n
+\g witness
+\a vittne 
+
+\m dansa1.1
+\c v
+\g dance
+\a dans 
+
+\m krig1.1
+\c n
+\g war
+\a krig 
+
+\m lämna1.1
+\c v
+\g leave
+\a lämn 
+
+\m nästan1.1
+\c adv
+\g almost
+\a nästan 
+
+\m orange1.1
+\c adj
+\g orange
+\a orange 
+
+\m smycke1.1
+\c n
+\g piece.of.jewelry
+\a smycke 
+
+\m veta1.1
+\c v
+\g know
+\a vet 
+
+\m öster1.1
+\c adj
+\g east
+\a öster 
+
+\m hotell1.1
+\c n
+\g hotel
+\a hotell 
+
+\m igång1.1
+\c adv
+\g started
+\a igång 
+
+\m öken1.1
+\c n
+\g desert
+\a ökn 
+\a öken 
+
+\m ö1.1
+\c n
+\g island
+\a ö 
+
+\m ut1.1
+\c adv
+\g out
+\a ut 
+
+\m likadan1.1
+\c adj
+\g alike
+\a likadan 
+
+\m dags1.1
+\c n
+\g time
+\a dags 
+
+\m olycka1.1
+\c n
+\g accident
+\a olyck 
+
+\m vintras1.1
+\c n
+\g last.winter
+\a vintras 
+
+\m de_här1.1
+\c dem
+\g these
+\a de_här 
+
+\m slips1.1
+\c n
+\g necktie
+\a slips 
+
+\m sköldpadda1.1
+\c n
+\g turtle
+\a sköldpadd 
+
+\m bunden1.1
+\c adj
+\g tied
+\a bunden 
+
+\m filt1.1
+\c n
+\g blanket
+\a filt 
+
+\m skidåkar1.1
+\c n
+\g skiers
+\a skidåkar 
+
+\m alltid1.1
+\c deg
+\g always
+\a alltid 
+
+\m rött1
+\c _variant_
+\g 
+\a rött 
+
+\m barrträd1.1
+\c n
+\g conifer
+\a barrträd 
+
+\m fanns1
+\c _variant_
+\g 
+\a fanns 
+
+\m lån1.1
+\c n
+\g loan
+\a lån 
+
+\m barr1.1
+\c n
+\g needle
+\a barr 
+
+\m dålig1.1
+\c adj
+\g bad
+\a dålig 
+
+\m född1.1
+\c n
+\g born
+\a född 
+
+\m konsert1.1
+\c n
+\g concert
+\a konsert 
+
+\m fyrverkerier1.1
+\c n
+\g fireworks
+\a fyrverkerier 
+
+\m sug1.1
+\c v
+\g suck
+\a sug 
+
+\m kudde1.1
+\c n
+\g pillow
+\a kudde 
+
+\m över1.1
+\c prep
+\g past
+\a över 
+
+\m över1.2
+\c prep
+\g over
+\a över 
+
+\m trettio1.1
+\c cardnum
+\g thirty
+\a trettio 
+
+\m skulle1.1
+\c v
+\g would
+\a skulle 
+
+\m bygga1.1
+\c v
+\g build
+\a bygg 
+
+\m flerst1.1
+\c adj
+\g most
+\a flerst 
+
+\m grön1.1
+\c adj
+\g green
+\a grön 
+
+\m han1.1
+\c pro
+\g 3SG.M
+\a han 
+
+\m onsdag1.1
+\c nprop
+\g Wednesday
+\a onsdag 
+
+\m värld1.1
+\c n
+\g world
+\a värld 
+
+\m de_där1.1
+\c dem
+\g those
+\a de_där 
+
+\m hem1.1
+\c n
+\g home
+\a hem 
+
+\m rekord1.1
+\c n
+\g record
+\a rekord 
+
+\m i1.1
+\c prep
+\g in
+\a i 
+
+\m molnigt1.1
+\c adj
+\g cloudy
+\a molnigt 
+
+\m förenta_nationernas1.1
+\c nprop
+\g United Nations
+\a Förenta_Nationernas 
+
+\m choklad1.1
+\c n
+\g chocolate
+\a choklad 
+
+\m kön1.1
+\c n
+\g line
+\a kön 
+
+\m häck1.1
+\c n
+\g butt
+\a häck 
+
+\m titta1.1
+\c v
+\g watch
+\a titt 
+
+\m öppet1
+\c _variant_
+\g 
+\a öppet 
+
+\m höger1.1
+\c adj
+\g right
+\a högr 
+\a höger 
+
+\m sprung1
+\c _variant_
+\g 
+\a sprung 
+
+\m oskyldiga1.1
+\c adj
+\g innocent
+\a oskyldiga 
+
+\m först1.1
+\c ordnum
+\g first
+\a först 
+
+\m först1.2
+\c adv
+\g at.first
+\a först 
+
+\m rakt_fram1.1
+\c adj
+\g straight ahead
+\a rakt_fram 
+
+\m vägg1.1
+\c n
+\g wall
+\a vägg 
+
+\m när1.1
+\c interrog
+\g when
+\a när 
+
+\m tåg1.1
+\c n
+\g train
+\a tåg 
+
+\m glad1.1
+\c adj
+\g happy
+\a glad 
+
+\m morfar1.1
+\c n
+\g mat.grandfather
+\a morfar 
+
+\m höst1.1
+\c n
+\g autumn
+\a höst 
+
+\m inget1.1
+\c pro
+\g nothing
+\a inget 
+
+\m populär1.1
+\c adj
+\g popular
+\a populär 
+
+\m syster1.1
+\c n
+\g sister
+\a systr / _ a 
+\a syster ~/ _ a 
+
+\m regna1.1
+\c v
+\g rain
+\a regn 
+
+\m trä1.1
+\c n
+\g wood
+\a trä 
+
+\m tittår_på1.1
+\c v
+\g look.on
+\a tittår_på 
+
+\m lexikon1.1
+\c n
+\g dictionary
+\a lexikon 
+
+\m sjutton1.1
+\c cardnum
+\g seventeen
+\a sjutton 
+
+\m klass1.1
+\c n
+\g class
+\a klass 
+
+\m sked1.1
+\c n
+\g spoon
+\a sked 
+
+\m uppför1.1
+\c prep
+\g up
+\a uppför 
+
+\m trappa1.1
+\c n
+\g stair
+\a trappa 
+
+\m stat1.1
+\c n
+\g state
+\a stat 
+
+\m tolv1.1
+\c cardnum
+\g twelve
+\a tolv 
+
+\m smaka1.1
+\c v
+\g taste
+\a smak 
+
+\m tandkräm1.1
+\c n
+\g toothpaste
+\a tandkräm 
+
+\m hår1.1
+\c n
+\g hair
+\a hår 
+
+\m sova1.1
+\c v
+\g sleep
+\a sov 
+
+\m gräs1.1
+\c n
+\g grass
+\a gräs 
+
+\m får1.1
+\c n
+\g sheep
+\a får 
+
+\m dräkt1.1
+\c n
+\g costume
+\a dräkt 
+
+\m musik1.1
+\c n
+\g music
+\a musik 
+
+\m läkare1.1
+\c n
+\g doctor
+\a läkare 
+
+\m kosta1.1
+\c v
+\g cost
+\a kost 
+
+\m bio1.1
+\c n
+\g cinema
+\a bio 
+
+\m land1.1
+\c n
+\g country
+\a land 
+
+\m kärlek1.1
+\c n
+\g love
+\a kärlek 
+
+\m tak1.1
+\c n
+\g ceiling
+\a tak 
+
+\m trots1.1
+\c prep
+\g in.spite.of
+\a trots 
+
+\m sverige1.1
+\c nprop
+\g Sweden
+\a Sverige 
+
+\m rumsnummer1.1
+\c n
+\g room.number
+\a rumsnummer 
+
+\m piano1.1
+\c n
+\g piano
+\a piano 
+
+\m klot1.1
+\c n
+\g ball (sphere)
+\a klot 
+
+\m sophink1.1
+\c n
+\g trash.can
+\a sophink 
+
+\m även1.1
+\c subordconn
+\g even
+\a även 
+
+\m placering1.1
+\c n
+\g place
+\a placering 
+
+\m huvud1.1
+\c n
+\g head
+\a huvud 
+
+\m varm1.1
+\c adj
+\g warm
+\a varm 
+
+\m is1.1
+\c n
+\g ice
+\a is 
+
+\m grekland1.1
+\c nprop
+\g Greece
+\a Grekland 
+
+\m moské1.1
+\c n
+\g mosque
+\a moské 
+
+\m dollar1.1
+\c n
+\g dollar
+\a dollar 
+
+\m katastrof1.1
+\c n
+\g catastrophe
+\a katastrof 
+
+\m sko1.1
+\c n
+\g shoe
+\a sko 
+
+\m var1.1
+\c interrog
+\g where
+\a var 
+
+\m invecklat1.1
+\c adj
+\g complicated
+\a invecklat 
+
+\m köksbänk1.1
+\c n
+\g kitchen.counter
+\a köksbänk 
+
+\m död1.1
+\c adj
+\g dead
+\a död 
+
+\m rykte1.1
+\c n
+\g rumor
+\a rykte 
+
+\m mobil1.1
+\c n
+\g cell.phone
+\a mobil 
+
+\m före1.1
+\c prep
+\g before
+\a före 
+
+\m städer1
+\c _variant_
+\g 
+\a städer 
+
+\m ty1.1
+\c coordconn
+\g for
+\a ty 
+
+\m mot1.1
+\c prep
+\g toward
+\a mot 
+
+\m vänster1.1
+\c adj
+\g left
+\a vänstr 
+\a vänster 
+
+\m spela1.1
+\c v
+\g play
+\a spel 
+
+\m te1.1
+\c n
+\g tea
+\a te 
+
+\m sur1.1
+\c adj
+\g sour
+\a sur 
+
+\m grym1.1
+\c adj
+\g cruel
+\a grymm 
+\a grym 
+
+\m stilla_havet1.1
+\c nprop
+\g Pacific Ocean
+\a Stilla_havet 
+
+\m boll1.1
+\c n
+\g ball
+\a boll 
+
+\m mycket1.1
+\c quant
+\g much
+\a mycket 
+
+\m mycket1.2
+\c Deg
+\g very
+\a mycket 
+
+\m område1.1
+\c n
+\g area
+\a område 
+
+\m kidnappa1.1
+\c v
+\g kidnap
+\a kidnapp 
+
+\m glas1.1
+\c n
+\g glass
+\a glas 
+
+\m behöva1.1
+\c v
+\g need
+\a behöv 
+
+\m att1.1
+\c prt
+\g to
+\a att 
+
+\m att1.2
+\c subordconn
+\g that
+\a att 
+
+\m ont1.1
+\c adv
+\g pain
+\a ont 
+
+\m lätt1.1
+\c adj
+\g light
+\a lätt 
+
+\m lätt1.2
+\c adv
+\g easy
+\a lätt 
+
+\m vinter1.1
+\c n
+\g winter
+\a vinter 
+
+\m upp-och-ner1.1
+\c adj
+\g upside-down
+\a upp-och-ner 
+
+\m män1
+\c _variant_
+\g 
+\a männ / _ en 
+\a män ~/ _ en 
+
+\m de1.1
+\c pro
+\g 3PL
+\a de 
+
+\m servitör1.1
+\c n
+\g waiter
+\a servitör 
+
+\m socker1.1
+\c n
+\g sugar
+\a socker 
+
+\m väcka1.1
+\c v
+\g wake
+\a väck 
+
+\m stängt1
+\c _variant_
+\g 
+\a stängt 
+
+\m bokhandeln1.1
+\c n
+\g bookstore
+\a bokhandeln 
+
+\m ned1.1
+\c prep
+\g down
+\a ned 
+
+\m garage1.1
+\c n
+\g garage
+\a garage 
+
+\m öga1.1
+\c n
+\g eye
+\a öga 
+
+\m bebis1.1
+\c n
+\g baby
+\a bebis 
+
+\m apelsin1.1
+\c n
+\g orange
+\a apelsin 
+
+\m måste1.1
+\c v
+\g must
+\a måste 
+
+\m maj1.1
+\c nprop
+\g May
+\a maj 
+
+\m sig1.1
+\c refl
+\g 1PL/3.REFL
+\a sig 
+
+\m helg1.1
+\c n
+\g weekend
+\a helg 
+
+\m sångar1.1
+\c n
+\g singer
+\a sångar 
+
+\m ditt1
+\c _variant_
+\g 
+\a ditt 
+
+\m kilometer1.1
+\c n
+\g kilometer
+\a kilometer 
+
+\m kamel1.1
+\c n
+\g camel
+\a kamel 
+
+\m hungrig1.1
+\c adj
+\g hungry
+\a hungrig 
+
+\m servitris1.1
+\c n
+\g waitress
+\a servitris 
+
+\m lördag1.1
+\c nprop
+\g Saturday
+\a lördag 
+
+\m livsmedelsaffär1.1
+\c n
+\g grocery.store
+\a livsmedelsaffär 
+
+\m kostym1.1
+\c n
+\g suit
+\a kostym 
+
+\m komma1.1
+\c v
+\g come
+\a komm 
+
+\m tandställning1.1
+\c n
+\g braces
+\a tandställning 
+
+\m röva1.1
+\c v
+\g steal
+\a röv 
+
+\m frukt1.1
+\c n
+\g fruit
+\a frukt 
+
+\m boka1.1
+\c v
+\g book
+\a bok 
+
+\m arton1.1
+\c cardnum
+\g eighteen
+\a arton 
+
+\m backe1.1
+\c n
+\g slope
+\a backe 
+
+\m badkar1.1
+\c n
+\g bathtub
+\a badkar 
+
+\m som_tur_är1.1
+\c adv
+\g fortunately
+\a som_tur_är 
+
+\m söder1.1
+\c adj
+\g south
+\a söder 
+
+\m av1.1
+\c prep
+\g of
+\a av 
+
+\m upp1.1
+\c prt
+\g up
+\a upp 
+
+\m lakan1.1
+\c n
+\g sheet
+\a lakan 
+
+\m börja1.1
+\c v
+\g begin
+\a börj 
+
+\m sommar1.1
+\c n
+\g summer
+\a sommar 
+
+\m betala1.1
+\c v
+\g pay
+\a betal 
+
+\m datum1.1
+\c n
+\g date
+\a datum 
+
+\m period1.1
+\c n
+\g period
+\a period 
+
+\m glass1.1
+\c n
+\g ice.cream
+\a glass 
+
+\m regering1.1
+\c n
+\g government
+\a regering 
+
+\m dörr1.1
+\c n
+\g door
+\a dörr 
+
+\m gälla1.1
+\c v
+\g pertain
+\a gäll 
+
+\m snäpp1.1
+\c n
+\g bit
+\a snäpp 
+
+\m sextio1.1
+\c cardnum
+\g sixty
+\a sextio 
+
+\m antagligen1.1
+\c adv
+\g likely
+\a antagligen 
+
+\m diska1.1
+\c v
+\g dish.wash
+\a disk 
+
+\m sämre1.1
+\c adj
+\g worse
+\a sämre 
+
+\m glosögon1.1
+\c n
+\g glasses
+\a glosögon 
+
+\m städa1.1
+\c v
+\g clean.up
+\a städ 
+
+\m film1.1
+\c n
+\g film
+\a film 
+
+\m idag1.1
+\c adv
+\g today
+\a idag 
+
+\m ny1.1
+\c adj
+\g new
+\a ny 
+
+\m vår2.1
+\c n
+\g spring
+\a vår 
+
+\m restaurang1.1
+\c n
+\g restaurant
+\a restaurang 
+
+\m ost1.1
+\c n
+\g cheese
+\a ost 
+
+\m rike1.1
+\c n
+\g kingdom
+\a rike 
+
+\m vill1.1
+\c v
+\g want
+\a vill 
+
+\m långsam1.1
+\c adj
+\g slow
+\a långsamm 
+\a långsam 
+
+\m del1.1
+\c n
+\g part
+\a del 
+
+\m elva1.1
+\c cardnum
+\g eleven
+\a elva 
+
+\m borste1.1
+\c n
+\g brush
+\a borste 
+
+\m bäst1.1
+\c adj
+\g best
+\a bäst 
+
+\m såg1
+\c _variant_
+\g 
+\a såg 
+
+\m ovanför1.1
+\c adj
+\g above
+\a ovanför 
+
+\m välkommen1.1
+\c interj
+\g welcome
+\a välkommen 
+
+\m borsta1.1
+\c v
+\g brush
+\a borst 
+
+\m drömma1.1
+\c v
+\g dream
+\a drömm 
+
+\m länge1.1
+\c adj
+\g long
+\a länge 
+
+\m nitton1.1
+\c cardnum
+\g nineteen
+\a nitton 
+
+\m klocken1.1
+\c n
+\g o'clock
+\a klocken 
+
+\m solglasögon1.1
+\c n
+\g sunglasses
+\a solglasögon 
+
+\m måndag1.1
+\c nprop
+\g Monday
+\a måndag 
+
+\m sand1.1
+\c n
+\g sand
+\a sand 
+
+\m turist1.1
+\c n
+\g tourist
+\a turist 
+
+\m februari1.1
+\c nprop
+\g February
+\a februari 
+
+\m plåster1.1
+\c n
+\g band.aid
+\a plåster 
+
+\m postkontor1.1
+\c n
+\g post.office
+\a postkontor 
+
+\m rädd1.1
+\c adj
+\g afraid
+\a rädd 
+
+\m teater1.1
+\c n
+\g theater
+\a teater 
+
+\m kyckling1.1
+\c n
+\g chicken
+\a kyckling 
+
+\m gul1.1
+\c adj
+\g yellow
+\a gul 
+
+\m det_här1.1
+\c dem
+\g this.N
+\a det_här 
+
+\m chef1.1
+\c n
+\g boss
+\a chef 
+
+\m fylla1.1
+\c v
+\g fill
+\a fyll 
+
+\m undervisa1.1
+\c v
+\g teach
+\a undervis 
+
+\m arm1.1
+\c n
+\g arm
+\a arm 
+
+\m flyga1.1
+\c v
+\g fly
+\a flyg 
+
+\m fot1.1
+\c n
+\g foot
+\a fot 
+
+\m apoteket1.1
+\c n
+\g pharmacy
+\a apoteket 
+
+\m busshållplats1.1
+\c n
+\g bus.stop
+\a busshållplats 
+
+\m hittills1.1
+\c adv
+\g up.to.now
+\a hittills 
+
+\m bli1.1
+\c v
+\g become
+\a bli 
+
+\m favorit1.1
+\c adj
+\g favorite
+\a favorit 
+
+\m åt1
+\c _variant_
+\g 
+\a åt 
+
+\m matrum1.1
+\c n
+\g dining.room
+\a matrumm / _ e 
+\a matrum ~/ _ e 
+
+\m kuvert1.1
+\c n
+\g envelope
+\a kuvert 
+
+\m lång1.1
+\c adj
+\g tall
+\a lång 
+
+\m tennis1.1
+\c n
+\g tennis
+\a tennis 
+
+\m älska1.1
+\c v
+\g love
+\a älsk 
+
+\m problem1.1
+\c n
+\g problem
+\a problem 
+
+\m limefrukt1.1
+\c n
+\g lime
+\a limefrukt 
+
+\m mjuk1.1
+\c adj
+\g soft
+\a mjuk 
+
+\m pund1.1
+\c n
+\g pound
+\a pund 
+
+\m år1.1
+\c n
+\g year
+\a år 
+
+\m katt1.1
+\c n
+\g cat
+\a katt 
+
+\m handla1.1
+\c v
+\g shop
+\a handl 
+
+\m handla1.2
+\c v
+\g trade
+\a handl 
+
+\m sälja1.1
+\c v
+\g sell
+\a sälj 
+
+\m hemma1.1
+\c adv
+\g at.home
+\a hemma 
+
+\m disk1.1
+\c n
+\g dirty.dishes
+\a disk 
+
+\m kniv1.1
+\c n
+\g knife
+\a kniv 
+
+\m två1.1
+\c cardnum
+\g two
+\a två 
+
+\m lämna_tillbaka1.1
+\c v
+\g return
+\a lämna_tillbaka 
+
+\m fågel1.1
+\c n
+\g bird
+\a fågl 
+\a fågel 
+
+\m snöa1.1
+\c v
+\g snow
+\a snö 
+
+\m vanlig1.1
+\c adj
+\g common
+\a vanlig 
+
+\m gymnasieskola1.1
+\c n
+\g high.school
+\a gymnasieskola 
+
+\m ögonblick1.1
+\c n
+\g moment
+\a ögonblick 
+
+\m med1.1
+\c prep
+\g with
+\a med 
+
+\m jaga1.1
+\c v
+\g chase
+\a jag 
+
+\m jaga1.2
+\c v
+\g hunt
+\a jag 
+
+\m blåsigt1.1
+\c adj
+\g windy
+\a blåsigt 
+
+\m närhet1.1
+\c n
+\g neighborhood
+\a närhet 
+
+\m gata1.1
+\c n
+\g street
+\a gat 
+
+\m förlåt1.1
+\c interj
+\g sorry
+\a förlåt 
+
+\m rock1.1
+\c n
+\g coat
+\a rock 
+
+\m befria1.1
+\c v
+\g free
+\a befri 
+
+\m utanför1.1
+\c prep
+\g outside
+\a utanför 
+
+\m mörk1.1
+\c adj
+\g dark
+\a mörk 
+
+\m mejl1.1
+\c n
+\g email
+\a mejl 
+
+\m böck1
+\c _variant_
+\g 
+\a böck 
+
+\m olik1.1
+\c adj
+\g different
+\a olik 
+
+\m vatten1.1
+\c n
+\g water
+\a vattn / _ e 
+\a vatten ~/ _ e 
+
+\m därför1.1
+\c coordconn
+\g therefore
+\a därför 
+
+\m ofta1.1
+\c adv
+\g often
+\a ofta 
+
+\m middag1.1
+\c n
+\g dinner
+\a middag 
+
+\m fabrik1.1
+\c n
+\g factory
+\a fabrik 
+
+\m lyssna1.1
+\c v
+\g listen
+\a lyssn 
+
+\m trädgård1.1
+\c n
+\g garden
+\a trädgård 
+
+\m spindel1.1
+\c n
+\g spider
+\a spindel 
+
+\m val1.1
+\c n
+\g whale
+\a val 
+
+\m bundit1
+\c _variant_
+\g 
+\a bundit 
+
+\m fyrtio1.1
+\c cardnum
+\g forty
+\a fyrtio 
+
+\m segel1.1
+\c n
+\g sail
+\a segel 
+
+\m gå1.1
+\c v
+\g go
+\a gå 
+
+\m gå1.2
+\c v
+\g walk
+\a gå 
+
+\m passa1.1
+\c v
+\g fit
+\a pass 
+
+\m sannerligen1.1
+\c adv
+\g certainly
+\a sannerligen 
+
+\m täcke1.1
+\c n
+\g cover (bed)
+\a täcke 
+
+\m dricka1.1
+\c v
+\g drink
+\a drick 
+
+\m drack1
+\c _variant_
+\g 
+\a drack 
+
+\m judar1.1
+\c nprop
+\g Jew
+\a jud 
+
+\m cykel1.1
+\c n
+\g bicycle
+\a cykl 
+\a cykel 
+
+\m bredvid1.1
+\c prep
+\g beside
+\a bredvid 
+
+\m torsdag1.1
+\c nprop
+\g Thursday
+\a torsdag 
+
+\m hoppa1.1
+\c v
+\g jump
+\a hopp 
+
+\m röd1.1
+\c adj
+\g red
+\a röd 
+
+\m såna1.1
+\c pro
+\g such
+\a såna 
+
+\m leka1.1
+\c v
+\g play
+\a lek 
+
+\m sätta1.1
+\c v
+\g put
+\a sätt 
+
+\m verkligen1.1
+\c adv
+\g really
+\a verkligen 
+
+\m båt1.1
+\c n
+\g boat
+\a båt 
+
+\m plast1.1
+\c n
+\g plastic
+\a plast 
+
+\m dunk1.1
+\c n
+\g can, drum
+\a dunk 
+
+\m bad1.1
+\c n
+\g bath
+\a bad 
+
+\m lova1.1
+\c v
+\g promise
+\a lov 
+
+\m vänta1.1
+\c v
+\g wait
+\a vänt 
+
+\m bod1
+\c _variant_
+\g 
+\a bod 
+
+\m döda1.1
+\c v
+\g kill
+\a död 
+
+\m växa1.1
+\c v
+\g grow
+\a väx 
+
+\m storlek1.1
+\c n
+\g size
+\a storlek 
+
+\m byggnad1.1
+\c n
+\g building
+\a byggnad 
+
+\m kafé1.1
+\c n
+\g café
+\a kafé 
+
+\m strejk1.1
+\c n
+\g strike
+\a strejk 
+
+\m färgglad1.1
+\c adj
+\g brightly-colored
+\a färgglad 
+
+\m eller1.1
+\c coordconn
+\g or
+\a eller 
+
+\m hitta1.1
+\c v
+\g find
+\a hitt 
+
+\m pingvin1.1
+\c n
+\g penguin
+\a pingvin 
+
+\m vecka1.1
+\c n
+\g week
+\a veck 
+
+\m kamera1.1
+\c n
+\g camera
+\a kamera 
+
+\m ställe1.1
+\c n
+\g place
+\a ställe 
+
+\m bageri1.1
+\c n
+\g bakery
+\a bageri 
+
+\m vakna1.1
+\c v
+\g be.awake
+\a vakn 
+
+\m nära1.1
+\c prep
+\g near
+\a nära 
+
+\m lag2.1
+\c v
+\g cook
+\a lag 
+
+\m dotter1.1
+\c n
+\g daughter
+\a döttr 
+\a dotter 
+
+\m matta1.1
+\c n
+\g carpet
+\a matt 
+
+\m vilk1.1
+\c interrog
+\g which
+\a vilk 
+\a vilk 
+
+\m ord1.1
+\c n
+\g word
+\a ord 
+
+\m bok1.1
+\c n
+\g book
+\a bok 
+
+\m stå1.1
+\c v
+\g stand
+\a stå 
+
+\m skylt1.1
+\c n
+\g sign
+\a skylt 
+
+\m undra1.1
+\c v
+\g wonder v.
+\a undr 
+
+\m tack1.1
+\c interj
+\g thank.you
+\a tack 
+
+\m få1.1
+\c v
+\g may
+\a få 
+
+\m jordgubbe1.1
+\c n
+\g strawberry
+\a jordgubb 
+
+\m äpple1.1
+\c n
+\g apple
+\a äppel / _ träd 
+\a äpple ~/ _ träd 
+
+\m papper1.1
+\c n
+\g paper
+\a papper 
+
+\m försöka1.1
+\c v
+\g try
+\a försök 
+
+\m tjugo1.1
+\c cardnum
+\g twenty
+\a tjugo 
+
+\m för2.1
+\c v
+\g lead
+\a för 
+
+\m premiärminister1.1
+\c n
+\g prime.minister
+\a premiärminister 
+
+\m smutsig1.1
+\c adj
+\g dirty
+\a smutsig 
+
+\m hatt1.1
+\c n
+\g hat
+\a hatt 
+
+\m fortsätt1.1
+\c v
+\g continue
+\a fortsätt 
+
+\m skål1.1
+\c n
+\g bowl
+\a skål 
+
+\m servett1.1
+\c n
+\g napkin
+\a servett 
+
+\m vi1.1
+\c pro
+\g 1PL
+\a vi 
+
+\m gård1.1
+\c n
+\g yard
+\a gård 
+
+\m hund1.1
+\c n
+\g dog
+\a hund 
+
+\m nedför1.1
+\c prep
+\g down
+\a nedför 
+
+\m elev1.1
+\c n
+\g student
+\a elev 
+
+\m mil1.1
+\c n
+\g 10km
+\a mil 
+
+\m finns1.1
+\c v
+\g finds
+\a finns 
+
+\m staket1.1
+\c n
+\g fence
+\a staket 
+
+\m då1.1
+\c adv
+\g at.that.time
+\a då 
+
+\m januari1.1
+\c nprop
+\g January
+\a januari 
+
+\m kväll1.1
+\c n
+\g evening
+\a kväll 
+
+\m shorts1.1
+\c n
+\g shorts
+\a shorts 
+
+\m råd1.1
+\c n
+\g advice
+\a råd 
+
+\m råd1.2
+\c n
+\g council
+\a råd 
+
+\m ett1.1
+\c indf
+\g a.N
+\a ett 
+
+\m ett1.2
+\c cardnum
+\g one
+\a ett 
+
+\m ledsen1.1
+\c adj
+\g sad
+\a ledsen 
+
+\m filma1.1
+\c v
+\g film
+\a film 
+
+\m gitarr1.1
+\c n
+\g guitar
+\a gitarr 
+
+\m eftersom1.1
+\c coordconn
+\g since
+\a eftersom 
+
+\m sände1
+\c _variant_
+\g 
+\a sände 
+
+\m vann1
+\c _variant_
+\g 
+\a vann 
+
+\m kläder1.1
+\c n
+\g clothes
+\a kläder 
+
+\m person1.1
+\c n
+\g person
+\a person 
+
+\m ren1.1
+\c adj
+\g clean
+\a ren 
+
+\m några1.1
+\c quant
+\g any/some.PL
+\a några 
+
+\m några1.2
+\c n
+\g something.PL
+\a några 
+
+\m fest1.1
+\c n
+\g party
+\a fest 
+
+\m barn1.1
+\c n
+\g child
+\a barn 
+
+\m mynt1.1
+\c n
+\g coin
+\a mynt 
+
+\m jul1.1
+\c nprop
+\g Christmas
+\a jul 
+
+\m klara1.1
+\c v
+\g clear
+\a klar 
+
+\m försenat1.1
+\c adj
+\g late
+\a försenat 
+
+\m ringa1.1
+\c v
+\g call
+\a ring 
+
+\m april1.1
+\c nprop
+\g April
+\a april 
+
+\m framför1.1
+\c prep
+\g in.front.of
+\a framför 
+
+\m kvart1.1
+\c quant
+\g quarter
+\a kvart 
+
+\m president1.1
+\c n
+\g president
+\a president 
+
+\m gud1.1
+\c nprop
+\g God
+\a Gud 
+
+\m svår1.1
+\c adv
+\g difficult
+\a svår 
+
+\m ta_reda_på1.1
+\c v
+\g to.find.out
+\a ta_reda_på 
+
+\m bibliotek1.1
+\c n
+\g library
+\a bibliotek 
+
+\m gång1.1
+\c n
+\g occasion
+\a gång 
+
+\m all1.1
+\c quant
+\g all
+\a all 
+
+\m all1.2
+\c pro
+\g all
+\a all 
+
+\m troligen1.1
+\c adv
+\g likely
+\a troligen 
+
+\m ris1.1
+\c n
+\g rice
+\a ris 
+
+\m tvål1.1
+\c n
+\g soap
+\a tvål 
+
+\m djur1.1
+\c n
+\g animal
+\a djur 
+
+\m berömt1
+\c _variant_
+\g 
+\a berömt 
+
+\m gjorde1
+\c _variant_
+\g 
+\a gjorde 
+
+\m naturkunskap1.1
+\c n
+\g science
+\a naturkunskap 
+
+\m aldrig1.1
+\c deg
+\g never
+\a aldrig 
+
+\m t-tröja1.1
+\c n
+\g t-shirt
+\a T-tröja 
+
+\m tycka1.1
+\c v
+\g love
+\a tyck 
+
+\m tycka1.2
+\c v
+\g think
+\a tyck 
+
+\m soligt1.1
+\c adj
+\g sunny
+\a soligt 
+
+\m går_av1.1
+\c v
+\g get.off
+\a går_av 
+
+\m färg1.1
+\c adj
+\g color
+\a färg 
+
+\m bensinstation1.1
+\c n
+\g gas.station
+\a bensinstation 
+
+\m e-postadress1.1
+\c n
+\g email.address
+\a e-postadress 
+
+\m adress1.1
+\c n
+\g address
+\a adress 
+
+\m bo1.1
+\c v
+\g live
+\a bo 
+
+\m tre1.1
+\c cardnum
+\g three
+\a tre 
+
+\m siffra1.1
+\c n
+\g digit
+\a siffra 
+
+\m hand1.1
+\c n
+\g hand
+\a händ 
+\a hand 
+
+\m *låna1.1
+\c v
+\g borrow
+\a lån 
+
+\m häst1.1
+\c n
+\g horse
+\a häst 
+
+\m ende1.1
+\c adj
+\g only
+\a ende 
+
+\m penna1.1
+\c n
+\g pen
+\a penn 
+
+\m tillsammans1.1
+\c adv
+\g together
+\a tillsammans 
+
+\m klänning1.1
+\c n
+\g dress
+\a klänning 
+
+\m kappa1.1
+\c n
+\g coat
+\a kapp 
+
+\m ska1.1
+\c v
+\g must
+\a ska 
+
+\m ska1.2
+\c v
+\g will
+\a ska 
+
+\m ocean1.1
+\c nprop
+\g ocean
+\a ocean 
+
+\m snart1.1
+\c adv
+\g soon
+\a snart 
+
+\m ni1.1
+\c pro
+\g 2PL
+\a ni 
+
+\m kraftig1.1
+\c adj
+\g powerful
+\a kraftig 
+
+\m godis1.1
+\c n
+\g candy
+\a godis 
+
+\m den_där1.1
+\c dem
+\g that.C
+\a den_där 
+
+\m sitta1.1
+\c v
+\g sit
+\a sitt 
+
+\m sitta1.2
+\c v
+\g act
+\a sitt 
+
+\m väder1.1
+\c n
+\g weather
+\a vädre 
+\a väder 
+
+\m allvarligt1.1
+\c adv
+\g seriously
+\a allvarligt 
+
+\m väska1.1
+\c n
+\g suitcase
+\a väsk 
+
+\m vinna1.1
+\c v
+\g win
+\a vinn 
+
+\m det_gör_inget1.1
+\c idm
+\g it doesn't matter
+\a det_gör_inget 
+
+\m nio1.1
+\c cardnum
+\g nine
+\a nio 
+
+\m reda1.1
+\c v
+\g sort.out
+\a red 
+
+\m val2.1
+\c n
+\g election
+\a val 
+
+\m kina1.1
+\c nprop
+\g China
+\a Kina 
+
+\m och1.1
+\c coordconn
+\g and
+\a och 
+
+\m handduk1.1
+\c n
+\g towel
+\a handduk 
+
+\m öva1.1
+\c v
+\g practice
+\a öv 
+
+\m oktober1.1
+\c nprop
+\g October
+\a oktober 
+
+\m varsågod1.1
+\c interj
+\g your.welcome
+\a varsågod 
+
+\m skrämmande1.1
+\c adj
+\g terrifying
+\a skrämmande 
+
+\m tillbaka1.1
+\c prep
+\g back
+\a tillbaka 
+
+\m paraply1.1
+\c n
+\g umbrella
+\a paraply 
+
+\m sända1.1
+\c v
+\g send
+\a sänd 
+
+\m spanien1.1
+\c nprop
+\g Spain
+\a Spanien 
+
+\m vad1.1
+\c interrog
+\g what
+\a vad 
+
+\m islamisk1.1
+\c adj
+\g Islamic
+\a Islamisk 
+
+\m sämst1.1
+\c adj
+\g worst
+\a sämst 
+
+\m bara_på_att1.1
+\c prep
+\g for
+\a bara_på_att 
+
+\m likna1.1
+\c v
+\g resemble
+\a likn 
+
+\m flygplats1.1
+\c n
+\g airport
+\a flygplats 
+
+\m eld1.1
+\c n
+\g fire
+\a eld 
+
+\m himmel1.1
+\c n
+\g sky
+\a himl 
+\a himmel 
+
+\m tyskland1.1
+\c nprop
+\g Germany
+\a Tyskland 
+
+\m diskmaskin1.1
+\c n
+\g dish.washer
+\a diskmaskin 
+
+\m temperatur1.1
+\c n
+\g temperature
+\a temperatur 
+
+\m ger1.1
+\c v
+\g give
+\a ge 
+
+\m skolbänk1.1
+\c n
+\g school.desk
+\a skolbänk 
+
+\m sopa1.1
+\c v
+\g sweep
+\a sop 
+
+\m elefant1.1
+\c n
+\g elephant
+\a elefant 
+
+\m åka1.1
+\c v
+\g ride
+\a åker 
+\a åk 
+
+\m dess1.1
+\c pro-adj
+\g 3SG.N.POSS
+\a dess 
+
+\m student1.1
+\c n
+\g student (univ.)
+\a student 
+
+\m blont1.1
+\c adj
+\g blond
+\a blont 
+
+\m fråga1.1
+\c v
+\g ask
+\a fråg 
+
+\m plan1.1
+\c n
+\g plan
+\a plan 
+
+\m augusti1.1
+\c nprop
+\g August
+\a augusti 
+
+\m hav1.1
+\c n
+\g ocean
+\a hav 
+
+\m gav1
+\c _variant_
+\g 
+\a gav 
+
+\m ämne1.1
+\c n
+\g material
+\a ämne 
+
+\m törstig1.1
+\c adj
+\g thirsty
+\a törstig 
+
+\m mest1.1
+\c adv
+\g most
+\a mest 
+
+\m polis1.1
+\c n
+\g police
+\a polis 
+
+\m ficklampa1.1
+\c n
+\g flashlight
+\a ficklampa 
+
+\m kan1.1
+\c v
+\g can
+\a kan 
+
+\m betyda1.1
+\c v
+\g mean
+\a betyd 
+
+\m fatt1.1
+\c v
+\g grasp
+\a fatt 
+
+\m fatt1.2
+\c v
+\g understand
+\a fatt 
+
+\m mars1.1
+\c nprop
+\g March
+\a mars 
+
+\m heta1.1
+\c v
+\g be.called
+\a het 
+
+\m leta1.1
+\c v
+\g look
+\a let 
+
+\m tvinga1.1
+\c v
+\g force
+\a tving 
+
+\m blöt1.1
+\c adj
+\g wet
+\a blöt 
+
+\m vems1.1
+\c interrog
+\g whose
+\a vems 
+
+\m gunga1.1
+\c n
+\g swing
+\a gunga 
+
+\m liv1.1
+\c n
+\g life
+\a liv 
+
+\m på1.1
+\c prep
+\g on
+\a på 
+
+\m frimärke1.1
+\c n
+\g postage.stamp
+\a frimärke 
+
+\m din1.1
+\c pro-adj
+\g 2SG.POSS
+\a din 
+
+\m pass1.1
+\c n
+\g passport
+\a pass 
+
+\m helst1.1
+\c adv
+\g any
+\a helst 
+
+\m henne1.1
+\c pro
+\g 3SG.F.OBJ
+\a henne 
+
+\m flytta1.1
+\c v
+\g move
+\a flytta 
+
+\m ibland1.1
+\c adv
+\g sometimes
+\a ibland 
+
+\m igen1.1
+\c adv
+\g again
+\a igen 
+
+\m sopor1.1
+\c n
+\g trash
+\a sopor 
+
+\m tro2.1
+\c v
+\g believe
+\a tro 
+
+\m kontant1.1
+\c n
+\g cash
+\a kontant 
+
+\m innan1.1
+\c prep
+\g before
+\a innan 
+
+\m upptagen1.1
+\c adj
+\g busy
+\a upptagn 
+\a upptagen 
+
+\m föddes1.1
+\c v
+\g be.born
+\a föddes 
+
+\m eftermiddag1.1
+\c n
+\g afternoon
+\a eftermiddag 
+
+\m grönsaker1.1
+\c n
+\g vegetables
+\a grönsaker 
+
+\m kall1.1
+\c adj
+\g cool
+\a kall 
+
+\m teaterföreställning1.1
+\c n
+\g play
+\a teaterföreställning 
+
+\m and1.1
+\c n
+\g duck
+\a änd 
+\a and 
+
+\m familj1.1
+\c n
+\g family
+\a familj 
+
+\m potatis1.1
+\c n
+\g potato
+\a potatis 
+
+\m må1.1
+\c v
+\g feel
+\a mår 
+\a må 
+
+\m varg1.1
+\c n
+\g wolf
+\a varg 
+
+\m simbassäng1.1
+\c n
+\g swimming.pool
+\a simbassäng 
+
+\m precis_som1.1
+\c adv
+\g just.like
+\a precis_som 
+
+\m cykla1.1
+\c v
+\g cycle
+\a cykl 
+
+\m musiker1.1
+\c n
+\g musician
+\a musiker 
+
+\m brasilien1.1
+\c nprop
+\g Brasil
+\a Brasilien 
+
+\m satt1
+\c _variant_
+\g 
+\a satt 
+
+\m vilja1
+\c _variant_
+\g 
+\a vilja 
+
+\m sjuttio1.1
+\c cardnum
+\g seventy
+\a sjuttio 
+
+\m igår1.1
+\c adv
+\g yesterday
+\a igår 
+
+\m frukost1.1
+\c n
+\g breakfast
+\a frukost 
+
+\m stilla1.1
+\c adv
+\g still
+\a stilla 
+
+\m tusen1.1
+\c num
+\g thousand
+\a tusen 
+
+\m toalett1.1
+\c n
+\g toilet
+\a toalett 
+
+\m kopp1.1
+\c n
+\g cup
+\a kopp 
+
+\m som1.1
+\c prep
+\g as
+\a som 
+
+\m som1.2
+\c rel
+\g that
+\a som 
+
+\m om1.1
+\c prep
+\g about
+\a om 
+
+\m överfallen1.1
+\c adj
+\g assaulted
+\a överfallen 
+
+\m fiol1.1
+\c n
+\g violin
+\a fiol 
+
+\m blev1
+\c _variant_
+\g 
+\a blev 
+
+\m lade1
+\c _variant_
+\g 
+\a lade 
+
+\m tredje1.1
+\c ordnum
+\g third
+\a tredje 
+
+\m hundra1.1
+\c num
+\g hundred
+\a hundra 
+
+\m *pojke1.1
+\c n
+\g boy
+\a pojk 
+
+\m nuförtiden1.1
+\c adv
+\g nowadays
+\a nuförtiden 
+
+\m häna1.1
+\c v
+\g happen
+\a hän 
+
+\m rest1.1
+\c adj
+\g rest
+\a rest 
+
+\m soffa1.1
+\c n
+\g sofa
+\a soffa 
+
+\m protest1.1
+\c n
+\g protest
+\a protest 
+
+\m dem1.1
+\c n
+\g 3PL.OBJ
+\a dem 
+
+\m mamma1.1
+\c n
+\g mother
+\a mamm 
+
+\m nittio1.1
+\c cardnum
+\g ninety
+\a nittio 
+
+\m talar_någon_engelska_här1.1
+\c phr
+\g Does anyone here speak English
+\a Talar_någon_engelska_här 
+
+\m europa1.1
+\c nprop
+\g Europe
+\a Europa 
+
+\m packa1.1
+\c v
+\g pack
+\a pack 
+
+\m park1.1
+\c n
+\g park
+\a park 
+
+\m nyckel1.1
+\c n
+\g key
+\a nyckl 
+\a nyckel 
+
+\m karta1.1
+\c n
+\g map
+\a karta 
+
+\m en1.1
+\c indf
+\g a.C
+\a en 
+
+\m en1.2
+\c cardnum
+\g one
+\a en 
+
+\m ute1.1
+\c adv
+\g out
+\a ute 
+
+\m gäst1.1
+\c n
+\g guest
+\a gäst 
+
+\m tyvärr1.1
+\c adv
+\g unfortunately
+\a tyvärr 
+
+\m forntid1.1
+\c adj
+\g ancient
+\a forntid 
+
+\m spis1.1
+\c n
+\g stove
+\a spis 
+
+\m efter1.1
+\c prep
+\g after
+\a efter 
+
+\m min1.1
+\c pro-adj
+\g 1SG.POSS
+\a min 
+
+\m golv1.1
+\c n
+\g floor
+\a golv 
+
+\m skrivbord1.1
+\c n
+\g desk
+\a skrivbord 
+
+\m jag1.1
+\c pro
+\g 1SG
+\a jag 
+
+\m mage1.1
+\c n
+\g stomach
+\a mag 
+
+\m ren2.1
+\c n
+\g reindeer
+\a ren 
+
+\m gråta1.1
+\c v
+\g cry
+\a gråt 
+
+\m sekund1.1
+\c n
+\g second
+\a sekund 
+
+\m blomma1.1
+\c n
+\g flower
+\a blomm 
+
+\m juni1.1
+\c nprop
+\g June
+\a juni 
+
+\m lukta1.1
+\c v
+\g smell
+\a lukt 
+
+\m pengar1.1
+\c n
+\g money
+\a pengar 
+
+\m by1.1
+\c n
+\g village
+\a by 
+
+\m om2.1
+\c subordconn
+\g if
+\a om 
+
+\m genom1.1
+\c prep
+\g through
+\a genom 
+
+\m bensin1.1
+\c n
+\g gasoline
+\a bensin 
+
+\m medan1.1
+\c coordconn
+\g while
+\a medan 
+
+\m synagoga1.1
+\c n
+\g synagogue
+\a synagoga 
+
+\m tisdag1.1
+\c nprop
+\g Tuesday
+\a tisdag 
+
+\m är1.1
+\c v
+\g be
+\a ä 
+
+\m deras1.1
+\c pro-adj
+\g 3SG.POSS
+\a deras 
+
+\m kyrka1.1
+\c n
+\g church
+\a kyrka 
+
+\m lila1.1
+\c adj
+\g purple
+\a lila 
+
+\m stod1
+\c _variant_
+\g 
+\a stod 
+
+\m brun1.1
+\c adj
+\g brown
+\a brun 
+
+\m blivit1
+\c _variant_
+\g 
+\a blivit 
+
+\m sjö1.1
+\c n
+\g lake
+\a sjö 
+
+\m ligga1.1
+\c v
+\g be.located
+\a ligg 
+
+\m den_här1.1
+\c dem
+\g this.C
+\a den_här 
+
+\m mjölk1.1
+\c n
+\g milk
+\a mjölk 
+
+\m anlända1.1
+\c v
+\g arrive
+\a anländ 
+
+\m ryggsäck1.1
+\c n
+\g backpack
+\a ryggsäck 
+
+\m ändå1.1
+\c adv
+\g anyway
+\a ändå 
+
+\m flyg1.1
+\c n
+\g flight
+\a flyg 
+
+\m snabb1.1
+\c adj
+\g fast
+\a snabb 
+
+\m kryddstark1.1
+\c adj
+\g hot (spicy)
+\a kryddstark 
+
+\m sin1.1
+\c pro-adj
+\g 3.REFL.POSS
+\a sin 
+
+\m överfalla1.1
+\c v
+\g assault
+\a överfalla 
+
+\m teve1.1
+\c n
+\g TV
+\a teve 
+
+\m lunch1.1
+\c n
+\g lunch
+\a lunch 
+
+\m regel1.1
+\c n
+\g rule
+\a regel 
+
+\m billig1.1
+\c adj
+\g cheap
+\a billig 
+
+\m kulle1.1
+\c n
+\g hill
+\a kull 
+
+\m lärare1.1
+\c n
+\g teacher
+\a lärare 
+
+\m sak1.1
+\c n
+\g thing
+\a sak 
+
+\m valfri1.1
+\c adj
+\g optional
+\a valfri 
+
+\m något1.1
+\c quant
+\g any/some.N
+\a något 
+
+\m något1.2
+\c n
+\g something
+\a något 
+
+\m världsdel1.1
+\c n
+\g continent
+\a världsdel 
+
+\m sort1.1
+\c n
+\g kind
+\a sort 
+
+\m morot1.1
+\c n
+\g carrot
+\a morött 
+\a morot 
+
+\m expert1.1
+\c n
+\g expert
+\a expert 
+
+\m förra1.1
+\c adj
+\g previous
+\a förra 
+
+\m fem1.1
+\c cardnum
+\g five
+\a fem 
+
+\m badrum1.1
+\c n
+\g bathroom
+\a badrumm / _ e 
+\a badrum ~/ _ e 
+
+\m avtal1.1
+\c n
+\g agreement
+\a avtal 
+
+\m tecken1.1
+\c n
+\g sign
+\a tecken 
+
+\m trasig1.1
+\c adj
+\g broken
+\a trasig 
+
+\m sedan1.1
+\c coordconn
+\g then
+\a sedan 
+
+\m sedan1.2
+\c prep
+\g since
+\a sedan 
+
+\m sedan1.3
+\c adj
+\g ago
+\a sedan 
+
+\m beklaga1.1
+\c v
+\g regret
+\a beklag 
+
+\m århundrade1.1
+\c n
+\g century
+\a århundrade 
+
+\m företag1.1
+\c n
+\g company
+\a företag 
+
+\m ha1.1
+\c v
+\g have
+\a h 
+\a har 
+
+\m ha1.2
+\c aux
+\g have.AUX
+\a h 
+\a har 
+
+\m sol1.1
+\c n
+\g sun
+\a sol 
+
+\m parti1.1
+\c n
+\g party
+\a parti 
+
+\m äld1.1
+\c adj
+\g old
+\a äld 
+
+\m avgå1.1
+\c v
+\g depart
+\a avgår 
+\a avgå 
+
+\m flygplan1.1
+\c n
+\g airplane
+\a flygplan 
+
+\m bank1.1
+\c n
+\g bank
+\a bank 
+
+\m någon1.1
+\c quant
+\g any/some.C
+\a någon 
+
+\m någon1.2
+\c n
+\g someone
+\a någon 
+
+\m packa_upp1.1
+\c v
+\g unpack
+\a packa_upp 
+
+\m fisk1.1
+\c n
+\g fish
+\a fisk 
+
+\m dig1.1
+\c pro
+\g 2SG.OBJ
+\a dig 
+
+\m dig1.2
+\c pro
+\g 2SG.REFL
+\a dig 
+
+\m nu1.1
+\c adv
+\g now
+\a nu 
+
+\m syskon1.1
+\c n
+\g sibling
+\a syskon 
+
+\m guldsmedsaffär1.1
+\c n
+\g goldsmith
+\a guldsmedsaffär 
+
+\m månad1.1
+\c n
+\g month
+\a månad 
+
+\m nej1.1
+\c interj
+\g no
+\a nej 
+
+\m fläskkött1.1
+\c n
+\g pork
+\a fläskkött 
+
+\m ljus1.1
+\c adj
+\g light
+\a ljus 
+
+\m kök1.1
+\c n
+\g kitchen
+\a kök 
+
+\m natt1.1
+\c n
+\g night
+\a natt 
+
+\m leksak1.1
+\c n
+\g toy
+\a leksak 
+
+\m tand1.1
+\c n
+\g tooth
+\a tänd 
+\a tand 
+
+\m staty1.1
+\c n
+\g statue
+\a staty 
+
+\m berömd1.1
+\c adj
+\g famous
+\a berömd 
+
+\m tunnelbana1.1
+\c n
+\g subway
+\a tunnelbana 
+
+\m hämta1.1
+\c v
+\g bring
+\a hämt 
+
+\m tempel1.1
+\c n
+\g temple
+\a tempel 
+
+\m god1.1
+\c adj
+\g good
+\a god 
+
+\m taxi1.1
+\c n
+\g taxi
+\a taxi 
+
+\m sprang1
+\c _variant_
+\g 
+\a sprang 
+
+\m skåp1.1
+\c n
+\g closet
+\a skåp 
+
+\m knä1.1
+\c n
+\g knee
+\a knä 
+
+\m instrument1.1
+\c n
+\g instrument
+\a instrument 
+
+\m möjligt1.1
+\c adj
+\g possible
+\a möjligt 
+
+\m tvätta1.1
+\c v
+\g wash
+\a tvätt 
+
+\m kontor1.1
+\c n
+\g office
+\a kontor 
+
+\m förstå1.1
+\c v
+\g understand
+\a förstå 
+
+\m frankrike1.1
+\c nprop
+\g France
+\a Frankrike 
+
+\m vår1.1
+\c pro-adj
+\g 1PL.POSS
+\a vår 
+
+\m fjorton1.1
+\c cardnum
+\g fourteen
+\a fjorton 
+
+\m gaffel1.1
+\c n
+\g fork
+\a gaffel 
+
+\m kom1
+\c _variant_
+\g 
+\a kom 
+
+\m förr1.1
+\c adv
+\g previously
+\a förr 
+
+\m borde1.1
+\c v
+\g should
+\a borde 
+
+\m erfarenhet1.1
+\c n
+\g experience
+\a erfarenhet 
+
+\m tänka1.1
+\c v
+\g think
+\a tänk 
+
+\m tänka1.2
+\c v
+\g intend
+\a tänk 
+
+\m kompis1.1
+\c n
+\g buddy
+\a kompis 
+
+\m målning1.1
+\c n
+\g painting
+\a målning 
+
+\m förmiddag1.1
+\c n
+\g mid.morning
+\a förmiddag 
+
+\m bälte1.1
+\c n
+\g belt
+\a bälte 
+
+\m nötkött1.1
+\c n
+\g beef
+\a nötkött 
+
+\m storm1.1
+\c n
+\g storm
+\a storm 
+
+\m trumma1.1
+\c n
+\g drum
+\a trumm 
+
+\m järnaffär1.1
+\c n
+\g hardware.store
+\a järnaffär 
+
+\m tog1
+\c _variant_
+\g 
+\a tog 
+
+\m fler1.1
+\c quant
+\g more
+\a fler 
+
+\m pussa1.1
+\c v
+\g kiss
+\a puss 
+
+\m museum1.1
+\c n
+\g museum
+\a museum 
+
+\m se1.1
+\c v
+\g see
+\a se 
+
+\m väldigt1.1
+\c adv
+\g especially
+\a väldigt 
+
+\m aktivitet1.1
+\c n
+\g activity
+\a aktivitet 
+
+\m växt1.1
+\c n
+\g plant
+\a växt 
+
+\m kylskåp1.1
+\c n
+\g refrigerator
+\a kylskåp 
+
+\m än1.1
+\c prep
+\g as
+\a än 
+
+\m uppför2.1
+\c v
+\g behave
+\a uppför 
+
+\m skriva1.1
+\c v
+\g write
+\a skriv 
+
+\m euro1.1
+\c n
+\g euro
+\a euro 
+
+\m son1.1
+\c n
+\g son
+\a sön / _ e 
+\a son ~/ _ e 
+
+\m telefonnummer1.1
+\c n
+\g telelphone.number
+\a telefonnummer 
+
+\m myndighet1.1
+\c n
+\g majority
+\a myndighet 
+
+\m hur1.1
+\c interrog
+\g how
+\a hur 
+
+\m utmärkt1.1
+\c adv
+\g perfectly
+\a utmärkt 
+
+\m det1.1
+\c dem
+\g this.N
+\a det 
+
+\m det1.2
+\c pro
+\g 3SG.N
+\a det 
+
+\m kjol1.1
+\c n
+\g skirt
+\a kjol 
+
+\m grupp1.1
+\c n
+\g group
+\a grupp 
+
+\m explosion1.1
+\c n
+\g explosion
+\a explosion 
+
+\m tusan1.1
+\c prt
+\g heck
+\a tusan 
+
+\m australien1.1
+\c nprop
+\g Australia
+\a Australien 
+
+\m bil1.1
+\c n
+\g car
+\a bil 
+
+\m ledig1.1
+\c adj
+\g available
+\a ledig 
+
+\m jeans1.1
+\c n
+\g jeans
+\a jeans 
+
+\m löv1.1
+\c n
+\g leaf
+\a löv 
+
+\m ta1.1
+\c v
+\g take
+\a t 
+
+\m få2.1
+\c v
+\g get
+\a få 
+
+\m noll1.1
+\c cardnum
+\g zero
+\a noll 
+
+\m förlora1.1
+\c v
+\g lose
+\a förlor 
+
+\m vidare1.1
+\c adv
+\g further
+\a vidare 
+
+\m tro1.1
+\c n
+\g belief
+\a tro 
+
+\m bland1.1
+\c prep
+\g among
+\a bland 
+
+\m fredag1.1
+\c nprop
+\g Friday
+\a fredag 
+
+\m mitt1
+\c _variant_
+\g 
+\a mitt 
+
+\m anteckningsblock1.1
+\c n
+\g notebook
+\a anteckningsblock 
+
+\m krabba1.1
+\c n
+\g crab
+\a krabb 
+
+\m lägga1.1
+\c v
+\g lay
+\a lägg 
+
+\m fall1.1
+\c n
+\g case
+\a fall 
+
+\m lager1.1
+\c n
+\g storehouse
+\a lagre 
+\a lager 
+
+\m lag1.1
+\c n
+\g team
+\a lag 
+
+\m träd1.1
+\c n
+\g tree
+\a träd 
+
+\m också1.1
+\c adv
+\g also
+\a också 
+
+\m stol1.1
+\c n
+\g chair
+\a stol 
+
+\m hans2
+\c _variant_
+\g 
+\a hans 
+
+\m åksjuk1.1
+\c n
+\g car.sick
+\a åksjuk 
+
+\m hel1.1
+\c adj
+\g whole
+\a hela 
+\a hel 
+
+\m dammsuga1.1
+\c v
+\g vacuum
+\a dammsug 
+
+\m klocka1.1
+\c n
+\g clock
+\a klock 
+
+\m klocka1.2
+\c n
+\g time
+\a klock 
+
+\m använd1.1
+\c v
+\g use
+\a använd 
+
+\m vit1.1
+\c adj
+\g white
+\a vit 
+
+\m smörgås1.1
+\c n
+\g sandwich
+\a smörgås 
+
+\m hålla1.1
+\c v
+\g hold
+\a håll 
+
+\m böna1.1
+\c n
+\g bean
+\a bön 
+
+\m kreditkort1.1
+\c n
+\g credit.card
+\a kreditkort 
+
+\m dyr1.1
+\c adj
+\g expensive
+\a dyr 
+
+\m bild1.1
+\c n
+\g picture
+\a bild 
+
+\m den1.1
+\c dem
+\g this.C
+\a den 
+
+\m den1.2
+\c pro
+\g 3SG.C
+\a den 
+
+\m sådan1.1
+\c pro-adj
+\g such
+\a sådan 
+
+\m farfar1.1
+\c n
+\g pat.grandfather
+\a farfar 
+
+\m åt2.1
+\c prep
+\g to
+\a åt 
+
+\m fånga1.1
+\c v
+\g catch
+\a fång 
+
+\m mer1.1
+\c quant
+\g more
+\a mer 
+
+\m dygn1.1
+\c n
+\g day.and.night
+\a dygn 
+
+\m krig2.1
+\c v
+\g make.war
+\a krig 
+
+\m ännu1.1
+\c adv
+\g still
+\a ännu 
+
+\m sitt1
+\c _variant_
+\g 
+\a sitt 
+
+\m drabba1.1
+\c v
+\g hit
+\a drabb 
+
+\m vän1.1
+\c n
+\g friend
+\a vänn / _ e 
+\a vän ~/ _ e 
+
+\m döma,_dömer1.1
+\c v
+\g judge
+\a döm 
+
+\m stad1.1
+\c n
+\g city
+\a stad 
+
+\m kvinna1.1
+\c n
+\g woman
+\a kvinn 
+
+\m hög1.1
+\c adj
+\g high
+\a hög 
+
+\m årtionde1.1
+\c n
+\g decade
+\a årtionde 
+
+\m farlig1.1
+\c adj
+\g dangerous
+\a farlig 
+
+\m ingen1.1
+\c pro
+\g no.one
+\a ingen 
+
+\m duscha1.1
+\c v
+\g shower
+\a dusch 
+
+\m du1.1
+\c pro
+\g 2SG
+\a du 
+
+\m väster1.1
+\c adj
+\g west
+\a väster 
+
+\m tillstånd1.1
+\c n
+\g state
+\a tillstånd 
+
+\m sorg1.1
+\c n
+\g sorrow
+\a sorg 
+
+\m enklare1.1
+\c adj
+\g easier
+\a enklare 
+
+\m ifrån1.1
+\c prep
+\g from
+\a ifrån 
+
+\m folk1.1
+\c n
+\g people
+\a folk 
+
+\m klart1.1
+\c adv
+\g already
+\a klart 
+
+\m arbeta1.1
+\c v
+\g work
+\a arbet 
+
+\m skida1.1
+\c n
+\g ski
+\a skid 
+
+\m sandal1.1
+\c n
+\g sandal
+\a sandal 
+
+\m varandra1.1
+\c pro
+\g each.other
+\a varandra 
+
+\m mormor1.1
+\c n
+\g mat.grandmother
+\a mormor 
+
+\m atlanten1.1
+\c nprop
+\g the Atlantic Ocean
+\a Atlanten 
+
+\m ställa1.1
+\c v
+\g place
+\a ställ 
+
+\m ung1.1
+\c adj
+\g young
+\a yng 
+\a ung 
+
+\m hennes2
+\c _variant_
+\g 
+\a hennes 
+
+\m fotboll1.1
+\c n
+\g soccer
+\a fotboll 
+
+\m köpa1.1
+\c v
+\g buy
+\a köp 
+
+\m armbåge1.1
+\c n
+\g elbow
+\a armbåg 
+
+\m centrum1.1
+\c n
+\g city.center
+\a centrum 
+
+\m torr1.1
+\c adj
+\g dry
+\a torr 
+
+\m fontän1.1
+\c n
+\g fountain
+\a fontän 
+
+\m tå1.1
+\c n
+\g toe
+\a tå 
+
+\m stör1
+\c _variant_
+\g 
+\a stör 
+
+\m smör1.1
+\c n
+\g butter
+\a smör 
+
+\m utomhus1.1
+\c adv
+\g outside
+\a utomhus 
+
+\m både1.1
+\c adj
+\g both
+\a både 
+
+\m gärna1.1
+\c adv
+\g gladly
+\a gärna 
+
+\m binda,_binder_(band,_bundit)1.1
+\c v
+\g tie
+\a bind 
+
+\m sydamerika1.1
+\c nprop
+\g South America
+\a Sydamerika 
+
+\m salt1.1
+\c n
+\g salt
+\a salt 
+
+\m myra1.1
+\c n
+\g ant
+\a myra 
+
+\m ramla1.1
+\c v
+\g fall v.
+\a raml 
+
+\m klättra1.1
+\c v
+\g climb
+\a klättr 
+
+\m mellan1.1
+\c prep
+\g between
+\a mellan 
+
+\m tal1.1
+\c n
+\g speech
+\a tal 
+
+\m rum1.1
+\c n
+\g room
+\a rum 
+
+\m sovrum1.1
+\c n
+\g bedroom
+\a sovrumm / _ e 
+\a sovrum ~/ _ e 
+
+\m åtta1.1
+\c cardnum
+\g eight
+\a åtta 
+
+\m sex1.1
+\c cardnum
+\g six
+\a sex 
+
+\m fönster1.1
+\c n
+\g window
+\a fönstr / _ e 
+\a fönster ~/ _ e 
+
+\m gifte1.1
+\c n
+\g marriage
+\a gifte 
+
+\m hus1.1
+\c n
+\g house
+\a hus 
+
+\m tid1.1
+\c n
+\g time
+\a tid 
+
+\m trött1.1
+\c adj
+\g tired
+\a trött 
+
+\m strax1.1
+\c adv
+\g directly
+\a strax 
+
+\m modern1.1
+\c adj
+\g modern
+\a modern 
+
+\m sju1.1
+\c cardnum
+\g seven
+\a sju 
+
+\m tårta1.1
+\c n
+\g cake
+\a tårta 
+
+\m gifta1.1
+\c v
+\g marry
+\a gift 
+

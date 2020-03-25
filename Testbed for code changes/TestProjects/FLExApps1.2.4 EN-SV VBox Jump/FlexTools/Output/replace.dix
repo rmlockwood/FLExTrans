@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">
+<dictionary>
+	<alphabet></alphabet>
+	<sdefs>
+		<!-- Add symbol definitions here -->
+		<sdef c="SampleCategory" n="sss">
+		</sdef>
+	</sdefs>
+	<section id="replacement" type="standard">
+		<!-- Add replacement entries here -->
+		<e>
+			<p>
+				<l>SourceWord1.1<s n="sss"></s>
+				</l>
+				<r>TargetWord1.1<s n="sss"></s>
+				</r>
+			</p>
+		</e>
+	</section>
+	<section id="append" type="standard">
+		<!-- Add new entries to be appended here -->
+		<e>
+			<p>
+				<l>SourceWord2.1<s n="sss"></s>
+				</l>
+				<r>TargetWord2.1<s n="sss"></s>
+				</r>
+			</p>
+		</e>
+	</section>
+</dictionary>

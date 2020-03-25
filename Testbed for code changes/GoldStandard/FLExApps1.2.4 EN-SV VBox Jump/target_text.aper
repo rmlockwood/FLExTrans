@@ -1,0 +1,37 @@
+ ^arbeta1.1<v><INF><IND>$ ^du1.1<pro>$
+^*pojke1.1<n><PL_2><DEF_PL>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^*pojke1.1<n><DEF_SG_2/3>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^*pojke1.1<n><PL_2>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^*pojke1.1<n><SG_2>$
+^Flicka1.1<n><PL_1><DEF_PL>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^Flicka1.1<n><DEF_SG_1>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^Flicka1.1<n><PL_1>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^flicka1.1<n><SG_1>$
+^Fisk1.1<n><PL_2><DEF_PL>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^Fisk1.1<n><DEF_SG_2/3>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^Fisk1.1<n><PL_2>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^fisk1.1<n>$
+^Pingvin1.1<n><PL_3><DEF_PL>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^Pingvin1.1<n><DEF_SG_2/3>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^Pingvin1.1<n><PL_3>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^pingvin1.1<n>$
+^Vittne1.1<n><PL_4><DEF_PL>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^Vittne1.1<n><DEF_SG_4/5>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^Vittne1.1<n><PL_4>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^vittne1.1<n>$
+^Barn1.1<n><PL_5a><DEF_PL_5>$ ^simma1.1<v><INF><IND>$  ^sjö1.1<n><DEF_SG_2/3>$ ^Barn1.1<n><DEF_SG_4/5>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^penna1.1<n><SG_1>$ ^Barn1.1<n><PL_5a>$ ^simma1.1<v><INF><IND>$ ^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^barn1.1<n>$
+ ^arbeta1.1<v><INF><IND>$ ^du1.1<pro>$
+^Den_här1.1<dem>$ ^bil1.1<n><DEF_SG_2/3>$ ^är1.1<v><IND>$ ^gammal1.1<adj>$ ^Den_där1.1<dem>$ ^bil1.1<n><DEF_SG_2/3>$ ^är1.1<v><IND>$ ^gammal1.1<adj>$ ^De_här1.1<dem>$ ^bil1.1<n><PL_2><DEF_PL>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_PL>$ ^De_där1.1<dem>$ ^bil1.1<n><PL_2><DEF_PL>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_PL>$
+^Det_här1.1<dem>$ ^äpple1.1<n><DEF_SG_4/5>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_N>$ ^Det_där1.1<dem>$ ^äpple1.1<n><DEF_SG_4/5>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_N>$ ^De_här1.1<dem>$ ^äpple1.1<n><PL_4><DEF_PL>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_PL>$ ^De_där1.1<dem>$ ^äpple1.1<n><PL_4><DEF_PL>$ ^är1.1<v><IND>$ ^gammal1.1<adj><AGR_PL>$
+^Han1.1<pro>$ ^ha1.1<v><INF><IND>$ ^en1.1<indf>$ ^bil1.1<n>$
+^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^röd1.1<adj><AGR_PL>$ ^äpple1.1<n><PL_4>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$  ^röd1.1<adj><AGR_N>$ ^äpple1.1<n>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^röd1.1<adj><AGR_PL>$ ^äpple1.1<n><PL_4><DEF_PL>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^röd1.1<adj><AGR_DEF>$ ^äpple1.1<n><DEF_SG_4/5>$
+^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_PL>$ ^flicka1.1<n><PL_1>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$  ^stor1.1<adj>$ ^flicka1.1<n><SG_1>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_PL>$ ^flicka1.1<n><PL_1><DEF_PL>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_DEF>$ ^flicka1.1<n><DEF_SG_1>$
+^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_PL>$ ^*pojke1.1<n><PL_2>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$  ^stor1.1<adj>$ ^*pojke1.1<n><SG_2>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_PL>$ ^*pojke1.1<n><PL_2><DEF_PL>$ ^jag1.1<pro>$ ^ha1.1<v><INF><IND>$ ^stor1.1<adj><AGR_DEF>$ ^*pojke1.1<n><DEF_SG_2/3>$
+ ^gå1.1<v><IND>$ ^du1.1<pro>$
+^Blomma1.1<n><PL_1><DEF_PL>$ ^är1.1<v><IND>$ ^stor1.1<adj><AGR_PL>$ ^Blomma1.1<n><DEF_SG_1>$ ^är1.1<v><IND>$ ^stor1.1<adj>$ ^Äpple1.1<n><PL_4><DEF_PL>$ ^är1.1<v><IND>$ ^stor1.1<adj><AGR_PL>$ ^Äpple1.1<n><DEF_SG_4/5>$ ^är1.1<v><IND>$ ^stor1.1<adj><AGR_N>$
+^jag1.1<pro>$ ^arbeta1.1<v><INF><PST>$ ^jag1.1<pro>$ ^gå1.1<v><PST>$
+^Igår1.1<adv>$ ^studera1.1<v><INF><PST>$ ^jag1.1<pro>$ ^historia1.1<n>$
+^På1.1<prep>$ ^måndag1.1<nprop>$ ^spela1.1<v><INF><PST>$ ^jag1.1<pro>$ ^fotboll1.1<n>$
+^Igår1.1<adv>$ ^studera1.1<v><INF><PST>$ ^jag1.1<pro>$ ^historia1.1<n>$  ^konst1.1<n>$
+^Tidigare1.1<adv>$ ^arbeta1.1<v><INF><PST>$ ^hon1.1<pro>$  ^en1.1<indf>$ ^bageri1.1<n>$
+^Han1.1<pro>$ ^döda1.1<v><INF><PST><PASS>$
+^Han1.1<pro>$ ^döda1.1<v><INF><PST><PASS>$
+^De1.1<pro>$ ^döda1.1<v><INF><PST><PASS>$
+^De1.1<pro>$ ^döda1.1<v><INF><PST><PASS>$
+^En1.2<cardnum>$ ^natt1.1<n>$ ^han1.1<pro>$ ^simma1.1<v><INF><PST>$
+^Han1.1<pro>$ ^köpa1.1<v><PST>$ ^ett1.2<cardnum>$ ^hus1.1<n>$
+^En1.2<cardnum>$ ^flicka1.1<n><SG_1>$ ^skratta1.1<v><INF><IND>$
+^jag1.1<pro>$ ^simma1.1<v><INF><IND>$ ^inte1.1<prt>$
+^jag1.1<pro>$ ^se1.1<v><IND>$ ^honom1.1<pro>$ ^inte1.1<prt>$
+^jag1.1<pro>$ ^se1.1<v><PST>$ ^honom1.1<pro>$ ^inte1.1<prt>$
+^Igår1.1<adv>$ ^gå1.1<v><PST>$ ^jag1.1<pro>$ ^inte1.1<prt>$
+^jag1.1<pro>$ ^få1.1<v>$ ^inte1.1<prt>$ ^se1.1<v><IND>$ ^honom1.1<pro>$
+^jag1.1<pro>$ ^ha1.1<v><INF>$ ^inte1.1<prt>$ ^se1.1<v><PFV>$ ^honom1.1<pro>$
+^jag1.1<pro>$ ^är1.1<v><IND>$ ^glad1.1<adj>$  ^den1.2<pro>$ ^regna1.1<v><INF><IND>$ ^inte1.1<prt>$
+^jag1.1<pro>$ ^se1.1<v><IND>$ ^honom1.1<pro>$ ^inte1.1<prt>$
+^jag1.1<pro>$ ^se1.1<v><PST>$ ^honom1.1<pro>$ ^inte1.1<prt>$

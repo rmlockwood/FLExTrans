@@ -1,0 +1,31 @@
+Paste the project into TestProjects
+
+Use copies of the FLEx DBs in question so they can be static (remain unchanged)
+
+Change the default database to the new source project by running FlexTools or changing the .ini file
+
+Update the flextrans.config file with the new target database.
+
+edit link_to_git.bat and run it so the source files all point to the latest modules in git
+
+Go to the Testbed\FLExTools2.0-RunTestbed\FlexTools\Modules\Testbed folder
+
+Copy one of the modules and rename it
+
+Edit the module to correspond to the folder name of the new project
+
+Run the "RunTestbed" FlexTools project and edit the collection to add the new project
+
+Run the new module which starts the new project
+
+Copy "CopyTestResults.py" from another testbed project to the new project's FlexTools\Modules folder
+
+Edit the collection and delete the "Insert Target Text" module and add the "Copy Test Results" module
+
+Run the new project to make sure it is working
+
+Create a new folder in the GoldStandard folder named the same as the project folder
+
+Copy the 10 files from the Results folder for the new project to the new GoldStandard folder
+
+Test that the testbed runs correctly and doesn't show any file differences 

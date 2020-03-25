@@ -1,0 +1,617 @@
+
+\a  < v arbeta1.1 > INF IND
+
+\a  < pro du1.1 > 
+
+\a  < n *pojke1.1 > PL_2 DEF_PL
+\f \n
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n *pojke1.1 > DEF_SG_2/3
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n *pojke1.1 > PL_2
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n *pojke1.1 > SG_2
+
+\a  < n flicka1.1 > PL_1 DEF_PL
+\f \n
+\c 1
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n flicka1.1 > DEF_SG_1
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n flicka1.1 > PL_1
+\c 1
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n flicka1.1 > SG_1
+
+\a  < n fisk1.1 > PL_2 DEF_PL
+\f \n
+\c 1
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n fisk1.1 > DEF_SG_2/3
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n fisk1.1 > PL_2
+\c 1
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n fisk1.1 > 
+
+\a  < n pingvin1.1 > PL_3 DEF_PL
+\f \n
+\c 1
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n pingvin1.1 > DEF_SG_2/3
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n pingvin1.1 > PL_3
+\c 1
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n pingvin1.1 > 
+
+\a  < n vittne1.1 > PL_4 DEF_PL
+\f \n
+\c 1
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n vittne1.1 > DEF_SG_4/5
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n vittne1.1 > PL_4
+\c 1
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n vittne1.1 > 
+
+\a  < n barn1.1 > PL_5a DEF_PL_5
+\f \n
+\c 1
+
+\a  < v simma1.1 > INF IND
+\n   
+
+\a  < n sjö1.1 > DEF_SG_2/3
+
+\a  < n barn1.1 > DEF_SG_4/5
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n penna1.1 > SG_1
+
+\a  < n barn1.1 > PL_5a
+\c 1
+
+\a  < v simma1.1 > INF IND
+
+\a  < pro han1.1 > 
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n barn1.1 > 
+
+\a  < v arbeta1.1 > INF IND
+\f \n
+
+\a  < pro du1.1 > 
+
+\a  < dem den_här1.1 > 
+\f \n
+\c 1
+
+\a  < n bil1.1 > DEF_SG_2/3
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > 
+
+\a  < dem den_där1.1 > 
+\c 1
+
+\a  < n bil1.1 > DEF_SG_2/3
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > 
+
+\a  < dem de_här1.1 > 
+\c 1
+
+\a  < n bil1.1 > PL_2 DEF_PL
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_PL
+
+\a  < dem de_där1.1 > 
+\c 1
+
+\a  < n bil1.1 > PL_2 DEF_PL
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_PL
+
+\a  < dem det_här1.1 > 
+\f \n
+\c 1
+
+\a  < n äpple1.1 > DEF_SG_4/5
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_N
+
+\a  < dem det_där1.1 > 
+\c 1
+
+\a  < n äpple1.1 > DEF_SG_4/5
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_N
+
+\a  < dem de_här1.1 > 
+\c 1
+
+\a  < n äpple1.1 > PL_4 DEF_PL
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_PL
+
+\a  < dem de_där1.1 > 
+\c 1
+
+\a  < n äpple1.1 > PL_4 DEF_PL
+
+\a  < v är1.1 > IND
+
+\a  < adj gammal1.1 > AGR_PL
+
+\a  < pro han1.1 > 
+\f \n
+\c 1
+
+\a  < v ha1.1 > INF IND
+
+\a  < indf en1.1 > 
+
+\a  < n bil1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj röd1.1 > AGR_PL
+
+\a  < n äpple1.1 > PL_4
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+\n   
+
+\a  < adj röd1.1 > AGR_N
+
+\a  < n äpple1.1 > 
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj röd1.1 > AGR_PL
+
+\a  < n äpple1.1 > PL_4 DEF_PL
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj röd1.1 > AGR_DEF
+
+\a  < n äpple1.1 > DEF_SG_4/5
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n flicka1.1 > PL_1
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+\n   
+
+\a  < adj stor1.1 > 
+
+\a  < n flicka1.1 > SG_1
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n flicka1.1 > PL_1 DEF_PL
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_DEF
+
+\a  < n flicka1.1 > DEF_SG_1
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n *pojke1.1 > PL_2
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+\n   
+
+\a  < adj stor1.1 > 
+
+\a  < n *pojke1.1 > SG_2
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n *pojke1.1 > PL_2 DEF_PL
+
+\a  < pro jag1.1 > 
+
+\a  < v ha1.1 > INF IND
+
+\a  < adj stor1.1 > AGR_DEF
+
+\a  < n *pojke1.1 > DEF_SG_2/3
+
+\a  < v gå1.1 > IND
+\f \n
+
+\a  < pro du1.1 > 
+
+\a  < n blomma1.1 > PL_1 DEF_PL
+\f \n
+\c 1
+
+\a  < v är1.1 > IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n blomma1.1 > DEF_SG_1
+\c 1
+
+\a  < v är1.1 > IND
+
+\a  < adj stor1.1 > 
+
+\a  < n äpple1.1 > PL_4 DEF_PL
+\c 1
+
+\a  < v är1.1 > IND
+
+\a  < adj stor1.1 > AGR_PL
+
+\a  < n äpple1.1 > DEF_SG_4/5
+\c 1
+
+\a  < v är1.1 > IND
+
+\a  < adj stor1.1 > AGR_N
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v arbeta1.1 > INF PST
+
+\a  < pro jag1.1 > 
+
+\a  < _variant_ gick1 > 
+
+\a  < adv igår1.1 > 
+\f \n
+\c 1
+
+\a  < v studera1.1 > INF PST
+
+\a  < pro jag1.1 > 
+
+\a  < n historia1.1 > 
+
+\a  < prep på1.1 > 
+\f \n
+\c 1
+
+\a  < nprop måndag1.1 > 
+
+\a  < v spela1.1 > INF PST
+
+\a  < pro jag1.1 > 
+
+\a  < n fotboll1.1 > 
+
+\a  < adv igår1.1 > 
+\f \n
+\c 1
+
+\a  < v studera1.1 > INF PST
+
+\a  < pro jag1.1 > 
+
+\a  < n historia1.1 > 
+\n   
+
+\a  < n konst1.1 > 
+
+\a  < adv tidigare1.1 > 
+\f \n
+\c 1
+
+\a  < v arbeta1.1 > INF PST
+
+\a  < pro hon1.1 > 
+\n   
+
+\a  < indf en1.1 > 
+
+\a  < n bageri1.1 > 
+
+\a  < pro han1.1 > 
+\f \n
+\c 1
+
+\a  < v döda1.1 > INF PST PASS
+
+\a  < pro han1.1 > 
+\f \n
+\c 1
+
+\a  < v döda1.1 > INF PST PASS
+
+\a  < pro de1.1 > 
+\f \n
+\c 1
+
+\a  < v döda1.1 > INF PST PASS
+
+\a  < pro de1.1 > 
+\f \n
+\c 1
+
+\a  < v döda1.1 > INF PST PASS
+
+\a  < cardnum en1.2 > 
+\f \n
+\c 1
+
+\a  < n natt1.1 > 
+
+\a  < pro han1.1 > 
+
+\a  < v simma1.1 > INF PST
+
+\a  < pro han1.1 > 
+\f \n
+\c 1
+
+\a  < v köpa1.1 > PST
+
+\a  < cardnum ett1.2 > 
+
+\a  < n hus1.1 > 
+
+\a  < cardnum en1.2 > 
+\f \n
+\c 1
+
+\a  < n flicka1.1 > SG_1
+
+\a  < v skratta1.1 > INF IND
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v simma1.1 > INF IND
+
+\a  < prt inte1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v se1.1 > IND
+
+\a  < pro honom1.1 > 
+
+\a  < prt inte1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < _variant_ såg1 > 
+
+\a  < pro honom1.1 > 
+
+\a  < prt inte1.1 > 
+
+\a  < adv igår1.1 > 
+\f \n
+\c 1
+
+\a  < _variant_ gick1 > 
+
+\a  < pro jag1.1 > 
+
+\a  < prt inte1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v få1.1 > 
+
+\a  < prt inte1.1 > 
+
+\a  < v se1.1 > IND
+
+\a  < pro honom1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v ha1.1 > INF
+
+\a  < prt inte1.1 > 
+
+\a  < v se1.1 > PFV
+
+\a  < pro honom1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v är1.1 > IND
+
+\a  < adj glad1.1 > 
+\n   
+
+\a  < pro den1.2 > 
+
+\a  < v regna1.1 > INF IND
+
+\a  < prt inte1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < v se1.1 > IND
+
+\a  < pro honom1.1 > 
+
+\a  < prt inte1.1 > 
+
+\a  < pro jag1.1 > 
+\f \n
+
+\a  < _variant_ såg1 > 
+
+\a  < pro honom1.1 > 
+
+\a  < prt inte1.1 > 
+

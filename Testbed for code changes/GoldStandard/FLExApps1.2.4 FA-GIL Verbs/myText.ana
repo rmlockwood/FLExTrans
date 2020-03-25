@@ -1,0 +1,590 @@
+
+\a pfv < vpst-sp کودن1.1 > 1sg
+
+\a pfv < vpst-sp کودن1.1 > 2sg
+
+\a pfv < vpst-sp کودن1.1 > 3sg
+
+\a pfv < vpst-sp کودن1.1 > 1pl
+
+\a pfv < vpst-sp کودن1.1 > 2/3pl
+
+\a pfv < vpst-sp کودن1.1 > 2/3pl
+
+\a  < vpst-sp کودن1.1 > ipfv 1sg
+\f \n
+
+\a  < vpst-sp کودن1.1 > ipfv 2sg
+
+\a  < vpst-sp کودن1.1 > ipfv 3sg_pst
+
+\a  < vpst-sp کودن1.1 > ipfv 1pl
+
+\a  < vpst-sp کودن1.1 > ipfv 2/3pl
+
+\a  < vpst-sp کودن1.1 > ipfv 2/3pl
+
+\a  < vpst-sp کودن1.1 > inf
+\f \n
+
+\a neg < vpst-sp کودن1.1 > inf
+
+\a  < vprs کون1.1 > 1sg
+\f \n
+
+\a  < vprs کون1.1 > 2sg
+
+\a  < vprs کون1.1 > 3sg
+
+\a  < vprs کون1.1 > 1pl
+
+\a  < vprs کون1.1 > 2/3pl
+
+\a  < vprs کون1.1 > 2/3pl
+
+\a sbjv < vprs کون1.1 > 1sg
+\f \n
+
+\a sbjv < vprs کون1.1 > 2sg
+
+\a sbjv < vprs کون1.1 > 3sg
+
+\a sbjv < vprs کون1.1 > 1pl
+
+\a sbjv < vprs کون1.1 > 2/3pl
+
+\a sbjv < vprs کون1.1 > 2/3pl
+
+\a imp < vprs کون1.1 > 2sg_imp
+\f \n
+
+\a sbjv < vprs کون1.1 > 2/3pl
+
+\a neg imp < vprs کون1.1 > 2sg_imp
+
+\a pfv < vpst نیویشتن1.1 > 1sg
+\f \n
+
+\a  < vpst نیویشتن1.1 > ipfv 1sg
+\f \n
+
+\a neg < vpst نیویشتن1.1 > inf
+\f \n
+
+\a  < vprs نیویس1.1 > 1pl
+\f \n
+
+\a sbjv < vprs نیویس1.1 > 2/3pl
+\f \n
+
+\a sbjv < vprs نیویس1.1 > 2/3pl
+\f \n
+
+\a  pfv < n رنج1.1 > 2/3pl 
+\f \n
+
+\a  < vpst کشن1.1 > 
+
+\a  < n رنج1.1 > ipfv 3sg_pst 
+\f \n
+
+\a  < vpst کشن1.1 > 
+
+\a  < n رنج1.1 > 3sg 
+\f \n
+
+\a  < vprs کش2.1 > 
+
+\a  imp < n رنج1.1 > 2sg_imp 
+\f \n
+
+\a  < vprs کش2.1 > 
+
+\a pfv < vcmplx وَورسن1.1 > 1sg
+\f \n
+
+\a pfv < vcmplx وَورسن1.1 > 2sg
+
+\a pfv < vcmplx وَورسن1.1 > 3sg_pst
+
+\a neg pfv < vcmplx وَورسن1.1 > 2/3pl
+
+\a  < vcmplx وَورسن1.1 > ipfv 1sg
+\f \n
+
+\a neg < vcmplx وَورسن1.1 > inf
+\f \n
+
+\a neg < vcmplx وَورس1.1 > 1sg
+\f \n
+
+\a sbjv < vcmplx وَورس1.1 > 1pl
+\f \n
+
+\a neg < vcmplx وَورس1.1 > 1pl
+
+\a pfv < vcmplx دوکودن1.1 > 1sg
+\f \n
+
+\a neg pfv < vcmplx دوکودن1.1 > 1sg
+
+\a  < vcmplx دوکودن1.1 > ipfv 2sg
+\f \n
+
+\a  < vcmplx دوکودن1.1 > inf
+\f \n
+
+\a  < vcmplx دوکون1.1 > 1pl
+\f \n
+
+\a sbjv < vcmplx دوکون1.1 > 3sg
+\f \n
+
+\a sbjv < vcmplx دوکون1.1 > 2/3pl
+\f \n
+
+\a imp < vcmplx دوکون1.1 > 2sg_imp
+
+\a  < cop بوئن1.1 > 1sg
+\f \n
+
+\a  < cop بوئن1.1 > 2sg
+
+\a  < cop بوئن1.1 > 3sg_pst
+
+\a  < cop بوئن1.1 > 1pl
+
+\a  < cop بوئن1.1 > 2/3pl
+
+\a  < cop بوئن1.1 > 2/3pl
+
+\a  < cop بوئن1.1 > inf
+\f \n
+
+\a neg < cop بوئن1.1 > inf
+
+\a  < cop ایس2.1 > 1sg
+\f \n
+
+\a  < cop ایس2.1 > 2sg
+
+\a  < cop ایس2.1 > 3sg
+
+\a  < cop ایس2.1 > 1pl
+
+\a  < cop ایس2.1 > 2/3pl
+
+\a  < cop ایس2.1 > 2/3pl
+
+\a sbjv < cop ایس2.1 > 1sg
+\f \n
+
+\a sbjv < cop ایس2.1 > 2sg
+
+\a sbjv < cop ایس2.1 > 3sg
+
+\a sbjv < cop ایس2.1 > 1pl
+
+\a sbjv < cop ایس2.1 > 2/3pl
+
+\a sbjv < cop ایس2.1 > 2/3pl
+
+\a imp < cop ایس2.1 > 2sg_imp
+\f \n
+
+\a sbjv < cop ایس2.1 > 2/3pl
+
+\a pfv < vpst گفتن1.1 > 1pl
+\f \n
+
+\a  < vpst گفتن1.1 > ipfv 3sg_pst
+\f \n
+
+\a  < vpst گفتن1.1 > inf
+\f \n
+
+\a  < vprs گ1.1 > 1pl
+\f \n
+
+\a  < vprs گ1.1 > 2sg
+
+\a neg < vprs گ1.1 > 2/3pl
+
+\a sbjv < vprs گ1.1 > 2/3pl
+\f \n
+
+\a imp < vprs گ1.1 > 2sg_imp
+\f \n
+
+\a neg imp < vprs گ1.1 > 2sg_imp
+
+\a pfv < vpst-sp بوستن1.1 > 1sg
+\f \n
+
+\a neg pfv < vpst-sp بوستن1.1 > 3sg
+
+\a neg < vpst-sp بوستن1.1 > ipfv 1pl
+\f \n
+
+\a  < vprs ب1.1 > 1sg
+\f \n
+
+\a  < vprs ب1.1 > 2sg
+
+\a  < vprs ب1.1 > 3sg
+
+\a  < vprs ب1.1 > 1pl
+
+\a  < vprs ب1.1 > 2/3pl
+
+\a  < vprs ب1.1 > 2/3pl
+
+\a neg < vprs ب1.1 > 1sg
+
+\a neg < vprs ب1.1 > 2sg
+
+\a neg < vprs ب1.1 > 3sg
+
+\a neg < vprs ب1.1 > 1pl
+
+\a neg < vprs ب1.1 > 2/3pl
+
+\a neg < vprs ب1.1 > 2/3pl
+
+\a sbjv < vprs ب1.1 > 1sg
+\f \n
+
+\a neg sbjv < vprs ب1.1 > 1sg
+
+\a pfv < vpst شوئون1.1 > 1sg
+\f \n
+
+\a neg < vprs ش1.1 > 2sg
+\f \n
+
+\a  < vprs ش1.1 > 2/3pl
+\f \n
+
+\a sbjv < vprs ش1.1 > 1pl
+\f \n
+
+\a imp < vprs ش1.1 > 2sg_imp
+\f \n
+
+\a pfv < vcmplx فدن1.1 > 1sg
+\f \n
+
+\a pfv < vcmplx فدن1.1 > 3sg_pst
+
+\a neg pfv < vcmplx فدن1.1 > 3sg_pst
+
+\a neg < vcmplx فدن1.1 > ipfv 1pl
+\f \n
+
+\a neg < vcmplx فدن1.1 > inf
+\f \n
+
+\a  < vcmplx فد1.1 > 1sg
+\f \n
+
+\a neg < vcmplx فد1.1 > 1pl
+
+\a sbjv < vcmplx فد1.1 > 3sg
+\f \n
+
+\a imp < vcmplx فد1.1 > 2sg_imp
+\f \n
+
+\a pfv < vpst دأشتن1.1 > 1sg
+\f \n
+
+\a neg pfv < vpst دأشتن1.1 > 2sg
+
+\a  < vprs دأر1.1 > 3sg
+\f \n
+
+\a pfv < vpst اَوردن1.1 > 1sg
+\f \n
+
+\a neg pfv < vpst اَوردن1.1 > 1sg
+
+\a  < vpst اَوردن1.1 > ipfv 2/3pl
+\f \n
+
+\a neg < vpst اَوردن1.1 > inf
+\f \n
+
+\a  < vprs اَور1.1 > 1sg
+\f \n
+
+\a neg < vprs اَور1.1 > 1pl
+
+\a sbjv < vprs اَور1.1 > 3sg
+\f \n
+
+\a neg < vprs اَور1.1 > 1sg
+
+\a sbjv < vprs اَور1.1 > 2/3pl
+\f \n
+
+\a neg < vprs اَور1.1 > 2/3pl
+
+\a pfv < vpst گیفتن1.1 > 2/3pl
+\f \n
+
+\a neg pfv < vpst گیفتن1.1 > 2sg
+
+\a  < pfv گرفتن1.4 > 2/3pl
+
+\a pfv < neg گرفتن1.4 > 2sg
+
+\a neg < vpst گیفتن1.1 > inf
+\f \n
+
+\a  < neg گرفتن1.4 > inf
+
+\a  < vprs گیر1.1 > 1sg
+\f \n
+
+\a neg < vprs گیر1.1 > 2sg
+
+\a  < vcmplx فیگیر1.1 > 1sg
+
+\a neg < vcmplx فیگیر1.1 > 2sg
+
+\a imp < vprs گیر1.1 > 2sg_imp
+\f \n
+
+\a neg < vprs گیر1.1 > 2/3pl
+
+\a imp < vcmplx فیگیر1.1 > 2sg_imp
+
+\a neg < vcmplx فیگیر1.1 > 2/3pl
+
+\a pfv < vcmplx فَرسن1.1 > 1sg
+\f \n
+
+\a neg < vcmplx فَرسن1.1 > ipfv 3sg_pst
+\f \n
+
+\a neg pfv < vcmplx فَرسن1.1 > 2/3pl
+\f \n
+
+\a neg < vcmplx فَرس1.1 > 2/3pl
+\f \n
+
+\a sbjv < vcmplx فَرس1.1 > 1pl
+\f \n
+
+\a pfv < vcmplx فدن1.1 > 1sg
+\f \n
+
+\a pfv < vcmplx فوکودن1.1 > 1sg
+
+\a pfv < vpst گیفتن1.1 > 1sg
+
+\a pfv < vcmplx فَرسن1.1 > 1sg
+
+\a pfv < vcmplx فکشن1.1 > 1sg
+
+\a vpfx2  pfv < vpst *وست2.1 > 1sg 
+
+\a  < vcmplx فدن1.1 > inf
+\f \n
+
+\a  < vcmplx فوکودن1.1 > inf
+
+\a  < vpst گیفتن1.1 > inf
+
+\a  < vcmplx فَرسن1.1 > inf
+
+\a  < vcmplx فکشن1.1 > inf
+
+\a vpfx2  < vpst *وست2.1 > inf 
+
+\a  < vcmplx فد1.1 > 1sg
+\f \n
+
+\a  < prep بر1.1 > 
+
+\a  < vcmplx تَودَن1.1 > ipfv 1sg
+
+\a  < vprs گیر1.1 > 1sg
+
+\a  < vcmplx فَرس1.1 > 1sg
+
+\a  < vcmplx فکش1.1 > 1sg
+
+\a  < vcmplx فوو1.1 > 1sg
+
+\a  pfv < n شهادت1.1 > 1sg 
+\f \n
+
+\a  < vpst دَئن1.1 > 
+
+\a  pfv < n شهادت1.1 > 3sg_pst 
+
+\a  < vpst دَئن1.1 > 
+
+\a  pfv < n شهادت1.1 > 1pl 
+
+\a  < vpst دَئن1.1 > 
+\n ؛ 
+
+\a  neg pfv < n شهادت1.1 > 1sg 
+
+\a  < vpst دَئن1.1 > 
+
+\a  < n شهادت1.1 > ipfv 1sg 
+\f \n
+
+\a  < vpst دَئن1.1 > 
+
+\a  pfv < n شهادت1.1 > 
+
+\a  < vpst دَئن1.1 > 
+
+\a  < n شهادت1.1 > ipfv 2/3pl 
+
+\a  < vpst دَئن1.1 > 
+
+\a  neg < n شهادت1.1 > inf 
+\f \n
+
+\a  < vpst دَئن1.1 > 
+
+\a  neg < n شهادت1.1 > 1sg 
+\f \n
+
+\a  < vprs د2.1 > 
+
+\a  sbjv < n شهادت1.1 > 3sg 
+\f \n
+
+\a  < vprs د2.1 > 
+
+\a  imp < n شهادت1.1 > 2sg_imp 
+\f \n
+
+\a  < vprs د2.1 > 
+
+\a  sbjv < n شهادت1.1 > 2/3pl 
+
+\a  < vprs د2.1 > 
+
+\a pfv < vpst دِئن1.1 > 1sg
+\f \n
+
+\a neg pfv < vpst دِئن1.1 > 3sg_pst
+
+\a neg < vpst دِئن1.1 > ipfv 3sg_pst
+\f \n
+
+\a  < vpst دِئن1.1 > inf
+\f \n
+
+\a  < vprs دین1.1 > 1pl
+\f \n
+
+\a neg < vprs دین1.1 > 1sg
+\f \n
+
+\a imp < vprs دین1.1 > 2sg_imp
+\f \n
+
+\a pfv < vpst هِئن1.1 > 1sg
+\f \n
+
+\a neg pfv < vpst هِئن1.1 > 1pl
+
+\a  < vprs هین1.1 > 2/3pl
+\f \n
+
+\a neg < vpst هِئن1.1 > inf
+\f \n
+
+\a  < vprs هین1.1 > 1sg
+\f \n
+
+\a neg < vprs هین1.1 > 2/3pl
+
+\a sbjv < vprs هین1.1 > 3sg
+\f \n
+
+\a imp < vprs هین1.1 > 2sg_imp
+\f \n
+
+\a pfv < vcmplx دکفتن1.1 > 1sg
+\f \n
+
+\a neg pfv < vcmplx دکفتن1.1 > 3sg
+
+\a pfv < vcmplx دَوَستن1.1 > 1sg
+
+\a neg pfv < vcmplx دَوَستن1.1 > 2sg
+
+\a pfv < vpst خوأندن1.2 > 1sg
+
+\a neg pfv < vpst خوأندن1.2 > 1pl
+
+\a pfv < vcmplx دوکودن1.1 > 1sg
+
+\a neg pfv < vcmplx دوکودن1.1 > 2sg
+
+\a  < vcmplx دکف1.1 > 1sg
+\f \n
+
+\a neg < vcmplx دَوَد1.1 > 1sg
+
+\a  < vprs خوأن1.1 > 1pl
+
+\a  < vcmplx دوکون1.1 > 1sg
+
+\a pfv < vcmplx تَودَن1.1 > 2/3pl
+\f \n
+
+\a  < vcmplx تَودَن1.1 > inf
+\f \n
+
+\a  < vcmplx تَود1.1 > 1pl
+\f \n
+
+\a pfv < vcmplx ویریشتن1.1 > 1sg
+\f \n
+
+\a neg pfv < vcmplx ویریشتن1.1 > 2/3pl
+
+\a pfv < vcmplx وأکودن1.1 > 2sg
+
+\a neg pfv < vcmplx وأکودن1.1 > 3sg
+
+\a pfv < vcmplx وَورسن1.1 > 2/3pl
+
+\a neg pfv < vcmplx وَورسن1.1 > 1sg
+
+\a pfv < vcmplx وأگردستن1.1 > 1sg
+
+\a neg pfv < vcmplx وأگردستن1.1 > 1sg
+
+\a pfv < vcmplx وَون1.1 > 1sg
+
+\a neg pfv < vcmplx وَون1.1 > 2/3pl
+
+\a pfv < vcmplx وَوستن1.1 > 1sg
+
+\a  < vcmplx ویریز1.1 > 1sg
+\f \n
+
+\a sbjv < vcmplx وأکون1.1 > 1sg
+
+\a  < vcmplx وَورس1.1 > 1sg
+
+\a neg < vcmplx وَورس1.1 > 2sg
+
+\a  < vcmplx وأگرد1.1 > 1sg
+
+\a pfv < vcmplx چأکودن1.1 > 1sg
+\f \n
+
+\a neg pfv < vcmplx چأکودن1.1 > 2/3pl
+

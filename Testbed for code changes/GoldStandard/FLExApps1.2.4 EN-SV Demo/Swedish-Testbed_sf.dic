@@ -1,0 +1,111 @@
+
+
+\g AGR_DEF_M
+\a e 
+\a a 
+
+\g DEF_PL_5
+\a n / [V] _ 
+\a en ~/ [V] _ 
+
+\g AGR_N
+\a tt / å _ / y _ 
+\a et ~/ å _ ~/ y _ / lk _ 
+\a t ~/ å _ ~/ y _ ~/ lk _ 
+
+\g PL_4
+\a n / [V] _ 
+\a en ~/ [V] _ 
+
+\g CMP
+\a re 
+\a are 
+
+\g AGR_DEF
+\a a 
+
+\g DEF_SG_1
+\a n / [V] _ 
+\a an ~/ [V] _ 
+
+\g SUPL
+\a st 
+\a ast 
+
+\g PL_5a
+\a 0 
+
+\g PL_1
+\a r / [V] _ 
+\a or ~/ [V] _ 
+
+\g SG_2
+\a e 
+
+\g PL_2
+\a r / [V-ö] _ 
+\a ar ~/ [V-ö] _ 
+
+\g GEN
+\a s 
+
+\g SG_1
+\a a 
+
+\g CMPDR
+\a s 
+
+\g AGR_PL
+\a a 
+
+\g PL_3
+\a r / [V-i] _ 
+\a er ~/ [V-i] _ 
+
+\g PASS
+\a s 
+
+\g ORD
+\a nde 
+
+\g DEF_SG_4/5
+\a t / [V] _ 
+\a et ~/ [V] _ 
+
+\g INF
+\a a 
+
+\g AGR_C
+\a d 
+
+\g PFV
+\a d / _ m 
+\a tt ~/ _ m / å _ / e _ 
+\a it ~/ _ m ~/ å _ ~/ e _ / _ g / _ t / _ v 
+\a t ~/ _ m ~/ å _ ~/ e _ ~/ _ g ~/ _ t ~/ _ v 
+
+\g AGR_C
+\a n / [V] _ 
+\a en ~/ [V] _ 
+
+\g DEF_PL
+\a a / n _ 
+\a na ~/ n _ 
+
+\g IND
+\a r / [V] _ 
+\a er ~/ [V] _ 
+
+\g PST
+\a dde /o_ 
+\a te ~/o_ / [Cv] _ 
+\a de ~/o_ ~/ [Cv] _ 
+
+\g PL_5b
+\a r / [V-i] _ 
+\a er ~/ [V-i] _ 
+
+\g DEF_SG_2/3
+\a en / #[C][V]l _ / [C-l] _ 
+\a n ~/ #[C][V]l _ ~/ [C-l] _ 
+

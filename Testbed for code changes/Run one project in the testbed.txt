@@ -1,0 +1,9 @@
+Move all the folders from the GoldStandard folder except the one you one to test to the parent folder.
+
+Run the RunTestbed project
+
+Run the 1st module to intialize
+
+Run the project you want to test
+
+Run the last module to do the compare

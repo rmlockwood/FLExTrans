@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">
+<dictionary>
+	<alphabet></alphabet>
+	<sdefs>
+		<!-- Add symbol definitions here -->
+    <sdef n="dem" c="dem"/>
+    <sdef n="adj" c="adj"/>
+    <sdef n="n" c="n"/>
+    <sdef n="same" c="Same"/>
+    <sdef n="emph" c="Emphatic"/>
+    <sdef n="pfv_sfx" c="Perfective Suffix"/>
+    <sdef n="pc_3sg" c="Pron. Clitic 3sg"/>
+    <sdef n="3sg_pst" c="3sg Past"/>
+	</sdefs>
+	<section id="replacement" type="standard">
+		<!-- Add replacement entries here -->
+    <e><p><l>همان1.1<s n="dem"/></l><r>او1.1<s n="dem"/><s n="same"/><s n="emph"/></r></p></e>
+    <e><p><l>سیر2.1<s n="adj"/></l><r>سر3.1<s n="adj"/><s n="pfv_sfx"/></r></p></e>
+    <e><p><l>ول1.1<s n="n"/></l><r>وئل1.1<s n="adj"/><s n="pfv_sfx"/></r></p></e>
+	</section>
+	<section id="append" type="standard">
+		<!-- Add new entries to be appended here -->
+    <e><p><l>همه1.1<s n="quant"/><s n="pc_3sg"/></l><r>همش1.1<s n="n"/></r></p></e>
+    <e><p><l>داشتن2.1<s n="aux"/><s n="3sg_pst"/></l><r>کره1.1<s n="prt"/></r></p></e>
+	</section>
+</dictionary>
+

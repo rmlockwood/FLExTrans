@@ -1,0 +1,15 @@
+
+
+\g ifxtest
+\l prefix suffix root /[V]_[C] /[C]_[C] 
+\a xx 
+\a ss 
+
+\g iii
+\l prefix suffix root /#[C]_ 
+\a yy 
+
+\g dsfasf
+\l prefix suffix root /#[C]_ 
+\a oo 
+

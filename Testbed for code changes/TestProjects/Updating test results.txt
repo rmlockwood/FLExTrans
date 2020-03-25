@@ -1,0 +1,7 @@
+Here's how you update the test results:
+---------------------------------------
+0. Run the testbed project that needs updating
+
+1. Open up the "correct" test results (under Results\DATE\project) for the project in question.
+
+2. Copy the 10 files from there to the corresponding GoldStandard folder.

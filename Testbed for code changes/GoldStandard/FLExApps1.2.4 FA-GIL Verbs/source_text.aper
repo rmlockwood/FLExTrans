@@ -1,0 +1,99 @@
+^کردن1.1<vcomp><pst><1sg>$ ^کردن1.1<vcomp><pst><2sg>$ ^کردن1.1<vcomp><pst><3sg_pst>$ ^کردن1.1<vcomp><pst><1pl>$ ^کردن1.1<vcomp><pst><2pl>$ ^کردن1.1<vcomp><pst><3pl>$
+^کردن1.1<vcomp><pst><ipfv><1sg>$ ^کردن1.1<vcomp><pst><ipfv><2sg>$ ^کردن1.1<vcomp><pst><ipfv><3sg_pst>$ ^کردن1.1<vcomp><pst><ipfv><1pl>$ ^کردن1.1<vcomp><pst><ipfv><2pl>$ ^کردن1.1<vcomp><pst><ipfv><3pl>$
+^کردن1.1<vcomp><pst><inf>$ ^کردن1.1<vcomp><pst><neg><inf>$
+^کن1.1<vcomp><prs><ipfv><1sg>$ ^کن1.1<vcomp><prs><ipfv><2sg>$ ^کن1.1<vcomp><prs><ipfv><3sg_prs>$ ^کن1.1<vcomp><prs><ipfv><1pl>$ ^کن1.1<vcomp><prs><ipfv><2pl>$ ^کن1.1<vcomp><prs><ipfv><3pl>$
+^کن1.1<vcomp><prs><sbjv><1sg>$ ^کن1.1<vcomp><prs><sbjv><2sg>$ ^کن1.1<vcomp><prs><sbjv><3sg_prs>$ ^کن1.1<vcomp><prs><sbjv><1pl>$ ^کن1.1<vcomp><prs><sbjv><2pl>$ ^کن1.1<vcomp><prs><sbjv><3pl>$
+^کن1.1<vcomp><prs><sbjv><imp>$ ^کن1.1<vcomp><prs><sbjv><2pl>$ ^کن1.1<vcomp><prs><neg><sbjv><imp>$
+^نوشتن1.1<v><pst><1sg>$
+^نوشتن1.1<v><pst><ipfv><1sg>$
+^نوشتن1.1<v><pst><neg><inf>$
+^نویس1.1<v><prs><ipfv><1pl>$
+^نویس1.1<v><prs><sbjv><3pl>$
+^نویس1.1<v><prs><sbjv><2pl>$
+^رنج کشیدن1.1<vphrase><pst><3pl>$
+^رنج کشیدن1.1<vphrase><pst><ipfv><3sg_pst>$
+^رنج کش1.1<vphrase><prs><ipfv><3sg_prs>$
+^رنج کش1.1<vphrase><prs><sbjv><imp>$
+^پرسیدن1.1<v><pst><1sg>$ ^پرسیدن1.1<v><pst><2sg>$ ^پرسیدن1.1<v><pst><3sg_pst>$ ^پرسیدن1.1<v><pst><neg><3pl>$
+^پرسیدن1.1<v><pst><ipfv><1sg>$
+^پرسیدن1.1<v><pst><neg><inf>$
+^پرس1.1<v><prs><neg><ipfv><1sg>$
+^پرس1.1<v><prs><sbjv><1pl>$ ^پرس1.1<v><prs><neg><1pl>$
+^تن کردن1.1<vphrase><pst><1sg>$ ^تن کردن1.1<vphrase><pst><neg><1sg>$
+^تن کردن1.1<vphrase><pst><ipfv><2sg>$
+^تن کردن1.1<vphrase><pst><inf>$
+^تن کن1.1<vphrase><prs><ipfv><1pl>$
+^تن کن1.1<vphrase><prs><sbjv><3sg_prs>$
+^تن کن1.1<vphrase><prs><sbjv><2pl>$ ^تن کن1.1<vphrase><prs><sbjv><imp>$
+^بودن1.1<cop><pst><1sg>$ ^بودن1.1<cop><pst><2sg>$ ^بودن1.1<cop><pst><3sg_pst>$ ^بودن1.1<cop><pst><1pl>$ ^بودن1.1<cop><pst><2pl>$ ^بودن1.1<cop><pst><3pl>$
+^بودن1.1<cop><pst><inf>$ ^بودن1.1<cop><pst><neg><inf>$
+^هست1.1<cop><prs><1sg>$ ^هست1.1<cop><prs><2sg>$ ^هست1.1<cop><prs><3sg_cop_prs>$ ^هست1.1<cop><prs><1pl>$ ^هست1.1<cop><prs><2pl>$ ^هست1.1<cop><prs><3pl>$
+^باش1.1<v><prs><sbjv><1sg>$ ^باش1.1<v><prs><sbjv><2sg>$ ^باش1.1<v><prs><sbjv><3sg_prs>$ ^باش1.1<v><prs><sbjv><1pl>$ ^باش1.1<v><prs><sbjv><2pl>$ ^باش1.1<v><prs><sbjv><3pl>$
+^باش1.1<v><prs><sbjv><imp>$ ^باش1.1<v><prs><sbjv><2pl>$
+^گفتن1.1<vcomp><pst><1pl>$
+^گفتن1.1<vcomp><pst><ipfv><3sg_pst>$
+^گفتن1.1<vcomp><pst><inf>$
+^گو1.1<vcomp><prs><ipfv><1pl>$ ^گو1.1<vcomp><prs><ipfv><2sg>$ ^گو1.1<vcomp><prs><neg><ipfv><3pl>$
+^گو1.1<vcomp><prs><sbjv><2pl>$
+^گو1.1<vcomp><prs><sbjv><imp>$ ^گو1.1<vcomp><prs><neg><sbjv><imp>$
+^شدن1.1<vcomp><pst><1sg>$ ^شدن1.1<vcomp><pst><neg><3sg_pst>$
+^شدن1.1<vcomp><pst><neg><ipfv><1pl>$
+^شو2.1<vcomp><prs><ipfv><1sg>$ ^شو2.1<vcomp><prs><ipfv><2sg>$ ^شو2.1<vcomp><prs><ipfv><3sg_prs>$ ^شو2.1<vcomp><prs><ipfv><1pl>$ ^شو2.1<vcomp><prs><ipfv><2pl>$ ^شو2.1<vcomp><prs><ipfv><3pl>$ ^شو2.1<vcomp><prs><neg><ipfv><1sg>$ ^شو2.1<vcomp><prs><neg><ipfv><2sg>$ ^شو2.1<vcomp><prs><neg><ipfv><3sg_prs>$ ^شو2.1<vcomp><prs><neg><ipfv><1pl>$ ^شو2.1<vcomp><prs><neg><ipfv><2pl>$ ^شو2.1<vcomp><prs><neg><ipfv><3pl>$
+^شو2.1<vcomp><prs><sbjv><1sg>$ ^شو2.1<vcomp><prs><neg><sbjv><1sg>$
+^رفتن1.1<v><pst><1sg>$
+^رو4.1<v><prs><neg><ipfv><2sg>$
+^رو4.1<v><prs><ipfv><3pl>$
+^رو4.1<v><prs><sbjv><1pl>$
+^رو4.1<v><prs><sbjv><imp>$
+^دادن1.1<vcomp><pst><1sg>$ ^دادن1.1<vcomp><pst><3sg_pst>$ ^دادن1.1<vcomp><pst><neg><3sg_pst>$
+^دادن1.1<vcomp><pst><neg><ipfv><1pl>$
+^دادن1.1<vcomp><pst><neg><inf>$
+^ده1.1<vcomp><prs><ipfv><1sg>$ ^ده1.1<vcomp><prs><neg><ipfv><1pl>$
+^ده1.1<vcomp><prs><sbjv><3sg_prs>$
+^ده1.1<vcomp><prs><sbjv><imp>$
+^داشتن1.1<vcomp><pst><1sg>$ ^داشتن1.1<vcomp><pst><neg><2sg>$
+^دار1.1<vcomp><prs><3sg_prs>$
+^آوردن1.1<v><pst><1sg>$ ^آوردن1.1<v><pst><neg><1sg>$
+^آوردن1.1<v><pst><ipfv><3pl>$
+^آوردن1.1<v><pst><neg><inf>$
+^آور1.1<v><prs><ipfv><1sg>$ ^آور1.1<v><prs><neg><ipfv><1pl>$
+^آور1.1<v><prs><sbjv><3sg_prs>$ ^آور1.1<v><prs><neg><1sg>$
+^آور1.1<v><prs><sbjv><2pl>$ ^آور1.1<v><prs><neg><2pl>$
+^گرفتن1.1<v><pst><3pl>$ ^گرفتن1.1<v><pst><neg><2sg>$ ^گرفتن1.4<v><pst><3pl>$ ^گرفتن1.4<v><pst><neg><2sg>$
+^گرفتن1.1<v><pst><neg><inf>$ ^گرفتن1.4<v><pst><neg><inf>$
+^گیر1.1<v><prs><ipfv><1sg>$ ^گیر1.1<v><prs><neg><ipfv><2sg>$ ^گیر1.4<v><prs><ipfv><1sg>$ ^گیر1.4<v><prs><neg><ipfv><2sg>$
+^گیر1.1<v><prs><sbjv><imp>$ ^گیر1.1<v><prs><neg><2pl>$ ^گیر1.4<v><prs><sbjv><imp>$ ^گیر1.4<v><prs><neg><2pl>$
+^رسیدن1.1<v><pst><1sg>$
+^رسیدن1.1<v><pst><neg><ipfv><3sg_pst>$
+^رسیدن1.1<v><pst><neg><3pl>$
+^رس1.1<v><prs><neg><ipfv><3pl>$
+^رس1.1<v><prs><sbjv><1pl>$
+^دادن1.1<vcomp><pst><1sg>$ ^برانداختن1.1<v><pst><1sg>$ ^گرفتن1.1<v><pst><1sg>$ ^رسیدن1.1<v><pst><1sg>$ ^کشیدن1.1<v><pst><1sg>$ ^ریخته شدن1.1<vphrase><pst><1sg>$
+^دادن1.1<vcomp><pst><inf>$ ^برانداختن1.1<v><pst><inf>$ ^گرفتن1.1<v><pst><inf>$ ^رسیدن1.1<v><pst><inf>$ ^کشیدن1.1<v><pst><inf>$ ^ریخته شدن1.1<vphrase><pst><inf>$
+^ده1.1<vcomp><prs><ipfv><1sg>$ ^بر1.1<prep>$ ^انداختن1.1<v><pst><ipfv><1sg>$ ^گیر1.1<v><prs><ipfv><1sg>$ ^رس1.1<v><prs><ipfv><1sg>$ ^کش2.1<v><prs><ipfv><1sg>$ ^ریخته شو1.1<vphrase><prs><ipfv><1sg>$
+^شهادت دادن1.1<vphrase><pst><1sg>$ ^شهادت دادن1.1<vphrase><pst><3sg_pst>$ ^شهادت دادن1.1<vphrase><pst><1pl>$^؛<sent>$ ^شهادت دادن1.1<vphrase><pst><neg><1sg>$
+^شهادت دادن1.1<vphrase><pst><ipfv><1sg>$ ^شهادت دادن1.1<vphrase><pst><ipfv>$ ^شهادت دادن1.1<vphrase><pst><ipfv><3pl>$
+^شهادت دادن1.1<vphrase><pst><neg><inf>$
+^شهادت ده1.1<vphrase><prs><neg><ipfv><1sg>$
+^شهادت ده1.1<vphrase><prs><sbjv><3sg_prs>$
+^شهادت ده1.1<vphrase><prs><sbjv><imp>$ ^شهادت ده1.1<vphrase><prs><sbjv><2pl>$
+^دیدن1.1<v><pst><1sg>$ ^دیدن1.1<v><pst><neg><3sg_pst>$
+^دیدن1.1<v><pst><neg><ipfv><3sg_pst>$
+^دیدن1.1<v><pst><inf>$
+^بین2.1<v><prs><ipfv><1pl>$
+^بین2.1<v><prs><neg><1sg>$
+^بین2.1<v><prs><sbjv><imp>$
+^خریدن1.1<v><pst><1sg>$ ^خریدن1.1<v><pst><neg><1pl>$
+^خر2.1<v><prs><ipfv><2pl>$
+^خریدن1.1<v><pst><neg><inf>$
+^خر2.1<v><prs><ipfv><1sg>$ ^خر2.1<v><prs><neg><ipfv><3pl>$
+^خر2.1<v><prs><sbjv><3sg_prs>$
+^خر2.1<v><prs><sbjv><imp>$
+^افتادن1.1<v><pst><1sg>$ ^افتادن1.1<v><pst><neg><3sg_pst>$ ^بستن1.4<v><pst><1sg>$ ^بستن1.4<v><pst><neg><2sg>$ ^خواندن1.1<v><pst><1sg>$ ^خواندن1.1<v><pst><neg><1pl>$ ^تن کردن1.1<vphrase><pst><1sg>$ ^تن کردن1.1<vphrase><pst><neg><2sg>$
+^افت1.1<v><prs><ipfv><1sg>$ ^بند1.4<v><prs><neg><ipfv><1sg>$ ^خوان2.1<v><prs><ipfv><1pl>$ ^تن کن1.1<vphrase><prs><ipfv><1sg>$
+^انداختن1.1<v><pst><3pl>$
+^انداختن1.1<v><pst><inf>$
+^انداز2.1<v><prs><ipfv><1pl>$
+^برخاستن1.1<vphrase><pst><1sg>$ ^برخاستن1.1<vphrase><pst><neg><3pl>$ ^باز کردن1.1<vphrase><pst><2sg>$ ^باز کردن1.1<vphrase><pst><neg><3sg_pst>$ ^پرسیدن1.1<v><pst><3pl>$ ^پرسیدن1.1<v><pst><neg><1sg>$ ^برگشتن1.1<vphrase><pst><1sg>$ ^برگشتن1.1<vphrase><pst><neg><1sg>$ ^بریدن1.1<v><pst><1sg>$ ^بریدن1.1<v><pst><neg><3pl>$ ^گشودن1.1<v><pst><1sg>$
+^برخیز1.1<vphrase><prs><ipfv><1sg>$ ^باز کن1.1<vphrase><prs><sbjv><1sg>$ ^پرس1.1<v><prs><ipfv><1sg>$ ^پرس1.1<v><prs><neg><ipfv><2sg>$ ^برگرد1.1<v><prs><ipfv><1sg>$
+^درست کردن1.1<vphrase><pst><1sg>$ ^درست کردن1.1<vphrase><pst><neg><3pl>$

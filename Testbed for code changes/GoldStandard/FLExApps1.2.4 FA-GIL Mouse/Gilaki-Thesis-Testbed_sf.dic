@@ -1,0 +1,283 @@
+
+
+\g be_prs_2/3pl2
+\a یید / [VMinusYe] _ 
+\a ‌یید ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ید ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g pc_1sg
+\a م 
+
+\g poss
+\a ‌شین 
+\a شین 
+
+\g clf
+\a ‌تأ / [He] _ 
+\a تأ ~/ [He] _ 
+
+\g be_prs_1pl
+\a ییم / [VMinusYe] _ 
+\a ‌ییم ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یم ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g pl2
+\a ها 
+
+\g inf
+\a ئون / شو _ / بو _ 
+\a ئن ~/ شو _ ~/ بو _ / ِ _ / َ _ 
+\a ن ~/ شو _ ~/ بو _ ~/ ِ _ ~/ َ _ 
+
+\g inf_cop
+\a ئون / شو _ / بو _ 
+\a ئن ~/ شو _ ~/ بو _ / ِ _ / َ _ 
+\a ن ~/ شو _ ~/ بو _ ~/ ِ _ ~/ َ _ 
+
+\g ind
+\a یی / [VMinusYe] _ 
+\a ‌یی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g 1sg_fut
+\a مه 
+
+\g 1sg_pfv
+\a مه 
+
+\g adjlz3
+\a ین 
+
+\g 2sg
+\a یی / [VMinusYe] _ 
+\a ‌یی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ / [A] _ / [He] _ 
+
+\g cmpr
+\a ‌تر 
+\a تر 
+
+\g affect
+\a ک 
+
+\g derog
+\a ک 
+
+\g advlz4
+\a کی 
+
+\g 2sg_imp
+\a ن / # بد _ / # فند _ / # نز _ / # ند _ / # فد _ / # بز _ 
+\a 0 ~/ # بد _ ~/ # فند _ ~/ # نز _ ~/ # ند _ ~/ # فد _ ~/ # بز _ / _ # 
+
+\g adjlz
+\a یی / [VMinusYe] _ 
+\a ‌یی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g pl3
+\a جات 
+\a ‌جات 
+\a ات 
+
+\g pspt
+\a 0 / [VMinusFatah] _ 
+\a ه ~/ [VMinusFatah] _ 
+
+\g actor
+\a نده 
+
+\g 1pl2
+\a ییمی / [VMinusYe] _ 
+\a ‌ییمی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یمی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ / [A] _ / [He] _ 
+
+\g minuscule_suffix
+\a ک 
+
+\g caus
+\a أنه 
+\a أن 
+
+\g ez
+\a یٚ / [VMinusYe] _ 
+\a ‌یٚ ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ٚ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g adjlz2
+
+\g be_prs_2/3pl
+\a ییدی / [VMinusYe] _ 
+\a ‌ییدی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یدی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g 2/3pl
+\a ییدی / [VMinusYe] _ 
+\a ‌ییدی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یدی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ / [A] _ / [He] _ 
+
+\g nmlz
+\a یی / [VMinusYe] _ 
+\a ‌یی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g advlz3
+\a ه 
+
+\g gen
+\a یٚ / [VMinusYe] _ 
+\a ‌یٚ ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ٚ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g pfv_sfx
+\a َ / _ # 
+\a َه ~/ _ # / _ # 
+
+\g imp_sfx
+\a َ / _ # 
+\a َه ~/ _ # / _ # 
+
+\g sbjv_sfx
+\a َ / _ # 
+\a َه ~/ _ # / _ # 
+
+\g property_of
+\a أنه 
+
+\g advlz2
+\a یی 
+\a ی 
+
+\g advlz
+\a یی 
+\a ی 
+
+\g ben
+\a ره / [VMinusYe] _ 
+\a ‌ره ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ٚره ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+\a ٚ‌ره ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g pc_3sg
+\a ش 
+
+\g nmlz2
+\a یی / [VMinusYe] _ 
+\a ‌یی ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ی ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g be_prs_2sg
+\a یی / [VMinusYe] _ # 
+\a ‌یی ~/ [VMinusYe] _ # / [Ye] _ #  / [He] _ # 
+\a ی ~/ [VMinusYe] _ # ~/ [Ye] _ #  ~/ [He] _ # 
+
+\g supr
+\a ین 
+
+\g emph
+\a ن 
+
+\g ipfv
+\a 0 / _ ([ZWNJ]) [Ye]  
+\a یی ~/ _ ([ZWNJ]) [Ye]  / [V] _ 
+\a ‌یی ~/ _ ([ZWNJ]) [Ye]  ~/ [V] _ / [He] _ 
+\a ی ~/ _ ([ZWNJ]) [Ye]  ~/ [V] _ ~/ [He] _ 
+
+\g prpt
+\a ان 
+
+\g 1sg
+\a یم / أ _ / اَ _ 
+\a ‌یم ~/ أ _ ~/ اَ _ / نی _ 
+\a م ~/ أ _ ~/ اَ _ ~/ نی _ 
+
+\g pl5
+
+\g pc_2sg
+\a ت 
+
+\g 3sg2
+
+\g pc_1pl
+\a مأن 
+
+\g pl4
+\a ین 
+
+\g 2pl_imp2
+
+\g 1pl
+\a ییم / [VMinusYe] _ 
+\a ‌ییم ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یم ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ / [A] _ / [He] _ 
+
+\g 1pl_imp
+\a ییم / [VMinusYe] _ 
+\a ‌ییم ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a یم ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ / [A] _ / [He] _ 
+
+\g 3sg_pst
+\a 0 / [VMinusFatah] _ / [He] _ 
+\a ه ~/ [VMinusFatah] _ ~/ [He] _ / َ _ 
+
+\g acc/dat
+\a یَ / [VMinusYe] _ 
+\a ‌یَ ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a َ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+\a َه ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g 3sg
+\a یه / [VMinusYe] _ 
+\a ‌یه ~/ [VMinusYe] _ / [Ye] _  
+\a ه ~/ [VMinusYe] _ ~/ [Ye] _  / [A] _ / َ _ 
+
+\g be_prs_3sg
+\a یه / [VMinusYe] _ 
+\a ‌یه ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ه ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+\a ِ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g dear
+\a ‌جان 
+
+\g be_prs_1sg
+\a یم / [VMinusYe] _ 
+\a ‌یم ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a م ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g 2/3pl2
+\a یید / [V] _ / [VMinusYe] _ 
+\a ‌یید ~/ [V] _ ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ید ~/ [V] _ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g 2pl_imp
+\a یید / [V] _ / [VMinusYe] _ 
+\a ‌یید ~/ [V] _ ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a ید ~/ [V] _ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+
+\g ord2
+\a مین 
+
+\g pl
+\a یأن / [VMinusYe] _ 
+\a ‌یأن ~/ [VMinusYe] _ / [Ye] _  / [He] _ 
+\a أن ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ 
+\a ‌ها ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ /ححح _ 
+\a أ ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ ~/ححح _ /ححح _ 
+\a هأن ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ ~/ححح _ ~/ححح _ /ححح _ 
+\a ‌تأن ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ ~/ححح _ ~/ححح _ ~/ححح _ /ححح _ 
+\a گأن ~/ [VMinusYe] _ ~/ [Ye] _  ~/ [He] _ ~/ححح _ ~/ححح _ ~/ححح _ ~/ححح _ 
+
+\g pc_3pl
+\a شأن 
+
+\g def
+\a ه / _ # 
+
+\g ord
+\a ّم 
+\a م 
+
+\g def2
+\a ای 
+

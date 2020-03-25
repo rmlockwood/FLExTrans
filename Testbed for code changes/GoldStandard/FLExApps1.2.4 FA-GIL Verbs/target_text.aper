@@ -1,0 +1,99 @@
+^کودن1.1<vpst-sp><pfv><1sg>$ ^کودن1.1<vpst-sp><pfv><2sg>$ ^کودن1.1<vpst-sp><pfv><3sg>$ ^کودن1.1<vpst-sp><pfv><1pl>$ ^کودن1.1<vpst-sp><pfv><2/3pl>$ ^کودن1.1<vpst-sp><pfv><2/3pl>$
+^کودن1.1<vpst-sp><ipfv><1sg>$ ^کودن1.1<vpst-sp><ipfv><2sg>$ ^کودن1.1<vpst-sp><ipfv><3sg_pst>$ ^کودن1.1<vpst-sp><ipfv><1pl>$ ^کودن1.1<vpst-sp><ipfv><2/3pl>$ ^کودن1.1<vpst-sp><ipfv><2/3pl>$
+^کودن1.1<vpst-sp><inf>$ ^کودن1.1<vpst-sp><neg><inf>$
+^کون1.1<vprs><1sg>$ ^کون1.1<vprs><2sg>$ ^کون1.1<vprs><3sg>$ ^کون1.1<vprs><1pl>$ ^کون1.1<vprs><2/3pl>$ ^کون1.1<vprs><2/3pl>$
+^کون1.1<vprs><sbjv><1sg>$ ^کون1.1<vprs><sbjv><2sg>$ ^کون1.1<vprs><sbjv><3sg>$ ^کون1.1<vprs><sbjv><1pl>$ ^کون1.1<vprs><sbjv><2/3pl>$ ^کون1.1<vprs><sbjv><2/3pl>$
+^کون1.1<vprs><imp><2sg_imp>$ ^کون1.1<vprs><sbjv><2/3pl>$ ^کون1.1<vprs><neg><imp><2sg_imp>$
+^نیویشتن1.1<vpst><pfv><1sg>$
+^نیویشتن1.1<vpst><ipfv><1sg>$
+^نیویشتن1.1<vpst><neg><inf>$
+^نیویس1.1<vprs><1pl>$
+^نیویس1.1<vprs><sbjv><2/3pl>$
+^نیویس1.1<vprs><sbjv><2/3pl>$
+^رنج کشن1.1<vcmplx><pfv><2/3pl>$
+^رنج کشن1.1<vcmplx><ipfv><3sg_pst>$
+^رنج کش1.1<vcmplx><3sg>$
+^رنج کش1.1<vcmplx><imp><2sg_imp>$
+^وَورسن1.1<vcmplx><pfv><1sg>$ ^وَورسن1.1<vcmplx><pfv><2sg>$ ^وَورسن1.1<vcmplx><pfv><3sg_pst>$ ^وَورسن1.1<vcmplx><neg><pfv><2/3pl>$
+^وَورسن1.1<vcmplx><ipfv><1sg>$
+^وَورسن1.1<vcmplx><neg><inf>$
+^وَورس1.1<vcmplx><neg><1sg>$
+^وَورس1.1<vcmplx><sbjv><1pl>$ ^وَورس1.1<vcmplx><neg><1pl>$
+^دوکودن1.1<vcmplx><pfv><1sg>$ ^دوکودن1.1<vcmplx><neg><pfv><1sg>$
+^دوکودن1.1<vcmplx><ipfv><2sg>$
+^دوکودن1.1<vcmplx><inf>$
+^دوکون1.1<vcmplx><1pl>$
+^دوکون1.1<vcmplx><sbjv><3sg>$
+^دوکون1.1<vcmplx><sbjv><2/3pl>$ ^دوکون1.1<vcmplx><imp><2sg_imp>$
+^بوئن1.1<cop><1sg>$ ^بوئن1.1<cop><2sg>$ ^بوئن1.1<cop><3sg_pst>$ ^بوئن1.1<cop><1pl>$ ^بوئن1.1<cop><2/3pl>$ ^بوئن1.1<cop><2/3pl>$
+^بوئن1.1<cop><inf>$ ^بوئن1.1<cop><neg><inf>$
+^ایس2.1<cop><1sg>$ ^ایس2.1<cop><2sg>$ ^ایس2.1<cop><3sg>$ ^ایس2.1<cop><1pl>$ ^ایس2.1<cop><2/3pl>$ ^ایس2.1<cop><2/3pl>$
+^ایس2.1<cop><sbjv><1sg>$ ^ایس2.1<cop><sbjv><2sg>$ ^ایس2.1<cop><sbjv><3sg>$ ^ایس2.1<cop><sbjv><1pl>$ ^ایس2.1<cop><sbjv><2/3pl>$ ^ایس2.1<cop><sbjv><2/3pl>$
+^ایس2.1<cop><imp><2sg_imp>$ ^ایس2.1<cop><sbjv><2/3pl>$
+^گفتن1.1<vpst><pfv><1pl>$
+^گفتن1.1<vpst><ipfv><3sg_pst>$
+^گفتن1.1<vpst><inf>$
+^گ1.1<vprs><1pl>$ ^گ1.1<vprs><2sg>$ ^گ1.1<vprs><neg><2/3pl>$
+^گ1.1<vprs><sbjv><2/3pl>$
+^گ1.1<vprs><imp><2sg_imp>$ ^گ1.1<vprs><neg><imp><2sg_imp>$
+^بوستن1.1<vpst-sp><pfv><1sg>$ ^بوستن1.1<vpst-sp><neg><pfv><3sg>$
+^بوستن1.1<vpst-sp><neg><ipfv><1pl>$
+^ب1.1<vprs><1sg>$ ^ب1.1<vprs><2sg>$ ^ب1.1<vprs><3sg>$ ^ب1.1<vprs><1pl>$ ^ب1.1<vprs><2/3pl>$ ^ب1.1<vprs><2/3pl>$ ^ب1.1<vprs><neg><1sg>$ ^ب1.1<vprs><neg><2sg>$ ^ب1.1<vprs><neg><3sg>$ ^ب1.1<vprs><neg><1pl>$ ^ب1.1<vprs><neg><2/3pl>$ ^ب1.1<vprs><neg><2/3pl>$
+^ب1.1<vprs><sbjv><1sg>$ ^ب1.1<vprs><neg><sbjv><1sg>$
+^شوئون1.1<vpst><pfv><1sg>$
+^ش1.1<vprs><neg><2sg>$
+^ش1.1<vprs><2/3pl>$
+^ش1.1<vprs><sbjv><1pl>$
+^ش1.1<vprs><imp><2sg_imp>$
+^فدن1.1<vcmplx><pfv><1sg>$ ^فدن1.1<vcmplx><pfv><3sg_pst>$ ^فدن1.1<vcmplx><neg><pfv><3sg_pst>$
+^فدن1.1<vcmplx><neg><ipfv><1pl>$
+^فدن1.1<vcmplx><neg><inf>$
+^فد1.1<vcmplx><1sg>$ ^فد1.1<vcmplx><neg><1pl>$
+^فد1.1<vcmplx><sbjv><3sg>$
+^فد1.1<vcmplx><imp><2sg_imp>$
+^دأشتن1.1<vpst><pfv><1sg>$ ^دأشتن1.1<vpst><neg><pfv><2sg>$
+^دأر1.1<vprs><3sg>$
+^اَوردن1.1<vpst><pfv><1sg>$ ^اَوردن1.1<vpst><neg><pfv><1sg>$
+^اَوردن1.1<vpst><ipfv><2/3pl>$
+^اَوردن1.1<vpst><neg><inf>$
+^اَور1.1<vprs><1sg>$ ^اَور1.1<vprs><neg><1pl>$
+^اَور1.1<vprs><sbjv><3sg>$ ^اَور1.1<vprs><neg><1sg>$
+^اَور1.1<vprs><sbjv><2/3pl>$ ^اَور1.1<vprs><neg><2/3pl>$
+^گیفتن1.1<vpst><pfv><2/3pl>$ ^گیفتن1.1<vpst><neg><pfv><2sg>$ ^گرفتن1.4<pfv><2/3pl>$ ^گرفتن1.4<neg><pfv><2sg>$
+^گیفتن1.1<vpst><neg><inf>$ ^گرفتن1.4<neg><inf>$
+^گیر1.1<vprs><1sg>$ ^گیر1.1<vprs><neg><2sg>$ ^فیگیر1.1<vcmplx><1sg>$ ^فیگیر1.1<vcmplx><neg><2sg>$
+^گیر1.1<vprs><imp><2sg_imp>$ ^گیر1.1<vprs><neg><2/3pl>$ ^فیگیر1.1<vcmplx><imp><2sg_imp>$ ^فیگیر1.1<vcmplx><neg><2/3pl>$
+^فَرسن1.1<vcmplx><pfv><1sg>$
+^فَرسن1.1<vcmplx><neg><ipfv><3sg_pst>$
+^فَرسن1.1<vcmplx><neg><pfv><2/3pl>$
+^فَرس1.1<vcmplx><neg><2/3pl>$
+^فَرس1.1<vcmplx><sbjv><1pl>$
+^فدن1.1<vcmplx><pfv><1sg>$ ^فوکودن1.1<vcmplx><pfv><1sg>$ ^گیفتن1.1<vpst><pfv><1sg>$ ^فَرسن1.1<vcmplx><pfv><1sg>$ ^فکشن1.1<vcmplx><pfv><1sg>$ ^فووستن1.1<vprs><pfv><1sg>$
+^فدن1.1<vcmplx><inf>$ ^فوکودن1.1<vcmplx><inf>$ ^گیفتن1.1<vpst><inf>$ ^فَرسن1.1<vcmplx><inf>$ ^فکشن1.1<vcmplx><inf>$ ^فووستن1.1<vprs><inf>$
+^فد1.1<vcmplx><1sg>$ ^بر1.1<prep>$ ^تَودَن1.1<vcmplx><ipfv><1sg>$ ^گیر1.1<vprs><1sg>$ ^فَرس1.1<vcmplx><1sg>$ ^فکش1.1<vcmplx><1sg>$ ^فوو1.1<vcmplx><1sg>$
+^شهادت دَئن1.1<vcmplx><pfv><1sg>$ ^شهادت دَئن1.1<vcmplx><pfv><3sg_pst>$ ^شهادت دَئن1.1<vcmplx><pfv><1pl>$^؛<sent>$ ^شهادت دَئن1.1<vcmplx><neg><pfv><1sg>$
+^شهادت دَئن1.1<vcmplx><ipfv><1sg>$ ^شهادت دَئن1.1<vcmplx><pfv>$ ^شهادت دَئن1.1<vcmplx><ipfv><2/3pl>$
+^شهادت دَئن1.1<vcmplx><neg><inf>$
+^شهادت ده1.1<vcmplx><neg><1sg>$
+^شهادت ده1.1<vcmplx><sbjv><3sg>$
+^شهادت ده1.1<vcmplx><imp><2sg_imp>$ ^شهادت ده1.1<vcmplx><sbjv><2/3pl>$
+^دِئن1.1<vpst><pfv><1sg>$ ^دِئن1.1<vpst><neg><pfv><3sg_pst>$
+^دِئن1.1<vpst><neg><ipfv><3sg_pst>$
+^دِئن1.1<vpst><inf>$
+^دین1.1<vprs><1pl>$
+^دین1.1<vprs><neg><1sg>$
+^دین1.1<vprs><imp><2sg_imp>$
+^هِئن1.1<vpst><pfv><1sg>$ ^هِئن1.1<vpst><neg><pfv><1pl>$
+^هین1.1<vprs><2/3pl>$
+^هِئن1.1<vpst><neg><inf>$
+^هین1.1<vprs><1sg>$ ^هین1.1<vprs><neg><2/3pl>$
+^هین1.1<vprs><sbjv><3sg>$
+^هین1.1<vprs><imp><2sg_imp>$
+^دکفتن1.1<vcmplx><pfv><1sg>$ ^دکفتن1.1<vcmplx><neg><pfv><3sg>$ ^دَوَستن1.1<vcmplx><pfv><1sg>$ ^دَوَستن1.1<vcmplx><neg><pfv><2sg>$ ^خوأندن1.2<vpst><pfv><1sg>$ ^خوأندن1.2<vpst><neg><pfv><1pl>$ ^دوکودن1.1<vcmplx><pfv><1sg>$ ^دوکودن1.1<vcmplx><neg><pfv><2sg>$
+^دکف1.1<vcmplx><1sg>$ ^دَوَد1.1<vcmplx><neg><1sg>$ ^خوأن1.1<vprs><1pl>$ ^دوکون1.1<vcmplx><1sg>$
+^تَودَن1.1<vcmplx><pfv><2/3pl>$
+^تَودَن1.1<vcmplx><inf>$
+^تَود1.1<vcmplx><1pl>$
+^ویریشتن1.1<vcmplx><pfv><1sg>$ ^ویریشتن1.1<vcmplx><neg><pfv><2/3pl>$ ^وأکودن1.1<vcmplx><pfv><2sg>$ ^وأکودن1.1<vcmplx><neg><pfv><3sg>$ ^وَورسن1.1<vcmplx><pfv><2/3pl>$ ^وَورسن1.1<vcmplx><neg><pfv><1sg>$ ^وأگردستن1.1<vcmplx><pfv><1sg>$ ^وأگردستن1.1<vcmplx><neg><pfv><1sg>$ ^وَون1.1<vcmplx><pfv><1sg>$ ^وَون1.1<vcmplx><neg><pfv><2/3pl>$ ^وَوستن1.1<vcmplx><pfv><1sg>$
+^ویریز1.1<vcmplx><1sg>$ ^وأکون1.1<vcmplx><sbjv><1sg>$ ^وَورس1.1<vcmplx><1sg>$ ^وَورس1.1<vcmplx><neg><2sg>$ ^وأگرد1.1<vcmplx><1sg>$
+^چأکودن1.1<vcmplx><pfv><1sg>$ ^چأکودن1.1<vcmplx><neg><pfv><2/3pl>$
