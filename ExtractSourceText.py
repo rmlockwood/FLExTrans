@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.1.1 - 3/26/20 - Ron Lockwood
+#    Moved TreeTran-related class and function to the Utils file.
+#
 #   Version 2.1 - 3/20/20 - Ron Lockwood
 #    Use new getInterlinData function and text and sentence objects we get back.
 #
@@ -224,10 +227,10 @@ def MainFunction(DB, report, modifyAllowed):
             return
         
         # get the list of guids from the TreeTran results file
-        treeSentList = getTreeSents(treeTranResultFile)
+        treeSentList = Utils.getTreeSents(treeTranResultFile)
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
-        logInfo = importGoodParsesLog()
+        logInfo = Utils.importGoodParsesLog()
             
     # Process the text
     report.Info("Exporting analyses...")
@@ -274,6 +277,7 @@ def MainFunction(DB, report, modifyAllowed):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
                     if myGuid == None:
+                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
                     # NEW CODE
@@ -281,7 +285,7 @@ def MainFunction(DB, report, modifyAllowed):
                     if myFLExSent.haveGuid(myGuid) == False:
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
-                        if myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+                        if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
                             report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     #DELETE
                     #if myGuid not in guidMap:
@@ -357,83 +361,6 @@ def MainFunction(DB, report, modifyAllowed):
 
     report.Info("Export of " + text_desired_eng + " complete.")
     
-def importGoodParsesLog():
-    logList = []
-    
-    f = open(os.path.join(tempfile.gettempdir(), Utils.GOOD_PARSES_LOG))
-    
-    for line in f:
-        (numWordsStr, flagStr) = line.rstrip().split(',')
-        
-        if flagStr == '1':
-            parsed = True
-        else:
-            parsed = False
-    
-        logList.append((int(numWordsStr), parsed))
-    
-    return logList
-    
-class treeTranSent():
-    def __init__(self):
-        self.__singleTree = True
-        self.__guidList = []
-        self.__index = 0
-    def getSingleTree(self):
-        return self.__singleTree
-    def setSingleTree(self, val):
-        self.__singleTree = val
-    def addGuid(self, myGuid):
-        self.__guidList.append(myGuid)
-    def getNextGuid(self):
-        if self.__index >= len(self.__guidList):
-            return None
-        return self.__guidList[self.__index]
-    def getNextGuidAndIncrement(self):
-        if self.__index >= len(self.__guidList):
-            return None
-        g = self.__guidList[self.__index]    
-        self.__index += 1
-        return g
-    def getLength(self):
-        return len(self.__guidList)
-        
-def getTreeSents(inputFilename):
-    
-    obj_list = []
-
-    try:
-        myETree = ET.parse(inputFilename)
-    except:
-        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
-    
-    myRoot = myETree.getroot()
-    
-    newSent = True
-    myTreeSent = None
-    
-    # Loop through the anaRec's 
-    for anaRec in myRoot:
-        # Create a new treeTranSent object
-        if newSent == True:
-            myTreeSent = treeTranSent()
-            obj_list.append(myTreeSent) # add it to the list
-            newSent = False
-            
-        # See if this word has multiple parses which means it wasn't syntax-parsed
-        mparses = anaRec.findall('mparse')
-        if len(mparses) > 1:
-            myTreeSent.setSingleTree(False)
-        
-        pNode = anaRec.find('./mparse/a/root/p')
-        currGuid = Guid(String(pNode.text))
-        analysisNode = anaRec.find('Analysis')
-        if analysisNode != None:
-            newSent = True
-        
-        myTreeSent.addGuid(currGuid)
-    
-    return obj_list
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
