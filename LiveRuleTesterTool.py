@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.6 - 3/26/20 - Ron Lockwood
+#    Added the same logic as ExtractSourceText to process words in TreeTran-
+#    outputted order, if TreeTran is being used.
+#
 #   Version 3.1.5 - 3/20/20 - Ron Lockwood
 #    Use new getInterlinData function.
 #
@@ -116,7 +120,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.1.5",
+        FTM_Version    : "3.1.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1493,21 +1497,99 @@ def MainFunction(DB, report, modify=False):
             report.Error('The text named: '+text_desired_eng+' not found.')
             return
 
+    # Check if we are using TreeTran for sorting the text output
+    treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+    
+    if not treeTranResultFile:
+        TreeTranSort = False
+    else:
+        TreeTranSort = True
+    
+    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
+    if TreeTranSort:
+        try:
+            f_treeTranResultFile = open(treeTranResultFile)
+            f_treeTranResultFile.close()
+        except:
+            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            return
+        
+        # get the list of guids from the TreeTran results file
+        treeSentList = Utils.getTreeSents(treeTranResultFile)
+        
+        # get log info. that tells us which sentences have a syntax parse and # words per sent
+        logInfo = Utils.importGoodParsesLog()
+            
+
     # NEW CODE
     myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
 
-    #DELETE
-    #getSurfaceForm = True
-    #segment_list = Utils.get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm)
-    
-    # NEW CODE
-    if myText.haveData() == True:
-        segment_list = myText.getSurfaceAndDataTupleListBySent()
+    if TreeTranSort:
         
-    #DELETE
-    # See if we have any data to show
-    #if len(segment_list) > 0:
+        segment_list = []
+        
+        # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
+        myText.createGuidMaps()
+        
+        p = 0
+        noParseSentCount = 0
+        
+        # Loop through each sent
+        for sentNum, (_, parsed) in enumerate(logInfo):
+            
+            tupList = []
+            
+            # If we have a parse for a sentence, TreeTran may have rearranged the words.
+            # We need to put them out in the new TreeTran order.
+            if parsed == True:
+                myTreeSent = treeSentList[p]
                 
+                myFLExSent = myText.getSent(sentNum)
+                if myFLExSent is None:
+                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    return
+                    
+                # Loop through each word in the sentence and get the Guids
+                for wrdNum in range(0, myTreeSent.getLength()):
+                    myGuid = myTreeSent.getNextGuidAndIncrement()
+                    
+                    if myGuid == None:
+                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                        break
+                    
+                    # If we couldn't find the guid, see if there's a reason
+                    if myFLExSent.haveGuid(myGuid) == False:
+                        # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
+                        nextGuid = myTreeSent.getNextGuid()
+                        if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                    else:
+                        surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
+                        tupList.append((surface,data))
+                    
+                p += 1
+                
+            # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
+            else:
+                noParseSentCount += 1
+                
+                # Get the sentence in question
+                myFLExSent = myText.getSent(sentNum)
+                myFLExSent.getSurfaceAndDataTupleList(tupList)
+            
+            segment_list.append(tupList)
+                
+        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        
+        if noParseSentCount > 0:
+            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+
+    else:
+        # Normal, non-TreeTran processing
+        if myText.haveData() == True:
+            segment_list = myText.getSurfaceAndDataTupleListBySent()
+        
+    if len(segment_list) > 0:    
         # Create the qt app
         app = QtGui.QApplication(sys.argv)
         
@@ -1527,6 +1609,8 @@ def MainFunction(DB, report, modify=False):
         
         window.show()
         app.exec_()
+    else:
+        report.Error('This text has no data.')
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
