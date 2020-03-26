@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.3 - 3/26/20 - Ron Lockwood
+#    Moved TreeTran related class and functions from ExtractSourceText to the 
+#    Utils file.
+#
 #   Version 2.1.2 - 3/22/20 - Ron Lockwood
 #    Reorganized the punctuation part. Put the check for new sentence and
 #    paragraph into a function. The logic is more linear now.
@@ -95,6 +99,8 @@ import subprocess
 import uuid
 from datetime import datetime
 import TestbedValidator
+from System import Guid
+from System import String
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
@@ -1295,6 +1301,8 @@ class TextEntirety():
     # determine which par and index into it to return the right sentence
     def getSent(self, sentNum):
         (count, par) = self.getParAndSentIndex(sentNum)
+        if sentNum >= count:
+            return None
         return par.getSent(sentNum-(count-len(par.getSentences())))
     def getSentCount(self):
         return sum([x.getSentCount() for x in self.__parList])
@@ -1342,6 +1350,8 @@ class TextParagraph():
         for sent in self.__sentList:
             sent.findComplexForms(cmplxFormMap, typesList)
     def getSent(self, sentNum):
+        if sentNum >= len(self.__sentList) or sentNum < 0:
+            return None
         return self.__sentList[sentNum]
     def getSentCount(self):
         return len(self.__sentList)
@@ -1378,6 +1388,8 @@ class TextSentence():
     def createGuidMap(self):
         for word in self.__wordList:
             self.__guidMap[word.getGuid()] = word
+    def getSurfaceAndDataForGuid(self, guid):
+        return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
     def getSurfaceAndDataTupleList(self, tupList):
         for word in self.__wordList:
             tupList.append((word.getSurfaceForm(), word.outputDataStream()))
@@ -1448,6 +1460,9 @@ class TextSentence():
         
     # See if a bundle is not part of a neighboring complex form
     def notPartOfAdjacentComplexForm(self, currGuid, nextGuid):
+        if nextGuid not in self.__guidMap:
+            return True
+        
         # Get the next word object
         nextWrd = self.__guidMap[nextGuid]
         
@@ -2471,3 +2486,81 @@ def processSharedComplexForm(shared_complex_e, saved1stbaselineWord, outStr, rep
         report.Warning("No senses found for the complex form.")
 
     return outStr
+
+def importGoodParsesLog():
+    logList = []
+    
+    f = open(os.path.join(tempfile.gettempdir(), GOOD_PARSES_LOG))
+    
+    for line in f:
+        (numWordsStr, flagStr) = line.rstrip().split(',')
+        
+        if flagStr == '1':
+            parsed = True
+        else:
+            parsed = False
+    
+        logList.append((int(numWordsStr), parsed))
+    
+    return logList
+    
+class treeTranSent():
+    def __init__(self):
+        self.__singleTree = True
+        self.__guidList = []
+        self.__index = 0
+    def getSingleTree(self):
+        return self.__singleTree
+    def setSingleTree(self, val):
+        self.__singleTree = val
+    def addGuid(self, myGuid):
+        self.__guidList.append(myGuid)
+    def getNextGuid(self):
+        if self.__index >= len(self.__guidList):
+            return None
+        return self.__guidList[self.__index]
+    def getNextGuidAndIncrement(self):
+        if self.__index >= len(self.__guidList):
+            return None
+        g = self.__guidList[self.__index]    
+        self.__index += 1
+        return g
+    def getLength(self):
+        return len(self.__guidList)
+        
+def getTreeSents(inputFilename):
+    
+    obj_list = []
+
+    try:
+        myETree = ET.parse(inputFilename)
+    except:
+        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
+    
+    myRoot = myETree.getroot()
+    
+    newSent = True
+    myTreeSent = None
+    
+    # Loop through the anaRec's 
+    for anaRec in myRoot:
+        # Create a new treeTranSent object
+        if newSent == True:
+            myTreeSent = treeTranSent()
+            obj_list.append(myTreeSent) # add it to the list
+            newSent = False
+            
+        # See if this word has multiple parses which means it wasn't syntax-parsed
+        mparses = anaRec.findall('mparse')
+        if len(mparses) > 1:
+            myTreeSent.setSingleTree(False)
+        
+        pNode = anaRec.find('./mparse/a/root/p')
+        currGuid = Guid(String(pNode.text))
+        analysisNode = anaRec.find('Analysis')
+        if analysisNode != None:
+            newSent = True
+        
+        myTreeSent.addGuid(currGuid)
+    
+    return obj_list
