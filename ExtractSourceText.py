@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.1.2 - 3/27/20 - Ron Lockwood
+#    Handle adding sentence punctuation when using TreeTran.
+#    
 #   Version 2.1.1 - 3/26/20 - Ron Lockwood
 #    Moved TreeTran-related class and function to the Utils file.
 #
@@ -134,7 +137,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.1.1",
+        FTM_Version    : "2.1.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -272,6 +275,13 @@ def MainFunction(DB, report, modifyAllowed):
                 myFLExSent = myText.getSent(sentNum)
                 isLastSent = myText.isLastSentInParagraph(sentNum)
                 
+                if myFLExSent is None:
+                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    return
+                    
+                # Output any punctuation preceding the sentence.
+                myFLExSent.writePrecedingSentPunc(f_out)
+                
                 # Loop through each word in the sentence and get the Guids
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
@@ -305,6 +315,9 @@ def MainFunction(DB, report, modifyAllowed):
                         #outStr = Utils.split_compounds(outStr)
                         #f_out.write(outStr.encode('utf-8'))
 
+                # Output any punctuation at the of the sentence.
+                myFLExSent.writeFinalSentPunc(f_out)
+                
                 if isLastSent:
                     f_out.write('\n')
 

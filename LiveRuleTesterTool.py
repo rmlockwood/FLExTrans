@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.1.7 - 3/27/20 - Ron Lockwood
+#    Handle adding sentence punctuation when using TreeTran.
+#    
 #   Version 3.1.6 - 3/26/20 - Ron Lockwood
 #    Added the same logic as ExtractSourceText to process words in TreeTran-
 #    outputted order, if TreeTran is being used.
@@ -120,7 +123,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.1.6",
+        FTM_Version    : "3.1.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1549,6 +1552,10 @@ def MainFunction(DB, report, modify=False):
                     report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
                     return
                     
+                # Output any punctuation preceding the sentence.
+                prePuncTupList = myFLExSent.getSurfaceAndDataPrecedingSentPunc()
+                tupList.extend(prePuncTupList)
+                
                 # Loop through each word in the sentence and get the Guids
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
@@ -1567,6 +1574,10 @@ def MainFunction(DB, report, modify=False):
                         surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
                         tupList.append((surface,data))
                     
+                # Output any punctuation at the of the sentence.
+                postPuncTupList = myFLExSent.getSurfaceAndDataFinalSentPunc()
+                tupList.extend(postPuncTupList)
+                
                 p += 1
                 
             # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        

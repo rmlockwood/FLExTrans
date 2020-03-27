@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.4 - 3/27/20 - Ron Lockwood
+#    Handle adding sentence punctuation when using TreeTran.
+#    
 #   Version 2.1.3 - 3/26/20 - Ron Lockwood
 #    Moved TreeTran related class and functions from ExtractSourceText to the 
 #    Utils file.
@@ -1393,6 +1396,23 @@ class TextSentence():
     def getSurfaceAndDataTupleList(self, tupList):
         for word in self.__wordList:
             tupList.append((word.getSurfaceForm(), word.outputDataStream()))
+    # Write out final sentence punctuation (possibly multiple)
+    def getSurfaceAndDataFinalSentPunc(self):
+        tupList = []
+        for word in reversed(self.__wordList):
+            if word.isSentPunctutationWord():
+                tupList.insert(0,(word.getSurfaceForm(), word.outputDataStream()))
+            else: # stop on the first non-sent punc. word
+                break
+        return tupList
+    def getSurfaceAndDataPrecedingSentPunc(self):
+        tupList = []
+        for word in self.__wordList:
+            if word.isSentPunctutationWord():
+                tupList.append((word.getSurfaceForm(), word.outputDataStream()))
+            else: # stop on the first non-sent punc. word
+                break
+        return tupList
     def getWordCount(self):
         return len(self.__wordList)
     def getWordList(self):
@@ -1402,6 +1422,23 @@ class TextSentence():
     def write(self, fOut):
         for word in self.__wordList:
             word.write(fOut)
+    # Write out final sentence punctuation (possibly multiple)
+    def writeFinalSentPunc(self, fOut):
+        myList = []
+        for word in reversed(self.__wordList):
+            if word.isSentPunctutationWord():
+                myList.insert(0, word) # add to beg. of list
+            else: # stop on the first non-sent punc. word
+                break
+        for word in myList: # write out in original order
+            word.write(fOut)
+    # Write out preceeding sentence punctuation (possibly multiple)
+    def writePrecedingSentPunc(self, fOut):
+        for word in self.__wordList:
+            if word.isSentPunctutationWord():
+                word.write(fOut)
+            else: # stop on the first non-sent punc. word
+                break
     def writeThisGuid(self, fOut, myGuid):
         self.__guidMap[myGuid].write(fOut)
     
@@ -1875,6 +1912,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
                 
                 # initialize it with the puctuation and sent as the "POS"
                 myWord.addLemma(textPunct)
+                myWord.setSurfaceForm(textPunct)
                 myWord.addPlainTextAffix('sent')
                 
                 # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
