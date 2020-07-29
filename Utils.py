@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.7 - 7/29/20 - Ron Lockwood
+#    In CheckForUnknown, check the surface form, not punctuation.
+#    
 #   Version 2.1.6 - 7/29/20 - Ron Lockwood
 #    Support writing the word data and the punctuation separately in the Word
 #    and Sent classes. This is for keeping punctuation in the same place during
@@ -1583,7 +1586,7 @@ class TextSentence():
             # See if we have an uninitialized word which indicates it's unknown
             if word.isInitialized() == False:
                 # Allow some unknown "words" without warning, such as sfm markers
-                if len(word.getInitialPunc()) > 0 and word.getInitialPunc()[0] == '\\':
+                if len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0] == '\\':
                     continue
                 if i > 0:
                     prvWrd = self.__wordList[i-1]
