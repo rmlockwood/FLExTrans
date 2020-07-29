@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.5 - 7/29/20 - Ron Lockwood
+#    Moved pre-punctuation check in getInterlinear above check for new sent.
+#    
 #   Version 2.1.4 - 3/27/20 - Ron Lockwood
 #    Handle adding sentence punctuation when using TreeTran.
 #    
@@ -1935,14 +1938,14 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
         # Start with a new word
         myWord = TextWord(report)
         
-        # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
-        newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
-        
         # See if we have any pre-punctuation
         if len(savedPrePunc) > 0:
             myWord.addInitialPunc(savedPrePunc)
             savedPrePunc = ""
             
+        # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
+        newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
+        
         # Figure out the surface form and set it.
         beg = analysisOccurance.GetMyBeginOffsetInPara()
         end = analysisOccurance.GetMyEndOffsetInPara()
