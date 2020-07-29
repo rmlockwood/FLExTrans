@@ -322,7 +322,7 @@ def MainFunction(DB, report, modifyAllowed):
                         #myFLExSent.writeThisGuid(f_out, myGuid)
                         
                         # Write the original word order punctuation.
-                        myFLExSent.writePostPunc(wrdNum, f_out)
+                        myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
                     
                     #DELETE
                     #else:
