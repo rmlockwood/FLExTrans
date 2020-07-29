@@ -215,6 +215,11 @@ class ANAInfo(object):
             myRoot = myRoot.lower()
             
         self.Analysis = ' '.join(prefixes) + ' < '+myPos+' '+myRoot+' > '+' '.join(suffixes)
+    def escapePunc(self, myStr):
+        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
+        if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
+            myStr =  re.sub(r'\\([^n])', r'\\\\\1', myStr)
+        return myStr
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
@@ -222,9 +227,9 @@ class ANAInfo(object):
     def write(self, f_ana):
         f_ana.write('\\a ' + self.getAnalysis().encode('utf-8') + '\n')
         if self.getBeforePunc():
-            f_ana.write('\\f ' + self.getBeforePunc().encode('utf-8') + '\n')
+            f_ana.write('\\f ' + self.escapePunc(self.getBeforePunc()).encode('utf-8') + '\n')
         if self.getAfterPunc():
-            f_ana.write('\\n ' + self.getAfterPunc().encode('utf-8') + '\n')
+            f_ana.write('\\n ' + self.escapePunc(self.getAfterPunc()).encode('utf-8') + '\n')
         if self.getCapitalization():
             f_ana.write('\\c ' + self.getCapitalization().encode('utf-8') + '\n')
         f_ana.write('\n')
@@ -316,8 +321,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         word_toks = []
         for aper_tok in aper_toks:
             
-            # If we have at least one word-forming char, then we have a word package(s)
-            if re.search('\w', aper_tok, re.U):
+            # If we have at least one word-forming char, then we have a word package(s), except if we have a standard format marker that has \ + x
+            if re.search(r'\\', aper_tok) == None and re.search('\w', aper_tok, re.U):
                 
                 # Split on < or >. For ^rast<ez>dast<ez> we get ['^rast', '<', 'ez', '>', 'dast', '<', 'ez', '>', '']
                 sub_toks = re.split('(<|>)', aper_tok) # Note: we get the < and > in the list because we used parens
@@ -350,8 +355,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
             # If there is more than one whitespace, save it as post punctuation.
             elif re.match('\s*$', tok): # match starts at beg. of string
                 post_punct = tok
-            # word plus possible affixes
-            elif re.search('\w', tok, re.U):
+            # word plus possible affixes (don't count sfm markers as words)
+            elif re.search(r'\\', tok) == None and re.search('\w', tok, re.U):
                 
                 # write out the last word we processed.
                 if wordAnaInfo:
@@ -365,7 +370,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                     # handle punctuation at the beginning of the paragraph (before the word)
                     if post_punct:
                         pre_punct = post_punct
-                        post_punct = ''
+                        pre_punct += next_pre_punct
+                        next_pre_punct = post_punct = ''
                         
                     # if first word of a non-initial paragraph
                     if cnt > 0:
