@@ -8,7 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
-#   Version 2.1.3 - 3/27/20 - Ron Lockwood
+#   Version 2.1.4 - 7/29/20 - Ron Lockwood
+#    Use an offset when writing punctuation in TreeTran case.
+#    
+#   Version 2.1.3 - 7/29/20 - Ron Lockwood
 #    Write the punctuation of the words in their normal order when doing TreeTran.
 #    This avoids punctuation staying with words that change their order.
 #    
@@ -141,7 +144,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.1.3",
+        FTM_Version    : "2.1.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -284,9 +287,10 @@ def MainFunction(DB, report, modifyAllowed):
                     return
                     
                 # Output any punctuation preceding the sentence.
-                myFLExSent.writePrecedingSentPunc(f_out)
+                puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
                 
                 # Loop through each word in the sentence and get the Guids
+                # NB: any <sent> 'words' won't get processed since they are not in the guid list.
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
@@ -309,7 +313,8 @@ def MainFunction(DB, report, modifyAllowed):
                     # We want the punctuation to be at the same points as in the original sentence. This won't always come out right, but maybe close.
                     else:
                         # Write the original word order punctuation.
-                        myFLExSent.writePrePunc(wrdNum, f_out)
+                        # Use the punctuation words written above as the offset to make sure the guid word is the same as the flex sentence word.
+                        myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
 
                         # Write the data that's between the punctuation
                         myFLExSent.writeWordDataForThisGuid(f_out, myGuid)

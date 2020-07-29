@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.8 - 7/29/20 - Ron Lockwood
+#    Return a count from writePrecedingSentPunc
+#    
 #   Version 2.1.7 - 7/29/20 - Ron Lockwood
 #    In CheckForUnknown, check the surface form, not punctuation.
 #    
@@ -1450,12 +1453,14 @@ class TextSentence():
              
     # Write out preceeding sentence punctuation (possibly multiple)
     def writePrecedingSentPunc(self, fOut):
+        count = 0
         for word in self.__wordList:
             if word.isSentPunctutationWord():
                 word.write(fOut)
+                count += 1
             else: # stop on the first non-sent punc. word
                 break
-
+        return count
     def writePostPunc(self, wrdNum, fOut):
         if wrdNum <= len(self.__wordList) - 1:
             self.__wordList[wrdNum].writePostPunc(fOut)
