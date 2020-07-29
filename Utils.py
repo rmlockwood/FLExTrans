@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 2.1.6 - 7/29/20 - Ron Lockwood
+#    Support writing the word data and the punctuation separately in the Word
+#    and Sent classes. This is for keeping punctuation in the same place during
+#    TreeTran transformations.
+#    
 #   Version 2.1.5 - 7/29/20 - Ron Lockwood
 #    Moved pre-punctuation check in getInterlinear above check for new sent.
 #    
@@ -1435,6 +1440,11 @@ class TextSentence():
                 break
         for word in myList: # write out in original order
             word.write(fOut)
+    
+    def writePrePunc(self, wrdNum, fOut):
+        if wrdNum <= len(self.__wordList) - 1:
+            self.__wordList[wrdNum].writePrePunc(fOut)
+             
     # Write out preceeding sentence punctuation (possibly multiple)
     def writePrecedingSentPunc(self, fOut):
         for word in self.__wordList:
@@ -1442,8 +1452,16 @@ class TextSentence():
                 word.write(fOut)
             else: # stop on the first non-sent punc. word
                 break
+
+    def writePostPunc(self, wrdNum, fOut):
+        if wrdNum <= len(self.__wordList) - 1:
+            self.__wordList[wrdNum].writePostPunc(fOut)
+             
     def writeThisGuid(self, fOut, myGuid):
         self.__guidMap[myGuid].write(fOut)
+    # Don't write punctuation, just word data
+    def writeWordDataForThisGuid(self, fOut, myGuid):
+        self.__guidMap[myGuid].writeWordData(fOut)
     
     ### Long methods - in alphabetical order
     def findComplexForms(self, cmplxFormMap, typesList):
@@ -1801,7 +1819,10 @@ class TextWord():
                 retStr += self.getDataStreamSymbols(i)
         return retStr
     def outputDataStream(self):
-        retStr = self.__initPunc+'^'+self.outputDataForAllRoots()+'$'+self.__finalPunc
+        retStr = self.__initPunc+self.outputWordDataStream()+self.__finalPunc
+        return retStr
+    def outputWordDataStream(self):
+        retStr = '^'+self.outputDataForAllRoots()+'$'
         return retStr
     def setComponentList(self, cList):
         self.__componentList = cList
@@ -1811,6 +1832,12 @@ class TextWord():
         self.__surfaceForm = myStr
     def write(self, fOut):
         fOut.write(split_compounds(self.outputDataStream()).encode('utf-8'))
+    def writePrePunc(self, fOut):
+        fOut.write(self.__initPunc.encode('utf-8'))
+    def writePostPunc(self, fOut):
+        fOut.write(self.__finalPunc.encode('utf-8'))
+    def writeWordData(self, fOut):
+        fOut.write(split_compounds(self.outputWordDataStream()).encode('utf-8'))
         
 def initProgress(contents, report): 
     # count analysis objects

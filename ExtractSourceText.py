@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 2.1.3 - 3/27/20 - Ron Lockwood
+#    Write the punctuation of the words in their normal order when doing TreeTran.
+#    This avoids punctuation staying with words that change their order.
+#    
 #   Version 2.1.2 - 3/27/20 - Ron Lockwood
 #    Handle adding sentence punctuation when using TreeTran.
 #    
@@ -137,7 +141,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.1.2",
+        FTM_Version    : "2.1.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -302,8 +306,18 @@ def MainFunction(DB, report, modifyAllowed):
                     #    report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     
                     # NEW CODE
+                    # We want the punctuation to be at the same points as in the original sentence. This won't always come out right, but maybe close.
                     else:
-                        myFLExSent.writeThisGuid(f_out, myGuid)
+                        # Write the original word order punctuation.
+                        myFLExSent.writePrePunc(wrdNum, f_out)
+
+                        # Write the data that's between the punctuation
+                        myFLExSent.writeWordDataForThisGuid(f_out, myGuid)
+                        
+                        #myFLExSent.writeThisGuid(f_out, myGuid)
+                        
+                        # Write the original word order punctuation.
+                        myFLExSent.writePostPunc(wrdNum, f_out)
                     
                     #DELETE
                     #else:
