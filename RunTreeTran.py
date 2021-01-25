@@ -24,29 +24,26 @@
 # and the output filename (from the config file) as parameters.
 
 
-import Utils
-import ReadConfig
 import os
-import re
 import xml.etree.ElementTree as ET
 import tempfile
-import sys
-import shutil
-import unicodedata
 from subprocess import call
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *                                                 
+
+import Utils
+import ReadConfig
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "2.0",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
         FTM_Description: 
-u"""
+"""
 This module will run the TreeTran program to modify a syntax tree. The resulting
 file is placed in the Output folder which is then used by the ExtractSourceText
 module to modify the word order of the sentence according to the TreeTran rules
@@ -122,13 +119,13 @@ def MainFunction(DB, report, modify=True):
     
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
-    if not configMap:
+    if configMap is None:
         return
 
     # Check if we are using TreeTran for sorting the text output
     # If TreeTran is not being used the config file will have AnalyzedTextTreeTranOutputFile=
     # i.e. set to nothing
-    treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
     if not treeTranResultFile:
         return 
     
