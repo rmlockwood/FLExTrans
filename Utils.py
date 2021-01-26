@@ -156,6 +156,7 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 OUTPUT_FOLDER = 'Output'
 TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
 TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
+TRANSFER_RULE_FILE_PATH = OUTPUT_FOLDER + '\\transfer_rules.t1x'
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
