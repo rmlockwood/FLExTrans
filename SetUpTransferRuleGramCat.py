@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.0 - 1/25/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -22,18 +25,18 @@
 #
 
 import shutil
-import codecs
-import ReadConfig
 import xml.etree.ElementTree as ET
 from FTModuleClass import *                                          
 from SIL.LCModel import *                                            
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr  
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
+import Utils
+import ReadConfig
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : '2.0',
+        FTM_Version    : '3.0',
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",
@@ -49,7 +52,7 @@ lexicons and put them under an attribute called a_gram_cat in the transfer rule 
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
-    transFile = 'Output\\transfer_rules.t1x'
+    transFile = Utils.TRANSFER_RULE_FILE_PATH
     
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -95,12 +98,14 @@ def MainFunction(DB, report, modify=True):
 
     # If it doesn't exist create it and add it to section-def-attrs
     if def_attr is None:
+        
         def_attr = ET.Element('def-attr')
         def_attr.attrib['n'] = 'a_gram_cat'
         section_def_attrs.append(def_attr)
         
     # Loop through all of the symbol definition (sdef) elements in the bilingual file
     for my_sdef in sdefs:
+        
         # Get the c (comment) and n (value) attributes for the current sdef
         # Create an attr-item element
         new_attr_item = ET.Element('attr-item')
@@ -112,17 +117,23 @@ def MainFunction(DB, report, modify=True):
         # Append the attr-item element to the gram cat def_attr
         def_attr.append(new_attr_item)
         
-    # Write the transfer rule file
-    ff = codecs.open(transFile, 'w', 'utf-8')
-    ff.write('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"\n"transfer.dtd">\n')
-    transEtree.write(ff, 'utf-8')
+    # Write the transfer rule file (it's XML)
+    transEtree.write(transFile, 'utf-8')
+    
+    # Prepend the lines for a proper XML file (XML Editor needs this)
+    newLines = '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"\n"transfer.dtd">\n'
+
+    f2 = open(transFile, encoding='utf-8')
+    data = f2.read()
+    f2.close()
+    f3 = open(transFile, 'w', encoding='utf-8')
+    f3.write(newLines + data)
+    f3.close()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
