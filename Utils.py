@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.0 - 1/25/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.1.8 - 7/29/20 - Ron Lockwood
 #    Return a count from writePrecedingSentPunc
 #    
@@ -115,15 +118,13 @@ import platform
 import subprocess
 import uuid
 from datetime import datetime
-import TestbedValidator
+# TODO: import TestbedValidator
 from System import Guid
 from System import String
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from __builtin__ import False, True
-from future.backports.test.pystone import FALSE, TRUE
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -195,7 +196,8 @@ DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 reObjAddOne = re.compile('\d$')
-reDataStream = re.compile('(>[^$<])')   
+reDataStream = re.compile('(>[^$<])')  
+""" 
 ## Testbed classes
 # Models a single FLExTrans lexical unit
 # A lexical unit consists of a headword, a sense number, a grammatical category 
@@ -1031,6 +1033,7 @@ class FlexTransTestbedResultsFile():
     
     def write(self):
         self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
+"""
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
@@ -1057,16 +1060,17 @@ def run_makefile(relPathToBashFile):
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
     f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
-    f.write('#!/bin/sh\n')
-    f.write('cd '+"'"+dir_path+"'"+'\n')
-    f.write('make 2>err_out\n')
-    #f.write('# '+full_path)
+    outStr = '#!/bin/sh\n'
+    outStr += 'cd ' + "'" + dir_path + "'" + '\n'
+    outStr += 'make 2>err_out\n'
+    
+    f.write(bytes(outStr, 'ascii'))
     f.close()
     
     cmd = [bash, '-c', full_path]
     return subprocess.call(cmd)
-    #return 0
 
+"""
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
@@ -2640,3 +2644,4 @@ def getTreeSents(inputFilename):
         myTreeSent.addGuid(currGuid)
     
     return obj_list
+"""
