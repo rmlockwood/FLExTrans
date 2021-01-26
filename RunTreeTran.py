@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.0 - 1/25/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0.1 - 1/22/20 - Ron Lockwood
 #    Updated comments and documentation.
 #
