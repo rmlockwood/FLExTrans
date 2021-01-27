@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.0 - 1/27/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.1 - 7/29/20 - Ron Lockwood
 #   Double backslash chars, fixed complex punct. at beg. of par.
 #
@@ -116,15 +119,15 @@
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
 #   
-import sys
 import re 
 import os
 import tempfile
-import ReadConfig
-import Utils
 from datetime import datetime
 from System import Guid
 from System import String
+
+import ReadConfig
+import Utils
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -135,12 +138,12 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "2.1",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
         FTM_Description:  
-u"""
+"""
 The target database set in the configuration file will be used. This module will 
 create a text file in STAMP format using the Apertium transfer results. 
 NOTE: messages and the task bar will show the SOURCE database
@@ -181,7 +184,7 @@ class ANAInfo(object):
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis)
         if g:
             ret = self.removeUnderscores(g.group(1))
-            return unicode(ret)
+            return ret
         return None
     def getSenseNum(self):
         return re.search(r'< .+ .+\.(\d+) >',self.Analysis).group(1)
@@ -228,13 +231,13 @@ class ANAInfo(object):
     def setBeforePunc(self, myBeforePunc):
         self.BeforePunc = myBeforePunc
     def write(self, f_ana):
-        f_ana.write('\\a ' + self.getAnalysis().encode('utf-8') + '\n')
+        f_ana.write('\\a ' + self.getAnalysis() + '\n')
         if self.getBeforePunc():
-            f_ana.write('\\f ' + self.escapePunc(self.getBeforePunc()).encode('utf-8') + '\n')
+            f_ana.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
         if self.getAfterPunc():
-            f_ana.write('\\n ' + self.escapePunc(self.getAfterPunc()).encode('utf-8') + '\n')
+            f_ana.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
         if self.getCapitalization():
-            f_ana.write('\\c ' + self.getCapitalization().encode('utf-8') + '\n')
+            f_ana.write('\\c ' + self.getCapitalization() + '\n')
         f_ana.write('\n')
     def calcCase(self, word):
         if word.isupper():
@@ -247,11 +250,11 @@ class ANAInfo(object):
 # Read an ANA file and convert it to a list of ANAInfo objects
 def get_ANA_info(file_name_str):
     
-    f_ana = open(file_name_str, 'r')
+    f_ana = open(file_name_str, 'r', encoding='utf-8')
     
     infoList = []
     for line in f_ana:
-        line = unicode(line,'utf-8')
+
         if len(line) < 2:
             continue
         elif (line[1] == 'a'):
@@ -272,7 +275,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     error_list = []
     
     try:
-        f_ana = open(ana_name, 'w')
+        f_ana = open(ana_name, 'w', encoding='utf-8')
     except IOError:
         error_list.append(('The file: '+ana_name+' was not found.', 2))
         return error_list
@@ -280,7 +283,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     affix_map = {}
     
     # Read in the target affix list. 
-    f_afx = open(pfx_name, 'r')
+    f_afx = open(pfx_name, 'r', encoding='utf-8')
     for line in f_afx:
         (affix, morph_type) = re.split('\|', line.rstrip())
         affix_map[affix] = morph_type
@@ -288,18 +291,18 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     f_afx.close()
 
     try:
-        f_test = open(out_name, 'r')
+        f_test = open(out_name, 'r', encoding='utf-8')
     except IOError:
         error_list.append(('The file: '+out_name+' was not found.', 2))
         return error_list
         
-    num_lines = sum(1 for line in open(out_name))
+    num_lines = sum(1 for line in open(out_name, encoding='utf-8'))
     
     if report is not None:
         report.ProgressStart(num_lines)
     
     # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
-    f_apert = open(out_name, 'r')
+    f_apert = open(out_name, 'r', encoding='utf-8')
     
     # Have to start with a blank line with utf8 files
     f_ana.write('\n')
@@ -309,15 +312,13 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         if report is not None:
             report.ProgressUpdate(cnt)
             
-        line = unicode(line,'utf-8')
-        
         # convert <sent> (sentence punctuation) to simply the punctuation without the tag or ^$
         reStr = '\^([' + sentPunct + ']+)<sent>\$'
         line = re.sub(reStr,r'\1',line)
         
         # split on ^ or $ to get the 'word packages' (word + POS + affixes) E.g. ^xx1.1<vpst><pfv><3sg_pst>$ (assumption that no feature tags come out of the transfer process)
         aper_toks = re.split('\^|\$', line) 
-        aper_toks = filter(None, aper_toks) # remove empty strings (typically at the beginning and end)
+        aper_toks = [_f for _f in aper_toks if _f] # remove empty strings (typically at the beginning and end)
         
         # each token can contain multiple words packages, flesh these out 
         # E.g. ^xxx1.1<ez>xxx1.1<ez>$  NOT SURE IT'S VALID LIKE THIS
@@ -325,11 +326,11 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         for aper_tok in aper_toks:
             
             # If we have at least one word-forming char, then we have a word package(s), except if we have a standard format marker that has \ + x
-            if re.search(r'\\', aper_tok) == None and re.search('\w', aper_tok, re.U):
+            if re.search(r'\\', aper_tok) == None and re.search('\w', aper_tok):
                 
                 # Split on < or >. For ^rast<ez>dast<ez> we get ['^rast', '<', 'ez', '>', 'dast', '<', 'ez', '>', '']
                 sub_toks = re.split('(<|>)', aper_tok) # Note: we get the < and > in the list because we used parens
-                sub_toks = filter(None, sub_toks) # remove empty strings (typically at the end)
+                sub_toks = [_f for _f in sub_toks if _f] # remove empty strings (typically at the end)
             
                 # loop through all the sub tokens which may have multiple words
                 my_list = []
@@ -359,7 +360,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
             elif re.match('\s*$', tok): # match starts at beg. of string
                 post_punct = tok
             # word plus possible affixes (don't count sfm markers as words)
-            elif re.search(r'\\', tok) == None and re.search('\w', tok, re.U):
+            elif re.search(r'\\', tok) == None and re.search('\w', tok):
                 
                 # write out the last word we processed.
                 if wordAnaInfo:
@@ -381,8 +382,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                         pre_punct = '\\n' + pre_punct
                 
                 # Get the root, root category and any affixes
-                morphs = re.split('<|>', tok, re.U)
-                morphs = filter(None, morphs) # remove empty strings
+                morphs = re.split('<|>', tok)
+                morphs = [_f for _f in morphs if _f] # remove empty strings
                 
                 prefix_list = []
                 suffix_list = []
@@ -424,7 +425,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                             
                     error_list.append(("Word or POS missing. Found: "+",".join(morphs),2))
                     for m in morphs:
-                        f_ana.write(m.encode('utf-8'))
+                        f_ana.write(m)
                     return error_list
                     #raise FTM_ModuleError, "Examine the target text output from apertium."
                 
@@ -770,17 +771,17 @@ class ConversionData():
         
         for (featGrpName, abbValue) in abbList:
             # Write out the feature name and the value
-            f.write(featGrpName.encode('utf-8')+'\n')
-            f.write(abbValue.encode('utf-8')+'\n')
+            f.write(featGrpName+'\n')
+            f.write(abbValue+'\n')
             
     def saveToCache(self):
-        f = open(self.getCacheFilePath(), 'w')
+        f = open(self.getCacheFilePath(), 'w', encoding='utf-8')
         
         # TODO: HANDLE writing all forms for each headword
         f.write(COMPLEX_FORMS+'\n')
         for headWord in sorted(self.complex_map.keys()):
             # output head word
-            f.write(headWord.encode('utf-8')+'\n')
+            f.write(headWord+'\n')
 
             # output the entry guid
             self.writeEntry(f, self.complex_map[headWord])
@@ -789,7 +790,7 @@ class ConversionData():
         for headWord in sorted(self.irr_infl_var_map.keys()):
             
             # output head word
-            f.write(headWord.encode('utf-8')+'\n')
+            f.write(headWord+'\n')
 
             myList = self.irr_infl_var_map[headWord]
 
@@ -835,7 +836,7 @@ class ConversionData():
         return e
     
     def loadFromCache(self):
-        f = open(self.getCacheFilePath())
+        f = open(self.getCacheFilePath(), encoding='utf-8')
         
         complex_lines = []
         infl_lines = []
@@ -856,9 +857,9 @@ class ConversionData():
                 continue
 
             if doingComplexForms == True:
-                complex_lines.append(unicode(line.rstrip(), 'utf-8'))      
+                complex_lines.append(line.rstrip())      
             else: # variant forms
-                infl_lines.append(unicode(line.rstrip(), 'utf-8'))
+                infl_lines.append(line.rstrip())
          
         # Process complex forms
         i = 0
@@ -968,9 +969,6 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
-    # Convert the sentence punctuation to a unicode string
-    sentPunct = unicode(sentPunct,'utf-8')
-
     # Check the validity of the complex forms lists
     if complexForms1st and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report):
         error_list.append(('Configuration file problem.', 2))
@@ -1030,7 +1028,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # Read in the ANA file we created above storing all the ana pieces (\a + \f + \n)
     anaInfoList = get_ANA_info(anaFileName)
     
-    f_ana = open(anaFileName, 'w')
+    f_ana = open(anaFileName, 'w', encoding='utf-8')
     f_ana.write('\n') # always need a blank line at the top
     
     count = 0
@@ -1053,7 +1051,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         
         count += 1
     
-    error_list.append((unicode(count)+' records exported in ANA format.', 0))
+    error_list.append((str(count)+' records exported in ANA format.', 0))
     f_ana.close()
     
     return error_list
