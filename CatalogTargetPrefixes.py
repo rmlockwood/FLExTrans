@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -52,10 +55,7 @@
 #   for each affix. Do this per sense. Write one gloss and type per line.
 #
 
-import sys
-import re 
 import os
-from collections import defaultdict
 from System import Guid
 from System import String
 from datetime import datetime
@@ -72,12 +72,12 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "2.0",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
         FTM_Description:
-u"""
+"""
 The target database set in the configuration file will be used. This module will output all 
 the gloss and morphtype fields for the best analysis writing system for all affixes. 
 NOTE: messages and the task bar will show the SOURCE database
@@ -130,12 +130,8 @@ def catalog_affixes(DB, configMap, filePath, report=None):
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
-        #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
-#         return error_list
+    except: 
         raise
     
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
@@ -150,7 +146,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     
     # Open the file for writing.
     try:
-        f_out = open(myPath, 'w') 
+        f_out = open(myPath, 'w', encoding='utf-8') 
     except IOError as e:
         error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
         return error_list
@@ -179,7 +175,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
             # First the main form. If we have an affix or stem type that is anything other than the ones counted 
             # as roots according to the config file (morphNames), e.g. clitic, enclitic, proclitic, etc.
             if (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoAffixAllomorph' and e.LexemeFormOA.MorphTypeRA) or \
-               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType <> None and morphType not in morphNames):
+               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType != None and morphType not in morphNames):
     
                 processIt = True
             
@@ -190,7 +186,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
                     
                     morphType = ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
-                       (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType <> None and morphType not in morphNames):
+                       (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
             
                         processIt = True
                         break
