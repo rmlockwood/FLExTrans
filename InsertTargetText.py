@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -28,15 +31,13 @@
 #   give it a new unique name.
 #
 
-import os
-import tempfile
-import ReadConfig
-import Utils
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs.FLExProject import FLExProject, GetProjectNames
+import ReadConfig
+import Utils
 
 #----------------------------------------------------------------
 # Configurables:
@@ -51,7 +52,7 @@ docs = {FTM_Name       : "Insert Target Text",
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
         FTM_Description:
-u"""
+"""
 The target database set in the configuration file will be used. This module will take
 the results of the synthesis process (Create Target Dictionaries and Synthesize module)
 and insert the text into the target FLEx project. The SourceTextName property in 
@@ -98,11 +99,8 @@ def MainFunction(DB, report, modify=True):
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
             return
-        #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
+    except: 
         raise
 
     report.Info('Using: '+targetProj+' as the target database.')
@@ -116,7 +114,7 @@ def MainFunction(DB, report, modify=True):
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
 
     try:
-        f = open(synFile)
+        f = open(synFile, encoding='utf-8')
     except:
         report.Error('Could not open the file: "'+synFile+'".')
 
@@ -158,7 +156,7 @@ def MainFunction(DB, report, modify=True):
         stText.ParagraphsOS.Add(stTxtPara)       
         
         # Create a TS String to hold the line of text. Use the default vern. writing system
-        tss = TsStringUtils.MakeString(unicode(line,'utf-8'), TargetDB.project.DefaultVernWs)
+        tss = TsStringUtils.MakeString(line, TargetDB.project.DefaultVernWs)
         
         # Set the paragraph contents to the TS String
         stTxtPara.Contents = tss             
@@ -168,20 +166,12 @@ def MainFunction(DB, report, modify=True):
     text.Name.AnalysisDefaultWritingSystem = tss
     
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
-#    # End the Undo Task
-#    DB.db.MainCacheAccessor.EndNonUndoableTask()        
-#
-#    usm = DB.db.ServiceLocator.GetInstance(IUndoStackManager)
-#    # Save the changes to fwdata
-#    usm.Save()         
  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
