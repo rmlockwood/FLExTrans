@@ -5,22 +5,20 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.0 - 1/25/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 1.0 - 6/9/18 - Ron Lockwood
 #    Initial Version
 #
 #   A Class to validate if a lexical unit is good by checking against the FLEx database.
 
 import re
-import copy
 import tempfile
 import os
-import xml.etree.ElementTree as ET
-import platform
-import subprocess
-import uuid
+from datetime import datetime
 import Utils
 import ReadConfig
-from datetime import datetime
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
@@ -115,25 +113,24 @@ class TestbedValidator():
             return False
 
     def saveToCache(self):
-        f = open(self.getCacheFilePath(), 'w')
+        f = open(self.getCacheFilePath(), 'w', encoding='utf-8')
         
-        # TODO: check encodings
         f.write(GRAM_CATS+'\n')
         for cat in sorted(self.mapCats.keys()):
-            f.write(cat.encode('utf-8')+'\n')
+            f.write(cat+'\n')
             
         f.write(TAGS+'\n')
         for tag in sorted(self.mapTags.keys()):
-            f.write(tag.encode('utf-8')+'\n')
+            f.write(tag+'\n')
             
         f.write(WORD_SENSES+'\n')
         for wordSense in sorted(self.mapWordSenses.keys()):
-            f.write(wordSense.encode('utf-8')+'\n')
+            f.write(wordSense+'\n')
         
         f.close()
             
     def loadFromCache(self):
-        f = open(self.getCacheFilePath())
+        f = open(self.getCacheFilePath(), encoding='utf-8')
         
         # start with grammatical categories
         myMap = self.mapCats
@@ -155,7 +152,7 @@ class TestbedValidator():
                 myMap = self.mapWordSenses
                 continue
             
-            myMap[unicode(line.rstrip(), 'utf-8')] = 7 # dummy value
+            myMap[line.rstrip()] = 7 # dummy value
          
         f.close()
            

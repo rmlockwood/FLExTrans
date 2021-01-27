@@ -118,7 +118,7 @@ import platform
 import subprocess
 import uuid
 from datetime import datetime
-# TODO: import TestbedValidator
+import TestbedValidator
 from System import Guid
 from System import String
 
@@ -198,7 +198,7 @@ XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 reObjAddOne = re.compile('\d$')
 reDataStream = re.compile('(>[^$<])')  
-""" 
+
 ## Testbed classes
 # Models a single FLExTrans lexical unit
 # A lexical unit consists of a headword, a sense number, a grammatical category 
@@ -271,7 +271,7 @@ class LexicalUnit():
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = ur'\u200F' + self.__gramCat
+            symb = r'\u200F' + self.__gramCat
         else:
             symb = self.__gramCat
         
@@ -283,7 +283,7 @@ class LexicalUnit():
             # Check for RTL
             if rtl == True:
                 # prepend the RTL marker
-                symb = ur'\u200F' + tag
+                symb = r'\u200F' + tag
             else:
                 symb = tag
             
@@ -319,7 +319,9 @@ class LexicalUnit():
         
         # Split off the symbols from the lemma in the lexical unit
         tokens = re.split('<|>', self.__inStr)
-        tokens = filter(None, tokens) # filter out the empty strings
+        
+        #Python 2 code: tokens = filter(None, tokens) # filter out the empty strings
+        tokens = [_f for _f in tokens if _f] # filter out the empty strings
         
         # If we have less than 2 items, it's badly_formed. We need at least a value plus it's gramm. category
         if len(tokens) < 2:
@@ -376,7 +378,7 @@ class LexicalUnit():
 class LexicalUnitParser():
     
     def __init__(self, string2Parse):
-        self.__inputStr = unicode(string2Parse)
+        self.__inputStr = string2Parse
         self.__badly_formed = False
         self.__lexUnitList = []
         self.__parse()
@@ -663,7 +665,7 @@ class TestbedTestXMLObject():
         
         # each test goes on its own line. Add a dummy EOL lexical unit so that
         # transfer rules don't go to the next line unintentially 
-        f_out.write(self.getApertiumString().encode('utf-8')+' ^EOL<eol>$\n')
+        f_out.write(self.getApertiumString() + ' ^EOL<eol>$\n')
 
     def extractResults(self, f_out):
         
@@ -672,8 +674,6 @@ class TestbedTestXMLObject():
             line = f_out.readline()
         except:
             raise ValueError('No more lines to read in the synthesis file.')
-        
-        line = unicode(line, 'utf-8')
         
         # Remove the dummy EOL lexical unit at the end.
         line = re.sub(' @EOL', '', line)
@@ -1034,7 +1034,6 @@ class FlexTransTestbedResultsFile():
     
     def write(self):
         self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
-"""
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
@@ -1071,7 +1070,6 @@ def run_makefile(relPathToBashFile):
     cmd = [bash, '-c', full_path]
     return subprocess.call(cmd)
 
-"""
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
@@ -1082,7 +1080,7 @@ def output_span(parent, color, text_str, rtl):
     # Check for RTL
     if rtl == True:
         # prepend the RTL marker
-        text_str = ur'\u200F'+text_str
+        text_str = r'\u200F'+text_str
         
     span.text = text_str
     
@@ -1098,7 +1096,7 @@ def add_subscript(span, num):
 def process_chunk_lexical_unit(lu_str, parent_element, rtl):
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
-    symbols = filter(None, symbols) # filter out the empty strings
+    symbols = [_f for _f in symbols if _f] # filter out the empty strings
     
     # Lemma is the first one
     lemma = symbols.pop(0)
@@ -1125,7 +1123,7 @@ def process_chunk_lexical_unit(lu_str, parent_element, rtl):
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = ur'\u200F' + symb
+            symb = r'\u200F' + symb
         
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
@@ -1134,7 +1132,7 @@ def process_chunk_lexical_unit(lu_str, parent_element, rtl):
 def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
-    symbols = filter(None, symbols) # filter out the empty strings
+    symbols = [_f for _f in symbols if _f] # filter out the empty strings
     
     # Lemma is the first one
     lemma = symbols.pop(0)
@@ -1180,7 +1178,7 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = ur'\u200F' + symb
+            symb = r'\u200F' + symb
         
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
@@ -1222,6 +1220,7 @@ def add_one(headWord):
         return (headWord + '1')
     return headWord 
 
+"""
 # Duplicate the capitalization of the model word on the input word
 def do_capitalization(wordToChange, modelWord):
     if wordToChange and modelWord:
@@ -1844,13 +1843,13 @@ class TextWord():
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
-        fOut.write(split_compounds(self.outputDataStream()).encode('utf-8'))
+        fOut.write(split_compounds(self.outputDataStream()))
     def writePrePunc(self, fOut):
-        fOut.write(self.__initPunc.encode('utf-8'))
+        fOut.write(self.__initPunc)
     def writePostPunc(self, fOut):
-        fOut.write(self.__finalPunc.encode('utf-8'))
+        fOut.write(self.__finalPunc)
     def writeWordData(self, fOut):
-        fOut.write(split_compounds(self.outputWordDataStream()).encode('utf-8'))
+        fOut.write(split_compounds(self.outputWordDataStream()))
         
 def initProgress(contents, report): 
     # count analysis objects
