@@ -1294,10 +1294,12 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
+"""
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
 
+"""
 # The whole text from FLEx
 class TextEntirety():
     def __init__(self):
