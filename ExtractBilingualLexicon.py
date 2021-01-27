@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0 - 1/27/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0.2 - 2/4/20 - Ron Lockwood
 #    give an error when the target db open fails.
 #
@@ -96,13 +99,13 @@
 
 import re 
 import os
-import tempfile
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from collections import defaultdict
+
 from System import Guid
 from System import String
+
 import ReadConfig
 
 from FTModuleClass import *                                                 
@@ -114,12 +117,12 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "2.0.1",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
         FTM_Description:
-u"""
+"""
 The source database should be chosen for this module. This module will create a bilingual 
 lexicon for two projects. The
 database that FlexTools is set to is your source project. Set the TargetProject
@@ -328,11 +331,11 @@ def do_replacements(configMap, report, fullPathBilingFile):
     bilingEtree.write(fullPathBilingFile, 'utf-8', True)
     
     # Insert the DOCTYPE as the 2nd line of the file.
-    f = open(fullPathBilingFile, "r")
+    f = open(fullPathBilingFile, "r", encoding="utf-8")
     contents = f.readlines()
     f.close()
     contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-    f = open(fullPathBilingFile, 'w')
+    f = open(fullPathBilingFile, 'w', encoding="utf-8")
     contents = "".join(contents)
     f.write(contents)
     f.close()
@@ -434,17 +437,14 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     fullPathBilingFile = bilingFile
-    #fullPathBilingFile = os.path.join(tempfile.gettempdir(), bilingFile)
-    #f_out = open(fullPathBilingFile, 'w')
 
-    
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
         report.Info('Bilingual dictionary is up to date.')
         
     else: # build the file
         try:
-            f_out = open(fullPathBilingFile, 'w')
+            f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as e:
             report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
     
@@ -526,7 +526,7 @@ def MainFunction(DB, report, modifyAllowed):
                     posMap[featAbbr] = featName
                 
         # build string for the xml pos section
-        for pos_abbr, pos_name in sorted(posMap.items(), key=lambda(k, v): (k.lower(),v)):
+        for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
             cat_str = '    <sdef n="'
             # output abbreviation
             cat_str += pos_abbr
@@ -535,7 +535,7 @@ def MainFunction(DB, report, modifyAllowed):
             # output full category name
             cat_str += pos_name
             cat_str += '"/>\n'
-            f_out.write(cat_str.encode('utf-8'))
+            f_out.write(cat_str)
         
         f_out.write('  </sdefs>\n\n')
         f_out.write('  <section id="main" type="standard">\n')
@@ -658,7 +658,7 @@ def MainFunction(DB, report, modifyAllowed):
                                                 # output the bilingual dictionary line (the sX is xml stuff)
                                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
                                                           str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                                f_out.write(out_str.encode('utf-8'))
+                                                f_out.write(out_str)
                                                 records_dumped_cnt += 1
                                         
                                             else:
@@ -707,7 +707,7 @@ def MainFunction(DB, report, modifyAllowed):
                             out_str = headWord+'.'+str(i+1)+s2+abbrev        
                             out_str = s1i+out_str+s4i+'\n'
                             
-                        f_out.write(out_str.encode('utf-8')) 
+                        f_out.write(out_str) 
                         records_dumped_cnt += 1   
                         
             else:
@@ -740,7 +740,7 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.close()
     
         report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
-        report.Info(unicode(records_dumped_cnt)+' records created in the bilingual dictionary.')
+        report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
 
         # TODO: Check if the replacement file is out of date        
         # As a last step, replace certain parts of the bilingual dictionary
@@ -749,7 +749,6 @@ def MainFunction(DB, report, modifyAllowed):
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             
