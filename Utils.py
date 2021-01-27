@@ -1220,7 +1220,6 @@ def add_one(headWord):
         return (headWord + '1')
     return headWord 
 
-"""
 # Duplicate the capitalization of the model word on the input word
 def do_capitalization(wordToChange, modelWord):
     if wordToChange and modelWord:
@@ -1230,6 +1229,7 @@ def do_capitalization(wordToChange, modelWord):
             return wordToChange[0].upper()+wordToChange[1:]
     return wordToChange
 
+"""
 # OLD CODE -- TO BE DELETED        
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
@@ -1246,6 +1246,7 @@ def get_position_in_component_list(e, complex_e):
             for i, my_e in enumerate(entryRef.ComponentLexemesRS):
                 if e == my_e:
                     return i
+"""
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -1294,12 +1295,11 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
-"""
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
 
-"""
+
 # The whole text from FLEx
 class TextEntirety():
     def __init__(self):
@@ -1673,7 +1673,7 @@ class TextWord():
     def addUnknownAffix(self):
         self.addPlainTextAffix('UNK')
     def buildLemmaAndAdd(self, baseStr, senseNum):
-        if type(baseStr) == str or type(baseStr) == unicode:
+        if type(baseStr) == str: # Python2 code: or type(baseStr) == unicode:
             myStr = baseStr 
         else:
             myStr = ITsString(baseStr).Text
@@ -1911,7 +1911,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     savedPrePunc = ''
     newParagraph = False
     newSentence = False
-    
+        
     initProgress(contents, report)
     
     # Initialize the text and the first paragraph object
@@ -1936,7 +1936,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
             newParagraph = True
             
         # If we are on a different segment, it's a new sentence.
-        if analysisOccurance.Segment.Hvo <> currSegNum:
+        if analysisOccurance.Segment.Hvo != currSegNum:
             newSentence = True
             
         # Save where we are    
@@ -2092,6 +2092,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
     
     return myText
 
+"""
 # Old function to get interlinear data        
 def get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort=False):
     
@@ -2568,6 +2569,7 @@ def processSharedComplexForm(shared_complex_e, saved1stbaselineWord, outStr, rep
         report.Warning("No senses found for the complex form.")
 
     return outStr
+"""
 
 def importGoodParsesLog():
     logList = []
@@ -2609,7 +2611,7 @@ class treeTranSent():
         return g
     def getLength(self):
         return len(self.__guidList)
-        
+
 def getTreeSents(inputFilename):
     
     obj_list = []
@@ -2646,4 +2648,3 @@ def getTreeSents(inputFilename):
         myTreeSent.addGuid(currGuid)
     
     return obj_list
-"""

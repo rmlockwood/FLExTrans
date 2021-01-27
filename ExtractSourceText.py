@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.1.4 - 7/29/20 - Ron Lockwood
 #    Use an offset when writing punctuation in TreeTran case.
 #    
@@ -112,12 +115,6 @@
 #    Changed module description.
 #
 
-import sys
-import os
-import re 
-import tempfile
-import copy
-import xml.etree.ElementTree as ET
 from System import Guid
 from System import String
 
@@ -127,12 +124,8 @@ import Utils
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
-
 from FTModuleClass import FlexToolsModuleClass
 from collections import defaultdict
-from types import *
-from future.backports.test.pystone import FALSE, TRUE
-from __builtin__ import True
 
 #----------------------------------------------------------------
 # Configurables:
@@ -144,12 +137,12 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "2.1.4",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
         FTM_Description :
-u"""
+"""
 The source database should be chosen for this module. This module will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
@@ -177,10 +170,11 @@ def MainFunction(DB, report, modifyAllowed):
     outFileVal = ReadConfig.getConfigVal(configMap, 'AnalyzedTextOutputFile', report)
     if not outFileVal:
         return
-    #fullPathTextOutputFile = os.path.join(tempfile.gettempdir(), outFileVal)
+    
     fullPathTextOutputFile = outFileVal
+    
     try:
-        f_out = open(fullPathTextOutputFile, 'w')
+        f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
         return
@@ -212,13 +206,13 @@ def MainFunction(DB, report, modifyAllowed):
             return
     
     # Get punctuation string
-    sent_punct = unicode(ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report), "utf-8")
+    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
     
     if not sent_punct:
         return
     
     # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
     
     if not treeTranResultFile:
         TreeTranSort = False
