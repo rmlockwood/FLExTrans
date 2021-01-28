@@ -177,7 +177,7 @@ class Main(QMainWindow):
     def load(self):
         # Open the input file
         try:
-            f = open(self.viewFile, 'utf-8')
+            f = open(self.viewFile, encoding='utf-8')
         except IOError:
             QMessageBox.warning(self, 'File Error', 'There was a problem opening the file: '+self.viewFile+'. ')
             return
@@ -323,10 +323,9 @@ class Main(QMainWindow):
         # The webView widget seems to only display non-ascii characters if it is
         # in utf-16
         utf16_name = self.html+'16'
-        original = open(self.html, 'utf-8')
-        utf16 = open(utf16_name, "w", 'utf-16')
+        original = open(self.html, encoding='utf-8')
+        utf16 = open(utf16_name, "w", encoding='utf-16')
 
-#        utf16.write(unicode(original.read(), 'UTF-8').encode('UTF-16'))
         utf16.write(original.read())
         original.close()
         utf16.close()
@@ -334,7 +333,7 @@ class Main(QMainWindow):
         f.close()
         
         # Give the html file location to the web viewer widget
-        self.ui.webView.setUrl(QtCore.QUrl("file:///"+self.html))
+        self.ui.webView.setUrl(QtCore.QUrl("file:///"+re.sub(r'\\','/',self.html)))
         
         # Set the link label address
         rich_str = '<a href="file:///'+self.html+'">Open in Browser</a>'
