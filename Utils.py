@@ -271,7 +271,7 @@ class LexicalUnit():
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = r'\u200F' + self.__gramCat
+            symb = '\u200F' + self.__gramCat
         else:
             symb = self.__gramCat
         
@@ -283,7 +283,7 @@ class LexicalUnit():
             # Check for RTL
             if rtl == True:
                 # prepend the RTL marker
-                symb = r'\u200F' + tag
+                symb = '\u200F' + tag
             else:
                 symb = tag
             
@@ -1080,7 +1080,7 @@ def output_span(parent, color, text_str, rtl):
     # Check for RTL
     if rtl == True:
         # prepend the RTL marker
-        text_str = r'\u200F'+text_str
+        text_str = '\u200F'+text_str
         
     span.text = text_str
     
@@ -1123,7 +1123,7 @@ def process_chunk_lexical_unit(lu_str, parent_element, rtl):
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = r'\u200F' + symb
+            symb = '\u200F' + symb
         
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
@@ -1178,7 +1178,7 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # Check for RTL
         if rtl == True:
             # prepend the RTL marker
-            symb = r'\u200F' + symb
+            symb = '\u200F' + symb
         
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
