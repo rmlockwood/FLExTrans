@@ -14,7 +14,7 @@
    <string>Source/Target Viewer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWebView" name="webView">
+   <widget class="QWebView" name="webView" native="true">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -29,7 +29,7 @@
       <pointsize>12</pointsize>
      </font>
     </property>
-    <property name="zoomFactor">
+    <property name="zoomFactor" stdset="0">
      <double>1.000000000000000</double>
     </property>
    </widget>
