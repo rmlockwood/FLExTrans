@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -17,13 +17,13 @@ class Ui_MainWindow(object):
         MainWindow.resize(891, 670)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.webView = QtWebKitWidgets.QWebView(self.centralwidget)
+        self.webView = QWebEngineView(self.centralwidget)
         self.webView.setGeometry(QtCore.QRect(10, 10, 871, 591))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(12)
         self.webView.setFont(font)
-        self.webView.setZoomFactor(1.0)
+        self.webView.setProperty("zoomFactor", 1.0)
         self.webView.setObjectName("webView")
         self.OKButton = QtWidgets.QPushButton(self.centralwidget)
         self.OKButton.setGeometry(QtCore.QRect(790, 620, 90, 25))
@@ -89,4 +89,3 @@ class Ui_MainWindow(object):
         self.targetRadio1.setText(_translate("MainWindow", "1"))
         self.targetRadio2.setText(_translate("MainWindow", "2"))
         self.targetRadio3.setText(_translate("MainWindow", "3"))
-from PyQt5 import QtWebKitWidgets
