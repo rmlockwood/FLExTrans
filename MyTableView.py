@@ -9,24 +9,25 @@
 #
 #   TableView & CheckBox delegate classes used to show check boxes in the linker table view. 
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QApplication, QTableView, QStyleOptionButton, QStyledItemDelegate, QStyle, QItemDelegate
 
 
-class MyTableView(QtGui.QTableView):
+class MyTableView(QTableView):
     """
     A simple table to demonstrate the QComboBox delegate.
     """
     def __init__(self, *args, **kwargs):
-        QtGui.QTableView.__init__(self, *args, **kwargs)
+        QTableView.__init__(self, *args, **kwargs)
         self.setItemDelegateForColumn(0, CheckBoxDelegate(self))
 
-class CheckBoxDelegate(QtGui.QStyledItemDelegate):
+class CheckBoxDelegate(QStyledItemDelegate):
     """
     A delegate that places a fully functioning QCheckBox in every
     cell of the column to which it's applied
     """
     def __init__(self, parent):
-        QtGui.QItemDelegate.__init__(self, parent)
+        QItemDelegate.__init__(self, parent)
         
     def createEditor(self, parent, option, index):
         '''
@@ -40,30 +41,31 @@ class CheckBoxDelegate(QtGui.QStyledItemDelegate):
         Paint a checkbox without the label.
         '''
 
-        checked = index.data().toBool()
-        check_box_style_option = QtGui.QStyleOptionButton()
+        checked = index.data()
+        check_box_style_option = QStyleOptionButton()
 
-        if (index.flags() & QtCore.Qt.ItemIsEditable) > 0:
-            check_box_style_option.state |= QtGui.QStyle.State_Enabled
+        flags = int(index.flags())
+        if (flags & QtCore.Qt.ItemIsEditable) > 0:
+            check_box_style_option.state |= QStyle.State_Enabled
         else:
-            check_box_style_option.state |= QtGui.QStyle.State_ReadOnly
+            check_box_style_option.state |= QStyle.State_ReadOnly
 
         if checked:
-            check_box_style_option.state |= QtGui.QStyle.State_On
-            #painter.fillRect(self.getCheckBoxRect(option), QtGui.QColor(QtCore.Qt.yellow))
+            check_box_style_option.state |= QStyle.State_On
+            #painter.fillRect(self.getCheckBoxRect(option), QColor(QtCore.Qt.yellow))
         else:
-            check_box_style_option.state |= QtGui.QStyle.State_Off
-            #painter.fillRect(self.getCheckBoxRect(option), QtGui.QColor(QtCore.Qt.white))
+            check_box_style_option.state |= QStyle.State_Off
+            #painter.fillRect(self.getCheckBoxRect(option), QColor(QtCore.Qt.white))
 
         check_box_style_option.rect = self.getCheckBoxRect(option)
 
         # this will not run - hasFlag does not exist
         #if not index.model().hasFlag(index, QtCore.Qt.ItemIsEditable):
-            #check_box_style_option.state |= QtGui.QStyle.State_ReadOnly
+            #check_box_style_option.state |= QStyle.State_ReadOnly
 
-        check_box_style_option.state |= QtGui.QStyle.State_Enabled
+        check_box_style_option.state |= QStyle.State_Enabled
 
-        QtGui.QApplication.style().drawControl(QtGui.QStyle.CE_CheckBox, check_box_style_option, painter)
+        QApplication.style().drawControl(QStyle.CE_CheckBox, check_box_style_option, painter)
 
     def editorEvent(self, event, model, option, index):
         '''
@@ -109,13 +111,13 @@ class CheckBoxDelegate(QtGui.QStyledItemDelegate):
         mn.setGeometry(mn.x()-1,mn.y()-1,mn.width(),mn.height()-1)
 
     def getCheckBoxRect(self, option):
-        check_box_style_option = QtGui.QStyleOptionButton()
-        check_box_rect = QtGui.QApplication.style().subElementRect(QtGui.QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
+        check_box_style_option = QStyleOptionButton()
+        check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
         check_box_point = QtCore.QPoint (option.rect.x() +
-                            option.rect.width() / 2 -
-                            check_box_rect.width() / 2,
+                            option.rect.width() // 2 -
+                            check_box_rect.width() // 2,
                             option.rect.y() +
-                            option.rect.height() / 2 -
-                            check_box_rect.height() / 2)
+                            option.rect.height() // 2 -
+                            check_box_rect.height() // 2)
         return QtCore.QRect(check_box_point, check_box_rect.size())
 
