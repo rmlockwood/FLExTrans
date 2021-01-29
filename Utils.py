@@ -290,7 +290,9 @@ class LexicalUnit():
             # output the symbol
             output_span(p, AFFIX_COLOR, ' '+symb, rtl)
         
-        return ET.tostring(p)
+        retStr = ET.tostring(p, encoding='unicode')
+            
+        return retStr
     
     def toApertiumString(self):
         ret_str = '^' + self.__headWord

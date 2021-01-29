@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.0 - 1/28/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0.1 - 1/30/20 - Ron Lockwood
 #    Start with a font size of 12 
 # 
@@ -20,26 +23,25 @@
 #   date/time.
 #
 
-import os
 import re
-import tempfile
 import sys
 import unicodedata
-import copy
-import datetime
 import xml.etree.ElementTree as ET
+from datetime import datetime
+
 from System import Guid
 from System import String
-from datetime import datetime
-from PyQt4 import QtGui, QtCore
-from PyQt4 import QtWebKit
-import ReadConfig
-import Utils
+
+from PyQt5 import QtGui, QtCore
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  
+import Utils
+
 from TestbedLog import Ui_MainWindow
 
 #----------------------------------------------------------------
@@ -51,7 +53,7 @@ docs = {FTM_Name       : "Testbed Log Viewer",
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
         FTM_Description:  
-u"""
+"""
 View testbed run results.
 """ }
                  
@@ -93,7 +95,7 @@ class Stats():
 
         p = ET.Element('p')
         Utils.output_span(p, myColor, myStr, False) #rtl
-        return ET.tostring(p)
+        return ET.tostring(p, encoding='unicode')
 
     
 # An item that can be used to populate a tree view, knowing it's place in the model
@@ -135,7 +137,7 @@ class BaseTreeItem(object):
             return self.parent.children.index(self)
         return 0
     def createTheWidget(self, col):
-        return QtGui.QLabel()
+        return QtWidgets.QLabel()
     
 # Represents the root of the tree    
 class RootTreeItem(BaseTreeItem):
@@ -181,7 +183,7 @@ class TestStatsItem(BaseTreeItem):
         return ''
 
     def createTheWidget(self, col):
-        myLabel = QtGui.QLabel()
+        myLabel = QtWidgets.QLabel()
         myLabel.setText(self.Data(col))
         if self.isRTL():
             myLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -265,13 +267,14 @@ class TestResultItem(BaseTreeItem):
             elif self.testFailed():
                 p = ET.Element('p')
                 Utils.output_span(p, Utils.NOT_FOUND_COLOR, self.actualStr, False) #rtl
-                return ET.tostring(p)
+                return ET.tostring(p, encoding='unicode')
             else:
                 retStr = '---'
                 # keep ltr unless the expected data is rtl
-                if isinstance(self.expectedStr[0], str) == False and unicodedata.bidirectional(self.expectedStr[0]) in (u'R', u'AL'):
-                #if self.isRTL():
-                    retStr = u'\u200F' + retStr
+                if isinstance(self.expectedStr[0], str) == False and unicodedata.bidirectional(self.expectedStr[0]) in ('R', 'AL'):
+
+                    retStr = '\u200F' + retStr
+                    
                 return retStr
         return ''
     
@@ -302,14 +305,12 @@ class TestResultItem(BaseTreeItem):
 
         # Expected and actual results
         else:
-            myWidget = QtGui.QLabel(self.Data(col))
-#             if self.isRTL():
-#                 myWidget.setAlignment(QtCore.Qt.AlignRight)
+            myWidget = QtWidgets.QLabel(self.Data(col))
             
         return myWidget
 
 # A widget for an icon and text
-class ITWidget(QtGui.QWidget):
+class ITWidget(QtWidgets.QWidget):
 
     def __init__(self, rtl):
         super(ITWidget, self).__init__()
@@ -318,16 +319,13 @@ class ITWidget(QtGui.QWidget):
         self.__create()
 
     def __create(self):
-        layout = QtGui.QHBoxLayout()
-        self.iconLabel = QtGui.QLabel()
-        self.textLabel = QtGui.QLabel()
+        layout = QtWidgets.QHBoxLayout()
+        self.iconLabel = QtWidgets.QLabel()
+        self.textLabel = QtWidgets.QLabel()
         
         if self.rtl:
             layout.addWidget(self.iconLabel)
             layout.addWidget(self.textLabel,1)
-            #layout.setDirection(0)
-            #self.iconLabel.setAlignment(QtCore.Qt.AlignRight)
-            #self.textLabel.setAlignment(QtCore.Qt.AlignRight)
         else:
             layout.addWidget(self.iconLabel)
             layout.addWidget(self.textLabel,1)
@@ -412,7 +410,6 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
     def index(self, row, column, parentindex): 
         
-        node = QtCore.QModelIndex()
         if parentindex.isValid():
             nodeS = parentindex.internalPointer()
             nodeX = nodeS.GetChild(row)
@@ -491,10 +488,10 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         
         return QtCore.QVariant()
                 
-class LogViewerMain(QtGui.QMainWindow):
+class LogViewerMain(QMainWindow):
 
     def __init__(self, resultsXMLObj):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -528,14 +525,14 @@ class LogViewerMain(QtGui.QMainWindow):
         return self.__model
     
     def okClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.Ok
+        self.retValue = QDialogButtonBox.Ok
         self.close()
 
     def EditTestbedClicked(self):
         pass
 
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
         self.myResize()
         
     def myResize(self):    
@@ -564,7 +561,7 @@ def MainFunction(DB, report, modify):
     # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     window = LogViewerMain(resultsXMLObj)
     
@@ -572,7 +569,7 @@ def MainFunction(DB, report, modify):
     window.myResize()
     firstIndex = window.getModel().rootItem.children[0].index
     window.ui.logTreeView.expand(firstIndex)
-    exec_val = app.exec_()
+    app.exec_()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
