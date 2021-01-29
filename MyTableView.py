@@ -102,7 +102,7 @@ class CheckBoxDelegate(QStyledItemDelegate):
         The user wanted to change the old state in the opposite.
         '''
         #print 'SetModelData'
-        newValue = not index.data().toBool()
+        newValue = not index.data()
         #print 'New Value : {0}'.format(newValue)
         model.setData(index, newValue, QtCore.Qt.EditRole)
         # Crude way to cause repaint
