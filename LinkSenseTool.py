@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#/   Version 3.0 - 1/29/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.2.2 - 2/27/19 - Ron Lockwood
 #    Skip empty MSAs
 #
@@ -65,24 +68,26 @@
 #   will be updated.
 #
 
-from FTModuleClass import FlexToolsModuleClass
-import ReadConfig
-import os
 import re
-import tempfile
 import sys
 import unicodedata
 from fuzzywuzzy import fuzz
-import copy
+
 from System import Guid
 from System import String
-from PyQt4 import QtGui, QtCore
+
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from FTModuleClass import *                                                 
+from FTModuleClass import FlexToolsModuleClass
+
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+import ReadConfig
 
 from Linker import Ui_MainWindow
 
@@ -103,12 +108,12 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "2.2.2",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
         FTM_Description:  
-u"""
+"""
 The source database should be chosen for this module. This module will create links 
 in the source project to senses in the target project. This module will show a window
 with a list of all the senses in the text. White background rows indicate links that
@@ -206,7 +211,7 @@ class Link(object):
         elif col > 3 and col < 7:
             # columns 4-6 need to be blank if there is no tgtHPG 
             if self.get_tgtHPG() == None:
-                ret = u''   
+                ret = ''   
             elif col == 4:
                 ret = self.get_tgtHPG().getHeadword()
             elif col == 5:
@@ -236,11 +241,11 @@ class LinkerCombo(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             if self.getRTL():
-                value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
+                value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
             else:
-                value = myHPG.getHeadword() + u' (' + myHPG.getPOS() + u') ' + myHPG.getGloss()
+                value = myHPG.getHeadword() + ' (' + myHPG.getPOS() + ') ' + myHPG.getGloss()
             self.__currentHPG = myHPG    
-            return QtCore.QString(value)
+            return value
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
@@ -340,7 +345,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 value = self.__localData[row].getDataByColumn(col)
                 
             if type(value) == str:
-                return QtCore.QString(value)
+                return value
             else:
                 return value
             
@@ -349,7 +354,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             if col > 0 and len(self.__localData[row].getDataByColumn(col)) > 0:
                 
                 # check first character of the given cell
-                if unicodedata.bidirectional(self.__localData[row].getDataByColumn(col)[0]) in (u'R', u'AL'): 
+                if unicodedata.bidirectional(self.__localData[row].getDataByColumn(col)[0]) in ('R', 'AL'): 
                     
                     return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
     def flags(self, index):
@@ -368,10 +373,10 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 self.__localData[row].linkIt = value
         return True
             
-class Main(QtGui.QMainWindow):
+class Main(QMainWindow):
 
     def __init__(self, myData, headerData, comboData):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.OKButton.clicked.connect(self.OKClicked)
@@ -393,20 +398,20 @@ class Main(QtGui.QMainWindow):
         myHeadword = myHPG.getHeadword()
         # Check for right to left data and set the combobox direction if needed
         for i in range(0, len(myHeadword)):
-            if unicodedata.bidirectional(myHeadword[i]) in (u'R', u'AL'):
+            if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
                 self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                 self.__combo_model.setRTL(True)
                 break
         
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
         
         # Stretch the table view to fit
         self.ui.tableView.setGeometry(10, 50, self.width() - 20, \
                                       self.height() - 80 - self.ui.OKButton.height() - 25)
         
         # Move the OK and Cancel buttons as the window gets resized.
-        x = self.width()/2 - 10 - self.ui.OKButton.width()
+        x = self.width()//2 - 10 - self.ui.OKButton.width()
         if x < 0:
             x = 0
         self.ui.OKButton.setGeometry(x, 50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
@@ -416,7 +421,7 @@ class Main(QtGui.QMainWindow):
                                          self.ui.OKButton.height())
         # Set the column widths
         colCount = self.cols # self.ui.tableView.columnCount()
-        colWidth = (self.ui.tableView.width() / colCount) - 3
+        colWidth = (self.ui.tableView.width() // colCount) - 3
         if colWidth < 40:
             colWidth = 40
         for i in range(0, colCount):
@@ -516,7 +521,7 @@ def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, sca
                     POS = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
                 else:
-                    POS = u'UNK'
+                    POS = 'UNK'
                     
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
@@ -589,7 +594,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map):
             gloss_len = len(gloss)
             if gloss_len >= MIN_GLOSS_LEN_FOR_FUZZ:
                 # Loop through all the target glosses
-                for mgloss in gloss_map.keys():
+                for mgloss in list(gloss_map.keys()):
                     mgloss_len = len(mgloss)
                     # skip the fuzzy match if the target gloss is to small or there's a big difference in length
                     if mgloss_len >= MIN_GLOSS_LEN_FOR_FUZZ and \
@@ -762,7 +767,7 @@ def MainFunction(DB, report, modify=True):
                             if bundle.MsaRA.PartOfSpeechRA:
                                 srcPOS =  ITsString(bundle.MsaRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                srcPOS = u'UNK'
+                                srcPOS = 'UNK'
                             
                             # Create a headword-POS-gloss object and initialize a Link object with this
                             # as the source sense info.
@@ -823,7 +828,7 @@ def MainFunction(DB, report, modify=True):
     else:
     
         # Show the window
-        app = QtGui.QApplication(sys.argv)
+        app = QApplication(sys.argv)
         
         myHeaderData = ["Link it", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
                         'Target Head Word',  'Target Cat.', 'Target Gloss']
@@ -857,7 +862,7 @@ def MainFunction(DB, report, modify=True):
                     
                         # Set the sense number if necessary
                         if currLink.get_tgtSenseNum() > 1:
-                            numStr = unicode(currLink.get_tgtSenseNum())
+                            numStr = str(currLink.get_tgtSenseNum())
                             DB.LexiconSetFieldText(currSense, senseNumField, numStr)
                     
                         updated_senses[currSense] = 1
@@ -872,23 +877,19 @@ def MainFunction(DB, report, modify=True):
                         updated_senses[currSense] = 1
                     
         if cnt == 1:
-            report.Info(unicode(cnt)+' link created.')
+            report.Info(str(cnt)+' link created.')
         else:
-            report.Info(unicode(cnt)+' links created.')
+            report.Info(str(cnt)+' links created.')
 
         if unlinkCount == 1:
             report.Info('1 link removed')
         elif unlinkCount > 1:
-            report.Info(unicode(unlinkCount) + ' links removed')  
+            report.Info(str(unlinkCount) + ' links removed')  
                       
-    #exit(exec_val)
- 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
