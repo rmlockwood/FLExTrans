@@ -48,7 +48,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "2.0.1",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -191,7 +191,7 @@ class TestStatsItem(BaseTreeItem):
         # Create the elapsed time tooltip
         total_secs = self.statsObj.getTestElapsedSeconds()
         
-        minutes = total_secs / 60
+        minutes = total_secs // 60
         sec = total_secs % 60
         
         if minutes == 1:
@@ -539,9 +539,9 @@ class LogViewerMain(QMainWindow):
         myWidth = self.ui.logTreeView.width()
         
         # Set the width of the columns
-        self.ui.logTreeView.setColumnWidth(0, myWidth*5/10-3) # -3 so we don't go over total
-        self.ui.logTreeView.setColumnWidth(1, myWidth*3/10-3) # width and get a horizontal
-        self.ui.logTreeView.setColumnWidth(2, myWidth*2/10-3) # scrollbar
+        self.ui.logTreeView.setColumnWidth(0, myWidth*5//10-3) # -3 so we don't go over total
+        self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-3) # width and get a horizontal
+        self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-3) # scrollbar
     
 def MainFunction(DB, report, modify):
         
