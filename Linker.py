@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         # !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!
         # !!!! This next line has been manually modified !!!!!!!!!!!!
-        self.tableView = MyTableView.MyTableView(self.centralwidget)
+        self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 835, 351))
         font = QtGui.QFont()
         font.setFamily("Arial")
