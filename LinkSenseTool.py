@@ -6,7 +6,13 @@
 #   7/18/15
 #
 #   Version 3.0 - 1/29/21 - Ron Lockwood
-#    Changes for python 3 conversion
+#    Changes for python 3 conversion. This included removing the code for a
+#    delegate widget and a custom TableView. Instead the IsCheckable signal is
+#    used.
+#    Also overhauled the TableView user interface to support unlinking of senses
+#    currently linked in the DB. This required changes in the Link object as
+#    well as the code for loading the link list and processing the link list
+#    after the user presses OK.
 #
 #   Version 2.2.2 - 2/27/19 - Ron Lockwood
 #    Skip empty MSAs
@@ -124,6 +130,7 @@ gloss (currently 75% similar), red background rows
 have no link yet established. Double-click on the Target Head Word column for a row to copy
 the currently selected target sense in the upper combo box into that row. Click the checkbox
 to create a link for that row. I.e. the source sense will be linked to the target sense.
+Unchecking a checkbox for white row will unlink the specified sense from its target sense.
 Close matches are only attempted for words with five letters or longer.
 For suggested sense pairs where
 there is a mismatch in the grammatical category, both categories are colored red. This
@@ -200,6 +207,8 @@ class Link(object):
             self.linkIt = False
     def set_srcHPG(self, srcHPG):
         self.__srcHPG = srcHPG
+    def set_tgtHPG_only(self, tgtHPG):
+        self.__tgtHPG = tgtHPG
     def set_tgtHPG(self, tgtHPG):
         self.__tgtHPG = tgtHPG
         if tgtHPG is not None:
@@ -230,8 +239,9 @@ class Link(object):
                 ret = self.get_srcHPG().getGloss()
                 
         elif col > 3 and col < 7:
-            # columns 4-6 need to be blank if there is no tgtHPG 
-            if self.get_tgtHPG() == None or (self.get_initial_status() == INITIAL_STATUS_LINKED and self.linkIt == False):
+            # columns 4-6 need to be blank if there is no tgtHPG or we unchecked the linkIt box and we have a 
+            # non-suggested link. This is just extra visual feedback that we will do nothing when OK is clicked.
+            if self.get_tgtHPG() == None or (self.linkIt == False and not self.is_suggestion()):
                 ret = ''   
             elif col == 4:
                 ret = self.get_tgtHPG().getHeadword()
@@ -317,10 +327,10 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
             elif col == 4: # target headword column
                 
-                locData.set_tgtHPG(self.__selectedHPG)
+                locData.set_tgtHPG_only(self.__selectedHPG)
                 locData.linkIt = True
-                locData.modified = True
-                self.dataChanged.emit(index, index)
+                locData.tgtModified = True
+                #self.dataChanged.emit(index, index)
                 
                 return self.__selectedHPG.getHeadword()
         
@@ -496,6 +506,7 @@ class Main(QMainWindow):
         
         myHPG = self.__combo_model.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
+        
         # Check for right to left data and set the combobox direction if needed
         for i in range(0, len(myHeadword)):
             if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
@@ -519,12 +530,16 @@ class Main(QMainWindow):
         self.ui.CancelButton.setGeometry(x + self.ui.OKButton.width() + 10,  \
                                          50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
                                          self.ui.OKButton.height())
+        firstColWidth = 45
+        
         # Set the column widths
         colCount = self.cols # self.ui.tableView.columnCount()
-        colWidth = (self.ui.tableView.width() // colCount) - 3
+        colWidth = ((self.ui.tableView.width() - firstColWidth) // (colCount - 1)) - 4 #don't include 1st column
         if colWidth < 40:
             colWidth = 40
-        for i in range(0, colCount):
+
+        self.ui.tableView.setColumnWidth(0, firstColWidth)
+        for i in range(1, colCount):
             self.ui.tableView.setColumnWidth(i, colWidth)
     def ComboClicked(self):
         # Set the target HPG for the model  
@@ -596,7 +611,7 @@ def GetEntryWithSense(e):
         notDoneWithVariants = False
     return e
 
-def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
+def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
 
     # Loop through all the target entries
     for entry_cnt,e in enumerate(TargetDB.LexiconAllEntries()):
@@ -816,8 +831,8 @@ def MainFunction(DB, report, modify=True):
     if bundles_scale == 0:
     	bundles_scale = 1
 
-    # Create a map of glosses to target senses and their number
-    if not get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+    # Create a map of glosses to target senses and their number and a list of target lexical senses
+    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
         return
 
     warning_list = []
@@ -939,7 +954,7 @@ def MainFunction(DB, report, modify=True):
         # Show the window
         app = QApplication(sys.argv)
         
-        myHeaderData = ["Link it", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
+        myHeaderData = ["Link It!", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
