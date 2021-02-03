@@ -96,7 +96,6 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 import ReadConfig
 
 from Linker import Ui_MainWindow
-from _ast import Or
 
 #----------------------------------------------------------------
 # Configurables:
