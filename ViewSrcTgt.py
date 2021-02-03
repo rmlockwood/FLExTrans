@@ -40,7 +40,7 @@ import unicodedata
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *                                                 
 
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from SrcTgtViewer import Ui_MainWindow
