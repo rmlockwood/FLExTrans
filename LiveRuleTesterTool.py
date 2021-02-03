@@ -120,8 +120,8 @@ import copy
 import xml.etree.ElementTree as ET
 import shutil
 
-from PyQt5 import QtCore, Qt
-from PyQt5.QtGui import QStandardItem, QStandardItemModel, QCursor
+from PyQt5 import QtCore
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
 import Utils
