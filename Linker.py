@@ -10,10 +10,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-# !!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!
-# !!!! This has been manually added !!!!!!!!!!!!
-import MyTableView
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -25,8 +21,6 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        # !!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!
-        # !!!! This next line has been manually modified !!!!!!!!!!!!
         self.tableView = QtWidgets.QTableView(self.centralwidget)
         self.tableView.setGeometry(QtCore.QRect(10, 50, 835, 351))
         font = QtGui.QFont()
