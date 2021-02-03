@@ -538,10 +538,12 @@ class LogViewerMain(QMainWindow):
     def myResize(self):    
         myWidth = self.ui.logTreeView.width()
         
+        colWidthReduction = 7 # so we don't go over total width and get a horizontal scrollbar
+        
         # Set the width of the columns
-        self.ui.logTreeView.setColumnWidth(0, myWidth*5//10-3) # -3 so we don't go over total
-        self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-3) # width and get a horizontal
-        self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-3) # scrollbar
+        self.ui.logTreeView.setColumnWidth(0, myWidth*5//10-colWidthReduction) 
+        self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-colWidthReduction) 
+        self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-colWidthReduction)
     
 def MainFunction(DB, report, modify):
         
