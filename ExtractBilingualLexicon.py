@@ -97,7 +97,7 @@
 #   well as any features that are present for the entry. 
 #
 
-import re 
+import re
 import os
 import shutil
 import xml.etree.ElementTree as ET
@@ -112,6 +112,9 @@ from FTModuleClass import *
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+
+DONT_CACHE = False
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -328,7 +331,7 @@ def do_replacements(configMap, report, fullPathBilingFile):
     bilingRoot.remove(biling_section)
     bilingRoot.append(new_biling_section)
     
-    bilingEtree.write(fullPathBilingFile, 'utf-8', True)
+    bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
     
     # Insert the DOCTYPE as the 2nd line of the file.
     f = open(fullPathBilingFile, "r", encoding="utf-8")
@@ -439,7 +442,7 @@ def MainFunction(DB, report, modifyAllowed):
     fullPathBilingFile = bilingFile
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
+    if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
         report.Info('Bilingual dictionary is up to date.')
         
     else: # build the file
@@ -559,7 +562,7 @@ def MainFunction(DB, report, modifyAllowed):
                 headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
                 
                 # If there is not a homograph # at the end, make it 1
-                if not re.search('(\d$)', headWord):
+                if not re.search('\d$', headWord, re.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                     headWord += '1'
                 
                 # Loop through senses
@@ -606,7 +609,7 @@ def MainFunction(DB, report, modifyAllowed):
                                     targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
                                     
                                     # If there is not a homograph # at the end, make it 1
-                                    if not re.search('(\d$)', targetHeadWord):
+                                    if not re.search('\d$', targetHeadWord, re.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                                         targetHeadWord += '1'
                                     
                                     # An empty sense number means default to sense 1
