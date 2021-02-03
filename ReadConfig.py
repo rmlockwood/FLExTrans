@@ -21,7 +21,7 @@ CONFIG_FILE = 'FlexTrans.config'
 
 def readConfig(report):
     try:
-        f_handle = open(CONFIG_FILE)
+        f_handle = open(CONFIG_FILE, encoding='utf-8')
     except:
         if report is not None:
             report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
