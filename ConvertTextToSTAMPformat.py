@@ -181,13 +181,13 @@ class ANAInfo(object):
     def getAnalysisSuffixes(self):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getPreDotRoot(self): # in other words the headword
-        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis)
+        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, re.A) # re.A=ASCII-only match
         if g:
             ret = self.removeUnderscores(g.group(1))
             return ret
         return None
     def getSenseNum(self):
-        return re.search(r'< .+ .+\.(\d+) >',self.Analysis).group(1)
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, re.A).group(1) # re.A=ASCII-only match
     def getAfterPunc(self):
         return self.AfterPunc
     def getBeforePunc(self):
@@ -526,7 +526,7 @@ def get_ana_data_from_entry(comp_e):
                 abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
                    
         # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-        sense_num = re.search(r'(\d*) \(',ITsString(comp_sense.HeadWord).Text).group(1)
+        sense_num = re.search(r'(\d*) \(',ITsString(comp_sense.HeadWord).Text, re.A).group(1) # re.A=ASCII-only match
         
         # No number found, so use sense 1
         if sense_num == '':

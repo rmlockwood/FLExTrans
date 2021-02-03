@@ -196,7 +196,7 @@ NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-reObjAddOne = re.compile('\d$')
+reObjAddOne = re.compile('\d$', re.A) # ASCII-only match
 reDataStream = re.compile('(>[^$<])')  
 
 ## Testbed classes
@@ -259,7 +259,7 @@ class LexicalUnit():
         p = ET.Element('span')
         
         # Split off the homograph_num (if present; sent punctuation won't have it)
-        lemma_parts = re.split('(\d+)', self.__headWord) # last item is empty
+        lemma_parts = re.split('(\d+)', self.__headWord, re.A) # last item is empty re.A=ASCII-only match
         
         # Output the lexeme
         span = output_span(p, LEMMA_COLOR, lemma_parts[0], rtl)
@@ -1140,7 +1140,7 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
     lemma = symbols.pop(0)
     
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
-    lemma_parts = re.split('(\d+\.\d+)', lemma) # last item is empty
+    lemma_parts = re.split('(\d+\.\d+)', lemma, re.A) # last item is empty, re.A=ASCII only match
     
     # Check for an @
     if lemma_parts[0][0] == '@':

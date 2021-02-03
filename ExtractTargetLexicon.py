@@ -622,7 +622,7 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line)
+            line = re.sub('\d+\.\d+', '', line, re.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()
