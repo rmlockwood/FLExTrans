@@ -344,7 +344,7 @@ def MainFunction(DB, report, modifyAllowed):
                 # Get the sentence in question
                 myFLExSent = myText.getSent(sentNum)
                 myFLExSent.write(f_out)
-                f_out.write('\n'.encode('utf-8'))
+                f_out.write('\n')
                 
                 # Get the sentence in question
                 #DELETE
