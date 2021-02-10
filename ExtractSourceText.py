@@ -269,7 +269,7 @@ def MainFunction(DB, report, modifyAllowed):
             
             # If we have a parse for a sentence, TreeTran may have rearranged the words.
             # We need to put them out in the new TreeTran order.
-            if parsed == True:
+            if parsed == True and p < len(treeSentList):
                 myTreeSent = treeSentList[p]
                 
                 # NEW CODE
