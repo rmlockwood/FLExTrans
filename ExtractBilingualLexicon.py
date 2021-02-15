@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.1 - 2/15/21 - Ron Lockwood
+#    Always process the replacement file, even if the biling file is up-to-date.
+#    This will allow changes there to be seen in results every time.
+#
 #   Version 3.0 - 1/27/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -120,7 +124,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.0.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -443,7 +447,10 @@ def MainFunction(DB, report, modifyAllowed):
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
-        report.Info('Bilingual dictionary is up to date.')
+        
+        # Always do replacements.
+        do_replacements(configMap, report, fullPathBilingFile)
+        report.Info('Bilingual dictionary is up to date. Replacements made.')
         
     else: # build the file
         try:
