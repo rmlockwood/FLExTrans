@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.1 - 2/19/21 - Ron Lockwood
+#    remove multiple spaces from synthesis result
+#
 #   Version 3.2 - 1/29/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -147,7 +150,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.2.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -466,6 +469,9 @@ class Main(QMainWindow):
         # Remove the RTL marker
         synResult = re.sub('\u200F','', synResult)
         
+        # Remove multiple spaces
+        synResult = re.sub('\s{2,}', ' ', synResult)
+        
         cnt = 0
         
         # Check if add-multiple was selected
@@ -525,6 +531,8 @@ class Main(QMainWindow):
                         cnt += 1
                     
         else:
+            # TODO: This leaves out the punctuation that may be between lexical units. The synthesis result will have punctuation in it.
+            # so this creates a mismatch.
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return

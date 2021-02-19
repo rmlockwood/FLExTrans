@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.0.1 - 2/19/21 - Ron Lockwood
+#    remove @EOL or just EOL
+#
 #   Version 3.0 - 1/25/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -678,7 +681,10 @@ class TestbedTestXMLObject():
             raise ValueError('No more lines to read in the synthesis file.')
         
         # Remove the dummy EOL lexical unit at the end.
-        line = re.sub(' @EOL', '', line)
+        line = re.sub(r' @*EOL', '', line)
+        
+        # Remove multiple spaces
+        line = re.sub('\s{2,}', ' ', line)
         line = line.rstrip()
         self.setActualResult(line)
         return 1
