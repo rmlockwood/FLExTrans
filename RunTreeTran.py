@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.0.1 - 2/24/21 - Ron Lockwood
+#    Error message when config file not right.
+#
 #   Version 3.0 - 1/25/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -41,7 +44,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.0.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -130,6 +133,7 @@ def MainFunction(DB, report, modify=True):
     # i.e. set to nothing
     treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
     if not treeTranResultFile:
+        report.Error('You have not specified a value in the configuration file for AnalyzedTextTreeTranOutputFile.')
         return 
     
     # Create a path to the temporary folder + invoker file
