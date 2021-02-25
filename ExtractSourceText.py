@@ -259,18 +259,10 @@ def MainFunction(DB, report, modifyAllowed):
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
         return
 
-    # NEW CODE
+    # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
         
-    #DELETE
-    # Get the morphemes from the interlinear text in FLEx
-    #getSurfaceForm = False
-    #retObject = Utils.get_interlin_data_old(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
-
     if TreeTranSort:
-        
-        #DELETE
-        #(guidMap, sentList) = retObject
         
         # If we are using an Insert Words file, add the words to the text object
         if insertWordsFile == True:
@@ -290,7 +282,6 @@ def MainFunction(DB, report, modifyAllowed):
             if parsed == True and p < len(treeSentList):
                 myTreeSent = treeSentList[p]
                 
-                # NEW CODE
                 myFLExSent = myText.getSent(sentNum)
                 isLastSent = myText.isLastSentInParagraph(sentNum)
                 
@@ -310,18 +301,13 @@ def MainFunction(DB, report, modifyAllowed):
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
-                    # NEW CODE
                     # If we couldn't find the guid, see if there's a reason
                     if myFLExSent.haveGuid(myGuid) == False:
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
                             report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
-                    #DELETE
-                    #if myGuid not in guidMap:
-                    #    report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     
-                    # NEW CODE
                     # We want the punctuation to be at the same points as in the original sentence. This won't always come out right, but maybe close.
                     else:
                         # Write the original word order punctuation.
@@ -336,16 +322,6 @@ def MainFunction(DB, report, modifyAllowed):
                         # Write the original word order punctuation.
                         myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
                     
-                    #DELETE
-                    #else:
-                        #DELETE
-                        #outStr = guidMap[myGuid]
-                        
-                        # Split compound words
-                        #DELETE
-                        #outStr = Utils.split_compounds(outStr)
-                        #f_out.write(outStr.encode('utf-8'))
-
                 # Output any punctuation at the of the sentence.
                 myFLExSent.writeFinalSentPunc(f_out)
                 
@@ -370,43 +346,17 @@ def MainFunction(DB, report, modifyAllowed):
                 myFLExSent.write(f_out)
                 f_out.write('\n')
                 
-                # Get the sentence in question
-                #DELETE
-                #sent = sentList[sentNum]
-                
-                # Output each part of the sentence   
-                #DELETE 
-#                 for i in range(0, len(sent), 2):
-#                 
-#                     outStr = sent[i]
-#                     outStrPunct = sent[i+1]
-#                     
-#                     # Split compound words
-#                     outStr = Utils.split_compounds(outStr)
-#                     f_out.write(outStr.encode('utf-8'))
-#                     f_out.write(outStrPunct.encode('utf-8'))
-#                 #DELETE
-#                 f_out.write('\n'.encode('utf-8'))
-
         report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
         
         if noParseSentCount > 0:
             report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
 
     else:
-        # NEW CODE
         # Write out all the words
         myText.write(f_out)
         
         report.Info("Exported: " + str(myText.getSentCount()) + " sentence(s).")
         
-        #DELETE
-        # retObject is a list
-        #for outStr in retObject:
-            # Split compound words
-            #outStr = Utils.split_compounds(outStr)
-            #f_out.write(outStr.encode('utf-8'))
-
     f_out.close()
 
     report.Info("Export of " + text_desired_eng + " complete.")
