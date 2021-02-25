@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.2 - 2/25/21 - Ron Lockwood
+#    Support an insert word list file for extraction purposes. Get new item:
+#    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
+#    and addInseredWordsList. Bug fix: check if we get None for the sent. object
+#    for the number given. Give an error if needed.
+#
 #   Version 3.2.1 - 2/19/21 - Ron Lockwood
 #    remove multiple spaces from synthesis result
 #
@@ -150,7 +156,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.1",
+        FTM_Version    : "3.2.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1516,6 +1522,16 @@ def MainFunction(DB, report, modify=False):
     else:
         TreeTranSort = True
     
+    # Check if we are using an Insert Words File for TreeTran 
+    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
+    
+    if not treeTranInsertWordsFile:
+        insertWordsFile = False
+    else:
+        insertWordsFile = True
+        
+        insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -1538,6 +1554,10 @@ def MainFunction(DB, report, modify=False):
     if TreeTranSort:
         
         segment_list = []
+        
+        # If we are using an Insert Words file, add the words to the text object
+        if insertWordsFile == True:
+            myText.addInsertedWordsList(insertWordsList)
         
         # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
         myText.createGuidMaps()
@@ -1594,6 +1614,12 @@ def MainFunction(DB, report, modify=False):
                 
                 # Get the sentence in question
                 myFLExSent = myText.getSent(sentNum)
+
+                if myFLExSent == None:
+                    
+                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    continue 
+
                 myFLExSent.getSurfaceAndDataTupleList(tupList)
             
             segment_list.append(tupList)
