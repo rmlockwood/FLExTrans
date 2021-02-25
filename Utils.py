@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.1 - 2/25/21 - Ron Lockwood
+#    Support an insert word list file for extraction purposes. Added a parameter
+#    to createGuidMaps functions. New initialize() method in TextWord. New function:
+#    getInsertedWordsList.
+#
 #   Version 3.0.1 - 2/19/21 - Ron Lockwood
 #    remove @EOL or just EOL
 #
@@ -1314,11 +1319,14 @@ class TextEntirety():
         self.__parList = []
         self.__cmplxFormMap = {}
         self.__unknownWordMap = {}
+        self.__insertedWordsList = []
+    def addInsertedWordsList(self, insertList):
+        self.__insertedWordsList = insertList
     def addParagraph(self, textPar):
         self.__parList.append(textPar)
     def createGuidMaps(self):
         for par in self.__parList:
-            par.createGuidMaps()
+            par.createGuidMaps(self.__insertedWordsList)
     def getParagraphs(self):
         return self.__parList
     def getParAndSentIndex(self, sentNum):
@@ -1374,9 +1382,9 @@ class TextParagraph():
         self.__sentList = []
     def addSentence(self, textSent):
         self.__sentList.append(textSent)
-    def createGuidMaps(self):
+    def createGuidMaps(self, insertList):
         for sent in self.__sentList:
-            sent.createGuidMap()
+            sent.createGuidMap(insertList)
     def findComplexForms(self, cmplxFormMap, typesList):
         for sent in self.__sentList:
             sent.findComplexForms(cmplxFormMap, typesList)
@@ -1416,8 +1424,10 @@ class TextSentence():
         self.__guidMap = {}
     def addWord(self, textWord):
         self.__wordList.append(textWord)
-    def createGuidMap(self):
+    def createGuidMap(self, insertList):
         for word in self.__wordList:
+            self.__guidMap[word.getGuid()] = word
+        for word in insertList:
             self.__guidMap[word.getGuid()] = word
     def getSurfaceAndDataForGuid(self, guid):
         return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
@@ -1786,6 +1796,47 @@ class TextWord():
         if len(self.__senseList) > 0:
             return True
         return False
+    # Use bundle guid to look up the entry and initialize the entry, sense, and lemma
+    def initialize(self, bundleGuid, DB):
+        
+        # get the repository that holds bundle guids
+        repo = DB.project.ServiceLocator.GetInstance(IWfiMorphBundleRepository)
+        
+        # look up the guid
+        try:
+            bundleObject = repo.GetObject(bundleGuid)
+        except:
+            self.__report.Error('Could not find bundle Guid for word in the inserted word list.')
+            return 
+        
+        # get the entry object and add it
+        myEntry = bundleObject.MorphRA.Owner
+        self.addEntry(myEntry)
+        
+        # set the guid for this word
+        self.setGuid(bundleGuid)
+        
+        # Go through each sense and identify which sense number we have
+        foundSense = False
+        for senseNum, mySense in enumerate(myEntry.SensesOS):
+            
+            if mySense.Guid == bundleObject.SenseRA.Guid:
+                foundSense = True
+                break
+            
+        if foundSense:
+            
+            self.addSense(mySense)
+            
+            # Construct and set the lemma in the form xyzN.M
+            lem = getHeadwordStr(myEntry)
+            lem = add_one(lem)
+            lem = lem + '.' + str(senseNum+1) # add sense number
+            self.addLemma(lem)
+        else:
+            self.__report.Error('Could not find the sense for word in the inserted word list.')
+            return    
+
     def isEnclitic(self, myEntry):
         return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
     def isSentPunctutationWord(self):
@@ -2655,4 +2706,30 @@ def getTreeSents(inputFilename):
         
         myTreeSent.addGuid(currGuid)
     
+    return obj_list
+
+def getInsertedWordsList(inputFilename, report, DB):
+    
+    obj_list = []
+
+    try:
+        myETree = ET.parse(inputFilename)
+    except:
+        raise ValueError('The Tree Tran Words to Insert File has invalid XML content.' + ' (' + inputFilename + ')')
+    
+    myRoot = myETree.getroot()
+    
+    # Loop through the anaRec's 
+    for anaRec in myRoot:
+        
+        # get the element that has the bundle guid
+        pNode = anaRec.find('./mparse/a/root/p')
+        currGuid = Guid(String(pNode.text))
+        
+        # create and initialize a TextWord object
+        currWord = TextWord(report)
+        currWord.initialize(currGuid, DB)
+        
+        obj_list.append(currWord)
+        
     return obj_list
