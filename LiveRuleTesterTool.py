@@ -472,6 +472,9 @@ class Main(QMainWindow):
         # Remove multiple spaces
         synResult = re.sub('\s{2,}', ' ', synResult)
         
+        # For now remove non-sentence ending punctuation
+        synResult = re.sub(r'[,،]', '', synResult)
+        
         cnt = 0
         
         # Check if add-multiple was selected
