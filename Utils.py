@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.1.1 - 2/25/21 - Ron Lockwood
+#    Fixed bug where stem features would be duplicated if getStemFeatures was
+#    called more than once. Also set the surface form in the new initialize() method.
+#
 #   Version 3.1 - 2/25/21 - Ron Lockwood
 #    Support an insert word list file for extraction purposes. Added a parameter
 #    to createGuidMaps functions. New initialize() method in TextWord. New function:
@@ -1776,8 +1780,10 @@ class TextWord():
         if self.hasSenses():
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
-                get_feat_abbr_list(mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                # if we already have a populated list, we don't need to do it again.
+                if len(self.__stemFeatAbbrList) == 0:
+                    # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                    get_feat_abbr_list(mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
                 return self.getFeatures(self.__stemFeatAbbrList)
         return []
     def getSurfaceForm(self):
@@ -1829,10 +1835,11 @@ class TextWord():
             self.addSense(mySense)
             
             # Construct and set the lemma in the form xyzN.M
-            lem = getHeadwordStr(myEntry)
+            lem = headword = getHeadwordStr(myEntry)
             lem = add_one(lem)
             lem = lem + '.' + str(senseNum+1) # add sense number
             self.addLemma(lem)
+            self.__surfaceForm = re.sub(r'\d', '', headword)
         else:
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
