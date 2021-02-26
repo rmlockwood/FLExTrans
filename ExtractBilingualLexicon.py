@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.2 - 2/26/21 - Ron Lockwood
+#    Check if the bilingual file is older than the replacement file and if so
+#    process everything.
+#
 #   Version 3.0.1 - 2/15/21 - Ron Lockwood
 #    Always process the replacement file, even if the biling file is up-to-date.
 #    This will allow changes there to be seen in results every time.
@@ -124,7 +128,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0.1",
+        FTM_Version    : "3.0.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -189,6 +193,26 @@ def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
     else: # affix file is newer
         return False
 
+def repl_file_out_of_date(bilingFile, replFile):
+    
+    # Get the date of the files
+    try:
+        mtime = os.path.getmtime(bilingFile)
+    except OSError:
+        mtime = 0
+    bilingFileDateTime = datetime.fromtimestamp(mtime)
+
+    try:
+        mtime = os.path.getmtime(replFile)
+    except OSError:
+        mtime = 0
+    replFileDateTime = datetime.fromtimestamp(mtime)
+    
+    if replFileDateTime > bilingFileDateTime: # replacement file is newer
+        return True 
+    else: 
+        return False
+
 def is_number(s):
     try:
         float(s)
@@ -207,17 +231,11 @@ def is_number(s):
 # in its symbol definition section <sdefs>. This function takes all those symbol definitions
 # and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
 # indicate where the new <sdef> elements start.
-def do_replacements(configMap, report, fullPathBilingFile):
+def do_replacements(configMap, report, fullPathBilingFile, replFile):
 
     # See if we need to do replacements
     # See if the config setting is there or if it has valid info.
     if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-        return
-    
-    #biling = os.path.join(tempfile.gettempdir(), configMap['BilingualDictOutputFile'])
-    
-    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
-    if not replFile:
         return
     
     # Save a copy of the bilingual dictionary
@@ -444,13 +462,15 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     fullPathBilingFile = bilingFile
-
+    
+    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
+    if not replFile:
+        return
+    
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
+    if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
         
-        # Always do replacements.
-        do_replacements(configMap, report, fullPathBilingFile)
-        report.Info('Bilingual dictionary is up to date. Replacements made.')
+        pass
         
     else: # build the file
         try:
@@ -754,7 +774,7 @@ def MainFunction(DB, report, modifyAllowed):
 
         # TODO: Check if the replacement file is out of date        
         # As a last step, replace certain parts of the bilingual dictionary
-        if do_replacements(configMap, report, fullPathBilingFile) == False:
+        if do_replacements(configMap, report, fullPathBilingFile, replFile) == False:
             return
         
 #----------------------------------------------------------------
