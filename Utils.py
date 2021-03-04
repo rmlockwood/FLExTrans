@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2 - 3/4/21 - Ron Lockwood
+#    Support for discontiguous complex forms
+#
 #   Version 3.1.2 - 3/4/21 - Ron Lockwood
 #    Support for testbed editing in the XML Editor XXE
 #
@@ -1334,6 +1337,7 @@ class TextEntirety():
     def __init__(self):
         self.__parList = []
         self.__cmplxFormMap = {}
+        self.__discontigCmplxFormMap = {}
         self.__unknownWordMap = {}
         self.__insertedWordsList = []
     def addInsertedWordsList(self, insertList):
@@ -1382,6 +1386,14 @@ class TextEntirety():
             par.findComplexForms(self.__cmplxFormMap, typesList)
         for par in self.__parList:
             par.substituteComplexForms(self.__cmplxFormMap)
+    def processDiscontiguousComplexForms(self, typesList, discontigTypesList, discontigPOSList): 
+        if typesList == discontigTypesList:
+            self.__discontigCmplxFormMap = self.__cmplxFormMap
+        else:
+            for par in self.__parList:
+                par.findDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
+        for par in self.__parList:
+            par.substituteDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigPOSList)
     def warnForUnknownWords(self):
         multipleUnknownWords = False
         for par in self.__parList:
@@ -1420,6 +1432,9 @@ class TextParagraph():
     def substituteComplexForms(self, cmplxFormMap):
         for sent in self.__sentList:
             sent.substituteComplexForms(cmplxFormMap)
+    def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
+        for sent in self.__sentList:
+            sent.substituteDiscontiguousComplexForms(cmplxFormMap, discontigPOSList)
     def warnForUnknownWords(self, unknownWordMap):
         multipleUnknownWords = False
         for sent in self.__sentList:
@@ -1512,6 +1527,7 @@ class TextSentence():
         self.__guidMap[myGuid].writeWordData(fOut)
     
     ### Long methods - in alphabetical order
+    
     def findComplexForms(self, cmplxFormMap, typesList):
         # Loop through the word list
         for wrd in self.__wordList:
@@ -1549,7 +1565,7 @@ class TextSentence():
         
         # Loop through the part of the word list that we will remove. Save the components in a list that we will add to the new word.
         for _ in range(0, count):
-            componentList.append(self.__wordList.pop(i)) # don't increment the next one is in position i after the previous pop
+            componentList.append(self.__wordList.pop(i)) # don't increment, the next one is in position i after the previous pop
         
         # New object
         newWord = TextWord(self.__report)
@@ -1560,6 +1576,26 @@ class TextSentence():
         
         # Insert the new word into the word list
         self.__wordList.insert(i, newWord)
+        
+        # Update the guid map
+        self.__guidMap[newWord.getGuid()] = newWord
+        
+    def modifyDiscontiguousList(self, i, count, complexEn):
+        componentList = []
+        
+        # we assume count is 2, we want to pop the ith and the i+2th, after the first pop everything moved up so just pop i+1 the 2nd time
+        componentList.append(self.__wordList.pop(i))
+        componentList.append(self.__wordList.pop(i+1))
+        
+        # New object
+        newWord = TextWord(self.__report)
+        
+        # Initialize it with the complex entry being the main entry of the word. Other attributes are drawn from the last
+        # matching component. Tags will also transferred as needed
+        newWord.initWithComplex(complexEn, componentList)
+        
+        # Insert the new word into the word list after the skipped word
+        self.__wordList.insert(i+1, newWord)
         
         # Update the guid map
         self.__guidMap[newWord.getGuid()] = newWord
@@ -1623,6 +1659,52 @@ class TextSentence():
                     if match == True:
                         # pop the matching words from the list and insert the complex word
                         self.modifyList(i, count, cmplxEn)
+            i += 1
+            
+    def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
+        i = 0
+        # Loop through the word list
+        while i < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
+            wrd = self.__wordList[i]
+
+            # Process words that have complex entries
+            if wrd.getEntryHandle() in cmplxFormMap:
+                
+                cmplxEnList = cmplxFormMap[wrd.getEntryHandle()]
+                
+                # We only need to deal with the list that is non-empty
+                if len(cmplxEnList) > 0:
+                    
+                    # Sort the list from most components to least components
+                    # each list item is a tuple. See below. We want the length of the component list.
+                    cmplxEnList.sort(key=lambda x: len(x[1]), reverse=True)
+                    
+                    # Loop through the complex entries tuples (cmplxEntry, componentEntryList)
+                    for cmplxEn, componentEList in cmplxEnList:
+                        match = False
+                        
+                        count = len(componentEList)
+
+                        # Only process component lists with two items
+                        if count == 2:
+                            # Only continue if we won't go off the end of the list
+                            if i + 2 < len(self.__wordList):
+                                
+                                # This word and the word + 2 has to match. Also the inbetween word has to match one of the allowed POSs.
+                                if self.__wordList[i].getFirstEntry() == componentEList[0] and \
+                                   self.__wordList[i+2].getFirstEntry() == componentEList[1] and \
+                                   self.__wordList[i+1].posMatchForMiddleItemInDiscontigousList(discontigPOSList) == True: 
+
+                                    match = True
+                                else:
+                                    match = False
+                                    break
+                                # break out of the outer loop
+                                if match == True:
+                                    break
+                    if match == True:
+                        # pop the matching words from the list and insert the complex word
+                        self.modifyDiscontiguousList(i, count, cmplxEn)
             i += 1
             
     def warnForUnknownWords(self, unknownWordMap):
@@ -1916,6 +1998,10 @@ class TextWord():
     def outputWordDataStream(self):
         retStr = '^'+self.outputDataForAllRoots()+'$'
         return retStr
+    def posMatchForMiddleItemInDiscontigousList(self, discontigPOSList):
+        if self.getPOS(0) in discontigPOSList:
+            return True
+        return False
     def setComponentList(self, cList):
         self.__componentList = cList
     def setGuid(self, myGuid):
@@ -1980,7 +2066,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
 # At the end of the function we figure out appropriate warnings for unknown words and we process 
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, sentPunct, contents, typesList):
+def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList):
     
     prevEndOffset = 0
     currSegNum = 0
@@ -2167,6 +2253,9 @@ def getInterlinData(DB, report, sentPunct, contents, typesList):
 
     # substitute a complex form when its components are found contiguous in the text      
     myText.processComplexForms(typesList) 
+    
+    # substitute a complex form when its components are found discontiguous in the text      
+    myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
     
     return myText
 

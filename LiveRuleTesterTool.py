@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.4 - 3/4/21 - Ron Lockwood
+#    Support for discontiguous complex forms
+#
 #   Version 3.2.3 - 3/4/21 - Ron Lockwood
 #    Support for testbed editing in the XML Editor XXE
 #
@@ -160,7 +163,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.3",
+        FTM_Version    : "3.2.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1507,6 +1510,18 @@ def MainFunction(DB, report, modify=False):
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
         return
 
+    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+        return
+
+    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+        return
+
     # Find the desired text
     text_list = []
     foundText = False
@@ -1561,9 +1576,8 @@ def MainFunction(DB, report, modify=False):
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
             
-
-    # NEW CODE
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
+    # Get the interlinear data. It's stored in a complex object.
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
 
     if TreeTranSort:
         

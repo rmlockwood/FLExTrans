@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2 - 3/4/21 - Ron Lockwood
+#    Support for discontiguous complex forms
+#
 #   Version 3.1 - 2/25/21 - Ron Lockwood
 #    Support an insert word list file for extraction purposes. Get new item:
 #    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
@@ -143,7 +146,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.1",
+        FTM_Version    : "3.2,
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -259,8 +262,20 @@ def MainFunction(DB, report, modifyAllowed):
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
         return
 
+    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+        return
+
+    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+        return
+
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList)
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
         
     if TreeTranSort:
         
