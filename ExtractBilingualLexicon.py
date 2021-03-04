@@ -353,6 +353,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     bilingRoot.remove(biling_section)
     bilingRoot.append(new_biling_section)
     
+    # Give whitespace indent TODO: this will only work in python 3.9+
+#    ET.indent(bilingEtree)
+    
     bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
     
     # Insert the DOCTYPE as the 2nd line of the file.
