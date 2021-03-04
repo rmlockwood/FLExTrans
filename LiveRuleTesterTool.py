@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.3 - 3/4/21 - Ron Lockwood
+#    Support for testbed editing in the XML Editor XXE
+#
 #   Version 3.2.2 - 2/25/21 - Ron Lockwood
 #    Support an insert word list file for extraction purposes. Get new item:
 #    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
@@ -128,6 +131,7 @@ import unicodedata
 import copy
 import xml.etree.ElementTree as ET
 import shutil
+from subprocess import call
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
@@ -156,7 +160,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.2",
+        FTM_Version    : "3.2.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -311,6 +315,7 @@ class Main(QMainWindow):
         self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
+        self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
         
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
@@ -450,7 +455,16 @@ class Main(QMainWindow):
         window.ui.logTreeView.expand(firstIndex)
         #exec_val = app.exec_()
 
+    def EditTestbedLogButtonClicked(self):
         
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        Utils.TESTBED_FILE_PATH
+
+        call([xxe, Utils.TESTBED_FILE_PATH])
+            
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
         

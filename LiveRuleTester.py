@@ -238,7 +238,7 @@ class Ui_MainWindow(object):
         self.addMultipleCheckBox.setGeometry(QtCore.QRect(340, 781, 391, 25))
         self.addMultipleCheckBox.setObjectName("addMultipleCheckBox")
         self.editTestbedButton = QtWidgets.QPushButton(self.centralwidget)
-        self.editTestbedButton.setEnabled(False)
+        self.editTestbedButton.setEnabled(True)
         self.editTestbedButton.setGeometry(QtCore.QRect(754, 778, 151, 31))
         self.editTestbedButton.setObjectName("editTestbedButton")
         self.viewTestbedLogButton = QtWidgets.QPushButton(self.centralwidget)

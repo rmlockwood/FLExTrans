@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.1.2 - 3/4/21 - Ron Lockwood
+#    Support for testbed editing in the XML Editor XXE
+#
 #   Version 3.1.1 - 2/25/21 - Ron Lockwood
 #    Fixed bug where stem features would be duplicated if getStemFeatures was
 #    called more than once. Also set the surface form in the new initialize() method.
@@ -867,6 +870,15 @@ class FlexTransTestbedFile():
 
     def write(self):
         self.__testbedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        
+        # Add the DOCTYPE declaration
+        f = open(TESTBED_FILE_PATH, encoding='utf-8')
+        lines = f.readlines()
+        f.close()
+        lines.insert(1, '<!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">\n')
+        f = open(TESTBED_FILE_PATH, 'w', encoding='utf-8')
+        f.writelines(lines)
+        f.close()
 
 # Models the result part of the XML structure for a results log
 # It contains a list of FLExTransTestbedXMLObject's
