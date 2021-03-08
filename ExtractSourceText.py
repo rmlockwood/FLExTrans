@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.1 - 3/8/21 - Ron Lockwood
+#    Error checking for missing guid in XML files
+#
 #   Version 3.2 - 3/4/21 - Ron Lockwood
 #    Support for discontiguous complex forms
 #
@@ -146,7 +149,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.2.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -238,6 +241,9 @@ def MainFunction(DB, report, modifyAllowed):
         
         insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
+        if insertWordsList == None: 
+            return # error already reported
+        
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -248,7 +254,10 @@ def MainFunction(DB, report, modifyAllowed):
             return
         
         # get the list of guids from the TreeTran results file
-        treeSentList = Utils.getTreeSents(treeTranResultFile)
+        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        
+        if treeSentList == None: 
+            return # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()

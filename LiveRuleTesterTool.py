@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.5 - 3/8/21 - Ron Lockwood
+#    Error checking for missing guid in XML files
+#
 #   Version 3.2.4 - 3/4/21 - Ron Lockwood
 #    Support for discontiguous complex forms
 #
@@ -163,7 +166,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.4",
+        FTM_Version    : "3.2.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1561,6 +1564,9 @@ def MainFunction(DB, report, modify=False):
         
         insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
+        if insertWordsList == None: 
+            return # error already reported
+        
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -1571,7 +1577,10 @@ def MainFunction(DB, report, modify=False):
             return
         
         # get the list of guids from the TreeTran results file
-        treeSentList = Utils.getTreeSents(treeTranResultFile)
+        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        
+        if treeSentList == None: 
+            return # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()

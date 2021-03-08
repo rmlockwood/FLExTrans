@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2.1 - 3/8/21 - Ron Lockwood
+#    Error checking for missing guid in XML files
+#
 #   Version 3.2 - 3/4/21 - Ron Lockwood
 #    Support for discontiguous complex forms
 #
@@ -2300,7 +2303,7 @@ class treeTranSent():
     def getLength(self):
         return len(self.__guidList)
 
-def getTreeSents(inputFilename):
+def getTreeSents(inputFilename, report):
     
     obj_list = []
 
@@ -2328,6 +2331,11 @@ def getTreeSents(inputFilename):
             myTreeSent.setSingleTree(False)
         
         pNode = anaRec.find('./mparse/a/root/p')
+        
+        if pNode == None:
+            report.Error("Could not find a GUID in the TreeTran results file. Exiting.")
+            return None
+        
         currGuid = Guid(String(pNode.text))
         analysisNode = anaRec.find('Analysis')
         if analysisNode != None:
@@ -2353,6 +2361,11 @@ def getInsertedWordsList(inputFilename, report, DB):
         
         # get the element that has the bundle guid
         pNode = anaRec.find('./mparse/a/root/p')
+
+        if pNode == None:
+            report.Error("Could not find a GUID in the Inserted Words Lists file. Exiting.")
+            return None
+        
         currGuid = Guid(String(pNode.text))
         
         # create and initialize a TextWord object
