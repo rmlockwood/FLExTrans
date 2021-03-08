@@ -1698,7 +1698,7 @@ class TextSentence():
                                     match = True
                                 else:
                                     match = False
-                                    break
+                                    
                                 # break out of the outer loop
                                 if match == True:
                                     break
