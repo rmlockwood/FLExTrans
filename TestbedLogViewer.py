@@ -5,6 +5,13 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.1 - 4/30/21 - Ron Lockwood
+#    Enable the Edit Testbed button which now calls XXE with the xml file.
+#    Also limit the display of testbed results to the last 50 results. This
+#    significantly improves performance when there are lots of results. This is
+#    hard-coded for now. It would be nice to allow the user to change this and
+#    re-load.
+#
 #   Version 3.0 - 1/28/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -23,11 +30,13 @@
 #   date/time.
 #
 
+import os
 import re
 import sys
 import unicodedata
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from subprocess import call
 
 from System import Guid
 from System import String
@@ -48,7 +57,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -382,7 +391,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
     def SetupModelData(self):
         
         # Loop through the test results
-        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList():
+        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[-50:]: # Just show the last 50
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
@@ -529,7 +538,13 @@ class LogViewerMain(QMainWindow):
         self.close()
 
     def EditTestbedClicked(self):
-        pass
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        Utils.TESTBED_FILE_PATH
+
+        call([xxe, Utils.TESTBED_FILE_PATH])
 
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
