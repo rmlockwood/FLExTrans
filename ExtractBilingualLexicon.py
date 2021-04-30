@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.3 - 4/30/21 - Ron Lockwood
+#    Just give one warning for spaces in categories and likewise one warning for
+#    periods in categories. Make the "suppressing" message just info. not a warning
+#    This cuts down on the number of warning you always have
+#    to see if these warnings are prevalent.
+#
 #   Version 3.0.2 - 2/26/21 - Ron Lockwood
 #    Check if the bilingual file is older than the replacement file and if so
 #    process everything.
@@ -128,7 +134,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0.2",
+        FTM_Version    : "3.0.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -516,19 +522,19 @@ def MainFunction(DB, report, modifyAllowed):
             # DONE: allow spaces in POS abbreviations
             # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
             if re.search(r'\s', posAbbr):
-                if spaceErrors < 3:
+                if spaceErrors < 1:
                     report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
-                if spaceErrors == 2:
-                    report.Warning("Suppressing further errors of this type.")
+                if spaceErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
                 posAbbr = re.sub(r'\s', '_', posAbbr)
                 spaceErrors += 1
                 
             # give a warning if there is a period in the target category. Remove them.
             if re.search(r'\.', posAbbr):
-                if periodErrors < 3:
+                if periodErrors < 1:
                     report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
-                if periodErrors == 2:
-                    report.Warning("Suppressing further errors of this type.")
+                if periodErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
                 posAbbr = re.sub(r'\.', '', posAbbr)
                 periodErrors += 1
     
