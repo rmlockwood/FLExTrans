@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2.2 - 4/30/21 - Ron Lockwood
+#    More detailed error when GUID not found.
+#
 #   Version 3.2.1 - 3/8/21 - Ron Lockwood
 #    Error checking for missing guid in XML files
 #
@@ -2333,7 +2336,7 @@ def getTreeSents(inputFilename, report):
         pNode = anaRec.find('./mparse/a/root/p')
         
         if pNode == None:
-            report.Error("Could not find a GUID in the TreeTran results file. Exiting.")
+            report.Error("Could not find a GUID in the TreeTran results file. Perhaps TreeTran is not putting out all that you expect. anaRec id=" + anaRec.attrib[ID] + ". Exiting.")
             return None
         
         currGuid = Guid(String(pNode.text))
