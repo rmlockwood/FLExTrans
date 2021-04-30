@@ -36,7 +36,7 @@ class Ui_MainWindow(object):
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.editTestbedButton = QtWidgets.QPushButton(self.centralwidget)
-        self.editTestbedButton.setEnabled(False)
+        self.editTestbedButton.setEnabled(True)
         self.editTestbedButton.setObjectName("editTestbedButton")
         self.horizontalLayout_2.addWidget(self.editTestbedButton)
         spacerItem2 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
