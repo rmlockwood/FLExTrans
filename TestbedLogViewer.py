@@ -391,7 +391,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
     def SetupModelData(self):
         
         # Loop through the test results
-        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[-50:]: # Just show the last 50
+        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[:-50]: # Just show the last 50
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
