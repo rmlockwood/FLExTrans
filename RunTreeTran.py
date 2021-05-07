@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.0.2 - 5/7/21 - Ron Lockwood
+#    Give the user the # of sentences processed.
+#
 #   Version 3.0.1 - 2/24/21 - Ron Lockwood
 #    Error message when config file not right.
 #
@@ -44,7 +47,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.0.1",
+        FTM_Version    : "3.0.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -78,6 +81,8 @@ def filterAndLogInvokerParses(inputFilename):
     
     myRoot = myETree.getroot()
     
+    sentCount = 0
+    
     # Loop through the anaRec's 
     for anaRec in myRoot:
         
@@ -103,6 +108,7 @@ def filterAndLogInvokerParses(inputFilename):
             # reset the sentence list
             recsInSent = []
             wordCount = 0
+            sentCount += 1
 
     # Remove records if there's no analysis, i.e. no syntax parse
     for rec in deleteList:
@@ -116,7 +122,7 @@ def filterAndLogInvokerParses(inputFilename):
     # Write the new filter file
     myETree.write(filteredFileName, encoding='utf-8', xml_declaration=True)
         
-    return filteredFileName
+    return filteredFileName, sentCount
 
 #----------------------------------------------------------------
 # The main processing function
@@ -140,7 +146,7 @@ def MainFunction(DB, report, modify=True):
     invokerFile = os.path.join(tempfile.gettempdir(), INVOKER_FILE)
     
     # Filter the invoker file down to just the sentences that have a syntax parse
-    filteredFile = filterAndLogInvokerParses(invokerFile)
+    filteredFile, sentCount = filterAndLogInvokerParses(invokerFile)
     
     # verify the filtered file exists
     if os.path.exists(filteredFile) == False:
@@ -149,6 +155,8 @@ def MainFunction(DB, report, modify=True):
 
     # run TreeTran
     call(['treetran.exe', Utils.OUTPUT_FOLDER+'\\'+TREE_TRAN_RULES, filteredFile, treeTranResultFile])
+    
+    report.Info(str(sentCount) + ' Sentence(s) processed.')
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
