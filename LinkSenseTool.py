@@ -950,21 +950,21 @@ def MainFunction(DB, report, modify=True):
         report.Warning('There were no senses found for linking.')
     else:
     
-#         # TEMP
-#         # dump words with no link
-#         processed = {}
-#         fz = open("vocab_dump.txt", 'w', encoding='utf-8')
-#         for link in myData:
-#             hpg = link.get_srcHPG()
-#             if hpg.getSense() not in processed:
-# 
-#                 if link.initial_status != INITIAL_STATUS_LINKED:
-#                     myHeadword = hpg.getHeadword()
-#                     myHeadword = re.sub('\d','',myHeadword,re.A)
-#                     fz.write(myHeadword+'\n')
-#                     
-#                 processed[hpg.getSense()] = 1
-#         fz.close()
+        # TEMP
+        # dump words with no link
+        processed = {}
+        fz = open("vocab_dump.txt", 'w', encoding='utf-8')
+        for link in myData:
+            hpg = link.get_srcHPG()
+            if hpg.getSense() not in processed:
+ 
+                if link.initial_status != INITIAL_STATUS_LINKED:
+                    myHeadword = hpg.getHeadword()
+                    myHeadword = re.sub('\d','',myHeadword,re.A)
+                    fz.write(myHeadword+'\n')
+                     
+                processed[hpg.getSense()] = 1
+        fz.close()
     
         # Show the window
         app = QApplication(sys.argv)
