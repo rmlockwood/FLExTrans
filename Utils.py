@@ -1492,6 +1492,10 @@ class TextSentence():
         return len(self.__wordList)
     def getWordList(self):
         return self.__wordList
+    def hasPunctuation(self, myGuid):
+        if myGuid in self.__guidMap:
+            return self.__guidMap[myGuid].hasPunctuation()
+        return False
     def haveGuid(self, myGuid):
         return myGuid in self.__guidMap
     def write(self, fOut):
@@ -1845,6 +1849,12 @@ class TextWord():
         return self.__finalPunc
     def getGuid(self):
         return self.__guid
+    def hasPunctuation(self):
+        if len(self.getInitialPunc()) > 0 or len(self.getFinalPunc()) > 0:
+            return True
+        return False
+    def getID(self):
+        return self.getGuid()
     def getEntryIndex(self, e):
         for i, myE in enumerate(self.__eList):
             if myE == e:
@@ -2289,6 +2299,8 @@ class treeTranSent():
         self.__index = 0
     def getSingleTree(self):
         return self.__singleTree
+    def getGuidList(self):
+        return self.__guidList
     def setSingleTree(self, val):
         self.__singleTree = val
     def addGuid(self, myGuid):

@@ -139,6 +139,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from FTModuleClass import FlexToolsModuleClass
 from collections import defaultdict
 
+NGRAM_SIZE = 5
+
 #----------------------------------------------------------------
 # Configurables:
 
@@ -312,9 +314,16 @@ def MainFunction(DB, report, modifyAllowed):
                 if myFLExSent is None:
                     report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
                     return
+                
+                beforeAfterMap = wordGramMap = {}
+                
+                # Set up the maps for the original sentnece
+                setUpOrigSentMaps(myFLExSent, beforeAfterMap, wordGramMap)
                     
                 # Output any punctuation preceding the sentence.
-                puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
+                #puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
+                
+                puncOutputMap = {}
                 
                 # Loop through each word in the sentence and get the Guids
                 # NB: any <sent> 'words' won't get processed since they are not in the guid list.
@@ -336,15 +345,35 @@ def MainFunction(DB, report, modifyAllowed):
                     else:
                         # Write the original word order punctuation.
                         # Use the punctuation words written above as the offset to make sure the guid word is the same as the flex sentence word.
-                        myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
+                        #myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
 
+                        # See if we should write punctuation for this word or if we should write punctuation for a different word
+                        writePunc = punctuation_eval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap)
+                        
+                        if writePunc == True:
+                        
+                            myFLExSent.writeBeforePunc(f_out, myGuid)
+                        
+                        # if we are on a word that we saved for outputting punctuation, put out that word's punctuation now
+                        elif wrdNum in puncOutputMap:
+                            
+                            myFLExSent.writeBeforePunc(f_out, puncOutputMap[wrdNum])
+                            
                         # Write the data that's between the punctuation
                         myFLExSent.writeWordDataForThisGuid(f_out, myGuid)
                         
+                        if writePunc == True:
+                            
+                            myFLExSent.writeAfterPunc(f_out, myGuid)
+
+                        elif wrdNum in puncOutputMap:
+                            
+                            myFLExSent.writeAfterPunc(f_out, puncOutputMap[wrdNum])
+
                         #myFLExSent.writeThisGuid(f_out, myGuid)
                         
                         # Write the original word order punctuation.
-                        myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
+                        #myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
                     
                 # Output any punctuation at the of the sentence.
                 myFLExSent.writeFinalSentPunc(f_out)
@@ -384,7 +413,111 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.close()
 
     report.Info("Export of " + text_desired_eng + " complete.")
+
+def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
+    wordObjList = sentObj.getWordList()
+    numWords = len(wordObjList)
+    
+    # set up the before/after map which is a map of the current word to its before and after words
+    for i, wordObj in enumerate(wordObjList):
+        
+        if i > 0 and i < numWords-1: # not first or last
+            befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
+            
+    # set up the word-gram map which is the current word + 1-n following words. e.g. for abcd: ab, abc, abcd, bc, bcd, cd (if n was 4 or more)
+    for i in range(0, numWords-1):
+        for j in range(2, NGRAM_SIZE+1):
+            
+            keyList = []
+            if i+j <= numWords:
+                
+                for k in range(i, i+j):
+                    if k < numWords:
+                        
+                        keyList.append(wordObjList[k].getID())
+                        
+                if len(keyList) > 1:
+                    # we can't use a list as the map value, a tuple works, why not make a hash of it
+                    wrdGramMap[hash(tuple(keyList))] = 1
+                    
+def test_add(a, b):
+    
+    return a + b                    
+
+def punctuation_eval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap):      
+    
+    wordList = treeTranSentObj.getGuidList()
+    numWords = len(wordList)
+
+    # Only process a word that has punctuation
+    if myFLExSent.hasPunctuation(wordList[i]) == True:
+        
+        # TODO: write this method
+        # TreeTran first word matches original first word
+        if i == 0 and myFLExSent.matchesFirstWord(wordList[i]):
+            
+            return True # output puctuation for this word
+        
+        # If last word
+        if i == numWords - 1:
+            
+            # TODO: write this method
+            # and matches original last word
+            if myFLExSent.matchesLastWord(wordList[i]):
+                
+                return True
+        else:
+            # See if we match an n-gram that was reversed in the tree tran sentence
+            for j in range(2, NGRAM_SIZE+1):
+                if i+j < numWords:
+                    
+                    if hash(tuple(list(reversed(wordList[i:i+j])))) in wordGramMap:
+                        
+                        puncOutputMap[i] = wordList[i]
+                        return True
+        
+        # Look to see if the previous and next words are the same as in the original
+        myID = myFLExSent.getWordByGuid(wordList[i]).getID()
+        
+        # Not first word or last word and this word is in the map
+        if i != 0 and i != numWords - 1 and myID in beforeAfterMap:
+        
+            # First the simple case, the direct previous and direct following word
+            if beforeAfterMap[myID] == (wordList[i-1], wordList[i+1]):
+                
+                return True
+            
+            # Check a reversed n-gram for the previous word with the direct following word.
+            for j in range(2, NGRAM_SIZE+1):
+                
+                if i-j > 0:
+                    if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
+                       beforeAfterMap[myID] == (wordList[i-j], wordList[i+1]):
+                    
+                        return True
+            
+            # Check the direct previous word with a reversed n-gram for the next word
+            for j in range(2, NGRAM_SIZE+1):
+                
+                if i+j > numWords:
+                    if hash(tuple(list(reversed(wordList[i+1:i+j+1])))) in wordGramMap and \
+                       beforeAfterMap[myID] == (wordList[i-1], wordList[i+j]):
+                    
+                        return True
+            
+            # Check a reversed n-gram for the previous and a reversed n-gram for the following word
+            for j in range(2, NGRAM_SIZE+1):
+                for l in range(2, NGRAM_SIZE+1):
+                    
+                    if i-j > 0 and i+l < numWords:
+                        
+                        if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
+                           hash(tuple(list(reversed(wordList[i+1:i+l+1])))) in wordGramMap and \
+                           beforeAfterMap[myID] == (wordList[i-j], wordList[i+l]):
+                            
+                            return True
+        
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
