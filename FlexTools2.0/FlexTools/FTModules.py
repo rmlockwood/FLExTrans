@@ -19,7 +19,6 @@ import os
 import sys
 import imp
 import traceback
-import exceptions
 
 import Version
 import FTReport
@@ -88,7 +87,7 @@ class ModuleManager (object):
         if isinstance(e, System.Exception): #.NET
             eName = e.GetType().FullName
             details = e.ToString()          # The full stack trace
-        elif isinstance(e, exceptions.Exception): #Python
+        elif isinstance(e, Exception): #Python
             eName = sys.exc_info()[0].__name__
             eMsg = e.message if hasattr(e, "message") else ""
             eStack = traceback.format_exc()

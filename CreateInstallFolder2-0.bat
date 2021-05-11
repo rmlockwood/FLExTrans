@@ -15,6 +15,8 @@ xcopy FlexTools2.0\* Install2.0\FlexTools2.0
 xcopy FlexTools2.0\FlexTools\* Install2.0\FlexTools2.0\FlexTools 
 xcopy /s FlexTools2.0\FlexTools\__icons\* Install2.0\FlexTools2.0\FlexTools\__icons
 echo fuzzywuzzy >> Install2.0\FlexTools2.0\requirements.txt
+echo Levenshtein >> Install2.0\FlexTools2.0\requirements.txt
+echo PyQt5 >> Install2.0\FlexTools2.0\requirements.txt
 copy install_flextools_libs.bat Install2.0\FlexTools2.0
 
 rem core models
@@ -60,19 +62,19 @@ copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install
 copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Install2.0\FlexTools2.0\Sample Projects"
 
 rem Sense Linker pieces
-mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4  
-mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\Levenshtein  
-mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\fuzzywuzzy  
 copy LinkSenseTool.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
 copy Linker.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
 copy Linker.ui Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
-copy Qt*.* Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
-copy __init__.py Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
-copy libeay32.dll Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
-copy ssleay32.dll Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
-copy fuzzywuzzy Install2.0\FlexTools2.0\Python27.NET\FW8\fuzzywuzzy
-copy Levenshtein Install2.0\FlexTools2.0\Python27.NET\FW8\Levenshtein
-copy sip.pyd Install2.0\FlexTools2.0\Python27.NET\FW8
+rem mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4  
+rem mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\Levenshtein  
+rem mkdir Install2.0\FlexTools2.0\Python27.NET\FW8\fuzzywuzzy  
+rem copy Qt*.* Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
+rem copy __init__.py Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
+rem copy libeay32.dll Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
+rem copy ssleay32.dll Install2.0\FlexTools2.0\Python27.NET\FW8\PyQt4
+rem copy fuzzywuzzy Install2.0\FlexTools2.0\Python27.NET\FW8\fuzzywuzzy
+rem copy Levenshtein Install2.0\FlexTools2.0\Python27.NET\FW8\Levenshtein
+rem copy sip.pyd Install2.0\FlexTools2.0\Python27.NET\FW8
 
 rem Live Rule Tester pieces
 mkdir Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester

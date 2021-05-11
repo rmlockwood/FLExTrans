@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -18,9 +21,6 @@
 #   log and start the log viewer. Put in an end time in the log.
 #
 
-import sys
-import re 
-import os
 import ReadConfig
 import Utils
 
@@ -32,12 +32,12 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "End Testbed",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Conclude a testbed log result.",
         FTM_Help   : "",
         FTM_Description:  
-u"""
+"""
 Conclude a testbed log result..
 """ }
 
@@ -57,7 +57,7 @@ def MainFunction(DB, report, modifyAllowed):
     
     # Open the synthesis file
     try:
-        f_out = open(outFileVal)
+        f_out = open(outFileVal, encoding='utf-8')
     except IOError:
         report.Error('There is a problem with the Synthesis Output File path: '+outFileVal+'. Please check the configuration file setting.')
         return

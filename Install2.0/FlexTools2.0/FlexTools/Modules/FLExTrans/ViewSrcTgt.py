@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.0 - 1/28/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -27,27 +30,35 @@
 # files or change the font. 
 
 
-from FTModuleClass import FlexToolsModuleClass
-import Utils
-import ReadConfig
 import os
 import re
 import tempfile
 import sys
 import shutil
 import unicodedata
+
+from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *                                                 
+
+from PyQt5 import QtCore
+from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+
+from SrcTgtViewer import Ui_MainWindow
+import xml.etree.ElementTree as ET
+
+import Utils
+import ReadConfig
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "1.1",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a more readable source or target text file.",    
         FTM_Help   : "",
         FTM_Description: 
-u"""
+"""
 This module will display a more readable view of the Apertium source or target 
 file. The lexical unit (^$) and symbol (<>) notation is removed and parts of 
 the lexical unit are color coded as follows: black-lemma, blue-grammatical 
@@ -57,18 +68,10 @@ dark pink-unknown lemma, pink-unknown category, red-lemma not found.
                  
 #----------------------------------------------------------------
 # The main processing function
-
-from PyQt4 import QtGui, QtCore, QtWebKit
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QFontDialog, QMessageBox
-
-from SrcTgtViewer import Ui_MainWindow
-import xml.etree.ElementTree as ET
-
-class Main(QtGui.QMainWindow):
+class Main(QMainWindow):
 
     def __init__(self, srcFile, tgtFile, htmlFile, advanced):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.src = srcFile
         self.tgt = tgtFile
         self.html = htmlFile
@@ -112,7 +115,7 @@ class Main(QtGui.QMainWindow):
         self.load()
         
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
         
         buttonHeight = self.ui.OKButton.height()
         buttonWidth = self.ui.OKButton.width()
@@ -174,7 +177,7 @@ class Main(QtGui.QMainWindow):
     def load(self):
         # Open the input file
         try:
-            f = open(self.viewFile)
+            f = open(self.viewFile, encoding='utf-8')
         except IOError:
             QMessageBox.warning(self, 'File Error', 'There was a problem opening the file: '+self.viewFile+'. ')
             return
@@ -205,7 +208,6 @@ class Main(QtGui.QMainWindow):
             # Process all lines in the input file
             for line in f:
                 
-                line = unicode(line,'utf-8')
                 line = unicodedata.normalize('NFC', line)
                 
                 list_item = ET.SubElement(ord_list, 'li')
@@ -289,7 +291,6 @@ class Main(QtGui.QMainWindow):
             # Process all lines in the input file
             for line in f:
                 
-                line = unicode(line,'utf-8')
                 line = unicodedata.normalize('NFC', line)
                 
                 list_item = ET.SubElement(ord_list, 'li')
@@ -322,17 +323,17 @@ class Main(QtGui.QMainWindow):
         # The webView widget seems to only display non-ascii characters if it is
         # in utf-16
         utf16_name = self.html+'16'
-        original = open(self.html)
-        utf16 = open(utf16_name, "w")
+        original = open(self.html, encoding='utf-8')
+        utf16 = open(utf16_name, "w", encoding='utf-16')
 
-        utf16.write(unicode(original.read(), 'UTF-8').encode('UTF-16'))
+        utf16.write(original.read())
         original.close()
         utf16.close()
         shutil.copy2(utf16_name, self.html)
         f.close()
         
         # Give the html file location to the web viewer widget
-        self.ui.webView.setUrl(QtCore.QUrl(QtCore.QString("file:///"+self.html)))
+        self.ui.webView.setUrl(QtCore.QUrl("file:///"+re.sub(r'\\','/',self.html)))
         
         # Set the link label address
         rich_str = '<a href="file:///'+self.html+'">Open in Browser</a>'
@@ -368,7 +369,7 @@ def MainFunction(DB, report, modify=True):
     htmlFile = os.path.join(tempfile.gettempdir(), 'FlexTransFileViewer.html')
     
     # Show the window
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     window = Main(srcFile, tgtFile, htmlFile, advanced)
     
@@ -377,7 +378,6 @@ def MainFunction(DB, report, modify=True):
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             

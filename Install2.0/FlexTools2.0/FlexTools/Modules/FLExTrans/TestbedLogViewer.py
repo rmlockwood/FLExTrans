@@ -5,6 +5,19 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.1 - 4/30/21 - Ron Lockwood
+#    Enable the Edit Testbed button which now calls XXE with the xml file.
+#    Also limit the display of testbed results to the last 50 results. This
+#    significantly improves performance when there are lots of results. This is
+#    hard-coded for now. It would be nice to allow the user to change this and
+#    re-load.
+#
+#   Version 3.0 - 1/28/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
+#   Version 2.0.1 - 1/30/20 - Ron Lockwood
+#    Start with a font size of 12 
+# 
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -19,36 +32,37 @@
 
 import os
 import re
-import tempfile
 import sys
 import unicodedata
-import copy
-import datetime
 import xml.etree.ElementTree as ET
+from datetime import datetime
+from subprocess import call
+
 from System import Guid
 from System import String
-from datetime import datetime
-from PyQt4 import QtGui, QtCore
-from PyQt4 import QtWebKit
-import ReadConfig
-import Utils
+
+from PyQt5 import QtGui, QtCore
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  
+import Utils
+
 from TestbedLog import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
         FTM_Description:  
-u"""
+"""
 View testbed run results.
 """ }
                  
@@ -90,7 +104,7 @@ class Stats():
 
         p = ET.Element('p')
         Utils.output_span(p, myColor, myStr, False) #rtl
-        return ET.tostring(p)
+        return ET.tostring(p, encoding='unicode')
 
     
 # An item that can be used to populate a tree view, knowing it's place in the model
@@ -132,7 +146,7 @@ class BaseTreeItem(object):
             return self.parent.children.index(self)
         return 0
     def createTheWidget(self, col):
-        return QtGui.QLabel()
+        return QtWidgets.QLabel()
     
 # Represents the root of the tree    
 class RootTreeItem(BaseTreeItem):
@@ -178,7 +192,7 @@ class TestStatsItem(BaseTreeItem):
         return ''
 
     def createTheWidget(self, col):
-        myLabel = QtGui.QLabel()
+        myLabel = QtWidgets.QLabel()
         myLabel.setText(self.Data(col))
         if self.isRTL():
             myLabel.setAlignment(QtCore.Qt.AlignRight)
@@ -186,7 +200,7 @@ class TestStatsItem(BaseTreeItem):
         # Create the elapsed time tooltip
         total_secs = self.statsObj.getTestElapsedSeconds()
         
-        minutes = total_secs / 60
+        minutes = total_secs // 60
         sec = total_secs % 60
         
         if minutes == 1:
@@ -262,13 +276,14 @@ class TestResultItem(BaseTreeItem):
             elif self.testFailed():
                 p = ET.Element('p')
                 Utils.output_span(p, Utils.NOT_FOUND_COLOR, self.actualStr, False) #rtl
-                return ET.tostring(p)
+                return ET.tostring(p, encoding='unicode')
             else:
                 retStr = '---'
                 # keep ltr unless the expected data is rtl
-                if isinstance(self.expectedStr[0], str) == False and unicodedata.bidirectional(self.expectedStr[0]) in (u'R', u'AL'):
-                #if self.isRTL():
-                    retStr = u'\u200F' + retStr
+                if isinstance(self.expectedStr[0], str) == False and unicodedata.bidirectional(self.expectedStr[0]) in ('R', 'AL'):
+
+                    retStr = '\u200F' + retStr
+                    
                 return retStr
         return ''
     
@@ -299,14 +314,12 @@ class TestResultItem(BaseTreeItem):
 
         # Expected and actual results
         else:
-            myWidget = QtGui.QLabel(self.Data(col))
-#             if self.isRTL():
-#                 myWidget.setAlignment(QtCore.Qt.AlignRight)
+            myWidget = QtWidgets.QLabel(self.Data(col))
             
         return myWidget
 
 # A widget for an icon and text
-class ITWidget(QtGui.QWidget):
+class ITWidget(QtWidgets.QWidget):
 
     def __init__(self, rtl):
         super(ITWidget, self).__init__()
@@ -315,16 +328,13 @@ class ITWidget(QtGui.QWidget):
         self.__create()
 
     def __create(self):
-        layout = QtGui.QHBoxLayout()
-        self.iconLabel = QtGui.QLabel()
-        self.textLabel = QtGui.QLabel()
+        layout = QtWidgets.QHBoxLayout()
+        self.iconLabel = QtWidgets.QLabel()
+        self.textLabel = QtWidgets.QLabel()
         
         if self.rtl:
             layout.addWidget(self.iconLabel)
             layout.addWidget(self.textLabel,1)
-            #layout.setDirection(0)
-            #self.iconLabel.setAlignment(QtCore.Qt.AlignRight)
-            #self.textLabel.setAlignment(QtCore.Qt.AlignRight)
         else:
             layout.addWidget(self.iconLabel)
             layout.addWidget(self.textLabel,1)
@@ -381,7 +391,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
     def SetupModelData(self):
         
         # Loop through the test results
-        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList():
+        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[:-50]: # Just show the last 50
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
@@ -409,7 +419,6 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
     def index(self, row, column, parentindex): 
         
-        node = QtCore.QModelIndex()
         if parentindex.isValid():
             nodeS = parentindex.internalPointer()
             nodeX = nodeS.GetChild(row)
@@ -488,10 +497,10 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         
         return QtCore.QVariant()
                 
-class LogViewerMain(QtGui.QMainWindow):
+class LogViewerMain(QMainWindow):
 
     def __init__(self, resultsXMLObj):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -507,8 +516,8 @@ class LogViewerMain(QtGui.QMainWindow):
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedClicked)
         self.ui.fontSizeSpinBox.valueChanged.connect(self.FontSizeSpinBoxClicked)
 
-        # Start the font size at 9
-        self.ui.fontSizeSpinBox.setValue(9)
+        # Start the font size at 12
+        self.ui.fontSizeSpinBox.setValue(12)
         
         # Make the header text bold
         headerFont = self.ui.logTreeView.header().font()
@@ -525,23 +534,31 @@ class LogViewerMain(QtGui.QMainWindow):
         return self.__model
     
     def okClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.Ok
+        self.retValue = QDialogButtonBox.Ok
         self.close()
 
     def EditTestbedClicked(self):
-        pass
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        Utils.TESTBED_FILE_PATH
+
+        call([xxe, Utils.TESTBED_FILE_PATH])
 
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
         self.myResize()
         
     def myResize(self):    
         myWidth = self.ui.logTreeView.width()
         
+        colWidthReduction = 7 # so we don't go over total width and get a horizontal scrollbar
+        
         # Set the width of the columns
-        self.ui.logTreeView.setColumnWidth(0, myWidth*5/10-3) # -3 so we don't go over total
-        self.ui.logTreeView.setColumnWidth(1, myWidth*3/10-3) # width and get a horizontal
-        self.ui.logTreeView.setColumnWidth(2, myWidth*2/10-3) # scrollbar
+        self.ui.logTreeView.setColumnWidth(0, myWidth*5//10-colWidthReduction) 
+        self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-colWidthReduction) 
+        self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-colWidthReduction)
     
 def MainFunction(DB, report, modify):
         
@@ -561,7 +578,7 @@ def MainFunction(DB, report, modify):
     # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     window = LogViewerMain(resultsXMLObj)
     
@@ -569,7 +586,7 @@ def MainFunction(DB, report, modify):
     window.myResize()
     firstIndex = window.getModel().rootItem.children[0].index
     window.ui.logTreeView.expand(firstIndex)
-    exec_val = app.exec_()
+    app.exec_()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -5,6 +5,40 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.2.5 - 3/8/21 - Ron Lockwood
+#    Error checking for missing guid in XML files
+#
+#   Version 3.2.4 - 3/4/21 - Ron Lockwood
+#    Support for discontiguous complex forms
+#
+#   Version 3.2.3 - 3/4/21 - Ron Lockwood
+#    Support for testbed editing in the XML Editor XXE
+#
+#   Version 3.2.2 - 2/25/21 - Ron Lockwood
+#    Support an insert word list file for extraction purposes. Get new item:
+#    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
+#    and addInseredWordsList. Bug fix: check if we get None for the sent. object
+#    for the number given. Give an error if needed.
+#
+#   Version 3.2.1 - 2/19/21 - Ron Lockwood
+#    remove multiple spaces from synthesis result
+#
+#   Version 3.2 - 1/29/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
+#   Version 3.1.7 - 3/27/20 - Ron Lockwood
+#    Handle adding sentence punctuation when using TreeTran.
+#    
+#   Version 3.1.6 - 3/26/20 - Ron Lockwood
+#    Added the same logic as ExtractSourceText to process words in TreeTran-
+#    outputted order, if TreeTran is being used.
+#
+#   Version 3.1.5 - 3/20/20 - Ron Lockwood
+#    Use new getInterlinData function.
+#
+#   Version 3.1.4 - 1/30/20 - Ron Lockwood
+#    On Synthesize catch if the Target DB is locked. 
+# 
 #   Version 3.1.3 - 4/22/19 - Ron Lockwood
 #    Look at first half of text box strings to determine rtl. This prevents the
 #    whole thing from being right aligned when there is just an rtl punctuation
@@ -91,11 +125,33 @@
 
 from System import Guid
 from System import String
-import Utils
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+import os
+import re
+import sys
+import unicodedata
+import copy
+import xml.etree.ElementTree as ET
+import shutil
+from subprocess import call
+
+from PyQt5 import QtCore
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
+
+import Utils
+import ReadConfig
+import CatalogTargetPrefixes
+import ConvertTextToSTAMPformat
+import ExtractTargetLexicon
+#import TestbedLogViewer
+
+from LiveRuleTester import Ui_MainWindow
+from OverWriteTestDlg import Ui_OverWriteTest
 
 #----------------------------------------------------------------
 # Configurables:
@@ -110,12 +166,12 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.1.2",
+        FTM_Version    : "3.2.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
         FTM_Description:
-u"""
+"""
 The Live Rule Tester Tool is a tool that allows you to test source words or 
 sentences live against transfer rules. This tool is especially helpful for 
 finding out why transfer rules are not doing what you expect them to do. 
@@ -127,33 +183,6 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
                  
-#----------------------------------------------------------------
-# The main processing function
-
-#import TestbedLogViewer
-import ReadConfig
-import CatalogTargetPrefixes
-import ConvertTextToSTAMPformat
-import ExtractTargetLexicon
-import os
-import re
-import sys
-import unicodedata
-import copy
-import time
-import platform
-import subprocess
-import xml.etree.ElementTree as ET
-import shutil
-import uuid
-
-from PyQt4.QtGui import QFileDialog, QMessageBox
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QApplication, QCursor
-from LiveRuleTester import Ui_MainWindow
-from OverWriteTestDlg import Ui_OverWriteTest
-    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
     
@@ -177,11 +206,11 @@ class SentenceList(QtCore.QAbstractListModel):
         if role == QtCore.Qt.DisplayRole:
             #if self.getRTL():
             #    pass
-                #value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
+                #value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
             #else:
             value = self.joinTupParts(mySent, 0)
             self.__currentSent = mySent    
-            return QtCore.QString(value)
+            return value
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
@@ -196,39 +225,39 @@ class SentenceList(QtCore.QAbstractListModel):
              
         return ret.lstrip()
     
-class OverWriteDlg(QtGui.QDialog):
+class OverWriteDlg(QDialog):
     def __init__(self, luStr):
-        QtGui.QDialog.__init__(self)
+        QDialog.__init__(self)
         self.ui = Ui_OverWriteTest()
         self.ui.setupUi(self)
         
         # Default to NoToAll. 
-        self.retValue = QtGui.QDialogButtonBox.NoToAll
+        self.retValue = QDialogButtonBox.NoToAll
         
         # Add the lexical unit to the label
         labelStr = str(self.ui.label.text())
         labelStr = re.sub('XX', '"' + luStr + '"', labelStr)
         self.ui.label.setText(labelStr)
         
-        self.ui.buttonBox.button(QtGui.QDialogButtonBox.YesToAll).clicked.connect(self.yesToAllClicked)
-        self.ui.buttonBox.button(QtGui.QDialogButtonBox.NoToAll).clicked.connect(self.noToAllClicked)
-        self.ui.buttonBox.button(QtGui.QDialogButtonBox.Yes).clicked.connect(self.yesClicked)
-        self.ui.buttonBox.button(QtGui.QDialogButtonBox.No).clicked.connect(self.noClicked)
+        self.ui.buttonBox.button(QDialogButtonBox.YesToAll).clicked.connect(self.yesToAllClicked)
+        self.ui.buttonBox.button(QDialogButtonBox.NoToAll).clicked.connect(self.noToAllClicked)
+        self.ui.buttonBox.button(QDialogButtonBox.Yes).clicked.connect(self.yesClicked)
+        self.ui.buttonBox.button(QDialogButtonBox.No).clicked.connect(self.noClicked)
     def yesToAllClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.YesToAll
+        self.retValue = QDialogButtonBox.YesToAll
     def noToAllClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.NoToAll
+        self.retValue = QDialogButtonBox.NoToAll
     def yesClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.Yes
+        self.retValue = QDialogButtonBox.Yes
     def noClicked(self):
-        self.retValue = QtGui.QDialogButtonBox.No
+        self.retValue = QDialogButtonBox.No
     def getRetValue(self):
         return self.retValue
         
-class Main(QtGui.QMainWindow):
+class Main(QMainWindow):
 
     def __init__(self, sentence_list, biling_file, source_text, DB, configMap, report):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -292,6 +321,7 @@ class Main(QtGui.QMainWindow):
         self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
+        self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
         
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
@@ -302,7 +332,7 @@ class Main(QtGui.QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
         for i in range(0,50):
-            myCheck = QtGui.QCheckBox(self.ui.scrollArea)
+            myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
             myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
@@ -407,7 +437,7 @@ class Main(QtGui.QMainWindow):
         
     def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
         # Get the name of the text this lu came from
-        origin = unicode(self.ui.SourceFileEdit.text())
+        origin = self.ui.SourceFileEdit.text()
         
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
@@ -421,7 +451,7 @@ class Main(QtGui.QMainWindow):
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
     
-        #app = QtGui.QApplication(sys.argv)
+        #app = QApplication(sys.argv)
     
         window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
         
@@ -431,7 +461,16 @@ class Main(QtGui.QMainWindow):
         window.ui.logTreeView.expand(firstIndex)
         #exec_val = app.exec_()
 
+    def EditTestbedLogButtonClicked(self):
         
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        Utils.TESTBED_FILE_PATH
+
+        call([xxe, Utils.TESTBED_FILE_PATH])
+            
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
         
@@ -451,10 +490,16 @@ class Main(QtGui.QMainWindow):
         testXMLObjList = testbedObj.getTestXMLObjectList()
         
         # Get the synthesis result text
-        synResult = unicode(self.ui.SynthTextEdit.toPlainText()).strip()
+        synResult = self.ui.SynthTextEdit.toPlainText().strip()
         
         # Remove the RTL marker
-        synResult = re.sub(ur'\u200F','', synResult)
+        synResult = re.sub('\u200F','', synResult)
+        
+        # Remove multiple spaces
+        synResult = re.sub('\s{2,}', ' ', synResult)
+        
+        # For now remove non-sentence ending punctuation
+        synResult = re.sub(r'[,،]', '', synResult)
         
         cnt = 0
         
@@ -497,24 +542,26 @@ class Main(QtGui.QMainWindow):
                     
                     if existingTestXMLObj:
                         # Get confirmation from the user if necessary.
-                        if ret_val != QtGui.QDialogButtonBox.YesToAll:
+                        if ret_val != QDialogButtonBox.YesToAll:
                             dlg = OverWriteDlg(myTestXMLObj.getLUString())
                             dlg.exec_()
                             ret_val = dlg.getRetValue()
                         
                         # See if we should overwrite    
-                        if ret_val == QtGui.QDialogButtonBox.Yes or ret_val == QtGui.QDialogButtonBox.YesToAll:
+                        if ret_val == QDialogButtonBox.Yes or ret_val == QDialogButtonBox.YesToAll:
                             testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
                             cnt += 1
                         
                         # Break out of the loop if the user said no to all    
-                        elif ret_val == QtGui.QDialogButtonBox.NoToAll:
+                        elif ret_val == QDialogButtonBox.NoToAll:
                             break
                     else:
                         testbedObj.addToTestbed(myTestXMLObj)
                         cnt += 1
                     
         else:
+            # TODO: This leaves out the punctuation that may be between lexical units. The synthesis result will have punctuation in it.
+            # so this creates a mismatch.
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
@@ -539,7 +586,7 @@ class Main(QtGui.QMainWindow):
                     dlg = OverWriteDlg(myTestXMLObj.getLUString())
                     
                     # Only show the Yes and No buttons
-                    dlg.ui.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.No|QtGui.QDialogButtonBox.Yes)
+                    dlg.ui.buttonBox.setStandardButtons(QDialogButtonBox.No|QDialogButtonBox.Yes)
 
                     # Show the dialog
                     ret_val = dlg.exec_()
@@ -576,7 +623,7 @@ class Main(QtGui.QMainWindow):
     
     def has_RTL_data(self, word1):
         for i in range(0, len(word1)):
-            if unicodedata.bidirectional(word1[i]) in (u'R', u'AL'):
+            if unicodedata.bidirectional(word1[i]) in ('R', 'AL'):
                 return True
         return False
 
@@ -597,7 +644,12 @@ class Main(QtGui.QMainWindow):
         # We only need to do this once, until the user requests to refresh the lexicon
         if self.__doCatalog:
             
-            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            try:
+                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            except:
+                QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                return
+
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
@@ -648,16 +700,16 @@ class Main(QtGui.QMainWindow):
                 return
                     
         # Load the synthesized result into the text box
-        lf = open(SYNTHESIS_FILE_PATH)
-        synthText = unicode(lf.read(),'utf-8')
+        lf = open(SYNTHESIS_FILE_PATH, encoding='utf-8')
+        synthText = lf.read()
         
         # if RTL text, prepend the RTL mark
-        if self.has_RTL_data(synthText[:len(synthText)/2]): # just check the 1st half of the string.
-            synthText = ur'\u200F' + synthText
+        if self.has_RTL_data(synthText[:len(synthText)//2]): # just check the 1st half of the string.
+            synthText = '\u200F' + synthText
             
         self.ui.SynthTextEdit.setPlainText(synthText)
         
-        if self.has_RTL_data(synthText[:len(synthText)/2]):
+        if self.has_RTL_data(synthText[:len(synthText)//2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -786,7 +838,7 @@ class Main(QtGui.QMainWindow):
                 self.doLexicalUnitProcessing(mySent, i, paragraph_element)
         
         # The paragraph_element now has one or more <span> children, turn it into a string        
-        val = ET.tostring(paragraph_element)
+        val = ET.tostring(paragraph_element, encoding='unicode')
         
         # The text box will turn the html into rich text    
         self.ui.SelectedWordsEdit.setText(val)    
@@ -808,7 +860,7 @@ class Main(QtGui.QMainWindow):
             self.doLexicalUnitProcessing(mySent, i, paragraph_element)
         
         # The paragraph_element now has one or more <span> children, turn them into a string        
-        val = ET.tostring(paragraph_element)
+        val = ET.tostring(paragraph_element, encoding='unicode')
             
         # The text box will turn the html into rich text    
         self.ui.SelectedSentencesEdit.setText(val)
@@ -817,14 +869,14 @@ class Main(QtGui.QMainWindow):
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
         
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
             ret = self.__lexicalUnits
         elif self.ui.tabSource.currentIndex() == 1:
             ret = self.__lexicalUnits
         else:
-            ret = unicode(self.ui.ManualEdit.toPlainText())
+            ret = (self.ui.ManualEdit.toPlainText())
         return ret
     def getActiveSrcTextEditVal(self):
         if self.ui.tabSource.currentIndex() == 0:
@@ -832,7 +884,7 @@ class Main(QtGui.QMainWindow):
         elif self.ui.tabSource.currentIndex() == 1:
             ret = self.ui.SelectedSentencesEdit.toHtml()
         else:
-            ret = unicode(self.ui.ManualEdit.toPlainText())
+            ret = self.ui.ManualEdit.toPlainText()
         return ret
     def __ClearAllChecks(self):
         for check in self.__checkBoxList:
@@ -1010,7 +1062,7 @@ class Main(QtGui.QMainWindow):
         if self.__transferRulesElement is not None:
             self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
             self.__transferRuleFileXMLtree = test_tree
-            self.__transferModel = QtGui.QStandardItemModel()
+            self.__transferModel = QStandardItemModel()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
@@ -1042,7 +1094,7 @@ class Main(QtGui.QMainWindow):
             
             if self.__interchunkRulesElement is not None:
                 self.__interChunkRuleFileXMLtree = interchunk_tree
-                self.__interChunkModel = QtGui.QStandardItemModel()
+                self.__interChunkModel = QStandardItemModel()
                 self.displayRules(self.__interchunkRulesElement, self.__interChunkModel)
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
@@ -1069,7 +1121,7 @@ class Main(QtGui.QMainWindow):
                 
                 if self.__postchunkRulesElement is not None:
                     self.__postChunkRuleFileXMLtree = postchunk_tree
-                    self.__postChunkModel = QtGui.QStandardItemModel()
+                    self.__postChunkModel = QStandardItemModel()
                     self.displayRules(self.__postchunkRulesElement, self.__postChunkModel)
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
@@ -1133,14 +1185,14 @@ class Main(QtGui.QMainWindow):
                 comment = 'missing comment'
                 
             # Create an item object
-            item = QtGui.QStandardItem(comment) 
+            item = QStandardItem(comment) 
             item.setCheckable(True)
             item.setCheckState(False)
             ruleModel.appendRow(item)
             
     def TransferClicked(self):
         
-        QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        #QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
             self.__interchunkHtmlResult = ''
@@ -1199,14 +1251,14 @@ class Main(QtGui.QMainWindow):
             rule_file = self.__transferRuleFileXMLtree.getroot()
             
         # Save the source text to the tester folder
-        sf = open(source_file, 'w')
-        myStr = unicode(self.getActiveLexicalUnits())
+        sf = open(source_file, 'w', encoding='utf-8')
+        myStr = self.getActiveLexicalUnits()
         
-        sf.write(myStr.encode('utf-8'))
+        sf.write(myStr)
         sf.close()
         
         # Save the transfer rules file with the selected rules present
-        rf = open(tr_file, 'w')
+        #rf = open(tr_file, 'w', encoding='utf-8')
         
         # Copy the xml structure to a new object
         myRoot = myTree.getroot()
@@ -1232,8 +1284,8 @@ class Main(QtGui.QMainWindow):
                 new_sr_element.append(rule_el) 
             
         # Write out the file
-        myTree.write(rf, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
-        rf.close()
+        myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+        #rf.close()
         
         ## Display the results
         
@@ -1251,13 +1303,13 @@ class Main(QtGui.QMainWindow):
             return
         
         # Load the target text contents into the results edit box
-        tgtf = open(tgt_file)
-        target_output = unicode(tgtf.read(),'utf-8')
+        tgtf = open(tgt_file, encoding='utf-8')
+        target_output = tgtf.read()
         
         # Create a <p> html element
         pElem = ET.Element('p')
 
-        rtl_flag = self.has_RTL_data(target_output[:len(target_output)/2])
+        rtl_flag = self.has_RTL_data(target_output[:len(target_output)//2])
         
         # Process advanced results differently (which doesn't apply to post chunk, because we get normal data stream in that case)
         if self.advancedTransfer and self.ui.tabRules.currentIndex() != 2: # 'tab_postchunk_rules'
@@ -1342,10 +1394,10 @@ class Main(QtGui.QMainWindow):
             # ignore the punctuation (spaces)
             for i in range(0,len(tokens)-1,2):
                 # Turn the lexical units into color-coded html.            
-                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)/2]), True) # last parameter: show UNK categories
+                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)//2]), True) # last parameter: show UNK categories
             
         # The p element now has one or more <span> children, turn them into an html string        
-        htmlVal = ET.tostring(pElem)
+        htmlVal = ET.tostring(pElem, encoding='unicode')
 
         self.ui.TargetTextEdit.setText(htmlVal)
         
@@ -1369,11 +1421,11 @@ class Main(QtGui.QMainWindow):
                 self.__postchunkPrevSourceLUs = self.getActiveLexicalUnits()
         
         # Load the log file
-        lf = open(log_file)
-        self.ui.LogEdit.setPlainText(unicode(lf.read(),'utf-8'))
+        lf = open(log_file, encoding='utf-8')
+        self.ui.LogEdit.setPlainText(lf.read())
         lf.close()
         
-        QApplication.restoreOverrideCursor()
+       # QApplication.restoreOverrideCursor()
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -1450,7 +1502,7 @@ def MainFunction(DB, report, modify=False):
         return
     
     # Get punctuation string
-    sent_punct = unicode(ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report), "utf-8")
+    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
     
     if not sent_punct:
         return
@@ -1459,6 +1511,18 @@ def MainFunction(DB, report, modify=False):
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
+        return
+
+    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+        return
+
+    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
         return
 
     # Find the desired text
@@ -1482,14 +1546,134 @@ def MainFunction(DB, report, modify=False):
             report.Error('The text named: '+text_desired_eng+' not found.')
             return
 
-    getSurfaceForm = True
-    segment_list = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm)
+    # Check if we are using TreeTran for sorting the text output
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
     
-    # See if we have any data to show
-    if len(segment_list) > 0:
+    if not treeTranResultFile:
+        TreeTranSort = False
+    else:
+        TreeTranSort = True
+    
+    # Check if we are using an Insert Words File for TreeTran 
+    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
+    
+    if not treeTranInsertWordsFile:
+        insertWordsFile = False
+    else:
+        insertWordsFile = True
+        
+        insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+
+        if insertWordsList == None: 
+            return # error already reported
+        
+    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
+    if TreeTranSort:
+        try:
+            f_treeTranResultFile = open(treeTranResultFile, encoding='utf-8')
+            f_treeTranResultFile.close()
+        except:
+            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            return
+        
+        # get the list of guids from the TreeTran results file
+        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        
+        if treeSentList == None: 
+            return # error already reported
+        
+        # get log info. that tells us which sentences have a syntax parse and # words per sent
+        logInfo = Utils.importGoodParsesLog()
+            
+    # Get the interlinear data. It's stored in a complex object.
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+
+    if TreeTranSort:
+        
+        segment_list = []
+        
+        # If we are using an Insert Words file, add the words to the text object
+        if insertWordsFile == True:
+            myText.addInsertedWordsList(insertWordsList)
+        
+        # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
+        myText.createGuidMaps()
+        
+        p = 0
+        noParseSentCount = 0
+        
+        # Loop through each sent
+        for sentNum, (_, parsed) in enumerate(logInfo):
+            
+            tupList = []
+            
+            # If we have a parse for a sentence, TreeTran may have rearranged the words.
+            # We need to put them out in the new TreeTran order.
+            if parsed == True:
+                myTreeSent = treeSentList[p]
                 
+                myFLExSent = myText.getSent(sentNum)
+                if myFLExSent is None:
+                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    return
+                    
+                # Output any punctuation preceding the sentence.
+                prePuncTupList = myFLExSent.getSurfaceAndDataPrecedingSentPunc()
+                tupList.extend(prePuncTupList)
+                
+                # Loop through each word in the sentence and get the Guids
+                for wrdNum in range(0, myTreeSent.getLength()):
+                    myGuid = myTreeSent.getNextGuidAndIncrement()
+                    
+                    if myGuid == None:
+                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                        break
+                    
+                    # If we couldn't find the guid, see if there's a reason
+                    if myFLExSent.haveGuid(myGuid) == False:
+                        # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
+                        nextGuid = myTreeSent.getNextGuid()
+                        if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                    else:
+                        surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
+                        tupList.append((surface,data))
+                    
+                # Output any punctuation at the of the sentence.
+                postPuncTupList = myFLExSent.getSurfaceAndDataFinalSentPunc()
+                tupList.extend(postPuncTupList)
+                
+                p += 1
+                
+            # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
+            else:
+                noParseSentCount += 1
+                
+                # Get the sentence in question
+                myFLExSent = myText.getSent(sentNum)
+
+                if myFLExSent == None:
+                    
+                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    continue 
+
+                myFLExSent.getSurfaceAndDataTupleList(tupList)
+            
+            segment_list.append(tupList)
+                
+        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        
+        if noParseSentCount > 0:
+            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+
+    else:
+        # Normal, non-TreeTran processing
+        if myText.haveData() == True:
+            segment_list = myText.getSurfaceAndDataTupleListBySent()
+        
+    if len(segment_list) > 0:    
         # Create the qt app
-        app = QtGui.QApplication(sys.argv)
+        app = QApplication(sys.argv)
         
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
@@ -1507,6 +1691,8 @@ def MainFunction(DB, report, modify=False):
         
         window.show()
         app.exec_()
+    else:
+        report.Error('This text has no data.')
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

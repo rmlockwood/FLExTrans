@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.0 - 1/25/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -18,9 +21,6 @@
 #   source text can be fed into the normal FLExTrans process.
 #
 
-import sys
-import re 
-import os
 import ReadConfig
 import Utils
 
@@ -31,12 +31,12 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
         FTM_Description:  
-u"""
+"""
 Initialize the testbed log and create source text from the testbed.
 """ }
 
@@ -85,7 +85,7 @@ def MainFunction(DB, report, modifyAllowed):
     
     # Open the output file
     try:
-        f_out = open(outFileVal, 'w')
+        f_out = open(outFileVal, 'w', encoding="utf-8")
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: '+outFileVal+'. Please check the configuration file setting.')
         return

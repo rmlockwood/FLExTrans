@@ -5,6 +5,29 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.3 - 4/30/21 - Ron Lockwood
+#    Just give one warning for spaces in categories and likewise one warning for
+#    periods in categories. Make the "suppressing" message just info. not a warning
+#    This cuts down on the number of warning you always have
+#    to see if these warnings are prevalent.
+#
+#   Version 3.0.2 - 2/26/21 - Ron Lockwood
+#    Check if the bilingual file is older than the replacement file and if so
+#    process everything.
+#
+#   Version 3.0.1 - 2/15/21 - Ron Lockwood
+#    Always process the replacement file, even if the biling file is up-to-date.
+#    This will allow changes there to be seen in results every time.
+#
+#   Version 3.0 - 1/27/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
+#   Version 2.0.2 - 2/4/20 - Ron Lockwood
+#    give an error when the target db open fails.
+#
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Only do replacement file if the dictionary is out of date.
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -88,15 +111,15 @@
 #   well as any features that are present for the entry. 
 #
 
-import re 
+import re
 import os
-import tempfile
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from collections import defaultdict
+
 from System import Guid
 from System import String
+
 import ReadConfig
 
 from FTModuleClass import *                                                 
@@ -104,16 +127,19 @@ from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
+
+DONT_CACHE = False
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.0.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
         FTM_Description:
-u"""
+"""
 The source database should be chosen for this module. This module will create a bilingual 
 lexicon for two projects. The
 database that FlexTools is set to is your source project. Set the TargetProject
@@ -173,6 +199,26 @@ def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
     else: # affix file is newer
         return False
 
+def repl_file_out_of_date(bilingFile, replFile):
+    
+    # Get the date of the files
+    try:
+        mtime = os.path.getmtime(bilingFile)
+    except OSError:
+        mtime = 0
+    bilingFileDateTime = datetime.fromtimestamp(mtime)
+
+    try:
+        mtime = os.path.getmtime(replFile)
+    except OSError:
+        mtime = 0
+    replFileDateTime = datetime.fromtimestamp(mtime)
+    
+    if replFileDateTime > bilingFileDateTime: # replacement file is newer
+        return True 
+    else: 
+        return False
+
 def is_number(s):
     try:
         float(s)
@@ -191,17 +237,11 @@ def is_number(s):
 # in its symbol definition section <sdefs>. This function takes all those symbol definitions
 # and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
 # indicate where the new <sdef> elements start.
-def do_replacements(configMap, report, fullPathBilingFile):
+def do_replacements(configMap, report, fullPathBilingFile, replFile):
 
     # See if we need to do replacements
     # See if the config setting is there or if it has valid info.
     if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-        return
-    
-    #biling = os.path.join(tempfile.gettempdir(), configMap['BilingualDictOutputFile'])
-    
-    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
-    if not replFile:
         return
     
     # Save a copy of the bilingual dictionary
@@ -319,14 +359,17 @@ def do_replacements(configMap, report, fullPathBilingFile):
     bilingRoot.remove(biling_section)
     bilingRoot.append(new_biling_section)
     
-    bilingEtree.write(fullPathBilingFile, 'utf-8', True)
+    # Give whitespace indent TODO: this will only work in python 3.9+
+#    ET.indent(bilingEtree)
+    
+    bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
     
     # Insert the DOCTYPE as the 2nd line of the file.
-    f = open(fullPathBilingFile, "r")
+    f = open(fullPathBilingFile, "r", encoding="utf-8")
     contents = f.readlines()
     f.close()
     contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-    f = open(fullPathBilingFile, 'w')
+    f = open(fullPathBilingFile, 'w', encoding="utf-8")
     contents = "".join(contents)
     f.write(contents)
     f.close()
@@ -405,9 +448,9 @@ def MainFunction(DB, report, modifyAllowed):
         #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
-        raise
+        report.Error('There was an error opening target database: '+targetProj+'.')
+        #error_list.append((e.message, 2))
+        return
 
     report.Info('Using: '+targetProj+' as the target database.')
 
@@ -428,17 +471,19 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     fullPathBilingFile = bilingFile
-    #fullPathBilingFile = os.path.join(tempfile.gettempdir(), bilingFile)
-    #f_out = open(fullPathBilingFile, 'w')
-
+    
+    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
+    if not replFile:
+        return
     
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if biling_file_out_of_date(DB, TargetDB, bilingFile) == False:
-        report.Info('Bilingual dictionary is up to date.')
+    if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
+        
+        pass
         
     else: # build the file
         try:
-            f_out = open(fullPathBilingFile, 'w')
+            f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as e:
             report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
     
@@ -477,19 +522,19 @@ def MainFunction(DB, report, modifyAllowed):
             # DONE: allow spaces in POS abbreviations
             # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
             if re.search(r'\s', posAbbr):
-                if spaceErrors < 3:
+                if spaceErrors < 1:
                     report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
-                if spaceErrors == 2:
-                    report.Warning("Suppressing further errors of this type.")
+                if spaceErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
                 posAbbr = re.sub(r'\s', '_', posAbbr)
                 spaceErrors += 1
                 
             # give a warning if there is a period in the target category. Remove them.
             if re.search(r'\.', posAbbr):
-                if periodErrors < 3:
+                if periodErrors < 1:
                     report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
-                if periodErrors == 2:
-                    report.Warning("Suppressing further errors of this type.")
+                if periodErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
                 posAbbr = re.sub(r'\.', '', posAbbr)
                 periodErrors += 1
     
@@ -520,7 +565,7 @@ def MainFunction(DB, report, modifyAllowed):
                     posMap[featAbbr] = featName
                 
         # build string for the xml pos section
-        for pos_abbr, pos_name in sorted(posMap.items(), key=lambda(k, v): (k.lower(),v)):
+        for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
             cat_str = '    <sdef n="'
             # output abbreviation
             cat_str += pos_abbr
@@ -529,7 +574,7 @@ def MainFunction(DB, report, modifyAllowed):
             # output full category name
             cat_str += pos_name
             cat_str += '"/>\n'
-            f_out.write(cat_str.encode('utf-8'))
+            f_out.write(cat_str)
         
         f_out.write('  </sdefs>\n\n')
         f_out.write('  <section id="main" type="standard">\n')
@@ -553,7 +598,7 @@ def MainFunction(DB, report, modifyAllowed):
                 headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
                 
                 # If there is not a homograph # at the end, make it 1
-                if not re.search('(\d$)', headWord):
+                if not re.search('\d$', headWord, re.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                     headWord += '1'
                 
                 # Loop through senses
@@ -600,7 +645,7 @@ def MainFunction(DB, report, modifyAllowed):
                                     targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
                                     
                                     # If there is not a homograph # at the end, make it 1
-                                    if not re.search('(\d$)', targetHeadWord):
+                                    if not re.search('\d$', targetHeadWord, re.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                                         targetHeadWord += '1'
                                     
                                     # An empty sense number means default to sense 1
@@ -652,7 +697,7 @@ def MainFunction(DB, report, modifyAllowed):
                                                 # output the bilingual dictionary line (the sX is xml stuff)
                                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
                                                           str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                                f_out.write(out_str.encode('utf-8'))
+                                                f_out.write(out_str)
                                                 records_dumped_cnt += 1
                                         
                                             else:
@@ -701,7 +746,7 @@ def MainFunction(DB, report, modifyAllowed):
                             out_str = headWord+'.'+str(i+1)+s2+abbrev        
                             out_str = s1i+out_str+s4i+'\n'
                             
-                        f_out.write(out_str.encode('utf-8')) 
+                        f_out.write(out_str) 
                         records_dumped_cnt += 1   
                         
             else:
@@ -734,15 +779,15 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.close()
     
         report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
-        report.Info(unicode(records_dumped_cnt)+' records created in the bilingual dictionary.')
-        
-    # As a last step, replace certain parts of the bilingual dictionary
-    if do_replacements(configMap, report, fullPathBilingFile) == False:
-        return
+        report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
+
+        # TODO: Check if the replacement file is out of date        
+        # As a last step, replace certain parts of the bilingual dictionary
+        if do_replacements(configMap, report, fullPathBilingFile, replFile) == False:
+            return
         
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             

@@ -5,6 +5,15 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.0 - 1/29/21 - Ron Lockwood
+#    Changes for python 3 conversion. This included removing the code for a
+#    delegate widget and a custom TableView. Instead the IsCheckable signal is
+#    used.
+#    Also overhauled the TableView user interface to support unlinking of senses
+#    currently linked in the DB. This required changes in the Link object as
+#    well as the code for loading the link list and processing the link list
+#    after the user presses OK.
+#
 #   Version 2.2.2 - 2/27/19 - Ron Lockwood
 #    Skip empty MSAs
 #
@@ -65,24 +74,26 @@
 #   will be updated.
 #
 
-from FTModuleClass import FlexToolsModuleClass
-import ReadConfig
-import os
 import re
-import tempfile
 import sys
 import unicodedata
 from fuzzywuzzy import fuzz
-import copy
+
 from System import Guid
 from System import String
-from PyQt4 import QtGui, QtCore
+
+from PyQt5 import QtGui, QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from FTModuleClass import *                                                 
+from FTModuleClass import FlexToolsModuleClass
+
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+import ReadConfig
 
 from Linker import Ui_MainWindow
 
@@ -103,12 +114,12 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "2.2.2",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
         FTM_Description:  
-u"""
+"""
 The source database should be chosen for this module. This module will create links 
 in the source project to senses in the target project. This module will show a window
 with a list of all the senses in the text. White background rows indicate links that
@@ -118,6 +129,7 @@ gloss (currently 75% similar), red background rows
 have no link yet established. Double-click on the Target Head Word column for a row to copy
 the currently selected target sense in the upper combo box into that row. Click the checkbox
 to create a link for that row. I.e. the source sense will be linked to the target sense.
+Unchecking a checkbox for white row will unlink the specified sense from its target sense.
 Close matches are only attempted for words with five letters or longer.
 For suggested sense pairs where
 there is a mismatch in the grammatical category, both categories are colored red. This
@@ -156,18 +168,22 @@ class HPG(object):
         return self.__gloss
     def getSenseNum(self):
         return self.__senseNum
-    
+
+INITIAL_STATUS_UNLINKED = 0
+INITIAL_STATUS_LINKED = 1    
+INITIAL_STATUS_EXACT_SUGGESTION = 2
+INITIAL_STATUS_FUZZY_SUGGESTION = 3
+
 # model the information having to do with a link from a source sense
 # to a target sense
 class Link(object):
     def __init__(self, srcHPG, tgtHPG=None):
         self.set_srcHPG(srcHPG)
         self.set_tgtHPG(tgtHPG)
-        self.suggestion = False
+        self.initial_status = INITIAL_STATUS_UNLINKED
         self.linkIt = False
         self.modified = False
-        self.unlinked = True
-        self.initiallyUnlinked = False
+        self.tgtModified = False
     def get_srcHPG(self):
         return self.__srcHPG
     def get_tgtHPG(self):
@@ -180,12 +196,23 @@ class Link(object):
         return self.__srcHPG.getGloss()
     def get_tgtGloss(self):
         return self.__tgtHPG.getGloss()
+    def get_initial_status(self):
+        return self.initial_status
+    def set_initial_status(self, myStatus):
+        self.initial_status = myStatus
+        if myStatus == INITIAL_STATUS_LINKED:
+            self.linkIt = True # this shows that this is a sense the user intends to keep linked
+        else:
+            self.linkIt = False
     def set_srcHPG(self, srcHPG):
         self.__srcHPG = srcHPG
+    def set_tgtHPG_only(self, tgtHPG):
+        self.__tgtHPG = tgtHPG
     def set_tgtHPG(self, tgtHPG):
         self.__tgtHPG = tgtHPG
-        if tgtHPG:
-            self.unlinked = False
+        if tgtHPG is not None:
+            self.set_initial_status(INITIAL_STATUS_LINKED)
+            self.linkIt = True
     def get_srcSense(self):
         return self.__srcHPG.getSense()
     def get_tgtSense(self):
@@ -194,6 +221,12 @@ class Link(object):
         return self.__tgtHPG.getSense().OwningEntry.Guid.ToString()
     def get_tgtSenseNum(self):
         return self.__tgtHPG.getSenseNum()
+    def is_suggestion(self):
+        if self.get_initial_status() == INITIAL_STATUS_EXACT_SUGGESTION or self.get_initial_status() == INITIAL_STATUS_FUZZY_SUGGESTION:
+            return True
+        return False
+    def isInitiallyUnlinkedAndTargetUnmodified(self):
+        return self.get_initial_status() == INITIAL_STATUS_LINKED and self.tgtModified == False
     def getDataByColumn(self, col):
         ret =''
         if col > 0 and col < 4:
@@ -203,10 +236,12 @@ class Link(object):
                 ret = self.get_srcHPG().getPOS()
             elif col == 3:
                 ret = self.get_srcHPG().getGloss()
+                
         elif col > 3 and col < 7:
-            # columns 4-6 need to be blank if there is no tgtHPG 
-            if self.get_tgtHPG() == None:
-                ret = u''   
+            # columns 4-6 need to be blank if there is no tgtHPG or we unchecked the linkIt box and we have a 
+            # non-suggested link. This is just extra visual feedback that we will do nothing when OK is clicked.
+            if self.get_tgtHPG() == None or (self.linkIt == False and not self.is_suggestion()):
+                ret = ''   
             elif col == 4:
                 ret = self.get_tgtHPG().getHeadword()
             elif col == 5:
@@ -236,11 +271,11 @@ class LinkerCombo(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             if self.getRTL():
-                value = myHPG.getHeadword() + u' \u200F(' + myHPG.getPOS() + u')\u200F ' + myHPG.getGloss()
+                value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
             else:
-                value = myHPG.getHeadword() + u' (' + myHPG.getPOS() + u') ' + myHPG.getGloss()
+                value = myHPG.getHeadword() + ' (' + myHPG.getPOS() + ') ' + myHPG.getGloss()
             self.__currentHPG = myHPG    
-            return QtCore.QString(value)
+            return value
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
@@ -263,124 +298,203 @@ class LinkerTable(QtCore.QAbstractTableModel):
     def columnCount(self, parent):
         return 7 
     def headerData(self, section, orientation, role):
+        
         # Set the background color
         if role == QtCore.Qt.BackgroundRole:
+            
             qColor = QtGui.QColor(QtCore.Qt.gray)
             return qColor
+        
         if role == QtCore.Qt.DisplayRole:
+            
             if orientation == QtCore.Qt.Horizontal:
+                
                 return self.__myHeaderData[section]
             else:
                 return
+            
     def data(self, index, role):
+        
         row = index.row()
         col = index.column()
+        locData = self.__localData[row]
         
         if role == QtCore.Qt.EditRole:
+            
             if col == 0: # Checkbox column
-                # make sure we have a target info.
-                if self.__localData[row].get_tgtHPG() == None:
-                    return False
-                else:
-                    self.dataChanged.emit(index, index)
-                    return True # default to True every time 
+                pass
+            
             elif col == 4: # target headword column
-                self.__localData[row].set_tgtHPG(self.__selectedHPG)
-                self.__localData[row].linkIt = True
-                self.__localData[row].modified = True
-                self.dataChanged.emit(index, index)
+                
+                locData.set_tgtHPG_only(self.__selectedHPG)
+                locData.linkIt = True
+                locData.tgtModified = True
+                #self.dataChanged.emit(index, index)
+                
                 return self.__selectedHPG.getHeadword()
         
         # Set the foreground (font) color
         if role == QtCore.Qt.ForegroundRole:
+            
             qColor = QtGui.QColor(QtCore.Qt.black)
+            
             if row >= 0:
+                
+                # src headword
                 if col == 1:
+                    
                     qColor = QtGui.QColor(QtCore.Qt.darkGreen)
+                
+                # tgt headword    
                 elif col == 4:
+                    
                     qColor = QtGui.QColor(QtCore.Qt.darkBlue)
-                elif (col == 2 or col == 5) and self.__localData[row].suggestion == True: #gram cat.
+                
+                # gram. category    
+                elif (col == 2 or col == 5) and locData.is_suggestion() == True: 
+                    
                     # If there is a mismatch in grammatical category color it red
-                    if self.__localData[row].get_srcPOS().lower() != self.__localData[row].get_tgtPOS().lower():
+                    if locData.get_srcPOS().lower() != locData.get_tgtPOS().lower():
+                        
                         qColor = QtGui.QColor(QtCore.Qt.red)
+                        
                 qBrush = QtGui.QBrush(qColor)
+                
                 return qBrush
         
         # Set the background color
         if role == QtCore.Qt.BackgroundRole:
+            
             if row >= 0:
-                # Not working because painting is handled in the delegate class
-                # Mark in yellow the first column cells for the rows to be linked
-                if col == 0 and self.__localData[row].linkIt == True:
+                
+                initiallyLinkedUnmodifiedSense = locData.isInitiallyUnlinkedAndTargetUnmodified()
+                
+                # Mark in yellow the first column cells for the rows to be linked or unlinked (in the case of a previously linked row from the DB)
+                if col == 0 and ((locData.linkIt == True and not initiallyLinkedUnmodifiedSense) or (locData.linkIt == False and initiallyLinkedUnmodifiedSense)):
+                    
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
+                
                 # Modified rows get a color just for the target columns
-                elif self.__localData[row].modified == True and col >= 4 and col <= 6:
-                        qColor = QtGui.QColor(152, 251, 152) # pale green
-                # Suggested links
-                elif self.__localData[row].suggestion == True:
-                    # Exact match
-                    if self.__localData[row].get_srcGloss() == self.__localData[row].get_tgtGloss():
-                        qColor = QtGui.QColor(176, 255, 255) # medium cyan?
-                    else:
-                        qColor = QtGui.QColor(224, 255, 255) # light cyan
+                elif col >= 4 and col <= 6 and (locData.tgtModified == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.linkIt == False)):
+                    
+                    qColor = QtGui.QColor(152, 251, 152) # pale green
+                
+                # Exact suggestion 
+                elif locData.get_initial_status() == INITIAL_STATUS_EXACT_SUGGESTION:
+                    
+                    qColor = QtGui.QColor(176, 255, 255) # medium cyan
+                    
+                # Fuzzy suggestion 
+                elif locData.get_initial_status() == INITIAL_STATUS_FUZZY_SUGGESTION:
+                            
+                    qColor = QtGui.QColor(224, 255, 255) # light cyan
+                
                 # No links
-                elif self.__localData[row].unlinked == True or self.__localData[row].initiallyUnlinked == True:
-                    self.__localData[row].initiallyUnlinked = True
+                elif locData.get_initial_status() == INITIAL_STATUS_UNLINKED:
+                    
                     qColor = QtGui.QColor(255, 192, 203) # pink
-                else:
+                    
+                # Existing link in the DB    
+                else: # INITIAL_STATUS_LINKED:
+                    
                     qColor = QtGui.QColor(QtCore.Qt.white)
-                #qBrush = QtGui.QBrush(qColor) 
+
+                self.dataChanged.emit(index, index)
+
                 return qColor
         
         if role == QtCore.Qt.DisplayRole:
-            
+             
+            if col != 0:
+                 
+                return locData.getDataByColumn(col)
+                 
+        if role == QtCore.Qt.CheckStateRole:
+             
             if col == 0:
-                value = self.__localData[row].linkIt
-            else:
-                value = self.__localData[row].getDataByColumn(col)
+                 
+                # If user said link it, check the box. Also if there is an existing link in the DB on 
+                if locData.linkIt == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.modified == False):
+                     
+                    val = QtCore.Qt.Checked
+                else:
+                    val = QtCore.Qt.Unchecked
                 
-            if type(value) == str:
-                return QtCore.QString(value)
-            else:
-                return value
-            
+                # force an update so we get colors changing as needed
+                #self.dataChanged.emit(index, index)
+                
+                return val
+             
         elif role == QtCore.Qt.TextAlignmentRole:
-            # Check if we have right to left data in a column, if so align it right
-            if col > 0 and len(self.__localData[row].getDataByColumn(col)) > 0:
-                
-                # check first character of the given cell
-                if unicodedata.bidirectional(self.__localData[row].getDataByColumn(col)[0]) in (u'R', u'AL'): 
-                    
-                    return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
-    def flags(self, index):
-        # Columns 0 and 4 are editable
-        val = QtCore.Qt.ItemIsEnabled
-        if index.column() == 0:
-            val = val | QtCore.Qt.ItemIsEditable 
-        if index.column() == 4:
-            val = val | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable 
-        return val
-    def setData(self, index, value, role = QtCore.Qt.EditRole):
-        if role == QtCore.Qt.EditRole:
-            row = index.row()
-            col = index.column()
+             
             if col == 0:
-                self.__localData[row].linkIt = value
+                 
+                # Doesn't have an effect
+                return QtCore.Qt.AlignCenter
+             
+            # Check if we have right to left data in a column, if so align it right
+            elif col > 0 and len(locData.getDataByColumn(col)) > 0:
+                 
+                # check first character of the given cell
+                if unicodedata.bidirectional(locData.getDataByColumn(col)[0]) in ('R', 'AL'): 
+                     
+                    return QtCore.Qt.AlignRight | QtCore.Qt.AlignCenter
+                
+    def flags(self, index):
+        
+        locData = self.__localData[index.row()]
+        
+        # Columns 0 and 4 are enabled and selectable
+        val = QtCore.Qt.ItemIsSelectable
+        
+        # Add checkable for the 1st column
+        if index.column() == 0:
+
+            # Don't allow the box to be checked if we have an unlinked row that hasn't had the target modified
+            if not (locData.get_initial_status() == INITIAL_STATUS_UNLINKED and locData.tgtModified == False):
+            
+                val =  val | QtCore.Qt.ItemIsEnabled
+                
+            val =  val | QtCore.Qt.ItemIsUserCheckable 
+        
+        # Add editable for the target headword column  
+        elif index.column() == 4:
+            
+            val = val | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable 
+            
+        return val
+    
+    def setData(self, index, value, role = QtCore.Qt.EditRole):
+        
+        col = index.column()
+
+        if role == QtCore.Qt.CheckStateRole and col == 0:
+            
+            row = index.row()
+            
+            if value == QtCore.Qt.Checked: 
+                
+                self.__localData[row].linkIt = True
+                self.__localData[row].modified = True
+            else:
+                self.__localData[row].linkIt = False
+                self.__localData[row].modified = True
+                
         return True
             
-class Main(QtGui.QMainWindow):
+class Main(QMainWindow):
 
     def __init__(self, myData, headerData, comboData):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
         self.__model = LinkerTable(myData, headerData)
         self.ui.tableView.setModel(self.__model)
-        # Prepare the checkbox column
-        for row in range(0, self.__model.rowCount(self)):
-            self.ui.tableView.openPersistentEditor(self.__model.index(row, 0))
+#         # Prepare the checkbox column
+#         for row in range(0, self.__model.rowCount(self)):
+#             self.ui.tableView.openPersistentEditor(self.__model.index(row, 0))
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.ret_val = 0
@@ -391,22 +505,23 @@ class Main(QtGui.QMainWindow):
         
         myHPG = self.__combo_model.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
+        
         # Check for right to left data and set the combobox direction if needed
         for i in range(0, len(myHeadword)):
-            if unicodedata.bidirectional(myHeadword[i]) in (u'R', u'AL'):
+            if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
                 self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                 self.__combo_model.setRTL(True)
                 break
         
     def resizeEvent(self, event):
-        QtGui.QMainWindow.resizeEvent(self, event)
+        QMainWindow.resizeEvent(self, event)
         
         # Stretch the table view to fit
         self.ui.tableView.setGeometry(10, 50, self.width() - 20, \
                                       self.height() - 80 - self.ui.OKButton.height() - 25)
         
         # Move the OK and Cancel buttons as the window gets resized.
-        x = self.width()/2 - 10 - self.ui.OKButton.width()
+        x = self.width()//2 - 10 - self.ui.OKButton.width()
         if x < 0:
             x = 0
         self.ui.OKButton.setGeometry(x, 50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
@@ -414,12 +529,16 @@ class Main(QtGui.QMainWindow):
         self.ui.CancelButton.setGeometry(x + self.ui.OKButton.width() + 10,  \
                                          50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
                                          self.ui.OKButton.height())
+        firstColWidth = 45
+        
         # Set the column widths
         colCount = self.cols # self.ui.tableView.columnCount()
-        colWidth = (self.ui.tableView.width() / colCount) - 3
+        colWidth = ((self.ui.tableView.width() - firstColWidth) // (colCount - 1)) - 4 #don't include 1st column
         if colWidth < 40:
             colWidth = 40
-        for i in range(0, colCount):
+
+        self.ui.tableView.setColumnWidth(0, firstColWidth)
+        for i in range(1, colCount):
             self.ui.tableView.setColumnWidth(i, colWidth)
     def ComboClicked(self):
         # Set the target HPG for the model  
@@ -443,7 +562,7 @@ class Main(QtGui.QMainWindow):
         # Create a new filtered list
         filteredData = []
         for myLink in self.__model.getInternalData():
-            if myLink.get_tgtHPG() is None or myLink.suggestion:
+            if myLink.get_tgtHPG() is None or myLink.is_suggestion():
                 filteredData.append(myLink)
         self.__model.beginResetModel();
         self.__model.setInternalData(filteredData)
@@ -491,7 +610,7 @@ def GetEntryWithSense(e):
         notDoneWithVariants = False
     return e
 
-def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
+def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
 
     # Loop through all the target entries
     for entry_cnt,e in enumerate(TargetDB.LexiconAllEntries()):
@@ -516,7 +635,7 @@ def get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, sca
                     POS = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
                 else:
-                    POS = u'UNK'
+                    POS = 'UNK'
                     
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
@@ -589,7 +708,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map):
             gloss_len = len(gloss)
             if gloss_len >= MIN_GLOSS_LEN_FOR_FUZZ:
                 # Loop through all the target glosses
-                for mgloss in gloss_map.keys():
+                for mgloss in list(gloss_map.keys()):
                     mgloss_len = len(mgloss)
                     # skip the fuzzy match if the target gloss is to small or there's a big difference in length
                     if mgloss_len >= MIN_GLOSS_LEN_FOR_FUZZ and \
@@ -711,8 +830,8 @@ def MainFunction(DB, report, modify=True):
     if bundles_scale == 0:
     	bundles_scale = 1
 
-    # Create a map of glosses to target senses and their number
-    if not get_gloss_map(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+    # Create a map of glosses to target senses and their number and a list of target lexical senses
+    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
         return
 
     warning_list = []
@@ -762,7 +881,7 @@ def MainFunction(DB, report, modify=True):
                             if bundle.MsaRA.PartOfSpeechRA:
                                 srcPOS =  ITsString(bundle.MsaRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                srcPOS = u'UNK'
+                                srcPOS = 'UNK'
                             
                             # Create a headword-POS-gloss object and initialize a Link object with this
                             # as the source sense info.
@@ -804,14 +923,23 @@ def MainFunction(DB, report, modify=True):
                                             matchLink = myLink
                                         else:
                                             matchLink = Link(myHPG, matchHPG)
-                                        matchLink.suggestion = True
+                                        
+                                        # See if we have an exact match
+                                        if matchLink.get_srcGloss().lower() == matchLink.get_tgtGloss().lower():
+                                            
+                                            matchLink.set_initial_status(INITIAL_STATUS_EXACT_SUGGESTION)
+                                        else:
+                                            matchLink.set_initial_status(INITIAL_STATUS_FUZZY_SUGGESTION)
+
                                         myData.append(matchLink)
                                         processed_map[mySense] = matchLink
+                                        
                                 # No matches
                                 else:
                                     # add a Link object that has no target information
                                     myData.append(myLink)
                                     processed_map[mySense] = myLink
+                                    
                         else: # we've processed this sense before, add it to the list again
                             myLink = processed_map[mySense]
                             myData.append(myLink)
@@ -822,11 +950,27 @@ def MainFunction(DB, report, modify=True):
         report.Warning('There were no senses found for linking.')
     else:
     
+#         # TEMP
+#         # dump words with no link
+#         processed = {}
+#         fz = open("vocab_dump.txt", 'w', encoding='utf-8')
+#         for link in myData:
+#             hpg = link.get_srcHPG()
+#             if hpg.getSense() not in processed:
+# 
+#                 if link.initial_status != INITIAL_STATUS_LINKED:
+#                     myHeadword = hpg.getHeadword()
+#                     myHeadword = re.sub('\d','',myHeadword,re.A)
+#                     fz.write(myHeadword+'\n')
+#                     
+#                 processed[hpg.getSense()] = 1
+#         fz.close()
+    
         # Show the window
-        app = QtGui.QApplication(sys.argv)
+        app = QApplication(sys.argv)
         
-        myHeaderData = ["Link it", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
-                        'Target Head Word',  'Target Cat.', 'Target Gloss']
+        myHeaderData = ["Link It!", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
+                        'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
         window = Main(myData, myHeaderData, tgtLexList)
@@ -845,10 +989,17 @@ def MainFunction(DB, report, modify=True):
                 
                 # See if we have already updated this sense
                 currSense = currLink.get_srcSense()
+                
                 if currSense not in updated_senses:
-                    # Create a link if the user marked it for linking
-                    if (currLink.linkIt == True) and (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() != ''):
+                    
+                    # Create a link if the user marked it for linking and we have a valid target
+                    # and it's not an existing linked sense in the DB where the link hasn't been changed (these are 
+                    # marked linkIt=True, but we don't want to re-link them even though it wouldn't hurt).
+                    if (currLink.linkIt == True and currLink.get_tgtHPG() != None and currLink.get_tgtHPG().getHeadword() != '') and \
+                       not currLink.isInitiallyUnlinkedAndTargetUnmodified():
+                        
                         cnt += 1
+                        
                         # Build target link from saved url path plus guid string for this target sense
                         text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
                         
@@ -857,38 +1008,41 @@ def MainFunction(DB, report, modify=True):
                     
                         # Set the sense number if necessary
                         if currLink.get_tgtSenseNum() > 1:
-                            numStr = unicode(currLink.get_tgtSenseNum())
+                            numStr = str(currLink.get_tgtSenseNum())
                             DB.LexiconSetFieldText(currSense, senseNumField, numStr)
                     
                         updated_senses[currSense] = 1
                     
-                    elif (currLink.get_tgtHPG() != None) and (currLink.get_tgtHPG().getHeadword() == ''):
-
+                    
+                    elif currLink.linkIt == False and currLink.isInitiallyUnlinkedAndTargetUnmodified():
+ 
                         unlinkCount += 1
+                        
                         # Clear the target field
                         DB.LexiconSetFieldText(currSense, senseEquivField, '')
                         DB.LexiconSetFieldText(currSense, senseNumField, '')
-
+ 
                         updated_senses[currSense] = 1
-                    
+        
+        # Give feedback            
         if cnt == 1:
-            report.Info(unicode(cnt)+' link created.')
+            
+            report.Info('1 link created.')
         else:
-            report.Info(unicode(cnt)+' links created.')
+            report.Info(str(cnt)+' links created.')
 
         if unlinkCount == 1:
+            
             report.Info('1 link removed')
+            
         elif unlinkCount > 1:
-            report.Info(unicode(unlinkCount) + ' links removed')  
+            
+            report.Info(str(unlinkCount) + ' links removed')  
                       
-    #exit(exec_val)
- 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
 
 #----------------------------------------------------------------
 if __name__ == '__main__':

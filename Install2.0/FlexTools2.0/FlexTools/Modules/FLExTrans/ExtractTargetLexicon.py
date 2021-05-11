@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -87,38 +90,34 @@
 #   of the previous allomorph(s).
 #
 
+import os
 import sys
 import re 
-import os
 import tempfile
-import ReadConfig
-import Utils
-from collections import defaultdict
-from System import Guid
-from System import String
+from subprocess import call
 from datetime import datetime
 
-from subprocess import call
-import os
-import platform
-import subprocess
+from System import Guid
+from System import String
+
+import ReadConfig
+import Utils
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs.FLExProject import FLExProject, GetProjectNames
-from __builtin__ import True
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
         FTM_Description:  
-u"""
+"""
 The target database set in the configuration file will be used. This module will create a three target language lexicons. One for
 roots, one for prefixes and one for suffixes. They are in the CARLA style
 which is suitable for input to STAMP for synthesis. They use the standard
@@ -174,15 +173,15 @@ def output_allomorph(morph, envList, f_handle, e, report, TargetDB):
     
     # Convert spaces between words to underscores, these have to be removed later.
     amorph = re.sub(r' ', r'_', amorph)
-    f_handle.write('\\a '+amorph.encode('utf-8')+' ')
+    f_handle.write('\\a '+amorph+' ')
     
     # Write out negated environments from previous allomorphs
     for prevEnv in envList:
-        f_handle.write('~'+prevEnv.encode('utf-8')+' ') 
+        f_handle.write('~'+prevEnv+' ') 
         
     for env in morph.PhoneEnvRC:
         envStr = ITsString(env.StringRepresentation).Text
-        f_handle.write(envStr.encode('utf-8')+' ')
+        f_handle.write(envStr+' ')
         envList.append(envStr)
     f_handle.write('\n')
 
@@ -198,7 +197,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
 
     # Output gloss
     if myGloss:
-        f_pf.write('\\g ' + myGloss.encode('utf-8')+'_cfx_part_a' + '\n')
+        f_pf.write('\\g ' + myGloss+'_cfx_part_a' + '\n')
     else:
         f_pf.write('\\g \n')
     
@@ -212,7 +211,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, report, myType, TargetDB):
     
     # Output gloss
     if myGloss:
-        f_sf.write('\\g ' + myGloss.encode('utf-8')+'_cfx_part_b' + '\n')
+        f_sf.write('\\g ' + myGloss+'_cfx_part_b' + '\n')
     else:
         f_sf.write('\\g \n')
     
@@ -232,7 +231,7 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
 
     # Output gloss
     if myGloss:
-        f_handle.write('\\g ' + myGloss.encode('utf-8') + '\n')
+        f_handle.write('\\g ' + myGloss + '\n')
     else:
         f_handle.write('\\g \n')
     
@@ -246,7 +245,7 @@ def process_allomorphs(e, f_handle, myGloss, report, myType, TargetDB):
         f_handle.write('\\l ' + morphTypesStr)
         for position in e.LexemeFormOA.PositionRS:
             positionStr = ITsString(position.StringRepresentation).Text
-            f_handle.write(positionStr.encode('utf-8')+' ')
+            f_handle.write(positionStr+' ')
         f_handle.write('\n')
         
     # Loop through all the allomorphs
@@ -269,11 +268,11 @@ def create_dictionary_files(partPath):
     (dicFileNameList, decFileName) = define_some_names(partPath)
     
     # Open the dictionary files we are going to create
-    f_pf = open(dicFileNameList[0], 'w') # prefixes
-    f_if = open(dicFileNameList[1], 'w') # infixes
-    f_sf = open(dicFileNameList[2], 'w') # suffixes
-    f_rt = open(dicFileNameList[3], 'w') # roots
-    f_dec = open(decFileName, 'w') # categories and string (natural) classes 
+    f_pf = open(dicFileNameList[0], 'w', encoding="utf-8") # prefixes
+    f_if = open(dicFileNameList[1], 'w', encoding="utf-8") # infixes
+    f_sf = open(dicFileNameList[2], 'w', encoding="utf-8") # suffixes
+    f_rt = open(dicFileNameList[3], 'w', encoding="utf-8") # roots
+    f_dec = open(decFileName, 'w', encoding="utf-8") # categories and string (natural) classes 
     
     # need a blank line at the top
     f_pf.write('\n\n') 
@@ -293,7 +292,7 @@ def create_synthesis_files(partPath):
     cmdFileName = partPath+'_ctrl_files.txt'
     
     # Command file
-    f_cmd = open(cmdFileName, 'w')
+    f_cmd = open(cmdFileName, 'w', encoding="utf-8")
     f_cmd.write(decFileName+'\n')
     f_cmd.write(blankFileNameList[0]+'\n')
     f_cmd.write(blankFileNameList[1]+'\n')
@@ -306,7 +305,7 @@ def create_synthesis_files(partPath):
     f_cmd.close()
     
     # Synthesis codes file
-    f_sycd = open(sycdFileName, 'w')
+    f_sycd = open(sycdFileName, 'w', encoding="utf-8")
     firstLineList = ['\\infix \\g','\\prefix \\g','\\suffix \\g','\\root \\m']
     for i, f in enumerate(firstLineList):
         f_sycd.write('\n') # blank line
@@ -328,7 +327,7 @@ def create_synthesis_files(partPath):
 
     # Create the blank files we need
     for b in blankFileNameList:
-        f = open(b,'w')
+        f = open(b,'w', encoding="utf-8")
         f.close()
     
     return cmdFileName
@@ -364,8 +363,8 @@ def output_nat_class_info(TargetDB, f_dec):
         natClassName = ITsString(natClass.Abbreviation.BestAnalysisAlternative).Text
         
         # Make sure we have a valid class name and that it is not a Natural Class of Features which we are not concerned with
-        if natClassName and natClass.ClassName <> 'PhNCFeatures':
-            f_dec.write('\\scl '+natClassName.encode('utf-8')+'\n')
+        if natClassName and natClass.ClassName != 'PhNCFeatures':
+            f_dec.write('\\scl '+natClassName+'\n')
         
             # Loop through all the segments in the class
             for seg in natClass.SegmentsRC:
@@ -378,7 +377,7 @@ def output_nat_class_info(TargetDB, f_dec):
                         err_list.append(('Null grapheme found for natural class: '+natClassName+'. Skipping.', 1))
                         continue
                     else:
-                        f_dec.write(' '+grapheme.encode('utf-8'))
+                        f_dec.write(' '+grapheme)
             f_dec.write('\n')
     f_dec.close()
     
@@ -432,7 +431,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     headWord = re.sub('\s', '_', headWord)
     
                     # Write out morphname field (no sense number for variants)
-                    f_rt.write('\\m '+headWord.encode('utf-8')+'\n')
+                    f_rt.write('\\m '+headWord+'\n')
                     f_rt.write('\\c '+"_variant_"+'\n')
 
                     # Process all allomorphs and their environments
@@ -482,7 +481,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         continue
     
                     # Write out morphname field
-                    f_rt.write('\\m '+headWord.encode('utf-8')+'.'+unicode(i+1).encode('utf-8')+'\n')
+                    f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
                     
                     # change spaces to underscores
                     abbrev = re.sub('\s', '_', abbrev)
@@ -535,10 +534,10 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
     
     err_list.append(('STAMP dictionaries created.', 0))
-    err_list.append((unicode(pf_cnt)+' prefixes in the prefix dictionary.', 0))
-    err_list.append((unicode(sf_cnt)+' suffixes in the suffix dictionary.', 0))
-    err_list.append((unicode(if_cnt)+' infixes in the infix dictionary.', 0))
-    err_list.append((unicode(rt_cnt)+' roots in the root dictionary.', 0))
+    err_list.append((str(pf_cnt)+' prefixes in the prefix dictionary.', 0))
+    err_list.append((str(sf_cnt)+' suffixes in the suffix dictionary.', 0))
+    err_list.append((str(if_cnt)+' infixes in the infix dictionary.', 0))
+    err_list.append((str(rt_cnt)+' roots in the root dictionary.', 0))
 
     return err_list
     
@@ -612,18 +611,18 @@ def extract_target_lex(DB, configMap, report=None):
 
 def fix_up_text(synFile, cleanUpText):
     # Also remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
-    f_s = open(synFile)
+    f_s = open(synFile, encoding="utf-8")
     line_list = []
     for line in f_s:
         line_list.append(line)
 
     f_s.close()
-    f_s = open(synFile, 'w')
+    f_s = open(synFile, 'w', encoding="utf-8")
     for line in line_list:
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line)
+            line = re.sub('\d+\.\d+', '', line, re.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()

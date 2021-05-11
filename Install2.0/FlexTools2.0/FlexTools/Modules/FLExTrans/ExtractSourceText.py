@@ -8,6 +8,53 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.1 - 3/8/21 - Ron Lockwood
+#    Error checking for missing guid in XML files
+#
+#   Version 3.2 - 3/4/21 - Ron Lockwood
+#    Support for discontiguous complex forms
+#
+#   Version 3.1 - 2/25/21 - Ron Lockwood
+#    Support an insert word list file for extraction purposes. Get new item:
+#    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
+#    and addInseredWordsList. Bug fix: check if we get None for the sent. object
+#    for the number given. Give an error if needed.
+#
+#   Version 3.0 - 1/26/21 - Ron Lockwood
+#    Changes for python 3 conversion
+#
+#   Version 2.1.4 - 7/29/20 - Ron Lockwood
+#    Use an offset when writing punctuation in TreeTran case.
+#    
+#   Version 2.1.3 - 7/29/20 - Ron Lockwood
+#    Write the punctuation of the words in their normal order when doing TreeTran.
+#    This avoids punctuation staying with words that change their order.
+#    
+#   Version 2.1.2 - 3/27/20 - Ron Lockwood
+#    Handle adding sentence punctuation when using TreeTran.
+#    
+#   Version 2.1.1 - 3/26/20 - Ron Lockwood
+#    Moved TreeTran-related class and function to the Utils file.
+#
+#   Version 2.1 - 3/20/20 - Ron Lockwood
+#    Use new getInterlinData function and text and sentence objects we get back.
+#
+#   Version 2.0.4 - 2/12/20 - Ron Lockwood
+#    Don't use sentence number as part of the guid map key.
+# 
+#   Version 2.0.3 - 2/4/20 - Ron Lockwood
+#    Only a tuple of two now coming back from get_interlin.
+# 
+#   Version 2.0.2 - 1/29/20 - Ron Lockwood
+#    Write a newline after a sentence that didn't have a parse. Also put out a 
+#    warning with the # of unparsed sentences.
+# 
+#   Version 2.0.1 - 1/22/20 - Ron Lockwood
+#    Use a sentence list from the get_interlinear function to use when there is not
+#    a parse available from TreeTran. This fixes the problem where a phrasal verb
+#    was reducing the word count and causing the non-parsed sentence to be off by
+#    one.
+# 
 #   Version 2.0 - 12/2/19 - Ron Lockwood
 #    Bump version number for FlexTools 2.0
 #
@@ -80,12 +127,6 @@
 #    Changed module description.
 #
 
-import sys
-import os
-import re 
-import tempfile
-import copy
-import xml.etree.ElementTree as ET
 from System import Guid
 from System import String
 
@@ -95,12 +136,8 @@ import Utils
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
-
 from FTModuleClass import FlexToolsModuleClass
 from collections import defaultdict
-from types import *
-from future.backports.test.pystone import FALSE, TRUE
-from __builtin__ import True
 
 #----------------------------------------------------------------
 # Configurables:
@@ -112,12 +149,12 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "1.7",
+        FTM_Version    : "3.2.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
         FTM_Description :
-u"""
+"""
 The source database should be chosen for this module. This module will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
@@ -145,10 +182,11 @@ def MainFunction(DB, report, modifyAllowed):
     outFileVal = ReadConfig.getConfigVal(configMap, 'AnalyzedTextOutputFile', report)
     if not outFileVal:
         return
-    #fullPathTextOutputFile = os.path.join(tempfile.gettempdir(), outFileVal)
+    
     fullPathTextOutputFile = outFileVal
+    
     try:
-        f_out = open(fullPathTextOutputFile, 'w')
+        f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
         return
@@ -180,21 +218,32 @@ def MainFunction(DB, report, modifyAllowed):
             return
     
     # Get punctuation string
-    sent_punct = unicode(ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report), "utf-8")
+    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
     
     if not sent_punct:
         return
     
     # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = unicode(ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report), "utf-8")
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
     
     if not treeTranResultFile:
         TreeTranSort = False
     else:
         TreeTranSort = True
     
-    #TreeTranSort = False
+    # Check if we are using an Insert Words File for TreeTran 
+    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
     
+    if not treeTranInsertWordsFile:
+        insertWordsFile = False
+    else:
+        insertWordsFile = True
+        
+        insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+
+        if insertWordsList == None: 
+            return # error already reported
+        
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -204,11 +253,14 @@ def MainFunction(DB, report, modifyAllowed):
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
             return
         
-        # get the list of guids from the tree tran results file
-        treeSentList = getTreeSents(treeTranResultFile)
+        # get the list of guids from the TreeTran results file
+        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        
+        if treeSentList == None: 
+            return # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
-        logInfo = importGoodParsesLog()
+        logInfo = Utils.importGoodParsesLog()
             
     # Process the text
     report.Info("Exporting analyses...")
@@ -219,133 +271,120 @@ def MainFunction(DB, report, modifyAllowed):
     elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
         return
 
-    getSurfaceForm = False
-    retObject = Utils.get_interlin_data(DB, report, sent_punct, contents, typesList, getSurfaceForm, TreeTranSort)
+    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+        return
 
+    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+        return
+
+    # Get interlinear data. A complex text object is returned.
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+        
     if TreeTranSort:
-        (guidMap, outputStringList) = retObject
-        index = 0
+        
+        # If we are using an Insert Words file, add the words to the text object
+        if insertWordsFile == True:
+            myText.addInsertedWordsList(insertWordsList)
+        
+        # create a map of bundle guids to word objects. This gets used when the TreeTran module is used.
+        myText.createGuidMaps()
+        
         p = 0
+        noParseSentCount = 0
         
         # Loop through each sent
-        for sentNum, (numWords, parsed) in enumerate(logInfo):
+        for sentNum, (_, parsed) in enumerate(logInfo):
             
-            if parsed == True:
-                mySent = treeSentList[p]
+            # If we have a parse for a sentence, TreeTran may have rearranged the words.
+            # We need to put them out in the new TreeTran order.
+            if parsed == True and p < len(treeSentList):
+                myTreeSent = treeSentList[p]
+                
+                myFLExSent = myText.getSent(sentNum)
+                isLastSent = myText.isLastSentInParagraph(sentNum)
+                
+                if myFLExSent is None:
+                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    return
+                    
+                # Output any punctuation preceding the sentence.
+                puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
                 
                 # Loop through each word in the sentence and get the Guids
-                for x in range(0,mySent.getLength()):
-                    myGuid = mySent.getNextGuid()
+                # NB: any <sent> 'words' won't get processed since they are not in the guid list.
+                for wrdNum in range(0, myTreeSent.getLength()):
+                    myGuid = myTreeSent.getNextGuidAndIncrement()
                     
                     if myGuid == None:
+                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
-                    myGuid = (sentNum, myGuid) # new index is sent. # + Guid
-                    if myGuid not in guidMap:
-                        report.Error('Could not find the desired Guid')
+                    # If we couldn't find the guid, see if there's a reason
+                    if myFLExSent.haveGuid(myGuid) == False:
+                        # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
+                        nextGuid = myTreeSent.getNextGuid()
+                        if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
+                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                    
+                    # We want the punctuation to be at the same points as in the original sentence. This won't always come out right, but maybe close.
                     else:
-                        outStr = guidMap[myGuid]
-                        # Split compound words
-                        outStr = Utils.split_compounds(outStr)
-                        f_out.write(outStr.encode('utf-8'))
+                        # Write the original word order punctuation.
+                        # Use the punctuation words written above as the offset to make sure the guid word is the same as the flex sentence word.
+                        myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
+
+                        # Write the data that's between the punctuation
+                        myFLExSent.writeWordDataForThisGuid(f_out, myGuid)
+                        
+                        #myFLExSent.writeThisGuid(f_out, myGuid)
+                        
+                        # Write the original word order punctuation.
+                        myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
+                    
+                # Output any punctuation at the of the sentence.
+                myFLExSent.writeFinalSentPunc(f_out)
+                
+                if isLastSent:
+                    f_out.write('\n')
+
                 p += 1
                 
-            # no syntax parse put words out in their default order                        
+            # No syntax parse from PC-PATR. Put words out in their default order since TreeTran didn't rearrange anything.                        
             else:
-                j = index
-                for i in range (j, j+numWords):
-                    outStr = outputStringList[i*2] # *2 because there's always a punct string between every lexical unit string
-                    outStrPunct = outputStringList[i*2+1] # punctuation
-                    # Split compound words
-                    outStr = Utils.split_compounds(outStr)
-                    f_out.write(outStr.encode('utf-8'))
-                    f_out.write(outStrPunct.encode('utf-8'))
-            
-            index += numWords
-    else:
-        # retObject is a list
-        # Write out all the words
-        for outStr in retObject:
-            # Split compound words
-            outStr = Utils.split_compounds(outStr)
-            f_out.write(outStr.encode('utf-8'))
+                noParseSentCount += 1
+                
+                # NEW CODE
+                # Get the sentence in question
+                myFLExSent = myText.getSent(sentNum)
+                
+                if myFLExSent == None:
+                    
+                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    continue 
+                
+                myFLExSent.write(f_out)
+                f_out.write('\n')
+                
+        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        
+        if noParseSentCount > 0:
+            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
 
+    else:
+        # Write out all the words
+        myText.write(f_out)
+        
+        report.Info("Exported: " + str(myText.getSentCount()) + " sentence(s).")
+        
     f_out.close()
 
     report.Info("Export of " + text_desired_eng + " complete.")
     
-def importGoodParsesLog():
-    logList = []
-    
-    f = open(os.path.join(tempfile.gettempdir(), Utils.GOOD_PARSES_LOG))
-    
-    for line in f:
-        (numWordsStr, flagStr) = line.rstrip().split(',')
-        
-        if flagStr == '1':
-            parsed = True
-        else:
-            parsed = False
-    
-        logList.append((int(numWordsStr), parsed))
-    
-    return logList
-    
-class treeTranSent():
-    def __init__(self):
-        self._singleTree = True
-        self._guidList = []
-        self._index = 0
-    def getSingleTree(self):
-        return self._singleTree
-    def setSingleTree(self, val):
-        self._singleTree = val
-    def addGuid(self, myGuid):
-        self._guidList.append(myGuid)
-    def getNextGuid(self):
-        if self._index >= len(self._guidList):
-            return None
-        g = self._guidList[self._index]    
-        self._index += 1
-        return g
-    def getLength(self):
-        return len(self._guidList)
-        
-def getTreeSents(inputFilename):
-    
-    obj_list = []
-
-    try:
-        myETree = ET.parse(inputFilename)
-    except:
-        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
-    
-    myRoot = myETree.getroot()
-    
-    newSent = True
-    myTreeSent = None
-    # Loop through the anaRec's 
-    for anaRec in myRoot:
-        # Create a new tree tran sentence object
-        if newSent == True:
-            myTreeSent = treeTranSent()
-            obj_list.append(myTreeSent) # add it to the list
-            newSent = False
-            
-        # See if this word has multiple parses which means it wasn't syntax-parsed
-        mparses = anaRec.findall('mparse')
-        if len(mparses) > 1:
-            myTreeSent.setSingleTree(False)
-        
-        pNode = anaRec.find('./mparse/a/root/p')
-        currGuid = Guid(String(pNode.text))
-        analysisNode = anaRec.find('Analysis')
-        if analysisNode != None:
-            newSent = True
-        
-        myTreeSent.addGuid(currGuid)
-    
-    return obj_list
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
