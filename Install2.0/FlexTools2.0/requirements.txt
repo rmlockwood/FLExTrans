@@ -4,3 +4,4 @@ git+https://github.com/cdfarrow/flexlibs.git
 fuzzywuzzy 
 Levenshtein 
 PyQt5 
+PyQtWebEngine 

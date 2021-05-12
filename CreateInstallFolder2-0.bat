@@ -17,7 +17,7 @@ xcopy /s FlexTools2.0\FlexTools\__icons\* Install2.0\FlexTools2.0\FlexTools\__ic
 echo fuzzywuzzy >> Install2.0\FlexTools2.0\requirements.txt
 echo Levenshtein >> Install2.0\FlexTools2.0\requirements.txt
 echo PyQt5 >> Install2.0\FlexTools2.0\requirements.txt
-copy install_flextools_libs.bat Install2.0\FlexTools2.0
+echo PyQtWebEngine >> Install2.0\FlexTools2.0\requirements.txt
 
 rem core models
 copy CatalogTargetPrefixes.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans

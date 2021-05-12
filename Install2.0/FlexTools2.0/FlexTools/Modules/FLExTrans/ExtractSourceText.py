@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.2 - 5/12/21 - Ron Lockwood
+#    Only look for TreeTranInsertWordsFile in the config file if we are looking
+#    already for a TreeTran output file.
+#
 #   Version 3.2.1 - 3/8/21 - Ron Lockwood
 #    Error checking for missing guid in XML files
 #
@@ -149,7 +153,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.1",
+        FTM_Version    : "3.2.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -231,18 +235,18 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         TreeTranSort = True
     
-    # Check if we are using an Insert Words File for TreeTran 
-    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
-    
-    if not treeTranInsertWordsFile:
-        insertWordsFile = False
-    else:
-        insertWordsFile = True
+        # Check if we are using an Insert Words File for TreeTran 
+        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
         
-        insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
-
-        if insertWordsList == None: 
-            return # error already reported
+        if not treeTranInsertWordsFile:
+            insertWordsFile = False
+        else:
+            insertWordsFile = True
+            
+            insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+    
+            if insertWordsList == None: 
+                return # error already reported
         
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
