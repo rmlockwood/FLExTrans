@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.4 - 7/1/21 - Ron Lockwood
+#    Instead of just using the text in the <l> element as the key for finding 
+#    lines in the bilingual file, use everything between <l>
+#    and </l> including </b>, but remove any <s> elements. This is because sometimes
+#    we have a phrase in the replacement file that has a space (/b) and before we would
+#    only pick up the text before the space.
+#
 #   Version 3.0.3 - 4/30/21 - Ron Lockwood
 #    Just give one warning for spaces in categories and likewise one warning for
 #    periods in categories. Make the "suppressing" message just info. not a warning
@@ -113,6 +120,7 @@
 
 import re
 import os
+import copy
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -134,7 +142,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0.3",
+        FTM_Version    : "3.0.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -265,8 +273,24 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     for entry in repl_sec:
         # Get the <l> text which is under the <p> which is under the <e>
         left = entry.find('p/l')
-        replMap[left.text] = entry
+#        replMap[left.text] = entry
+
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+        
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
     
+        replMap[key] = entry
+          
     # Read in the bilingual xml file
     try:
         bilingEtree = ET.parse(fullPathBilingFile)
@@ -313,22 +337,39 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         # Get the left lemma text
         left = entry.find('p/l')
         
-        # If we can't find it, use the identity text <e> should either have <l> (and <r>) or <i>
+        # If we can't find it, use the identity text <e> should either have <p><l></l><r></r></p>) or <i>
         if left == None:
             left = entry.find('i')
         
+        # Create string with the old contents of the entry. 
+        s = ET.tostring(left, encoding='unicode')
+        
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l> (same as above)
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+
+        # create the key string
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
+    
         # See if we have a match for replacing the entry
-        if left.text in replMap:
+        if key in replMap:
             
             # Create a comment containing the old entry and a note and insert them into the entry list
             comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
             
-            # Create string with the old contents of the entry. Using tostring() didn't work because of &# symbols come out for non-ascii text
-            if left.tag == 'i':
-                s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-            else:
-                s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-                s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
+#             if left.tag == 'i':
+#                 s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+#             else:
+#                 s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+#                 s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
                 
             comment2 = ET.Comment(s+'\n')
             
@@ -336,7 +377,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             new_biling_section.append(comment2)
             
             # Insert the new entry from the replacement file map
-            new_biling_section.append(replMap[left.text])
+            new_biling_section.append(replMap[key])
             
         else: # copy the old entry to the new
             new_biling_section.append(entry)

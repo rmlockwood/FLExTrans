@@ -8,6 +8,14 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.2 - 7/1/21 - Ron Lockwood
+#    Fixed bugs with punctuation algorithm. Initialize maps properly. Output the
+#    preceding punctuation of a sentence. Moved punctuation_eval() to Utils
+#    Put out a space after writing 'after' and 'final' punctuation. 
+#    When a sentence doesn't have parsing don't automatically put out a newline.
+#    Only do it when it is the last sentence of the paragraph.
+#    Omit 'ra' when building punctuation maps.
+#
 #   Version 3.2.1 - 3/8/21 - Ron Lockwood
 #    Error checking for missing guid in XML files
 #
@@ -132,6 +140,7 @@ from System import String
 
 import ReadConfig
 import Utils
+import copy
 
 from FTModuleClass import *
 from SIL.LCModel import *
@@ -151,7 +160,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.1",
+        FTM_Version    : "3.2.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -315,13 +324,15 @@ def MainFunction(DB, report, modifyAllowed):
                     report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
                     return
                 
-                beforeAfterMap = wordGramMap = {}
+                beforeAfterMap = {}
+                wordGramMap = {}
+                wordsHandledMap = {}
                 
                 # Set up the maps for the original sentnece
                 setUpOrigSentMaps(myFLExSent, beforeAfterMap, wordGramMap)
                     
                 # Output any punctuation preceding the sentence.
-                #puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
+                _ = myFLExSent.writePrecedingSentPunc(f_out)
                 
                 puncOutputMap = {}
                 
@@ -348,7 +359,7 @@ def MainFunction(DB, report, modifyAllowed):
                         #myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
 
                         # See if we should write punctuation for this word or if we should write punctuation for a different word
-                        writePunc = punctuation_eval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap)
+                        writePunc = Utils.punctuation_eval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap)
                         
                         if writePunc == True:
                         
@@ -365,10 +376,12 @@ def MainFunction(DB, report, modifyAllowed):
                         if writePunc == True:
                             
                             myFLExSent.writeAfterPunc(f_out, myGuid)
+                            f_out.write(' ')
 
                         elif wrdNum in puncOutputMap:
                             
                             myFLExSent.writeAfterPunc(f_out, puncOutputMap[wrdNum])
+                            f_out.write(' ')
 
                         #myFLExSent.writeThisGuid(f_out, myGuid)
                         
@@ -377,6 +390,7 @@ def MainFunction(DB, report, modifyAllowed):
                     
                 # Output any punctuation at the of the sentence.
                 myFLExSent.writeFinalSentPunc(f_out)
+                f_out.write(' ')
                 
                 if isLastSent:
                     f_out.write('\n')
@@ -397,7 +411,9 @@ def MainFunction(DB, report, modifyAllowed):
                     continue 
                 
                 myFLExSent.write(f_out)
-                f_out.write('\n')
+                
+                if myText.isLastSentInParagraph(sentNum):
+                    f_out.write('\n')
                 
         report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
         
@@ -416,7 +432,19 @@ def MainFunction(DB, report, modifyAllowed):
 
 def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
-    wordObjList = sentObj.getWordList()
+    wordObjList = []
+    
+    fullList = sentObj.getWordList()
+    
+    deleteList = ['را1.1']
+    
+    # Remove words that are going to be deleted
+    for wordObj in fullList:
+        
+        if wordObj.getLemma(0) not in deleteList:
+            
+            wordObjList.append(wordObj)
+    
     numWords = len(wordObjList)
     
     # set up the before/after map which is a map of the current word to its before and after words
@@ -435,89 +463,18 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
                 for k in range(i, i+j):
                     if k < numWords:
                         
-                        keyList.append(wordObjList[k].getID())
+                        myID = wordObjList[k].getID()
                         
-                if len(keyList) > 1:
+                        if myID != None:
+                            keyList.append(myID)
+                        else:
+                            break
+                        
+                if len(keyList) > 1 and myID != None:
                     # we can't use a list as the map value, a tuple works, why not make a hash of it
                     wrdGramMap[hash(tuple(keyList))] = 1
                     
-def test_add(a, b):
-    
-    return a + b                    
 
-def punctuation_eval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap):      
-    
-    wordList = treeTranSentObj.getGuidList()
-    numWords = len(wordList)
-
-    # Only process a word that has punctuation
-    if myFLExSent.hasPunctuation(wordList[i]) == True:
-        
-        # TODO: write this method
-        # TreeTran first word matches original first word
-        if i == 0 and myFLExSent.matchesFirstWord(wordList[i]):
-            
-            return True # output puctuation for this word
-        
-        # If last word
-        if i == numWords - 1:
-            
-            # TODO: write this method
-            # and matches original last word
-            if myFLExSent.matchesLastWord(wordList[i]):
-                
-                return True
-        else:
-            # See if we match an n-gram that was reversed in the tree tran sentence
-            for j in range(2, NGRAM_SIZE+1):
-                if i+j < numWords:
-                    
-                    if hash(tuple(list(reversed(wordList[i:i+j])))) in wordGramMap:
-                        
-                        puncOutputMap[i] = wordList[i]
-                        return True
-        
-        # Look to see if the previous and next words are the same as in the original
-        myID = myFLExSent.getWordByGuid(wordList[i]).getID()
-        
-        # Not first word or last word and this word is in the map
-        if i != 0 and i != numWords - 1 and myID in beforeAfterMap:
-        
-            # First the simple case, the direct previous and direct following word
-            if beforeAfterMap[myID] == (wordList[i-1], wordList[i+1]):
-                
-                return True
-            
-            # Check a reversed n-gram for the previous word with the direct following word.
-            for j in range(2, NGRAM_SIZE+1):
-                
-                if i-j > 0:
-                    if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
-                       beforeAfterMap[myID] == (wordList[i-j], wordList[i+1]):
-                    
-                        return True
-            
-            # Check the direct previous word with a reversed n-gram for the next word
-            for j in range(2, NGRAM_SIZE+1):
-                
-                if i+j > numWords:
-                    if hash(tuple(list(reversed(wordList[i+1:i+j+1])))) in wordGramMap and \
-                       beforeAfterMap[myID] == (wordList[i-1], wordList[i+j]):
-                    
-                        return True
-            
-            # Check a reversed n-gram for the previous and a reversed n-gram for the following word
-            for j in range(2, NGRAM_SIZE+1):
-                for l in range(2, NGRAM_SIZE+1):
-                    
-                    if i-j > 0 and i+l < numWords:
-                        
-                        if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
-                           hash(tuple(list(reversed(wordList[i+1:i+l+1])))) in wordGramMap and \
-                           beforeAfterMap[myID] == (wordList[i-j], wordList[i+l]):
-                            
-                            return True
-        
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
