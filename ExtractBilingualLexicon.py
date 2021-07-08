@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.0.5 - 7/8/21 - Ron Lockwood
+#    Handle slash in category name
+# 
 #   Version 3.0.4 - 7/1/21 - Ron Lockwood
 #    Instead of just using the text in the <l> element as the key for finding 
 #    lines in the bilingual file, use everything between <l>
@@ -142,7 +145,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0.4",
+        FTM_Version    : "3.0.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -554,6 +557,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         spaceErrors = 0
         periodErrors = 0
+        slashErrors = 0
         # loop through all target categories
         for pos in TargetDB.lp.AllPartsOfSpeech:
     
@@ -578,6 +582,15 @@ def MainFunction(DB, report, modifyAllowed):
                     report.Info("Suppressing further warnings of this type.")
                 posAbbr = re.sub(r'\.', '', posAbbr)
                 periodErrors += 1
+    
+            # give a warning if there is a slash in the target category. Remove them.
+            if re.search(r'/', posAbbr):
+                if slashErrors < 1:
+                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a slash in it. The slash has been removed. Keep this in mind when referring to this category in transfer rules.")
+                if slashErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
+                posAbbr = re.sub(r'/', '|', posAbbr)
+                slashErrors += 1
     
             if posAbbr not in posMap:
                 posMap[posAbbr] = pos.ToString()
@@ -714,9 +727,10 @@ def MainFunction(DB, report, modifyAllowed):
                                                 trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                                       Abbreviation.BestAnalysisAlternative).Text
                                                 
-                                                # Convert spaces to underscores and remove periods
+                                                # Convert spaces to underscores and remove periods and convert slash to bar
                                                 trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
                                                 trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
+                                                trgtAbbrev = re.sub(r'/', '|', trgtAbbrev)
                                                 
                                                 # Get target inflection class
                                                 trgtInflCls =''
