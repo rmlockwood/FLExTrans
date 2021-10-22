@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Bump version number for FlexTools 3.2
+#
 #   Version 3.0 - 1/25/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
