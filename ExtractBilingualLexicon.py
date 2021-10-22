@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Put underscores in target feature abbreviations if necessary.
+#
 #   Version 3.0.5 - 7/8/21 - Ron Lockwood
 #    Handle slash in category name
 # 
@@ -132,6 +135,7 @@ from System import Guid
 from System import String
 
 import ReadConfig
+import Utils
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -616,7 +620,7 @@ def MainFunction(DB, report, modifyAllowed):
                 for val in feat.ValuesOC:
                     featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
                     featName = ITsString(val.Name.BestAnalysisAlternative).Text
-                    posMap[featAbbr] = featName
+                    posMap[Utils.underscores(featAbbr)] = featName
                 
         # build string for the xml pos section
         for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
@@ -747,7 +751,7 @@ def MainFunction(DB, report, modifyAllowed):
                                                     
                                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                                     for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                        featStr += s2 + abb + s4a
+                                                        featStr += s2 + Utils.underscores(abb) + s4a
                                                 
                                                 # output the bilingual dictionary line (the sX is xml stuff)
                                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
