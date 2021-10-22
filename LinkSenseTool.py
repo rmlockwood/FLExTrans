@@ -952,19 +952,34 @@ def MainFunction(DB, report, modify=True):
     
         # TEMP
         # dump words with no link
-        processed = {}
-        fz = open("vocab_dump.txt", 'w', encoding='utf-8')
-        for link in myData:
-            hpg = link.get_srcHPG()
-            if hpg.getSense() not in processed:
- 
-                if link.initial_status != INITIAL_STATUS_LINKED:
-                    myHeadword = hpg.getHeadword()
-                    myHeadword = re.sub('\d','',myHeadword,re.A)
-                    fz.write(myHeadword+'\n')
-                     
-                processed[hpg.getSense()] = 1
-        fz.close()
+#         processed = {}
+#         fz = open("vocab_dump.txt", encoding='utf-8')
+#         
+#         # read in existing data in the file
+#         for i,line in enumerate(fz):
+#             processed[line.strip()] = 0
+#         
+#         fz.close()
+#         
+#         fz = open("vocab_dump.txt", 'w', encoding='utf-8')
+#         
+#         # print out existing words in the same order they were in the file
+#         for key, _ in sorted(processed.items(), key=lambda item: item[1]):
+#             
+#             fz.write(key+'\n')
+# 
+#         for link in myData:
+#             hpg = link.get_srcHPG()
+#             myHeadword = hpg.getHeadword()
+#             myHeadword = re.sub('\d','',myHeadword,re.A)
+#             
+#             if myHeadword not in processed:
+#  
+#                 if link.initial_status != INITIAL_STATUS_LINKED:
+#                     fz.write(myHeadword+'\n')
+#                      
+#                 processed[myHeadword] = 1
+#         fz.close()
     
         # Show the window
         app = QApplication(sys.argv)
