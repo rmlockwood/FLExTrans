@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Another python 3 fix.
+#
 #   Version 3.0 - 1/26/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -126,7 +129,7 @@ def MainFunction(DB, report, modify=True):
             done = False
             i = 2
             while not done: 
-                tryName = sourceTextName + ' (' + bytes(str(i)) + ')'
+                tryName = sourceTextName + ' (' + str(i) + ')'
                 if not findTextName(TargetDB, tryName): 
                     sourceTextName = tryName
                     done = True 
