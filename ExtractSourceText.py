@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.3 - 7/1/21 - Ron Lockwood
+#    Add 1 to sent# for reporting not found sentences.
+#
 #   Version 3.2.2 - 7/1/21 - Ron Lockwood
 #    Fixed bugs with punctuation algorithm. Initialize maps properly. Output the
 #    preceding punctuation of a sentence. Moved punctuation_eval() to Utils
@@ -160,7 +163,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.2",
+        FTM_Version    : "3.2.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -321,7 +324,7 @@ def MainFunction(DB, report, modifyAllowed):
                 isLastSent = myText.isLastSentInParagraph(sentNum)
                 
                 if myFLExSent is None:
-                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    report.Error('Sentence ' + str(sentNum+1) + ' from TreeTran not found')
                     return
                 
                 beforeAfterMap = {}
@@ -407,7 +410,7 @@ def MainFunction(DB, report, modifyAllowed):
                 
                 if myFLExSent == None:
                     
-                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    report.Error('Sentence: ' + str(sentNum+1) + ' not found. Check that the right parses are present.')
                     continue 
                 
                 myFLExSent.write(f_out)
