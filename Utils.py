@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2.4 - 10/22/21 - Ron Lockwood
+#    Process the insertList first when building the guid map. This way uses
+#    of az or va in the current sentence override the inserList ones. This
+#    matters for punctuation. 
+#
 #   Version 3.2.3 - 7/1/21 - Ron Lockwood
 #    punctuation_eval() moved here from ExtractSourceText
 #
@@ -1493,6 +1498,7 @@ class TextEntirety():
         if typesList == discontigTypesList:
             self.__discontigCmplxFormMap = self.__cmplxFormMap
         else:
+            # findDiscontig... method not coded yet !!!!
             for par in self.__parList:
                 par.findDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
         for par in self.__parList:
@@ -1559,9 +1565,9 @@ class TextSentence():
     def addWord(self, textWord):
         self.__wordList.append(textWord)
     def createGuidMap(self, insertList):
-        for word in self.__wordList:
-            self.__guidMap[word.getGuid()] = word
         for word in insertList:
+            self.__guidMap[word.getGuid()] = word
+        for word in self.__wordList:
             self.__guidMap[word.getGuid()] = word
     def getSurfaceAndDataForGuid(self, guid):
         return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
