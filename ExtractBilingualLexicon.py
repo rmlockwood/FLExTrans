@@ -5,6 +5,19 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Put underscores in target feature abbreviations if necessary.
+#
+#   Version 3.0.5 - 7/8/21 - Ron Lockwood
+#    Handle slash in category name
+# 
+#   Version 3.0.4 - 7/1/21 - Ron Lockwood
+#    Instead of just using the text in the <l> element as the key for finding 
+#    lines in the bilingual file, use everything between <l>
+#    and </l> including </b>, but remove any <s> elements. This is because sometimes
+#    we have a phrase in the replacement file that has a space (/b) and before we would
+#    only pick up the text before the space.
+#
 #   Version 3.0.3 - 4/30/21 - Ron Lockwood
 #    Just give one warning for spaces in categories and likewise one warning for
 #    periods in categories. Make the "suppressing" message just info. not a warning
@@ -113,6 +126,7 @@
 
 import re
 import os
+import copy
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -121,6 +135,7 @@ from System import Guid
 from System import String
 
 import ReadConfig
+import Utils
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -134,7 +149,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.0.3",
+        FTM_Version    : "3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -265,8 +280,24 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     for entry in repl_sec:
         # Get the <l> text which is under the <p> which is under the <e>
         left = entry.find('p/l')
-        replMap[left.text] = entry
+#        replMap[left.text] = entry
+
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+        
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
     
+        replMap[key] = entry
+          
     # Read in the bilingual xml file
     try:
         bilingEtree = ET.parse(fullPathBilingFile)
@@ -313,22 +344,39 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         # Get the left lemma text
         left = entry.find('p/l')
         
-        # If we can't find it, use the identity text <e> should either have <l> (and <r>) or <i>
+        # If we can't find it, use the identity text <e> should either have <p><l></l><r></r></p>) or <i>
         if left == None:
             left = entry.find('i')
         
+        # Create string with the old contents of the entry. 
+        s = ET.tostring(left, encoding='unicode')
+        
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l> (same as above)
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+
+        # create the key string
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
+    
         # See if we have a match for replacing the entry
-        if left.text in replMap:
+        if key in replMap:
             
             # Create a comment containing the old entry and a note and insert them into the entry list
             comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
             
-            # Create string with the old contents of the entry. Using tostring() didn't work because of &# symbols come out for non-ascii text
-            if left.tag == 'i':
-                s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-            else:
-                s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-                s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
+#             if left.tag == 'i':
+#                 s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+#             else:
+#                 s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
+#                 s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
                 
             comment2 = ET.Comment(s+'\n')
             
@@ -336,7 +384,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             new_biling_section.append(comment2)
             
             # Insert the new entry from the replacement file map
-            new_biling_section.append(replMap[left.text])
+            new_biling_section.append(replMap[key])
             
         else: # copy the old entry to the new
             new_biling_section.append(entry)
@@ -513,6 +561,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         spaceErrors = 0
         periodErrors = 0
+        slashErrors = 0
         # loop through all target categories
         for pos in TargetDB.lp.AllPartsOfSpeech:
     
@@ -538,6 +587,15 @@ def MainFunction(DB, report, modifyAllowed):
                 posAbbr = re.sub(r'\.', '', posAbbr)
                 periodErrors += 1
     
+            # give a warning if there is a slash in the target category. Remove them.
+            if re.search(r'/', posAbbr):
+                if slashErrors < 1:
+                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a slash in it. The slash has been removed. Keep this in mind when referring to this category in transfer rules.")
+                if slashErrors == 0:
+                    report.Info("Suppressing further warnings of this type.")
+                posAbbr = re.sub(r'/', '|', posAbbr)
+                slashErrors += 1
+    
             if posAbbr not in posMap:
                 posMap[posAbbr] = pos.ToString()
             else:
@@ -562,7 +620,7 @@ def MainFunction(DB, report, modifyAllowed):
                 for val in feat.ValuesOC:
                     featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
                     featName = ITsString(val.Name.BestAnalysisAlternative).Text
-                    posMap[featAbbr] = featName
+                    posMap[Utils.underscores(featAbbr)] = featName
                 
         # build string for the xml pos section
         for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
@@ -673,9 +731,10 @@ def MainFunction(DB, report, modifyAllowed):
                                                 trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                                       Abbreviation.BestAnalysisAlternative).Text
                                                 
-                                                # Convert spaces to underscores and remove periods
+                                                # Convert spaces to underscores and remove periods and convert slash to bar
                                                 trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
                                                 trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
+                                                trgtAbbrev = re.sub(r'/', '|', trgtAbbrev)
                                                 
                                                 # Get target inflection class
                                                 trgtInflCls =''
@@ -692,7 +751,7 @@ def MainFunction(DB, report, modifyAllowed):
                                                     
                                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                                     for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
-                                                        featStr += s2 + abb + s4a
+                                                        featStr += s2 + Utils.underscores(abb) + s4a
                                                 
                                                 # output the bilingual dictionary line (the sX is xml stuff)
                                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\

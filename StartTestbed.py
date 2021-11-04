@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Bump version number for FlexTools 3.2
+#
 #   Version 3.0 - 1/25/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -31,7 +34,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
