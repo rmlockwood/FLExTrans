@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    Bump version number for FlexTools 3.2
+#
+#   Version 3.0.1 - 7/8/21 - Ron Lockwood
+#    Handle slash in category name
+# 
 #   Version 3.0 - 1/26/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -112,7 +118,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -345,6 +351,9 @@ def output_cat_info(TargetDB, f_dec):
 
         # remove periods
         posAbbr = re.sub('\.', '', posAbbr)
+
+        # change / to |
+        posAbbr = re.sub('/', '|', posAbbr)
 
         f_dec.write('\\ca ' + posAbbr + '\n')
     f_dec.write('\\ca _variant_\n') # for variant entries

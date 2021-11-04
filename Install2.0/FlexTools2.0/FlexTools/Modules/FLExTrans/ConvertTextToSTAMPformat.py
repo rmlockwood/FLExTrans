@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.2 - 10/22/21 - Ron Lockwood
+#    If a guid is no longer valid when reading from the cache, don't use the
+#    cache and load from scratch.
+#
 #   Version 3.0 - 1/27/21 - Ron Lockwood
 #    Changes for python 3 conversion
 #
@@ -138,7 +142,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.0",
+        FTM_Version    : "3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -734,8 +738,10 @@ class ConversionData():
             # check if it's out of date
             if self.isCacheOutOfDate() == False:
                 
-                self.loadFromCache()
-                return
+                if self.loadFromCache() == False: # False == error
+                    pass
+                else:
+                    return
                 
         self.readDatabaseValues()
         self.saveToCache()
@@ -831,7 +837,8 @@ class ConversionData():
         try:
             e = repo.GetObject(flex_guid)
         except:
-            self.report.Error('Bad guid?')
+            self.report.Warning('Bad guid! Not using cache.')
+            return None
             
         return e
     
@@ -869,6 +876,10 @@ class ConversionData():
             guid = complex_lines[i+1].rstrip()
             
             e = self.getEntry(guid)
+            
+            if e == None:
+                return False
+            
             self.complex_map[headWord] = e
             i += 2
             
@@ -885,6 +896,10 @@ class ConversionData():
             for j in range(0, num_variants):
                 guid = infl_lines[i].rstrip()
                 e = self.getEntry(guid)
+                
+                if e == None:
+                    return False
+                
                 i += 1
                 abbr_list = self.getAbbrList(i, infl_lines)
                 
@@ -896,6 +911,7 @@ class ConversionData():
             self.irr_infl_var_map[headWord] = var_list
         
         f.close()
+        return True
            
     def getCacheFilePath(self):
         # build the path in the temp dir using project name + testbed_cache.txt

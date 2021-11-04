@@ -8,6 +8,17 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.2.4 - 7/1/21 - Ron Lockwood
+#    Add 1 to sent# for reporting not found sentences.
+#
+#   Version 3.2.3 - 7/1/21 - Ron Lockwood
+#    Fixed bugs with punctuation algorithm. Initialize maps properly. Output the
+#    preceding punctuation of a sentence. Moved punctuation_eval() to Utils
+#    Put out a space after writing 'after' and 'final' punctuation. 
+#    When a sentence doesn't have parsing don't automatically put out a newline.
+#    Only do it when it is the last sentence of the paragraph.
+#    Omit 'ra' when building punctuation maps.
+#
 #   Version 3.2.2 - 5/12/21 - Ron Lockwood
 #    Only look for TreeTranInsertWordsFile in the config file if we are looking
 #    already for a TreeTran output file.
@@ -136,12 +147,15 @@ from System import String
 
 import ReadConfig
 import Utils
+import copy
 
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from FTModuleClass import FlexToolsModuleClass
 from collections import defaultdict
+
+NGRAM_SIZE = 5
 
 #----------------------------------------------------------------
 # Configurables:
@@ -153,7 +167,8 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.2",
+        FTM_Version    : "3.2.4",
+        FTM_Version    : "3.2.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -314,11 +329,20 @@ def MainFunction(DB, report, modifyAllowed):
                 isLastSent = myText.isLastSentInParagraph(sentNum)
                 
                 if myFLExSent is None:
-                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    report.Error('Sentence ' + str(sentNum+1) + ' from TreeTran not found')
                     return
+                
+                beforeAfterMap = {}
+                wordGramMap = {}
+                wordsHandledMap = {}
+                
+                # Set up the maps for the original sentnece
+                setUpOrigSentMaps(myFLExSent, beforeAfterMap, wordGramMap)
                     
                 # Output any punctuation preceding the sentence.
-                puncWrdsWritten = myFLExSent.writePrecedingSentPunc(f_out)
+                _ = myFLExSent.writePrecedingSentPunc(f_out)
+                
+                puncOutputMap = {}
                 
                 # Loop through each word in the sentence and get the Guids
                 # NB: any <sent> 'words' won't get processed since they are not in the guid list.
@@ -340,18 +364,41 @@ def MainFunction(DB, report, modifyAllowed):
                     else:
                         # Write the original word order punctuation.
                         # Use the punctuation words written above as the offset to make sure the guid word is the same as the flex sentence word.
-                        myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
+                        #myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
 
+                        # See if we should write punctuation for this word or if we should write punctuation for a different word
+                        writePunc = Utils.punctuation_eval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap)
+                        
+                        if writePunc == True:
+                        
+                            myFLExSent.writeBeforePunc(f_out, myGuid)
+                        
+                        # if we are on a word that we saved for outputting punctuation, put out that word's punctuation now
+                        elif wrdNum in puncOutputMap:
+                            
+                            myFLExSent.writeBeforePunc(f_out, puncOutputMap[wrdNum])
+                            
                         # Write the data that's between the punctuation
                         myFLExSent.writeWordDataForThisGuid(f_out, myGuid)
                         
+                        if writePunc == True:
+                            
+                            myFLExSent.writeAfterPunc(f_out, myGuid)
+                            f_out.write(' ')
+
+                        elif wrdNum in puncOutputMap:
+                            
+                            myFLExSent.writeAfterPunc(f_out, puncOutputMap[wrdNum])
+                            f_out.write(' ')
+
                         #myFLExSent.writeThisGuid(f_out, myGuid)
                         
                         # Write the original word order punctuation.
-                        myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
+                        #myFLExSent.writePostPunc(wrdNum+puncWrdsWritten, f_out)
                     
                 # Output any punctuation at the of the sentence.
                 myFLExSent.writeFinalSentPunc(f_out)
+                f_out.write(' ')
                 
                 if isLastSent:
                     f_out.write('\n')
@@ -368,11 +415,13 @@ def MainFunction(DB, report, modifyAllowed):
                 
                 if myFLExSent == None:
                     
-                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    report.Error('Sentence: ' + str(sentNum+1) + ' not found. Check that the right parses are present.')
                     continue 
                 
                 myFLExSent.write(f_out)
-                f_out.write('\n')
+                
+                if myText.isLastSentInParagraph(sentNum):
+                    f_out.write('\n')
                 
         report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
         
@@ -388,7 +437,52 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.close()
 
     report.Info("Export of " + text_desired_eng + " complete.")
+
+def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
+    wordObjList = []
+    
+    fullList = sentObj.getWordList()
+    
+    deleteList = ['را1.1']
+    
+    # Remove words that are going to be deleted
+    for wordObj in fullList:
+        
+        if wordObj.getLemma(0) not in deleteList:
+            
+            wordObjList.append(wordObj)
+    
+    numWords = len(wordObjList)
+    
+    # set up the before/after map which is a map of the current word to its before and after words
+    for i, wordObj in enumerate(wordObjList):
+        
+        if i > 0 and i < numWords-1: # not first or last
+            befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
+            
+    # set up the word-gram map which is the current word + 1-n following words. e.g. for abcd: ab, abc, abcd, bc, bcd, cd (if n was 4 or more)
+    for i in range(0, numWords-1):
+        for j in range(2, NGRAM_SIZE+1):
+            
+            keyList = []
+            if i+j <= numWords:
+                
+                for k in range(i, i+j):
+                    if k < numWords:
+                        
+                        myID = wordObjList[k].getID()
+                        
+                        if myID != None:
+                            keyList.append(myID)
+                        else:
+                            break
+                        
+                if len(keyList) > 1 and myID != None:
+                    # we can't use a list as the map value, a tuple works, why not make a hash of it
+                    wrdGramMap[hash(tuple(keyList))] = 1
+                    
+
 #----------------------------------------------------------------
 # define the FlexToolsModule
 

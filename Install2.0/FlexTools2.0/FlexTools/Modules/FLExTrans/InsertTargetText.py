@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.0.1 - 5/12/21 - Ron Lockwood
+#   Version 3.2 - 5/12/21 - Ron Lockwood
 #    Bug fix related to python 3 conversion for name of new text with copy (X)
 #
 #   Version 3.0 - 1/26/21 - Ron Lockwood
@@ -50,7 +50,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.0.1",
+        FTM_Version    : "3.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",

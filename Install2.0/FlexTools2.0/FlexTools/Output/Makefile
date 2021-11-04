@@ -3,7 +3,7 @@ target_text.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
 bilingual.bin: bilingual.dix
 	lt-comp lr bilingual.dix bilingual.bin
 transfer_rules.t1x.bin: transfer_rules.t1x
-	python fix.py transfer_rules.t1x tr.t1x
+	python3 fix.py transfer_rules.t1x tr.t1x
 	apertium-preprocess-transfer tr.t1x transfer_rules.t1x.bin
 clean:
 	rm -f target_text.aper bilingual.bin transfer_rules.t1x.bin
