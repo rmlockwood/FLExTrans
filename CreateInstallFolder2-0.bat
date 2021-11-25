@@ -52,9 +52,13 @@ rem Documentation
 mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation"
 mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation\Images"
 mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation\Transfer Rules Tutorial"
+mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation\Agreement"
+mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation\Irregular Form"
 copy Doc\*.htm "Install2.0\FlexTools2.0\FLExTrans Documentation"
 copy Doc\Images\* "Install2.0\FlexTools2.0\FLExTrans Documentation\Images"
 copy "Doc\Transfer Rules Tutorial\*" "Install2.0\FlexTools2.0\FLExTrans Documentation\Transfer Rules Tutorial"
+copy "Doc\Agreement\*" "Install2.0\FlexTools2.0\FLExTrans Documentation\Agreement"
+copy "Doc\Irregular Form\*" "Install2.0\FlexTools2.0\FLExTrans Documentation\Irregular Form"
 
 rem Sample projects
 mkdir "Install2.0\FlexTools2.0\Sample Projects"

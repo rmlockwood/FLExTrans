@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->20 April 2019</date
+>19 November 2021</date
 ><version
->For FLExTrans 1.7 (Sense Linker 2.2.1, Live Rule Tester 3.1.2)</version
+>For FLExTrans 3.2.1 (Sense Linker 3.0, Live Rule Tester 3.2.5)</version
 ><contents
 showLevel="3"
 ></contents
@@ -415,8 +415,6 @@ type="tSenseLinker"
 num="xLinkerNoLinks"
 ><chart
 ><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
 src="Images/SenseLinkerNoLinks.png"
 ></img
 ></chart
@@ -823,8 +821,8 @@ type="tLiveRuleTester"
 num="xTesterImage"
 ><chart
 ><img
-XeLaTeXSpecial="scaled='700'"
-cssSpecial=" height:70%"
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
 src="Images/LiveRuleTester.png"
 ></img
 ></chart
@@ -3860,6 +3858,20 @@ type="tFlextrans"
 ></object
 > How To’s</secTitle
 ><section2
+id="sOneVerse"
+><secTitle
+>Complete Process for Translating One Verse (video)</secTitle
+><p
+><link
+href="https://drive.google.com/file/d/1KibhaxIHRPYM8SXiWxYcaxSgxHOlt1fv/view?usp=sharing"
+><img
+cssSpecial=" height:30%"
+src="Images\CompleteVerseVideo.png"
+></img
+></link
+></p
+></section2
+><section2
 id="sTransferRuleHowTos"
 ><secTitle
 >Transfer Rule How To’s</secTitle
@@ -4173,7 +4185,7 @@ num="xOutputWhole"
 ><section3
 id="sCondLogic"
 ><secTitle
->How so I use conditional logic in a transfer rule? (How do I say if this ... then that?)<img
+>How do I use conditional logic in a transfer rule? (How do I say if this ... then that?)  (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4186,7 +4198,7 @@ href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
 ><section3
 id="sMacro"
 ><secTitle
->How do I use a macro? (How can I repeat rule statements in multiple places?)<img
+>How do I use a macro? (How can I repeat rule statements in multiple places?)  (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4199,7 +4211,7 @@ href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt"
 ><section3
 id="sAgreement"
 ><secTitle
->How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)<img
+>How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)  (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4385,7 +4397,7 @@ type="tCourier"
 ><section3
 id="sInflVariantTgt"
 ><secTitle
->How do I handle inflectional variants in the target language?<img
+>How do I handle inflectional variants in the target language?  (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4408,7 +4420,7 @@ type="tFoldername"
 ><section3
 id="sInflVariantSrc"
 ><secTitle
->How do I handle inflectional variants in the source language?<img
+>How do I handle inflectional variants in the source language?  (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4437,7 +4449,7 @@ id="aAppend"
 >Appendix</secTitle
 ><p
 ><comment
->Somewhere I need to mention that glosses have to be unique and no spaces.</comment
+>Somewhere I need to mention that glosses have to be unique and no spaces. Or is it sufficient that the modules will warn about it?</comment
 ></p
 ><section1
 id="sStartFlextools"
