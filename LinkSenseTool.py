@@ -975,7 +975,7 @@ def MainFunction(DB, report, modify=True):
                 myHeadword = hpg.getHeadword()
                 myHeadword = re.sub('\d','',myHeadword,re.A)
                  
-                if myHeadword not in processed:
+                if myHeadword not in processed and hpg.getPOS() != 'nprop':
       
                     if link.initial_status != INITIAL_STATUS_LINKED:
                         fz.write(myHeadword+'\n')
