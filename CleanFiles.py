@@ -1,8 +1,13 @@
 #
 #   CleanFiles
 #
+#   Ron Lockwood
+#   SIL International
+#   11/25/2021
+#
 #   Remove key files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.2 - 11/25/2021 - Ron Lockwood
 #
 
 import os
@@ -10,18 +15,16 @@ from pathlib import Path
 import tempfile
 from FTModuleClass import *
 
-
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Clean files"
+descr = "Remove key files to force each FLExTrans module to regenerate everything."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : '3.0',
+        FTM_Version    : '3.2',
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  
         FTM_Description:    descr}     
 #----------------------------------------------------------------
-
 
 OUTPUT = "Output\\"
 
@@ -60,20 +63,12 @@ def MainFunction(DB, report, modify=True):
             p.unlink()
     except:
         pass # ignore errors
-    
     try:
         for p in Path(tempPath).glob("*conversion_to_STAMP_cache.txt"):
             p.unlink()
     except:
         pass # ignore errors
     
-    
-    #remove root lexicon files in the tempfolder
-    
-    
-    
-        #report.Error("Deletion error, files might already be deleted.")
-
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
