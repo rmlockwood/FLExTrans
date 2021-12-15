@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2.5 - 11/30/21 - Ron Lockwood
+#    New methods for TextSentence, TextWord to support Linker enhancements 
+#
 #   Version 3.2.4 - 10/22/21 - Ron Lockwood
 #    Process the insertList first when building the guid map. This way uses
 #    of az or va in the current sentence override the inserList ones. This
@@ -1593,7 +1596,7 @@ class TextSentence():
         return tupList
     def getWordCount(self):
         return len(self.__wordList)
-    def getWordList(self):
+    def getWords(self):
         return self.__wordList
     def hasPunctuation(self, myGuid):
         if myGuid in self.__guidMap:
@@ -1927,6 +1930,9 @@ class TextWord():
                                 
         lem = do_capitalization(getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(add_one(lem) + '.' + str(senseNum+1))
+    def getAffixSymbols(self):
+        # assume no compound roots for this word
+        return self.__affixLists[0]
     def getComplexFormEntries(self):
         if self.hasEntries():
             return self.__eList[0].ComplexFormEntries
@@ -1963,11 +1969,14 @@ class TextWord():
         # Put each symbol in angle brackets e.g. <sbjv>. Also _ for .
         return '<'+'><'.join(underscores(x) for x in symbols)+'>'
     
+    def getEntries(self):
+        return self.__eList
     def getFeatures(self, featList):
         # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
         return [abb for _, abb in sorted(featList, key=lambda x: x[0])]
     def getFinalPunc(self):
         return self.__finalPunc
+        # I believe there's one sense for each entry
     def getGuid(self):
         return self.__guid
     def hasPunctuation(self):
@@ -1999,15 +2008,16 @@ class TextWord():
         if i < len(self.__lemmaList):
             return self.__lemmaList[i]
         return ''
-    def getAffixSymbols(self):
-        # assume no compound roots for this word
-        return self.__affixLists[0]
     def getPOS(self, i):
         if self.hasSenses():
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
                 return ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
         return self.getUnknownPOS()
+    def getSense(self, i):
+        if self.hasSenses() and i < len(self.__senseList):
+            return self.__senseList[i]
+        return None
     def getStemFeatures(self, i):
         if self.hasSenses():
             mySense = self.__senseList[i]

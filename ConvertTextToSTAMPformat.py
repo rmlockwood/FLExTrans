@@ -355,7 +355,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         post_punct = ''
 
         # Loop through all word packages
-        for tok in word_toks:
+        for wrd_cnt, tok in enumerate(word_toks):
             # If the token is one whitespace, ignore it. By default no \n line in the 
             # ANA file will produce a space after the word.
             if re.match('\s$', tok): # match starts at beg. of string
@@ -427,7 +427,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
 
                 if len(morphs) <2:
                             
-                    error_list.append(("Word or POS missing. Found: "+",".join(morphs),2))
+                    error_list.append(("Lemma or grammatical category missing for target word number "+str(wrd_cnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
                     for m in morphs:
                         f_ana.write(m)
                     return error_list

@@ -83,12 +83,12 @@
      <enum>Qt::LeftToRight</enum>
     </property>
    </widget>
-   <widget class="QCheckBox" name="FilterCheckBox">
+   <widget class="QCheckBox" name="ShowOnlyUnlinkedCheckBox">
     <property name="geometry">
      <rect>
       <x>550</x>
       <y>10</y>
-      <width>221</width>
+      <width>121</width>
       <height>27</height>
      </rect>
     </property>
@@ -107,6 +107,19 @@
     </property>
     <property name="text">
      <string>All Target Senses:</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="HideProperNounsCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>10</y>
+      <width>121</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hide Proper Nouns</string>
     </property>
    </widget>
   </widget>

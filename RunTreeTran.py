@@ -159,7 +159,7 @@ def MainFunction(DB, report, modify=True):
     # run TreeTran
     call(['treetran.exe', Utils.OUTPUT_FOLDER+'\\'+TREE_TRAN_RULES, filteredFile, treeTranResultFile])
     
-    report.Info(str(sentCount) + ' Sentence(s) processed.')
+    report.Info(str(sentCount) + ' sentence(s) processed.')
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -442,7 +442,7 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
     wordObjList = []
     
-    fullList = sentObj.getWordList()
+    fullList = sentObj.getWords()
     
     deleteList = ['را1.1']
     

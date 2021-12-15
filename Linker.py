@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -41,12 +42,15 @@ class Ui_MainWindow(object):
         self.targetLexCombo.setFont(font)
         self.targetLexCombo.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.targetLexCombo.setObjectName("targetLexCombo")
-        self.FilterCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.FilterCheckBox.setGeometry(QtCore.QRect(550, 10, 221, 27))
-        self.FilterCheckBox.setObjectName("FilterCheckBox")
+        self.ShowOnlyUnlinkedCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.ShowOnlyUnlinkedCheckBox.setGeometry(QtCore.QRect(550, 10, 121, 27))
+        self.ShowOnlyUnlinkedCheckBox.setObjectName("ShowOnlyUnlinkedCheckBox")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(10, 10, 151, 23))
         self.label.setObjectName("label")
+        self.HideProperNounsCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.HideProperNounsCheckBox.setGeometry(QtCore.QRect(710, 10, 121, 27))
+        self.HideProperNounsCheckBox.setObjectName("HideProperNounsCheckBox")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1372, 21))
@@ -65,5 +69,6 @@ class Ui_MainWindow(object):
         self.OKButton.setText(_translate("MainWindow", "OK"))
         self.CancelButton.setText(_translate("MainWindow", "Cancel"))
         self.targetLexCombo.setToolTip(_translate("MainWindow", "After selecting the desired sense here, double-click in the target head word column for the desired row to copy it."))
-        self.FilterCheckBox.setText(_translate("MainWindow", "Show Only Unlinked"))
+        self.ShowOnlyUnlinkedCheckBox.setText(_translate("MainWindow", "Show Only Unlinked"))
         self.label.setText(_translate("MainWindow", "All Target Senses:"))
+        self.HideProperNounsCheckBox.setText(_translate("MainWindow", "Hide Proper Nouns"))
