@@ -2560,7 +2560,7 @@ type="tBold"
 num="xPattern1"
 ><chart
 ><img
-cssSpecial="Height:60%"
+cssSpecial="Height:10%"
 src="Images/RulesTutPattern1.PNG"
 ></img
 ></chart
@@ -3943,8 +3943,32 @@ type="tluGrammCat"
 >n-irreg</object
 > followed by <object
 type="tluAffix"
->f</object
-> and optionally something else afterward.</p
+>ind</object
+> and optionally something else afterward. Note that <object
+type="tCourier"
+>n.ind</object
+> and <object
+type="tCourier"
+>n.ind.*</object
+> are both necessary because <object
+type="tCourier"
+>n.ind.*</object
+> would require some affix after <object
+type="tluAffix"
+>ind</object
+> and not match an indefinite noun like <langData
+lang="lVernacular"
+>car</langData
+><object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>ind</object
+> that has no additional suffixes..</p
 ><p
 >You can use the lemma element to identify a specific word-sense. <exampleRef
 letter="xCatLem"
@@ -4185,7 +4209,7 @@ num="xOutputWhole"
 ><section3
 id="sCondLogic"
 ><secTitle
->How do I use conditional logic in a transfer rule? (How do I say if this ... then that?)  (video)<img
+>How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4198,7 +4222,7 @@ href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
 ><section3
 id="sMacro"
 ><secTitle
->How do I use a macro? (How can I repeat rule statements in multiple places?)  (video)<img
+>How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4211,7 +4235,7 @@ href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt"
 ><section3
 id="sAgreement"
 ><secTitle
->How do I handle noun agreement? (How do I get a target word or words to agree with a noun?)  (video)<img
+>How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4397,7 +4421,7 @@ type="tCourier"
 ><section3
 id="sInflVariantTgt"
 ><secTitle
->How do I handle inflectional variants in the target language?  (video)<img
+>How do I handle inflectional variants in the target language? (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
@@ -4420,7 +4444,7 @@ type="tFoldername"
 ><section3
 id="sInflVariantSrc"
 ><secTitle
->How do I handle inflectional variants in the source language?  (video)<img
+>How do I handle inflectional variants in the source language? (video)<img
 src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
