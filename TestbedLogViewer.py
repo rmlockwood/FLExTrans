@@ -74,6 +74,10 @@ View testbed run results.
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
+MAX_RESULTS_TO_DISPLAY = 50
+
+color_re = re.compile('color:#......')
+colorNumPunc = 'color:#'+Utils.PUNC_COLOR
 
 class Stats():
     def __init__(self, dateTimeStart, dateTimeEnd, totalTests, numFailed, numInvalid):
@@ -223,7 +227,7 @@ class TestStatsItem(BaseTreeItem):
 
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason):
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, greenCheck, redX, yellowTriangle):
         super(TestResultItem, self).__init__(inParent, rtl)
         self.unformattedLexicalUnitsString = LUString
         self.formattedLexicalUnitsString = formattedLexicalUnitsString
@@ -232,9 +236,9 @@ class TestResultItem(BaseTreeItem):
         self.invalid = not valid
         self.origin = origin
         self.invalidReason = invalidReason
-        self.greenCheck = QtGui.QPixmap(GREEN_CHECK)
-        self.redX = QtGui.QPixmap(RED_X)
-        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
+        self.greenCheck = greenCheck
+        self.redX = redX
+        self.yellowTriangle = yellowTriangle
         
     def testFailed(self):
         if self.expectedStr != self.actualStr:
@@ -262,7 +266,7 @@ class TestResultItem(BaseTreeItem):
                 myStr = self.getFormattedLUString()
                 
                 # Change the colors to orange when it's invalid
-                myStr = re.sub('color:#......', 'color:#'+Utils.PUNC_COLOR, myStr)
+                myStr = color_re.sub(colorNumPunc, myStr) 
                 
                 return myStr
             else:
@@ -359,6 +363,9 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
         self.__view = None
         self.rtl = resultsXMLObj.isRTL()
+        self.greenCheck = QtGui.QPixmap(GREEN_CHECK) 
+        self.redX = QtGui.QPixmap(RED_X)
+        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
         
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
@@ -393,8 +400,15 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         
     def SetupModelData(self):
         
+        objList = self.resultsXMLObj.getTestbedResultXMLObjectList()
+        maxResults = len(objList)
+        
+        # Set max test results to display
+        if maxResults > MAX_RESULTS_TO_DISPLAY:
+            maxResults = MAX_RESULTS_TO_DISPLAY
+
         # Loop through the test results
-        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[:-50]: # Just show the last 50
+        for resultObj in objList[:maxResults+1]: # Just show the last X
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
@@ -412,7 +426,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                     
                     resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), \
                                                 test.getExpectedResult(), test.getActualResult(), \
-                                                test.isValid(), test.getOrigin(), test.getInvalidReason())
+                                                test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
                     
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)
@@ -587,8 +601,11 @@ def MainFunction(DB, report, modify):
     
     window.show()
     window.myResize()
-    firstIndex = window.getModel().rootItem.children[0].index
-    window.ui.logTreeView.expand(firstIndex)
+    if len(window.getModel().rootItem.children) > 0:
+        
+        firstIndex = window.getModel().rootItem.children[0].index
+        window.ui.logTreeView.expand(firstIndex)
+        
     app.exec_()
     
 #----------------------------------------------------------------
