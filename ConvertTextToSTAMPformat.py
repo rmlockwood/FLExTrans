@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.2.1 - 12/15/21 - Ron Lockwood
+#    Better error message for missing word or POS error when converting to Ana format.
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    If a guid is no longer valid when reading from the cache, don't use the
 #    cache and load from scratch.
@@ -142,7 +145,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.2.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
