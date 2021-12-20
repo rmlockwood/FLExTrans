@@ -5,6 +5,14 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.2.1 - 12/20/21 - Ron Lockwood
+#    Fixes issue #6 where only the test results -50 were being displayed. 
+#    This resulted in having the a test results file with only 1 result to not 
+#    show anything. Now there's a MAX_RESULTS_TO_DISPLAY set to 50 and the tool 
+#    will display up to this amount of test results. Also performance tweaks. 
+#    The main one that helped is just creating the QTGui object for the green check, 
+#    red x and yellow triangle just once for a TestResultItem.
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    Bump version number for FlexTools 3.2
 #
@@ -30,7 +38,7 @@
 #   Version 1.0 - 4/19/2019 - Ron Lockwood
 #
 #   Show the testbed log which shows the results of tests run for a certain
-#   date/time.
+#   date/time. See design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
 #
 
 import os
