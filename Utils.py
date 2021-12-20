@@ -216,6 +216,8 @@ SENT_TAG = '<'+SENT+'>'
 TARGET_OUTPUT = 'targetOutput' 
 EXPECTED_RESULT = 'expectedResult' 
 ACTUAL_RESULT = 'actualResult' 
+TGT_EXPECTED = TARGET_OUTPUT+'/'+EXPECTED_RESULT
+TGT_ACTUAL = TARGET_OUTPUT+'/'+ACTUAL_RESULT
 SOURCE_DIRECTION = 'source_direction' 
 TARGET_DIRECTION = 'target_direction' 
 N_ATTRIB = 'n' 
@@ -617,6 +619,8 @@ class TestbedTestXMLObject():
         self.__synthResult = synthResult
         self.__testNode = testNode
         self.__testChanged = False
+        self.actResult = None
+        self.expResult = None
         
         # If no lexical unit object list is given, create it
         if luList == None:
@@ -692,9 +696,13 @@ class TestbedTestXMLObject():
     def getOrigin(self):
         return self.__testNode.find(SOURCE_INPUT).attrib[ORIGIN]
     def getExpectedResult(self):
-        return self.__testNode.find(TARGET_OUTPUT+'/'+EXPECTED_RESULT).text
+        if self.expResult == None:
+            self.expResult = self.__testNode.find(TGT_EXPECTED).text
+        return self.expResult
     def getActualResult(self):
-        return self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text
+        if self.actResult == None:
+            self.actResult = self.__testNode.find(TGT_ACTUAL).text
+        return self.actResult
     def setActualResult(self, myStr):
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
     def getTestNode(self):
