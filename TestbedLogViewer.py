@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.2.2 - 12/30/21 - Ron Lockwood
+#    Optimized Testbed Viewing. Particularly through caching TestResultItem objects.
+#
 #   Version 3.2.1 - 12/20/21 - Ron Lockwood
 #    Fixes issue #6 where only the test results -50 were being displayed. 
 #    This resulted in having the a test results file with only 1 result to not 
@@ -68,13 +71,13 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.2.1",
+        FTM_Version    : "3.2.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
         FTM_Description:  
 """
-View testbed run results.
+View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.
 """ }
                  
 #----------------------------------------------------------------
@@ -82,7 +85,7 @@ View testbed run results.
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
-MAX_RESULTS_TO_DISPLAY = 50
+MAX_RESULTS_TO_DISPLAY = 25
 
 color_re = re.compile('color:#......')
 colorNumPunc = 'color:#'+Utils.PUNC_COLOR
@@ -374,6 +377,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         self.greenCheck = QtGui.QPixmap(GREEN_CHECK) 
         self.redX = QtGui.QPixmap(RED_X)
         self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
+        self.__cache = {}
         
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
@@ -415,12 +419,19 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         if maxResults > MAX_RESULTS_TO_DISPLAY:
             maxResults = MAX_RESULTS_TO_DISPLAY
 
+        resultsCount = 1
+        
         # Loop through the test results
-        for resultObj in objList[:maxResults+1]: # Just show the last X
+        for resultObj in objList: # Just show the last X
+            
+            if resultsCount > maxResults:
+                break
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
                 continue
+            
+            resultsCount += 1
             
             # Set the stats branch of the tree
             statsObj = self.getStats(resultObj)
@@ -430,12 +441,25 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
             # Loop through the testbeds
             for testbed in resultObj.getFLExTransTestbedXMLObjectList():
                 # Loop through the tests
-                for test in testbed.getTestXMLObjectList():
+                for i, test in enumerate(testbed.getTestXMLObjectList()):
                     
-                    resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), \
-                                                test.getExpectedResult(), test.getActualResult(), \
-                                                test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
+                    # Use the dump of the test XML node as the hash key
+                    testNodeStr = ET.tostring(test.getTestNode(), encoding='unicode')
+
+                    # But remove the unique id in the string
+                    myHash = hash(Utils.removeTestID(testNodeStr))
                     
+                    # Check if we have cached this test object and use it if we have
+                    if myHash in self.__cache:
+                        
+                        resultItem = self.__cache[myHash]
+                    # Otherwise build the TestResultItem object and then add it to the cache
+                    else:
+                        resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
+                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
+                        
+                        self.__cache[myHash] = resultItem
+                                     
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)
             
@@ -588,10 +612,10 @@ class LogViewerMain(QMainWindow):
 def MainFunction(DB, report, modify):
         
     # Create an object for the testbed file
-    testbedFileObj = Utils.FlexTransTestbedFile(None)
+#    testbedFileObj = Utils.FlexTransTestbedFile(None)
 
     # We can't do anything if there is no testbed
-    if testbedFileObj.exists() == False:
+    if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
         report.Error('Testbed does not exist. Please add tests to the testbed.')
         return None
     
