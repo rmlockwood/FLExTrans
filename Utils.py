@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.2.6 - 12/30/21 - Ron Lockwood
+#    Optimized Testbed Viewing. Particularly through caching Lexical Units. 
+#
 #   Version 3.2.5 - 11/30/21 - Ron Lockwood
 #    New methods for TextSentence, TextWord to support Linker enhancements 
 #
@@ -863,13 +866,13 @@ class FLExTransTestbedXMLObject():
     # You can create this class in two ways:
     # 1) initialize a new one which creates the basic structure without test elements
     # 2) initialize from an existing XML node which fills out everything including a list of TestXMLObjects 
-    def __init__(self, root, direction, luCache={}, testCache={}):
+    def __init__(self, root, direction):
         self.__rootNode = root
         self.__TestXMLObjectList = []
         self.__direction = direction
         self.__testbedChanged = False
-        self.__testCache = testCache
-        self.__luCache = luCache
+        self.__testCache = {}
+        self.__luCache = {}
         self.__failedAndInvalid = None
         
         # if new (tree==None), create the structure down to the tests node
@@ -1077,7 +1080,7 @@ class TestbedResultXMLObject():
         else:
             for testbedNode in list(self.__rootNode):
                 # create a testbed object and add it to the list
-                testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None, luCache, testCache) # direction is None
+                testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
     
     def getFLExTransTestbedXMLObjectList(self):
