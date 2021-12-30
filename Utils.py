@@ -235,9 +235,14 @@ XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 reObjAddOne = re.compile('\d$', re.A) # ASCII-only match
 reDataStream = re.compile('(>[^$<])')  
+reTestID = re.compile('test id=".+?"')
 
 NGRAM_SIZE = 5
 
+def removeTestID(inStr):
+    
+    return reTestID.sub('', inStr)
+    
 def punctuation_eval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):      
     
     wordList = treeTranSentObj.getGuidList()
@@ -344,6 +349,8 @@ class LexicalUnit():
         self.__gramCat = None
         self.__otherTags = []
         self.__badly_formed = False 
+        self.__formatedString = None
+        self.__plainString = None
         
         if str2Parse != None:
             self.__inStr = str2Parse
@@ -377,53 +384,67 @@ class LexicalUnit():
                     return False
             
     def toString(self):
-        ret_str = self.__headWord
-        if self.__gramCat != SENT:
-            ret_str += '.' + self.__senseNum
-        ret_str += ' ' + self.__gramCat
-        for tag in self.__otherTags:
-            ret_str += ' ' + tag
-        return ret_str
+        
+        if self.__plainString == None:
+            
+            ret_str = self.__headWord
+            
+            if self.__gramCat != SENT:
+                ret_str += '.' + self.__senseNum
+                
+            ret_str += ' ' + self.__gramCat
+            
+            for tag in self.__otherTags:
+                ret_str += ' ' + tag
+                
+            self.__plainString = ret_str
+            
+        return self.__plainString
     
     def toFormattedString(self, rtl = False):
-        # Create an element
-        p = ET.Element('span')
         
-        # Split off the homograph_num (if present; sent punctuation won't have it)
-        lemma_parts = re.split('(\d+)', self.__headWord, re.A) # last item is empty re.A=ASCII-only match
+        if self.__formatedString == None:
+            
+            # Create an element
+            p = ET.Element('span')
+            
+            # Split off the homograph_num (if present; sent punctuation won't have it)
+            lemma_parts = re.split('(\d+)', self.__headWord, re.A) # last item is empty re.A=ASCII-only match
+            
+            # Output the lexeme
+            span = output_span(p, LEMMA_COLOR, lemma_parts[0], rtl)
         
-        # Output the lexeme
-        span = output_span(p, LEMMA_COLOR, lemma_parts[0], rtl)
-    
-        # Output the subscript homograph # and sense # (if they exist)
-        if self.__gramCat != SENT:
-            add_subscript(span, lemma_parts[1]+'.'+self.__senseNum)
-        
-        # Check for RTL
-        if rtl == True:
-            # prepend the RTL marker
-            symb = '\u200F' + self.__gramCat
-        else:
-            symb = self.__gramCat
-        
-        # output the symbol
-        output_span(p, GRAM_CAT_COLOR, ' '+symb, rtl)
-        
-        for tag in self.__otherTags:
-        
+            # Output the subscript homograph # and sense # (if they exist)
+            if self.__gramCat != SENT:
+                add_subscript(span, lemma_parts[1]+'.'+self.__senseNum)
+            
             # Check for RTL
             if rtl == True:
                 # prepend the RTL marker
-                symb = '\u200F' + tag
+                symb = '\u200F' + self.__gramCat
             else:
-                symb = tag
+                symb = self.__gramCat
             
             # output the symbol
-            output_span(p, AFFIX_COLOR, ' '+symb, rtl)
-        
-        retStr = ET.tostring(p, encoding='unicode')
+            output_span(p, GRAM_CAT_COLOR, ' '+symb, rtl)
             
-        return retStr
+            for tag in self.__otherTags:
+            
+                # Check for RTL
+                if rtl == True:
+                    # prepend the RTL marker
+                    symb = '\u200F' + tag
+                else:
+                    symb = tag
+                
+                # output the symbol
+                output_span(p, AFFIX_COLOR, ' '+symb, rtl)
+            
+            self.__formatedString = ET.tostring(p, encoding='unicode')
+        else:
+            pass
+            
+        return self.__formatedString
     
     def toApertiumString(self):
         ret_str = '^' + self.__headWord
@@ -613,14 +634,15 @@ class TestbedTestXMLObject():
     # You can initialize this class in two ways:
     # 1) Give it a list of LexicalUnit objects + origin + synthesis result and it creates the testbed XML object
     # 2) Give it a <test> XML object (ElementTree.Element) and it initializes the LexicalUnit List
-    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None):
+    def __init__(self, luList=None, origin=None, synthResult=None, testNode=None, luCache={}):
         self.__luList = luList
         self.__origin = origin
         self.__synthResult = synthResult
         self.__testNode = testNode
         self.__testChanged = False
-        self.actResult = None
-        self.expResult = None
+        self.__actResult = None
+        self.__expResult = None
+        self.__luCache = luCache
         
         # If no lexical unit object list is given, create it
         if luList == None:
@@ -649,9 +671,21 @@ class TestbedTestXMLObject():
         sourceInputNode = self.__testNode.find(SOURCE_INPUT)
         lexicalUnitsNode = sourceInputNode.find(LEXICAL_UNITS)
         
-        # Go through all the lexical units
+        # Go through all the lexical units 
         for luNode in list(lexicalUnitsNode):
-            lu = LexicalUnit(None, luNode) # 1st param is str2parse
+
+            # Do hash on headword + sense number + tags concatenated (don't need gramm. cat since x1.1 will generally have same gramm. cat)            
+            tags = ''.join([x.text for x in list(luNode.find(OTHER_TAGS))])
+            myHash = hash(tuple((luNode.find(HEAD_WORD).text, luNode.find(SENSE_NUM).text, tags)))
+            
+            # See if this hash value is in the cache and if so use it.
+            if myHash in self.__luCache:
+                
+                lu = self.__luCache[myHash]
+            else:
+                lu = LexicalUnit(None, luNode) # 1st param is str2parse
+                self.__luCache[myHash] = lu
+                
             self.__luList.append(lu)
             
     def __createXMLStructureFromLUList(self):
@@ -696,13 +730,13 @@ class TestbedTestXMLObject():
     def getOrigin(self):
         return self.__testNode.find(SOURCE_INPUT).attrib[ORIGIN]
     def getExpectedResult(self):
-        if self.expResult == None:
-            self.expResult = self.__testNode.find(TGT_EXPECTED).text
-        return self.expResult
+        if self.__expResult == None:
+            self.__expResult = self.__testNode.find(TGT_EXPECTED).text
+        return self.__expResult
     def getActualResult(self):
-        if self.actResult == None:
-            self.actResult = self.__testNode.find(TGT_ACTUAL).text
-        return self.actResult
+        if self.__actResult == None:
+            self.__actResult = self.__testNode.find(TGT_ACTUAL).text
+        return self.__actResult
     def setActualResult(self, myStr):
         self.__testNode.find(TARGET_OUTPUT+'/'+ACTUAL_RESULT).text = myStr
     def getTestNode(self):
@@ -829,11 +863,14 @@ class FLExTransTestbedXMLObject():
     # You can create this class in two ways:
     # 1) initialize a new one which creates the basic structure without test elements
     # 2) initialize from an existing XML node which fills out everything including a list of TestXMLObjects 
-    def __init__(self, root, direction):
+    def __init__(self, root, direction, luCache={}, testCache={}):
         self.__rootNode = root
         self.__TestXMLObjectList = []
         self.__direction = direction
         self.__testbedChanged = False
+        self.__testCache = testCache
+        self.__luCache = luCache
+        self.__failedAndInvalid = None
         
         # if new (tree==None), create the structure down to the tests node
         if root == None:
@@ -854,13 +891,19 @@ class FLExTransTestbedXMLObject():
         self.__testsNode = ET.SubElement(testbed, TESTS)
     
     def getFailedAndInvalid(self):
-        tot_failed = 0
-        tot_invalid = 0
-        for test in self.__TestXMLObjectList:
-            (failed, invalid) = test.getFailedAndInvalid()
-            tot_failed += failed
-            tot_invalid += invalid
-        return (tot_failed, tot_invalid)
+        
+        if self.__failedAndInvalid == None:
+                
+            tot_failed = 0
+            tot_invalid = 0
+            for test in self.__TestXMLObjectList:
+                (failed, invalid) = test.getFailedAndInvalid()
+                tot_failed += failed
+                tot_invalid += invalid
+            
+            self.__failedAndInvalid = (tot_failed, tot_invalid)
+            
+        return self.__failedAndInvalid
             
     def getNumTests(self):
         return len(self.__TestXMLObjectList)
@@ -898,10 +941,23 @@ class FLExTransTestbedXMLObject():
         return self.__TestXMLObjectList
     
     def __createTestXMLObjectList(self):
-        # loop through all the tests
+        # loop through all the tests 
         for testNode in list(self.__testsNode):
-            # Initialize a result object and add it to the list
-            newTestXMLObj = TestbedTestXMLObject(None, None, None, testNode) # luList=None, origin=None, synthResult=None
+            
+            # Make a hash key based on expected result text plus # lexical units
+            #numLexUnits = len(testNode.findall('./'+SOURCE_INPUT+'/'+LEXICAL_UNITS+'/'+LEXICAL_UNIT))
+            #targetNode = testNode.find(TARGET_OUTPUT)
+            myHash = 0#  hash(tuple((targetNode.find(EXPECTED_RESULT).text, targetNode.find(ACTUAL_RESULT).text, numLexUnits)))
+            
+            # See if this hash value is in the cache and if so use it.
+            if myHash in self.__testCache:
+                
+                newTestXMLObj = self.__testCache[myHash]
+            else:
+                # Initialize a result object and add it to the list
+                newTestXMLObj = TestbedTestXMLObject(None, None, None, testNode, self.__luCache) # luList=None, origin=None, synthResult=None
+                #self.__testCache[myHash] = newTestXMLObj
+                
             self.__TestXMLObjectList.append(newTestXMLObj)
     
     def validate(self, DB, report):
@@ -1008,7 +1064,7 @@ class TestbedResultXMLObject():
     # You can initialize this class in two ways:
     # 1) Give just a parent element and it creates an empty <result> element for the parent
     # 2) Give it a <result> XML object (ElementTree.Element) and it initializes the testbed object list from the testbed xml elements.
-    def __init__(self, parentNode, rootNode=None):
+    def __init__(self, parentNode, rootNode=None, luCache={}, testCache={}):
         self.__rootNode = rootNode
         self.__testbedXMLObjList = []
         
@@ -1021,7 +1077,7 @@ class TestbedResultXMLObject():
         else:
             for testbedNode in list(self.__rootNode):
                 # create a testbed object and add it to the list
-                testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None) # direction is None
+                testbedXMLObj = FLExTransTestbedXMLObject(testbedNode, None, luCache, testCache) # direction is None
                 self.__testbedXMLObjList.append(testbedXMLObj)
     
     def getFLExTransTestbedXMLObjectList(self):
@@ -1098,6 +1154,8 @@ class FLExTransTestbedResultsXMLObject():
     def __init__(self, root=None):
         self.__rootNode = root
         self.__resultXMLObjList = []
+        self.__luCache = {}
+        self.__testCache = {}
         if root == None:
             self.__rootNode = ET.Element(FLEXTRANS_TESTBED_RESULTS)
         else:
@@ -1109,7 +1167,7 @@ class FLExTransTestbedResultsXMLObject():
     def initTestResult(self, testbedXMLObj):
         
         # create a new result object and set the start time and give it a blank end time
-        resultXMLObj = TestbedResultXMLObject(self.__rootNode, None)
+        resultXMLObj = TestbedResultXMLObject(self.__rootNode, None, None)
         resultXMLObj.startTest(testbedXMLObj)
         
         # new results are always put at the top of the list
@@ -1127,7 +1185,7 @@ class FLExTransTestbedResultsXMLObject():
         for resultNode in list(self.__rootNode):
 
             # initialize a result object and add it to the list
-            newResultXMLObj = TestbedResultXMLObject(None, resultNode)
+            newResultXMLObj = TestbedResultXMLObject(None, resultNode, self.__luCache, self.__testCache)
             self.__resultXMLObjList.append(newResultXMLObj)
 
     def dump(self, f_out):
