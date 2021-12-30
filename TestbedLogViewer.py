@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.2.2 - 12/30/21 - Ron Lockwood
+#    Optimized Testbed Viewing. Particularly through caching TestResultItem objects.
+#
 #   Version 3.2.1 - 12/20/21 - Ron Lockwood
 #    Fixes issue #6 where only the test results -50 were being displayed. 
 #    This resulted in having the a test results file with only 1 result to not 
@@ -68,7 +71,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.2.1",
+        FTM_Version    : "3.2.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -416,12 +419,19 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         if maxResults > MAX_RESULTS_TO_DISPLAY:
             maxResults = MAX_RESULTS_TO_DISPLAY
 
+        resultsCount = 1
+        
         # Loop through the test results
-        for resultObj in objList[:maxResults+1]: # Just show the last X
+        for resultObj in objList: # Just show the last X
+            
+            if resultsCount > maxResults:
+                break
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
                 continue
+            
+            resultsCount += 1
             
             # Set the stats branch of the tree
             statsObj = self.getStats(resultObj)
