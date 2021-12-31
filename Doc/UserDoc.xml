@@ -23,7 +23,7 @@ showLevel="3"
 ></contents
 ><abstract
 ><p
->This paper describes how to use the <object
+>This document describes how to use the <object
 type="tFlextrans"
 ></object
 > machine translation system. See <sectionRef
@@ -83,6 +83,79 @@ textBefore="singular"
 ></abstract
 ></frontMatter
 ><section1
+id="sIntro"
+><secTitle
+>Introduction</secTitle
+><p
+><object
+type="tFlextrans"
+></object
+> is a rule-based machine translation system. It was first developed in 2015 (<citation
+paren="final"
+ref="rLockwood15"
+></citation
+>. It marries the power of the <object
+type="tProgramName"
+>Apertium</object
+> (<citation
+paren="none"
+ref="rApertiumSite"
+></citation
+>) transfer engine with the outstanding lexical model and usability of <object
+type="tFlexx"
+></object
+>. </p
+><figure
+align="center"
+id="f1"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial="height:50%;"
+src="Images/diagram%20v3.png"
+></img
+></chart
+></figure
+><p
+><object
+type="tFlextrans"
+></object
+> is composed basically of two language databases, a list of transfer rules and a series of programs that do the work. The language databases, one for the source language and one for the target language, are in the form of <object
+type="tFlexx"
+></object
+> projects. A <object
+type="tFlexx"
+></object
+> project stores, among other things, a lexicon, grammar settings and a database of texts. The transfer rules are in the form of a text file in XML format. The core programs are the analysis engine, the transfer engine and the synthesis engine. A text in the source language first goes through the analysis process where words are broken down into morphemes. Then the “analyzed” text is transformed into target morphemes and rearranged as necessary in the transfer process. Lastly, the target morphemes are put together into target words in the synthesis process. The end result is a text in the target language.</p
+><p
+><object
+type="tFlextrans"
+></object
+>, as a program, consists of several different modules that are run within the <object
+type="tFlexxTools"
+></object
+><endnote
+id="nFlexTools"
+><p
+><object
+type="tFlexxTools"
+></object
+> is a general purpose program for running python scripts against a <object
+type="tFlexx"
+></object
+> database.</p
+></endnote
+> program. Upon installation, <object
+type="tFlexxTools"
+></object
+> is populated with three collections of modules for common <object
+type="tFlextrans"
+></object
+> tasks.  <comment
+>Maybe refer to a new section on how FlexTools and collections work. Should this mention deleting lock files?</comment
+></p
+></section1
+><section1
 id="sGettingStarted"
 ><secTitle
 >Getting Started</secTitle
@@ -108,7 +181,7 @@ type="tSenseLinker"
 ><li
 >Write transfer rules that convert source words and phrases to target words and phrases.</li
 ><li
->Run the six <object
+>Run the seven basic <object
 type="tFlextrans"
 ></object
 > modules.</li
@@ -124,7 +197,7 @@ href="https://software.sil.org/flextrans/installation/"
 > steps as given on the <object
 type="tFlextrans"
 ></object
-> Wiki and that you have <object
+> website and that you have <object
 type="tFlextrans"
 ></object
 > working for the sample projects. It is also assumed that you have two <object
@@ -478,7 +551,7 @@ id="sWriteRules"
 ><li
 >Navigate to the <object
 type="tFoldername"
->'FlexTools\Output</object
+>FlexTools\Output</object
 > folder in your installation folder.</li
 ><li
 >Open the file <object
@@ -634,7 +707,7 @@ type="tTool"
 > engine that has the “n” tag. (Every word coming from <object
 type="tFlexx"
 ></object
-> has the word’s grammatical category in the form of a tag. It's always the first tag.)</p
+> has the word’s grammatical category in the form of a tag. It’s always the first tag.)</p
 ><p
 >The <object
 type="tRuleElemInXXE"
@@ -904,7 +977,7 @@ type="tTool"
 >You can’t edit the transfer rules in the <object
 type="tLiveRuleTester"
 ></object
-> and even when you change the order of the rules in the tool that doesn't change your transfer rules file. Make your changes in a separate editor. To reload the transfer rules after you have changed them, click on the <object
+> and even when you change the order of the rules in the tool that doesn’t change your transfer rules file. Make your changes in a separate editor. To reload the transfer rules after you have changed them, click on the <object
 type="tButton"
 >Refresh Rules</object
 > button.</p
@@ -1114,7 +1187,7 @@ id="sLexicalStruct"
 ><secTitle
 >Lexical Transfer and Structural Transfer</secTitle
 ><p
->We don't want to confuse the roles of lexical transfer and structural transfer. There is a grey area between the two, but there are also big parts that don’t overlap.</p
+>We don’t want to confuse the roles of lexical transfer and structural transfer. There is a grey area between the two, but there are also big parts that don’t overlap.</p
 ><ul
 ><li
 ><object
@@ -1427,7 +1500,7 @@ num="xOverviewRuleFile"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
+cssSpecial="Height:50%;"
 src="Images/RulesTutOverview.PNG"
 ></img
 ></chart
@@ -2873,7 +2946,7 @@ type="tluGrammCat"
 > meaning verb. So, make a new attribute element for grammatical category.<endnote
 id="nUseSetUpTxfrRulGramCatTool"
 ><p
->It can be arduous to type in all the grammatical categories that you need for your transfer rules. That's why there is the <object
+>It can be arduous to type in all the grammatical categories that you need for your transfer rules. That’s why there is the <object
 type="tFlextrans"
 ></object
 > tool called <object
@@ -3034,7 +3107,7 @@ id="step4"
 ><secTitle
 >Step 4</secTitle
 ><p
->To recap, the input we've been working with is:</p
+>To recap, the input we’ve been working with is:</p
 ><example
 num="xStep4Input"
 ><single
@@ -3487,7 +3560,7 @@ type="tItalic"
 >Trick: Click on the word "clip" and type Ctrl-a. This will execute the last command you did in the <object
 type="tXMLmindXMLEditor"
 ></object
-> again (namley wrap an element with the <object
+> again (namely wrap an element with the <object
 type="tRuleElemInXXE"
 >get case from</object
 > element.)</object
@@ -3688,7 +3761,7 @@ type="tFlextrans"
 > <object
 type="tTool"
 >Testbed</object
-> is a system designed to help you maintain the quality of your translations. It not uncommon, as you add new transfer rules to the system or change the lexicons, you mess up the results you were getting before. To help mitigate this, it is very helpful to have a database of expected results for a certain inputs. This is called a testbed. After making significant changes to your translation system, you can rerun the testbed to make sure you are still getting the results you expect for words or sentences that you earlier deemed correct.</p
+> is a system designed to help you maintain the quality of your translations. It not uncommon, as you add new transfer rules to the system or change the lexicons, you mess up the results you were getting before. To help prevent this, it is very helpful to have a database of expected results for a certain inputs. This is called a testbed. After making significant changes to your translation system, you can re-run the testbed to make sure you are still getting the results you expect for words or sentences that you earlier deemed correct.</p
 ><section2
 id="sTestbedWorkflow"
 ><secTitle
@@ -3697,10 +3770,7 @@ type="tTool"
 >Testbed</object
 ></secTitle
 ><p
->Right now the <object
-type="tTool"
->Testbed Editor</object
-> is not finished. This is the way you would work with the testbed:</p
+>This is the way you normally work with the testbed:</p
 ><ol
 ><li
 >Make a change to the system, e.g. add a new rule or other changes.</li
@@ -3725,7 +3795,7 @@ type="tCollection"
 >Click the <object
 type="tButton"
 >Run All</object
-> button to run all the needed modules.</li
+> button to run all the modules.</li
 ><li
 >Review the <object
 type="tTool"
@@ -3734,7 +3804,16 @@ type="tTool"
 ></ol
 ></li
 ><li
->Make any adjustments as needed. Repeat</li
+>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
+type="tFilename"
+>testbed.xml</object
+> which is in the <object
+type="tFoldername"
+>Output</object
+> folder in the <object
+type="tXMLmindXMLEditor"
+></object
+>.</li
 ></ol
 ></section2
 ><section2
@@ -3833,12 +3912,9 @@ showTitle="full"
 ><section3
 id="sTestbedEditor"
 ><secTitle
-><object
-type="tTool"
->Testbed Editor</object
-></secTitle
+>Testbed Editing</secTitle
 ><p
->This module is under construction. Add new tests to the testbed in the <object
+>It’s easiest to add new tests to the testbed while in the <object
 type="tLiveRuleTester"
 ></object
 >. If you need to edit or delete a test, edit the file <object
@@ -3847,7 +3923,10 @@ type="tFilename"
 > in the <object
 type="tFoldername"
 >Output</object
-> folder.</p
+> folder with the <object
+type="tXMLmindXMLEditor"
+></object
+>.</p
 ></section3
 ></section2
 ></section1
@@ -3936,7 +4015,7 @@ type="tluAffix"
 letter="xCat"
 num="xCat"
 ></exampleRef
-> defines the set of all indefinite nouns — words that have the the grammatical category <object
+> defines the set of all indefinite nouns — words that have the  grammatical category <object
 type="tluGrammCat"
 >n</object
 > or <object
@@ -4073,7 +4152,7 @@ id="sDeleteWord"
 ><secTitle
 >How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</secTitle
 ><p
->The short answer is don't output it. In other words, don't declare that it should be outputted into the target data stream.</p
+>The short answer is don’t output it. In other words, don’t declare that it should be outputted into the target data stream.</p
 ><p
 >When you match two or more words in the <object
 type="tRuleElemInXXE"
@@ -4112,7 +4191,7 @@ type="tRuleElemInXXE"
 > element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category. If we are manually outputting a word-sense, we need to use a <object
 type="tRuleElemInXXE"
 >literal string</object
-> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn't one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
+> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
 letter="xInsertWord"
 num="xInsertWord"
 ></exampleRef
@@ -4156,7 +4235,7 @@ id="sDeleteAffix"
 >Method 1. Use the <object
 type="tRuleElemInXXE"
 >let</object
-> element to set an attribute's value to blank. See <exampleRef
+> element to set an attribute’s value to blank. See <exampleRef
 letter="xLetBlank"
 num="xLetBlank"
 ></exampleRef
@@ -4187,7 +4266,7 @@ src="Images/OutputWholeWord.PNG"
 >Method 2. In the <object
 type="tRuleElemInXXE"
 >Output</object
-> element, explicitly declare each attribute of the word that you want to output. Don't include the attribute that needs to be deleted.<example
+> element, explicitly declare each attribute of the word that you want to output. Don’t include the attribute that needs to be deleted.<example
 num="xOutMultAffixes"
 ><chart
 ><img
@@ -4355,7 +4434,7 @@ type="tFlextrans"
 > </object
 >.</p
 ><p
->Let's say that we want to map the past tense of the entry for <langData
+>Let’s say that we want to map the past tense of the entry for <langData
 lang="lVernacular"
 >lieben</langData
 > shown in <exampleRef
@@ -4475,7 +4554,7 @@ id="sReferenceDocs"
 >The first version of <object
 type="tFlextrans"
 ></object
-> was produced as part of a Master's Thesis see <citation
+> was produced as part of a Master’s Thesis see <citation
 ref="rLockwood15"
 ></citation
 >. In 2018 and 2021 Ron presented papers about <object
@@ -4515,14 +4594,15 @@ type="tFlexxTools"
 >Here are the steps:</p
 ><ol
 ><li
->Navigate to the folder where you unzipped the install files.</li
+>Navigate to the installation folder (typically <object
+type="tFilename"
+>Documents\FlexTools2.0</object
+>).</li
 ><li
 >Double-click on the file <object
 type="tBold"
 >FlexTools.vbs</object
 > (a Visual Basic script file).</li
-><li
->The first time you run it, it may give you a message saying, “FLExTools has updated its configuration to match the new version of Fieldworks. Restarting.”</li
 ><li
 >The <object
 type="tFlexxTools"
@@ -4615,6 +4695,23 @@ type="tFlexx"
 ><endnotes
 ></endnotes
 ><references
+><refAuthor
+citename="Apertium,"
+name="Apertium"
+><refWork
+id="rApertiumSite"
+><refDate
+>2021</refDate
+><refTitle
+>Apertium, A free/open-source machine translation platform</refTitle
+><webPage
+><url
+>http://apertium.org</url
+><dateAccessed
+>12/20/2021</dateAccessed
+></webPage
+></refWork
+></refAuthor
 ><refAuthor
 citename="Forcada et al."
 name="Forcada, Mikel L., Bonev, Boyan Ivanov, Rojas, Sergio Ortiz, Ortiz, Juan Antonio Perez, Sanchez, Gema Ramirez, Martinez, Felipe Sanchez, Armentano-Oller, Carme, Montava, Marco A., Tyers, Francis M."
@@ -4889,6 +4986,11 @@ id="tFoldername"
 after="Live Rule Tester Tool"
 id="tLiveRuleTester"
 types="tTool"
+></type
+><type
+color="#000066"
+id="tProgramName"
+types="tBold"
 ></type
 ><type
 color="#00B050"
