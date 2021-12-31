@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->16 December 2021</date
+>31 December 2021</date
 ><version
 >For FLExTrans 3.2.1 (Sense Linker 3.0, Live Rule Tester 3.2.5)</version
 ><contents
@@ -26,12 +26,12 @@ showLevel="3"
 >This paper describes how to use the <object
 type="tFlextrans"
 ></object
-> machine translation system. It is a supplement to a master’s thesis which goes into more detail on the background and documents a test case. Please see <link
-href="https://digital.lib.washington.edu/researchworks/handle/1773/33999"
->A Linguist-Friendly Machine Translation System for Low-Resource Languages</link
->.<comment
-></comment
-></p
+> machine translation system. See <sectionRef
+sec="sReferenceDocs"
+showTitle="numberOnly"
+textBefore="singular"
+></sectionRef
+> for other documentation.</p
 ><p
 ><comment
 >Ideas for content for this document</comment
@@ -119,10 +119,7 @@ type="tFlextrans"
 ></p
 ><p
 >(It is assumed that you have gone through the <link
-href="https://github.com/rmlockwood/FLExTrans/wiki/Download"
->download</link
-> and <link
-href="https://github.com/rmlockwood/FLExTrans/wiki/Installation"
+href="https://software.sil.org/flextrans/installation/"
 >installation</link
 > steps as given on the <object
 type="tFlextrans"
@@ -201,15 +198,18 @@ type="tTool"
 ><li
 >Select File &gt; Open from the menu.</li
 ><li
->Navigate to the install folder and into the <object
+>Navigate to the install folder (typically Documents\FlexTools2.0) and into the <object
 type="tFoldername"
 >FlexTools</object
-> folder.</li
+> sub-folder.</li
 ><li
 >Select the <object
 type="tFilename"
 >FlexTrans.config</object
-> file.</li
+> file and hit <object
+type="tItalic"
+>Enter</object
+>.</li
 ><li
 >Change these two values:<table
 border="1"
@@ -388,8 +388,23 @@ src="Images/LinkerInCollections.png"
 ><li
 >Double-click on <object
 type="tCollection"
->FLExTrans Sense Linker</object
+>FLExTrans Tools</object
 > in the list and you’ll see this:<example
+num="xToolsCollection"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/ToolsCollection.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on <object
+type="tCollection"
+>FLExTrans.Sense Linker Tool</object
+> in the list.<example
 num="xLinkerModule"
 ><chart
 ><img
@@ -421,7 +436,7 @@ src="Images/SenseLinkerNoLinks.png"
 ></example
 ></li
 ><li
->Link each sense. (cf. <sectionRef
+>Link each sense. (More details in <sectionRef
 sec="sLinker"
 showTitle="numberOnly"
 textBefore="singular"
@@ -457,20 +472,6 @@ type="tBold"
 id="sWriteRules"
 ><secTitle
 >Write Transfer Rules</secTitle
-><p
->If you have not yet installed <object
-type="tXMLmindXMLEditor"
-></object
-> and the <object
-type="tUnderline"
->needed files</object
-> for editing transfer rules within it, follow the first two steps <link
-href="https://github.com/rmlockwood/FLExTrans/wiki/Transfer-Rule-Editing-App"
->on this page</link
->. Even if you already have <object
-type="tXMLmindXMLEditor"
-></object
-> installed you still need the addon files. See the previous link.</p
 ><p
 >In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category. We’ll modify an existing rule to do this.</p
 ><ol
@@ -798,7 +799,7 @@ border="1"
 ></tr
 ></table
 ><p
->For suggested sense links (colored in blue), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of senses () then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color.</p
+>For suggested sense links (colored in blue), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color.</p
 ><p
 >If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p
 ></section1
@@ -4466,6 +4467,34 @@ type="tFoldername"
 ></section3
 ></section2
 ></section1
+><section1
+id="sReferenceDocs"
+><secTitle
+>Reference documents</secTitle
+><p
+>The first version of <object
+type="tFlextrans"
+></object
+> was produced as part of a Master's Thesis see <citation
+ref="rLockwood15"
+></citation
+>. In 2018 and 2021 Ron presented papers about <object
+type="tFlextrans"
+></object
+> at the respective BT Conferences. See <citation
+ref="rLockwood17"
+></citation
+> and <citation
+ref="rLockwood21a"
+></citation
+>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <object
+type="tFlextrans"
+></object
+>. See <citation
+ref="rLockwood21b"
+></citation
+>.</p
+></section1
 ><backMatter
 ><appendix
 id="aAppend"
@@ -4601,6 +4630,104 @@ id="rApertium"
 ></ms
 ><url
 >http://xixona.dlsi.ua.es/~fran/apertium2-documentation.pdf</url
+></refWork
+></refAuthor
+><refAuthor
+citename="Lockwood"
+name="Lockwood, Ronald Milton"
+><refWork
+id="rLockwood15"
+><refDate
+>2015</refDate
+><refTitle
+>A Linguist-Friendly Machine Translation System for Low-Resource Languages</refTitle
+><ms
+><institution
+>University of Washington</institution
+><url
+>https://digital.lib.washington.edu/researchworks/handle/1773/33999</url
+></ms
+></refWork
+></refAuthor
+><refAuthor
+citename="Lockwood"
+name="Lockwood, Ron"
+><refWork
+id="rLockwood17"
+><refDate
+>2018</refDate
+><refTitle
+>Linguistically-Based Machine Translation with the New Tool FLExTrans</refTitle
+><proceedings
+><procCitation
+page="pages unknown"
+refToBook="rBTConference17"
+></procCitation
+></proceedings
+></refWork
+></refAuthor
+><refAuthor
+citename="Lockwood"
+name="Lockwood, Ron"
+><refWork
+id="rLockwood21a"
+><refDate
+>2021a</refDate
+><refTitle
+>Results of Machine Translation with FLExTrans in Production-Mode</refTitle
+><proceedings
+><procCitation
+page="pages unknown"
+refToBook="rBTConference21"
+></procCitation
+></proceedings
+></refWork
+></refAuthor
+><refAuthor
+citename="Lockwood"
+name="Lockwood, Ron"
+><refWork
+id="rLockwood21b"
+><refDate
+>2021b</refDate
+><refTitle
+>Using Syntactic Parsing to Enable Machine Translation for Language Pairs with Thorny Differences</refTitle
+><proceedings
+><procCitation
+page="pages unknown"
+refToBook="rBTConference21"
+></procCitation
+></proceedings
+></refWork
+></refAuthor
+><refAuthor
+citename="BTConf2017"
+name="Bible Translation Conference 2017"
+><refWork
+id="rBTConference17"
+><refDate
+>2018</refDate
+><refTitle
+>Proceedings of Bible Translation 2017 Conference</refTitle
+><book
+><location
+>Dallas</location
+></book
+></refWork
+></refAuthor
+><refAuthor
+citename="BTConf2021"
+name="Bible Translation Conference 2021"
+><refWork
+id="rBTConference21"
+><refDate
+>2021</refDate
+><refTitle
+>Proceedings of Bible Translation 2021 Conference</refTitle
+><book
+><location
+>Online</location
+></book
 ></refWork
 ></refAuthor
 ></references
