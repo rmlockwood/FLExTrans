@@ -52,7 +52,31 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
     try:
+        os.remove(OUTPUT+'bilingual.bin')
+    except:
+        pass # ignore errors
+    try:
+        os.remove(OUTPUT+'bilingual.dix.old')
+    except:
+        pass # ignore errors
+    try:
+        os.remove(OUTPUT+'tr.t1x')
+    except:
+        pass # ignore errors
+    try:
         os.remove(OUTPUT+'target_pfx_glosses.txt')
+    except:
+        pass # ignore errors
+    try:
+        os.remove(OUTPUT+'transfer_rules.t1x.bin')
+    except:
+        pass # ignore errors
+    try:
+        os.remove(OUTPUT+'err_log')
+    except:
+        pass # ignore errors
+    try:
+        os.remove(OUTPUT+'err_out')
     except:
         pass # ignore errors
     
@@ -65,6 +89,11 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
     try:
         for p in Path(tempPath).glob("*conversion_to_STAMP_cache.txt"):
+            p.unlink()
+    except:
+        pass # ignore errors
+    try:
+        for p in Path(tempPath).glob("*testbed_cache.txt"):
             p.unlink()
     except:
         pass # ignore errors
