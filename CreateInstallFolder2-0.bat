@@ -112,6 +112,9 @@ copy Light_green_check.png Install2.0\FlexTools2.0\FLExTools
 copy Red_x.png             Install2.0\FlexTools2.0\FLExTools             
 copy Yellow_triangle.png   Install2.0\FlexTools2.0\FLExTools    
 
+rem Other Tools
+copy CleanFiles.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
+
 cd Install2.0
 "%SEVENZ_PATH%"\7z a FLExTools20WithFLExTrans.zip FlexTools2.0
 copy /Y FLExTools20WithFLExTrans.zip ..

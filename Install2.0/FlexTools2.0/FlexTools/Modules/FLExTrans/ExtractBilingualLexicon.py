@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
+#   Version 3.2.1 - 11/30/21 - Ron Lockwood
+#    Report when the bilingual lexicon is up to date (taken from cache).
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    Put underscores in target feature abbreviations if necessary.
 #
@@ -149,7 +155,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -527,6 +533,7 @@ def MainFunction(DB, report, modifyAllowed):
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
         
+        report.Info("The bilingual dictionary is up to date.")
         pass
         
     else: # build the file

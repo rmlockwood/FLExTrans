@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.1 - 11/30/21 - Ron Lockwood
 #    Rewrite of the MainFunction. Use the Utils.getInterlinData function to get
 #    the words in the interlinear text. The advantage is that the Utils function
@@ -129,7 +132,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.1",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
