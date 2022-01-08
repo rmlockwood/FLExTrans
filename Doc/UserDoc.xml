@@ -15,11 +15,11 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->31 December 2021</date
+>8 January, 2021</date
 ><version
->FLExTrans 3.2.1 (Sense Linker 3.0, Live Rule Tester 3.2.5)</version
+>FLExTrans 3.2.2</version
 ><contents
-showLevel="3"
+showLevel="4"
 ></contents
 ><abstract
 ><p
@@ -104,7 +104,7 @@ ref="rApertiumSite"
 >) transfer engine with the outstanding lexical model and usability of <object
 type="tFlexx"
 ></object
->. </p
+>.</p
 ><figure
 align="center"
 id="f1"
@@ -151,7 +151,7 @@ type="tFlexxTools"
 > is populated with three collections of modules for common <object
 type="tFlextrans"
 ></object
-> tasks.  <comment
+> tasks. <comment
 >Maybe refer to a new section on how FlexTools and collections work. Should this mention deleting lock files?</comment
 ></p
 ></section1
@@ -2710,8 +2710,6 @@ type="tButton"
 >Transfer</object
 > button. (This time you will notice some text in the yellow information box. This shows which rules matched which input words.)</li
 ></ol
-></li
-></ol
 ><p
 >The result is:</p
 ><example
@@ -2733,6 +2731,8 @@ type="tluAffix"
 ></example
 ><p
 >Great!</p
+></li
+></ol
 ></section4
 ><section4
 id="step2"
@@ -2856,8 +2856,8 @@ textBefore="capitalizedSingular"
 >Now test it in the <object
 type="tLiveRuleTester"
 ></object
->. (Don’t forget to refresh the rules first!)</li
-></ol
+>. (Don’t forget to refresh the rules first!)<br
+></br
 ><p
 >The result is:</p
 ><example
@@ -2879,6 +2879,8 @@ type="tluAffix"
 ></example
 ><p
 >Excellent!</p
+></li
+></ol
 ></section4
 ><section4
 id="step3"
@@ -2975,7 +2977,13 @@ src="Images/RulesTutAttrGramCat.PNG"
 ></br
 ><br
 ></br
->So, now that we’ve got our two attributes defined, let’s change our output statement: <br
+>So, now that we’ve got our two attributes defined, let’s change our <object
+type="tRuleElemInXXE"
+>output</object
+> statement: (You will have to open the <object
+type="tRuleElemInXXE"
+>output</object
+> element with the plus sign.) <br
 ></br
 ><br
 ></br
@@ -3012,8 +3020,8 @@ type="tSubscript"
 >Now test it in the <object
 type="tLiveRuleTester"
 ></object
->. (Don’t forget to refresh the rules first!)</li
-></ol
+>. (Don’t forget to refresh the rules first!)<br
+></br
 ><p
 >The result is:</p
 ><example
@@ -3101,6 +3109,8 @@ sec="sInflVariantTgt"
 > for more details.</p
 ><p
 >We’re getting there, now let’s move on to the next step.</p
+></li
+></ol
 ></section4
 ><section4
 id="step4"
@@ -3258,10 +3268,39 @@ type="tluAffix"
 ></br
 ></li
 ><li
->Insert this before our current <object
+>Insert a new <object
 type="tRuleElemInXXE"
 >lexical unit</object
-> element.<example
+> before our current <object
+type="tRuleElemInXXE"
+>lexical unit</object
+> element and make it look like <exampleRef
+letter="xLexUnitPron"
+num="xLexUnitPron"
+></exampleRef
+>.<br
+></br
+><p
+>You can do an Insert Before... and choose <object
+type="tItalic"
+>lu(lexical_unit_lit-string)</object
+> then click on the <object
+type="tRuleElemInXXE"
+>literal string</object
+>, do an Insert After... and choose <object
+type="tItalic"
+>lit-tag(literal_tag)</object
+>. The <object
+type="tRuleElemInXXE"
+>blank space</object
+> element comes after and is <object
+type="tUnderline"
+>indented at the same level</object
+> as <object
+type="tRuleElemInXXE"
+>lexical unit</object
+>.</p
+><example
 num="xLexUnitPron"
 ><chart
 ><img
@@ -3343,7 +3382,21 @@ src="Images/RulesTutAttrNumPer.PNG"
 ></example
 ></li
 ><li
->We then go back to our skeleton pronoun and add the missing features.<example
+>We then go back to our skeleton pronoun and add the missing features. So that it looks like <exampleRef
+letter="xLexUnitPronPerNum"
+num="xLexUnitPronPerNum"
+></exampleRef
+>.<br
+></br
+><p
+>Click on the <object
+type="tRuleElemInXXE"
+>literal tag</object
+> element and Insert After... and choose <object
+type="tItalic"
+>clip(clip_sl)</object
+>. Do this twice.</p
+><example
 num="xLexUnitPronPerNum"
 ><chart
 ><img
@@ -3433,8 +3486,8 @@ type="tItalic"
 > and <object
 type="tItalic"
 >si</object
-> selected.)</li
-></ol
+> checked.)<br
+></br
 ><p
 >The result is:</p
 ><example
@@ -3464,7 +3517,13 @@ type="tluAffix"
 ></single
 ></example
 ><p
->Select all the Croatian words and see what our English sentence looks like.</p
+>Select all the Croatian words, do <object
+type="tBold"
+>Transfer</object
+> and <object
+type="tBold"
+>Synthesize</object
+> and see what our English sentence looks like.</p
 ><p
 >Now we get:</p
 ><example
@@ -3491,7 +3550,11 @@ type="tItalic"
 > capitalized in all circumstances. For example, if the Croatian past tense clause is embedded in another phrase, the first word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization to the pronoun. Make your <object
 type="tRuleElemInXXE"
 >lexical unit</object
-> element look like this:<example
+> element look like <exampleRef
+letter="xGetCase1"
+num="xGetCase1"
+></exampleRef
+>:<example
 num="xGetCase1"
 ><chart
 ><img
@@ -3519,7 +3582,7 @@ src="Images/ButWrap.PNG"
 > button (upper right side) or press Ctrl-Shift-T.</li
 ><li
 >At this point a list of elements to insert shows up in the upper right pane. Choose <object
-type="tRuleElemInXXE"
+type="tItalic"
 >get-case-from</object
 >.</li
 ><li
@@ -3567,7 +3630,13 @@ type="tRuleElemInXXE"
 ></li
 ></ol
 ><p
->Transfer and Synthesize again.</p
+><object
+type="tBold"
+>Transfer</object
+> and <object
+type="tBold"
+>Synthesize</object
+> again.</p
 ><p
 >Now we get:</p
 ><example
@@ -3580,6 +3649,8 @@ lang="lVernacular"
 ></example
 ><p
 >Looking good!</p
+></li
+></ol
 ></section4
 ><section4
 id="step5"
@@ -3634,16 +3705,14 @@ src="Images/RulesTutLexUnitNoun1.PNG"
 ></img
 ></chart
 ></example
-></li
-></ol
 ><p
 >Now test it in the <object
 type="tLiveRuleTester"
 ></object
->, but this time check the Croatian word <object
+>, but this time check only the Croatian word <object
 type="tItalic"
 >pozdrava</object
-> and check the new Nouns rule.</p
+>.</p
 ><p
 >Starting with:</p
 ><example
@@ -3680,7 +3749,10 @@ type="tluGrammCat"
 ></single
 ></example
 ><p
->And if we synthesize we get:</p
+>And if we <object
+type="tBold"
+>Synthesize</object
+> we get:</p
 ><example
 num="xStep5aTarget"
 ><single
@@ -3709,6 +3781,8 @@ lang="lGloss"
 ></example
 ><p
 >Success!</p
+></li
+></ol
 ></section4
 ><section4
 id="step6"
@@ -4015,7 +4089,7 @@ type="tluAffix"
 letter="xCat"
 num="xCat"
 ></exampleRef
-> defines the set of all indefinite nouns — words that have the  grammatical category <object
+> defines the set of all indefinite nouns — words that have the grammatical category <object
 type="tluGrammCat"
 >n</object
 > or <object

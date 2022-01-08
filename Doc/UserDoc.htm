@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>31 December 2021</small></center>
-      <center><small>Version: For FLExTrans 3.2.1 (Sense Linker 3.0, Live Rule Tester 3.2.5)</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>8 January, 2021</small></center>
+      <center><small>Version: FLExTrans 3.2.2</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -41,6 +41,9 @@
                   <li><a href="#sFormalities">7.1.1&nbsp;Some Formalities</a></li>
                   <li><a href="#sApproach">7.1.2&nbsp;Approaching the Process of Writing Transfer Rules</a></li>
                   <li><a href="#sLexicalStruct">7.1.3&nbsp;Lexical Transfer and Structural Transfer</a></li>
+                  <ul>
+                     <li><a href="#sLexTransProc">7.1.3.1&nbsp;How Lexical Transfer is Processed</a></li>
+                  </ul>
                   <li><a href="#sPrelim">7.1.4&nbsp;Some Preliminaries</a></li>
                   <li><a href="#sFileOverview">7.1.5&nbsp;Overview of a Transfer File</a></li>
                   <li><a href="#sRulesApplied">7.1.6&nbsp;How Rules are Applied</a></li>
@@ -50,7 +53,21 @@
                   <li><a href="#sTutSetup">7.2.1&nbsp;Getting Set Up</a></li>
                   <li><a href="#sLexicalTransfer">7.2.2&nbsp;Lexical Transfer</a></li>
                   <li><a href="#sThinking">7.2.3&nbsp;Thinking it Through</a></li>
+                  <ul>
+                     <li><a href="#sProc">7.2.3.1&nbsp;Procedures</a></li>
+                     <li><a href="#sDecl">7.2.3.2&nbsp;Declarations</a></li>
+                     <li><a href="#sWorkOrder">7.2.3.3&nbsp;Work Order</a></li>
+                     <li><a href="#sCheatsheet">7.2.3.4&nbsp;Cheat Sheet</a></li>
+                  </ul>
                   <li><a href="#sImplementation">7.2.4&nbsp;Implementation</a></li>
+                  <ul>
+                     <li><a href="#step1">7.2.4.1&nbsp;Step 1</a></li>
+                     <li><a href="#step2">7.2.4.2&nbsp;Step 2</a></li>
+                     <li><a href="#step3">7.2.4.3&nbsp;Step 3</a></li>
+                     <li><a href="#step4">7.2.4.4&nbsp;Step 4</a></li>
+                     <li><a href="#step5">7.2.4.5&nbsp;Step 5</a></li>
+                     <li><a href="#step6">7.2.4.6&nbsp;Step 6</a></li>
+                  </ul>
                </ul>
             </ul>
             <li><a href="#sTestbed">8&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
@@ -119,7 +136,7 @@
       <hr>
       <h1 style=""><a name="sIntro"></a>1&nbsp;Introduction
       </h1>
-      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> is a rule-based machine translation system. It was first developed in 2015 (<a href="#rLockwood15">Lockwood  2015)</a>. It marries the power of the <span style="color:#000066; font-weight:bold; ">Apertium</span> (<a href="#rApertiumSite">Apertium,  2021</a>) transfer engine with the outstanding lexical model and usability of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. 
+      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> is a rule-based machine translation system. It was first developed in 2015 (<a href="#rLockwood15">Lockwood  2015)</a>. It marries the power of the <span style="color:#000066; font-weight:bold; ">Apertium</span> (<a href="#rApertiumSite">Apertium,  2021</a>) transfer engine with the outstanding lexical model and usability of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
       </p>
       <div id="f1" align="center" style="">
          <div style=""><img style="height:50%;" src="Images/diagram%20v3.png"></div>
@@ -132,7 +149,7 @@
          text is transformed into target morphemes and rearranged as necessary in the transfer process. Lastly, the target morphemes
          are put together into target words in the synthesis process. The end result is a text in the target language.
       </p>
-      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, as a program, consists of several different modules that are run within the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span><span style="font-size:65%; vertical-align:super">[<a href="#nFlexTools">1</a>]</span> program. Upon installation, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> is populated with three collections of modules for common <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tasks.  
+      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, as a program, consists of several different modules that are run within the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span><span style="font-size:65%; vertical-align:super">[<a href="#nFlexTools">1</a>]</span> program. Upon installation, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> is populated with three collections of modules for common <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tasks. 
       </p>
       <h1 style=""><a name="sGettingStarted"></a>2&nbsp;Getting Started
       </h1>
@@ -1273,24 +1290,24 @@
                <li>Click on the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button. (This time you will notice some text in the yellow information box. This shows which rules matched which input words.)
                </li>
             </ol>
+            <p>The result is:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep1Target">(37)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv ptcp_f_sg</span></span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>Great!</p>
          </li>
       </ol>
-      <p>The result is:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep1Target">(37)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv ptcp_f_sg</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Great!</p>
       <h4 style=""><a name="step2"></a>7.2.4.2&nbsp;Step 2
       </h4>
       <ol style="list-style-type:decimal; ">
@@ -1340,25 +1357,24 @@
                   </tr>
                </table>
             </div>(Note: the statement in <a href="#xLet1">(39)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">9.2.7</a>.<br><br></li>
-         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)
+         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)<br><p>The result is:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep2Target">(41)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv pst</span></span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>Excellent!</p>
          </li>
       </ol>
-      <p>The result is:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep2Target">(41)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv pst</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Excellent!</p>
       <h4 style=""><a name="step3"></a>7.2.4.3&nbsp;Step 3
       </h4>
       <p>So far we have been outputting the whole target language lexical unit, as seen in <a href="#xLexUnitWhole">(43)</a> below.
@@ -1383,7 +1399,7 @@
                </table>
             </div>
          </li>
-         <li>Declare which attributes we want to output. <br><br>So, now that we&#8217;ve got our two attributes defined, let&#8217;s change our output statement: <br><br>Where we previously had:
+         <li>Declare which attributes we want to output. <br><br>So, now that we&#8217;ve got our two attributes defined, let&#8217;s change our <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> statement: (You will have to open the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element with the plus sign.) <br><br>Where we previously had:
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -1414,64 +1430,63 @@
             </div>The last two attributes we know, as we&#8217;ve just added them. The &#8220;lem&#8221; attribute is a predefined feature which corresponds to
             lemma, i.e. the part before the tags. In this example it would be <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">leave<span style="font-size:65%; vertical-align:sub;">1.1</span></span>. There are other predefined features, but if you remember this one and &#8220;whole&#8221; which corresponds to the whole lexical unit,
             you have the main ones.<br><br></li>
-         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)
+         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)<br><p>The result is:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep3Target">(45)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>Woo! What just happened was that we magically deleted the unwanted <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv</span></span> tag by not specifying that we wanted it. Tag deletion is thus not stated as tag deletion (tag &#8594; 0), but by not declaring
+               it.
+            </p>
+            <p>Now we should have a lexical form for &#8220;leave&#8221; which we can synthesize. Let&#8217;s give it a go. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button.
+            </p>
+            <p>In the red box you should see:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xOutputStep3a">(46)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Left</span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>And if you click on the rest of the check boxes to select all of the Croatian words and click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> and <span style="font-style:normal; font-weight:bold; ">Synthesize</span> buttons again you should see:
+            </p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xOutputStep3">(47)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Left quietly and without wordgen sg</span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>This looks a lot better than our initial results in <a href="#xOutputInitial">(26)</a>. The word <span style="font-style:italic; ">Left</span> is now there correctly. It&#8217;s beyond the scope of this exercise to explain in detail how the synthesis works in this case,
+               but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">9.3.3</a> for more details.
+            </p>
+            <p>We&#8217;re getting there, now let&#8217;s move on to the next step.</p>
          </li>
       </ol>
-      <p>The result is:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep3Target">(45)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Woo! What just happened was that we magically deleted the unwanted <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv</span></span> tag by not specifying that we wanted it. Tag deletion is thus not stated as tag deletion (tag &#8594; 0), but by not declaring
-         it.
-      </p>
-      <p>Now we should have a lexical form for &#8220;leave&#8221; which we can synthesize. Let&#8217;s give it a go. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button.
-      </p>
-      <p>In the red box you should see:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xOutputStep3a">(46)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Left</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>And if you click on the rest of the check boxes to select all of the Croatian words and click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> and <span style="font-style:normal; font-weight:bold; ">Synthesize</span> buttons again you should see:
-      </p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xOutputStep3">(47)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Left quietly and without wordgen sg</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>This looks a lot better than our initial results in <a href="#xOutputInitial">(26)</a>. The word <span style="font-style:italic; ">Left</span> is now there correctly. It&#8217;s beyond the scope of this exercise to explain in detail how the synthesis works in this case,
-         but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">9.3.3</a> for more details.
-      </p>
-      <p>We&#8217;re getting there, now let&#8217;s move on to the next step.</p>
       <h4 style=""><a name="step4"></a>7.2.4.4&nbsp;Step 4
       </h4>
       <p>To recap, the input we&#8217;ve been working with is:</p>
@@ -1528,7 +1543,8 @@
       <ol style="list-style-type:decimal; ">
          <li>Output a skeleton pronoun.<br><br>So, we need to take the person and number information from the verb &#8220;be&#8221;, and the rest we need to just declare to be outputted.
             Let&#8217;s start with outputting the string <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>; we won&#8217;t worry about the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">2 sg</span></span> tags yet.<br><br></li>
-         <li>Insert this before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element.
+         <li>Insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(51)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string)</span> then click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span>, do an Insert After... and choose <span style="font-style:italic; ">lit-tag(literal_tag)</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element comes after and is <span style="text-decoration:underline; ">indented at the same level</span> as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span>.
+            </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -1560,7 +1576,8 @@
                </table>
             </div>
          </li>
-         <li>We then go back to our skeleton pronoun and add the missing features.
+         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(53)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_sl)</span>. Do this twice.
+            </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -1592,102 +1609,103 @@
                </table>
             </div>If we tried to clip from position 1 (<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Otic&#769;i<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv ptcp_f_sg</span></span>), we would get no result for the person attribute because the verb in position 1 does not contain any tags which match the
             tags in the definition for person.<br><br></li>
-         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Go back to having just <span style="font-style:italic; ">Oti&#353;la</span> and <span style="font-style:italic; ">si</span> selected.)
-         </li>
-      </ol>
-      <p>The result is:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep4Target">(55)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom 2 sg</span> Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Select all the Croatian words and see what our English sentence looks like.</p>
-      <p>Now we get:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xOutputStep4">(56)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">you Left quietly and without wordgen sg</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>We get the second person singular pronoun that we wanted, but this is not totally satisfying because <span style="font-style:italic; ">you</span> should be capitalized and <span style="font-style:italic; ">Left</span> should not be. Let&#8217;s fix that.
-      </p>
-      <ol style="list-style-type:decimal; ">
-         <li>We want to be careful, because we don&#8217;t want <span style="font-style:italic; ">you</span> capitalized in all circumstances. For example, if the Croatian past tense clause is embedded in another phrase, the first
-            word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization
-            to the pronoun. Make your <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element look like this:
+         <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Go back to having just <span style="font-style:italic; ">Oti&#353;la</span> and <span style="font-style:italic; ">si</span> checked.)<br><p>The result is:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xGetCase1">(57)</a></td>
+                     <td valign="top"><a name="xStep4Target">(55)</a></td>
                      <td>
-                        <table>
+                        <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
-                              <td><img style="Height:60%" src="Images/RulesTutGetCase1.PNG"></td>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom 2 sg</span> Leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span></td>
                            </tr>
                         </table>
                      </td>
                   </tr>
                </table>
-            </div>Notice how the literal string element is indented under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element. This means that it is a child element of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element. To accomplish this, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> has a way to wrap an element around another element. This is what you do.
+            </div>
+            <p>Select all the Croatian words, do <span style="font-weight:bold; ">Transfer</span> and <span style="font-weight:bold; ">Synthesize</span> and see what our English sentence looks like.
+            </p>
+            <p>Now we get:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xOutputStep4">(56)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">you Left quietly and without wordgen sg</span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>We get the second person singular pronoun that we wanted, but this is not totally satisfying because <span style="font-style:italic; ">you</span> should be capitalized and <span style="font-style:italic; ">Left</span> should not be. Let&#8217;s fix that.
+            </p>
             <ol style="list-style-type:lower-alpha; ">
-               <li>Click on the words &#8220;literal string&#8221;. The whole element becomes outlined in a red rectangle.</li>
-               <li>Either right-click and choose Convert [wrap]... or click on the <img src="Images/ButWrap.PNG"> button (upper right side) or press Ctrl-Shift-T.
+               <li>We want to be careful, because we don&#8217;t want <span style="font-style:italic; ">you</span> capitalized in all circumstances. For example, if the Croatian past tense clause is embedded in another phrase, the first
+                  word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization
+                  to the pronoun. Make your <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element look like <a href="#xGetCase1">(57)</a>:
+                  <div style="margin-left: 0.25in; margin-right: 0.25in">
+                     <table>
+                        <tr>
+                           <td valign="top"><a name="xGetCase1">(57)</a></td>
+                           <td>
+                              <table>
+                                 <tr>
+                                    <td><img style="Height:60%" src="Images/RulesTutGetCase1.PNG"></td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>Notice how the literal string element is indented under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element. This means that it is a child element of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element. To accomplish this, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> has a way to wrap an element around another element. This is what you do.
+                  <ol style="list-style-type:lower-roman; ">
+                     <li>Click on the words &#8220;literal string&#8221;. The whole element becomes outlined in a red rectangle.</li>
+                     <li>Either right-click and choose Convert [wrap]... or click on the <img src="Images/ButWrap.PNG"> button (upper right side) or press Ctrl-Shift-T.
+                     </li>
+                     <li>At this point a list of elements to insert shows up in the upper right pane. Choose <span style="font-style:italic; ">get-case-from</span>.
+                     </li>
+                     <li>Now set the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pos</span> property to 1 and we will be getting the capitalization from the first word.<br><br></li>
+                  </ol>
                </li>
-               <li>At this point a list of elements to insert shows up in the upper right pane. Choose <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get-case-from</span>.
-               </li>
-               <li>Now set the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pos</span> property to 1 and we will be getting the capitalization from the first word.<br><br></li>
+               <li>Now we need to make the second lexical unit come out with the first letter in lower case. We could use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify-case</span> element, but we would have to add a new statement above the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element. Instead we can just use the same method as above to get the case from the second word. This time wrap the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element around the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element that copies the lemma. This is shown below: 
+                  <div style="margin-left: 0.25in; margin-right: 0.25in">
+                     <table>
+                        <tr>
+                           <td valign="top"><a name="xGetCase2">(58)</a></td>
+                           <td>
+                              <table>
+                                 <tr>
+                                    <td><img style="Height:60%" src="Images/RulesTutGetCase2.PNG"></td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </div><span style="font-style:italic; ">Trick: Click on the word "clip" and type Ctrl-a. This will execute the last command you did in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> again (namely wrap an element with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element.)</span></li>
             </ol>
-         </li>
-         <li>Now we need to make the second lexical unit come out with the first letter in lower case. We could use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify-case</span> element, but we would have to add a new statement above the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element. Instead we can just use the same method as above to get the case from the second word. This time wrap the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element around the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element that copies the lemma. This is shown below: 
+            <p><span style="font-weight:bold; ">Transfer</span> and <span style="font-weight:bold; ">Synthesize</span> again.
+            </p>
+            <p>Now we get:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xGetCase2">(58)</a></td>
+                     <td valign="top"><a name="xOutputStep4b">(59)</a></td>
                      <td>
-                        <table>
+                        <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
-                              <td><img style="Height:60%" src="Images/RulesTutGetCase2.PNG"></td>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">You left quietly and without wordgen sg</span></td>
                            </tr>
                         </table>
                      </td>
                   </tr>
                </table>
-            </div><span style="font-style:italic; ">Trick: Click on the word "clip" and type Ctrl-a. This will execute the last command you did in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> again (namely wrap an element with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element.)</span></li>
+            </div>
+            <p>Looking good!</p>
+         </li>
       </ol>
-      <p>Transfer and Synthesize again.</p>
-      <p>Now we get:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xOutputStep4b">(59)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">You left quietly and without wordgen sg</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Looking good!</p>
       <h4 style=""><a name="step5"></a>7.2.4.5&nbsp;Step 5
       </h4>
       <p>The last remaining thing to do is to not output the genitive or singular tags on the noun. We&#8217;re going to have to make a whole
@@ -1758,73 +1776,74 @@
                   </tr>
                </table>
             </div>
+            <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check only the Croatian word <span style="font-style:italic; ">pozdrava</span>.
+            </p>
+            <p>Starting with:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep5Source">(64)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pozdrav<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">gen_sg</span></span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>The result is:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep5Target">(65)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">word<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span></span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>And if we <span style="font-weight:bold; ">Synthesize</span> we get:
+            </p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xStep5aTarget">(66)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">word</span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and run the modules in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FlexTrans All Steps</span> to see what our English sentence looks like.
+            </p>
+            <p>Now we get:</p>
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xOutputStep5">(67)</a></td>
+                     <td>
+                        <table cellpadding="0pt" cellspacing="0pt">
+                           <tr>
+                              <td><span style="font-family:Times New Roman; font-style:italic; ">You left quietly and without word</span></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+            <p>Success!</p>
          </li>
       </ol>
-      <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check the Croatian word <span style="font-style:italic; ">pozdrava</span> and check the new Nouns rule.
-      </p>
-      <p>Starting with:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep5Source">(64)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pozdrav<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">gen_sg</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>The result is:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep5Target">(65)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">word<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span></span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>And if we synthesize we get:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xStep5aTarget">(66)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">word</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and run the modules in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FlexTrans All Steps</span> to see what our English sentence looks like.
-      </p>
-      <p>Now we get:</p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xOutputStep5">(67)</a></td>
-               <td>
-                  <table cellpadding="0pt" cellspacing="0pt">
-                     <tr>
-                        <td><span style="font-family:Times New Roman; font-style:italic; ">You left quietly and without word</span></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <p>Success!</p>
       <h4 style=""><a name="step6"></a>7.2.4.6&nbsp;Step 6
       </h4>
       <p>Step 6 is left as an exercise for the reader. Change the noun rule to output an indefinite article before the noun. You can
@@ -1928,7 +1947,7 @@
       </div>
       <p><a href="#xCat">(69)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
          a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more
-         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(69)</a> defines the set of all indefinite nouns &#8212; words that have the  grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes..
+         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(69)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes..
       </p>
       <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(70)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
       </p>
