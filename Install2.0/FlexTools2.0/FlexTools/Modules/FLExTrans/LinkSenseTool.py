@@ -115,7 +115,7 @@ from Linker import Ui_MainWindow
 #----------------------------------------------------------------
 # Configurables:
 PROPER_NOUN_ABBREV = 'nprop'
-DUMP_VOCAB_WORDS = True
+DUMP_VOCAB_WORDS = False
 
 
 # The minimum length a word should have before doing a fuzzy compare

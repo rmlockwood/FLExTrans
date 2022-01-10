@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1271</width>
+    <height>817</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FLExTrans Live Rule Tester</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabRules">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>384</y>
+      <width>777</width>
+      <height>148</height>
+     </rect>
+    </property>
+    <property name="tabPosition">
+     <enum>QTabWidget::South</enum>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab_transfer_rules">
+     <attribute name="title">
+      <string>Transfer</string>
+     </attribute>
+     <widget class="QListView" name="listTransferRules">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>771</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(240, 221, 255);</string>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::EditKeyPressed</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_interchunk_rules">
+     <attribute name="title">
+      <string>Interchunk</string>
+     </attribute>
+     <widget class="QListView" name="listInterChunkRules">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>771</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 225, 194);</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_postchunk_rules">
+     <attribute name="title">
+      <string>Postchunk</string>
+     </attribute>
+     <widget class="QListView" name="listPostChunkRules">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>771</width>
+        <height>120</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(222, 255, 246);</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>23</y>
+      <width>81</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Rules File</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="TransferFileBrowseButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>19</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse...</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="TransferFileEdit">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>19</y>
+      <width>171</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="BilingFileEdit">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>19</y>
+      <width>171</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="BilingFileBrowseButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>728</x>
+      <y>19</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse...</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>23</y>
+      <width>131</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Biling. Dict. File</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabSource">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>1231</width>
+      <height>225</height>
+     </rect>
+    </property>
+    <property name="tabPosition">
+     <enum>QTabWidget::South</enum>
+    </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <property name="movable">
+     <bool>false</bool>
+    </property>
+    <widget class="QWidget" name="tab_select_words">
+     <attribute name="title">
+      <string>Select Words</string>
+     </attribute>
+     <widget class="QComboBox" name="SentCombo">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1225</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+     </widget>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>1225</width>
+        <height>103</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 220, 213);</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1223</width>
+         <height>101</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QTextEdit" name="SelectedWordsEdit">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>135</y>
+        <width>1225</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_select_sentences">
+     <attribute name="title">
+      <string>Select Sentences</string>
+     </attribute>
+     <widget class="QListView" name="listSentences">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1225</width>
+        <height>132</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 220, 213);</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="SelectedSentencesEdit">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>135</y>
+        <width>1225</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_manual_entry">
+     <attribute name="title">
+      <string>Manual Entry</string>
+     </attribute>
+     <widget class="QPlainTextEdit" name="ManualEdit">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1225</width>
+        <height>196</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>560</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Target Text</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source Text</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="LogEdit">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>384</y>
+      <width>451</width>
+      <height>122</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(251, 255, 206);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="TestButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>553</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Transfer</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>352</y>
+      <width>211</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select transfer rules to test</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>800</x>
+      <y>354</y>
+      <width>141</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Information</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="SourceTextName">
+    <property name="geometry">
+     <rect>
+      <x>848</x>
+      <y>23</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Text Name</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="SourceFileEdit">
+    <property name="geometry">
+     <rect>
+      <x>950</x>
+      <y>19</y>
+      <width>171</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="refreshButton">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>348</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Refresh Rules</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="selectAllButton">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>348</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Select All</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>657</y>
+      <width>1231</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>334</y>
+      <width>1231</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>55</y>
+      <width>1231</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="upButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>348</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>UpArrow.png</normaloff>UpArrow.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="downButton">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>348</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>DownArrow.png</normaloff>DownArrow.png</iconset>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ChooseSourceButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>1130</x>
+      <y>19</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose...</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="unselectAllButton">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>348</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Unselect All</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="TargetTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>590</y>
+      <width>1231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(229, 255, 236);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>675</y>
+      <width>161</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Synthesized Text</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="SynthTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>707</y>
+      <width>1231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(254, 194,194);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>540</y>
+      <width>1231</width>
+      <height>10</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="synthesizeButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>670</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Synthesize</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="refreshLexButton">
+    <property name="geometry">
+     <rect>
+      <x>630</x>
+      <y>670</y>
+      <width>201</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Refresh Target &amp;Lexicon</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="addToTestbedButton">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>778</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Add to Testbed</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="addMultipleCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>781</y>
+      <width>391</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add multiple words to the testbed word by word</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editTestbedButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>754</x>
+      <y>778</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Edit Testbed</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="viewTestbedLogButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>778</y>
+      <width>181</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;View Testbed Log</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TestsAddedLabel">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>781</y>
+      <width>131</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>X tests added.</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
