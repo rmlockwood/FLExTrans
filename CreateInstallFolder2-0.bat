@@ -38,10 +38,10 @@ copy MyTableView.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
 rem copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
-copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
+rem copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
 rem copy transfer_rules.t1x Install2.0\FlexTools2.0\FlexTools\Output
 rem copy replace.dix Install2.0\FlexTools2.0\FlexTools\Output
 copy stamp32.exe Install2.0\FlexTools2.0\FlexTools
