@@ -2,11 +2,16 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "FLExTrans"
-!define PRODUCT_PUBLISHER "Ron Lockwood"
-!define PRODUCT_WEB_SITE "https://github.com/rmlockwood/FLExTrans/wiki"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\FLExTools.exe"
+!define PRODUCT_PUBLISHER "SIL International"
+!define PRODUCT_WEB_SITE "https://software.sil.org/flextrans"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define PRODUCT_VERSION "3.3"
+
+!define PRODUCT_ZIP_FILE "FLExTools20WithFLExTrans${PRODUCT_VERSION}.zip"
+!define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
+!define FLEX_TOOLS_WITH_VERSION "FlexTools2.0"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -34,7 +39,8 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME}"
-OutFile "FLExTrans-installer.exe"
+
+OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
 InstallDir "$PROGRAMFILES\FLExTrans_Installer"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -46,37 +52,61 @@ InitPluginsDir
   #Connect to apertium
   #File "Command2.sh"
   #ExecWait "bash -ExecutionPolicy Bypass -WindowStyle Hidden -File $INSTDIR\install_files\Command2.sh -FFFeatureOff"
-  #installs python 3.7.4
+
+  # Install python 3.7.4
   MessageBox MB_YESNO "Install Python 3.7.4? $\nIMPORTANT! Check the box: 'Add Python 3.7 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
         File "python-3.7.4-amd64.exe"
         ExecWait "$INSTDIR\install_files\python-3.7.4-amd64.exe"
         Goto endPythonSync
   endPythonSync:
-  #installs Git
+
+  # Install Git
   MessageBox MB_YESNO "Install Git for Windows? $\nUse the default settings." /SD IDYES IDNO endGitSync
         File "Git-2.31.1-64-bit.exe"
         ExecWait "$INSTDIR\install_files\Git-2.31.1-64-bit.exe"
         Goto endGitSync
   endGitSync:
-  #unzip FLExTools to documents folder $DOCUMENTS\FLExTools2.0
-  File "FLExTools20WithFLExTrans.zip"
-  nsisunz::Unzip "$INSTDIR\install_files\FLExTools20WithFLExTrans.zip" "$DOCUMENTS"
-  #Git and connections
-  SetOutPath "$DOCUMENTS\FLExTools2.0"
-  File "Command.bat"
-  Exec '"$DOCUMENTS\FLExTools2.0\Command.bat"'
+
+
+  # Unzip FLExTools to documents folder $DOCUMENTS\FLExTools2.0
+  # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
+  File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
+  nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$DOCUMENTS"
+
+  # Copy files users may change only if they don't already exist
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Output"
+  SetOverwrite off
+
+  File "${GIT_FOLDER}\replace.dix"
+  File "${GIT_FOLDER}\transfer_rules.t1x"
+
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
+  File "${GIT_FOLDER}\FlexTrans.config"
+  File "${GIT_FOLDER}\flextools.ini"
+
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
+  File "${GIT_FOLDER}\FlexTrans All Steps.ini"
+  File "${GIT_FOLDER}\FlexTrans Run Testbed.ini"
+  File "${GIT_FOLDER}\FlexTrans Tools.ini"
+  SetOverwrite on
+
+  # Attempt to run pip to install FlexTools dependencies
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
+  File "${GIT_FOLDER}\Command.bat"
+  Exec '"$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
+
+  # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
-  #Installing XMLmind
   MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
         File "xxe-perso-8_2_0-setup.exe"
         ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
         Goto endXXeSync
   endXXeSync:
-  File "ApertiumForXMLmind.zip"
-  nsisunz::Unzip "$INSTDIR\install_files\ApertiumForXMLmind.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+  File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
+  nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   SetOutPath "$INSTDIR"
   #Delete $DOCUMENTS\FLExTools2.0\Command.bat
-  #RMDir /r "$INSTDIR\install_files"
+  RMDir /r "$INSTDIR\install_files"
 SectionEnd
 
 
@@ -85,7 +115,7 @@ Section "MainSection" SEC01
 SectionEnd
 
 Section -AdditionalIcons
-  CreateShortCut "$SMPROGRAMS\FLExTrans-installer\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -112,16 +142,18 @@ FunctionEnd
 Section Uninstall
 #Take a look here and make sure that you uninstall XXE, ask about git, python and the FLExTools folder.
   Delete "$INSTDIR\uninst.exe"
-  MessageBox MB_YESNO "Delete the FLExTools folder?" /SD IDYES IDNO endFlexDel
-        RMDir /r "$DOCUMENTS\FLExTools2.0"
+  MessageBox MB_YESNO "Delete the ${FLEX_TOOLS_WITH_VERSION} folder?" /SD IDYES IDNO endFlexDel
+        RMDir /r "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
         Goto endFlexDel
   endFlexDel:
-  Delete "$SMPROGRAMS\FLExTrans-installer\Uninstall.lnk"
-  Delete "$SMPROGRAMS\FLExTrans-installer\Website.lnk"
-  Delete "$DESKTOP\FLExTrans-installer.lnk"
-  Delete "$SMPROGRAMS\FLExTrans-installer\FLExTrans-installer.lnk"
+  
+  # Not sure what this does - RL 10Jan2022
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Website.lnk"
+  Delete "$DESKTOP\${PRODUCT_NAME}${PRODUCT_VERSION}.lnk"
+  Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\${PRODUCT_NAME}${PRODUCT_VERSION}.lnk"
 
-  RMDir "$SMPROGRAMS\FLExTrans-installer"
+  RMDir "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}"
   RMDir /r "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
