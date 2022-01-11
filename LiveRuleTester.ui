@@ -110,6 +110,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="TransferFileBrowseButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>290</x>
@@ -152,6 +155,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="BilingFileBrowseButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>728</x>

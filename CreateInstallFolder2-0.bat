@@ -1,3 +1,4 @@
+SET FLEXTRANS_VERSION=3.3
 rem Delete everything in Install2.0
 rd /s /q Install2.0
 
@@ -16,8 +17,8 @@ xcopy FlexTools2.0\FlexTools\* Install2.0\FlexTools2.0\FlexTools
 xcopy /s FlexTools2.0\FlexTools\__icons\* Install2.0\FlexTools2.0\FlexTools\__icons
 echo fuzzywuzzy >> Install2.0\FlexTools2.0\requirements.txt
 echo Levenshtein >> Install2.0\FlexTools2.0\requirements.txt
-echo PyQt5 >> Install2.0\FlexTools2.0\requirements.txt
-echo PyQtWebEngine >> Install2.0\FlexTools2.0\requirements.txt
+echo PyQt5==5.14 >> Install2.0\FlexTools2.0\requirements.txt
+echo PyQtWebEngine==5.14 >> Install2.0\FlexTools2.0\requirements.txt
 
 rem core models
 copy CatalogTargetPrefixes.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans
@@ -36,15 +37,15 @@ copy MyTableView.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 
 rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
-copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
-copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
-copy transfer_rules.t1x Install2.0\FlexTools2.0\FlexTools\Output
-copy replace.dix Install2.0\FlexTools2.0\FlexTools\Output
+rem copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
+rem copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
+rem copy transfer_rules.t1x Install2.0\FlexTools2.0\FlexTools\Output
+rem copy replace.dix Install2.0\FlexTools2.0\FlexTools\Output
 copy stamp32.exe Install2.0\FlexTools2.0\FlexTools
-copy VirtualMachineFiles\do_make_direct.sh Install2.0\FlexTools2.0\FlexTools\Output
+rem copy VirtualMachineFiles\do_make_direct.sh Install2.0\FlexTools2.0\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\Makefile Install2.0\FlexTools2.0\FlexTools\Output
 copy VirtualMachineFiles\ForXXE\fix.py Install2.0\FlexTools2.0\FlexTools\Output
 
@@ -87,7 +88,7 @@ copy LiveRuleTester.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
 copy LiveRuleTester.ui Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install2.0\FlexTools2.0\FLExTools
 copy DownArrow.png Install2.0\FlexTools2.0\FLExTools
-copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
+rem copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
 copy VirtualMachineFiles\ForXXE\Makefile Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
 copy VirtualMachineFiles\ForXXE\fix.py Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
 
@@ -112,9 +113,28 @@ copy Light_green_check.png Install2.0\FlexTools2.0\FLExTools
 copy Red_x.png             Install2.0\FlexTools2.0\FLExTools             
 copy Yellow_triangle.png   Install2.0\FlexTools2.0\FLExTools    
 
+rem Other Tools
+copy CleanFiles.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
+
+SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
+cd XXEaddon
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumInterchunkXMLmind
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
+
+copy /Y %ADD_ON_ZIP_FILE% ..
+copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
+del %ADD_ON_ZIP_FILE%
+cd ..
+
+SET ZIP_FILE=FLExTools20WithFLExTrans%FLEXTRANS_VERSION%.zip
 cd Install2.0
-"%SEVENZ_PATH%"\7z a FLExTools20WithFLExTrans.zip FlexTools2.0
-copy /Y FLExTools20WithFLExTrans.zip ..
+"%SEVENZ_PATH%"\7z a %ZIP_FILE% FlexTools2.0
+copy /Y %ZIP_FILE% ..
+copy /Y %ZIP_FILE% ..\"previous versions"
+del %ZIP_FILE%
 cd ..
 
 pause

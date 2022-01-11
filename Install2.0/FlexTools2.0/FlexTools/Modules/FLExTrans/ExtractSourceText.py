@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2.4 - 7/1/21 - Ron Lockwood
 #    Add 1 to sent# for reporting not found sentences.
 #
@@ -167,8 +170,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.4",
-        FTM_Version    : "3.2.3",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -442,7 +444,7 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
     wordObjList = []
     
-    fullList = sentObj.getWordList()
+    fullList = sentObj.getWords()
     
     deleteList = ['را1.1']
     

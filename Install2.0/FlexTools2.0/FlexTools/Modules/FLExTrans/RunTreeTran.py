@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    Bump version number for FlexTools 3.2
 #
@@ -50,7 +53,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -159,7 +162,7 @@ def MainFunction(DB, report, modify=True):
     # run TreeTran
     call(['treetran.exe', Utils.OUTPUT_FOLDER+'\\'+TREE_TRAN_RULES, filteredFile, treeTranResultFile])
     
-    report.Info(str(sentCount) + ' Sentence(s) processed.')
+    report.Info(str(sentCount) + ' sentence(s) processed.')
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

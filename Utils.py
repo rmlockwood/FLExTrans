@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2.6 - 12/30/21 - Ron Lockwood
 #    Optimized Testbed Viewing. Particularly through caching Lexical Units. 
 #

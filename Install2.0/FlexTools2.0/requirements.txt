@@ -3,5 +3,5 @@ git+https://github.com/cdfarrow/cdfutils.git
 git+https://github.com/cdfarrow/flexlibs.git
 fuzzywuzzy 
 Levenshtein 
-PyQt5 
-PyQtWebEngine 
+PyQt5==5.14 
+PyQtWebEngine==5.14 

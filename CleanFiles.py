@@ -7,8 +7,8 @@
 #
 #   Remove key files to force each FLExTrans module to regenerate everything.
 #
-#   Version 3.2.1 - 1/6/2022 - Ron Lockwood
-#    Remove som more files.
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
 #
 #   Version 3.2 - 11/25/2021 - Ron Lockwood
 #
@@ -22,7 +22,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 descr = "Remove key files to force each FLExTrans module to regenerate everything."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : '3.2.1',
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  

@@ -5,6 +5,20 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
+#   Version 3.2.2 - 12/30/21 - Ron Lockwood
+#    Optimized Testbed Viewing. Particularly through caching TestResultItem objects.
+#
+#   Version 3.2.1 - 12/20/21 - Ron Lockwood
+#    Fixes issue #6 where only the test results -50 were being displayed. 
+#    This resulted in having the a test results file with only 1 result to not 
+#    show anything. Now there's a MAX_RESULTS_TO_DISPLAY set to 50 and the tool 
+#    will display up to this amount of test results. Also performance tweaks. 
+#    The main one that helped is just creating the QTGui object for the green check, 
+#    red x and yellow triangle just once for a TestResultItem.
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    Bump version number for FlexTools 3.2
 #
@@ -30,7 +44,7 @@
 #   Version 1.0 - 4/19/2019 - Ron Lockwood
 #
 #   Show the testbed log which shows the results of tests run for a certain
-#   date/time.
+#   date/time. See design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb
 #
 
 import os
@@ -60,13 +74,13 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
         FTM_Description:  
 """
-View testbed run results.
+View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.
 """ }
                  
 #----------------------------------------------------------------
@@ -74,6 +88,10 @@ View testbed run results.
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
 YELLOW_TRIANGLE = 'Yellow_triangle.png'
+MAX_RESULTS_TO_DISPLAY = 25
+
+color_re = re.compile('color:#......')
+colorNumPunc = 'color:#'+Utils.PUNC_COLOR
 
 class Stats():
     def __init__(self, dateTimeStart, dateTimeEnd, totalTests, numFailed, numInvalid):
@@ -223,7 +241,7 @@ class TestStatsItem(BaseTreeItem):
 
 class TestResultItem(BaseTreeItem):
     
-    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason):
+    def __init__(self, inParent, rtl, LUString, formattedLexicalUnitsString, expectedStr, actualStr, valid, origin, invalidReason, greenCheck, redX, yellowTriangle):
         super(TestResultItem, self).__init__(inParent, rtl)
         self.unformattedLexicalUnitsString = LUString
         self.formattedLexicalUnitsString = formattedLexicalUnitsString
@@ -232,9 +250,9 @@ class TestResultItem(BaseTreeItem):
         self.invalid = not valid
         self.origin = origin
         self.invalidReason = invalidReason
-        self.greenCheck = QtGui.QPixmap(GREEN_CHECK)
-        self.redX = QtGui.QPixmap(RED_X)
-        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
+        self.greenCheck = greenCheck
+        self.redX = redX
+        self.yellowTriangle = yellowTriangle
         
     def testFailed(self):
         if self.expectedStr != self.actualStr:
@@ -262,7 +280,7 @@ class TestResultItem(BaseTreeItem):
                 myStr = self.getFormattedLUString()
                 
                 # Change the colors to orange when it's invalid
-                myStr = re.sub('color:#......', 'color:#'+Utils.PUNC_COLOR, myStr)
+                myStr = color_re.sub(colorNumPunc, myStr) 
                 
                 return myStr
             else:
@@ -359,6 +377,10 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
         self.__view = None
         self.rtl = resultsXMLObj.isRTL()
+        self.greenCheck = QtGui.QPixmap(GREEN_CHECK) 
+        self.redX = QtGui.QPixmap(RED_X)
+        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
+        self.__cache = {}
         
         # initialize base class
         super(TestbedLogModel, self).__init__(parent)
@@ -393,12 +415,26 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
         
     def SetupModelData(self):
         
+        objList = self.resultsXMLObj.getTestbedResultXMLObjectList()
+        maxResults = len(objList)
+        
+        # Set max test results to display
+        if maxResults > MAX_RESULTS_TO_DISPLAY:
+            maxResults = MAX_RESULTS_TO_DISPLAY
+
+        resultsCount = 1
+        
         # Loop through the test results
-        for resultObj in self.resultsXMLObj.getTestbedResultXMLObjectList()[:-50]: # Just show the last 50
+        for resultObj in objList: # Just show the last X
+            
+            if resultsCount > maxResults:
+                break
             
             # If this is an incomplete test (no end date-time), skip it
             if resultObj.isIncomplete():
                 continue
+            
+            resultsCount += 1
             
             # Set the stats branch of the tree
             statsObj = self.getStats(resultObj)
@@ -408,12 +444,25 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
             # Loop through the testbeds
             for testbed in resultObj.getFLExTransTestbedXMLObjectList():
                 # Loop through the tests
-                for test in testbed.getTestXMLObjectList():
+                for i, test in enumerate(testbed.getTestXMLObjectList()):
                     
-                    resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), \
-                                                test.getExpectedResult(), test.getActualResult(), \
-                                                test.isValid(), test.getOrigin(), test.getInvalidReason())
+                    # Use the dump of the test XML node as the hash key
+                    testNodeStr = ET.tostring(test.getTestNode(), encoding='unicode')
+
+                    # But remove the unique id in the string
+                    myHash = hash(Utils.removeTestID(testNodeStr))
                     
+                    # Check if we have cached this test object and use it if we have
+                    if myHash in self.__cache:
+                        
+                        resultItem = self.__cache[myHash]
+                    # Otherwise build the TestResultItem object and then add it to the cache
+                    else:
+                        resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
+                                  test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
+                        
+                        self.__cache[myHash] = resultItem
+                                     
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)
             
@@ -566,10 +615,10 @@ class LogViewerMain(QMainWindow):
 def MainFunction(DB, report, modify):
         
     # Create an object for the testbed file
-    testbedFileObj = Utils.FlexTransTestbedFile(None)
+#    testbedFileObj = Utils.FlexTransTestbedFile(None)
 
     # We can't do anything if there is no testbed
-    if testbedFileObj.exists() == False:
+    if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
         report.Error('Testbed does not exist. Please add tests to the testbed.')
         return None
     
@@ -587,8 +636,11 @@ def MainFunction(DB, report, modify):
     
     window.show()
     window.myResize()
-    firstIndex = window.getModel().rootItem.children[0].index
-    window.ui.logTreeView.expand(firstIndex)
+    if len(window.getModel().rootItem.children) > 0:
+        
+        firstIndex = window.getModel().rootItem.children[0].index
+        window.ui.logTreeView.expand(firstIndex)
+        
     app.exec_()
     
 #----------------------------------------------------------------
