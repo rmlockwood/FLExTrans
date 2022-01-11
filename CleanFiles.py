@@ -82,6 +82,10 @@ def MainFunction(DB, report, modify=True):
         os.remove(OUTPUT+'err_out')
     except:
         pass # ignore errors
+    try:
+        os.remove(OUTPUT+'do_make_direct.sh')
+    except:
+        pass # ignore errors
     
     tempPath = tempfile.gettempdir()
     
