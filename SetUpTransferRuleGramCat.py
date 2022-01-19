@@ -48,10 +48,11 @@ docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
         FTM_Help   : "",
         FTM_Description: 
 """
-This module requires that the bilingual dictionary has already been created by the 
-Extract Bilingual Lexicon module. This module will take the symbols from the bilingual
-lexicon, which represent all the grammatical categories in both the source and target
-lexicons and put them under an attribute called a_gram_cat in the transfer rule file.
+This module goes through both the source and target FLEx databases and extracts
+the grammatical category lists. It will replace what is currently listed for the
+tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
+will be discarded. Also naming conventions will be followed like in the bilingual
+lexicon. I.e. spaces are converted to underscores, periods and slashes are removed.
 """}
 
 #----------------------------------------------------------------
@@ -65,6 +66,13 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
+    TargetDB = Utils.openTargetProject(configMap, report)
+
+    posMap = {}
+    
+    # Get all source and target categories
+    Utils.get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=99, addInflectionClasses=False)
+
     # Get the path to the bilingual file
     if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
         report.Error('Did not find the entry BilingualDictOutputFile in the configuration file')
@@ -75,15 +83,6 @@ def MainFunction(DB, report, modify=True):
     # Make a backup copy of the transfer rule file
     shutil.copy2(transFile, transFile+'.old')
     
-    # Read in the bilingual lexicon XML file
-    try:
-        bilingEtree = ET.parse(bilingFile)
-    except IOError:
-        report.Error('Could not open the Bilingual Dictionary File: '+bilingFile+'. Make sure you run the Extract Bilingual Lexicon module first.')
-        return
-    
-    bilingRoot = bilingEtree.getroot()
-   
     # Read in the transfer rule file
     try:
         transEtree = ET.parse(transFile)
@@ -92,9 +91,6 @@ def MainFunction(DB, report, modify=True):
         return
     
     transRoot = transEtree.getroot()
-    
-    # Find the sdefs (symbol definitions) element in the bilingual file
-    sdefs = bilingRoot.find('sdefs')
     
     # Find the section-def-attrs (attribute definition section) in the transfer rules file
     section_def_attrs = transRoot.find("section-def-attrs")
@@ -109,16 +105,15 @@ def MainFunction(DB, report, modify=True):
         def_attr.attrib['n'] = 'a_gram_cat'
         section_def_attrs.append(def_attr)
         
-    # Loop through all of the symbol definition (sdef) elements in the bilingual file
-    for my_sdef in sdefs:
+    # Loop through all of the category abbreviations and names
+    for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
         
-        # Get the c (comment) and n (value) attributes for the current sdef
         # Create an attr-item element
         new_attr_item = ET.Element('attr-item')
         
         # Set its c and tags attributes
-        new_attr_item.attrib['c'] = my_sdef.attrib['c']
-        new_attr_item.attrib['tags'] = my_sdef.attrib['n']
+        new_attr_item.attrib['c'] = pos_name
+        new_attr_item.attrib['tags'] = pos_abbr
         
         # Append the attr-item element to the gram cat def_attr
         def_attr.append(new_attr_item)

@@ -166,6 +166,9 @@ from System import String
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
+from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+import ReadConfig as MyReadConfig
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -2595,3 +2598,111 @@ def getInsertedWordsList(inputFilename, report, DB):
         
     return obj_list
 
+def openTargetProject(configMap, report):
+    
+    TargetDB = FLExProject()
+
+    # Open the target database
+    targetProj = MyReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in GetProjectNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+    
+    try:
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+        report.Error('There was an error opening target database: '+targetProj+'.')
+        return
+
+    report.Info('Using: '+targetProj+' as the target database.')
+    
+    return TargetDB
+
+def get_sub_ics(mySubClasses):
+    
+    ic_list = []
+    
+    for ic in mySubClasses:
+        
+        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
+        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        
+        ic_list.append((icAbbr,icName))
+        
+        if ic.SubclassesOC and len(ic.SubclassesOC.ToArray()) > 0:
+            
+            icl = get_sub_ics(ic.SubclassesOC)
+            ic_list.extend(icl)
+            
+    return ic_list
+
+catData = [
+        [r'\s', 'space', 'converted to an underscore', '_'],
+        [r'\.', 'period', 'removed', ''],
+        [r'/', 'space', 'converted to a vertical bar', '|'],
+       ]
+
+def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
+
+    # loop through all source categories
+    for pos in DB.lp.AllPartsOfSpeech:
+
+        # save abbreviation
+        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+        
+        countList = [0]*len(catData)
+        countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses)
+    
+    # loop through all target categories
+    for pos in TargetDB.lp.AllPartsOfSpeech:
+
+        # save abbreviation
+        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+
+        countList = [0]*len(catData)
+        countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses)
+
+def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses):
+
+    for i, outStrings in enumerate(catData):
+        
+        # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
+        if re.search(outStrings[0], posAbbr):
+            
+            if countList[i] < numCatErrorsToShow:
+                
+                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a " + outStrings[2] + " in it. The " + outStrings[2] + \
+                               " has been " + outStrings[3] + ". Keep this in mind when referring to this category in transfer rules.")
+            
+            if countList[i] == numCatErrorsToShow:
+                
+                report.Info("Suppressing further warnings of this type.")
+                
+            posAbbr = re.sub(outStrings[0], outStrings[3], posAbbr)
+            countList[i] += 1
+        
+    if posAbbr not in posMap:
+        
+        posMap[posAbbr] = pos.ToString()
+    else:
+        # If we already have the abbreviation in the map and the full category name
+        # is not the same as the source one, append the target one to the source one
+        if posMap[posAbbr] != pos.ToString():
+            
+            posMap[posAbbr] += ' / ' + pos.ToString()
+
+    # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
+    if addInflectionClasses == True:
+        
+        if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
+            
+            AN_list = get_sub_ics(pos.InflectionClassesOC)
+            
+            for icAbbr, icName in AN_list:
+                
+                posMap[icAbbr] = icName
+            
