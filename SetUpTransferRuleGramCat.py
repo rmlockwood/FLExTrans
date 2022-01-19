@@ -105,6 +105,9 @@ def MainFunction(DB, report, modify=True):
         def_attr.attrib['n'] = 'a_gram_cat'
         section_def_attrs.append(def_attr)
         
+    else: # delete existing sub-elements
+        def_attr.clear()
+        
     # Loop through all of the category abbreviations and names
     for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
         
