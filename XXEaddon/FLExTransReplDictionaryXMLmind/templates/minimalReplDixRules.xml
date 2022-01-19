@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE repldictionary PUBLIC "-//XMLmind//DTD repldictionary//EN"
 "repldix.dtd">
-<dictionary>
-	<alphabet></alphabet>
-	<sdefs>
+<repldictionary>
+	<alphabet/>
+  <sdefs>
 		<!-- Add category definitions here -->
   	<sdef n="v" c="Verb"/>
   	<sdef n="pfv" c="Perfective"/>
   	<sdef n="ptcp" c="Participle"/>
-	</sdefs>
-	<section id="replacement" type="standard">
+  </sdefs>
+  <section id="replacement" type="standard">
 		<!-- Add replacement entries here -->
     <e><p><l><leftdata>SourceWord1.1</leftdata><s n="v"/><s n="pfv"/></l><r><rightdata>TargetWord1.1</rightdata><s n="v"/><s n="ptcp"/></r></p></e>
-	</section>
-	<section id="append" type="standard">
+  </section>
+  <section id="append" type="standard">
 		<!-- Add new entries to be appended here -->
     <e><p><l><leftdata>SourceWord2.1</leftdata><s n="v"/><s n="pfv"/></l><r><rightdata>TargetWord2.1</rightdata><s n="v"/><s n="ptcp"/></r></p></e>
-	</section>
-</dictionary>
+  </section>
+</repldictionary>
