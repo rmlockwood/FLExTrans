@@ -297,6 +297,8 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             
             keyLeft.remove(symb)
         
+        # TODO: If we have the new replacement file format, extract out the text from <leftdata>
+
         key = ET.tostring(keyLeft, encoding='unicode')
         
         # remove the <l> and </l>
@@ -366,6 +368,8 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             
             keyLeft.remove(symb)
 
+        # TODO: If we have the new replacement file format, extract out the text from <leftdata>
+        
         # create the key string
         key = ET.tostring(keyLeft, encoding='unicode')
         
@@ -378,12 +382,6 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             # Create a comment containing the old entry and a note and insert them into the entry list
             comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
             
-#             if left.tag == 'i':
-#                 s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-#             else:
-#                 s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-#                 s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
-                
             comment2 = ET.Comment(s+'\n')
             
             new_biling_section.append(comment1)
