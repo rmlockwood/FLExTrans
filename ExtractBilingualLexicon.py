@@ -525,7 +525,8 @@ def MainFunction(DB, report, modifyAllowed):
         posMap = {}
         
         # Get all source and target categories
-        Utils.get_categories(DB, TargetDB, report, posMap)
+        if Utils.get_categories(DB, TargetDB, report, posMap) == True:
+            return
 
         # save target features so they can go in the symbol definition section
         for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:

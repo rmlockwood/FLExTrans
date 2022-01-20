@@ -71,15 +71,9 @@ def MainFunction(DB, report, modify=True):
     posMap = {}
     
     # Get all source and target categories
-    Utils.get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=99, addInflectionClasses=False)
-
-    # Get the path to the bilingual file
-    if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-        report.Error('Did not find the entry BilingualDictOutputFile in the configuration file')
+    if Utils.get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=99, addInflectionClasses=False) == True:
         return
-    
-    bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
-    
+
     # Make a backup copy of the transfer rule file
     shutil.copy2(transFile, transFile+'.old')
     
@@ -107,7 +101,10 @@ def MainFunction(DB, report, modify=True):
         
     else: # delete existing sub-elements
         def_attr.clear()
+        def_attr.attrib['n'] = 'a_gram_cat'
         
+    count = 0
+    
     # Loop through all of the category abbreviations and names
     for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
         
@@ -121,6 +118,8 @@ def MainFunction(DB, report, modify=True):
         # Append the attr-item element to the gram cat def_attr
         def_attr.append(new_attr_item)
         
+        count += 1
+        
     # Write the transfer rule file (it's XML)
     transEtree.write(transFile, 'utf-8')
     
@@ -133,6 +132,8 @@ def MainFunction(DB, report, modify=True):
     f3 = open(transFile, 'w', encoding='utf-8')
     f3.write(newLines + data)
     f3.close()
+    
+    report.Info(str(count) + ' categories created for the a_gram_cat attribute.')
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

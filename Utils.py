@@ -2622,7 +2622,8 @@ def openTargetProject(configMap, report):
     
     return TargetDB
 
-def get_sub_ics(mySubClasses):
+# This is a recursive function to get all inflection subclasses
+def get_sub_inflection_classes(mySubClasses):
     
     ic_list = []
     
@@ -2635,56 +2636,96 @@ def get_sub_ics(mySubClasses):
         
         if ic.SubclassesOC and len(ic.SubclassesOC.ToArray()) > 0:
             
-            icl = get_sub_ics(ic.SubclassesOC)
+            icl = get_sub_inflection_classes(ic.SubclassesOC)
             ic_list.extend(icl)
             
     return ic_list
 
-catData = [
-        [r'\s', 'space', 'converted to an underscore', '_'],
-        [r'\.', 'period', 'removed', ''],
-        [r'/', 'space', 'converted to a vertical bar', '|'],
-       ]
+# Invalid category characters & descriptions & messages & replacements
+catData = [[r'\s', 'space', 'converted to an underscore', '_'],
+           [r'\.', 'period', 'removed', ''],
+           [r'/', 'slash', 'converted to a vertical bar', '|']
+#          [r'X', 'x char', 'fatal', '']
+          ]
 
 def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
 
-    # loop through all source categories
-    for pos in DB.lp.AllPartsOfSpeech:
+    haveError = False
+    dbList = [(DB, 'source'), (TargetDB, 'target')]
 
-        # save abbreviation
-        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+    for dbTup in dbList:
         
+        dbType = dbTup[1]
+        
+        # initialize a list of error counters to 0
         countList = [0]*len(catData)
-        countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses)
+            
+        # loop through all database categories
+        for pos in dbTup[0].lp.AllPartsOfSpeech:
     
-    # loop through all target categories
-    for pos in TargetDB.lp.AllPartsOfSpeech:
+            # save abbreviation
+            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            
+            # check for errors or warnings, pass in the error counter list which may have been incremented
+            countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses, dbType)
+            
+            # check for serious error
+            if countList[0] == 999:
+                
+                # Note we have the error, but keep going so tha we give all errors at once
+                # reset error (warning) counter to zero
+                countList[0] = 0
+                haveError = True
+    
+    if haveError == True:
+        return True
+    else:
+        return False
 
-        # save abbreviation
-        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses, dbType):
 
-        countList = [0]*len(catData)
-        countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses)
-
-def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses):
-
+    haveError = False
+    
+    # loop through the possible invalid characters
     for i, outStrings in enumerate(catData):
         
-        # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
-        if re.search(outStrings[0], posAbbr):
+        invalidChar = outStrings[0]
+        charName = outStrings[1]
+        message = outStrings[2]
+        replChar = outStrings[3]
+        
+        # give a warning if we find an invalid character
+        if re.search(invalidChar, posAbbr):
             
+            # check for a fatal error
+            if message == 'fatal':
+                
+                report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a " + charName + \
+                             " in it. Could not complete, please correct this category in the " + dbType + " database.")
+                haveError = True
+                
+                # show all fatal errors
+                continue
+                
+            # If we are under the max errors to show number, give a warning
             if countList[i] < numCatErrorsToShow:
                 
-                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a " + outStrings[2] + " in it. The " + outStrings[2] + \
-                               " has been " + outStrings[3] + ". Keep this in mind when referring to this category in transfer rules.")
+                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
+                               " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
             
-            if countList[i] == numCatErrorsToShow:
+            # Give suppressing message when we go 1 beyond the max
+            elif countList[i] == numCatErrorsToShow:
                 
                 report.Info("Suppressing further warnings of this type.")
                 
-            posAbbr = re.sub(outStrings[0], outStrings[3], posAbbr)
+            posAbbr = re.sub(invalidChar, replChar, posAbbr)
             countList[i] += 1
-        
+    
+    if haveError:
+        countList[0] = 999
+        return countList
+    
+    # add the pos category to a map    
     if posAbbr not in posMap:
         
         posMap[posAbbr] = pos.ToString()
@@ -2700,9 +2741,11 @@ def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, re
         
         if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
             
-            AN_list = get_sub_ics(pos.InflectionClassesOC)
+            # Get a list of abbreviation and name tuples
+            AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
             
             for icAbbr, icName in AN_list:
                 
                 posMap[icAbbr] = icName
-            
+                
+    return countList
