@@ -2655,19 +2655,29 @@ def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflec
 
     for dbTup in dbList:
         
+        dbObj = dbTup[0]
         dbType = dbTup[1]
         
         # initialize a list of error counters to 0
         countList = [0]*len(catData)
             
         # loop through all database categories
-        for pos in dbTup[0].lp.AllPartsOfSpeech:
+        for pos in dbObj.lp.AllPartsOfSpeech:
     
-            # save abbreviation
-            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            # save abbreviation and full name
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posFullNameStr = pos.ToString()
             
             # check for errors or warnings, pass in the error counter list which may have been incremented
-            countList = check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses, dbType)
+            countList, posAbbrStr = check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow)
+            
+            # add a (possibly changed abbreviation string) to the map
+            add_to_cat_map(posMap, posFullNameStr, posAbbrStr)
+            
+            # add inflection classes to the map if there are any if we are working on the target database
+            if addInflectionClasses and dbType == dbList[1][1]: #target
+                
+                process_inflection_classes(posMap, pos)
             
             # check for serious error
             if countList[0] == 999:
@@ -2682,7 +2692,31 @@ def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflec
     else:
         return False
 
-def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, report, addInflectionClasses, dbType):
+def add_to_cat_map(posMap, posFullNameStr, posAbbrStr):
+    
+    # add the pos category to a map    
+    if posAbbrStr not in posMap:
+        
+        posMap[posAbbrStr] = posFullNameStr
+    else:
+        # If we already have the abbreviation in the map and the full category name
+        # is not the same as the source one, append the target one to the source one
+        if posMap[posAbbrStr] != posFullNameStr:
+            
+            posMap[posAbbrStr] += ' / ' + posFullNameStr
+
+def process_inflection_classes(posMap, pos):
+    
+    if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
+        
+        # Get a list of abbreviation and name tuples
+        AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
+        
+        for icAbbr, icName in AN_list:
+            
+            posMap[icAbbr] = icName
+    
+def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow):
 
     haveError = False
     
@@ -2695,12 +2729,12 @@ def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, re
         replChar = outStrings[3]
         
         # give a warning if we find an invalid character
-        if re.search(invalidChar, posAbbr):
+        if re.search(invalidChar, posAbbrStr):
             
             # check for a fatal error
             if message == 'fatal':
                 
-                report.Error("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a " + charName + \
+                report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
                              " in it. Could not complete, please correct this category in the " + dbType + " database.")
                 haveError = True
                 
@@ -2710,7 +2744,7 @@ def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, re
             # If we are under the max errors to show number, give a warning
             if countList[i] < numCatErrorsToShow:
                 
-                report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
+                report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
                                " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
@@ -2718,34 +2752,11 @@ def check_for_cat_errors(pos, posAbbr, posMap, countList, numCatErrorsToShow, re
                 
                 report.Info("Suppressing further warnings of this type.")
                 
-            posAbbr = re.sub(invalidChar, replChar, posAbbr)
+            posAbbrStr = re.sub(invalidChar, replChar, posAbbrStr)
             countList[i] += 1
     
     if haveError:
         countList[0] = 999
-        return countList
+        return countList, posAbbrStr
     
-    # add the pos category to a map    
-    if posAbbr not in posMap:
-        
-        posMap[posAbbr] = pos.ToString()
-    else:
-        # If we already have the abbreviation in the map and the full category name
-        # is not the same as the source one, append the target one to the source one
-        if posMap[posAbbr] != pos.ToString():
-            
-            posMap[posAbbr] += ' / ' + pos.ToString()
-
-    # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
-    if addInflectionClasses == True:
-        
-        if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
-            
-            # Get a list of abbreviation and name tuples
-            AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
-            
-            for icAbbr, icName in AN_list:
-                
-                posMap[icAbbr] = icName
-                
-    return countList
+    return countList, posAbbrStr
