@@ -524,6 +524,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         posMap = {}
         
+        # TODO: test this is all working correctly
         # Get all source and target categories
         if Utils.get_categories(DB, TargetDB, report, posMap) == True:
             return
