@@ -5,6 +5,12 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.3.1 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Categories are 'repaired' as 
+#    needed in the process. E.g. space > underscore, etc. Fixes #50.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -43,7 +49,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.3.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",

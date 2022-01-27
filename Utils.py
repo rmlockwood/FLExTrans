@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.3.2 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Fixes #50.
+#
 #   Version 3.3.1 - 1/27/22 - Ron Lockwood
 #    Fixed index error bug when an index to the sense list overflowed. This is in
 #    The TextWord class. Also prevent empty lexical units from being produced when
