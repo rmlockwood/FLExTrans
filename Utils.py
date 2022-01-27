@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.3 - 1/27/22 - Ron Lockwood
+#    Fixed index error bug when an index to the sense list overflowed. This is in
+#    The TextWord class. Also prevent empty lexical units from being produced when
+#    no root is present. This fixes #39 & #40.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -2064,7 +2069,7 @@ class TextWord():
                 return i
         return None
     def getInflClass(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.InflectionClassRA:
                 return [ITsString(mySense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
@@ -2081,7 +2086,7 @@ class TextWord():
             return self.__lemmaList[i]
         return ''
     def getPOS(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
                 return ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
@@ -2091,7 +2096,7 @@ class TextWord():
             return self.__senseList[i]
         return None
     def getStemFeatures(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
                 # if we already have a populated list, we don't need to do it again.
@@ -2158,8 +2163,12 @@ class TextWord():
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
 
-    def isEnclitic(self, myEntry):
+    def isProlitic(self, myEntry):
+        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic')
+    def isClitic(self, myEntry):
         return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
+    def isEnclitic(self, myEntry):
+        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:
@@ -2424,8 +2433,9 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             inflFeatAbbrevs = []
                             tempEntry = GetEntryWithSense(tempEntry, inflFeatAbbrevs)
                             
-                            # See if we have an enclitic or proclitic
-                            if myWord.isEnclitic(tempEntry) == True:
+                            # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
+                            # in this case, treat it as a root
+                            if myWord.isClitic(tempEntry) == True and not (myWord.isEnclitic(tempEntry) and myWord.hasEntries() == False):
                                 # Get the clitic gloss.
                                 myWord.addAffix(bundle.SenseRA.Gloss)
                                 
@@ -2467,6 +2477,15 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                 report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
                 break # go on to the next word    
     
+        # if we don't have a root or stem and we have something else like an affix, give a warning
+        if myWord.hasEntries() == False:
+            
+            # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
+            
+            # need a root
+            myWord.addLemmaFromObj(wfiAnalysis.Owner)
+            report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
+        
     # Don't warn for sfm markers, but warn once for others        
     if myText.warnForUnknownWords() == True:
         report.Warning('One or more unknown words occurred multiple times.')
