@@ -3394,7 +3394,7 @@ type="tRuleElemInXXE"
 >literal tag</object
 > element and Insert After... and choose <object
 type="tItalic"
->clip(clip_sl)</object
+>clip(clip_source_language)</object
 >. Do this twice.</p
 ><example
 num="xLexUnitPronPerNum"
