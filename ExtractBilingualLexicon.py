@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3.2 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Fixes #50.
+#
 #   Version 3.3.1 - 1/25/22 - Ron Lockwood
 #    Fixed crash when grammatical category not set for a word.
 #
@@ -158,7 +163,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3.1",
+        FTM_Version    : "3.3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
