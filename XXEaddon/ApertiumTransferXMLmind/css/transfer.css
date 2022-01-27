@@ -106,12 +106,12 @@ call-macro
 
 case-of:before
 {
-    content: " case of ";
+    content: " case of - ";
 }
 case-of
 {
     display:block;
-    content: " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+    content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      "  side: "  radio-buttons(attribute, side,
 	                       labels, "source lang.\A target lang.", 
 	                       values, "sl\A tl")
@@ -161,12 +161,12 @@ chunk
 
 clip:before
 {
-    content: " clip ";
+    content: " clip - ";
 }
 clip
 {
     display:block;
-    content: " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+    content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
      " side: "  radio-buttons(attribute, side,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
@@ -235,7 +235,7 @@ def-macro:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
     " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,16)
-    " # of parameters = " 
+    " number of items = " 
     text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
 }
 def-macro
@@ -289,7 +289,7 @@ equal
 get-case-from:before
 {
     content: " get case from " 
-    " pos: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+    " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 get-case-from
 {
@@ -600,7 +600,7 @@ when
 
 with-param:before
 {
-    content: " with parameter: " 
+    content: " with item: " 
     text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 with-param
