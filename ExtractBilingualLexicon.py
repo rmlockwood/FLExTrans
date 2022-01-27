@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3.1 - 1/25/22 - Ron Lockwood
+#    Fixed crash when grammatical category not set for a word.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -155,7 +158,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.3.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -683,7 +686,7 @@ def MainFunction(DB, report, modifyAllowed):
                             else:
                                 report.Warning('Skipping sense because the POS is unknown: '+\
                                                ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                #abbrev = 'unk'
+                                abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
