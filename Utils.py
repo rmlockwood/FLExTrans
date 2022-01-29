@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.3.3 - 1/29/22 - Ron Lockwood
+#    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
+#    Also, if a later part of the word lacks a sense or entry, don't put out another
+#    lemma, instead put out a bogus affix: PartMissing. Fixes #54
+#
 #   Version 3.3.2 - 1/27/22 - Ron Lockwood
 #    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
 #    Now the setup tool and the bilingual lexicon uses common code for getting
@@ -2476,17 +2481,27 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                         else:
                             report.Warning("Sense object for affix is null.")
                 else:
-                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    if myWord.getLemma(0) == '':
+                        myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    else:
+                        # Give a clue that a part is missing by adding a bogus affix
+                        myWord.addPlainTextAffix('PartMissing')
+                        
                     report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getSurfaceForm())
                     break # go on to the next word    
             else:
                 # Part of the word has not been tied to a lexical entry-sense
-                myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                if myWord.getLemma(0) == '':
+                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                else:
+                    # Give a clue that a part is missing by adding a bogus affix
+                    myWord.addPlainTextAffix('PART_MISSING')
+                    
                 report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
                 break # go on to the next word    
     
         # if we don't have a root or stem and we have something else like an affix, give a warning
-        if myWord.hasEntries() == False:
+        if myWord.getLemma(0) == '': 
             
             # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
             
