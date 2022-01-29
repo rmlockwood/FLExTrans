@@ -5,10 +5,15 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.3.2 - 1/29/22 - Ron Lockwood
-#    Fixed bug introduced in last fix. Which output a 2nd version of unknown words.
+#   Version 3.3.3 - 1/29/22 - Ron Lockwood
+#    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
 #    Also, if a later part of the word lacks a sense or entry, don't put out another
 #    lemma, instead put out a bogus affix: PartMissing. Fixes #54
+#
+#   Version 3.3.2 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Fixes #50.
 #
 #   Version 3.3.1 - 1/27/22 - Ron Lockwood
 #    Fixed index error bug when an index to the sense list overflowed. This is in
@@ -176,6 +181,9 @@ from System import String
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
+from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+import ReadConfig as MyReadConfig
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -2629,3 +2637,165 @@ def getInsertedWordsList(inputFilename, report, DB):
         
     return obj_list
 
+def openTargetProject(configMap, report):
+    
+    TargetDB = FLExProject()
+
+    # Open the target database
+    targetProj = MyReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in GetProjectNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+    
+    try:
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+        report.Error('There was an error opening target database: '+targetProj+'.')
+        return
+
+    report.Info('Using: '+targetProj+' as the target database.')
+    
+    return TargetDB
+
+# This is a recursive function to get all inflection subclasses
+def get_sub_inflection_classes(mySubClasses):
+    
+    ic_list = []
+    
+    for ic in mySubClasses:
+        
+        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
+        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        
+        ic_list.append((icAbbr,icName))
+        
+        if ic.SubclassesOC and len(ic.SubclassesOC.ToArray()) > 0:
+            
+            icl = get_sub_inflection_classes(ic.SubclassesOC)
+            ic_list.extend(icl)
+            
+    return ic_list
+
+# Invalid category characters & descriptions & messages & replacements
+catData = [[r'\s', 'space', 'converted to an underscore', '_'],
+           [r'\.', 'period', 'removed', ''],
+           [r'/', 'slash', 'converted to a vertical bar', '|']
+#          [r'X', 'x char', 'fatal', '']
+          ]
+
+def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
+
+    haveError = False
+    dbList = [(DB, 'source'), (TargetDB, 'target')]
+
+    for dbTup in dbList:
+        
+        dbObj = dbTup[0]
+        dbType = dbTup[1]
+        
+        # initialize a list of error counters to 0
+        countList = [0]*len(catData)
+            
+        # loop through all database categories
+        for pos in dbObj.lp.AllPartsOfSpeech:
+    
+            # save abbreviation and full name
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posFullNameStr = pos.ToString()
+            
+            # check for errors or warnings, pass in the error counter list which may have been incremented
+            countList, posAbbrStr = check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow)
+            
+            # add a (possibly changed abbreviation string) to the map
+            add_to_cat_map(posMap, posFullNameStr, posAbbrStr)
+            
+            # add inflection classes to the map if there are any if we are working on the target database
+            if addInflectionClasses and dbType == dbList[1][1]: #target
+                
+                process_inflection_classes(posMap, pos)
+            
+            # check for serious error
+            if countList[0] == 999:
+                
+                # Note we have the error, but keep going so tha we give all errors at once
+                # reset error (warning) counter to zero
+                countList[0] = 0
+                haveError = True
+    
+    if haveError == True:
+        return True
+    else:
+        return False
+
+def add_to_cat_map(posMap, posFullNameStr, posAbbrStr):
+    
+    # add the pos category to a map    
+    if posAbbrStr not in posMap:
+        
+        posMap[posAbbrStr] = posFullNameStr
+    else:
+        # If we already have the abbreviation in the map and the full category name
+        # is not the same as the source one, append the target one to the source one
+        if posMap[posAbbrStr] != posFullNameStr:
+            
+            posMap[posAbbrStr] += ' / ' + posFullNameStr
+
+def process_inflection_classes(posMap, pos):
+    
+    if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
+        
+        # Get a list of abbreviation and name tuples
+        AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
+        
+        for icAbbr, icName in AN_list:
+            
+            posMap[icAbbr] = icName
+    
+def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow):
+
+    haveError = False
+    
+    # loop through the possible invalid characters
+    for i, outStrings in enumerate(catData):
+        
+        invalidChar = outStrings[0]
+        charName = outStrings[1]
+        message = outStrings[2]
+        replChar = outStrings[3]
+        
+        # give a warning if we find an invalid character
+        if re.search(invalidChar, posAbbrStr):
+            
+            # check for a fatal error
+            if message == 'fatal':
+                
+                report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
+                             " in it. Could not complete, please correct this category in the " + dbType + " database.")
+                haveError = True
+                
+                # show all fatal errors
+                continue
+                
+            # If we are under the max errors to show number, give a warning
+            if countList[i] < numCatErrorsToShow:
+                
+                report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
+                               " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
+            
+            # Give suppressing message when we go 1 beyond the max
+            elif countList[i] == numCatErrorsToShow:
+                
+                report.Info("Suppressing further warnings of this type.")
+                
+            posAbbrStr = re.sub(invalidChar, replChar, posAbbrStr)
+            countList[i] += 1
+    
+    if haveError:
+        countList[0] = 999
+        return countList, posAbbrStr
+    
+    return countList, posAbbrStr
