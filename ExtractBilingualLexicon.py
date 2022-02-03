@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3.2 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Fixes #50.
+#
+#   Version 3.3.1 - 1/25/22 - Ron Lockwood
+#    Fixed crash when grammatical category not set for a word.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -155,7 +163,7 @@ DONT_CACHE = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.3.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -426,23 +434,14 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     f.write(contents)
     f.close()
     
-def get_sub_ics(mySubClasses):
-    ic_list = []
-    for ic in mySubClasses:
-        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
-        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
-        ic_list.append((icAbbr,icName))
-        if ic.SubclassesOC and len(ic.SubclassesOC.ToArray())>0:
-            icl = get_sub_ics(ic.SubclassesOC)
-            ic_list.extend(icl)
-            
-    return ic_list
-
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
+        
         if spec.ClassID == 53: # FsComplexValue
+            
             get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+            
         else: # FsClosedValue - I don't think the other types are in use
             
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
@@ -483,28 +482,8 @@ def MainFunction(DB, report, modifyAllowed):
         except:
             report.Error('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.')
             return
-        
-    TargetDB = FLExProject()
 
-    # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    if not targetProj:
-        return
-    
-    # See if the target project is a valid database name.
-    if targetProj not in GetProjectNames():
-        report.Error('The Target Database does not exist. Please check the configuration file.')
-        return
-    
-    try:
-        #TargetDB.OpenDatabase(targetProj, verbose = True)
-        TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-        report.Error('There was an error opening target database: '+targetProj+'.')
-        #error_list.append((e.message, 2))
-        return
-
-    report.Info('Using: '+targetProj+' as the target database.')
+    TargetDB = Utils.openTargetProject(configMap, report)
 
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
@@ -550,75 +529,11 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
         
         posMap = {}
-        abbrevError = False
         
-        # loop through all source categories
-        for pos in DB.lp.AllPartsOfSpeech:
-    
-            # save abbreviation
-            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-            posMap[posAbbr] = pos.ToString()
-            
-            # give an error if there is a space in the category abbreviation, STAMP can't handle it.
-            if re.search(r'\s', posAbbr):
-                report.Error("The source abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. Please correct this in the source database.")
-                abbrevError = True
-        
-        spaceErrors = 0
-        periodErrors = 0
-        slashErrors = 0
-        # loop through all target categories
-        for pos in TargetDB.lp.AllPartsOfSpeech:
-    
-            # save abbreviation
-            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-    
-            # DONE: allow spaces in POS abbreviations
-            # give a warning if there is a space in the target category abbreviation. Convert the space to an underscore
-            if re.search(r'\s', posAbbr):
-                if spaceErrors < 1:
-                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a space in it. The space has been converted to an underscore. Keep this in mind when referring to this category in transfer rules.")
-                if spaceErrors == 0:
-                    report.Info("Suppressing further warnings of this type.")
-                posAbbr = re.sub(r'\s', '_', posAbbr)
-                spaceErrors += 1
-                
-            # give a warning if there is a period in the target category. Remove them.
-            if re.search(r'\.', posAbbr):
-                if periodErrors < 1:
-                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a period in it. The period has been removed. Keep this in mind when referring to this category in transfer rules.")
-                if periodErrors == 0:
-                    report.Info("Suppressing further warnings of this type.")
-                posAbbr = re.sub(r'\.', '', posAbbr)
-                periodErrors += 1
-    
-            # give a warning if there is a slash in the target category. Remove them.
-            if re.search(r'/', posAbbr):
-                if slashErrors < 1:
-                    report.Warning("The abbreviation: '"+posAbbr+"' for category: '"+pos.ToString()+"' can't have a slash in it. The slash has been removed. Keep this in mind when referring to this category in transfer rules.")
-                if slashErrors == 0:
-                    report.Info("Suppressing further warnings of this type.")
-                posAbbr = re.sub(r'/', '|', posAbbr)
-                slashErrors += 1
-    
-            if posAbbr not in posMap:
-                posMap[posAbbr] = pos.ToString()
-            else:
-                # If we already have the abbreviation in the map and the full category name
-                # is not the same as the source one, append the target one to the source one
-                if posMap[posAbbr] != pos.ToString():
-                    posMap[posAbbr] += ' / ' + pos.ToString()
-    
-            # save inflection classes, save them along with pos's since they also need to go into the symbol definition section
-            if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray())>0:
-                AN_list = get_sub_ics(pos.InflectionClassesOC)
-                for icAbbr, icName in AN_list:
-                    posMap[icAbbr] = icName
-        
-        # Exit after showing all abbreviation errors            
-        if abbrevError:
+        # Get all source and target categories
+        if Utils.get_categories(DB, TargetDB, report, posMap) == True:
             return
-        
+
         # save target features so they can go in the symbol definition section
         for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
             if feat.ClassID == 50: # FsClosedFeature
@@ -681,7 +596,7 @@ def MainFunction(DB, report, modifyAllowed):
                             else:
                                 report.Warning('Skipping sense because the POS is unknown: '+\
                                                ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
-                                #abbrev = 'unk'
+                                abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
