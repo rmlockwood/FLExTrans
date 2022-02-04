@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3.3 - 2/4/22 - Ron Lockwood
+#    Changed replacement file to a different format for improved editing. Handle
+#    either the old format or the new which uses new elements <leftdata> <rightdata>
+#
 #   Version 3.3.2 - 1/27/22 - Ron Lockwood
 #    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
 #    Now the setup tool and the bilingual lexicon uses common code for getting
@@ -159,11 +163,14 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 DONT_CACHE = False
 
+DICTIONARY = 'dictionary'
+REPLDICTIONARY = 'repldictionary'
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3.2",
+        FTM_Version    : "3.3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -273,8 +280,22 @@ def get_repl_entry_key(left, newDocType):
                 key += ET.tostring(myElement, encoding='unicode')
     else:
         
-    
-    
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+        
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
+     
+    return key
+
 # Use the replacement file specified by BilingualDictReplacmentFile in the
 # configuration file to replace or add entries in or to the bilingual dictionary.    
 # Two types of entries are in the replacement file, replacement entries and append entries.
@@ -303,6 +324,31 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return
     
+    # Determine the Doctype
+    f = open(replFile, encoding='utf-8')
+    
+    line = f.readline()
+    line = f.readline()
+    f.close()
+    
+    toks = line.split()
+
+    if len(toks) < 1:
+        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return
+
+    if toks[1] == REPLDICTIONARY:
+        
+        newDocType = True
+        
+    elif toks[1] == DICTIONARY:
+    
+        newDocType = False
+        
+    else:
+        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return
+        
     replMap = {}
     replRoot = replEtree.getroot()
     
@@ -400,8 +446,13 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             new_biling_section.append(comment1)
             new_biling_section.append(comment2)
             
+            if newDocType:
+                replEntry = convert_to_biling_style_entry(replMap[key])
+            else:
+                replEntry = replMap[key]
+                
             # Insert the new entry from the replacement file map
-            new_biling_section.append(convert_to_biling_style_entry(replMap[key]))
+            new_biling_section.append(replEntry)
             
         else: # copy the old entry to the new
             new_biling_section.append(entry)
