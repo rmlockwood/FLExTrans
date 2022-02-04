@@ -12,9 +12,6 @@
   <cfg:elementTemplate name="entry_pair">
     <e><p><l><leftdata>SourceWord1.1</leftdata><s n="cat99"/></l><r><rightdata>TargetWord1.1</rightdata><s n="cat99"/></r></p></e>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="identity">
-    <i>SourceWord1.1<s n="cat99"/></i>
-  </cfg:elementTemplate>
   <cfg:elementTemplate name="left">
     <l><leftdata>SourceWord1.1</leftdata><s n="cat99"/></l>
   </cfg:elementTemplate>
