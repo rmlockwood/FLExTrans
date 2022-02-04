@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE repldictionary PUBLIC "-//XMLmind//DTD repldictionary//EN"
 "repldix.dtd">
-<dictionary>
+<repldictionary>
 	<alphabet></alphabet>
 	<sdefs>
 		<!-- Add category definitions here -->
@@ -17,4 +17,4 @@
 		<!-- Add new entries to be appended here -->
     <e><p><l><leftdata>SourceWord2.1</leftdata><s n="v"/><s n="pfv"/></l><r><rightdata>TargetWord2.1</rightdata><s n="v"/><s n="ptcp"/></r></p></e>
 	</section>
-</dictionary>
+</repldictionary>
