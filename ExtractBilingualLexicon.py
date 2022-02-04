@@ -255,6 +255,26 @@ def is_number(s):
     except ValueError:
         return False
 
+def get_repl_entry_key(left, newDocType):
+    
+    if newDocType == True:
+        
+        key = ''
+        
+        # Build a key from leftdata text and possible space (<b />) elements (symbol <s> elements get skipped)
+        for myElement in left:
+            
+            if myElement.tag == 'leftdata':
+                
+                key += myElement.text
+                
+            elif myElement.tag == 'b':
+                
+                key += ET.tostring(myElement, encoding='unicode')
+    else:
+        
+    
+    
 # Use the replacement file specified by BilingualDictReplacmentFile in the
 # configuration file to replace or add entries in or to the bilingual dictionary.    
 # Two types of entries are in the replacement file, replacement entries and append entries.
@@ -293,22 +313,12 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     
     # Loop through the entries in this section
     for entry in repl_sec:
+        
         # Get the <l> text which is under the <p> which is under the <e>
         left = entry.find('p/l')
         
-        key = ''
+        key = get_repl_entry_key(left, newDocType)
         
-        # Build a key from leftdata text and possible space (<b />) elements (symbol <s> elements get skipped)
-        for myElement in left:
-            
-            if myElement.tag == 'leftdata':
-                
-                key += myElement.text
-                
-            elif myElement.tag == 'b':
-                
-                key += ET.tostring(myElement, encoding='unicode')
-                
         replMap[key] = entry
           
     # Read in the bilingual xml file
