@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.3.3 - 2/4/22 - Ron Lockwood
+#    Changed replacement file to a different format for improved editing. Handle
+#    either the old format or the new which uses new elements <leftdata> <rightdata>
+#
 #   Version 3.3.2 - 1/27/22 - Ron Lockwood
 #    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
 #    Now the setup tool and the bilingual lexicon uses common code for getting
@@ -159,11 +163,14 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 DONT_CACHE = False
 
+DICTIONARY = 'dictionary'
+REPLDICTIONARY = 'repldictionary'
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3.2",
+        FTM_Version    : "3.3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -255,6 +262,40 @@ def is_number(s):
     except ValueError:
         return False
 
+def get_repl_entry_key(left, newDocType):
+    
+    if newDocType == True:
+        
+        key = ''
+        
+        # Build a key from leftdata text and possible space (<b />) elements (symbol <s> elements get skipped)
+        for myElement in left:
+            
+            if myElement.tag == 'leftdata':
+                
+                key += myElement.text
+                
+            elif myElement.tag == 'b':
+                
+                key += ET.tostring(myElement, encoding='unicode')
+    else:
+        
+        keyLeft = copy.deepcopy(left)
+
+        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
+        symbolElements = keyLeft.findall('s')
+        
+        for symb in symbolElements:
+            
+            keyLeft.remove(symb)
+        
+        key = ET.tostring(keyLeft, encoding='unicode')
+        
+        # remove the <l> and </l>
+        key = key[3:-4]
+     
+    return key
+
 # Use the replacement file specified by BilingualDictReplacmentFile in the
 # configuration file to replace or add entries in or to the bilingual dictionary.    
 # Two types of entries are in the replacement file, replacement entries and append entries.
@@ -283,33 +324,47 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return
     
+    # Determine the Doctype
+    f = open(replFile, encoding='utf-8')
+    
+    line = f.readline()
+    line = f.readline()
+    f.close()
+    
+    toks = line.split()
+
+    if len(toks) < 1:
+        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return
+
+    if toks[1] == REPLDICTIONARY:
+        
+        newDocType = True
+        
+    elif toks[1] == DICTIONARY:
+    
+        newDocType = False
+        
+    else:
+        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return
+        
     replMap = {}
     replRoot = replEtree.getroot()
     
     ## Put the replacement entries into a map
-    # Get the replacement entries section
+    # Get the replacement and append entries section
     repl_sec = replRoot.find(".//*[@id='replacement']")
+    append_sec = replRoot.find(".//*[@id='append']")
     
     # Loop through the entries in this section
     for entry in repl_sec:
+        
         # Get the <l> text which is under the <p> which is under the <e>
         left = entry.find('p/l')
-#        replMap[left.text] = entry
-
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
-        symbolElements = keyLeft.findall('s')
         
-        for symb in symbolElements:
-            
-            keyLeft.remove(symb)
+        key = get_repl_entry_key(left, newDocType)
         
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-    
         replMap[key] = entry
           
     # Read in the bilingual xml file
@@ -363,7 +418,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             left = entry.find('i')
         
         # Create string with the old contents of the entry. 
-        s = ET.tostring(left, encoding='unicode')
+        oldEntryStr = ET.tostring(entry, encoding='unicode')
         
         keyLeft = copy.deepcopy(left)
 
@@ -386,36 +441,32 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             # Create a comment containing the old entry and a note and insert them into the entry list
             comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
             
-#             if left.tag == 'i':
-#                 s = 'identity: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-#             else:
-#                 s = 'left: ' + left.text + ' (' + left.find('s').attrib['n'] + ')'
-#                 s += ', right: ' + entry.find('p/r').text + ' (' + entry.find('p/r/s').attrib['n'] + ')'
-                
-            comment2 = ET.Comment(s+'\n')
+            comment2 = ET.Comment(oldEntryStr+'\n')
             
             new_biling_section.append(comment1)
             new_biling_section.append(comment2)
             
+            if newDocType:
+                replEntry = convert_to_biling_style_entry(replMap[key])
+            else:
+                replEntry = replMap[key]
+                
             # Insert the new entry from the replacement file map
-            new_biling_section.append(replMap[key])
+            new_biling_section.append(replEntry)
             
         else: # copy the old entry to the new
             new_biling_section.append(entry)
     
     ## Add the entries from the replacement file marked as 'append'
     
-    # Get the append entries section
-    append_sec = replRoot.find(".//*[@id='append']")
-    
     # Make a comment and adds it
     comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.\n')
     new_biling_section.append(comment)
     
-    # Loop through these entries
+    # Loop through append entries
     for entry in append_sec:
         # add them to the list of bilingual entries
-        new_biling_section.append(entry)
+        new_biling_section.append(convert_to_biling_style_entry(entry))
         
     # Remove the old entries list and add the new
     bilingRoot.remove(biling_section)
@@ -435,6 +486,57 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     contents = "".join(contents)
     f.write(contents)
     f.close()
+
+# convert from a <e> element that has <leftdata> and <rightdata> under <l> and <r> to one that doesn't have these
+# <b /> elements could be between multiple <leftdata> or <rightdata> elements and should come out something like
+# <l>source<b />word1.1<s n="v"></s></l> same kind of thing for <r>
+def convert_to_biling_style_entry(replStyleEntry):
+    
+    newEntry = ET.Element('e')
+    pEl = ET.Element('p')
+    lEl = ET.Element('l')
+    rEl = ET.Element('r')
+    
+    newEntry.append(pEl)
+    pEl.append(lEl)
+    pEl.append(rEl)
+    
+    newSide = [lEl, rEl]
+    
+    replP = replStyleEntry.find('p')
+    
+    if replP:
+        
+        replL = replP.find('l')
+        replR = replP.find('r')
+        
+        if replL and replR:
+            
+            # put both <l> and <r> in a list so we can process them the same
+            for i, side in enumerate([replL, replR]): 
+                
+                firstData = True
+                
+                for myElem in side:
+                    
+                    if myElem.tag == 'b':
+                        
+                        bEl = ET.Element('b')
+                        newSide[i].append(bEl)
+                        
+                    elif re.search('data', myElem.tag):
+                        
+                        if firstData:
+                            
+                            newSide[i].text = myElem.text
+                            firstData = False
+                        else:
+                            bEl.tail = myElem.text
+                    
+                    # other elements (like <s>)
+                    else:
+                        newSide[i].append(myElem)
+    return newEntry
     
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -762,7 +864,6 @@ def MainFunction(DB, report, modifyAllowed):
         report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
         report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
 
-        # TODO: Check if the replacement file is out of date        
         # As a last step, replace certain parts of the bilingual dictionary
         if do_replacements(configMap, report, fullPathBilingFile, replFile) == False:
             return
