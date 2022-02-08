@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.3
+SET FLEXTRANS_VERSION=3.3.1
 rem Delete everything in Install2.0
 rd /s /q Install2.0
 
@@ -37,6 +37,8 @@ copy MyTableView.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 
 rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
+rem 
+rem These things are now copied within the install program
 rem copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
 rem copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
 rem copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
