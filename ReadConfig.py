@@ -30,6 +30,12 @@ import unicodedata
 
 CONFIG_FILE = 'FlexTrans.config'
 
+CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
+TARGET_ANA_FILE = 'TargetOutputANAFile'
+TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
+TARGET_PROJECT = 'TargetProject'
+TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+
 def readConfig(report):
     try:
         f_handle = open(CONFIG_FILE, encoding='utf-8')

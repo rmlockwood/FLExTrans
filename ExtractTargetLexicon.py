@@ -643,7 +643,7 @@ def synthesize(configMap, anaFile, synFile, report=None):
     error_list = []
     
     targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    clean = ReadConfig.getConfigVal(configMap, 'CleanUpUnknownTargetWords', report)
+    clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
 
     if not (targetProject and clean): 
         error_list.append(('Configuration file problem.', 2))
@@ -682,8 +682,8 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
-    targetANA = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
-    targetSynthesis = ReadConfig.getConfigVal(configMap, 'TargetOutputSynthesisFile', report)
+    targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
+    targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (targetANA and targetSynthesis):
         return 
     
