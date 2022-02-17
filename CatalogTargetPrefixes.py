@@ -237,7 +237,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report)
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
 
     if not outFileVal:
         

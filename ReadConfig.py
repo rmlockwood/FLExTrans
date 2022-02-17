@@ -93,10 +93,11 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report):
+def getConfigVal(my_map, key, report, giveError=True):
     if key not in my_map:
         if report is not None:
-            report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+            if giveError:
+                report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
         return my_map[key]
