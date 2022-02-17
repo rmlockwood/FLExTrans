@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3.3 - 1/29/22 - Ron Lockwood
 #    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
 #    Also, if a later part of the word lacks a sense or entry, don't put out another
@@ -184,6 +187,11 @@ from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 import ReadConfig as MyReadConfig
+
+APERTIUM_ERROR_FILE = 'apertium_error.txt'
+DO_MAKE_SCRIPT_FILE = 'do_make_direct.sh'
+CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+TESTBED_CACHE_FILE = 'testbed_cache.txt'
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -1276,26 +1284,27 @@ def run_makefile(relPathToBashFile):
     
     # Change path to bash based on the architecture
     is32bit = (platform.architecture()[0] == '32bit')
-    system32 = os.path.join(os.environ['SystemRoot'],
-                            'SysNative' if is32bit else 'System32')
+    system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
     bash = os.path.join(system32, 'bash.exe')
 
     # Get the current working directory
     cwd = os.getcwd()
     cwd = re.sub(r'\\','/',cwd) # change to forward slashes
+    
     (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
     drive = re.sub(':','',drive) # remove colon
+    
     unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
     dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
-    full_path = "'"+dir_path+"/do_make_direct.sh'"
+    full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
     
     # Create the bash file which merely cds to the appropriate 
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
-    f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
+    f = open(relPathToBashFile+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
     outStr = '#!/bin/sh\n'
     outStr += 'cd ' + "'" + dir_path + "'" + '\n'
-    outStr += 'make 2>err_out\n'
+    outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'
     
     f.write(bytes(outStr, 'ascii'))
     f.close()
@@ -2642,7 +2651,7 @@ def openTargetProject(configMap, report):
     TargetDB = FLExProject()
 
     # Open the target database
-    targetProj = MyReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         return
     

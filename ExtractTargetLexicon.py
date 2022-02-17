@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -121,7 +124,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -559,7 +562,7 @@ def extract_target_lex(DB, configMap, report=None):
     TargetDB = FLExProject()
 
     # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         error_list.append(('Configuration file problem with TargetProject.', 2))
         return error_list
@@ -582,8 +585,8 @@ def extract_target_lex(DB, configMap, report=None):
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
-    targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    morphNames    = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    morphNames    = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
     if not (targetProject and morphNames): 
         error_list.append(('Configuration file problem.', 2))
         return error_list
@@ -642,7 +645,7 @@ def fix_up_text(synFile, cleanUpText):
 def synthesize(configMap, anaFile, synFile, report=None):
     error_list = []
     
-    targetProject = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
 
     if not (targetProject and clean): 
