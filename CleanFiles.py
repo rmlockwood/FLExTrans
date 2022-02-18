@@ -112,8 +112,20 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
 
+    # old log file
+    try:
+        os.remove(OUTPUT+'err_log')
+    except:
+        pass # ignore errors
+
     try:
         os.remove(Utils.APERTIUM_ERROR_FILE)
+    except:
+        pass # ignore errors
+
+    # old error file
+    try:
+        os.remove(OUTPUT+'err_out')
     except:
         pass # ignore errors
 
