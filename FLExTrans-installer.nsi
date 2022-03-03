@@ -74,14 +74,14 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$DOCUMENTS"
 
   # Copy files users may change only if they don't already exist
-  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Output"
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
   SetOverwrite off
 
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
+  File "${GIT_FOLDER}\FlexTrans.config"
 
   SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
-  File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
 
   SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
