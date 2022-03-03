@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -148,7 +151,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -727,7 +730,7 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
-CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+
 
 class ConversionData():
     def __init__(self, database, report, complexFormTypeMap):
@@ -921,7 +924,7 @@ class ConversionData():
            
     def getCacheFilePath(self):
         # build the path in the temp dir using project name + testbed_cache.txt
-        return os.path.join(tempfile.gettempdir(), str(self.project.lp)+'_'+CONVERSION_TO_STAMP_CACHE_FILE)
+        return os.path.join(tempfile.gettempdir(), str(self.project.lp)+'_'+Utils.CONVERSION_TO_STAMP_CACHE_FILE)
     
     def cacheExists(self):
         return os.path.exists(self.getCacheFilePath())
@@ -984,18 +987,18 @@ class ConversionData():
 def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
     error_list = []
     
-    complexForms1st = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report)
-    complexForms2nd = ReadConfig.getConfigVal(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report)
+    complexForms1st = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_FORMS_INFLECTION_1ST, report)
+    complexForms2nd = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_FORMS_INFLECTION_2ND, report)
     sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
     if not (targetANAFile and affixFile and transferResultsFile and sentPunct):
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
     # Check the validity of the complex forms lists
-    if complexForms1st and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn1stElement', report):
+    if complexForms1st and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_1ST, report):
         error_list.append(('Configuration file problem.', 2))
         return error_list
-    if complexForms2nd and not ReadConfig.configValIsList(configMap, 'TargetComplexFormsWithInflectionOn2ndElement', report):
+    if complexForms2nd and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_2ND, report):
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
@@ -1003,7 +1006,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
 
     try:
         # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
@@ -1085,9 +1088,15 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
-    targetANAFile = ReadConfig.getConfigVal(configMap, 'TargetOutputANAFile', report)
-    affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
-    transferResultsFile = ReadConfig.getConfigVal(configMap, 'TargetTranferResultsFile', report)
+    targetANAFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
+    affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
+    
+    if not affixFile:
+        
+        # Try the old config value name
+        affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+        
+    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
 
     error_list = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report)
 
