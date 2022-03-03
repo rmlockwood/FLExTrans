@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Find the config file one level up, i.e. top the top installed folder.
+#
+#   Version 3.3.1 - 1/27/22 - Ron Lockwood
+#    Convert config file values to decomposed Unicode.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -23,18 +29,23 @@
 #   Functions for reading a configuration file
 
 import re
+import unicodedata
+
 CONFIG_FILE = 'FlexTrans.config'
 
 def readConfig(report):
     try:
-        f_handle = open(CONFIG_FILE, encoding='utf-8')
+        f_handle = open('../' + CONFIG_FILE, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the top-level folder.')
         return None
 
     my_map = {}
     for line in f_handle:
+        
+        # decompose any composed characters. FLEx stores strings this way.
+        line = unicodedata.normalize('NFD', line)
         if len(line) < 2:
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
