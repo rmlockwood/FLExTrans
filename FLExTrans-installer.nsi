@@ -48,6 +48,7 @@ ShowUnInstDetails show
 
 Section -Prerequisites
 InitPluginsDir
+  SetShellVarContext all
   SetOutPath "$INSTDIR\install_files"
   #Connect to apertium
   #File "Command2.sh"
