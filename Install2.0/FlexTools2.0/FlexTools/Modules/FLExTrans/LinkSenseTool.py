@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
+#   Version 3.3.1 - 3/3/22 - Ron Lockwood
+#    Fixed crash when word was mapped to a target with POS not set. Bug 68.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -132,7 +138,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -744,10 +750,14 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
             
             targetSense = targetEntry.SensesOS.ToArray()[senseNum-1]
             if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                # TODO: verify PartOfSpeechRA is valid
-                # Get target pos abbreviation and gloss
-                POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                Abbreviation.BestAnalysisAlternative).Text
+                
+                # verify PartOfSpeechRA is valid, if not, set the POS unknown
+                if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA == None:
+                    POS = 'UNK'
+                else:
+                    # Get target pos abbreviation and gloss
+                    POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                    Abbreviation.BestAnalysisAlternative).Text
          
                 Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
                 
@@ -799,11 +809,11 @@ def MainFunction(DB, report, modify=True):
         return
 
     # Get need configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, 'SourceMorphNamesCountedAsRoots', report)
-    linkField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForEntryLink', report)
-    numField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForSenseNum', report)
-    targetMorphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
+    linkField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
+    numField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
+    targetMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
 
     if not (text_desired_eng and linkField and numField and text_desired_eng and sourceMorphNames):
         return
@@ -834,7 +844,7 @@ def MainFunction(DB, report, modify=True):
     TargetDB = FLExProject()
 
     # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         return
     
@@ -910,27 +920,27 @@ def process_interlinear_new(report, DB, configMap, senseEquivField, senseNumFiel
     myData = []
 
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
         return False, myData
     
-    typesList = ReadConfig.getConfigVal(configMap, 'SourceComplexTypes', report)
+    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
         return False, myData
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
         return False, myData
 
-    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return False, myData
 
     # Get interlinear data. A complex text object is returned.

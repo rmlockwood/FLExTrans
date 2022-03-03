@@ -1,5 +1,5 @@
 target_text.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
-	cat source_text.aper | apertium-transfer -t tr.t1x transfer_rules.t1x.bin bilingual.bin > target_text.aper 2>err_log
+	cat source_text.aper | apertium-transfer -t tr.t1x transfer_rules.t1x.bin bilingual.bin > target_text.aper 2>apertium_log.txt
 bilingual.bin: bilingual.dix
 	lt-comp lr bilingual.dix bilingual.bin
 transfer_rules.t1x.bin: ../../transfer_rules.t1x
