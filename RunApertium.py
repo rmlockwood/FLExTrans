@@ -3,6 +3,9 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -40,7 +43,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  

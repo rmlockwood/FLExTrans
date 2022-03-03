@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3.3 - 2/4/22 - Ron Lockwood
 #    Changed replacement file to a different format for improved editing. Handle
 #    either the old format or the new which uses new elements <leftdata> <rightdata>
@@ -170,7 +173,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -569,11 +572,11 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
     
-    catSub = ReadConfig.getConfigVal(configMap, 'CategoryAbbrevSubstitutionList', report)
-    linkField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForEntryLink', report)
-    senseNumField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForSenseNum', report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, 'SourceMorphNamesCountedAsRoots', report)
-    sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    catSub = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
+    linkField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
+    senseNumField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
+    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
+    sentPunct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     if not (linkField and senseNumField and sourceMorphNames and sentPunct):
         return
     
@@ -601,13 +604,13 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error(senseNumField + " field doesn't exist. Please read the instructions.")
         return
 
-    bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
+    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not bilingFile:
         return
     
     fullPathBilingFile = bilingFile
     
-    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
+    replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replFile:
         return
     

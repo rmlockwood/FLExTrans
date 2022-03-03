@@ -8,6 +8,9 @@
 #   Version 3.4.1 - 3/3/22 - Ron Lockwood
 #    Find the config file one level up, i.e. top the top installed folder.
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use defined config file constants for key values
+#
 #   Version 3.3.1 - 1/27/22 - Ron Lockwood
 #    Convert config file values to decomposed Unicode.
 #
@@ -32,6 +35,30 @@ import re
 import unicodedata
 
 CONFIG_FILE = 'FlexTrans.config'
+
+ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
+ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
+BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
+BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
+CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
+CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
+SENTENCE_PUNCTUATION = 'SentencePunctuation'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
+SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
+SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
+SOURCE_DISCONTIG_SKIPPED = 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'
+SOURCE_MORPHNAMES = 'SourceMorphNamesCountedAsRoots'
+SOURCE_TEXT_NAME = 'SourceTextName'
+TARGET_AFFIX_GLOSS_FILE = 'TargetAffixGlossListFile'
+TARGET_ANA_FILE = 'TargetOutputANAFile'
+TARGET_FORMS_INFLECTION_1ST = 'TargetComplexFormsWithInflectionOn1stElement'
+TARGET_FORMS_INFLECTION_2ND = 'TargetComplexFormsWithInflectionOn2ndElement'
+TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
+TARGET_PROJECT = 'TargetProject'
+TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
+TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 
 def readConfig(report):
     try:
@@ -69,10 +96,11 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report):
+def getConfigVal(my_map, key, report, giveError=True):
     if key not in my_map:
         if report is not None:
-            report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+            if giveError:
+                report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
         return my_map[key]
