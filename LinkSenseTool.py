@@ -8,6 +8,9 @@
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
+#   Version 3.3.1 - 3/3/22 - Ron Lockwood
+#    Fixed crash when word was mapped to a target with POS not set. Bug 68.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -747,10 +750,14 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
             
             targetSense = targetEntry.SensesOS.ToArray()[senseNum-1]
             if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                # TODO: verify PartOfSpeechRA is valid
-                # Get target pos abbreviation and gloss
-                POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                Abbreviation.BestAnalysisAlternative).Text
+                
+                # verify PartOfSpeechRA is valid, if not, set the POS unknown
+                if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA == None:
+                    POS = 'UNK'
+                else:
+                    # Get target pos abbreviation and gloss
+                    POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                                    Abbreviation.BestAnalysisAlternative).Text
          
                 Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
                 
