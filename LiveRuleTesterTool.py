@@ -5,6 +5,15 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Get the transfer_rules.t1x file from the top level
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2.5 - 3/8/21 - Ron Lockwood
 #    Error checking for missing guid in XML files
 #
@@ -166,7 +175,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.5",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -345,7 +354,7 @@ class Main(QMainWindow):
 
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, Utils.OUTPUT_FOLDER, 'transfer_rules.t1x')
+        self.__transfer_rules_file= os.path.join(pwd, '../transfer_rules.t1x')
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()
@@ -1494,35 +1503,35 @@ def MainFunction(DB, report, modify=False):
         return
 
     # Get needed configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
-    bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
+    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
 
     # check for errors
     if not (text_desired_eng and bilingFile):
         return
     
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
         return
     
-    typesList = ReadConfig.getConfigVal(configMap, 'SourceComplexTypes', report)
+    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
         return
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
         return
 
-    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return
 
     # Find the desired text
@@ -1547,7 +1556,7 @@ def MainFunction(DB, report, modify=False):
             return
 
     # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
     if not treeTranResultFile:
         TreeTranSort = False
@@ -1555,7 +1564,7 @@ def MainFunction(DB, report, modify=False):
         TreeTranSort = True
     
     # Check if we are using an Insert Words File for TreeTran 
-    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
+    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
     
     if not treeTranInsertWordsFile:
         insertWordsFile = False

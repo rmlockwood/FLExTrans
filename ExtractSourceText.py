@@ -8,6 +8,12 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2.4 - 7/1/21 - Ron Lockwood
 #    Add 1 to sent# for reporting not found sentences.
 #
@@ -167,8 +173,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.2.4",
-        FTM_Version    : "3.2.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
         FTM_Help : '',
@@ -198,7 +203,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, 'AnalyzedTextOutputFile', report)
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
     if not outFileVal:
         return
     
@@ -211,7 +216,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # Find the desired text
-    text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
+    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not text_desired_eng:
         return
     
@@ -237,13 +242,13 @@ def MainFunction(DB, report, modifyAllowed):
             return
     
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
         return
     
     # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
     if not treeTranResultFile:
         TreeTranSort = False
@@ -251,7 +256,7 @@ def MainFunction(DB, report, modifyAllowed):
         TreeTranSort = True
     
         # Check if we are using an Insert Words File for TreeTran 
-        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
+        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
         
         if not treeTranInsertWordsFile:
             insertWordsFile = False
@@ -284,22 +289,22 @@ def MainFunction(DB, report, modifyAllowed):
     # Process the text
     report.Info("Exporting analyses...")
 
-    typesList = ReadConfig.getConfigVal(configMap, 'SourceComplexTypes', report)
+    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
         return
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
         return
 
-    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return
 
     # Get interlinear data. A complex text object is returned.

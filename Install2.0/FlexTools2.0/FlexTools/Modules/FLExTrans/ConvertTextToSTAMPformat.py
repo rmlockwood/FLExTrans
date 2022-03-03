@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
+#   Version 3.2.1 - 12/15/21 - Ron Lockwood
+#    Better error message for missing word or POS error when converting to Ana format.
+#
 #   Version 3.2 - 10/22/21 - Ron Lockwood
 #    If a guid is no longer valid when reading from the cache, don't use the
 #    cache and load from scratch.
@@ -142,7 +148,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -355,7 +361,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         post_punct = ''
 
         # Loop through all word packages
-        for tok in word_toks:
+        for wrd_cnt, tok in enumerate(word_toks):
             # If the token is one whitespace, ignore it. By default no \n line in the 
             # ANA file will produce a space after the word.
             if re.match('\s$', tok): # match starts at beg. of string
@@ -427,7 +433,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
 
                 if len(morphs) <2:
                             
-                    error_list.append(("Word or POS missing. Found: "+",".join(morphs),2))
+                    error_list.append(("Lemma or grammatical category missing for target word number "+str(wrd_cnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
                     for m in morphs:
                         f_ana.write(m)
                     return error_list

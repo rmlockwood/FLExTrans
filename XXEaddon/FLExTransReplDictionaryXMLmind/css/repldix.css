@@ -1,0 +1,127 @@
+/* CSS for formating Apertium Dictionary in XXE */ 
+
+@property-value def-attr-background-color() #F5DEB3; /* wheat */
+@property-value def-cat-background-color() #FFB6C1; /* lightpink */
+@property-value def-list-background-color() #CCFFCC; /* lightgreen */
+@property-value def-macro-background-color() #F09FF0; /* violet */
+@property-value def-rule-background-color() #BFD0FF; /* paleblue */
+@property-value def-var-background-color() #AFEEEE; /* paleturquoise */
+@property-value def-pos-background-color() #FFDAB9; /* peach puff */
+@property-value def-literal-background-color() #98FB98; /* pale green */
+@property-value def-literal-tag-background-color() #FFFFB5; /* pale yellow */
+@property-value def-chunk-background-color() #AEC6CF; /* pastel blue */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+alphabet:before
+{
+    content:"Alphabet: ";
+} 
+alphabet
+{
+    display:block;
+} 
+
+b:before
+{
+    content:"[space]";
+    color:Orange;
+} 
+b
+{
+    display:inline;
+} 
+
+e:before
+{
+    content:"Entry: ";
+} 
+e
+{
+    display:block;
+    margin-left:.4in;
+} 
+
+
+l:before
+{
+    content:"left: ";
+    color:Black;
+} 
+l
+{
+    display:inline;
+    color:Green;
+} 
+
+p:before
+{
+    content:"pair: ";
+} 
+p
+{
+    display:inline;
+} 
+
+r:before
+{
+    content:" right: ";
+    color:Black;
+} 
+r
+{
+    display:inline;
+    color:Blue;
+} 
+
+s:before
+{
+    content:" category/affix: ";
+    color:Black;
+}
+s
+{
+    display:inline;
+    content:" "text-field(attribute,n,background-color,def-chunk-background-color(),columns,6);
+    color:Black;
+} 
+
+sdef:before
+{
+    content:"category/affix: ";
+} 
+sdef[n]
+{
+    display:block;
+    content: text-field(attribute,n,background-color,def-chunk-background-color(),columns,6)
+      " description: " text-field(attribute,c,background-color,def-chunk-background-color(),columns,15);
+    margin-left:.4in;
+}
+
+sdefs:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+	" Symbols: ";
+}
+sdefs
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
+
+section:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+	" Section: " text-field(attribute,id,background-color,def-rule-background-color(),columns,15)
+	" Type: " text-field(attribute,type,background-color,def-rule-background-color(),columns,15);
+}
+section
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}

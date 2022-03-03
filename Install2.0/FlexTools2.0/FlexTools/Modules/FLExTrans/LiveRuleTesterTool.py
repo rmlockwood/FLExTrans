@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Get the transfer_rules.t1x file from the top level
+#
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2.5 - 3/8/21 - Ron Lockwood
 #    Error checking for missing guid in XML files
 #
@@ -166,7 +172,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.2.5",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -345,7 +351,7 @@ class Main(QMainWindow):
 
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, Utils.OUTPUT_FOLDER, 'transfer_rules.t1x')
+        self.__transfer_rules_file= os.path.join(pwd, '../transfer_rules.t1x')
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()

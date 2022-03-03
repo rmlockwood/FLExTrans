@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
+#   Version 3.3 - 1/8/22 - Ron Lockwood
+#    Bump version number for FLExTrans 3.3
+#
 #   Version 3.2 - 5/12/21 - Ron Lockwood
 #    Bug fix related to python 3 conversion for name of new text with copy (X)
 #
@@ -50,7 +56,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -99,7 +105,7 @@ def MainFunction(DB, report, modify=True):
 
     try:
         # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
         if not targetProj:
             return
         TargetDB.OpenProject(targetProj, True)
@@ -108,8 +114,8 @@ def MainFunction(DB, report, modify=True):
 
     report.Info('Using: '+targetProj+' as the target database.')
 
-    sourceTextName = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
-    targetSynthesis = ReadConfig.getConfigVal(configMap, 'TargetOutputSynthesisFile', report)
+    sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (sourceTextName and targetSynthesis):
         return
     
