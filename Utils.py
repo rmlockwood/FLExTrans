@@ -196,6 +196,9 @@ TESTBED_CACHE_FILE = 'testbed_cache.txt'
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
 
+CHECK_DELIMITER = True
+DELIMITER_STR = '{'
+
 ## Viewer constants
 # Main color of the headwords
 LEMMA_COLOR = '000000' #black
@@ -1709,8 +1712,13 @@ class TextSentence():
                 return True
         return False
     def matchesLastWord(self, myGuid):
-        if len(self.__wordList) > 0:
-            if self.__wordList[-1].getGuid() == myGuid:
+        if len(self.__wordList) > 1: # > 1 since we may go back 2 words
+            
+            if self.__wordList[-1].isSentPunctutationWord():
+                last = -2
+            else:
+                last = -1
+            if self.__wordList[last].getGuid() == myGuid:
                 return True
         return False
     def write(self, fOut):
@@ -2380,7 +2388,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
             else:
                 # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
-                if myWord != None and not newSentence:
+                if myWord != None and not newSentence and (CHECK_DELIMITER and not textPunct == DELIMITER_STR): 
                     
                     myWord.addFinalPunc(spacesStr + textPunct) 
                 else:
