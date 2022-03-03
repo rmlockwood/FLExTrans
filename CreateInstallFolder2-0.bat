@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.3
+SET FLEXTRANS_VERSION=3.4
 rem Delete everything in Install2.0
 rd /s /q Install2.0
 
@@ -37,17 +37,19 @@ copy MyTableView.py Install2.0\FlexTools2.0\FlexTools\Modules\FLExTrans\Lib
 
 rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
-rem copy /Y FlexTrans.config Install2.0\FlexTools2.0\FlexTools
+rem 
+rem These things are now copied within the install program
+rem copy /Y FlexTrans.config Install2.0\FlexTools2.0
 rem copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
 rem copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
 rem copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
 rem copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
-rem copy transfer_rules.t1x Install2.0\FlexTools2.0\FlexTools\Output
+rem copy transfer_rules.t1x Install2.0\FlexTools2.0
 rem copy replace.dix Install2.0\FlexTools2.0\FlexTools\Output
 copy stamp32.exe Install2.0\FlexTools2.0\FlexTools
 rem copy VirtualMachineFiles\do_make_direct.sh Install2.0\FlexTools2.0\FlexTools\Output
-copy VirtualMachineFiles\ForXXE\Makefile Install2.0\FlexTools2.0\FlexTools\Output
-copy VirtualMachineFiles\ForXXE\fix.py Install2.0\FlexTools2.0\FlexTools\Output
+copy Makefile Install2.0\FlexTools2.0\FlexTools\Output
+copy fix.py Install2.0\FlexTools2.0\FlexTools\Output
 
 rem Documentation
 mkdir "Install2.0\FlexTools2.0\FLExTrans Documentation"
@@ -89,8 +91,8 @@ copy LiveRuleTester.ui Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install2.0\FlexTools2.0\FLExTools
 copy DownArrow.png Install2.0\FlexTools2.0\FLExTools
 rem copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
-copy VirtualMachineFiles\ForXXE\Makefile Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
-copy VirtualMachineFiles\ForXXE\fix.py Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
+copy Makefile Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
+copy fix.py Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans

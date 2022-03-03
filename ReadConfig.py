@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Find the config file one level up, i.e. top the top installed folder.
+#
 #   Version 3.3.1 - 1/27/22 - Ron Lockwood
 #    Convert config file values to decomposed Unicode.
 #
@@ -32,10 +35,10 @@ CONFIG_FILE = 'FlexTrans.config'
 
 def readConfig(report):
     try:
-        f_handle = open(CONFIG_FILE, encoding='utf-8')
+        f_handle = open('../' + CONFIG_FILE, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the top-level folder.')
         return None
 
     my_map = {}

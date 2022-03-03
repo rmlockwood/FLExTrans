@@ -7,7 +7,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.3"
+!define PRODUCT_VERSION "3.4"
 
 !define PRODUCT_ZIP_FILE "FLExTools20WithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -37,7 +37,7 @@
 !insertmacro MUI_LANGUAGE "English"
 
 ; MUI end ------
-
+Icon "${GIT_FOLDER}\FLExTransIcon32.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -74,14 +74,14 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$DOCUMENTS"
 
   # Copy files users may change only if they don't already exist
-  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Output"
+  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
   SetOverwrite off
 
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
+  File "${GIT_FOLDER}\FlexTrans.config"
 
   SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
-  File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
 
   SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
@@ -146,7 +146,7 @@ Section Uninstall
         RMDir /r "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
         Goto endFlexDel
   endFlexDel:
-  
+
   # Not sure what this does - RL 10Jan2022
   Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Uninstall.lnk"
   Delete "$SMPROGRAMS\${PRODUCT_NAME}${PRODUCT_VERSION}\Website.lnk"
