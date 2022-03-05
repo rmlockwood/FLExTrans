@@ -7,7 +7,8 @@
 #
 #   Version 3.4.2 - 3/5/22 - Ron Lockwood
 #    New parameter for run_makefile for a config file setting for transfer rules.
-#    Also rename err_log to apertium_log.txt
+#    Also rename err_log to apertium_log.txt and always use bilingual.dix for the
+#    filename in the tester folder.
 #
 #   Version 3.4.1 - 3/3/22 - Ron Lockwood
 #    Get the transfer_rules.t1x file from the top level
@@ -393,7 +394,8 @@ class Main(QMainWindow):
         
         # Copy bilingual file to the tester folder
         try:
-            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+            # always name the local version bilingual.dix which is what the Makefile has
+            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
             self.ret_val = False
