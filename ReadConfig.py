@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.2 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file.
+#
 #   Version 3.4.1 - 3/3/22 - Ron Lockwood
 #    Find the config file one level up, i.e. top the top installed folder.
 #
@@ -58,6 +61,7 @@ TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
 TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
+TRANSFER_RULES_FILE = 'TransferRulesFile'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 
 def readConfig(report):

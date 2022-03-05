@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.1 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file. Make it an 
+#    environment variable that the makefile can use.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -186,8 +190,12 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
-import ReadConfig as MyReadConfig
+import ReadConfig as MyReadConfig 
 
+MAKEFILE_RULES_VARIABLE = 'TRANSFER_RULE_PATH'
+MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
+MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
+MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
 APERTIUM_ERROR_FILE = 'apertium_error.txt'
 DO_MAKE_SCRIPT_FILE = 'do_make_direct.sh'
 CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
@@ -1283,7 +1291,39 @@ class FlexTransTestbedResultsFile():
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
 # relPathToBashFile is expected to be with Windows backslashes
-def run_makefile(relPathToBashFile):
+def run_makefile(relPathToBashFile, report):
+    
+    configMap = MyReadConfig.readConfig(report)
+    if not configMap:
+        return True
+
+    # Get the path to the transfer rules file
+    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report)
+    if not tranferRulePath:
+        return True
+    
+    tranferRulePath = re.sub(r'\\','/',tranferRulePath) # change to forward slashes
+    
+    # Get the path to the dictionary file
+    dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    if not dictionaryPath:
+        return True
+    
+    dictionaryPath = re.sub(r'\\','/',dictionaryPath) # change to forward slashes
+    
+    # Get the path to the source apertium file
+    analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
+    if not analyzedPath:
+        return True
+    
+    analyzedPath = re.sub(r'\\','/',analyzedPath) # change to forward slashes
+    
+    # Get the path to the target apertium file
+    transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
+    if not transferResultsPath:
+        return True
+    
+    transferResultsPath = re.sub(r'\\','/',transferResultsPath) # change to forward slashes
     
     # Change path to bash based on the architecture
     is32bit = (platform.architecture()[0] == '32bit')
@@ -1297,8 +1337,10 @@ def run_makefile(relPathToBashFile):
     (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
     drive = re.sub(':','',drive) # remove colon
     
+    # Build a unix path to the output folder
     unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
-    dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
+    cwdUnix = "/mnt/"+drive.lower()+tail+'/'
+    dir_path = cwdUnix+unixRelPath
     full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
     
     # Create the bash file which merely cds to the appropriate 
@@ -1306,7 +1348,21 @@ def run_makefile(relPathToBashFile):
     # we get unix line feeds not windows carriage return line feeds
     f = open(relPathToBashFile+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
     outStr = '#!/bin/sh\n'
-    outStr += 'cd ' + "'" + dir_path + "'" + '\n'
+    
+    # make a variable for where the transfer rules file should be found
+    # go up one level since the transfer rule path is relative to the FlexTools folder
+    outStr += f"export {MAKEFILE_RULES_VARIABLE}='../{tranferRulePath}'\n" 
+
+    # make a variable for where the bilingual dictionary file should be found
+    outStr += f"export {MAKEFILE_DICT_VARIABLE}='../{dictionaryPath}'\n" 
+    
+    # make a variable for where the analyzed text file should be found
+    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='../{analyzedPath}'\n" 
+    
+    # make a variable for where the transfer results file should be found
+    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='../{transferResultsPath}'\n" 
+    
+    outStr += f"cd '{dir_path}'\n"
     outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'
     
     f.write(bytes(outStr, 'ascii'))
