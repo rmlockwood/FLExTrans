@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.2 - 3/5/22 - Ron Lockwood
+#    New parameter for run_makefile for a config file setting for transfer rules.
+#    Also rename err_log to apertium_log.txt
+#
 #   Version 3.4.1 - 3/3/22 - Ron Lockwood
 #    Get the transfer_rules.t1x file from the top level
 #
@@ -175,7 +179,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.4.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -396,13 +400,15 @@ class Main(QMainWindow):
             return 
 
         # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-        try:
-            shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-            m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
-        except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
-            self.ret_val = False
-            return 
+
+        # The Makefile is now a separate one from the one in the Output folder
+#         try:
+#             shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+#             m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
+#         except:
+#             QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+#             self.ret_val = False
+#             return 
         
         ## Testbed preparation
         # Disable buttons as needed.
@@ -1223,7 +1229,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1233,7 +1239,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t2x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log2')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log2.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
@@ -1243,7 +1249,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t3x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log3')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log3.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
@@ -1253,7 +1259,7 @@ class Main(QMainWindow):
             source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
             tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
             tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-            log_file = os.path.join(TESTER_FOLDER, 'err_log')
+            log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1304,7 +1310,7 @@ class Main(QMainWindow):
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
-        ret = Utils.run_makefile('Output\\LiveRuleTester')
+        ret = Utils.run_makefile('Output\\LiveRuleTester', self.__report)
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
