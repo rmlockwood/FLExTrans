@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.4.1 - 3/4/22 - Ron Lockwood
+#    Give a better error than just showing the guid that wasn't found.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -138,7 +141,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -735,7 +738,8 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
     try:
         targetEntry = repo.GetObject(guid)
     except:
-        report.Error('Invalid guid or guid not found in target database. Guid: '+myGuid)
+        report.Error(f'Invalid guid or guid not found in target database. Guid: {myGuid}. You can filter for \
+                       this value in your target equivalent custom field to find the source entry with the problem.')
         return ret
     
     if targetEntry:

@@ -7,6 +7,11 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.4.1 - 3/5/22 - Ron Lockwood
+#    Makefile paramaterized to use setting in the config file. But many things
+#    to delete are in the Makefile as outputs, so just hard code them here.
+#    Remove nearly all files from the LiveRuleTester folder
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use the config file to find file names to clean up.
 #
@@ -28,7 +33,7 @@ import re
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "Remove generated files to force each FLExTrans module to regenerate everything.",  
@@ -74,21 +79,20 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
     
-    # TODO: parameterize makefile for this
-    bilingBinFile = re.sub('.dix', '.bin', bilingFile)
+    # makefile uses this target so hard code it here
     try:
-        os.remove(bilingBinFile)
+        os.remove(OUTPUT+'bilingual.bin')
     except:
         pass # ignore errors
     
-    # TODO: parameterize makefile for this
+    # remove bilingual dictionary backup file
     bilingOldFile = re.sub('.dix', '.dix.old', bilingFile)
     try:
         os.remove(bilingOldFile)
     except:
         pass # ignore errors
     
-    # TODO: parameterize makefile for this
+    # makefile uses this target so hard code it here
     try:
         os.remove(OUTPUT+'tr.t1x')
     except:
@@ -100,9 +104,9 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
     
-    # TODO: parameterize makefile for this
+    # always delete transfer_rules.t1x.bin. This is what is in the Makefile
     try:
-        os.remove(OUTPUT+f'{Utils.TRANSFER_RULE_FILE_PATH}.bin')
+        os.remove(OUTPUT+'transfer_rules.t1x.bin')
     except:
         pass # ignore errors
     
@@ -119,7 +123,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(Utils.APERTIUM_ERROR_FILE)
+        os.remove(OUTPUT+Utils.APERTIUM_ERROR_FILE)
     except:
         pass # ignore errors
 
@@ -130,7 +134,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(Utils.DO_MAKE_SCRIPT_FILE)
+        os.remove(OUTPUT+Utils.DO_MAKE_SCRIPT_FILE)
     except:
         pass # ignore errors
     
@@ -151,6 +155,18 @@ def MainFunction(DB, report, modify=True):
     
     try:
         for p in Path(tempPath).glob(f"*{Utils.TESTBED_CACHE_FILE}"):
+            p.unlink()
+    except:
+        pass # ignore errors
+    
+    # Remove files in the LiveRuleTester folder
+    try:
+        for p in Path('.').glob(f"{OUTPUT}LiveRuleTester\\*"):
+            
+            
+            if re.search('fix.py', p.name) or re.search('Makefile', p.name):
+                continue
+            
             p.unlink()
     except:
         pass # ignore errors
