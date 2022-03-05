@@ -3,6 +3,10 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 3.4.1 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file. Make it an 
+#    environment variable that the makefile can use.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -43,7 +47,7 @@ from FTModuleClass import *
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  
@@ -55,7 +59,7 @@ def MainFunction(DB, report, modify=True):
     # Run the makefile to run Apertium tools to do the transfer
     # component of FLExTrans. Pass in the folder of the bash
     # file to run. The current directory is FlexTools
-    ret = Utils.run_makefile(Utils.OUTPUT_FOLDER)
+    ret = Utils.run_makefile(Utils.OUTPUT_FOLDER, report)
     
     if ret:
         report.Error('An error happened when running the Apertium tools.')

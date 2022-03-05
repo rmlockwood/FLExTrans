@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.1 - 3/4/22 - Ron Lockwood
+#    Set abbrev variable in the main loop to prevent crash shown in issue #79.
+#    Also put out UNK as a symbol in the symbol definitions for the
+#    bilingual.dix file. Simplified building the sdef string.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -173,7 +178,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -651,15 +656,14 @@ def MainFunction(DB, report, modifyAllowed):
                 
         # build string for the xml pos section
         for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
-            cat_str = '    <sdef n="'
-            # output abbreviation
-            cat_str += pos_abbr
-            cat_str += '" c="'
             
-            # output full category name
-            cat_str += pos_name
-            cat_str += '"/>\n'
+            # output abbreviation and full category name
+            cat_str = f'    <sdef n="{pos_abbr}" c="{pos_name}"/>\n'
             f_out.write(cat_str)
+        
+        # write symbol for UNK
+        cat_str = '    <sdef n="UNK" c="Unknown"/>\n'
+        f_out.write(cat_str)
         
         f_out.write('  </sdefs>\n\n')
         f_out.write('  <section id="main" type="standard">\n')
@@ -690,6 +694,7 @@ def MainFunction(DB, report, modifyAllowed):
                 for i, mySense in enumerate(e.SensesOS):
                     
                     trgtFound = False
+                    abbrev = 'UNK'
                     
                     # Make sure we have a valid analysis object
                     if mySense.MorphoSyntaxAnalysisRA:

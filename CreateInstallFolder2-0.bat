@@ -91,7 +91,7 @@ copy LiveRuleTester.ui Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install2.0\FlexTools2.0\FLExTools
 copy DownArrow.png Install2.0\FlexTools2.0\FLExTools
 rem copy VirtualMachineFiles\ForLiveRuleTester\do_make.sh Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
-copy Makefile Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
+copy MakefileForLiveRuleTester Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester\Makefile
 copy fix.py Install2.0\FlexTools2.0\FlexTools\Output\LiveRuleTester
 
 rem View Source-Target pieces
