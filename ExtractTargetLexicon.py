@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4.1 - 3/10/22 - Ron Lockwood
+#    Allow variants with sense information to be put into the STAMP root dictionary.
+#    Fixes #84.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -124,7 +128,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -414,8 +418,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             
         morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
-        # If no senses, check if this entry is an inflectional variant and output it
-        if e.SensesOS.Count == 0:
+        # Process inflectional variants even if they have senses.
+        if True:
             
             got_one = False
             
@@ -453,7 +457,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     process_allomorphs(e, f_rt, "", report, 'stem', TargetDB)
                     rt_cnt +=1
 
-        else: # Entry with senses
+        if e.SensesOS.Count > 0: # Entry with senses
             # Loop through senses
             for i, mySense in enumerate(e.SensesOS):
                 
