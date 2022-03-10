@@ -363,7 +363,10 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, report)
         if not self.__transfer_rules_file:
-            return True
+            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TRANSFER_RULES_FILE} in the configuration file.')
+            self.ret_val = False
+            self.close()
+            return 
         
         # Load the transfer rules
         pwd = os.getcwd()
