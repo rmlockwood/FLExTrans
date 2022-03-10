@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.3 - 3/10/22 - Ron Lockwood
+#    Get the transfer rules path from the config file
+#
 #   Version 3.4.2 - 3/5/22 - Ron Lockwood
 #    New parameter for run_makefile for a config file setting for transfer rules.
 #    Also rename err_log to apertium_log.txt and always use bilingual.dix for the
@@ -180,7 +183,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.2",
+        FTM_Version    : "3.4.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -357,9 +360,17 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Get the path to the transfer rules file
+        self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, report)
+        if not self.__transfer_rules_file:
+            return True
+        
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, '../transfer_rules.t1x')
+
+#        os.path.join(pwd, '..', self.__transfer_rules_file)
+        
+        # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()
