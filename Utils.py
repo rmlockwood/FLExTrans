@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.2 - 3/10/22 - Ron Lockwood
+#    Don't do the discontiguous types processing if there is nothing on the list
+#    in the config file. This is a fix for issue #87.
+#
 #   Version 3.4.1 - 3/5/22 - Ron Lockwood
 #    Use a config file setting for the transfer rules file. Make it an 
 #    environment variable that the makefile can use.
@@ -2589,8 +2593,10 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     # substitute a complex form when its components are found contiguous in the text      
     myText.processComplexForms(typesList) 
     
-    # substitute a complex form when its components are found discontiguous in the text      
-    myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
+    # substitute a complex form when its components are found discontiguous in the text  
+    if len(discontigTypesList) > 0 and len(discontigPOSList) > 0 and len(typesList) > 0:
+            
+        myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
     
     return myText
 
