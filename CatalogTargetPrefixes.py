@@ -224,7 +224,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
         if tupGloss not in seen:
             seen.add(tupGloss)
         else:
-            error_list.append(('Found duplicate affix/clitic: ' + tupGloss + ' Use of this affix/clitic could produce unexpected results.', 1))
+            error_list.append((f'Found duplicate affix/clitic with gloss: {tupGloss}. Use of this affix/clitic could produce unexpected results.', 1))
 
     error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
     return error_list
