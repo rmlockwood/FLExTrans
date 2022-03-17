@@ -271,10 +271,7 @@ type="tTool"
 ><li
 >Select File &gt; Open from the menu.</li
 ><li
->Navigate to the install folder (typically Documents\FlexTools2.0) and into the <object
-type="tFoldername"
->FlexTools</object
-> sub-folder.</li
+>Navigate to the install folder (typically Documents\FlexTools2.0).</li
 ><li
 >Select the <object
 type="tFilename"
@@ -549,10 +546,7 @@ id="sWriteRules"
 >In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category. We’ll modify an existing rule to do this.</p
 ><ol
 ><li
->Navigate to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder in your installation folder.</li
+>Navigate to your installation folder.</li
 ><li
 >Open the file <object
 type="tFilename"
@@ -1665,10 +1659,7 @@ type="tFlexx"
 ><li
 >We will be writing new transfer rules so let’s rename the current rule file.<ol
 ><li
->Go to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder and rename the file <object
+>Go to the top-level folder and rename the file <object
 type="tFilename"
 >transfer_rules.t1x</object
 > to <object
@@ -1682,18 +1673,7 @@ type="tFoldername"
 > folder again and copy the file <object
 type="tFilename"
 >transfer_rules.t1x</object
-> to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder.</li
-><li
->Delete the files <object
-type="tFilename"
->transfer_rules.t1x.bin</object
-> and <object
-type="tFilename"
->tr.t1x</object
-> if they exist.</li
+> to the top-level folder.</li
 ><li
 >Open <object
 type="tFilename"
@@ -1707,10 +1687,7 @@ type="tXMLmindXMLEditor"
 ><li
 >We will be changing the configuration file so let’s rename the current one.<ol
 ><li
->Go to the <object
-type="tFoldername"
->FlexTools</object
-> folder and rename the file <object
+>Go to the top-level folder and rename the file <object
 type="tFilename"
 >FlexTrans.config</object
 > to <object
@@ -1724,10 +1701,7 @@ type="tFoldername"
 > folder again and copy the file <object
 type="tFilename"
 >FlexTrans.config</object
-> to the <object
-type="tFoldername"
->FlexTools</object
-> folder.</li
+> to the top-level folder.</li
 ></ol
 ></li
 ><li
@@ -3884,10 +3858,7 @@ type="tTool"
 >Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
 type="tFilename"
 >testbed.xml</object
-> which is in the <object
-type="tFoldername"
->Output</object
-> folder in the <object
+> which is in the top-level folder in the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</li
@@ -3997,10 +3968,7 @@ type="tLiveRuleTester"
 >. If you need to edit or delete a test, edit the file <object
 type="tFilename"
 >testbed.xml</object
-> in the <object
-type="tFoldername"
->Output</object
-> folder with the <object
+> in the top-level folder with the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</p
@@ -4568,15 +4536,12 @@ type="tRuleElemInXXE"
 >You also have to make a change to the configuration file (<object
 type="tFilename"
 >FlexTrans.config</object
-> in the <object
-type="tFoldername"
->FlexTools</object
-> folder) to signal <object
+> in the top-level folder) to signal <object
 type="tFlextrans"
 ></object
 > to use the replacement file. Change the applicable line to look like this: <object
 type="tCourier"
->BilingualDictReplacementFile=Output\replace.dix</object
+>BilingualDictReplacementFile=..\replace.dix</object
 ></p
 ></section3
 ><section3
