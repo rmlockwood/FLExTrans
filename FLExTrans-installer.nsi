@@ -48,7 +48,7 @@ ShowUnInstDetails show
 
 Section -Prerequisites
 InitPluginsDir
-  SetShellVarContext all
+  #SetShellVarContext all  #this causes the install folder to always be put in Public Documents
   SetOutPath "$INSTDIR\install_files"
   #Connect to apertium
   #File "Command2.sh"
@@ -81,6 +81,8 @@ InitPluginsDir
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   File "${GIT_FOLDER}\FlexTrans.config"
+  
+  CopyFiles "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FlexTrans.config" "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTrans.config"
 
   SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
   File "${GIT_FOLDER}\flextools.ini"
