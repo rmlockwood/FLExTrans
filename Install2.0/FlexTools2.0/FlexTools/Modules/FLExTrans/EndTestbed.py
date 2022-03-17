@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.4.1 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -41,7 +44,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "End Testbed",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Conclude a testbed log result.",
         FTM_Help   : "",
@@ -74,7 +77,7 @@ def MainFunction(DB, report, modifyAllowed):
     
     # Create an object for the testbed results file and get the associated
     # XML object
-    resultsFileObj = Utils.FlexTransTestbedResultsFile()
+    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
     
     # Extract the results from the myText.syn file

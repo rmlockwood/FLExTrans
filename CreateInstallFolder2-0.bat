@@ -40,9 +40,9 @@ copy /Y subdirs.pth Install2.0\FlexTools2.0\FlexTools\Modules
 rem 
 rem These things are now copied within the install program
 rem copy /Y FlexTrans.config Install2.0\FlexTools2.0
-rem copy "FlexTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-rem copy "FlexTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
-rem copy "FlexTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FLExTrans All Steps.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FLExTrans Run Testbed.ini" Install2.0\FlexTools2.0\FlexTools\Collections
+rem copy "FLExTrans Tools.ini" Install2.0\FlexTools2.0\FlexTools\Collections
 rem copy /Y flextools.ini Install2.0\FlexTools2.0\FlexTools
 rem copy transfer_rules.t1x Install2.0\FlexTools2.0
 rem copy replace.dix Install2.0\FlexTools2.0\FlexTools\Output

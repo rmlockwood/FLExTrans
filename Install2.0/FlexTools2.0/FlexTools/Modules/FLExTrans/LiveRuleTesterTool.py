@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.4 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4.3 - 3/10/22 - Ron Lockwood
+#    Get the transfer rules path from the config file
+#
 #   Version 3.4.2 - 3/5/22 - Ron Lockwood
 #    New parameter for run_makefile for a config file setting for transfer rules.
 #    Also rename err_log to apertium_log.txt and always use bilingual.dix for the
@@ -180,7 +186,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.2",
+        FTM_Version    : "3.4.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -357,9 +363,20 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Get the path to the transfer rules file
+        self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report)
+        if not self.__transfer_rules_file:
+            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TRANSFER_RULES_FILE} in the configuration file.')
+            self.ret_val = False
+            self.close()
+            return 
+        
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, '../transfer_rules.t1x')
+
+#        os.path.join(pwd, '..', self.__transfer_rules_file)
+        
+        # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()
@@ -463,7 +480,7 @@ class Main(QMainWindow):
         return myObj
     
     def ViewTestbedLogButtonClicked(self):
-        resultsFileObj = Utils.FlexTransTestbedResultsFile()
+        resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
     
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
@@ -480,13 +497,25 @@ class Main(QMainWindow):
 
     def EditTestbedLogButtonClicked(self):
         
+        # Get the path to the testbed file
+        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report)
+        if not testbedPath:
+            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TESTBED_FILE} in the configuration file.')
+            self.ret_val = False
+            self.close()
+            return 
+
+        if os.path.exists(testbedPath) == False:
+            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {testbedPath} does not exist. Perhaps you have not added any tests to the testbed.')
+            self.ret_val = False
+            self.close()
+            return 
+
         progFilesFolder = os.environ['ProgramFiles(x86)']
         
         xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
         
-        Utils.TESTBED_FILE_PATH
-
-        call([xxe, Utils.TESTBED_FILE_PATH])
+        call([xxe, testbedPath])
             
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
