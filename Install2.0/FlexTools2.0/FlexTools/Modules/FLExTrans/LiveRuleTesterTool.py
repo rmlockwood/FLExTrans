@@ -434,8 +434,19 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
-            self.ui.viewTestbedLogButton.setEnabled(False)
+        # Get the path to the testbed file
+        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report)
+        if not testbedPath:
+            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TESTBED_FILE} in the configuration file.')
+            self.ret_val = False
+            self.close()
+            return 
+
+        self.__testbedPath = testbedPath
+        
+        # Disable the edit testbed button if the testbed doesn't exist.
+        if os.path.exists(self.__testbedPath) == False:
+            self.ui.editTestbedButton.setEnabled(False)
 
         self.ret_val = True
 
@@ -497,25 +508,16 @@ class Main(QMainWindow):
 
     def EditTestbedLogButtonClicked(self):
         
-        # Get the path to the testbed file
-        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report)
-        if not testbedPath:
-            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TESTBED_FILE} in the configuration file.')
-            self.ret_val = False
-            self.close()
-            return 
+        if os.path.exists(self.__testbedPath) == False:
 
-        if os.path.exists(testbedPath) == False:
-            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {testbedPath} does not exist. Perhaps you have not added any tests to the testbed.')
-            self.ret_val = False
-            self.close()
+            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {self.__testbedPath} does not exist.')
             return 
-
+        
         progFilesFolder = os.environ['ProgramFiles(x86)']
         
         xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
         
-        call([xxe, testbedPath])
+        call([xxe, self.__testbedPath])
             
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
@@ -526,7 +528,7 @@ class Main(QMainWindow):
         else:
             direction = Utils.LTR
 
-        fileObj = Utils.FlexTransTestbedFile(direction)
+        fileObj = Utils.FlexTransTestbedFile(direction, self.__report)
         testbedObj = fileObj.getFLExTransTestbedXMLObject()
         
         if fileObj.isNew():
