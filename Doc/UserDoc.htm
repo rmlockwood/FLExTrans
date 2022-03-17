@@ -206,8 +206,7 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Open <span style="font-family:Courier New; font-weight:bold; color:navy; ">Notepad</span></li>
                <li>Select File &gt; Open from the menu.</li>
-               <li>Navigate to the install folder (typically Documents\FlexTools2.0) and into the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> sub-folder.
-               </li>
+               <li>Navigate to the install folder (typically Documents\FlexTools2.0).</li>
                <li>Select the <span style="font-style:italic; ">FlexTrans.config</span> file and hit <span style="font-style:italic; ">Enter</span>.
                </li>
                <li>Change these two values:
@@ -363,8 +362,7 @@
          We&#8217;ll modify an existing rule to do this.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Navigate to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder in your installation folder.
-         </li>
+         <li>Navigate to your installation folder.</li>
          <li>Open the file <span style="font-style:italic; ">transfer_rules.t1x</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(7)</a>. This is the transfer rules file that works with the sample projects.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -921,11 +919,9 @@
          </li>
          <li>We will be writing new transfer rules so let&#8217;s rename the current rule file.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder and rename the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-style:italic; ">transfer_rules_saved.t1x</span>.
+               <li>Go to the top-level folder and rename the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-style:italic; ">transfer_rules_saved.t1x</span>.
                </li>
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder.
-               </li>
-               <li>Delete the files <span style="font-style:italic; ">transfer_rules.t1x.bin</span> and <span style="font-style:italic; ">tr.t1x</span> if they exist.
+               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to the top-level folder.
                </li>
                <li>Open <span style="font-style:italic; ">transfer_rules.t1x</span> in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
                </li>
@@ -933,9 +929,9 @@
          </li>
          <li>We will be changing the configuration file so let&#8217;s rename the current one.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> folder and rename the file <span style="font-style:italic; ">FlexTrans.config</span> to <span style="font-style:italic; ">FlexTrans_saved.config</span>.
+               <li>Go to the top-level folder and rename the file <span style="font-style:italic; ">FlexTrans.config</span> to <span style="font-style:italic; ">FlexTrans_saved.config</span>.
                </li>
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> folder.
+               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the top-level folder.
                </li>
             </ol>
          </li>
@@ -1880,7 +1876,7 @@
                </li>
             </ol>
          </li>
-         <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the top-level folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
          </li>
       </ol>
       <h2 style=""><a name="sTestbedTools"></a>8.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools
@@ -1917,7 +1913,7 @@
       </p>
       <h3 style=""><a name="sTestbedEditor"></a>8.2.5&nbsp;Testbed Editing
       </h3>
-      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the top-level folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <h1 style=""><a name="sHowTo"></a>9&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s
       </h1>
@@ -2192,7 +2188,7 @@
       </div>
       <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
-      <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools</span> folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=Output\replace.dix</span></p>
+      <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the top-level folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=..\replace.dix</span></p>
       <h3 style=""><a name="sInflVariantTgt"></a>9.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
