@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.3 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
 #   Version 3.4.2 - 3/5/22 - Ron Lockwood
 #    Use a config file setting for the transfer rules file.
 #
@@ -60,6 +63,8 @@ TARGET_FORMS_INFLECTION_2ND = 'TargetComplexFormsWithInflectionOn2ndElement'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TESTBED_FILE = 'TestbedFile'
+TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
 TRANSFER_RULES_FILE = 'TransferRulesFile'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'

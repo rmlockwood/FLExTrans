@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.3 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
 #   Version 3.4.2 - 3/10/22 - Ron Lockwood
 #    Don't do the discontiguous types processing if there is nothing on the list
 #    in the config file. This is a fix for issue #87.
@@ -236,8 +239,6 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
-TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
-TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
 TRANSFER_RULE_FILE_PATH = OUTPUT_FOLDER + '\\transfer_rules.t1x'
 
 # Testbed XML constants
@@ -1055,12 +1056,22 @@ class FLExTransTestbedXMLObject():
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
-    def __init__(self, direction):
+    def __init__(self, direction, report):
         
         self.__isNew = False
         
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        testbedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_FILE, report)
+        if not testbedPath:
+            raise ValueError()
+        
+        self.__testbedPath = testbedPath
+        
         # check if the file exists
-        if os.path.exists(TESTBED_FILE_PATH) == False:
+        if os.path.exists(testbedPath) == False:
             
             # we will create it
             self.__isNew = True
@@ -1069,9 +1080,9 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedTree = ET.parse(TESTBED_FILE_PATH)
+                self.__testbedTree = ET.parse(testbedPath)
             except:
-                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
+                raise ValueError('The testbed file: ' + testbedPath + ' is invalid.')
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1094,14 +1105,14 @@ class FlexTransTestbedFile():
             self.write()
 
     def write(self):
-        self.__testbedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
         # Add the DOCTYPE declaration
-        f = open(TESTBED_FILE_PATH, encoding='utf-8')
+        f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()
         f.close()
         lines.insert(1, '<!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">\n')
-        f = open(TESTBED_FILE_PATH, 'w', encoding='utf-8')
+        f = open(self.__testbedPath, 'w', encoding='utf-8')
         f.writelines(lines)
         f.close()
 
@@ -1271,17 +1282,28 @@ class FLExTransTestbedResultsXMLObject():
 # Models the results log XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedResultsFile():
-    def __init__(self):
-        if os.path.exists(TESTBED_RESULTS_FILE_PATH) == False:
+    def __init__(self, report):
+
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        resultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_RESULTS_FILE, report)
+        if not resultsPath:
+            raise ValueError()
+        
+        self.__resultsPath = resultsPath
+
+        if os.path.exists(resultsPath) == False:
             
             self.__XMLObject = FLExTransTestbedResultsXMLObject()
             myRoot = self.__XMLObject.getRoot()
             self.__testbedResultsTree  = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedResultsTree = ET.parse(TESTBED_RESULTS_FILE_PATH)
+                self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError('The testbed results file: ' + TESTBED_RESULTS_FILE_PATH + ' is invalid.')
+                raise ValueError(f'The testbed results file: {resultsPath} is invalid.')
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     
@@ -1289,7 +1311,7 @@ class FlexTransTestbedResultsFile():
         return self.__XMLObject
     
     def write(self):
-        self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a

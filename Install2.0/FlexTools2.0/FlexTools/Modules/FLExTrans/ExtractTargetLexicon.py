@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4.2 - 3/11/22 - Ron Lockwood
+#    Less Information outputted to FlexTools.
+#
+#   Version 3.4.1 - 3/10/22 - Ron Lockwood
+#    Allow variants with sense information to be put into the STAMP root dictionary.
+#    Fixes #84.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -124,7 +131,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.4.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -414,8 +421,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             
         morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
-        # If no senses, check if this entry is an inflectional variant and output it
-        if e.SensesOS.Count == 0:
+        # Process inflectional variants even if they have senses.
+        if True:
             
             got_one = False
             
@@ -453,7 +460,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     process_allomorphs(e, f_rt, "", report, 'stem', TargetDB)
                     rt_cnt +=1
 
-        else: # Entry with senses
+        if e.SensesOS.Count > 0: # Entry with senses
             # Loop through senses
             for i, mySense in enumerate(e.SensesOS):
                 
@@ -548,12 +555,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         else:
                             err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
     
-    err_list.append(('STAMP dictionaries created.', 0))
-    err_list.append((str(pf_cnt)+' prefixes in the prefix dictionary.', 0))
-    err_list.append((str(sf_cnt)+' suffixes in the suffix dictionary.', 0))
-    err_list.append((str(if_cnt)+' infixes in the infix dictionary.', 0))
-    err_list.append((str(rt_cnt)+' roots in the root dictionary.', 0))
-
+    err_list.append((f'STAMP dictionaries created. {str(rt_cnt)} roots, {str(pf_cnt)} prefixes, {str(sf_cnt)} suffixes and {str(if_cnt)} infixes.', 0))
+    
     return err_list
     
 def extract_target_lex(DB, configMap, report=None):
@@ -603,16 +606,16 @@ def extract_target_lex(DB, configMap, report=None):
     (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
 
     # Output category info.
-    error_list.append(('Outputting category information...', 0))
+    #error_list.append(('Outputting category information...', 0))
     output_cat_info(TargetDB, f_dec)
     
     # Output natural class info.
-    error_list.append(('Outputting natural class information...', 0))
+    #error_list.append(('Outputting natural class information...', 0))
     err_list = output_nat_class_info(TargetDB, f_dec)
     error_list.extend(err_list)
     
     # Put data into the STAMP dictionaries
-    error_list.append(('Making the STAMP dictionaries...', 0))
+    #error_list.append(('Making the STAMP dictionaries...', 0))
     err_list = create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report)
     error_list.extend(err_list)
     
