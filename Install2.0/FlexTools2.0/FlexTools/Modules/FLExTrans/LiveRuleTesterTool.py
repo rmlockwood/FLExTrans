@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.5 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95
+#
 #   Version 3.4.4 - 3/17/22 - Ron Lockwood
 #    Allow for a user configurable Testbed location. Issue #70.
 #
@@ -186,7 +190,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.4",
+        FTM_Version    : "3.4.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -364,13 +368,12 @@ class Main(QMainWindow):
             self.__checkBoxList.append(myCheck)
 
         # Get the path to the transfer rules file
-        self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report)
+        self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
+
+        # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
         if not self.__transfer_rules_file:
-            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TRANSFER_RULES_FILE} in the configuration file.')
-            self.ret_val = False
-            self.close()
-            return 
-        
+            self.__transfer_rules_file = 'Output\\transfer_rules.t1x'
+            
         # Load the transfer rules
         pwd = os.getcwd()
 
@@ -434,13 +437,11 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        # Get the path to the testbed file
-        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report)
+        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the Output folder
+        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
         if not testbedPath:
-            QMessageBox.warning(self, 'Configuration File Error', f'Could not find an entry for {ReadConfig.TESTBED_FILE} in the configuration file.')
-            self.ret_val = False
-            self.close()
-            return 
+            
+            testbedPath = 'Output\\testbed.xml'
 
         self.__testbedPath = testbedPath
         
@@ -528,7 +529,12 @@ class Main(QMainWindow):
         else:
             direction = Utils.LTR
 
-        fileObj = Utils.FlexTransTestbedFile(direction, self.__report)
+        try:
+            fileObj = Utils.FlexTransTestbedFile(direction, self.__report)
+        except:
+            QMessageBox.warning(self, 'Not Found Error', f'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml')
+            return 
+        
         testbedObj = fileObj.getFLExTransTestbedXMLObject()
         
         if fileObj.isNew():
