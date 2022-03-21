@@ -7,6 +7,11 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.4.2 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95. In fact always give no error when config file
+#    entry is missing.
+#
 #   Version 3.4.1 - 3/5/22 - Ron Lockwood
 #    Makefile paramaterized to use setting in the config file. But many things
 #    to delete are in the Makefile as outputs, so just hard code them here.
@@ -33,7 +38,7 @@ import re
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.4.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "Remove generated files to force each FLExTrans module to regenerate everything.",  
@@ -49,31 +54,31 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
 
-    targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
+    targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report, giveError=False)
     try:
         os.remove(targetSynthesis)
     except:
         pass # ignore errors
 
-    targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
+    targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report, giveError=False)
     try:
         os.remove(targetANA)
     except:
         pass # ignore errors
 
-    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
+    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report, giveError=False)
     try:
         os.remove(transferResultsFile)
     except:
         pass # ignore errors
 
-    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report, giveError=False)
     try:
         os.remove(outFileVal)
     except:
         pass # ignore errors
     
-    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report, giveError=False)
     try:
         os.remove(bilingFile)
     except:
@@ -98,7 +103,7 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
 
-    affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report)
+    affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False)
     try:
         os.remove(affixFile)
     except:

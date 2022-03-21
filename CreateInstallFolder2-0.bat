@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.4
+SET FLEXTRANS_VERSION=3.4.1
 rem Delete everything in Install2.0
 rd /s /q Install2.0
 
