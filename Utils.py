@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.4 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95. Applies to run_makefile for Apertium.
+#
 #   Version 3.4.3 - 3/17/22 - Ron Lockwood
 #    Allow for a user configurable Testbed location. Issue #70.
 #
@@ -1324,9 +1328,11 @@ def run_makefile(relPathToBashFile, report):
         return True
 
     # Get the path to the transfer rules file
-    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report)
+    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
     if not tranferRulePath:
-        return True
+        tranferRulePath = 'Output\\transfer_rules.t1x'
     
     tranferRulePath = re.sub(r'\\','/',tranferRulePath) # change to forward slashes
     
@@ -2755,8 +2761,8 @@ def openTargetProject(configMap, report):
     try:
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-        report.Error('There was an error opening target database: '+targetProj+'.')
-        return
+        report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
+        raise
 
     report.Info('Using: '+targetProj+' as the target database.')
     
