@@ -243,7 +243,6 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
-TRANSFER_RULE_FILE_PATH = OUTPUT_FOLDER + '\\transfer_rules.t1x'
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
