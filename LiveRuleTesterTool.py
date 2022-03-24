@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5 - 3/24/22 - Ron Lockwood
+#    Save selected tabs on close to a file and rest to those on open. Bug #2.
+#
 #   Version 3.4.5 - 3/21/22 - Ron Lockwood
 #    Handle when transfer rules file and testbed file locations are not set in
 #    the configuration file. Issue #95
@@ -185,12 +188,13 @@ AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
 TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
 TARGET_ANA_PATH = TESTER_FOLDER + '\\myText.ana'
 SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
+WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.5",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -320,13 +324,8 @@ class Main(QMainWindow):
         self.__prevTab = 0
 
         
-        # Make sure we are on the 1st tabs
-        self.ui.tabRules.setCurrentIndex(0)
-        self.ui.tabSource.setCurrentIndex(0)
-        
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
-        #self.ui.CloseButton.clicked.connect(self.CloseClicked)
         self.ui.listSentences.clicked.connect(self.listSentClicked)
         self.ui.listTransferRules.clicked.connect(self.rulesListClicked)
         self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
@@ -367,6 +366,28 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Make sure we are on right tabs
+        ruleTab = 0
+        sourceTab = 0
+        
+        # Open a settings file to see which tabs were last used.
+        try:
+            f = open(WINDOWS_SETTINGS_FILE)
+            
+            line = f.readline()
+            
+            ruleTab, sourceTab = line.split(',')
+            ruleTab = int(ruleTab)
+            sourceTab = int(sourceTab)
+            
+            f.close()
+        except:
+            pass
+        
+        # Set which tab is shown        
+        self.ui.tabRules.setCurrentIndex(ruleTab)
+        self.ui.tabSource.setCurrentIndex(sourceTab)
+        
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
@@ -1071,9 +1092,16 @@ class Main(QMainWindow):
         for j in range(i+1,len(self.__checkBoxList)):
             self.__checkBoxList[j].setVisible(False)
              
-    def CloseClicked(self):
-        self.ret_val = 0
-        self.close()
+    def closeEvent(self, event):
+        
+        rulesTab = self.ui.tabRules.currentIndex()
+        sourceTab = self.ui.tabSource.currentIndex()
+        
+        f = open(WINDOWS_SETTINGS_FILE, 'w')
+        
+        f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
+        f.close()
+        
     def BilingBrowseClicked(self):
         # Bring up file select dialog
         biling_file_tup = \
