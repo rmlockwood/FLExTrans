@@ -48,7 +48,6 @@ ShowUnInstDetails show
 
 Section -Prerequisites
 InitPluginsDir
-  SetShellVarContext all
   SetOutPath "$INSTDIR\install_files"
   #Connect to apertium
   #File "Command2.sh"
@@ -72,11 +71,13 @@ InitPluginsDir
   # Unzip FLExTools to documents folder $DOCUMENTS\FLExTools2.0
   # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
   File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
+  Var /GLOBAL OUT_FOLDER
   Push "$Profile"
   Push "Choose where to put you files"
-  Push "$DOCUMENTS"
+  Push "$Desktop"
   Call BrowseForFolder
-  !define OUT_FOLDER $0
+  pop $0
+  StrCpy $OUT_FOLDER $0
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
   # Copy files users may change only if they don't already exist
@@ -86,20 +87,20 @@ InitPluginsDir
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
 
-  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
   File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
 
-  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
   File "${GIT_FOLDER}\FlexTrans All Steps.ini"
   File "${GIT_FOLDER}\FlexTrans Run Testbed.ini"
   File "${GIT_FOLDER}\FlexTrans Tools.ini"
   SetOverwrite on
 
   # Attempt to run pip to install FlexTools dependencies
-  SetOutPath "$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}"
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
-  Exec '"$DOCUMENTS\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
+  Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
 
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
