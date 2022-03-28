@@ -5,6 +5,20 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.2 - 3/11/22 - Ron Lockwood
+#    Give errors if biling lex file or replacement file values not found in the
+#    configuration file.
+#    Fixed bug where the old style replacement file wasn't doing the append section
+#    correctly.
+#
+#   Version 3.4.1 - 3/4/22 - Ron Lockwood
+#    Set abbrev variable in the main loop to prevent crash shown in issue #79.
+#    Also put out UNK as a symbol in the symbol definitions for the
+#    bilingual.dix file. Simplified building the sdef string.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3.3 - 2/4/22 - Ron Lockwood
 #    Changed replacement file to a different format for improved editing. Handle
 #    either the old format or the new which uses new elements <leftdata> <rightdata>
@@ -170,7 +184,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.3.3",
+        FTM_Version    : "3.4.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -465,8 +479,12 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     
     # Loop through append entries
     for entry in append_sec:
+        
         # add them to the list of bilingual entries
-        new_biling_section.append(convert_to_biling_style_entry(entry))
+        if newDocType:
+            new_biling_section.append(convert_to_biling_style_entry(entry))
+        else:
+            new_biling_section.append(entry)
         
     # Remove the old entries list and add the new
     bilingRoot.remove(biling_section)
@@ -569,12 +587,15 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
     
-    catSub = ReadConfig.getConfigVal(configMap, 'CategoryAbbrevSubstitutionList', report)
-    linkField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForEntryLink', report)
-    senseNumField = ReadConfig.getConfigVal(configMap, 'SourceCustomFieldForSenseNum', report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, 'SourceMorphNamesCountedAsRoots', report)
-    sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
+    linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
+    senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
+    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
+    sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
+    
     if not (linkField and senseNumField and sourceMorphNames and sentPunct):
+        report.Error(f'A value for {ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY}  or {ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM} or \
+        {ReadConfig.SOURCE_MORPHNAMES} or {ReadConfig.SENTENCE_PUNCTUATION} not found in the configuration file.')
         return
     
     # Transform the straight list of category abbreviations to a list of tuples
@@ -601,14 +622,16 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error(senseNumField + " field doesn't exist. Please read the instructions.")
         return
 
-    bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
+    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not bilingFile:
+        report.Error(f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.')
         return
     
     fullPathBilingFile = bilingFile
     
-    replFile = ReadConfig.getConfigVal(configMap, 'BilingualDictReplacementFile', report)
+    replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replFile:
+        report.Error(f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.')
         return
     
     # If the target database hasn't changed since we created the affix file, don't do anything.
@@ -648,15 +671,14 @@ def MainFunction(DB, report, modifyAllowed):
                 
         # build string for the xml pos section
         for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
-            cat_str = '    <sdef n="'
-            # output abbreviation
-            cat_str += pos_abbr
-            cat_str += '" c="'
             
-            # output full category name
-            cat_str += pos_name
-            cat_str += '"/>\n'
+            # output abbreviation and full category name
+            cat_str = f'    <sdef n="{pos_abbr}" c="{pos_name}"/>\n'
             f_out.write(cat_str)
+        
+        # write symbol for UNK
+        cat_str = '    <sdef n="UNK" c="Unknown"/>\n'
+        f_out.write(cat_str)
         
         f_out.write('  </sdefs>\n\n')
         f_out.write('  <section id="main" type="standard">\n')
@@ -687,6 +709,7 @@ def MainFunction(DB, report, modifyAllowed):
                 for i, mySense in enumerate(e.SensesOS):
                     
                     trgtFound = False
+                    abbrev = 'UNK'
                     
                     # Make sure we have a valid analysis object
                     if mySense.MorphoSyntaxAnalysisRA:

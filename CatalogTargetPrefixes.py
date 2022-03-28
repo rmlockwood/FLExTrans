@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -78,7 +81,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -122,7 +125,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     
     error_list = []
     
-    morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', report)
+    morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
 
     if not morphNames:
         error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
@@ -132,7 +135,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
 
     try:
         # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
@@ -221,7 +224,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
         if tupGloss not in seen:
             seen.add(tupGloss)
         else:
-            error_list.append(('Found duplicate affix/clitic: ' + tupGloss + ' Use of this affix/clitic could produce unexpected results.', 1))
+            error_list.append((f'Found duplicate affix/clitic with gloss: {tupGloss}. Use of this affix/clitic could produce unexpected results.', 1))
 
     error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
     return error_list
@@ -234,10 +237,15 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
 
     if not outFileVal:
-        return
+        
+        # Try the old config value name
+        outFileVal = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
+        
+        if not outFileVal:
+            return
     
     error_list = catalog_affixes(DB, configMap, outFileVal, report)
     

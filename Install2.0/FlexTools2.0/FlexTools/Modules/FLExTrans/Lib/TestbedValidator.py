@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -29,7 +32,6 @@ import ReadConfig
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 
-TESTBED_CACHE_FILE = 'testbed_cache.txt'
 GRAM_CATS = 'Grammatical Categories:'
 TAGS = 'Tags:'
 WORD_SENSES = 'Word Senses:'
@@ -164,7 +166,7 @@ class TestbedValidator():
            
     def getCacheFilePath(self):
         # build the path in the temp dir using project name + testbed_cache.txt
-        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+TESTBED_CACHE_FILE)
+        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+Utils.TESTBED_CACHE_FILE)
     def cacheExists(self):
         return os.path.exists(self.getCacheFilePath())
     def readDatabaseValues(self):
@@ -181,7 +183,7 @@ class TestbedValidator():
         
         configMap = ReadConfig.readConfig(self.report)
 
-        morphNames = ReadConfig.getConfigVal(configMap, 'TargetMorphNamesCountedAsRoots', self.report)
+        morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, self.report)
         
         if not morphNames: 
             self.report.Warning('Configuration File Problem. Morphnames not found.')

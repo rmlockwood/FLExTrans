@@ -5,6 +5,12 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.4.1 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -37,7 +43,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
@@ -51,7 +57,7 @@ def init_new_result(DB, report):
     # should this clean up result nodes that have no data?
     
     # Create an object for the testbed file
-    testbedFileObj = Utils.FlexTransTestbedFile(None)
+    testbedFileObj = Utils.FlexTransTestbedFile(None, report)
     
     # We can't do anything if there is no testbed
     if testbedFileObj.exists() == False:
@@ -65,7 +71,7 @@ def init_new_result(DB, report):
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()
     
     # Create an object for the testbed results file
-    resultsFileObj = Utils.FlexTransTestbedResultsFile()
+    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
     
     # Initialize the testbed run
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
@@ -85,7 +91,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # Get the output file name
-    outFileVal = ReadConfig.getConfigVal(configMap, 'AnalyzedTextOutputFile', report)
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
     if not outFileVal:
         return
     

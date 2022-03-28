@@ -5,6 +5,12 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.4.1 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -67,6 +73,7 @@ from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  
 import Utils
+import ReadConfig
 
 from TestbedLog import Ui_MainWindow
 
@@ -74,7 +81,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -551,11 +558,12 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                 
 class LogViewerMain(QMainWindow):
 
-    def __init__(self, resultsXMLObj):
+    def __init__(self, resultsXMLObj, testbedPath):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
+        
+        self.testbedPath = testbedPath
         self.__model = TestbedLogModel(resultsXMLObj)
         self.ui.logTreeView.setModel(self.__model)
         self.__model.setView(self.ui.logTreeView)
@@ -594,9 +602,7 @@ class LogViewerMain(QMainWindow):
         
         xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
         
-        Utils.TESTBED_FILE_PATH
-
-        call([xxe, Utils.TESTBED_FILE_PATH])
+        call([xxe, self.testbedPath])
 
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
@@ -614,25 +620,32 @@ class LogViewerMain(QMainWindow):
     
 def MainFunction(DB, report, modify):
         
-    # Create an object for the testbed file
-#    testbedFileObj = Utils.FlexTransTestbedFile(None)
+    # Read the configuration file 
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
 
+    testbedPath = ReadConfig.getConfigVal(configMap, ReadConfig.TESTBED_FILE, report)
+
+    if not testbedPath:
+        return 
+    
     # We can't do anything if there is no testbed
-    if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
-        report.Error('Testbed does not exist. Please add tests to the testbed.')
+    if os.path.exists(testbedPath) == False:
+        report.Error(f'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.')
         return None
     
     ## Load the testbed results
     
     # Create an object for the testbed results file
-    resultsFileObj = Utils.FlexTransTestbedResultsFile()
+    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
     
     # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
     app = QApplication(sys.argv)
 
-    window = LogViewerMain(resultsXMLObj)
+    window = LogViewerMain(resultsXMLObj, testbedPath)
     
     window.show()
     window.myResize()

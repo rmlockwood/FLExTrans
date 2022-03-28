@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -53,7 +56,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -143,9 +146,9 @@ def MainFunction(DB, report, modify=True):
     # Check if we are using TreeTran for sorting the text output
     # If TreeTran is not being used the config file will have AnalyzedTextTreeTranOutputFile=
     # i.e. set to nothing
-    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     if not treeTranResultFile:
-        report.Error('You have not specified a value in the configuration file for AnalyzedTextTreeTranOutputFile.')
+        report.Error(f'You have not specified a value in the configuration file for {ReadConfig.ANALYZED_TREETRAN_TEXT_FILE}.')
         return 
     
     # Create a path to the temporary folder + invoker file

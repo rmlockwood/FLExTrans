@@ -5,6 +5,14 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.4.1 - 3/22/22 - Ron Lockwood
+#    Fixed bug #99. Give an error if the file isn't in the format that XXE
+#    makes the xml file. Otherwise it's hard to find the right section of the
+#    transfer rules file to make the changes.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3.1 - 1/27/22 - Ron Lockwood
 #    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
 #    Now the setup tool and the bilingual lexicon uses common code for getting
@@ -49,7 +57,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : "3.3.1",
+        FTM_Version    : "3.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",
@@ -66,8 +74,6 @@ lexicon. I.e. spaces are converted to underscores, periods and slashes are remov
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
-    transFile = Utils.TRANSFER_RULE_FILE_PATH
-    
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -75,6 +81,13 @@ def MainFunction(DB, report, modify=True):
     
     TargetDB = Utils.openTargetProject(configMap, report)
 
+    # Get the path to the transfer rules file
+    transfer_rules_file = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
+    if not transfer_rules_file:
+        transfer_rules_file = 'Output\\transfer_rules.t1x'
+    
     posMap = {}
     
     # Get all source and target categories
@@ -82,7 +95,11 @@ def MainFunction(DB, report, modify=True):
         return
 
     # Make a backup copy of the transfer rule file
-    shutil.copy2(transFile, transFile+'.old')
+    try:
+        shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
+    except:
+        report.Error('There was a problem finding the transfer rules file. Check your configuration.')
+        return
     
     savedLines = []
     defAttrFound = False
@@ -90,14 +107,24 @@ def MainFunction(DB, report, modify=True):
     endFound = False
     gramCatElementMissing = False
     
-    tr_f = open(transFile+'.old', encoding='utf-8')
-    tr_out_f = open(transFile, 'w', encoding='utf-8')
+    tr_f = open(transfer_rules_file+'.old', encoding='utf-8')
+
+    # Check to see that we have the def-attr section in the format that XXE saves files in. Otherwise give an error.
+    linesList = tr_f.readlines()
+    
+    if '><def-attr' not in ''.join(linesList):
+        
+        report.Error('The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.')
+        tr_f.close()
+        return 
+    
+    tr_out_f = open(transfer_rules_file, 'w', encoding='utf-8')
     
     # Read and write the 1st part of the transfer rule file -- until we get to the beginning of grammatical categories.
     # After that, skip the old grammatical category lines and then after those, save the rest of the lines to be written later.
     # Or if there is no gram_cat attribute, stop writing at the end of the attribute section
     # Note: we are not using elementTree because it doesn't preserve comments
-    for line in tr_f:
+    for line in linesList:
         
         if  re.search('><def-attr', line):
             

@@ -1243,7 +1243,10 @@ num="xLexXfer"
 >. In other words, the bilingual dictionary maps a source word to target word. In <object
 type="tFlextrans"
 ></object
-> we don’t see the source and target lexical units together like this, but under the hood this is what it is.</p
+> you don’t normally need to examine the bilingual dictionary, but conceptually it looks like this. Open the <object
+type="tFilename"
+>bilingual.dix</object
+> in the XML Mind editor for the details.</p
 ><example
 num="xLexXfer"
 ><single
@@ -3394,7 +3397,7 @@ type="tRuleElemInXXE"
 >literal tag</object
 > element and Insert After... and choose <object
 type="tItalic"
->clip(clip_sl)</object
+>clip(clip_source_language)</object
 >. Do this twice.</p
 ><example
 num="xLexUnitPronPerNum"

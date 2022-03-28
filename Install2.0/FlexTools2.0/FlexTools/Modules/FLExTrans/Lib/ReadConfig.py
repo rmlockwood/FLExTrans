@@ -5,6 +5,21 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.4.3 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4.2 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file.
+#
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Find the config file one level up, i.e. top the top installed folder.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use defined config file constants for key values
+#
+#   Version 3.3.1 - 1/27/22 - Ron Lockwood
+#    Convert config file values to decomposed Unicode.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -23,18 +38,50 @@
 #   Functions for reading a configuration file
 
 import re
+import unicodedata
+
 CONFIG_FILE = 'FlexTrans.config'
+
+ANALYZED_TEXT_FILE = 'AnalyzedTextOutputFile'
+ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
+BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
+BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
+CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
+CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
+SENTENCE_PUNCTUATION = 'SentencePunctuation'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
+SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
+SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
+SOURCE_DISCONTIG_SKIPPED = 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'
+SOURCE_MORPHNAMES = 'SourceMorphNamesCountedAsRoots'
+SOURCE_TEXT_NAME = 'SourceTextName'
+TARGET_AFFIX_GLOSS_FILE = 'TargetAffixGlossListFile'
+TARGET_ANA_FILE = 'TargetOutputANAFile'
+TARGET_FORMS_INFLECTION_1ST = 'TargetComplexFormsWithInflectionOn1stElement'
+TARGET_FORMS_INFLECTION_2ND = 'TargetComplexFormsWithInflectionOn2ndElement'
+TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
+TARGET_PROJECT = 'TargetProject'
+TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TESTBED_FILE = 'TestbedFile'
+TESTBED_RESULTS_FILE = 'TestbedResultsFile'
+TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
+TRANSFER_RULES_FILE = 'TransferRulesFile'
+TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 
 def readConfig(report):
     try:
-        f_handle = open(CONFIG_FILE, encoding='utf-8')
+        f_handle = open('../' + CONFIG_FILE, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the FlexTools folder.')
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the top-level folder.')
         return None
 
     my_map = {}
     for line in f_handle:
+        
+        # decompose any composed characters. FLEx stores strings this way.
+        line = unicodedata.normalize('NFD', line)
         if len(line) < 2:
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
@@ -58,10 +105,11 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report):
+def getConfigVal(my_map, key, report, giveError=True):
     if key not in my_map:
         if report is not None:
-            report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+            if giveError:
+                report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
         return my_map[key]

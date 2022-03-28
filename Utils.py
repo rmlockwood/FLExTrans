@@ -5,6 +5,24 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.4 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95. Applies to run_makefile for Apertium.
+#
+#   Version 3.4.3 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4.2 - 3/10/22 - Ron Lockwood
+#    Don't do the discontiguous types processing if there is nothing on the list
+#    in the config file. This is a fix for issue #87.
+#
+#   Version 3.4.1 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file. Make it an 
+#    environment variable that the makefile can use.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3.3 - 1/29/22 - Ron Lockwood
 #    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
 #    Also, if a later part of the word lacks a sense or entry, don't put out another
@@ -183,10 +201,22 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
-import ReadConfig as MyReadConfig
+import ReadConfig as MyReadConfig 
+
+MAKEFILE_RULES_VARIABLE = 'TRANSFER_RULE_PATH'
+MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
+MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
+MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
+APERTIUM_ERROR_FILE = 'apertium_error.txt'
+DO_MAKE_SCRIPT_FILE = 'do_make_direct.sh'
+CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+TESTBED_CACHE_FILE = 'testbed_cache.txt'
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
+
+CHECK_DELIMITER = True
+DELIMITER_STR = '{'
 
 ## Viewer constants
 # Main color of the headwords
@@ -213,9 +243,6 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
-TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
-TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
-TRANSFER_RULE_FILE_PATH = OUTPUT_FOLDER + '\\transfer_rules.t1x'
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
@@ -1032,12 +1059,22 @@ class FLExTransTestbedXMLObject():
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
-    def __init__(self, direction):
+    def __init__(self, direction, report):
         
         self.__isNew = False
         
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        testbedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_FILE, report)
+        if not testbedPath:
+            raise ValueError()
+        
+        self.__testbedPath = testbedPath
+        
         # check if the file exists
-        if os.path.exists(TESTBED_FILE_PATH) == False:
+        if os.path.exists(testbedPath) == False:
             
             # we will create it
             self.__isNew = True
@@ -1046,9 +1083,9 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedTree = ET.parse(TESTBED_FILE_PATH)
+                self.__testbedTree = ET.parse(testbedPath)
             except:
-                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
+                raise ValueError('The testbed file: ' + testbedPath + ' is invalid.')
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1071,14 +1108,14 @@ class FlexTransTestbedFile():
             self.write()
 
     def write(self):
-        self.__testbedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
         # Add the DOCTYPE declaration
-        f = open(TESTBED_FILE_PATH, encoding='utf-8')
+        f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()
         f.close()
         lines.insert(1, '<!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">\n')
-        f = open(TESTBED_FILE_PATH, 'w', encoding='utf-8')
+        f = open(self.__testbedPath, 'w', encoding='utf-8')
         f.writelines(lines)
         f.close()
 
@@ -1248,17 +1285,28 @@ class FLExTransTestbedResultsXMLObject():
 # Models the results log XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedResultsFile():
-    def __init__(self):
-        if os.path.exists(TESTBED_RESULTS_FILE_PATH) == False:
+    def __init__(self, report):
+
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        resultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_RESULTS_FILE, report)
+        if not resultsPath:
+            raise ValueError()
+        
+        self.__resultsPath = resultsPath
+
+        if os.path.exists(resultsPath) == False:
             
             self.__XMLObject = FLExTransTestbedResultsXMLObject()
             myRoot = self.__XMLObject.getRoot()
             self.__testbedResultsTree  = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedResultsTree = ET.parse(TESTBED_RESULTS_FILE_PATH)
+                self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError('The testbed results file: ' + TESTBED_RESULTS_FILE_PATH + ' is invalid.')
+                raise ValueError(f'The testbed results file: {resultsPath} is invalid.')
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     
@@ -1266,36 +1314,87 @@ class FlexTransTestbedResultsFile():
         return self.__XMLObject
     
     def write(self):
-        self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
 # relPathToBashFile is expected to be with Windows backslashes
-def run_makefile(relPathToBashFile):
+def run_makefile(relPathToBashFile, report):
+    
+    configMap = MyReadConfig.readConfig(report)
+    if not configMap:
+        return True
+
+    # Get the path to the transfer rules file
+    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
+    if not tranferRulePath:
+        tranferRulePath = 'Output\\transfer_rules.t1x'
+    
+    tranferRulePath = re.sub(r'\\','/',tranferRulePath) # change to forward slashes
+    
+    # Get the path to the dictionary file
+    dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    if not dictionaryPath:
+        return True
+    
+    dictionaryPath = re.sub(r'\\','/',dictionaryPath) # change to forward slashes
+    
+    # Get the path to the source apertium file
+    analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
+    if not analyzedPath:
+        return True
+    
+    analyzedPath = re.sub(r'\\','/',analyzedPath) # change to forward slashes
+    
+    # Get the path to the target apertium file
+    transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
+    if not transferResultsPath:
+        return True
+    
+    transferResultsPath = re.sub(r'\\','/',transferResultsPath) # change to forward slashes
     
     # Change path to bash based on the architecture
     is32bit = (platform.architecture()[0] == '32bit')
-    system32 = os.path.join(os.environ['SystemRoot'],
-                            'SysNative' if is32bit else 'System32')
+    system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
     bash = os.path.join(system32, 'bash.exe')
 
     # Get the current working directory
     cwd = os.getcwd()
     cwd = re.sub(r'\\','/',cwd) # change to forward slashes
+    
     (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
     drive = re.sub(':','',drive) # remove colon
+    
+    # Build a unix path to the output folder
     unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
-    dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
-    full_path = "'"+dir_path+"/do_make_direct.sh'"
+    cwdUnix = "/mnt/"+drive.lower()+tail+'/'
+    dir_path = cwdUnix+unixRelPath
+    full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
     
     # Create the bash file which merely cds to the appropriate 
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
-    f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
+    f = open(relPathToBashFile+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
     outStr = '#!/bin/sh\n'
-    outStr += 'cd ' + "'" + dir_path + "'" + '\n'
-    outStr += 'make 2>err_out\n'
+    
+    # make a variable for where the transfer rules file should be found
+    # go up one level since the transfer rule path is relative to the FlexTools folder
+    outStr += f"export {MAKEFILE_RULES_VARIABLE}='../{tranferRulePath}'\n" 
+
+    # make a variable for where the bilingual dictionary file should be found
+    outStr += f"export {MAKEFILE_DICT_VARIABLE}='../{dictionaryPath}'\n" 
+    
+    # make a variable for where the analyzed text file should be found
+    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='../{analyzedPath}'\n" 
+    
+    # make a variable for where the transfer results file should be found
+    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='../{transferResultsPath}'\n" 
+    
+    outStr += f"cd '{dir_path}'\n"
+    outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'
     
     f.write(bytes(outStr, 'ascii'))
     f.close()
@@ -1700,8 +1799,13 @@ class TextSentence():
                 return True
         return False
     def matchesLastWord(self, myGuid):
-        if len(self.__wordList) > 0:
-            if self.__wordList[-1].getGuid() == myGuid:
+        if len(self.__wordList) > 1: # > 1 since we may go back 2 words
+            
+            if self.__wordList[-1].isSentPunctutationWord():
+                last = -2
+            else:
+                last = -1
+            if self.__wordList[last].getGuid() == myGuid:
                 return True
         return False
     def write(self, fOut):
@@ -2371,7 +2475,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
             else:
                 # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
-                if myWord != None and not newSentence:
+                if myWord != None and not newSentence and (CHECK_DELIMITER and not textPunct == DELIMITER_STR): 
                     
                     myWord.addFinalPunc(spacesStr + textPunct) 
                 else:
@@ -2516,8 +2620,10 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     # substitute a complex form when its components are found contiguous in the text      
     myText.processComplexForms(typesList) 
     
-    # substitute a complex form when its components are found discontiguous in the text      
-    myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
+    # substitute a complex form when its components are found discontiguous in the text  
+    if len(discontigTypesList) > 0 and len(discontigPOSList) > 0 and len(typesList) > 0:
+            
+        myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
     
     return myText
 
@@ -2642,7 +2748,7 @@ def openTargetProject(configMap, report):
     TargetDB = FLExProject()
 
     # Open the target database
-    targetProj = MyReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         return
     
@@ -2654,8 +2760,8 @@ def openTargetProject(configMap, report):
     try:
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-        report.Error('There was an error opening target database: '+targetProj+'.')
-        return
+        report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
+        raise
 
     report.Info('Using: '+targetProj+' as the target database.')
     

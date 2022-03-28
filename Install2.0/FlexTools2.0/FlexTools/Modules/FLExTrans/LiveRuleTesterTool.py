@@ -5,6 +5,27 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.4.5 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95
+#
+#   Version 3.4.4 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4.3 - 3/10/22 - Ron Lockwood
+#    Get the transfer rules path from the config file
+#
+#   Version 3.4.2 - 3/5/22 - Ron Lockwood
+#    New parameter for run_makefile for a config file setting for transfer rules.
+#    Also rename err_log to apertium_log.txt and always use bilingual.dix for the
+#    filename in the tester folder.
+#
+#   Version 3.4.1 - 3/3/22 - Ron Lockwood
+#    Get the transfer_rules.t1x file from the top level
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -169,7 +190,7 @@ SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.3",
+        FTM_Version    : "3.4.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -346,9 +367,19 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Get the path to the transfer rules file
+        self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
+
+        # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
+        if not self.__transfer_rules_file:
+            self.__transfer_rules_file = 'Output\\transfer_rules.t1x'
+            
         # Load the transfer rules
         pwd = os.getcwd()
-        self.__transfer_rules_file= os.path.join(pwd, Utils.OUTPUT_FOLDER, 'transfer_rules.t1x')
+
+#        os.path.join(pwd, '..', self.__transfer_rules_file)
+        
+        # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
             self.ret_val = False
             self.close()
@@ -383,28 +414,40 @@ class Main(QMainWindow):
         
         # Copy bilingual file to the tester folder
         try:
-            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+            # always name the local version bilingual.dix which is what the Makefile has
+            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
             self.ret_val = False
             return 
 
         # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-        try:
-            shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-            m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
-        except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
-            self.ret_val = False
-            return 
+
+        # The Makefile is now a separate one from the one in the Output folder
+#         try:
+#             shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
+#             m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
+#         except:
+#             QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+#             self.ret_val = False
+#             return 
         
         ## Testbed preparation
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        if os.path.exists(Utils.TESTBED_FILE_PATH) == False:
-            self.ui.viewTestbedLogButton.setEnabled(False)
+        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the Output folder
+        testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
+        if not testbedPath:
+            
+            testbedPath = 'Output\\testbed.xml'
+
+        self.__testbedPath = testbedPath
+        
+        # Disable the edit testbed button if the testbed doesn't exist.
+        if os.path.exists(self.__testbedPath) == False:
+            self.ui.editTestbedButton.setEnabled(False)
 
         self.ret_val = True
 
@@ -449,7 +492,7 @@ class Main(QMainWindow):
         return myObj
     
     def ViewTestbedLogButtonClicked(self):
-        resultsFileObj = Utils.FlexTransTestbedResultsFile()
+        resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
     
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
@@ -466,13 +509,16 @@ class Main(QMainWindow):
 
     def EditTestbedLogButtonClicked(self):
         
+        if os.path.exists(self.__testbedPath) == False:
+
+            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {self.__testbedPath} does not exist.')
+            return 
+        
         progFilesFolder = os.environ['ProgramFiles(x86)']
         
         xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
         
-        Utils.TESTBED_FILE_PATH
-
-        call([xxe, Utils.TESTBED_FILE_PATH])
+        call([xxe, self.__testbedPath])
             
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
@@ -483,7 +529,12 @@ class Main(QMainWindow):
         else:
             direction = Utils.LTR
 
-        fileObj = Utils.FlexTransTestbedFile(direction)
+        try:
+            fileObj = Utils.FlexTransTestbedFile(direction, self.__report)
+        except:
+            QMessageBox.warning(self, 'Not Found Error', f'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml')
+            return 
+        
         testbedObj = fileObj.getFLExTransTestbedXMLObject()
         
         if fileObj.isNew():
@@ -1217,7 +1268,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1227,7 +1278,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t2x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log2')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log2.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
@@ -1237,7 +1288,7 @@ class Main(QMainWindow):
                 source_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
                 tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t3x')
                 tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'err_log3')
+                log_file = os.path.join(TESTER_FOLDER, 'apertium_log3.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
@@ -1247,7 +1298,7 @@ class Main(QMainWindow):
             source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
             tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
             tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-            log_file = os.path.join(TESTER_FOLDER, 'err_log')
+            log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1298,7 +1349,7 @@ class Main(QMainWindow):
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
-        ret = Utils.run_makefile('Output\\LiveRuleTester')
+        ret = Utils.run_makefile('Output\\LiveRuleTester', self.__report)
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
@@ -1497,35 +1548,35 @@ def MainFunction(DB, report, modify=False):
         return
 
     # Get needed configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, 'SourceTextName', report)
-    bilingFile = ReadConfig.getConfigVal(configMap, 'BilingualDictOutputFile', report)
+    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
 
     # check for errors
     if not (text_desired_eng and bilingFile):
         return
     
     # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
+    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
         return
     
-    typesList = ReadConfig.getConfigVal(configMap, 'SourceComplexTypes', report)
+    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
         return
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexTypes', report)
+    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexTypes', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
         return
 
-    discontigPOSList = ReadConfig.getConfigVal(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report)
+    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, 'SourceDiscontigousComplexFormSkippedWordGrammaticalCategories', report):
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return
 
     # Find the desired text
@@ -1550,7 +1601,7 @@ def MainFunction(DB, report, modify=False):
             return
 
     # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = ReadConfig.getConfigVal(configMap, 'AnalyzedTextTreeTranOutputFile', report)
+    treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
     if not treeTranResultFile:
         TreeTranSort = False
@@ -1558,7 +1609,7 @@ def MainFunction(DB, report, modify=False):
         TreeTranSort = True
     
     # Check if we are using an Insert Words File for TreeTran 
-    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, 'TreeTranInsertWordsFile', report)
+    treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
     
     if not treeTranInsertWordsFile:
         insertWordsFile = False

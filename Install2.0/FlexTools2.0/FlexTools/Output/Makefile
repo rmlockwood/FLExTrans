@@ -1,9 +1,9 @@
-target_text.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
-	cat source_text.aper | apertium-transfer -t tr.t1x transfer_rules.t1x.bin bilingual.bin > target_text.aper 2>err_log
-bilingual.bin: bilingual.dix
-	lt-comp lr bilingual.dix bilingual.bin
-transfer_rules.t1x.bin: transfer_rules.t1x
-	python3 fix.py transfer_rules.t1x tr.t1x
+${TARGET_PATH}: bilingual.bin transfer_rules.t1x.bin ${SOURCE_PATH}
+	cat ${SOURCE_PATH} | apertium-transfer -t tr.t1x transfer_rules.t1x.bin bilingual.bin > ${TARGET_PATH} 2>apertium_log.txt
+bilingual.bin: ${DICTIONARY_PATH}
+	lt-comp lr ${DICTIONARY_PATH} bilingual.bin
+transfer_rules.t1x.bin: ${TRANSFER_RULE_PATH}
+	python3 fix.py ${TRANSFER_RULE_PATH} tr.t1x
 	apertium-preprocess-transfer tr.t1x transfer_rules.t1x.bin
 clean:
-	rm -f target_text.aper bilingual.bin transfer_rules.t1x.bin
+	rm -f ${TARGET_PATH} bilingual.bin transfer_rules.t1x.bin

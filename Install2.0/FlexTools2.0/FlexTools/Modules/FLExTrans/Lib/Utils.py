@@ -5,6 +5,39 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.4.4 - 3/21/22 - Ron Lockwood
+#    Handle when transfer rules file and testbed file locations are not set in
+#    the configuration file. Issue #95. Applies to run_makefile for Apertium.
+#
+#   Version 3.4.3 - 3/17/22 - Ron Lockwood
+#    Allow for a user configurable Testbed location. Issue #70.
+#
+#   Version 3.4.2 - 3/10/22 - Ron Lockwood
+#    Don't do the discontiguous types processing if there is nothing on the list
+#    in the config file. This is a fix for issue #87.
+#
+#   Version 3.4.1 - 3/5/22 - Ron Lockwood
+#    Use a config file setting for the transfer rules file. Make it an 
+#    environment variable that the makefile can use.
+#
+#   Version 3.4 - 2/17/22 - Ron Lockwood
+#    Use ReadConfig file constants.
+#
+#   Version 3.3.3 - 1/29/22 - Ron Lockwood
+#    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
+#    Also, if a later part of the word lacks a sense or entry, don't put out another
+#    lemma, instead put out a bogus affix: PartMissing. Fixes #54
+#
+#   Version 3.3.2 - 1/27/22 - Ron Lockwood
+#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
+#    Now the setup tool and the bilingual lexicon uses common code for getting
+#    the grammatical categories from each lexicon. Fixes #50.
+#
+#   Version 3.3.1 - 1/27/22 - Ron Lockwood
+#    Fixed index error bug when an index to the sense list overflowed. This is in
+#    The TextWord class. Also prevent empty lexical units from being produced when
+#    no root is present. This fixes #39 & #40.
+#
 #   Version 3.3 - 1/8/22 - Ron Lockwood
 #    Bump version number for FLExTrans 3.3
 #
@@ -166,9 +199,24 @@ from System import String
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
+from flexlibs.FLExProject import FLExProject, GetProjectNames
+
+import ReadConfig as MyReadConfig 
+
+MAKEFILE_RULES_VARIABLE = 'TRANSFER_RULE_PATH'
+MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
+MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
+MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
+APERTIUM_ERROR_FILE = 'apertium_error.txt'
+DO_MAKE_SCRIPT_FILE = 'do_make_direct.sh'
+CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+TESTBED_CACHE_FILE = 'testbed_cache.txt'
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
+
+CHECK_DELIMITER = True
+DELIMITER_STR = '{'
 
 ## Viewer constants
 # Main color of the headwords
@@ -195,8 +243,6 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
-TESTBED_FILE_PATH = OUTPUT_FOLDER + '\\testbed.xml'
-TESTBED_RESULTS_FILE_PATH = OUTPUT_FOLDER + '\\testbed_results.xml'
 TRANSFER_RULE_FILE_PATH = OUTPUT_FOLDER + '\\transfer_rules.t1x'
 
 # Testbed XML constants
@@ -1014,12 +1060,22 @@ class FLExTransTestbedXMLObject():
 # Models the testbed XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedFile():
-    def __init__(self, direction):
+    def __init__(self, direction, report):
         
         self.__isNew = False
         
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        testbedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_FILE, report)
+        if not testbedPath:
+            raise ValueError()
+        
+        self.__testbedPath = testbedPath
+        
         # check if the file exists
-        if os.path.exists(TESTBED_FILE_PATH) == False:
+        if os.path.exists(testbedPath) == False:
             
             # we will create it
             self.__isNew = True
@@ -1028,9 +1084,9 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedTree = ET.parse(TESTBED_FILE_PATH)
+                self.__testbedTree = ET.parse(testbedPath)
             except:
-                raise ValueError('The testbed file: ' + TESTBED_FILE_PATH + ' is invalid.')
+                raise ValueError('The testbed file: ' + testbedPath + ' is invalid.')
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1053,14 +1109,14 @@ class FlexTransTestbedFile():
             self.write()
 
     def write(self):
-        self.__testbedTree.write(TESTBED_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
         # Add the DOCTYPE declaration
-        f = open(TESTBED_FILE_PATH, encoding='utf-8')
+        f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()
         f.close()
         lines.insert(1, '<!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">\n')
-        f = open(TESTBED_FILE_PATH, 'w', encoding='utf-8')
+        f = open(self.__testbedPath, 'w', encoding='utf-8')
         f.writelines(lines)
         f.close()
 
@@ -1230,17 +1286,28 @@ class FLExTransTestbedResultsXMLObject():
 # Models the results log XML file.
 # It creates the XML file if it doesn't exist.
 class FlexTransTestbedResultsFile():
-    def __init__(self):
-        if os.path.exists(TESTBED_RESULTS_FILE_PATH) == False:
+    def __init__(self, report):
+
+        configMap = MyReadConfig.readConfig(report)
+        if not configMap:
+            raise ValueError()
+    
+        resultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_RESULTS_FILE, report)
+        if not resultsPath:
+            raise ValueError()
+        
+        self.__resultsPath = resultsPath
+
+        if os.path.exists(resultsPath) == False:
             
             self.__XMLObject = FLExTransTestbedResultsXMLObject()
             myRoot = self.__XMLObject.getRoot()
             self.__testbedResultsTree  = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedResultsTree = ET.parse(TESTBED_RESULTS_FILE_PATH)
+                self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError('The testbed results file: ' + TESTBED_RESULTS_FILE_PATH + ' is invalid.')
+                raise ValueError(f'The testbed results file: {resultsPath} is invalid.')
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     
@@ -1248,36 +1315,87 @@ class FlexTransTestbedResultsFile():
         return self.__XMLObject
     
     def write(self):
-        self.__testbedResultsTree.write(TESTBED_RESULTS_FILE_PATH, encoding='utf-8', xml_declaration=True)
+        self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
 # relPathToBashFile is expected to be with Windows backslashes
-def run_makefile(relPathToBashFile):
+def run_makefile(relPathToBashFile, report):
+    
+    configMap = MyReadConfig.readConfig(report)
+    if not configMap:
+        return True
+
+    # Get the path to the transfer rules file
+    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
+    if not tranferRulePath:
+        tranferRulePath = 'Output\\transfer_rules.t1x'
+    
+    tranferRulePath = re.sub(r'\\','/',tranferRulePath) # change to forward slashes
+    
+    # Get the path to the dictionary file
+    dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    if not dictionaryPath:
+        return True
+    
+    dictionaryPath = re.sub(r'\\','/',dictionaryPath) # change to forward slashes
+    
+    # Get the path to the source apertium file
+    analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
+    if not analyzedPath:
+        return True
+    
+    analyzedPath = re.sub(r'\\','/',analyzedPath) # change to forward slashes
+    
+    # Get the path to the target apertium file
+    transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
+    if not transferResultsPath:
+        return True
+    
+    transferResultsPath = re.sub(r'\\','/',transferResultsPath) # change to forward slashes
     
     # Change path to bash based on the architecture
     is32bit = (platform.architecture()[0] == '32bit')
-    system32 = os.path.join(os.environ['SystemRoot'],
-                            'SysNative' if is32bit else 'System32')
+    system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
     bash = os.path.join(system32, 'bash.exe')
 
     # Get the current working directory
     cwd = os.getcwd()
     cwd = re.sub(r'\\','/',cwd) # change to forward slashes
+    
     (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
     drive = re.sub(':','',drive) # remove colon
+    
+    # Build a unix path to the output folder
     unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
-    dir_path = "/mnt/"+drive.lower()+tail+"/"+unixRelPath
-    full_path = "'"+dir_path+"/do_make_direct.sh'"
+    cwdUnix = "/mnt/"+drive.lower()+tail+'/'
+    dir_path = cwdUnix+unixRelPath
+    full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
     
     # Create the bash file which merely cds to the appropriate 
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
-    f = open(relPathToBashFile+'\\do_make_direct.sh', 'wb')
+    f = open(relPathToBashFile+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
     outStr = '#!/bin/sh\n'
-    outStr += 'cd ' + "'" + dir_path + "'" + '\n'
-    outStr += 'make 2>err_out\n'
+    
+    # make a variable for where the transfer rules file should be found
+    # go up one level since the transfer rule path is relative to the FlexTools folder
+    outStr += f"export {MAKEFILE_RULES_VARIABLE}='../{tranferRulePath}'\n" 
+
+    # make a variable for where the bilingual dictionary file should be found
+    outStr += f"export {MAKEFILE_DICT_VARIABLE}='../{dictionaryPath}'\n" 
+    
+    # make a variable for where the analyzed text file should be found
+    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='../{analyzedPath}'\n" 
+    
+    # make a variable for where the transfer results file should be found
+    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='../{transferResultsPath}'\n" 
+    
+    outStr += f"cd '{dir_path}'\n"
+    outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'
     
     f.write(bytes(outStr, 'ascii'))
     f.close()
@@ -1682,8 +1800,13 @@ class TextSentence():
                 return True
         return False
     def matchesLastWord(self, myGuid):
-        if len(self.__wordList) > 0:
-            if self.__wordList[-1].getGuid() == myGuid:
+        if len(self.__wordList) > 1: # > 1 since we may go back 2 words
+            
+            if self.__wordList[-1].isSentPunctutationWord():
+                last = -2
+            else:
+                last = -1
+            if self.__wordList[last].getGuid() == myGuid:
                 return True
         return False
     def write(self, fOut):
@@ -2064,7 +2187,7 @@ class TextWord():
                 return i
         return None
     def getInflClass(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.InflectionClassRA:
                 return [ITsString(mySense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
@@ -2081,7 +2204,7 @@ class TextWord():
             return self.__lemmaList[i]
         return ''
     def getPOS(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
                 return ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
@@ -2091,7 +2214,7 @@ class TextWord():
             return self.__senseList[i]
         return None
     def getStemFeatures(self, i):
-        if self.hasSenses():
+        if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
                 # if we already have a populated list, we don't need to do it again.
@@ -2158,8 +2281,12 @@ class TextWord():
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
 
-    def isEnclitic(self, myEntry):
+    def isProlitic(self, myEntry):
+        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic')
+    def isClitic(self, myEntry):
         return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
+    def isEnclitic(self, myEntry):
+        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:
@@ -2349,7 +2476,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
             else:
                 # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
-                if myWord != None and not newSentence:
+                if myWord != None and not newSentence and (CHECK_DELIMITER and not textPunct == DELIMITER_STR): 
                     
                     myWord.addFinalPunc(spacesStr + textPunct) 
                 else:
@@ -2424,8 +2551,9 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             inflFeatAbbrevs = []
                             tempEntry = GetEntryWithSense(tempEntry, inflFeatAbbrevs)
                             
-                            # See if we have an enclitic or proclitic
-                            if myWord.isEnclitic(tempEntry) == True:
+                            # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
+                            # in this case, treat it as a root
+                            if myWord.isClitic(tempEntry) == True and not (myWord.isEnclitic(tempEntry) and myWord.hasEntries() == False):
                                 # Get the clitic gloss.
                                 myWord.addAffix(bundle.SenseRA.Gloss)
                                 
@@ -2458,15 +2586,34 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                         else:
                             report.Warning("Sense object for affix is null.")
                 else:
-                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    if myWord.getLemma(0) == '':
+                        myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    else:
+                        # Give a clue that a part is missing by adding a bogus affix
+                        myWord.addPlainTextAffix('PartMissing')
+                        
                     report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getSurfaceForm())
                     break # go on to the next word    
             else:
                 # Part of the word has not been tied to a lexical entry-sense
-                myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                if myWord.getLemma(0) == '':
+                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                else:
+                    # Give a clue that a part is missing by adding a bogus affix
+                    myWord.addPlainTextAffix('PART_MISSING')
+                    
                 report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
                 break # go on to the next word    
     
+        # if we don't have a root or stem and we have something else like an affix, give a warning
+        if myWord.getLemma(0) == '': 
+            
+            # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
+            
+            # need a root
+            myWord.addLemmaFromObj(wfiAnalysis.Owner)
+            report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
+        
     # Don't warn for sfm markers, but warn once for others        
     if myText.warnForUnknownWords() == True:
         report.Warning('One or more unknown words occurred multiple times.')
@@ -2474,8 +2621,10 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     # substitute a complex form when its components are found contiguous in the text      
     myText.processComplexForms(typesList) 
     
-    # substitute a complex form when its components are found discontiguous in the text      
-    myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
+    # substitute a complex form when its components are found discontiguous in the text  
+    if len(discontigTypesList) > 0 and len(discontigPOSList) > 0 and len(typesList) > 0:
+            
+        myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
     
     return myText
 
@@ -2595,3 +2744,165 @@ def getInsertedWordsList(inputFilename, report, DB):
         
     return obj_list
 
+def openTargetProject(configMap, report):
+    
+    TargetDB = FLExProject()
+
+    # Open the target database
+    targetProj = MyReadConfig.getConfigVal(configMap, MyReadConfig.TARGET_PROJECT, report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in GetProjectNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+    
+    try:
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+        report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
+        raise
+
+    report.Info('Using: '+targetProj+' as the target database.')
+    
+    return TargetDB
+
+# This is a recursive function to get all inflection subclasses
+def get_sub_inflection_classes(mySubClasses):
+    
+    ic_list = []
+    
+    for ic in mySubClasses:
+        
+        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
+        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        
+        ic_list.append((icAbbr,icName))
+        
+        if ic.SubclassesOC and len(ic.SubclassesOC.ToArray()) > 0:
+            
+            icl = get_sub_inflection_classes(ic.SubclassesOC)
+            ic_list.extend(icl)
+            
+    return ic_list
+
+# Invalid category characters & descriptions & messages & replacements
+catData = [[r'\s', 'space', 'converted to an underscore', '_'],
+           [r'\.', 'period', 'removed', ''],
+           [r'/', 'slash', 'converted to a vertical bar', '|']
+#          [r'X', 'x char', 'fatal', '']
+          ]
+
+def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
+
+    haveError = False
+    dbList = [(DB, 'source'), (TargetDB, 'target')]
+
+    for dbTup in dbList:
+        
+        dbObj = dbTup[0]
+        dbType = dbTup[1]
+        
+        # initialize a list of error counters to 0
+        countList = [0]*len(catData)
+            
+        # loop through all database categories
+        for pos in dbObj.lp.AllPartsOfSpeech:
+    
+            # save abbreviation and full name
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posFullNameStr = pos.ToString()
+            
+            # check for errors or warnings, pass in the error counter list which may have been incremented
+            countList, posAbbrStr = check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow)
+            
+            # add a (possibly changed abbreviation string) to the map
+            add_to_cat_map(posMap, posFullNameStr, posAbbrStr)
+            
+            # add inflection classes to the map if there are any if we are working on the target database
+            if addInflectionClasses and dbType == dbList[1][1]: #target
+                
+                process_inflection_classes(posMap, pos)
+            
+            # check for serious error
+            if countList[0] == 999:
+                
+                # Note we have the error, but keep going so tha we give all errors at once
+                # reset error (warning) counter to zero
+                countList[0] = 0
+                haveError = True
+    
+    if haveError == True:
+        return True
+    else:
+        return False
+
+def add_to_cat_map(posMap, posFullNameStr, posAbbrStr):
+    
+    # add the pos category to a map    
+    if posAbbrStr not in posMap:
+        
+        posMap[posAbbrStr] = posFullNameStr
+    else:
+        # If we already have the abbreviation in the map and the full category name
+        # is not the same as the source one, append the target one to the source one
+        if posMap[posAbbrStr] != posFullNameStr:
+            
+            posMap[posAbbrStr] += ' / ' + posFullNameStr
+
+def process_inflection_classes(posMap, pos):
+    
+    if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
+        
+        # Get a list of abbreviation and name tuples
+        AN_list = get_sub_inflection_classes(pos.InflectionClassesOC)
+        
+        for icAbbr, icName in AN_list:
+            
+            posMap[icAbbr] = icName
+    
+def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow):
+
+    haveError = False
+    
+    # loop through the possible invalid characters
+    for i, outStrings in enumerate(catData):
+        
+        invalidChar = outStrings[0]
+        charName = outStrings[1]
+        message = outStrings[2]
+        replChar = outStrings[3]
+        
+        # give a warning if we find an invalid character
+        if re.search(invalidChar, posAbbrStr):
+            
+            # check for a fatal error
+            if message == 'fatal':
+                
+                report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
+                             " in it. Could not complete, please correct this category in the " + dbType + " database.")
+                haveError = True
+                
+                # show all fatal errors
+                continue
+                
+            # If we are under the max errors to show number, give a warning
+            if countList[i] < numCatErrorsToShow:
+                
+                report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
+                               " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
+            
+            # Give suppressing message when we go 1 beyond the max
+            elif countList[i] == numCatErrorsToShow:
+                
+                report.Info("Suppressing further warnings of this type.")
+                
+            posAbbrStr = re.sub(invalidChar, replChar, posAbbrStr)
+            countList[i] += 1
+    
+    if haveError:
+        countList[0] = 999
+        return countList, posAbbrStr
+    
+    return countList, posAbbrStr
