@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.1 - 4/1/22 - Ron Lockwood
+#    If no rule is checked, give a specific error. Instead of letting Apertium 
+#    fail. Fixes #28.
+#
 #   Version 3.5 - 3/24/22 - Ron Lockwood
 #    Save selected tabs on close to a file and rest to those on open. Bug #2.
 #
@@ -194,7 +198,7 @@ WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1355,9 +1359,6 @@ class Main(QMainWindow):
         
         rules_element = rule_file.find('section-rules')
 
-        # Put a space in the rules section so we get a closing element </section-rules>
-        #makrules_element.text = ' '
-        
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):
         
@@ -1365,9 +1366,15 @@ class Main(QMainWindow):
             if self.__ruleModel.item(i).checkState():
                 new_sr_element.append(rule_el) 
             
+        # Give an error if no rules were selected
+        if len(list(new_sr_element)) < 1:
+            
+            self.ui.TargetTextEdit.setPlainText('At least one rule must be selected.')
+            #QApplication.restoreOverrideCursor()
+            return
+        
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
-        #rf.close()
         
         ## Display the results
         
@@ -1381,7 +1388,7 @@ class Main(QMainWindow):
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
-            QApplication.restoreOverrideCursor()
+            #QApplication.restoreOverrideCursor()
             return
         
         # Load the target text contents into the results edit box
