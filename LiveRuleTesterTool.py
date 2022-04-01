@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.4 - 4/1/22 - Ron Lockwood
+#    Program a button to rebuild the bilingual lexicon. Fixes #37
+#
 #   Version 3.5.3 - 4/1/22 - Ron Lockwood
 #    Save checked rules on refresh. Fixes #29
 #
@@ -189,7 +192,7 @@ import ReadConfig
 import CatalogTargetPrefixes
 import ConvertTextToSTAMPformat
 import ExtractTargetLexicon
-#import TestbedLogViewer
+import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
@@ -208,7 +211,7 @@ WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -360,6 +363,7 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
+        self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
         
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
@@ -511,6 +515,27 @@ class Main(QMainWindow):
         
         return myObj
     
+    def RebuildBilingLexButtonClicked(self):
+        
+        # Extract the bilingual lexicon        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        for triplet in error_list:
+            if triplet[1] == 2: # error code
+                msg = triplet[0]
+                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', msg + '\nRun the Extract Bilingual Lexicon module separately for more details.')
+                return
+
+        # Copy bilingual file to the tester folder
+        try:
+            # always name the local version bilingual.dix which is what the Makefile has
+            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
+        except:
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            self.ret_val = False
+            return 
+        
+        self.__ClearStuff()
+
     def ViewTestbedLogButtonClicked(self):
         resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
     
@@ -1018,6 +1043,7 @@ class Main(QMainWindow):
     def __ClearStuff(self):
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
+        self.ui.SynthTextEdit.setPlainText('')
     def sourceTabClicked(self):
 #         if self.ui.tabSource.currentIndex() == 0: # check boxes
 #             self.SourceCheckBoxClicked()
