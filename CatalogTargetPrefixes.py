@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.5.1 - 4/1/22 - Ron Lockwood
-#    Renamed to Catalog Target Affixes.
+#    Renamed to Catalog Target Affixes. Fixes #56.
 #
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Added a parameter useCacheIfAvailable and default it to false so that the

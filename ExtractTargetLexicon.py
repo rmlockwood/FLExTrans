@@ -7,7 +7,7 @@
 #
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Added a parameter useCacheIfAvailable and default it to false so that the
-#    LiveRuleTester can force the rebuild of the lexicon files.
+#    LiveRuleTester can force the rebuild of the lexicon files.  Fixes #56.
 #
 #   Version 3.4.2 - 3/11/22 - Ron Lockwood
 #    Less Information outputted to FlexTools.
