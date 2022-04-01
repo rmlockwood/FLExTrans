@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.2 - 4/1/22 - Ron Lockwood
+#    Fixed crash on up or down button. I was incorrectly using _children for
+#    ElementTree which no longer works in Python 3. Also got selecting a row
+#    working. Fixes #104
+#
 #   Version 3.5.1 - 4/1/22 - Ron Lockwood
 #    If no rule is checked, give a specific error. Instead of letting Apertium 
 #    fail. Fixes #28.
@@ -816,9 +821,11 @@ class Main(QMainWindow):
                 
     def UpButtonClicked(self):
         if self.TRIndex and self.TRIndex.row() > 0:
-            # pop current list item and insert it one above
-            self.__rulesElement._children.insert(self.TRIndex.row()-1,\
-                                                self.__rulesElement._children.pop(self.TRIndex.row()))
+            
+            # get current list item and insert it one above and remove it from its old position
+            elemToMove = self.__rulesElement[self.TRIndex.row()]
+            self.__rulesElement.remove(elemToMove)
+            self.__rulesElement.insert(self.TRIndex.row()-1, elemToMove)
             
             # copy the selection
             cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
@@ -826,23 +833,31 @@ class Main(QMainWindow):
             self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
             self.__ruleModel.item(self.TRIndex.row()-1).setCheckState(cur_state)
             
+            myIndex = self.__ruleModel.index(self.TRIndex.row()-1, self.TRIndex.column())
+            self.ui.listTransferRules.setCurrentIndex(myIndex)
+
             # redo the display
-            self.rulesListClicked(self.TRIndex)
+            self.rulesListClicked(myIndex)
             
     def DownButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() < len(self.__rulesElement._children)-1:
-            # pop current list item and insert it one above
-            self.__rulesElement._children.insert(self.TRIndex.row()+1,\
-                                                self.__rulesElement._children.pop(self.TRIndex.row()))
+        if self.TRIndex and self.TRIndex.row() < len(list(self.__rulesElement))-1:
             
+            # get current list item and insert it one above and remove it from its old position
+            elemToMove = self.__rulesElement[self.TRIndex.row()]
+            self.__rulesElement.remove(elemToMove)
+            self.__rulesElement.insert(self.TRIndex.row()+1, elemToMove)
+
             # copy the selection
             cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
             oth_state = self.__ruleModel.item(self.TRIndex.row()+1).checkState()
             self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
             self.__ruleModel.item(self.TRIndex.row()+1).setCheckState(cur_state)
             
+            myIndex = self.__ruleModel.index(self.TRIndex.row()+1, self.TRIndex.column())
+            self.ui.listTransferRules.setCurrentIndex(myIndex)
+
             # redo the display
-            self.rulesListClicked(self.TRIndex)
+            self.rulesListClicked(myIndex)
     
     def SelectAllClicked(self):
         # Loop through all the items in the rule list model
@@ -1148,7 +1163,7 @@ class Main(QMainWindow):
         if self.__transferRulesElement is not None:
             self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
             self.__transferRuleFileXMLtree = test_tree
-            self.__transferModel = QStandardItemModel()
+            self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
