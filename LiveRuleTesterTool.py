@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.3 - 4/1/22 - Ron Lockwood
+#    Save checked rules on refresh. Fixes #29
+#
 #   Version 3.5.2 - 4/1/22 - Ron Lockwood
 #    Fixed crash on up or down button. I was incorrectly using _children for
 #    ElementTree which no longer works in Python 3. Also got selecting a row
@@ -175,6 +178,8 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+#import win32gui
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
@@ -203,7 +208,7 @@ WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -297,6 +302,7 @@ class Main(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
         self.ui.BilingFileEdit.setText(biling_file)
@@ -331,7 +337,7 @@ class Main(QMainWindow):
         self.__postchunkPrevSource = ''
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
-
+        self.rulesCheckedList = []
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -404,11 +410,6 @@ class Main(QMainWindow):
         if not self.__transfer_rules_file:
             self.__transfer_rules_file = 'Output\\transfer_rules.t1x'
             
-        # Load the transfer rules
-        pwd = os.getcwd()
-
-#        os.path.join(pwd, '..', self.__transfer_rules_file)
-        
         # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
             self.ret_val = False
@@ -451,17 +452,6 @@ class Main(QMainWindow):
             self.ret_val = False
             return 
 
-        # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-
-        # The Makefile is now a separate one from the one in the Output folder
-#         try:
-#             shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-#             m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
-#         except:
-#             QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
-#             self.ret_val = False
-#             return 
-        
         ## Testbed preparation
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
@@ -878,11 +868,39 @@ class Main(QMainWindow):
         self.rulesListClicked(self.TRIndex)
             
     def RefreshClicked(self):
+        self.saveChecked()
         self.loadTransferRules()
         self.ui.SynthTextEdit.setPlainText('')
         self.__ClearStuff()
-        self.checkThemAll()
+        self.restoreChecked()
+        #self.checkThemAll()
         
+        # Redo the numbering
+        self.rulesListClicked(self.TRIndex)
+            
+    def saveChecked(self):
+        
+        self.rulesCheckedList = []
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, self.__ruleModel.rowCount()):
+            
+            # Save the state of each check box 
+            if self.__ruleModel.item(i).checkState():
+                self.rulesCheckedList.append(QtCore.Qt.Checked)
+            else:
+                self.rulesCheckedList.append(QtCore.Qt.Unchecked)
+                
+    def restoreChecked(self):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, self.__ruleModel.rowCount()):
+            
+            if i < len(self.rulesCheckedList):
+                
+                # Set the state of each check box
+                self.__ruleModel.item(i).setCheckState(self.rulesCheckedList[i])
+                
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
@@ -1797,7 +1815,7 @@ def MainFunction(DB, report, modify=False):
         app.exec_()
     else:
         report.Error('This text has no data.')
-        
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
