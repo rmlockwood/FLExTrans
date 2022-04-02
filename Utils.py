@@ -7,7 +7,7 @@
 #
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Support functions used by Extract Bilingual Lexicon that may have a null
-#    report object.     Fixes #37
+#    report object. Fixes #37
 #
 #   Version 3.4.4 - 3/21/22 - Ron Lockwood
 #    Handle when transfer rules file and testbed file locations are not set in
