@@ -81,6 +81,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(9)
         self.SentCombo.setFont(font)
+        self.SentCombo.setMaxVisibleItems(30)
         self.SentCombo.setObjectName("SentCombo")
         self.scrollArea = QtWidgets.QScrollArea(self.tab_select_words)
         self.scrollArea.setGeometry(QtCore.QRect(0, 30, 1225, 103))
