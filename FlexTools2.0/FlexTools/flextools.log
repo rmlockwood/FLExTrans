@@ -1,0 +1,20 @@
+INFO:flexlibs.FLExGlobals:Python version: 3.7.4 (tags/v3.7.4:e09359112e, Jul  8 2019, 20:34:20) [MSC v.1916 64 bit (AMD64)]
+INFO:flexlibs.FLExGlobals:.NET version: 4.0.30319.42000
+INFO:flexlibs.FLExGlobals:Looking for FieldWorks 9, 64bit...
+INFO:flexlibs.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_CURRENT_USER\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_LOCAL_MACHINE\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.FLExGlobals:sys.path = C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Desktop\Installer\Git_version\FlexTrans\FlexTools2.0\FlexTools
+	C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Desktop\Installer\Git_version\FlexTrans
+	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\python37.zip
+	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\DLLs
+	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\lib
+	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37
+	C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Documents\FlexTools2.0\venv
+	C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Documents\FlexTools2.0\venv\lib\site-packages
+	C:\Windows\Microsoft.NET\Framework64\v4.0.30319\
+	C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.FLExGlobals:Found FieldWorks installation
+INFO:flexlibs.FLExGlobals:FWCodeDir = C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.FLExGlobals:FWProjectsDir = C:\ProgramData\SIL\FieldWorks\Projects\
+INFO:flexlibs.FLExGlobals:FWShortVersion = 9.0.15
+INFO:flexlibs.FLExGlobals:FWLongVersion = Version: 9.0.15.0   2021/03/02  (64 bit)
