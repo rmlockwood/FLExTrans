@@ -4,7 +4,7 @@ INFO:flexlibs.FLExGlobals:Looking for FieldWorks 9, 64bit...
 INFO:flexlibs.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_CURRENT_USER\SOFTWARE\SIL\FieldWorks\9
 INFO:flexlibs.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_LOCAL_MACHINE\SOFTWARE\SIL\FieldWorks\9
 INFO:flexlibs.FLExGlobals:sys.path = C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Desktop\Installer\Git_version\FlexTrans\Install2.0\FlexTools2.0\FlexTools
-	C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Desktop\Installer\Git_version\FlexTrans
+	C:\Users\Lærke Roager\Dropbox\My PC (LAPTOP-T416IIV2)\Desktop\Installer\Git_version\FlexTrans\Install2.0\FlexTools2.0\FlexTools
 	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\python37.zip
 	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\DLLs
 	C:\Users\Lærke Roager\AppData\Local\Programs\Python\Python37\lib
