@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.5 - 4/1/22 - Ron Lockwood
+#    Turn on and off wait cursor for certain operations. Fixes #103
+#
 #   Version 3.5.4 - 4/1/22 - Ron Lockwood
 #    Program a button to rebuild the bilingual lexicon. Fixes #37
 #
@@ -211,7 +214,7 @@ WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.5.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -517,6 +520,8 @@ class Main(QMainWindow):
     
     def RebuildBilingLexButtonClicked(self):
         
+        self.setCursor(QtCore.Qt.WaitCursor)
+        
         # Extract the bilingual lexicon        
         error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
         for triplet in error_list:
@@ -535,14 +540,14 @@ class Main(QMainWindow):
             return 
         
         self.__ClearStuff()
+        
+        self.unsetCursor()
 
     def ViewTestbedLogButtonClicked(self):
         resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
     
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
-    
-        #app = QApplication(sys.argv)
     
         window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
         
@@ -735,6 +740,8 @@ class Main(QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         error_list = []
         
+        self.setCursor(QtCore.Qt.WaitCursor)
+
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
         
@@ -747,12 +754,14 @@ class Main(QMainWindow):
                 error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                self.unsetCursor()
                 return
 
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                    self.unsetCursor()
                     return
                 
             self.__doCatalog = False
@@ -767,6 +776,7 @@ class Main(QMainWindow):
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
+                    self.unsetCursor()
                     return
             
             self.__convertIt = False
@@ -780,6 +790,7 @@ class Main(QMainWindow):
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                self.unsetCursor()
                 return
             
             # Extract the lexicon        
@@ -788,6 +799,7 @@ class Main(QMainWindow):
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                    self.unsetCursor()
                     return
         
         ## SYNTHESIZE
@@ -796,6 +808,7 @@ class Main(QMainWindow):
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                self.unsetCursor()
                 return
                     
         # Load the synthesized result into the text box
@@ -832,6 +845,7 @@ class Main(QMainWindow):
             self.ui.addToTestbedButton.setEnabled(False)
             self.ui.addMultipleCheckBox.setEnabled(False)
         
+        self.unsetCursor()
         return
                 
     def UpButtonClicked(self):
@@ -1337,7 +1351,7 @@ class Main(QMainWindow):
             
     def TransferClicked(self):
         
-        #QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self.setCursor(QtCore.Qt.WaitCursor)
         
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
             self.__interchunkHtmlResult = ''
@@ -1348,6 +1362,7 @@ class Main(QMainWindow):
         # TODO: allow editable rule file edit box?
         # Make sure we have a transfer file
         if self.ui.TransferFileEdit.text() == '':
+            self.unsetCursor()
             return
         
         # Create the tester folder if it doesn't exist
@@ -1429,7 +1444,7 @@ class Main(QMainWindow):
         if len(list(new_sr_element)) < 1:
             
             self.ui.TargetTextEdit.setPlainText('At least one rule must be selected.')
-            #QApplication.restoreOverrideCursor()
+            self.unsetCursor()
             return
         
         # Write out the file
@@ -1447,7 +1462,7 @@ class Main(QMainWindow):
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
-            #QApplication.restoreOverrideCursor()
+            self.unsetCursor()
             return
         
         # Load the target text contents into the results edit box
@@ -1573,7 +1588,7 @@ class Main(QMainWindow):
         self.ui.LogEdit.setPlainText(lf.read())
         lf.close()
         
-       # QApplication.restoreOverrideCursor()
+        self.unsetCursor()
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
