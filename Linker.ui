@@ -65,9 +65,9 @@
    <widget class="QComboBox" name="targetLexCombo">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>100</x>
       <y>10</y>
-      <width>361</width>
+      <width>271</width>
       <height>29</height>
      </rect>
     </property>
@@ -77,7 +77,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>After selecting the desired sense here, double-click in the target head word column for the desired row to copy it.</string>
+     <string>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
     <property name="layoutDirection">
      <enum>Qt::LeftToRight</enum>
@@ -86,8 +86,8 @@
    <widget class="QCheckBox" name="ShowOnlyUnlinkedCheckBox">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>10</y>
+      <x>590</x>
+      <y>13</y>
       <width>121</width>
       <height>27</height>
      </rect>
@@ -100,9 +100,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>16</y>
       <width>151</width>
-      <height>23</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -112,14 +112,32 @@
    <widget class="QCheckBox" name="HideProperNounsCheckBox">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>10</y>
+      <x>720</x>
+      <y>13</y>
       <width>121</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
      <string>Hide Proper Nouns</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="searchTargetEdit">
+    <property name="geometry">
+     <rect>
+      <x>384</x>
+      <y>10</y>
+      <width>191</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Type the beginning of an entry, then double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
   </widget>

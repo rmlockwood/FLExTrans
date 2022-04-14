@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.5 - 4/2/22 - Ron Lockwood
+#    Added a search box to select target words from the list box. Fixes #106.
+#
 #   Version 3.4.1 - 3/4/22 - Ron Lockwood
 #    Give a better error than just showing the guid that wasn't found.
 #
@@ -141,7 +144,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -176,6 +179,12 @@ will be set to the corresponding sense number.
                  
 #----------------------------------------------------------------
 
+SEARCH_HERE = 'Search target senses here'
+INITIAL_STATUS_UNLINKED = 0
+INITIAL_STATUS_LINKED = 1    
+INITIAL_STATUS_EXACT_SUGGESTION = 2
+INITIAL_STATUS_FUZZY_SUGGESTION = 3
+
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
 class HPG(object):
@@ -195,11 +204,6 @@ class HPG(object):
         return self.__gloss
     def getSenseNum(self):
         return self.__senseNum
-
-INITIAL_STATUS_UNLINKED = 0
-INITIAL_STATUS_LINKED = 1    
-INITIAL_STATUS_EXACT_SUGGESTION = 2
-INITIAL_STATUS_FUZZY_SUGGESTION = 3
 
 # model the information having to do with a link from a source sense
 # to a target sense
@@ -290,6 +294,8 @@ class LinkerCombo(QtCore.QAbstractListModel):
         return self.__RTL
     def getCurrentHPG(self):
         return self.__currentHPG
+    def getRowValue(self, row):
+        return self.__localData[row]
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
@@ -298,7 +304,7 @@ class LinkerCombo(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             if self.getRTL():
-                value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
+                value = myHPG.getHeadword() + ' (' + myHPG.getPOS() + ') ' + myHPG.getGloss()
             else:
                 value = myHPG.getHeadword() + ' (' + myHPG.getPOS() + ') ' + myHPG.getGloss()
             self.__currentHPG = myHPG    
@@ -526,9 +532,14 @@ class Main(QMainWindow):
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.ret_val = 0
         self.cols = 7
+        
+        self.ui.searchTargetEdit.setText(SEARCH_HERE)
+        
         self.ui.targetLexCombo.currentIndexChanged.connect(self.ComboClicked)
         self.ui.ShowOnlyUnlinkedCheckBox.clicked.connect(self.ShowOnlyUnlinkedClicked)
         self.ui.HideProperNounsCheckBox.clicked.connect(self.HideProperNounsClicked)
+        self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
+        self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ComboClicked()
         
         myHPG = self.__combo_model.getCurrentHPG()
@@ -538,8 +549,39 @@ class Main(QMainWindow):
         for i in range(0, len(myHeadword)):
             if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
                 self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
+                #self.ui.searchTargetEdit.setAlignment(QtCore.Qt.AlignRight)
                 self.__combo_model.setRTL(True)
                 break
+    
+    def findRow(self, searchText):
+        
+        found = False
+        
+        # Look for a match to the beginning of a headword
+        for i in range(0, self.__combo_model.rowCount(None)):
+            
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.IGNORECASE):
+                found = True
+                break
+        
+        if found:
+            return i
+        
+        return -1
+        
+    def SearchTargetChanged(self):
+        
+        foundRow = self.findRow(self.ui.searchTargetEdit.text())
+        
+        if foundRow > 0:
+            self.ui.targetLexCombo.setCurrentIndex(foundRow)
+            
+    def SearchTargetClicked(self):
+        
+        # Blank out the search text box if the user hasn't typed anything yet
+        if self.ui.searchTargetEdit.text() == SEARCH_HERE:
+            
+            self.ui.searchTargetEdit.setText('')
         
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
@@ -738,8 +780,8 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
     try:
         targetEntry = repo.GetObject(guid)
     except:
-        report.Error(f'Invalid guid or guid not found in target database. Guid: {myGuid}. You can filter for \
-                       this value in your target equivalent custom field to find the source entry with the problem.')
+        report.Error(f'Invalid guid or guid not found in target database. Guid: {myGuid}. You can filter for ' +
+                       'this value in your target equivalent custom field to find the source entry with the problem.')
         return ret
     
     if targetEntry:
