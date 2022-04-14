@@ -222,6 +222,9 @@
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="maxVisibleItems">
+       <number>30</number>
+      </property>
      </widget>
      <widget class="QScrollArea" name="scrollArea">
       <property name="geometry">
@@ -751,6 +754,19 @@
     </property>
     <property name="text">
      <string>X tests added.</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="rebuildBilingLexButton">
+    <property name="geometry">
+     <rect>
+      <x>554</x>
+      <y>68</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Rebuild Bilingual Lexicon</string>
     </property>
    </widget>
   </widget>

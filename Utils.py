@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5 - 4/1/22 - Ron Lockwood
+#    Support functions used by Extract Bilingual Lexicon that may have a null
+#    report object. Fixes #37
+#
 #   Version 3.4.4 - 3/21/22 - Ron Lockwood
 #    Handle when transfer rules file and testbed file locations are not set in
 #    the configuration file. Issue #95. Applies to run_makefile for Apertium.
@@ -2754,16 +2758,19 @@ def openTargetProject(configMap, report):
     
     # See if the target project is a valid database name.
     if targetProj not in GetProjectNames():
-        report.Error('The Target Database does not exist. Please check the configuration file.')
+        if report:
+            report.Error('The Target Database does not exist. Please check the configuration file.')
         return
     
     try:
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-        report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
+        if report:
+            report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
         raise
-
-    report.Info('Using: '+targetProj+' as the target database.')
+    
+    if report:
+        report.Info('Using: '+targetProj+' as the target database.')
     
     return TargetDB
 
@@ -2879,8 +2886,9 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             # check for a fatal error
             if message == 'fatal':
                 
-                report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
-                             " in it. Could not complete, please correct this category in the " + dbType + " database.")
+                if report:
+                    report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
+                                 " in it. Could not complete, please correct this category in the " + dbType + " database.")
                 haveError = True
                 
                 # show all fatal errors
@@ -2889,13 +2897,15 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             # If we are under the max errors to show number, give a warning
             if countList[i] < numCatErrorsToShow:
                 
-                report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
-                               " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
+                if report:
+                    report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
+                                   " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
             elif countList[i] == numCatErrorsToShow:
                 
-                report.Info("Suppressing further warnings of this type.")
+                if report:
+                    report.Info("Suppressing further warnings of this type.")
                 
             posAbbrStr = re.sub(invalidChar, replChar, posAbbrStr)
             countList[i] += 1

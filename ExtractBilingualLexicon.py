@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5 - 4/1/22 - Ron Lockwood
+#    Put the code that does the main work into its own function so it can be
+#    called by the Live Rule Tester. This means that a possible null report 
+#    object is passed in. Also use an error list in the new function instead of
+#    report object. Output collected errors at the end. Fixes #37
+#
 #   Version 3.4.2 - 3/11/22 - Ron Lockwood
 #    Give errors if biling lex file or replacement file values not found in the
 #    configuration file.
@@ -184,7 +190,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.4.2",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -326,7 +332,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # See if we need to do replacements
     # See if the config setting is there or if it has valid info.
     if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-        return
+        return True
     
     # Save a copy of the bilingual dictionary
     shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
@@ -335,21 +341,24 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     try:
         replEtree = ET.parse(replFile)
     except IOError:
-        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
-        return
+        if report:
+            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
+        return True
     
     # Determine the Doctype
     f = open(replFile, encoding='utf-8')
     
-    line = f.readline()
+    # Read two lines
+    f.readline()
     line = f.readline()
     f.close()
     
     toks = line.split()
 
     if len(toks) < 1:
-        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-        return
+        if report:
+            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return True
 
     if toks[1] == REPLDICTIONARY:
         
@@ -360,8 +369,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         newDocType = False
         
     else:
-        report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-        return
+        if report:
+            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
+        return True
         
     replMap = {}
     replRoot = replEtree.getroot()
@@ -385,8 +395,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     try:
         bilingEtree = ET.parse(fullPathBilingFile)
     except IOError:
-        report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
-        return
+        if report:
+            report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
+        return True
     
     ## Add in new symbol definitions from the replacement file
     
@@ -504,6 +515,8 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     contents = "".join(contents)
     f.write(contents)
     f.close()
+    
+    return False
 
 # convert from a <e> element that has <leftdata> and <rightdata> under <l> and <r> to one that doesn't have these
 # <b /> elements could be between multiple <leftdata> or <rightdata> elements and should come out something like
@@ -571,7 +584,10 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             feat_abbr_list.append((featGrpName, abbValue))
     return
             
-def MainFunction(DB, report, modifyAllowed):
+def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
+    
+    error_list = []
+    
     # Constants for building the output lines in the dictionary file.
     s1 = '    <e><p><l>'
     s1i ='    <e><i>'
@@ -582,11 +598,6 @@ def MainFunction(DB, report, modifyAllowed):
     s4b='</r></p></e>'
     s4i ='"/></i></e>'
 
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-    
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
     linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
     senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
@@ -594,9 +605,9 @@ def MainFunction(DB, report, modifyAllowed):
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not (linkField and senseNumField and sourceMorphNames and sentPunct):
-        report.Error(f'A value for {ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY}  or {ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM} or \
-        {ReadConfig.SOURCE_MORPHNAMES} or {ReadConfig.SENTENCE_PUNCTUATION} not found in the configuration file.')
-        return
+        error_list.append((f'A value for {ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY}  or {ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM} or \
+        {ReadConfig.SOURCE_MORPHNAMES} or {ReadConfig.SENTENCE_PUNCTUATION} not found in the configuration file.', 2))
+        return error_list
     
     # Transform the straight list of category abbreviations to a list of tuples
     catSubList = []
@@ -605,8 +616,8 @@ def MainFunction(DB, report, modifyAllowed):
             for i in range(0,len(catSub),2):
                 catSubList.append((catSub[i],catSub[i+1]))
         except:
-            report.Error('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.')
-            return
+            error_list.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
+            return error_list
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
@@ -615,38 +626,38 @@ def MainFunction(DB, report, modifyAllowed):
     senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
     if not (senseEquivField):
-        report.Error(linkField + " field doesn't exist. Please read the instructions.")
-        return
+        error_list.append((linkField + " field doesn't exist. Please read the instructions.", 2))
+        return error_list
 
     if not (senseSenseNumField):
-        report.Error(senseNumField + " field doesn't exist. Please read the instructions.")
-        return
+        error_list.append((senseNumField + " field doesn't exist. Please read the instructions.", 2))
+        return error_list
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not bilingFile:
-        report.Error(f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.')
-        return
+        error_list.append((f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.', 2))
+        return error_list
     
     fullPathBilingFile = bilingFile
     
     replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replFile:
-        report.Error(f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.')
-        return
+        error_list.append((f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.', 2))
+        return error_list
     
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if not DONT_CACHE and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
+    if not DONT_CACHE and useCacheIfAvailable and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
         
-        report.Info("The bilingual dictionary is up to date.")
+        error_list.append(("The bilingual dictionary is up to date.", 0))
         pass
         
     else: # build the file
         try:
             f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as e:
-            report.Error('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.')
+            error_list.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
     
-        report.Info("Outputing category information...")
+        error_list.append(("Outputing category information...", 0))
         
         f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
         f_out.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
@@ -659,7 +670,9 @@ def MainFunction(DB, report, modifyAllowed):
         
         # Get all source and target categories
         if Utils.get_categories(DB, TargetDB, report, posMap) == True:
-            return
+            
+            error_list.append(('Error retrieving categories.'), 2)
+            return error_list
 
         # save target features so they can go in the symbol definition section
         for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
@@ -683,14 +696,16 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.write('  </sdefs>\n\n')
         f_out.write('  <section id="main" type="standard">\n')
         
-        report.Info("Building the bilingual dictionary...")
+        error_list.append(("Building the bilingual dictionary...", 0))
         records_dumped_cnt = 0
-        report.ProgressStart(DB.LexiconNumberOfEntries())
+        if report:
+            report.ProgressStart(DB.LexiconNumberOfEntries())
       
         # Loop through all the entries
         for entry_cnt,e in enumerate(DB.LexiconAllEntries()):
         
-            report.ProgressUpdate(entry_cnt)
+            if report:
+                report.ProgressUpdate(entry_cnt)
             
             # Don't process affixes, clitics
             if e.LexemeFormOA and \
@@ -721,8 +736,8 @@ def MainFunction(DB, report, modifyAllowed):
                                 abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                       Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                report.Warning('Skipping sense because the POS is unknown: '+\
-                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                error_list.append(('Skipping sense because the POS is unknown: '+\
+                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                 abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
@@ -740,8 +755,8 @@ def MainFunction(DB, report, modifyAllowed):
                                 try:
                                     targetEntry = repo.GetObject(guid)
                                 except:
-                                    report.Error('Skipping sense because the link to the target entry is invalid: '+\
-                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    error_list.append(('Skipping sense because the link to the target entry is invalid: '+\
+                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 2))
                                     continue
                                 
                                 if targetEntry:
@@ -760,10 +775,10 @@ def MainFunction(DB, report, modifyAllowed):
                                     elif is_number(senseNum):
                                         trgtSense = int(senseNum)
                                     else:
-                                        report.Warning('Sense number: '+trgtSense+\
+                                        error_list.append(('Sense number: '+trgtSense+\
                                                        ' is not valid for target headword: '+\
                                                        ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                     
                                     # Make sure that sense number is valid    
                                     if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
@@ -807,35 +822,35 @@ def MainFunction(DB, report, modifyAllowed):
                                                 records_dumped_cnt += 1
                                         
                                             else:
-                                                report.Warning('Skipping sense because the target POS is undefined '+\
+                                                error_list.append(('Skipping sense because the target POS is undefined '+\
                                                                ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                         else:
-                                            report.Warning('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
+                                            error_list.append(('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
                                                            ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                     else:
                                         if targetEntry.SensesOS == None:
-                                            report.Warning('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                            error_list.append(('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                         elif trgtSense > targetEntry.SensesOS.Count:
-                                            report.Warning('Sense number: '+str(trgtSense)+\
+                                            error_list.append(('Sense number: '+str(trgtSense)+\
                                                            ' is not valid. That many senses do not exist for target headword: '+\
                                                            ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                                 else:
-                                    report.Warning('Target entry not found. This target GUID does not exist: '+myGuid+\
-                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                                    error_list.append(('Target entry not found. This target GUID does not exist: '+myGuid+\
+                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                             else:
                                 pass
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
                         else:
-                            report.Warning('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                            error_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                     else:
-                        report.Warning('Skipping sense, no analysis object'\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                        error_list.append(('Skipping sense, no analysis object'\
+                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                     if not trgtFound:
                         # output the bilingual dictionary line -- source and target are the same
                         
@@ -857,17 +872,17 @@ def MainFunction(DB, report, modifyAllowed):
                         
             else:
                 if e.LexemeFormOA == None:
-                    report.Warning('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e))
+                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
                 elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                     # We've documented that affixes are skipped. Don't report this
                     #report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName)
                     pass
                 elif e.LexemeFormOA.MorphTypeRA == None:
-                    report.Warning('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e))
+                    error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
                 elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
                     # Don't report this. We've documented it.
                     #report.Warning('Skipping entry because the morph type is: '+\
-                                   #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
+                    #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
                     pass
            
         f_out.write('    <!-- SECTION: Punctuation -->\n')
@@ -884,13 +899,38 @@ def MainFunction(DB, report, modifyAllowed):
         f_out.write('</dictionary>\n')
         f_out.close()
     
-        report.Info('Creation complete to the file: '+fullPathBilingFile+'.')
-        report.Info(str(records_dumped_cnt)+' records created in the bilingual dictionary.')
+        error_list.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
+        error_list.append((str(records_dumped_cnt)+' records created in the bilingual dictionary.', 0))
 
         # As a last step, replace certain parts of the bilingual dictionary
-        if do_replacements(configMap, report, fullPathBilingFile, replFile) == False:
-            return
+        if do_replacements(configMap, report, fullPathBilingFile, replFile) == True:
+            
+            error_list.append(('Error processing the replacement file.', 2))
+            return error_list
         
+    return error_list
+
+def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Call the main function
+    error_list = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
+        
+    # output info, warnings, errors
+    for msg in error_list:
+        
+        # msg is a pair -- string & code
+        if msg[1] == 0:
+            report.Info(msg[0])
+        elif msg[1] == 1:
+            report.Warning(msg[0])
+        else: # error=2
+            report.Error(msg[0])
+                
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

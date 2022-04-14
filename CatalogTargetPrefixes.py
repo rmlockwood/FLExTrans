@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5 - 4/1/22 - Ron Lockwood
+#    Added a parameter useCacheIfAvailable and default it to false so that the
+#    LiveRuleTester can force the rebuild of the affix list.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -81,7 +85,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -121,7 +125,7 @@ def is_affix_file_out_of_date(DB, affixFile):
     else: # affix file is newer
         return False
 
-def catalog_affixes(DB, configMap, filePath, report=None):
+def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=False):
     
     error_list = []
     
@@ -149,7 +153,7 @@ def catalog_affixes(DB, configMap, filePath, report=None):
     myPath = Utils.build_path_default_to_temp(filePath)
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if is_affix_file_out_of_date(TargetDB, myPath) == False:
+    if useCacheIfAvailable and is_affix_file_out_of_date(TargetDB, myPath) == False:
         error_list.append(('Affix list is up to date.', 0))
         return error_list
     
@@ -247,7 +251,7 @@ def MainFunction(DB, report, modifyAllowed):
         if not outFileVal:
             return
     
-    error_list = catalog_affixes(DB, configMap, outFileVal, report)
+    error_list = catalog_affixes(DB, configMap, outFileVal, report, useCacheIfAvailable=True)
     
     # output info, warnings, errors
     for msg in error_list:

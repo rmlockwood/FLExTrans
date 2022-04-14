@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5 - 4/1/22 - Ron Lockwood
+#    Added a parameter useCacheIfAvailable and default it to false so that the
+#    LiveRuleTester can force the rebuild of the lexicon files.  Fixes #56.
+#
 #   Version 3.4.2 - 3/11/22 - Ron Lockwood
 #    Less Information outputted to FlexTools.
 #
@@ -131,7 +135,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.4.2",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -559,7 +563,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     
     return err_list
     
-def extract_target_lex(DB, configMap, report=None):
+def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
     TargetDB = FLExProject()
@@ -598,7 +602,7 @@ def extract_target_lex(DB, configMap, report=None):
     partPath = os.path.join(tempfile.gettempdir(), targetProject)
 
     # If the target database hasn't changed since we created the root databse file, don't do anything.
-    if is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
+    if useCacheIfAvailable and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         error_list.append(('Target lexicon files are up to date.', 0))
         return error_list
 
@@ -697,7 +701,7 @@ def MainFunction(DB, report, modifyAllowed):
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
     
     # Extract the target lexicon
-    error_list = extract_target_lex(DB, configMap, report)
+    error_list = extract_target_lex(DB, configMap, report, useCacheIfAvailable=True)
 
     # Synthesize the new target text
     err_list = synthesize(configMap, anaFile, synFile, report)

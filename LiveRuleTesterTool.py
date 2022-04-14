@@ -5,6 +5,30 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.6 - 4/14/22 - Ron Lockwood
+#    Give error message when no words are suggested. Fixes #109
+#
+#   Version 3.5.5 - 4/14/22 - Ron Lockwood
+#    Turn on and off wait cursor for certain operations. Fixes #103
+#
+#   Version 3.5.4 - 4/1/22 - Ron Lockwood
+#    Program a button to rebuild the bilingual lexicon. Fixes #37
+#
+#   Version 3.5.3 - 4/1/22 - Ron Lockwood
+#    Save checked rules on refresh. Fixes #29
+#
+#   Version 3.5.2 - 4/1/22 - Ron Lockwood
+#    Fixed crash on up or down button. I was incorrectly using _children for
+#    ElementTree which no longer works in Python 3. Also got selecting a row
+#    working. Fixes #104
+#
+#   Version 3.5.1 - 4/1/22 - Ron Lockwood
+#    If no rule is checked, give a specific error. Instead of letting Apertium 
+#    fail. Fixes #28.
+#
+#   Version 3.5 - 3/24/22 - Ron Lockwood
+#    Save selected tabs on close to a file and rest to those on open. Bug #2.
+#
 #   Version 3.4.5 - 3/21/22 - Ron Lockwood
 #    Handle when transfer rules file and testbed file locations are not set in
 #    the configuration file. Issue #95
@@ -163,6 +187,8 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+#import win32gui
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
@@ -172,7 +198,7 @@ import ReadConfig
 import CatalogTargetPrefixes
 import ConvertTextToSTAMPformat
 import ExtractTargetLexicon
-#import TestbedLogViewer
+import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
@@ -185,12 +211,13 @@ AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
 TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
 TARGET_ANA_PATH = TESTER_FOLDER + '\\myText.ana'
 SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
+WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.4.5",
+        FTM_Version    : "3.5.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -284,6 +311,7 @@ class Main(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
         self.ui.BilingFileEdit.setText(biling_file)
@@ -318,15 +346,10 @@ class Main(QMainWindow):
         self.__postchunkPrevSource = ''
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
-
-        
-        # Make sure we are on the 1st tabs
-        self.ui.tabRules.setCurrentIndex(0)
-        self.ui.tabSource.setCurrentIndex(0)
+        self.rulesCheckedList = []
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
-        #self.ui.CloseButton.clicked.connect(self.CloseClicked)
         self.ui.listSentences.clicked.connect(self.listSentClicked)
         self.ui.listTransferRules.clicked.connect(self.rulesListClicked)
         self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
@@ -346,6 +369,7 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
+        self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
         
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
@@ -367,6 +391,28 @@ class Main(QMainWindow):
             # add it to the list
             self.__checkBoxList.append(myCheck)
 
+        # Make sure we are on right tabs
+        ruleTab = 0
+        sourceTab = 0
+        
+        # Open a settings file to see which tabs were last used.
+        try:
+            f = open(WINDOWS_SETTINGS_FILE)
+            
+            line = f.readline()
+            
+            ruleTab, sourceTab = line.split(',')
+            ruleTab = int(ruleTab)
+            sourceTab = int(sourceTab)
+            
+            f.close()
+        except:
+            pass
+        
+        # Set which tab is shown        
+        self.ui.tabRules.setCurrentIndex(ruleTab)
+        self.ui.tabSource.setCurrentIndex(sourceTab)
+        
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
@@ -374,11 +420,6 @@ class Main(QMainWindow):
         if not self.__transfer_rules_file:
             self.__transfer_rules_file = 'Output\\transfer_rules.t1x'
             
-        # Load the transfer rules
-        pwd = os.getcwd()
-
-#        os.path.join(pwd, '..', self.__transfer_rules_file)
-        
         # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
             self.ret_val = False
@@ -421,17 +462,6 @@ class Main(QMainWindow):
             self.ret_val = False
             return 
 
-        # Copy makefile file to the tester folder. We do this because it could be an advanced transfer makefile
-
-        # The Makefile is now a separate one from the one in the Output folder
-#         try:
-#             shutil.copy(os.path.join(Utils.OUTPUT_FOLDER, 'Makefile'), TESTER_FOLDER)
-#             m_path = os.path.join(Utils.OUTPUT_FOLDER, 'Makefile')
-#         except:
-#             QMessageBox.warning(self, 'Copy Error', 'Could not copy '+m_path+' to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
-#             self.ret_val = False
-#             return 
-        
         ## Testbed preparation
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
@@ -491,13 +521,36 @@ class Main(QMainWindow):
         
         return myObj
     
+    def RebuildBilingLexButtonClicked(self):
+        
+        self.setCursor(QtCore.Qt.WaitCursor)
+        
+        # Extract the bilingual lexicon        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        for triplet in error_list:
+            if triplet[1] == 2: # error code
+                msg = triplet[0]
+                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', msg + '\nRun the Extract Bilingual Lexicon module separately for more details.')
+                return
+
+        # Copy bilingual file to the tester folder
+        try:
+            # always name the local version bilingual.dix which is what the Makefile has
+            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
+        except:
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            self.ret_val = False
+            return 
+        
+        self.__ClearStuff()
+        
+        self.unsetCursor()
+
     def ViewTestbedLogButtonClicked(self):
         resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
     
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
-    
-        #app = QApplication(sys.argv)
     
         window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
         
@@ -690,6 +743,8 @@ class Main(QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         error_list = []
         
+        self.setCursor(QtCore.Qt.WaitCursor)
+
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
         
@@ -702,12 +757,14 @@ class Main(QMainWindow):
                 error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                self.unsetCursor()
                 return
 
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                    self.unsetCursor()
                     return
                 
             self.__doCatalog = False
@@ -722,6 +779,7 @@ class Main(QMainWindow):
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
+                    self.unsetCursor()
                     return
             
             self.__convertIt = False
@@ -735,6 +793,7 @@ class Main(QMainWindow):
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                self.unsetCursor()
                 return
             
             # Extract the lexicon        
@@ -743,6 +802,7 @@ class Main(QMainWindow):
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
                     QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                    self.unsetCursor()
                     return
         
         ## SYNTHESIZE
@@ -751,6 +811,7 @@ class Main(QMainWindow):
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                self.unsetCursor()
                 return
                     
         # Load the synthesized result into the text box
@@ -787,13 +848,16 @@ class Main(QMainWindow):
             self.ui.addToTestbedButton.setEnabled(False)
             self.ui.addMultipleCheckBox.setEnabled(False)
         
+        self.unsetCursor()
         return
                 
     def UpButtonClicked(self):
         if self.TRIndex and self.TRIndex.row() > 0:
-            # pop current list item and insert it one above
-            self.__rulesElement._children.insert(self.TRIndex.row()-1,\
-                                                self.__rulesElement._children.pop(self.TRIndex.row()))
+            
+            # get current list item and insert it one above and remove it from its old position
+            elemToMove = self.__rulesElement[self.TRIndex.row()]
+            self.__rulesElement.remove(elemToMove)
+            self.__rulesElement.insert(self.TRIndex.row()-1, elemToMove)
             
             # copy the selection
             cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
@@ -801,23 +865,31 @@ class Main(QMainWindow):
             self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
             self.__ruleModel.item(self.TRIndex.row()-1).setCheckState(cur_state)
             
+            myIndex = self.__ruleModel.index(self.TRIndex.row()-1, self.TRIndex.column())
+            self.ui.listTransferRules.setCurrentIndex(myIndex)
+
             # redo the display
-            self.rulesListClicked(self.TRIndex)
+            self.rulesListClicked(myIndex)
             
     def DownButtonClicked(self):
-        if self.TRIndex and self.TRIndex.row() < len(self.__rulesElement._children)-1:
-            # pop current list item and insert it one above
-            self.__rulesElement._children.insert(self.TRIndex.row()+1,\
-                                                self.__rulesElement._children.pop(self.TRIndex.row()))
+        if self.TRIndex and self.TRIndex.row() < len(list(self.__rulesElement))-1:
             
+            # get current list item and insert it one above and remove it from its old position
+            elemToMove = self.__rulesElement[self.TRIndex.row()]
+            self.__rulesElement.remove(elemToMove)
+            self.__rulesElement.insert(self.TRIndex.row()+1, elemToMove)
+
             # copy the selection
             cur_state = self.__ruleModel.item(self.TRIndex.row()).checkState()
             oth_state = self.__ruleModel.item(self.TRIndex.row()+1).checkState()
             self.__ruleModel.item(self.TRIndex.row()).setCheckState(oth_state)
             self.__ruleModel.item(self.TRIndex.row()+1).setCheckState(cur_state)
             
+            myIndex = self.__ruleModel.index(self.TRIndex.row()+1, self.TRIndex.column())
+            self.ui.listTransferRules.setCurrentIndex(myIndex)
+
             # redo the display
-            self.rulesListClicked(self.TRIndex)
+            self.rulesListClicked(myIndex)
     
     def SelectAllClicked(self):
         # Loop through all the items in the rule list model
@@ -838,11 +910,39 @@ class Main(QMainWindow):
         self.rulesListClicked(self.TRIndex)
             
     def RefreshClicked(self):
+        self.saveChecked()
         self.loadTransferRules()
         self.ui.SynthTextEdit.setPlainText('')
         self.__ClearStuff()
-        self.checkThemAll()
+        self.restoreChecked()
+        #self.checkThemAll()
         
+        # Redo the numbering
+        self.rulesListClicked(self.TRIndex)
+            
+    def saveChecked(self):
+        
+        self.rulesCheckedList = []
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, self.__ruleModel.rowCount()):
+            
+            # Save the state of each check box 
+            if self.__ruleModel.item(i).checkState():
+                self.rulesCheckedList.append(QtCore.Qt.Checked)
+            else:
+                self.rulesCheckedList.append(QtCore.Qt.Unchecked)
+                
+    def restoreChecked(self):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, self.__ruleModel.rowCount()):
+            
+            if i < len(self.rulesCheckedList):
+                
+                # Set the state of each check box
+                self.__ruleModel.item(i).setCheckState(self.rulesCheckedList[i])
+                
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
@@ -960,6 +1060,7 @@ class Main(QMainWindow):
     def __ClearStuff(self):
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
+        self.ui.SynthTextEdit.setPlainText('')
     def sourceTabClicked(self):
 #         if self.ui.tabSource.currentIndex() == 0: # check boxes
 #             self.SourceCheckBoxClicked()
@@ -1071,9 +1172,16 @@ class Main(QMainWindow):
         for j in range(i+1,len(self.__checkBoxList)):
             self.__checkBoxList[j].setVisible(False)
              
-    def CloseClicked(self):
-        self.ret_val = 0
-        self.close()
+    def closeEvent(self, event):
+        
+        rulesTab = self.ui.tabRules.currentIndex()
+        sourceTab = self.ui.tabSource.currentIndex()
+        
+        f = open(WINDOWS_SETTINGS_FILE, 'w')
+        
+        f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
+        f.close()
+        
     def BilingBrowseClicked(self):
         # Bring up file select dialog
         biling_file_tup = \
@@ -1116,7 +1224,7 @@ class Main(QMainWindow):
         if self.__transferRulesElement is not None:
             self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
             self.__transferRuleFileXMLtree = test_tree
-            self.__transferModel = QStandardItemModel()
+            self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
@@ -1246,7 +1354,7 @@ class Main(QMainWindow):
             
     def TransferClicked(self):
         
-        #QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
+        self.setCursor(QtCore.Qt.WaitCursor)
         
         if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules'
             self.__interchunkHtmlResult = ''
@@ -1257,12 +1365,9 @@ class Main(QMainWindow):
         # TODO: allow editable rule file edit box?
         # Make sure we have a transfer file
         if self.ui.TransferFileEdit.text() == '':
+            self.unsetCursor()
             return
         
-        # Create the tester folder if it doesn't exist
-        #if not os.path.exists(TESTER_FOLDER):
-        #    os.makedirs(TESTER_FOLDER)
-            
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
@@ -1308,6 +1413,12 @@ class Main(QMainWindow):
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
         
+        if len(myStr) < 1:
+            
+            self.ui.TargetTextEdit.setPlainText('Nothing selected. Select at least one word or sentence.')
+            self.unsetCursor()
+            return
+            
         sf.write(myStr)
         sf.close()
         
@@ -1327,9 +1438,6 @@ class Main(QMainWindow):
         
         rules_element = rule_file.find('section-rules')
 
-        # Put a space in the rules section so we get a closing element </section-rules>
-        #makrules_element.text = ' '
-        
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):
         
@@ -1337,9 +1445,15 @@ class Main(QMainWindow):
             if self.__ruleModel.item(i).checkState():
                 new_sr_element.append(rule_el) 
             
+        # Give an error if no rules were selected
+        if len(list(new_sr_element)) < 1:
+            
+            self.ui.TargetTextEdit.setPlainText('At least one rule must be selected.')
+            self.unsetCursor()
+            return
+        
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
-        #rf.close()
         
         ## Display the results
         
@@ -1353,7 +1467,7 @@ class Main(QMainWindow):
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
-            QApplication.restoreOverrideCursor()
+            self.unsetCursor()
             return
         
         # Load the target text contents into the results edit box
@@ -1479,7 +1593,7 @@ class Main(QMainWindow):
         self.ui.LogEdit.setPlainText(lf.read())
         lf.close()
         
-       # QApplication.restoreOverrideCursor()
+        self.unsetCursor()
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -1747,7 +1861,7 @@ def MainFunction(DB, report, modify=False):
         app.exec_()
     else:
         report.Error('This text has no data.')
-        
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
