@@ -5,7 +5,10 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.5.5 - 4/1/22 - Ron Lockwood
+#   Version 3.5.6 - 4/14/22 - Ron Lockwood
+#    Give error message when no words are suggested. Fixes #109
+#
+#   Version 3.5.5 - 4/14/22 - Ron Lockwood
 #    Turn on and off wait cursor for certain operations. Fixes #103
 #
 #   Version 3.5.4 - 4/1/22 - Ron Lockwood
@@ -214,7 +217,7 @@ WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.5",
+        FTM_Version    : "3.5.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1365,10 +1368,6 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
         
-        # Create the tester folder if it doesn't exist
-        #if not os.path.exists(TESTER_FOLDER):
-        #    os.makedirs(TESTER_FOLDER)
-            
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
@@ -1414,6 +1413,12 @@ class Main(QMainWindow):
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
         
+        if len(myStr) < 1:
+            
+            self.ui.TargetTextEdit.setPlainText('Nothing selected. Select at least one word or sentence.')
+            self.unsetCursor()
+            return
+            
         sf.write(myStr)
         sf.close()
         
