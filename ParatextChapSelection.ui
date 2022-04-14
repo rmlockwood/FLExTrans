@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>316</width>
-    <height>152</height>
+    <height>179</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>110</y>
+     <y>140</y>
      <width>161</width>
      <height>32</height>
     </rect>
@@ -41,12 +41,15 @@
    <property name="text">
     <string>Paratext Project Abbreviation</string>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>43</y>
+     <y>73</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -59,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>43</y>
+     <y>73</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -85,7 +88,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>43</y>
+     <y>73</y>
      <width>21</width>
      <height>21</height>
     </rect>
@@ -98,7 +101,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>43</y>
+     <y>73</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -114,13 +117,39 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>80</y>
+     <y>110</y>
      <width>111</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
     <string>IncludeFootnotes</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>40</y>
+     <width>151</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Book Abbreviation</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="ptxProjAbbrevLineEdit_2">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>40</y>
+     <width>51</width>
+     <height>20</height>
+    </rect>
    </property>
   </widget>
  </widget>
