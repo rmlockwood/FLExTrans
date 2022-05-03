@@ -24,6 +24,8 @@ import re
 import sys
 import glob
 import winreg
+import json
+from shutil import copyfile
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
@@ -56,74 +58,78 @@ GEN 1-2. You have to have at least an Observer role on the project to use this m
 #----------------------------------------------------------------
 # The main processing function
 
+PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
+
 bookMap = {\
-'Genesis':'GEN',\
-'Exodus':'EXO',\
-'Leviticus':'LEV',\
-'Numbers':'NUM',\
-'Deuteronomy':'DEU',\
-'Joshua':'JOS',\
-'Judges':'JDG',\
-'Ruth':'RUT',\
-'1 Samuel':'1SA',\
-'2 Samuel':'2SA',\
-'1 Kings':'1KI',\
-'2 Kings':'2KI',\
-'1 Chronicles':'1CH',\
-'2 Chronicles':'2CH',\
-'Ezra':'EZR',\
-'Nehemiah':'NEH',\
-'Esther':'EST',\
-'Job':'JOB',\
-'Psalms':'PSA',\
-'Proverbs':'PRO',\
-'Ecclesiastes':'ECC',\
-'Song of Solomon':'SNG',\
-'Isaiah':'ISA',\
-'Jeremiah':'JER',\
-'Lamentations':'LAM',\
-'Ezekiel':'EZK',\
-'Daniel':'DAN',\
-'Hosea':'HOS',\
-'Joel':'JOL',\
-'Amos':'AMO',\
-'Obadiah':'OBA',\
-'Jonah':'JON',\
-'Micah':'MIC',\
-'Nahum':'NAM',\
-'Habakkuk':'HAB',\
-'Zephaniah':'ZEP',\
-'Haggai':'HAG',\
-'Zechariah':'ZEC',\
-'Malachi':'MAL',\
-'Matthew':'MAT',\
-'Mark':'MRK',\
-'Luke':'LUK',\
-'John':'JHN',\
-'Acts':'ACT',\
-'Romans':'ROM',\
-'1 Corinthians':'1CO',\
-'2 Corinthians':'2CO',\
-'Galatians':'GAL',\
-'Ephesians':'EPH',\
-'Philippians':'PHP',\
-'Colossians':'COL',\
-'1 Thessalonians':'1TH',\
-'2 Thessalonians':'2TH',\
-'1 Timothy':'1TI',\
-'2 Timothy':'2TI',\
-'Titus':'TIT',\
-'Philemon':'PHM',\
-'Hebrews':'HEB',\
-'James':'JAS',\
-'1 Peter':'1PE',\
-'2 Peter':'2PE',\
-'1 John':'1JN',\
-'2 John':'2JN',\
-'3 John':'3JN',\
-'Jude':'JUD',\
-'Revelation':'REV',\
+'GEN':'Genesis',\
+'EXO':'Exodus',\
+'LEV':'Leviticus',\
+'NUM':'Numbers',\
+'DEU':'Deuteronomy',\
+'JOS':'Joshua',\
+'JDG':'Judges',\
+'RUT':'Ruth',\
+'1SA':'1 Samuel',\
+'2SA':'2 Samuel',\
+'1KI':'1 Kings',\
+'2KI':'2 Kings',\
+'1CH':'1 Chronicles',\
+'2CH':'2 Chronicles',\
+'EZR':'Ezra',\
+'NEH':'Nehemiah',\
+'EST':'Esther',\
+'JOB':'Job',\
+'PSA':'Psalms',\
+'PRO':'Proverbs',\
+'ECC':'Ecclesiastes',\
+'SNG':'Song of Solomon',\
+'ISA':'Isaiah',\
+'JER':'Jeremiah',\
+'LAM':'Lamentations',\
+'EZK':'Ezekiel',\
+'DAN':'Daniel',\
+'HOS':'Hosea',\
+'JOL':'Joel',\
+'AMO':'Amos',\
+'OBA':'Obadiah',\
+'JON':'Jonah',\
+'MIC':'Micah',\
+'NAM':'Nahum',\
+'HAB':'Habakkuk',\
+'ZEP':'Zephaniah',\
+'HAG':'Haggai',\
+'ZEC':'Zechariah',\
+'MAL':'Malachi',\
+'MAT':'Matthew',\
+'MRK':'Mark',\
+'LUK':'Luke',\
+'JHN':'John',\
+'ACT':'Acts',\
+'ROM':'Romans',\
+'1CO':'1 Corinthians',\
+'2CO':'2 Corinthians',\
+'GAL':'Galatians',\
+'EPH':'Ephesians',\
+'PHP':'Philippians',\
+'COL':'Colossians',\
+'1TH':'1 Thessalonians',\
+'2TH':'2 Thessalonians',\
+'1TI':'1 Timothy',\
+'2TI':'2 Timothy',\
+'TIT':'Titus',\
+'PHM':'Philemon',\
+'HEB':'Hebrews',\
+'JAS':'James',\
+'1PE':'1 Peter',\
+'2PE':'2 Peter',\
+'1JN':'1 John',\
+'2JN':'2 John',\
+'3JN':'3 John',\
+'JUD':'Jude',\
+'REV':'Revelation',\
 }
+
+textNameList = []
 
 class ChapterSelection(object):
         
@@ -137,8 +143,91 @@ class ChapterSelection(object):
         self.includeFootnotes   = includeFootnotes
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName     
+        
+    def dump(self):
+        
+        ret = {\
+            'projectAbbrev'    : self.projectAbbrev      ,\
+            'bookAbbrev'       : self.bookAbbrev         ,\
+            'fromChap'         : self.fromChap           ,\
+            'toChap'           : self.toChap             ,\
+            'includeFootnotes' : self.includeFootnotes   ,\
+            'makeActive'       : self.makeActive         ,\
+            'useFullBookName'  : self.useFullBookName     \
+            }
+        return ret
     
-textNameList = []
+# TODO: this function is a duplicate of what is in InsertTargetText.py, move it to Utils and have both modules call it    
+def findTextName(TargetDB, myTextName):
+    foundText = False
+    
+    if len(textNameList) == 0:
+        
+        for text in TargetDB.ObjectsIn(ITextRepository):
+            
+            tName = ITsString(text.Name.BestVernacularAnalysisAlternative).Text
+            textNameList.append(tName)
+            
+            if myTextName == tName:
+                
+                foundText = True
+    else:
+        if myTextName in textNameList:
+            
+            foundText = True
+            
+    return foundText
+
+def  createUniqueTitle(DB, title):
+      
+    if findTextName(DB, title):
+        
+        title += ' - Copy'
+        if findTextName(DB, title): 
+            
+            done = False
+            i = 2
+            
+            while not done: 
+                
+                tryName = title + ' (' + str(i) + ')'
+                
+                if not findTextName(DB, tryName): 
+                    
+                    title = tryName
+                    done = True 
+                    
+                i += 1
+    return title
+
+def setSourceNameInConfigFile(report, title):
+        
+    try:
+        # Edit the FLExTrans config file to use the current text/folder name
+        myConfig = '../' + ReadConfig.CONFIG_FILE
+        f = open(myConfig, encoding='utf-8')
+        
+    except:
+        report.Error(f'Could not open the configuration file: {myConfig}') 
+        return
+    
+    configLines = f.readlines()
+    
+    for i, line in enumerate(configLines):
+        
+        if re.search('SourceTextName', line):
+        
+            configLines[i] = f'SourceTextName={title}\n'
+            break
+                    
+    f.close()
+
+    # Make a copy of the original
+    copyfile(myConfig, myConfig+'.copy')
+
+    f = open(myConfig, 'w', encoding='utf-8')
+    f.writelines(configLines)
+    f.close()
 
 def do_import(DB, report, chapSelectObj):
     
@@ -173,6 +262,9 @@ def do_import(DB, report, chapSelectObj):
     if str(chapSelectObj.toChap+1) not in chapList:
         
         copyUntilEnd = True
+        
+        if len(chapList) > 0:
+            chapSelectObj.toChap = int(chapList[-1])
     
     # Build the search regex
     reStr = fr'(\\c {str(chapSelectObj.fromChap)}\s.+?)'
@@ -193,9 +285,12 @@ def do_import(DB, report, chapSelectObj):
     # Replace new line with space if it's before a marker
     #outStr = re.sub(r'\n\\', r' \\', savedTxt)
     
-    # TODO: remove footnotes if necessary
+    # Remove footnotes if necessary
+    if chapSelectObj.includeFootnotes == False:
+        
+        importText = re.sub(r'\\f.+?\\f\*', '', importText)
     
-    segs = re.split(r'(\\f\*|\\f \+ |\\fr \d+:\d+|\\v \d+ |\\c \d+|\\\w+)', importText) # match footnotes or \v n or \c n or other sfms
+    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+:\d+|\\xo \d+:\d+|\\v \d+ |\\c \d+|\\\w+)', importText) # match footnotes, cros-refs,  or \v n or \c n or other sfms
 
     # Create 1st paragraph object
     stTxtPara = m_stTxtParaFactory.Create()
@@ -205,9 +300,12 @@ def do_import(DB, report, chapSelectObj):
 
     bldr = TsStringUtils.MakeStrBldr()
 
+    # SFMs to start a new paragraph in FLEx
+    newPar = r'\\[cpsqm]'
+    
     for _, seg in enumerate(segs):
         
-        if re.search(r'\\p', seg): # or first segment if not blank
+        if re.search(newPar, seg): # or first segment if not blank
         
             # Save the built up string to the Contents member
             stTxtPara.Contents = bldr.GetString()
@@ -225,6 +323,10 @@ def do_import(DB, report, chapSelectObj):
         
         elif re.search(r'\\', seg):
             
+            # add a space before the marker if we have content before it.
+            if bldr.Length > 0:
+                seg = ' ' + seg
+            
             # make this in the Analysis WS
             tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
             bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
@@ -236,21 +338,34 @@ def do_import(DB, report, chapSelectObj):
         
     stTxtPara.Contents = bldr.GetString()
 
-    # TODO: use new file name if the current one exists.
+    # If the user wants full name, look it up
+    if chapSelectObj.useFullBookName:
+        
+        bibleBook = bookMap[chapSelectObj.bookAbbrev]
+    else:
+        bibleBook = chapSelectObj.bookAbbrev
 
-    # Build the title string from book abbreviation and chapter range. E.g. EXO 3 or EXO 3-4
-    title = chapSelectObj.bookAbbrev + ' ' + str(chapSelectObj.fromChap)
+    # Build the title string from book abbreviation and chapter range. E.g. EXO 03 or EXO 03-04
+    title = bibleBook + ' ' + str(chapSelectObj.fromChap).zfill(2)
     
     if chapSelectObj.fromChap < chapSelectObj.toChap:
         
-        title += '-' + str(chapSelectObj.toChap)
+        title += '-' + str(chapSelectObj.toChap).zfill(2)
+
+    # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
+    title = createUniqueTitle(DB, title)
     
     # Set the title of the text
     tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
     
     report.Info('Text: "'+title+'" created.')
-
+    
+    # Make this new text the active text for FLExTrans if necessary
+    if chapSelectObj.makeActive:
+        
+        setSourceNameInConfigFile(report, title)
+    
 class Main(QMainWindow):
 
     def __init__(self):
@@ -268,6 +383,22 @@ class Main(QMainWindow):
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
         #self.ui.CancelButton.clicked.connect(self.CancelClicked)
+        
+        # Load settings if available
+        try:
+            f = open(PTXIMPORT_SETTINGS_FILE, 'r')
+            myMap = json.load(f)
+            
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap['projectAbbrev'])
+            self.ui.bookAbbrevLineEdit.setText(myMap['bookAbbrev'])
+            self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
+            self.ui.toChapterSpinBox.setValue(myMap['toChap'])
+            self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
+            self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
+            self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
+            
+        except:
+            pass
 
     def CancelClicked(self):
         self.retVal = False
@@ -299,7 +430,7 @@ class Main(QMainWindow):
 
         # Get values from the 'dialog' window
         projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
-        bookAbbrev = self.ui.bookAbbrevLineEdit.text()
+        bookAbbrev = self.ui.bookAbbrevLineEdit.text().upper()
         fromChap = self.ui.fromChapterSpinBox.value()        
         toChap = self.ui.toChapterSpinBox.value()
         includeFootnotes = self.ui.footnotesCheckBox.isChecked()
@@ -323,7 +454,7 @@ class Main(QMainWindow):
             return
 
         # Check if the book is valid
-        if bookAbbrev not in bookMap.values():
+        if bookAbbrev not in bookMap:
             
             QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
             return
@@ -341,6 +472,14 @@ class Main(QMainWindow):
         bookPath = parts[0]
         
         self.chapSel = ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
+        
+        # Save the settings to a file so the same settings can be shown next time
+        f = open(PTXIMPORT_SETTINGS_FILE, 'w')
+        
+        dumpMap = self.chapSel.dump()
+        json.dump(dumpMap, f)
+        
+        f.close()
         
         self.retVal = True
         self.close()
