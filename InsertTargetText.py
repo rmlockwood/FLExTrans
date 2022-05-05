@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5 - 5/5/22 - Ron Lockwood
+#    Moved logic for creating unique title to Utils.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -56,7 +59,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -72,23 +75,6 @@ will only change the target database as specified in the configuration file.
                  
 #----------------------------------------------------------------
 # The main processing function
-
-textNameList = []
-
-def findTextName(TargetDB, myTextName):
-    foundText = False
-    
-    if len(textNameList) == 0:
-        for text in TargetDB.ObjectsIn(ITextRepository):
-            tName = ITsString(text.Name.BestVernacularAnalysisAlternative).Text
-            textNameList.append(tName)
-            if myTextName == tName:
-                foundText = True
-    else:
-        if myTextName in textNameList:
-            foundText = True
-            
-    return foundText
 
 def MainFunction(DB, report, modify=True):
     
@@ -129,17 +115,7 @@ def MainFunction(DB, report, modify=True):
 
     # Figure out the naming of the text file. Use the source text name by default,
     # but if it exists create a different name. E.g. War & Peace, War & Peace - Copy, War & Peace - Copy (2)
-    if findTextName(TargetDB, sourceTextName):
-        sourceTextName += ' - Copy'
-        if findTextName(TargetDB, sourceTextName): 
-            done = False
-            i = 2
-            while not done: 
-                tryName = sourceTextName + ' (' + str(i) + ')'
-                if not findTextName(TargetDB, tryName): 
-                    sourceTextName = tryName
-                    done = True 
-                i += 1
+    sourceTextName = Utils.createUniqueTitle(TargetDB, sourceTextName)
  
     # Create the text objects
     m_textFactory = TargetDB.project.ServiceLocator.GetInstance(ITextFactory)

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.1 - 5/5/22 - Ron Lockwood
+#    Moved CreateUniqueTitle from InsertTargetText to here so that ImportFromParatext
+#    could use it. 
+#
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Support functions used by Extract Bilingual Lexicon that may have a null
 #    report object. Fixes #37
@@ -293,6 +297,52 @@ reDataStream = re.compile('(>[^$<])')
 reTestID = re.compile('test id=".+?"')
 
 NGRAM_SIZE = 5
+
+# Search for a text name in the list of texts in FLEx
+def findTextName(TargetDB, myTextName, textNameList):
+    foundText = False
+    
+    if len(textNameList) == 0:
+        
+        for text in TargetDB.ObjectsIn(ITextRepository):
+            
+            tName = ITsString(text.Name.BestVernacularAnalysisAlternative).Text
+            textNameList.append(tName)
+            
+            if myTextName == tName:
+                
+                foundText = True
+    else:
+        if myTextName in textNameList:
+            
+            foundText = True
+            
+    return foundText
+
+# Create a unique text title for FLEx
+def createUniqueTitle(DB, title):
+      
+    textNameList = []
+    
+    if findTextName(DB, title, textNameList):
+        
+        title += ' - Copy'
+        if findTextName(DB, title, textNameList): 
+            
+            done = False
+            i = 2
+            
+            while not done: 
+                
+                tryName = title + ' (' + str(i) + ')'
+                
+                if not findTextName(DB, tryName, textNameList): 
+                    
+                    title = tryName
+                    done = True 
+                    
+                i += 1
+    return title
 
 def removeTestID(inStr):
     
