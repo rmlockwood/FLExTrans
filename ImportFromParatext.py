@@ -5,7 +5,10 @@
 #   SIL International
 #   10/30/21
 #
-#   Version 3.1 - 2/4/22 - Ron Lockwood
+#   Version 3.5.1 - 5/5/22 - Ron Lockwood
+#    Various improvements.
+#
+#   Version 3.5 - 5/3/22 - Ron Lockwood
 #    Initial version.
 #
 #   Import chapters from Paratext. The user is prompted which chapters and which
@@ -19,6 +22,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 import ReadConfig
+import Utils
+import ChapterSelection
 import os
 import re
 import sys
@@ -30,7 +35,7 @@ from shutil import copyfile
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
-from ParatextChapSelection import Ui_MainWindow
+from ParatextChapSelectionDlg import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Configurables:
@@ -40,165 +45,28 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.2",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
         FTM_Description:
 """
-Copy chapters of a given book from a given Paratext project import it into the source FLEx project.
-The copied chapters will show up as a new text in the FLEx project. If the text already exists, a
-new text will get created with a similar name. By checking the Include footnotes checkbox, the sfm
-markers and associated text will be imported with the verse text. By checking the Make a new text the active text
-checkbox, FLExTrans will make the newly created text, the source text for subsequent FLExTrans work.
-By checking the Use full English book name for title checkbox, the title will have the full book name
-in the title. For example, Genesis 1-2. Otherwise the title will use the book abbreviation. For example,
-GEN 1-2. You have to have at least an Observer role on the project to use this module.""" }
+This module asks you which Paratext project, which book and which chapters should be 
+imported. The book name should be given as a three-letter abbreviation just like in
+Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
+new text. If you want to include the footnotes in the import, click the check box. 
+If you want to use the English full name of the book in the text name, click the check box. 
+If you want to make the newly imported text, the active text in FLExTrans click the check box.""" }
                  
 #----------------------------------------------------------------
 # The main processing function
 
+# Tuple of 3 items
+replaceList = [\
+               #('Name', 'find_str', 'rpl_str'),\
+              ]
+
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
-
-bookMap = {\
-'GEN':'Genesis',\
-'EXO':'Exodus',\
-'LEV':'Leviticus',\
-'NUM':'Numbers',\
-'DEU':'Deuteronomy',\
-'JOS':'Joshua',\
-'JDG':'Judges',\
-'RUT':'Ruth',\
-'1SA':'1 Samuel',\
-'2SA':'2 Samuel',\
-'1KI':'1 Kings',\
-'2KI':'2 Kings',\
-'1CH':'1 Chronicles',\
-'2CH':'2 Chronicles',\
-'EZR':'Ezra',\
-'NEH':'Nehemiah',\
-'EST':'Esther',\
-'JOB':'Job',\
-'PSA':'Psalms',\
-'PRO':'Proverbs',\
-'ECC':'Ecclesiastes',\
-'SNG':'Song of Solomon',\
-'ISA':'Isaiah',\
-'JER':'Jeremiah',\
-'LAM':'Lamentations',\
-'EZK':'Ezekiel',\
-'DAN':'Daniel',\
-'HOS':'Hosea',\
-'JOL':'Joel',\
-'AMO':'Amos',\
-'OBA':'Obadiah',\
-'JON':'Jonah',\
-'MIC':'Micah',\
-'NAM':'Nahum',\
-'HAB':'Habakkuk',\
-'ZEP':'Zephaniah',\
-'HAG':'Haggai',\
-'ZEC':'Zechariah',\
-'MAL':'Malachi',\
-'MAT':'Matthew',\
-'MRK':'Mark',\
-'LUK':'Luke',\
-'JHN':'John',\
-'ACT':'Acts',\
-'ROM':'Romans',\
-'1CO':'1 Corinthians',\
-'2CO':'2 Corinthians',\
-'GAL':'Galatians',\
-'EPH':'Ephesians',\
-'PHP':'Philippians',\
-'COL':'Colossians',\
-'1TH':'1 Thessalonians',\
-'2TH':'2 Thessalonians',\
-'1TI':'1 Timothy',\
-'2TI':'2 Timothy',\
-'TIT':'Titus',\
-'PHM':'Philemon',\
-'HEB':'Hebrews',\
-'JAS':'James',\
-'1PE':'1 Peter',\
-'2PE':'2 Peter',\
-'1JN':'1 John',\
-'2JN':'2 John',\
-'3JN':'3 John',\
-'JUD':'Jude',\
-'REV':'Revelation',\
-}
-
-textNameList = []
-
-class ChapterSelection(object):
-        
-    def __init__(self, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName):
-    
-        self.projectAbbrev      = projectAbbrev    
-        self.bookAbbrev         = bookAbbrev  
-        self.bookPath           = bookPath     
-        self.fromChap           = fromChap        
-        self.toChap             = toChap          
-        self.includeFootnotes   = includeFootnotes
-        self.makeActive         = makeActive      
-        self.useFullBookName    = useFullBookName     
-        
-    def dump(self):
-        
-        ret = {\
-            'projectAbbrev'    : self.projectAbbrev      ,\
-            'bookAbbrev'       : self.bookAbbrev         ,\
-            'fromChap'         : self.fromChap           ,\
-            'toChap'           : self.toChap             ,\
-            'includeFootnotes' : self.includeFootnotes   ,\
-            'makeActive'       : self.makeActive         ,\
-            'useFullBookName'  : self.useFullBookName     \
-            }
-        return ret
-    
-# TODO: this function is a duplicate of what is in InsertTargetText.py, move it to Utils and have both modules call it    
-def findTextName(TargetDB, myTextName):
-    foundText = False
-    
-    if len(textNameList) == 0:
-        
-        for text in TargetDB.ObjectsIn(ITextRepository):
-            
-            tName = ITsString(text.Name.BestVernacularAnalysisAlternative).Text
-            textNameList.append(tName)
-            
-            if myTextName == tName:
-                
-                foundText = True
-    else:
-        if myTextName in textNameList:
-            
-            foundText = True
-            
-    return foundText
-
-def  createUniqueTitle(DB, title):
-      
-    if findTextName(DB, title):
-        
-        title += ' - Copy'
-        if findTextName(DB, title): 
-            
-            done = False
-            i = 2
-            
-            while not done: 
-                
-                tryName = title + ' (' + str(i) + ')'
-                
-                if not findTextName(DB, tryName): 
-                    
-                    title = tryName
-                    done = True 
-                    
-                i += 1
-    return title
 
 def setSourceNameInConfigFile(report, title):
         
@@ -245,14 +113,13 @@ def do_import(DB, report, chapSelectObj):
     # Set StText object as the Text contents
     text.ContentsOA = stText  
     
-
-    # Open the file
+    # Open the Paratext file
     f = open(chapSelectObj.bookPath, encoding='utf-8')
     
     bookContents = f.read()
     
     # Find all the chapter #s
-    chapList = re.findall(r'\\c (\d+)', bookContents, re.DOTALL)
+    chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.DOTALL)
     
     if str(chapSelectObj.fromChap) not in chapList:
         
@@ -275,16 +142,18 @@ def do_import(DB, report, chapSelectObj):
     else:
         reStr += fr'\\c {str(chapSelectObj.toChap+1)}\s'
 
-    matchObj = re.search(reStr, bookContents, re.DOTALL)
+    matchObj = re.search(reStr, bookContents, flags=re.DOTALL)
     
     importText = matchObj.group(1)
     
     # Remove newlines
     importText = re.sub(r'\n', '', importText)
         
-    # Replace new line with space if it's before a marker
-    #outStr = re.sub(r'\n\\', r' \\', savedTxt)
-    
+    # Do some user defined replacements
+    for _, findStr, replStr in replaceList:
+        
+        importText = re.sub(findStr, replStr, importText)
+        
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
         
@@ -341,7 +210,7 @@ def do_import(DB, report, chapSelectObj):
     # If the user wants full name, look it up
     if chapSelectObj.useFullBookName:
         
-        bibleBook = bookMap[chapSelectObj.bookAbbrev]
+        bibleBook = ChapterSelection.bookMap[chapSelectObj.bookAbbrev]
     else:
         bibleBook = chapSelectObj.bookAbbrev
 
@@ -351,9 +220,9 @@ def do_import(DB, report, chapSelectObj):
     if chapSelectObj.fromChap < chapSelectObj.toChap:
         
         title += '-' + str(chapSelectObj.toChap).zfill(2)
-
+        
     # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
-    title = createUniqueTitle(DB, title)
+    title = Utils.createUniqueTitle(DB, title)
     
     # Set the title of the text
     tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
@@ -382,7 +251,6 @@ class Main(QMainWindow):
         
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
-        #self.ui.CancelButton.clicked.connect(self.CancelClicked)
         
         # Load settings if available
         try:
@@ -396,7 +264,7 @@ class Main(QMainWindow):
             self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
             self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
             self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
-            
+            f.close()
         except:
             pass
 
@@ -454,7 +322,7 @@ class Main(QMainWindow):
             return
 
         # Check if the book is valid
-        if bookAbbrev not in bookMap:
+        if bookAbbrev not in ChapterSelection.bookMap:
             
             QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
             return
@@ -471,7 +339,7 @@ class Main(QMainWindow):
     
         bookPath = parts[0]
         
-        self.chapSel = ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
+        self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
         
         # Save the settings to a file so the same settings can be shown next time
         f = open(PTXIMPORT_SETTINGS_FILE, 'w')
