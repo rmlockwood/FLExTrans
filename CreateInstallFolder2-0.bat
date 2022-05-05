@@ -115,6 +115,13 @@ copy Light_green_check.png Install2.0\FlexTools2.0\FLExTools
 copy Red_x.png             Install2.0\FlexTools2.0\FLExTools             
 copy Yellow_triangle.png   Install2.0\FlexTools2.0\FLExTools    
 
+rem Paratext Import/Export Tools
+copy ImportFromParatext.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
+copy ExportToParatext.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
+copy ParatextChapSelectionDlg.ui Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
+copy ParatextChapSelectionDlg.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
+copy ChapterSelection.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans\Lib
+
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
 
