@@ -2010,8 +2010,7 @@
       </p>
       <h3 style=""><a name="sInsertWord"></a>9.2.5&nbsp;How do I insert a word into the target output?
       </h3>
-      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category.
-         If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
+      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
          use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(72)</a> shows how it might look.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2048,7 +2047,7 @@
                      <td>
                         <table>
                            <tr>
-                              <td><img style="Height:63%" src="Images/LetBlank.PNG"></td>
+                              <td><img style="Height:67%" src="Images/LetBlank.PNG"></td>
                            </tr>
                         </table>
                      </td>
@@ -2129,10 +2128,10 @@
       <h3 style=""><a name="sRepl"></a>9.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
-      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon.
+      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon. This file is your install folder.
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
-         in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual
+         in the bilingual lexicon. That's the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual
          lexicon is shown in <a href="#xBilingEntries">(77)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2150,7 +2149,7 @@
          </table>
       </div>
       <p>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file.
-         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(78)</a>.
+         If you double-click on <span style="font-style:italic; ">replace.dix</span> in the install folder, you will see something like <a href="#xReplacement">(78)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -2168,7 +2167,7 @@
       </div>
       <p>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section
          for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
-         dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>.
+         dictionary file directly because it gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>. After <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> generates it, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> replaces and appends entries from the replacement file.
       </p>
       <p>Let&#8217;s say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(77)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(79)</a>.
       </p>
@@ -2186,11 +2185,10 @@
             </tr>
          </table>
       </div>
-      <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
+      <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add a new symbol definition, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span> so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
-      <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the top-level folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=..\replace.dix</span></p>
       <h3 style=""><a name="sInflVariantTgt"></a>9.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
-      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
+      <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
@@ -2198,7 +2196,7 @@
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
       </p>
       <h3 style=""><a name="sInflVariantSrc"></a>9.3.4&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
-      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
+      <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
