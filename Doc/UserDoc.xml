@@ -4002,7 +4002,7 @@ id="sTransferRuleHowTos"
 >Transfer Rule How To’s</secTitle
 ><p
 ><comment
->How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence.</comment
+>How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
 id="sCategory"
