@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.5.2 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.5.1 - 5/5/22 - Ron Lockwood
 #    Various improvements.
 #
@@ -36,6 +39,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:
@@ -45,7 +49,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -71,8 +75,9 @@ PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
 def setSourceNameInConfigFile(report, title):
         
     try:
-        # Edit the FLExTrans config file to use the current text/folder name
-        myConfig = '../' + ReadConfig.CONFIG_FILE
+        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+        # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
+        myConfig = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
         f = open(myConfig, encoding='utf-8')
         
     except:
@@ -254,7 +259,11 @@ class Main(QMainWindow):
         
         # Load settings if available
         try:
-            f = open(PTXIMPORT_SETTINGS_FILE, 'r')
+            # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+            # Get the parent folder of flextools.ini, i.e. Config and add the settings file
+            self.settingsPath = os.path.join(os.path.dirname(CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
+            
+            f = open(self.settingsPath, 'r')
             myMap = json.load(f)
             
             self.ui.ptxProjAbbrevLineEdit.setText(myMap['projectAbbrev'])
@@ -342,7 +351,7 @@ class Main(QMainWindow):
         self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
         
         # Save the settings to a file so the same settings can be shown next time
-        f = open(PTXIMPORT_SETTINGS_FILE, 'w')
+        f = open(self.settingsPath, 'w')
         
         dumpMap = self.chapSel.dump()
         json.dump(dumpMap, f)

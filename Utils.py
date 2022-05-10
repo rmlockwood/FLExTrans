@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.2 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.5.1 - 5/5/22 - Ron Lockwood
 #    Moved CreateUniqueTitle from InsertTargetText to here so that ImportFromParatext
 #    could use it. 
@@ -210,6 +213,7 @@ from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 import ReadConfig as MyReadConfig 
+from FTPaths import CONFIG_PATH
 
 MAKEFILE_RULES_VARIABLE = 'TRANSFER_RULE_PATH'
 MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
@@ -251,6 +255,7 @@ SUBSCRIPT_SIZE_PERCENTAGE = '60'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
+BUILD_FOLDER = 'Build'
 
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
@@ -1370,11 +1375,29 @@ class FlexTransTestbedResultsFile():
     def write(self):
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
+def turnPathIntoEnvironPath(myPath):
+    
+    # See if we have an absolute path
+    if os.path.isabs(myPath):
+        
+        buildDir = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), BUILD_FOLDER)
+        
+        relPath = os.path.relpath(myPath, buildDir)
+    
+    # If it's not an absolute path, we assume it's relative to the work project subfolder (e.g. WorkProjects\German-Swedish)
+    # So from doing the make from the Build folder, we need to add ..\ to all of the paths we get from the config file.
+    else:
+        relPath = os.path.join('..', myPath)
+        
+    relPath = re.sub(r'\\','/',relPath) # change to forward slashes
+        
+    return relPath
+    
 # Run the makefile to run Apertium tools to do the transfer
 # component of FLExTrans. The makefile is run by invoking a
 # bash file. Absolute paths seem to be necessary.
 # relPathToBashFile is expected to be with Windows backslashes
-def run_makefile(relPathToBashFile, report):
+def run_makefile(absPathToBuildFolder, report):
     
     configMap = MyReadConfig.readConfig(report)
     if not configMap:
@@ -1383,32 +1406,28 @@ def run_makefile(relPathToBashFile, report):
     # Get the path to the transfer rules file
     tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
 
-    # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
-    if not tranferRulePath:
-        tranferRulePath = 'Output\\transfer_rules.t1x'
-    
-    tranferRulePath = re.sub(r'\\','/',tranferRulePath) # change to forward slashes
+    tranferRulePath = turnPathIntoEnvironPath(tranferRulePath)
     
     # Get the path to the dictionary file
     dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not dictionaryPath:
         return True
     
-    dictionaryPath = re.sub(r'\\','/',dictionaryPath) # change to forward slashes
+    dictionaryPath = turnPathIntoEnvironPath(dictionaryPath)
     
     # Get the path to the source apertium file
     analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
     if not analyzedPath:
         return True
     
-    analyzedPath = re.sub(r'\\','/',analyzedPath) # change to forward slashes
+    analyzedPath = turnPathIntoEnvironPath(analyzedPath)
     
     # Get the path to the target apertium file
     transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
     if not transferResultsPath:
         return True
     
-    transferResultsPath = re.sub(r'\\','/',transferResultsPath) # change to forward slashes
+    transferResultsPath = turnPathIntoEnvironPath(transferResultsPath)
     
     # Change path to bash based on the architecture
     is32bit = (platform.architecture()[0] == '32bit')
@@ -1419,33 +1438,33 @@ def run_makefile(relPathToBashFile, report):
     cwd = os.getcwd()
     cwd = re.sub(r'\\','/',cwd) # change to forward slashes
     
-    (drive, tail) = os.path.splitdrive(cwd) # split off drive letter
+    (drive, tail) = os.path.splitdrive(absPathToBuildFolder) # split off drive letter
     drive = re.sub(':','',drive) # remove colon
     
-    # Build a unix path to the output folder
-    unixRelPath = re.sub(r'\\','/',relPathToBashFile) # change to forward slashes
-    cwdUnix = "/mnt/"+drive.lower()+tail+'/'
-    dir_path = cwdUnix+unixRelPath
+    # Build a unix path to the build folder
+    tail = re.sub(r'\\','/',tail) # change to forward slashes
+    cwdUnix = "/mnt/"+drive.lower()+tail
+    dir_path = cwdUnix
     full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
     
     # Create the bash file which merely cds to the appropriate 
     # directory and runs make. Open as a binary file so that
     # we get unix line feeds not windows carriage return line feeds
-    f = open(relPathToBashFile+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
+    f = open(absPathToBuildFolder+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
     outStr = '#!/bin/sh\n'
     
     # make a variable for where the transfer rules file should be found
     # go up one level since the transfer rule path is relative to the FlexTools folder
-    outStr += f"export {MAKEFILE_RULES_VARIABLE}='../{tranferRulePath}'\n" 
+    outStr += f"export {MAKEFILE_RULES_VARIABLE}='{tranferRulePath}'\n" 
 
     # make a variable for where the bilingual dictionary file should be found
-    outStr += f"export {MAKEFILE_DICT_VARIABLE}='../{dictionaryPath}'\n" 
+    outStr += f"export {MAKEFILE_DICT_VARIABLE}='{dictionaryPath}'\n" 
     
     # make a variable for where the analyzed text file should be found
-    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='../{analyzedPath}'\n" 
+    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='{analyzedPath}'\n" 
     
     # make a variable for where the transfer results file should be found
-    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='../{transferResultsPath}'\n" 
+    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='{transferResultsPath}'\n" 
     
     outStr += f"cd '{dir_path}'\n"
     outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'

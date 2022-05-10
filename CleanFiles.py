@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.5 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.4.2 - 3/21/22 - Ron Lockwood
 #    Handle when transfer rules file and testbed file locations are not set in
 #    the configuration file. Issue #95. In fact always give no error when config file
@@ -29,16 +32,17 @@
 import os
 from pathlib import Path
 import tempfile
+import re
 from FTModuleClass import *
 import ReadConfig
 import Utils
-import re
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.4.2",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "Remove generated files to force each FLExTrans module to regenerate everything.",  
@@ -49,6 +53,10 @@ OUTPUT = "Output\\"
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
+    
+    # Get parent folder of the folder flextools.ini is in and add \Build to it
+    buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+    buildFolder += '/'
     
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -86,7 +94,7 @@ def MainFunction(DB, report, modify=True):
     
     # makefile uses this target so hard code it here
     try:
-        os.remove(OUTPUT+'bilingual.bin')
+        os.remove(buildFolder+'bilingual.bin')
     except:
         pass # ignore errors
     
@@ -99,7 +107,7 @@ def MainFunction(DB, report, modify=True):
     
     # makefile uses this target so hard code it here
     try:
-        os.remove(OUTPUT+'tr.t1x')
+        os.remove(buildFolder+'tr.t1x')
     except:
         pass # ignore errors
 
@@ -111,35 +119,35 @@ def MainFunction(DB, report, modify=True):
     
     # always delete transfer_rules.t1x.bin. This is what is in the Makefile
     try:
-        os.remove(OUTPUT+'transfer_rules.t1x.bin')
+        os.remove(buildFolder+'transfer_rules.t1x.bin')
     except:
         pass # ignore errors
     
     # TODO: parameterize makefile for this
     try:
-        os.remove(OUTPUT+'apertium_log.txt')
+        os.remove(buildFolder+'apertium_log.txt')
     except:
         pass # ignore errors
 
     # old log file
     try:
-        os.remove(OUTPUT+'err_log')
+        os.remove(buildFolder+'err_log')
     except:
         pass # ignore errors
 
     try:
-        os.remove(OUTPUT+Utils.APERTIUM_ERROR_FILE)
+        os.remove(buildFolder+Utils.APERTIUM_ERROR_FILE)
     except:
         pass # ignore errors
 
     # old error file
     try:
-        os.remove(OUTPUT+'err_out')
+        os.remove(buildFolder+'err_out')
     except:
         pass # ignore errors
 
     try:
-        os.remove(OUTPUT+Utils.DO_MAKE_SCRIPT_FILE)
+        os.remove(buildFolder+Utils.DO_MAKE_SCRIPT_FILE)
     except:
         pass # ignore errors
     
@@ -166,7 +174,7 @@ def MainFunction(DB, report, modify=True):
     
     # Remove files in the LiveRuleTester folder
     try:
-        for p in Path('.').glob(f"{OUTPUT}LiveRuleTester\\*"):
+        for p in Path('.').glob(f"{buildFolder}LiveRuleTester\\*"):
             
             
             if re.search('fix.py', p.name) or re.search('Makefile', p.name):
