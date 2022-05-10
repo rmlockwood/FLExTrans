@@ -10,8 +10,7 @@ import os
 import re
 import tempfile
 import sys
-import shutil
-import unicodedata
+
 
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *
@@ -24,6 +23,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
 
 from Settings import Ui_MainWindow
+from ComboBox import CheckableComboBox
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 import xml.etree.ElementTree as ET
 
@@ -35,7 +35,7 @@ import ReadConfig
 
 docs = {FTM_Name: "Settings Tool",
         FTM_Version: "1.0",
-        FTM_ModifiesDB: True,
+        FTM_ModifiesDB: False,
         FTM_Synopsis: "Configuration settings",
         FTM_Help: "",
         FTM_Description:
@@ -48,7 +48,7 @@ docs = {FTM_Name: "Settings Tool",
 # The main processing function
 class Main(QMainWindow):
 
-    def __init__(self, configMap, report, targetDB):
+    def __init__(self, configMap, report, targetDB, DB):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
@@ -71,8 +71,10 @@ class Main(QMainWindow):
 
         self.report = report
         self.configMap = configMap
+        self.targetDB = targetDB
+        self.DB = DB
 
-        self.init_load(targetDB)
+        self.init_load()
 
     def open_a_text(self):
         self.browse(self.ui.output_filename, "(*.aper)")
@@ -113,58 +115,100 @@ class Main(QMainWindow):
     def browse(self, name, end):
         filename, _ = QFileDialog.getOpenFileName(self, "Open file", "", end)
         if filename:
-            name.setText(os.path.relpath(filename))
+            name.setText(os.path.abspath(filename))
 
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
-    def init_load(self, targetDB):
-        #self.ui.chose_sourc_text.addItem(self.read('SourceTextName'))
-        for item in targetDB.ObjectsIn(ITextRepository):
+    def init_load(self):
+        i = 0
+        for item in self.targetDB.ObjectsIn(ITextRepository):
             self.ui.chose_sourc_text.addItem(str(item))
-        #Find the list of sense-level custom fields (location: sense, type: single-line text)
-        #TODO: Probably use somthing in the FLExProject.py ??
-        self.ui.chose_entry_link.addItem(self.read('SourceCustomFieldForEntryLink'))
-        self.ui.chose_sense_number.addItem(self.read('SourceCustomFieldForEntryLink'))
-        #self.ui.chose_target_project.addItem(self.read('TargetProject'))
+            if str(item) == self.read('SourceTextName'):
+                self.ui.chose_sourc_text.setCurrentIndex(i)
+            i += 1
+        i = 0
+        for item in self.targetDB.LexiconGetSenseCustomFields():
+            self.ui.chose_entry_link.addItem(str(item[1]))
+            self.ui.chose_sense_number.addItem(str(item[1]))
+            if item[1] == self.read('SourceCustomFieldForEntryLink'):
+                self.ui.chose_entry_link.setCurrentIndex(i)
+            if item[1] == self.read('SourceCustomFieldForSenseNum'):
+                self.ui.chose_sense_number.setCurrentIndex(i)
+            i += 1
         i = 0
         for item in GetProjectNames():
             self.ui.chose_target_project.addItem(item)
             if item == self.read('TargetProject'):
                 self.ui.chose_target_project.setCurrentIndex(i)
             i += 1
+        #TODO: Some kind of safe file thing ??
         self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile'))
         self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile'))
         self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile'))
         self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile'))
         #From the Complex Form Types list
-        #TODO: find said list, under list in Feildwork, how to get those lists??
-        if self.read('SourceComplexTypes'):
-            self.ui.chose_source_compex_types.addItem(self.read('SourceComplexTypes'))
+        i = 1
+        for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+            self.ui.chose_source_compex_types.addItem(str(item))
+            if self.read('SourceComplexTypes'):
+                if str(item) == self.read('SourceComplexTypes'):
+                    self.ui.chose_source_compex_types.setCurrentIndex(i)
+            i += 1
         self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile'))
         self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile'))
-        #Target Prefix list??
         self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile'))
         #From the Complex Form Types list
-        #TODO: find the list, see previouse todo. how to make multiple select??
-        if self.read('TargetComplexFormsWithInflectionOn1stElement'):
-            self.ui.chose_infelction_first_element.addItem(self.read('TargetComplexFormsWithInflectionOn1stElement'))
-        if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-            self.ui.chose_infelction_second_element.addItem(self.read('TargetComplexFormsWithInflectionOn2ndElement'))
+        #TODO: how to make multiple select??
+        #i = 1
+        array = []
+        for item in self.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+            array.append(str(item))
+            #self.ui.chose_infelction_first_element.addItem(toStringItem)
+            #self.ui.chose_infelction_second_element.addItem(toStringItem)
+
+            #if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+            #    if toStringItem == self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+            #        self.ui.chose_source_compex_types.setCurrentIndex(i)
+            #i += 1
+        self.ui.chose_infelction_first_element.addItems(array)
+        self.ui.chose_infelction_second_element.addItems(array)
+        #if self.read('TargetComplexFormsWithInflectionOn1stElement'):
+        #    if toStringItem == self.read('TargetComplexFormsWithInflectionOn1stElement'):
+        #        self.ui.chose_source_compex_types.setCurrentIndex(i)
         #From the Morpheme Types list
-        #TODO: find the list, and select multiple
-        for item in self.read('TargetMorphNamesCountedAsRoots'):
-            self.ui.chose_target_morpheme_types.addItem(item)
-        for item in self.read('SourceMorphNamesCountedAsRoots'):
-            self.ui.chose_source_morpheme_types.addItem(item)
+        #TODO: select multiple
+        array = []
+        for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+            array.append(str(item).strip("-=~*"))
+        self.ui.chose_target_morpheme_types.addItems(array)
+        array = []
+        for item in self.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+            array.append(str(item).strip("-=~*"))
+        self.ui.chose_source_morpheme_types.addItems(array)
         #From the Complex Form Types list.
-        if self.read('SourceDiscontigousComplexTypes'):
-            self.ui.chose_source_discontiguous_compex.addItem(self.read('SourceDiscontigousComplexTypes'))
+        #TODO: Mulitiple select
+        #i = 1
+        array = []
+        for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+            array.append(str(item))
+            #if self.read('SourceDiscontigousComplexTypes'):
+            #    if str(item) == self.read('SourceDiscontigousComplexTypes'):
+            #        self.ui.chose_source_discontiguous_compex.setCurrentIndex(i)
+            #i += 1
+        self.ui.chose_source_discontiguous_compex.addItems(array)
         #From the category abbreviation list.
-        #TODO: Find the list, Look at get_categories() in Utils.py ??
-        if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-            self.ui.chose_skipped_source_words.addItem(
-                self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'))
+        #TODO: make multiple select
+        #i = 1
+        array = []
+        for pos in self.DB.lp.AllPartsOfSpeech:
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            array.append(posAbbrStr)
+            #if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+            #    if posAbbrStr == self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+            #        self.ui.chose_skipped_source_words.setCurrentIndex(i)
+            #i += 1
+        self.ui.chose_skipped_source_words.addItems(array)
         if self.read('AnalyzedTextTreeTranOutputFile'):
             self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile'))
         if self.read('TreeTranInsertWordsFile'):
@@ -172,11 +216,24 @@ class Main(QMainWindow):
         self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile'))
         self.ui.testbed_filename.setText(self.read('TestbedFile'))
         self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile'))
-        # From the category abbreviation list.
-        # TODO: Find the list, Look at get_categories() in Utils.py ??, be able to select more pairs??
-        if self.read('CategoryAbbrevSubstitutionList'):
-            self.ui.category_abbreviation_one.addItem(self.read('CategoryAbbrevSubstitutionList')[0])
-            self.ui.category_abbreviation_one.addItem(self.read('CategoryAbbrevSubstitutionList')[1])
+        #From the category abbreviation list.
+        #TODO: be able to select more pairs??
+        i = 1
+        for pos in self.DB.lp.AllPartsOfSpeech:
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            self.ui.category_abbreviation_one.addItem(posAbbrStr)
+            if self.read('CategoryAbbrevSubstitutionList'):
+                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[0]:
+                    self.ui.category_abbreviation_one.setCurrentIndex(i)
+            i += 1
+        i = 1
+        for pos in self.targetDB.lp.AllPartsOfSpeech:
+            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            self.ui.category_abbreviation_two.addItem(posAbbrStr)
+            if self.read('CategoryAbbrevSubstitutionList'):
+                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[1]:
+                    self.ui.category_abbreviation_two.setCurrentIndex(i)
+            i += 1
         if self.read('CleanUpUnknownTargetWords') == 'y':
             self.ui.cleanup_yes.setChecked(True)
         self.ui.punctuation.setText(self.read('SentencePunctuation'))
@@ -198,7 +255,6 @@ class Main(QMainWindow):
                 "BilingualDictOutputFile="+self.ui.bilingual_dictionary_output_filename.text()+"\n"+
                 "BilingualDictReplacementFile="+self.ui.bilingual_dictionary_repalce_file_2.text()+"\n"+
                 "TargetProject="+self.ui.chose_target_project.currentText()+"\n"+
-                "TargetPrefixGlossListFile=Output\\target_pfx_glosses.txt\n"+
                 "TargetComplexFormsWithInflectionOn1stElement="+self.optional(self.ui.chose_infelction_first_element)+"\n"+
                 "TargetComplexFormsWithInflectionOn2ndElement="+self.optional(self.ui.chose_infelction_second_element)+"\n"+
                 "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n"+
@@ -211,7 +267,7 @@ class Main(QMainWindow):
                 "TestbedFile="+self.ui.testbed_filename.text()+"\n"+
                 "TestbedResultsFile="+self.ui.testbed_result_filename.text()+"\n"+
                 "# This property is in the form source_cat,target_cat. Multiple pairs can be defined\n"+
-                "CategoryAbbrevSubstitutionList=\n"+
+                "CategoryAbbrevSubstitutionList="+self.optional(self.ui.category_abbreviation_one)+","+self.optional(self.ui.category_abbreviation_two)+"\n"+
                 "CleanUpUnknownTargetWords="+n+"\n"+
                 "SentencePunctuation="+self.ui.punctuation.text()+"\n")
         f.close()
@@ -220,6 +276,14 @@ class Main(QMainWindow):
         write = ''
         if string.currentText() != '...':
             write = string.currentText()
+        return write
+
+    def optional_mul(self, array):
+        write = ''
+        for text in array:
+            write += text + ","
+        if write != '':
+            write -= ","
         return write
 
     def reset(self):
@@ -236,7 +300,6 @@ class Main(QMainWindow):
                 "BilingualDictOutputFile=Output\\bilingual.dix\n" +
                 "BilingualDictReplacementFile=..\\replace.dix\n" +
                 "TargetProject=Swedish-FLExTrans-Sample\n" +
-                "TargetPrefixGlossListFile=Output\\target_pfx_glosses.txt\n" +
                 "TargetComplexFormsWithInflectionOn1stElement=\n" +
                 "TargetComplexFormsWithInflectionOn2ndElement=\n" +
                 "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n" +
@@ -258,9 +321,6 @@ class Main(QMainWindow):
 
 def MainFunction(DB, report, modify=True):
     # Read the configuration file which we assume is in the current directory.
-    if not modify:
-        report.Error('You need to run this module in "modify mode."')
-        return
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -273,14 +333,14 @@ def MainFunction(DB, report, modify=True):
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
         if not targetProj:
             return
-        TargetDB.OpenProject(targetProj, True)
+        TargetDB.OpenProject(targetProj, False)
     except:
         raise
 
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(configMap, report, TargetDB)
+    window = Main(configMap, report, TargetDB, DB)
 
     window.show()
     app.exec_()

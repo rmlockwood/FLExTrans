@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>899</width>
-    <height>712</height>
+    <height>756</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,234 +48,55 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-165</y>
+         <y>0</y>
          <width>847</width>
          <height>1046</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="6" column="0">
-         <widget class="QLabel" name="output_syn_file">
-          <property name="text">
-           <string>Target Output Synthesis File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="22" column="1" colspan="2">
-         <widget class="QLineEdit" name="testbed_result_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="20" column="1" colspan="2">
-         <widget class="QLineEdit" name="transfer_rules_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1" colspan="2">
-         <widget class="QLineEdit" name="bilingual_dictionary_repalce_file_2">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="transfer_result_file">
-          <property name="text">
-           <string>Target Transfer Results File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="21" column="1" colspan="2">
-         <widget class="QLineEdit" name="testbed_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="20" column="0">
-         <widget class="QLabel" name="transfer_rules_file">
-          <property name="text">
-           <string>Transfer Rules File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="22" column="0">
-         <widget class="QLabel" name="testbed_result_file">
-          <property name="text">
-           <string>Testbed Results File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1" colspan="2">
-         <widget class="QLineEdit" name="output_syn_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
         <item row="17" column="0">
-         <widget class="QLabel" name="skipped_source_words">
-          <property name="text">
-           <string>Source Skipped Word Grammatical 
-Categories for Discontigous Complex Forms</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="target_project">
-          <property name="text">
-           <string>Target Project</string>
-          </property>
-         </widget>
-        </item>
-        <item row="16" column="0">
          <widget class="QLabel" name="source_discountiguous_complex">
           <property name="text">
            <string>Source Discontiguous Complex Form Types</string>
           </property>
          </widget>
         </item>
-        <item row="11" column="1" colspan="2">
-         <widget class="QLineEdit" name="taget_affix_gloss_list_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="23" column="0">
-         <widget class="QLabel" name="category_abbreviation_pairs">
-          <property name="text">
-           <string>Category Abbreviation Pairs</string>
-          </property>
-         </widget>
-        </item>
-        <item row="19" column="1" colspan="2">
-         <widget class="QLineEdit" name="treetran_insert_words_file_2"/>
-        </item>
-        <item row="24" column="0">
-         <widget class="QLabel" name="cleanup_target_words">
-          <property name="text">
-           <string>Cleanup Unknown Target Words</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="analyzed_output">
-          <property name="text">
-           <string>Analyzed Text Output File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="18" column="1" colspan="2">
-         <widget class="QLineEdit" name="a_treetran_output_filename"/>
-        </item>
-        <item row="21" column="0">
-         <widget class="QLabel" name="testbed_file">
-          <property name="text">
-           <string>Testbed File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="0">
-         <widget class="QLabel" name="source_morpheme_types">
-          <property name="text">
-           <string>Source Morpheme Types 
-Counted As Roots</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="output_ANA_file">
-          <property name="text">
-           <string>Target Output ANA File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="18" column="0">
-         <widget class="QLabel" name="a_treetran_output_file">
-          <property name="text">
-           <string>Analyzed Text TreeTran Output File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="25" column="0">
-         <widget class="QLabel" name="sentence_punctuation">
-          <property name="text">
-           <string>Sentence Punctuation</string>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="0">
-         <widget class="QLabel" name="infelction_second_element">
-          <property name="text">
-           <string>Target Complex Form Types 
-with Inflection on 1st Element</string>
-          </property>
-         </widget>
-        </item>
-        <item row="24" column="1">
+        <item row="25" column="1">
          <widget class="QRadioButton" name="cleanup_yes">
           <property name="text">
            <string>Yes</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1" colspan="2">
-         <widget class="QLineEdit" name="output_ANA_filename">
+        <item row="19" column="1" colspan="2">
+         <widget class="QLineEdit" name="a_treetran_output_filename"/>
+        </item>
+        <item row="12" column="1" colspan="2">
+         <widget class="QLineEdit" name="taget_affix_gloss_list_filename">
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="10" column="0">
-         <widget class="QLabel" name="bilingual_dictionary_repalce_file">
+        <item row="21" column="3">
+         <widget class="QPushButton" name="transfer_rules_button">
           <property name="text">
-           <string>Bilingual Dictionary Replacement File</string>
+           <string>Browse file...</string>
           </property>
          </widget>
         </item>
-        <item row="14" column="0">
-         <widget class="QLabel" name="target_morpheme_types">
+        <item row="2" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_entry_link"/>
+        </item>
+        <item row="23" column="3">
+         <widget class="QPushButton" name="testbed_result_button">
           <property name="text">
-           <string>Target Morpheme Types 
-Counted As Roots</string>
+           <string>Browse file...</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="1" colspan="2">
-         <widget class="QLineEdit" name="transfer_result_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="source_complex_types">
-          <property name="text">
-           <string>Source Complex Form Types</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" colspan="2">
-         <widget class="QLineEdit" name="output_filename">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="bilingual_dictionary_output_file">
-          <property name="text">
-           <string>Bilingual Dictionary Output File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="23" column="1">
-         <widget class="QComboBox" name="category_abbreviation_one">
+        <item row="17" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_source_discontiguous_compex">
           <item>
            <property name="text">
             <string>...</string>
@@ -283,35 +104,317 @@ Counted As Roots</string>
           </item>
          </widget>
         </item>
-        <item row="9" column="1" colspan="2">
-         <widget class="QLineEdit" name="bilingual_dictionary_output_filename">
+        <item row="9" column="0">
+         <widget class="QLabel" name="source_complex_types">
           <property name="text">
-           <string/>
+           <string>Source Complex Form Types</string>
           </property>
          </widget>
         </item>
-        <item row="11" column="0">
+        <item row="12" column="0">
          <widget class="QLabel" name="taget_affix_gloss_list_file">
           <property name="text">
            <string>Target Affix Gloss List File</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="6" column="0">
+         <widget class="QLabel" name="output_ANA_file">
+          <property name="text">
+           <string>Target Output ANA File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
          <widget class="QLabel" name="entry_link">
           <property name="text">
            <string>Source Custom Field for Entry Link</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="sense_number">
+        <item row="20" column="3">
+         <widget class="QPushButton" name="tretran_insert_words_button">
           <property name="text">
-           <string>Source Custom Field for Sense Number</string>
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="26" column="1" colspan="3">
+         <widget class="QLineEdit" name="punctuation">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="bilingual_dictionary_output_file">
+          <property name="text">
+           <string>Bilingual Dictionary Output File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_skipped_source_words">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QLineEdit" name="output_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_target_morpheme_types"/>
+        </item>
+        <item row="22" column="0">
+         <widget class="QLabel" name="testbed_file">
+          <property name="text">
+           <string>Testbed File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
+         <widget class="QPushButton" name="ana_file_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="0">
+         <widget class="QLabel" name="transfer_rules_file">
+          <property name="text">
+           <string>Transfer Rules File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="3">
+         <widget class="QPushButton" name="bi_dictionary_replacefile_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QLabel" name="infelction_second_element">
+          <property name="text">
+           <string>Target Complex Form Types 
+with Inflection on 1st Element</string>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="0">
+         <widget class="QLabel" name="treetran_insert_words_file">
+          <property name="text">
+           <string>TreeTran Insert Words File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="output_syn_file">
+          <property name="text">
+           <string>Target Output Synthesis File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="3">
+         <widget class="QPushButton" name="target_affix_list_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1" colspan="2">
+         <widget class="QLineEdit" name="bilingual_dictionary_output_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="0">
+         <widget class="QLabel" name="skipped_source_words">
+          <property name="text">
+           <string>Source Skipped Word Grammatical 
+Categories for Discontigous Complex Forms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_target_project"/>
+        </item>
+        <item row="9" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_source_compex_types">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="22" column="3">
+         <widget class="QPushButton" name="testbed_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_sourc_text"/>
+        </item>
+        <item row="15" column="0">
+         <widget class="QLabel" name="target_morpheme_types">
+          <property name="text">
+           <string>Target Morpheme Types 
+Counted As Roots</string>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="1" colspan="2">
+         <widget class="QLineEdit" name="transfer_rules_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="bilingual_dictionary_repalce_file">
+          <property name="text">
+           <string>Bilingual Dictionary Replacement File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="3">
+         <widget class="QPushButton" name="a_text_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="3">
+         <widget class="QPushButton" name="a_tretran_outfile_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="analyzed_output">
+          <property name="text">
+           <string>Analyzed Text Output File</string>
           </property>
          </widget>
         </item>
         <item row="24" column="2">
+         <widget class="QComboBox" name="category_abbreviation_two">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="source_text_name">
+          <property name="text">
+           <string>Source Text Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0">
+         <widget class="QLabel" name="infelction_first_element">
+          <property name="text">
+           <string>Target Complex Form Types 
+with Inflection on 1st Element</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_infelction_first_element">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="8" column="1" colspan="2">
+         <widget class="QLineEdit" name="transfer_result_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1" colspan="2">
+         <widget class="QLineEdit" name="bilingual_dictionary_repalce_file_2">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="3">
+         <widget class="QPushButton" name="bi_dictionary_uotfile_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="1" colspan="2">
+         <widget class="QLineEdit" name="testbed_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="transfer_result_file">
+          <property name="text">
+           <string>Target Transfer Results File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_infelction_second_element">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="25" column="0">
+         <widget class="QLabel" name="cleanup_target_words">
+          <property name="text">
+           <string>Cleanup Unknown Target Words</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="3">
+         <widget class="QPushButton" name="transfer_result_file_button">
+          <property name="text">
+           <string>Browse file...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="26" column="0">
+         <widget class="QLabel" name="sentence_punctuation">
+          <property name="text">
+           <string>Sentence Punctuation</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="2">
+         <widget class="QLineEdit" name="output_syn_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="25" column="2">
          <widget class="QRadioButton" name="cleanup_no">
           <property name="text">
            <string>No</string>
@@ -321,190 +424,87 @@ Counted As Roots</string>
           </property>
          </widget>
         </item>
-        <item row="23" column="2">
-         <widget class="QComboBox" name="category_abbreviation_two">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="source_text_name">
+        <item row="3" column="0">
+         <widget class="QLabel" name="sense_number">
           <property name="text">
-           <string>Source Text Name</string>
+           <string>Source Custom Field for Sense Number</string>
           </property>
          </widget>
         </item>
-        <item row="19" column="0">
-         <widget class="QLabel" name="treetran_insert_words_file">
-          <property name="text">
-           <string>TreeTran Insert Words File</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0">
-         <widget class="QLabel" name="infelction_first_element">
-          <property name="text">
-           <string>Target Complex Form Types 
-with Inflection on 1st Element</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="3">
-         <widget class="QPushButton" name="ana_file_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_sourc_text"/>
-        </item>
-        <item row="1" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_entry_link"/>
-        </item>
-        <item row="2" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_sense_number"/>
-        </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_target_project"/>
-        </item>
-        <item row="4" column="3">
-         <widget class="QPushButton" name="a_text_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
+        <item row="7" column="3">
          <widget class="QPushButton" name="syn_file_button">
           <property name="text">
            <string>Browse file...</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="3">
-         <widget class="QPushButton" name="transfer_result_file_button">
+        <item row="24" column="0">
+         <widget class="QLabel" name="category_abbreviation_pairs">
           <property name="text">
-           <string>Browse file...</string>
+           <string>Category Abbreviation Pairs</string>
           </property>
          </widget>
         </item>
-        <item row="9" column="3">
-         <widget class="QPushButton" name="bi_dictionary_uotfile_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3">
-         <widget class="QPushButton" name="bi_dictionary_replacefile_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="3">
-         <widget class="QPushButton" name="target_affix_list_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_source_compex_types">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="12" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_infelction_first_element">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="13" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_infelction_second_element">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="14" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_target_morpheme_types"/>
-        </item>
-        <item row="15" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_source_morpheme_types"/>
-        </item>
-        <item row="16" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_source_discontiguous_compex">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="17" column="1" colspan="3">
-         <widget class="QComboBox" name="chose_skipped_source_words">
-          <item>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="18" column="3">
-         <widget class="QPushButton" name="a_tretran_outfile_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="19" column="3">
-         <widget class="QPushButton" name="tretran_insert_words_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="20" column="3">
-         <widget class="QPushButton" name="transfer_rules_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="21" column="3">
-         <widget class="QPushButton" name="testbed_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="22" column="3">
-         <widget class="QPushButton" name="testbed_result_button">
-          <property name="text">
-           <string>Browse file...</string>
-          </property>
-         </widget>
-        </item>
-        <item row="25" column="1" colspan="3">
-         <widget class="QLineEdit" name="punctuation">
+        <item row="23" column="1" colspan="2">
+         <widget class="QLineEdit" name="testbed_result_filename">
           <property name="text">
            <string/>
           </property>
          </widget>
+        </item>
+        <item row="16" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_source_morpheme_types"/>
+        </item>
+        <item row="23" column="0">
+         <widget class="QLabel" name="testbed_result_file">
+          <property name="text">
+           <string>Testbed Results File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="24" column="1">
+         <widget class="QComboBox" name="category_abbreviation_one">
+          <item>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="3">
+         <widget class="QComboBox" name="chose_sense_number"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="target_project">
+          <property name="text">
+           <string>Target Project</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0">
+         <widget class="QLabel" name="source_morpheme_types">
+          <property name="text">
+           <string>Source Morpheme Types 
+Counted As Roots</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1" colspan="2">
+         <widget class="QLineEdit" name="output_ANA_filename">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="0">
+         <widget class="QLabel" name="a_treetran_output_file">
+          <property name="text">
+           <string>Analyzed Text TreeTran Output File</string>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="1" colspan="2">
+         <widget class="QLineEdit" name="treetran_insert_words_file_2"/>
         </item>
        </layout>
       </widget>
@@ -514,6 +514,13 @@ with Inflection on 1st Element</string>
      <widget class="QPushButton" name="apply_button">
       <property name="text">
        <string>Apply</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="reset_button">
+      <property name="text">
+       <string>Reset</string>
       </property>
      </widget>
     </item>
