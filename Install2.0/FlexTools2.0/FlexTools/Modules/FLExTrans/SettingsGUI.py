@@ -10,6 +10,7 @@ import os
 import re
 import tempfile
 import sys
+import pymsgbox
 
 
 from FTModuleClass import FlexToolsModuleClass
@@ -160,55 +161,61 @@ class Main(QMainWindow):
         self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile'))
         #From the Complex Form Types list
         #TODO: how to make multiple select??
-        #i = 1
         array = []
         for item in self.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
-            #self.ui.chose_infelction_first_element.addItem(toStringItem)
-            #self.ui.chose_infelction_second_element.addItem(toStringItem)
-
-            #if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-            #    if toStringItem == self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-            #        self.ui.chose_source_compex_types.setCurrentIndex(i)
-            #i += 1
         self.ui.chose_infelction_first_element.addItems(array)
         self.ui.chose_infelction_second_element.addItems(array)
-        #if self.read('TargetComplexFormsWithInflectionOn1stElement'):
-        #    if toStringItem == self.read('TargetComplexFormsWithInflectionOn1stElement'):
-        #        self.ui.chose_source_compex_types.setCurrentIndex(i)
+        for string in array:
+            if self.read('TargetComplexFormsWithInflectionOn1stElement'):
+                for test in self.read('TargetComplexFormsWithInflectionOn1stElement'):
+                    if string == test:
+                        self.ui.chose_infelction_first_element.check(string)
+            if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+                for test in self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+                    if string == test:
+                        self.ui.chose_infelction_second_element.check(string)
         #From the Morpheme Types list
         #TODO: select multiple
         array = []
         for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
             array.append(str(item).strip("-=~*"))
         self.ui.chose_target_morpheme_types.addItems(array)
+        for string in array:
+            for test in self.read('TargetMorphNamesCountedAsRoots'):
+                if string == test:
+                    self.ui.chose_target_morpheme_types.check(string)
         array = []
         for item in self.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
             array.append(str(item).strip("-=~*"))
         self.ui.chose_source_morpheme_types.addItems(array)
+        for string in array:
+            for test in self.read('SourceMorphNamesCountedAsRoots'):
+                if string == test:
+                    self.ui.chose_source_morpheme_types.check(string)
         #From the Complex Form Types list.
         #TODO: Mulitiple select
-        #i = 1
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
-            #if self.read('SourceDiscontigousComplexTypes'):
-            #    if str(item) == self.read('SourceDiscontigousComplexTypes'):
-            #        self.ui.chose_source_discontiguous_compex.setCurrentIndex(i)
-            #i += 1
         self.ui.chose_source_discontiguous_compex.addItems(array)
+        for string in array:
+            if self.read('SourceDiscontigousComplexTypes'):
+                for test in self.read('SourceDiscontigousComplexTypes'):
+                    if string == test:
+                        self.ui.chose_source_discontiguous_compex.check(string)
         #From the category abbreviation list.
         #TODO: make multiple select
-        #i = 1
         array = []
         for pos in self.DB.lp.AllPartsOfSpeech:
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             array.append(posAbbrStr)
-            #if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-            #    if posAbbrStr == self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-            #        self.ui.chose_skipped_source_words.setCurrentIndex(i)
-            #i += 1
         self.ui.chose_skipped_source_words.addItems(array)
+        for string in array:
+            if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+                for test in self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+                    if string == test:
+                        self.ui.chose_skipped_source_words.check(string)
         if self.read('AnalyzedTextTreeTranOutputFile'):
             self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile'))
         if self.read('TreeTranInsertWordsFile'):
@@ -255,12 +262,12 @@ class Main(QMainWindow):
                 "BilingualDictOutputFile="+self.ui.bilingual_dictionary_output_filename.text()+"\n"+
                 "BilingualDictReplacementFile="+self.ui.bilingual_dictionary_repalce_file_2.text()+"\n"+
                 "TargetProject="+self.ui.chose_target_project.currentText()+"\n"+
-                "TargetComplexFormsWithInflectionOn1stElement="+self.optional(self.ui.chose_infelction_first_element)+"\n"+
-                "TargetComplexFormsWithInflectionOn2ndElement="+self.optional(self.ui.chose_infelction_second_element)+"\n"+
-                "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n"+
-                "SourceMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n"+
-                "SourceDiscontigousComplexTypes="+self.optional(self.ui.chose_source_discontiguous_compex)+"\n"+
-                "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories="+self.optional(self.ui.chose_skipped_source_words)+"\n"+
+                "TargetComplexFormsWithInflectionOn1stElement="+self.optional_mul(self.ui.chose_infelction_first_element.currentData())+"\n"+
+                "TargetComplexFormsWithInflectionOn2ndElement="+self.optional_mul(self.ui.chose_infelction_second_element.currentData())+"\n"+
+                "TargetMorphNamesCountedAsRoots="+self.optional_mul(self.ui.chose_target_morpheme_types.currentData())+"\n"+ #stem,bound stem,root,bound root,phrase
+                "SourceMorphNamesCountedAsRoots="+self.optional_mul(self.ui.chose_source_morpheme_types.currentData())+"\n"+#stem,bound stem,root,bound root,phrase
+                "SourceDiscontigousComplexTypes="+self.optional_mul(self.ui.chose_source_discontiguous_compex.currentData())+"\n"+
+                "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories="+self.optional_mul(self.ui.chose_skipped_source_words.currentData())+"\n"+
                 "AnalyzedTextTreeTranOutputFile="+self.ui.a_treetran_output_filename.text()+"\n"+
                 "TreeTranInsertWordsFile="+self.ui.treetran_insert_words_file_2.text()+"\n"+
                 "TransferRulesFile="+self.ui.transfer_rules_filename.text()+"\n"+
@@ -271,6 +278,7 @@ class Main(QMainWindow):
                 "CleanUpUnknownTargetWords="+n+"\n"+
                 "SentencePunctuation="+self.ui.punctuation.text()+"\n")
         f.close()
+        pymsgbox.alert('Your file has been successfully saved.', 'Save successful')
 
     def optional(self, string):
         write = ''
@@ -280,10 +288,10 @@ class Main(QMainWindow):
 
     def optional_mul(self, array):
         write = ''
-        for text in array:
-            write += text + ","
-        if write != '':
-            write -= ","
+        if array:
+            for text in array:
+                write += text + ","
+            write = write[:-1]
         return write
 
     def reset(self):
