@@ -7,11 +7,11 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.4.2"
+!define PRODUCT_VERSION "3.5"
 
 !define PRODUCT_ZIP_FILE "FLExTools20WithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
-!define FLEX_TOOLS_WITH_VERSION "FlexTools2.0"
+!define FLEX_TOOLS_WITH_VERSION "FlexTools2.0-FLExTrans"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -82,20 +82,21 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
   # Copy files users may change only if they don't already exist
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
   SetOverwrite off
 
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
-  File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\FlexTools.bat"
   
-  CopyFiles "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FlexTrans.config" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTrans.config"
-
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools"
+  #CopyFiles "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FlexTrans.config" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTrans.config"
+  
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
+  
+  File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
 
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Collections"
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\FlexTrans All Steps.ini"
   File "${GIT_FOLDER}\FlexTrans Run Testbed.ini"
   File "${GIT_FOLDER}\FlexTrans Tools.ini"
