@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.5 - 5/13/22 - Ron Lockwood
+#    Look for the rules file in the project folder instead of Output
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -51,12 +54,13 @@ from FTModuleClass import *
 
 import Utils
 import ReadConfig
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -161,9 +165,18 @@ def MainFunction(DB, report, modify=True):
     if os.path.exists(filteredFile) == False:
         report.Error('There is a problem with the TreeTran input file: '+filteredFile+'. Has the PC-PATR with FLEx program been run correctly?')
         return
+    
+    # Get parent folder of the folder flextools.ini (Config) is in. This should give us the working project folder. E.g. German-Swedish
+    # Assume that the rules file is in the folder.
+    rulesFilePath = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), TREE_TRAN_RULES)
 
+    # verify the filtered file exists
+    if os.path.exists(rulesFilePath) == False:
+        report.Error(f'Can\'t find the TreeTran rules file: {rulesFilePath}.')
+        return
+    
     # run TreeTran
-    call(['treetran.exe', Utils.OUTPUT_FOLDER+'\\'+TREE_TRAN_RULES, filteredFile, treeTranResultFile])
+    call(['treetran.exe', rulesFilePath, filteredFile, treeTranResultFile])
     
     report.Info(str(sentCount) + ' sentence(s) processed.')
     
