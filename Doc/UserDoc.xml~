@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->17 March, 2022</date
+>9 May, 2022</date
 ><version
->FLExTrans 3.4</version
+>FLExTrans 3.5</version
 ><contents
 showLevel="4"
 ></contents
@@ -511,7 +511,9 @@ sec="sLinker"
 showTitle="numberOnly"
 textBefore="singular"
 ></sectionRef
->)<ol
+>) <comment
+>Need a new image</comment
+><ol
 ><li
 >For blue rows that look good, simply check the check box in the <object
 type="tBold"
@@ -807,7 +809,9 @@ type="tSenseLinker"
 > is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
->:</p
+>: <comment
+>Need a new image and explain new stuff like, hiding proper nouns, and the search box!</comment
+></p
 ><example
 num="xLinkerToolShot"
 ><chart
@@ -2647,7 +2651,7 @@ src="Images/RulesTutCatList.PNG"
 letter="xOutput1"
 num="xOutput1"
 ></exampleRef
-> (“pos: 1” means the word in position 1). We are not outputting the word in position 2. The result is that our <langData
+> (“item: 1” means the first item or word). We are not outputting the 2nd word. The result is that our <langData
 lang="lVernacular"
 >biti<object
 type="tSubscript"
@@ -2657,10 +2661,6 @@ type="tSubscript"
 ><example
 num="xOutput1"
 ><chart
-><img
-cssSpecial="Height:60%"
-src="Images/RulesTutOutput0.PNG"
-></img
 ></chart
 ></example
 ></li
@@ -3565,7 +3565,7 @@ type="tItalic"
 ><li
 >Now set the <object
 type="tRuleElemInXXE"
->pos</object
+>item</object
 > property to 1 and we will be getting the capitalization from the first word.<br
 ></br
 ><br
@@ -4002,7 +4002,7 @@ id="sTransferRuleHowTos"
 >Transfer Rule How To’s</secTitle
 ><p
 ><comment
->How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use and or and not has part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. </comment
+>How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
 id="sCategory"
@@ -4237,7 +4237,10 @@ type="tRuleElemInXXE"
 > part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <object
 type="tRuleElemInXXE"
 >output</object
-> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category. If we are manually outputting a word-sense, we need to use a <object
+> element of our transfer rule. <object
+type="tUnderline"
+>The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</object
+> If we are manually outputting a word-sense, we need to use a <object
 type="tRuleElemInXXE"
 >literal string</object
 > element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
@@ -4292,7 +4295,7 @@ num="xLetBlank"
 num="xLetBlank"
 ><chart
 ><img
-cssSpecial="Height:63%"
+cssSpecial="Height:67%"
 src="Images/LetBlank.PNG"
 ></img
 ></chart
@@ -4430,9 +4433,12 @@ id="sRepl"
 >You can handle this by using the <object
 type="tFilename"
 >replace.dix</object
-> file to add additional mappings to the bilingual lexicon.</p
+> file to add additional mappings to the bilingual lexicon. This file is your install folder.</p
 ><p
->The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
+>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon. That's the way <object
+type="tFlextrans"
+></object
+> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
 letter="xBilingEntries"
 num="xBilingEntries"
 ></exampleRef
@@ -4464,7 +4470,7 @@ src="Images/BilingalEntries2.PNG"
 >In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
 type="tFilename"
 >replace.dix</object
-> you will see something like <exampleRef
+> in the install folder, you will see something like <exampleRef
 letter="xReplacement"
 num="xReplacement"
 ></exampleRef
@@ -4478,10 +4484,16 @@ src="Images/Replacement_In_XXE2.PNG"
 ></chart
 ></example
 ><p
->The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because that gets generated automatically by <object
+>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because it gets generated automatically by <object
 type="tFlextrans"
 > </object
->.</p
+>. After <object
+type="tFlextrans"
+></object
+> generates it, <object
+type="tFlextrans"
+></object
+> replaces and appends entries from the replacement file.</p
 ><p
 >Let’s say that we want to map the past tense of the entry for <langData
 lang="lVernacular"
@@ -4515,7 +4527,7 @@ lang="lVernacular"
 >v</langData
 > just like the bilingual file, but it also has a new symbol <langData
 lang="lVernacular"
->PST</langData
+>pst</langData
 >. This is the gloss for the past suffix in German. By adding this suffix, we are telling <object
 type="tFlextrans"
 ></object
@@ -4525,24 +4537,16 @@ lang="lVernacular"
 > to something else. The new Swedish word is listed for the <object
 type="tRuleElemInXXE"
 >right</object
-> element. Note that we also had to add two new symbol definitions so that <object
+> element. Note that we also had to add a new symbol definition, <langData
+lang="lVernacular"
+>pst</langData
+> so that <object
 type="tFlextrans"
 ></object
-> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <object
+> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <object
 type="tRuleElemInXXE"
 >Symbols</object
 > element.</p
-><p
->You also have to make a change to the configuration file (<object
-type="tFilename"
->FlexTrans.config</object
-> in the top-level folder) to signal <object
-type="tFlextrans"
-></object
-> to use the replacement file. Change the applicable line to look like this: <object
-type="tCourier"
->BilingualDictReplacementFile=..\replace.dix</object
-></p
 ></section3
 ><section3
 id="sInflVariantTgt"
@@ -4552,7 +4556,10 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->To learn how FT can handle these kind of variants, please watch this <link
+>To learn how <object
+type="tFlextrans"
+></object
+> can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
 >video</link
 >.</p
@@ -4575,7 +4582,10 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->To learn how FT can handle these kind of variants, please watch this <link
+>To learn how <object
+type="tFlextrans"
+></object
+> can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
 >video</link
 >.</p
@@ -4983,7 +4993,7 @@ id="tUnderline"
 xsl-foSpecial="text-decoration=&quot;underline&quot;"
 ></type
 ><comment
->Add your custom types here.</comment
+>Add your custom types here.'</comment
 ><type
 font-style="normal"
 font-weight="bold"

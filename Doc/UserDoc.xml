@@ -262,71 +262,13 @@ id="sPrepSteps"
 >Preparatory Steps</secTitle
 ><ol
 ><li
->Edit the configuration file and change two values.<ol
+>Create a new folder for your language pair.<ol
 ><li
->Open <object
-type="tTool"
->Notepad</object
-></li
+>In File Explorer, go to the WorkProjects subfolder in the install folder (typically Documents\FlexTools2.0-FLExTrans).</li
 ><li
->Select File &gt; Open from the menu.</li
+>Copy the German-Swedish folder and Paste it where it is. You should see a new folder called German-Swedish - Copy</li
 ><li
->Navigate to the install folder (typically Documents\FlexTools2.0).</li
-><li
->Select the <object
-type="tFilename"
->FlexTrans.config</object
-> file and hit <object
-type="tItalic"
->Enter</object
->.</li
-><li
->Change these two values:<table
-border="1"
-><tr
-><th
->Value</th
-><th
->Change to</th
-></tr
-><tr
-><td
-><object
-type="tCourier"
->SourceTextName</object
-></td
-><td
-><object
-type="tItalic"
->The title of the text you want to translate (from the source </object
-><object
-type="tFlexx"
-></object
-> <object
-type="tItalic"
->project)</object
-></td
-></tr
-><tr
-><td
-><object
-type="tCourier"
->TargetProject</object
-></td
-><td
-><object
-type="tItalic"
->The name of your target </object
-><object
-type="tFlexx"
-></object
-><object
-type="tItalic"
-> project</object
-></td
-></tr
-></table
-></li
+>Rename this folder to the language pair you will work with.</li
 ></ol
 ></li
 ><li
@@ -428,6 +370,65 @@ src="Images/DatabaseBut.PNG"
 type="tFlexx"
 ></object
 > project.</li
+><li
+>Change the settings for your new project.<ol
+><li
+>Click the Collections button</li
+><li
+>Select Tools</li
+><li
+>Select the FLExTrans.Settings module</li
+><li
+>Click the Run button</li
+><li
+>Change these two values:<table
+border="1"
+><tr
+><th
+>Value</th
+><th
+>Change to</th
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>SourceTextName</object
+></td
+><td
+><object
+type="tItalic"
+>The title of the text you want to translate (from the source </object
+><object
+type="tFlexx"
+></object
+> <object
+type="tItalic"
+>project)</object
+></td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>TargetProject</object
+></td
+><td
+><object
+type="tItalic"
+>The name of your target </object
+><object
+type="tFlexx"
+></object
+><object
+type="tItalic"
+> project</object
+></td
+></tr
+></table
+></li
+></ol
+></li
 ></ol
 ></section2
 ><section2
@@ -4652,7 +4653,7 @@ type="tFlexxTools"
 ><li
 >Navigate to the installation folder (typically <object
 type="tFilename"
->Documents\FlexTools2.0</object
+>Documents\FlexTools2.0\WorkProjects\[YourProject]</object
 >).</li
 ><li
 >Double-click on the file <object
