@@ -420,13 +420,13 @@ src="Images/ToolsCollection.png"
 ></example
 ></li
 ><li
->Select the FLExTrans.Settings module</li
+>Select the FLExTrans.Settings module.</li
 ><li
 >Click the <img
 cssSpecial="Width:5%"
-src="images\runbut.png"
+src="Images/RunBut.png"
 ></img
-> button</li
+> button.</li
 ><li
 >Change these two values:<table
 border="1"
