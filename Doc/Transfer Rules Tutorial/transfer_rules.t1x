@@ -23,7 +23,7 @@ tags="myotherfeature"
 ></section-def-attrs
 ><section-def-vars
 ><def-var
-n="v_var1"
+n="blank"
 ></def-var
 ></section-def-vars
 ><section-rules

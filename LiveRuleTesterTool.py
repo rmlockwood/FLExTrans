@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.7 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.5.6 - 4/14/22 - Ron Lockwood
 #    Give error message when no words are suggested. Fixes #109
 #
@@ -202,22 +205,16 @@ import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:
-
-TESTER_FOLDER = Utils.OUTPUT_FOLDER+'\\LiveRuleTester'
-AFFIX_GLOSS_PATH = TESTER_FOLDER + '\\target_pfx_glosses.txt'
-TRANFER_RESULTS_PATH = TESTER_FOLDER + '\\target_text.aper'
-TARGET_ANA_PATH = TESTER_FOLDER + '\\myText.ana'
-SYNTHESIS_FILE_PATH = TESTER_FOLDER + '\\myText.syn'
-WINDOWS_SETTINGS_FILE = TESTER_FOLDER+'\\window.settings.txt'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.6",
+        FTM_Version    : "3.5.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -371,6 +368,17 @@ class Main(QMainWindow):
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
         self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
         
+        # Set up paths to things.
+        # Get parent folder of the folder flextools.ini is in and add \Build to it
+        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+
+        self.testerFolder = self.buildFolder+'\\LiveRuleTester'
+        self.affixGlossPath = self.testerFolder + '\\target_pfx_glosses.txt'
+        self.transferResultsPath = self.testerFolder + '\\target_text.aper'
+        self.targetAnaPath = self.testerFolder + '\\myText.ana'
+        self.synthesisFilePath = self.testerFolder + '\\myText.syn'
+        self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
+        
         # Blank out the tests added feedback label
         self.ui.TestsAddedLabel.setText('')
         
@@ -397,7 +405,7 @@ class Main(QMainWindow):
         
         # Open a settings file to see which tabs were last used.
         try:
-            f = open(WINDOWS_SETTINGS_FILE)
+            f = open(self.windowsSettingsFile)
             
             line = f.readline()
             
@@ -416,9 +424,9 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
-        # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
+        # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
-            self.__transfer_rules_file = 'Output\\transfer_rules.t1x'
+            self.__transfer_rules_file = self.buildFolder + '\\..\\transfer_rules.t1x'
             
         # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
@@ -456,9 +464,9 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
+            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
             return 
 
@@ -467,11 +475,11 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the Output folder
+        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the proj. folder
         testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
         if not testbedPath:
             
-            testbedPath = 'Output\\testbed.xml'
+            testbedPath = self.buildFolder + '\\..\\testbed.xml'
 
         self.__testbedPath = testbedPath
         
@@ -536,9 +544,9 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, 'bilingual.dix'))
+            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+TESTER_FOLDER+'. Please check that it exists.')
+            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
             return 
         
@@ -754,7 +762,7 @@ class Main(QMainWindow):
         if self.__doCatalog:
             
             try:
-                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
                 self.unsetCursor()
@@ -774,7 +782,7 @@ class Main(QMainWindow):
         if self.__convertIt == True:
             
             # Convert the target text to .ana format (for STAMP)
-            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, TARGET_ANA_PATH, AFFIX_GLOSS_PATH, TRANFER_RESULTS_PATH)
+            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath)
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
@@ -789,7 +797,7 @@ class Main(QMainWindow):
         if self.__extractIt == True:
             
             # Redo the catalog of prefixes in case the user changed an affix
-            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, AFFIX_GLOSS_PATH)
+            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
@@ -806,7 +814,7 @@ class Main(QMainWindow):
                     return
         
         ## SYNTHESIZE
-        error_list = ExtractTargetLexicon.synthesize(self.__configMap, TARGET_ANA_PATH, SYNTHESIS_FILE_PATH) 
+        error_list = ExtractTargetLexicon.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]
@@ -815,7 +823,7 @@ class Main(QMainWindow):
                 return
                     
         # Load the synthesized result into the text box
-        lf = open(SYNTHESIS_FILE_PATH, encoding='utf-8')
+        lf = open(self.synthesisFilePath, encoding='utf-8')
         synthText = lf.read()
         
         # if RTL text, prepend the RTL mark
@@ -1177,7 +1185,7 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
         
-        f = open(WINDOWS_SETTINGS_FILE, 'w')
+        f = open(self.windowsSettingsFile, 'w')
         
         f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
         f.close()
@@ -1192,7 +1200,7 @@ class Main(QMainWindow):
         self.ui.BilingFileEdit.setText(self.__biling_file)
         
         # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(TESTER_FOLDER, os.path.basename(self.__biling_file)))
+        shutil.copy(self.__biling_file, os.path.join(self.testerFolder, os.path.basename(self.__biling_file)))
         
     def TransferBrowseClicked(self):
         # Bring up file select dialog
@@ -1370,40 +1378,40 @@ class Main(QMainWindow):
         
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
-                source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
-                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
-                tgt_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
+                source_file = os.path.join(self.testerFolder, 'source_text.aper')
+                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
+                tgt_file = os.path.join(self.testerFolder, 'target_text1.aper')
+                log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
                 rule_file = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
-                source_file = os.path.join(TESTER_FOLDER, 'target_text1.aper')
-                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t2x')
-                tgt_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'apertium_log2.txt')
+                source_file = os.path.join(self.testerFolder, 'target_text1.aper')
+                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t2x')
+                tgt_file = os.path.join(self.testerFolder, 'target_text2.aper')
+                log_file = os.path.join(self.testerFolder, 'apertium_log2.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
                 rule_file = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
-                source_file = os.path.join(TESTER_FOLDER, 'target_text2.aper')
-                tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t3x')
-                tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-                log_file = os.path.join(TESTER_FOLDER, 'apertium_log3.txt')
+                source_file = os.path.join(self.testerFolder, 'target_text2.aper')
+                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t3x')
+                tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
+                log_file = os.path.join(self.testerFolder, 'apertium_log3.txt')
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
                 rule_file = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
-            source_file = os.path.join(TESTER_FOLDER, 'source_text.aper')
-            tr_file = os.path.join(TESTER_FOLDER, 'transfer_rules.t1x')
-            tgt_file = os.path.join(TESTER_FOLDER, 'target_text.aper')
-            log_file = os.path.join(TESTER_FOLDER, 'apertium_log.txt')
+            source_file = os.path.join(self.testerFolder, 'source_text.aper')
+            tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
+            tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
+            log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1463,7 +1471,7 @@ class Main(QMainWindow):
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
-        ret = Utils.run_makefile('Output\\LiveRuleTester', self.__report)
+        ret = Utils.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
         
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')

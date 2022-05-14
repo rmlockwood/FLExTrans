@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>17 March, 2022</small></center>
-      <center><small>Version: FLExTrans 3.4</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>9 May, 2022</small></center>
+      <center><small>Version: FLExTrans 3.5</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -202,31 +202,12 @@
       <h2 style=""><a name="sPrepSteps"></a>2.2&nbsp;Preparatory Steps
       </h2>
       <ol style="list-style-type:decimal; ">
-         <li>Edit the configuration file and change two values.
+         <li>Create a new folder for your language pair.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Open <span style="font-family:Courier New; font-weight:bold; color:navy; ">Notepad</span></li>
-               <li>Select File &gt; Open from the menu.</li>
-               <li>Navigate to the install folder (typically Documents\FlexTools2.0).</li>
-               <li>Select the <span style="font-style:italic; ">FlexTrans.config</span> file and hit <span style="font-style:italic; ">Enter</span>.
+               <li>In File Explorer, go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">WorkProjects</span> subfolder of the installation folder (typically <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Documents\FlexTools2.0-FLExTrans</span>).
                </li>
-               <li>Change these two values:
-                  <div align="left">
-                     <table style="" border="1">
-                        <tr style="">
-                           <th align="left" valign="top" style="padding-left:.2em; ">Value</th>
-                           <th align="left" valign="top" style="padding-left:.2em; ">Change to</th>
-                        </tr>
-                        <tr style="">
-                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">SourceTextName</span></td>
-                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The title of the text you want to translate (from the source </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> <span style="font-style:italic; ">project)</span></td>
-                        </tr>
-                        <tr style="">
-                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">TargetProject</span></td>
-                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The name of your target </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span><span style="font-style:italic; "> project</span></td>
-                        </tr>
-                     </table>
-                  </div>
-               </li>
+               <li>Copy the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish</span> folder and Paste it where it is. You should see a new folder called <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish - Copy</span></li>
+               <li>Rename this folder to the language pair you will work with.</li>
             </ol>
          </li>
          <li>Add two custom fields to your source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. This is where link information to the target senses is kept.
@@ -273,41 +254,70 @@
          </li>
          <li>Click on the <img style="Width:5%" src="Images/DatabaseBut.PNG"> button and choose your source database, i.e. <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
          </li>
+         <li>Change the settings for your new project.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xLinkerInCollections">(3)</a>.
+                  <div style="margin-left: 0.25in; margin-right: 0.25in">
+                     <table>
+                        <tr>
+                           <td valign="top"><a name="xLinkerInCollections">(3)</a></td>
+                           <td>
+                              <table>
+                                 <tr>
+                                    <td><img style="Height:60%" src="Images/LinkerInCollections.png"></td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </li>
+               <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Tools</span> in the list and you&#8217;ll see this:
+                  <div style="margin-left: 0.25in; margin-right: 0.25in">
+                     <table>
+                        <tr>
+                           <td valign="top"><a name="xToolsCollection">(4)</a></td>
+                           <td>
+                              <table>
+                                 <tr>
+                                    <td><img style="Height:60%" src="Images/ToolsCollection.png"></td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </li>
+               <li>Select the FLExTrans.Settings module.</li>
+               <li>Click the <img style="Width:5%" src="Images/RunBut.png"> button.
+               </li>
+               <li>Change these two values:
+                  <div align="left">
+                     <table style="" border="1">
+                        <tr style="">
+                           <th align="left" valign="top" style="padding-left:.2em; ">Value</th>
+                           <th align="left" valign="top" style="padding-left:.2em; ">Change to</th>
+                        </tr>
+                        <tr style="">
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">SourceTextName</span></td>
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The title of the text you want to translate (from the lists of texts in the source </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> <span style="font-style:italic; ">project)</span></td>
+                        </tr>
+                        <tr style="">
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-size:100%; ">TargetProject</span></td>
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-style:italic; ">The name of your target </span><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span><span style="font-style:italic; "> project</span></td>
+                        </tr>
+                     </table>
+                  </div>
+               </li>
+            </ol>
+         </li>
       </ol>
       <h2 style=""><a name="sLinkSenses"></a>2.3&nbsp;Link Senses
       </h2>
       <ol style="list-style-type:decimal; ">
          <li>Click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xLinkerInCollections">(3)</a>.
-            <div style="margin-left: 0.25in; margin-right: 0.25in">
-               <table>
-                  <tr>
-                     <td valign="top"><a name="xLinkerInCollections">(3)</a></td>
-                     <td>
-                        <table>
-                           <tr>
-                              <td><img style="Height:60%" src="Images/LinkerInCollections.png"></td>
-                           </tr>
-                        </table>
-                     </td>
-                  </tr>
-               </table>
-            </div>
          </li>
-         <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Tools</span> in the list and you&#8217;ll see this:
-            <div style="margin-left: 0.25in; margin-right: 0.25in">
-               <table>
-                  <tr>
-                     <td valign="top"><a name="xToolsCollection">(4)</a></td>
-                     <td>
-                        <table>
-                           <tr>
-                              <td><img style="Height:60%" src="Images/ToolsCollection.png"></td>
-                           </tr>
-                        </table>
-                     </td>
-                  </tr>
-               </table>
-            </div>
+         <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Tools</span> in the list and you&#8217;ll see list of Tools modules:
          </li>
          <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans.Sense Linker Tool</span> in the list.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -341,7 +351,7 @@
                </table>
             </div>
          </li>
-         <li>Link each sense. (More details in section&nbsp;<a href="#sLinker">3</a>)
+         <li>Link each sense. (More details in section&nbsp;<a href="#sLinker">3</a>) 
             <ol style="list-style-type:lower-alpha; ">
                <li>For blue rows that look good, simply check the check box in the <span style="font-weight:bold; ">Link It</span> column.
                </li>
@@ -362,7 +372,7 @@
          We&#8217;ll modify an existing rule to do this.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Navigate to your installation folder.</li>
+         <li>Navigate to your work project folder.</li>
          <li>Open the file <span style="font-style:italic; ">transfer_rules.t1x</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(7)</a>. This is the transfer rules file that works with the sample projects.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -493,7 +503,7 @@
       <p></p>
       <h1 style=""><a name="sLinker"></a>3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file
-         and lists every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>:
+         and lists every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>: 
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -917,21 +927,28 @@
          </li>
          <li>Now close both <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects,
          </li>
-         <li>We will be writing new transfer rules so let&#8217;s rename the current rule file.
+         <li>Create a new folder for your language pair.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the top-level folder and rename the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-style:italic; ">transfer_rules_saved.t1x</span>.
+               <li>In File Explorer, go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">WorkProjects</span> subfolder of the installation folder (typically <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Documents\FlexTools2.0-FLExTrans</span>).
                </li>
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to the top-level folder.
+               <li>Copy the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish</span> folder and Paste it where it is. You should see a new folder called <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish - Copy</span></li>
+               <li>Rename this folder to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English</span>.
+               </li>
+            </ol>
+         </li>
+         <li>We will be writing new transfer rules so let&#8217;s start from scratch.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish</span> folder.
                </li>
                <li>Open <span style="font-style:italic; ">transfer_rules.t1x</span> in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
                </li>
             </ol>
          </li>
-         <li>We will be changing the configuration file so let&#8217;s rename the current one.
+         <li>Let's change the configuration file.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the top-level folder and rename the file <span style="font-style:italic; ">FlexTrans.config</span> to <span style="font-style:italic; ">FlexTrans_saved.config</span>.
+               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again.
                </li>
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the top-level folder.
+               <li>Copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish\Config</span> folder.
                </li>
             </ol>
          </li>
@@ -1259,7 +1276,7 @@
                </table>
             </div>
             <p>By using this pattern we will detect a participle followed by the auxiliary. Once detected, the rule will run.</p>
-            <p>Notice that the example rule as written outputs only the first among two lexical units as seen in <a href="#xOutput1">(36)</a> (&#8220;pos: 1&#8221; means the word in position 1). We are not outputting the word in position 2. The result is that our <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">biti<span style="font-size:65%; vertical-align:sub;">1.1</span></span> word will disappear.
+            <p>Notice that the example rule as written outputs only the first among two lexical units as seen in <a href="#xOutput1">(36)</a> (&#8220;item: 1&#8221; means the first item or word). We are not outputting the 2nd word. The result is that our <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">biti<span style="font-size:65%; vertical-align:sub;">1.1</span></span> word will disappear.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -1268,7 +1285,7 @@
                      <td>
                         <table>
                            <tr>
-                              <td><img style="Height:60%" src="Images/RulesTutOutput0.PNG"></td>
+                              <td></td>
                            </tr>
                         </table>
                      </td>
@@ -1663,7 +1680,7 @@
                      </li>
                      <li>At this point a list of elements to insert shows up in the upper right pane. Choose <span style="font-style:italic; ">get-case-from</span>.
                      </li>
-                     <li>Now set the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pos</span> property to 1 and we will be getting the capitalization from the first word.<br><br></li>
+                     <li>Now set the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> property to 1 and we will be getting the capitalization from the first word.<br><br></li>
                   </ol>
                </li>
                <li>Now we need to make the second lexical unit come out with the first letter in lower case. We could use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify-case</span> element, but we would have to add a new statement above the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element. Instead we can just use the same method as above to get the case from the second word. This time wrap the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from</span> element around the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element that copies the lemma. This is shown below: 
@@ -1876,7 +1893,7 @@
                </li>
             </ol>
          </li>
-         <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the top-level folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the project folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
          </li>
       </ol>
       <h2 style=""><a name="sTestbedTools"></a>8.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools
@@ -1913,7 +1930,7 @@
       </p>
       <h3 style=""><a name="sTestbedEditor"></a>8.2.5&nbsp;Testbed Editing
       </h3>
-      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the top-level folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+      <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the project folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <h1 style=""><a name="sHowTo"></a>9&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s
       </h1>
@@ -2010,8 +2027,7 @@
       </p>
       <h3 style=""><a name="sInsertWord"></a>9.2.5&nbsp;How do I insert a word into the target output?
       </h3>
-      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category.
-         If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
+      <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
          use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(72)</a> shows how it might look.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2048,7 +2064,7 @@
                      <td>
                         <table>
                            <tr>
-                              <td><img style="Height:63%" src="Images/LetBlank.PNG"></td>
+                              <td><img style="Height:67%" src="Images/LetBlank.PNG"></td>
                            </tr>
                         </table>
                      </td>
@@ -2110,7 +2126,7 @@
       <p></p>
       <h3 style=""><a name="sViewBiling"></a>9.3.1&nbsp;How do I view the bilingual lexicon?
       </h3>
-      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(76)</a>.
+      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(76)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -2129,11 +2145,11 @@
       <h3 style=""><a name="sRepl"></a>9.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
-      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon.
+      <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon. This file is your project folder.
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
-         in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(77)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FlexTools\Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         in the bilingual lexicon. That's the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual
+         lexicon is shown in <a href="#xBilingEntries">(77)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -2150,7 +2166,7 @@
          </table>
       </div>
       <p>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file.
-         If you double-click on <span style="font-style:italic; ">replace.dix</span> you will see something like <a href="#xReplacement">(78)</a>.
+         If you double-click on <span style="font-style:italic; ">replace.dix</span> in the project folder, you will see something like <a href="#xReplacement">(78)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -2168,7 +2184,7 @@
       </div>
       <p>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section
          for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
-         dictionary file directly because that gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>.
+         dictionary file directly because it gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>. After <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> generates it, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> replaces and appends entries from the replacement file.
       </p>
       <p>Let&#8217;s say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(77)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(79)</a>.
       </p>
@@ -2186,11 +2202,10 @@
             </tr>
          </table>
       </div>
-      <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">PST</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add two new symbol definitions so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
+      <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add a new symbol definition, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span> so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
-      <p>You also have to make a change to the configuration file (<span style="font-style:italic; ">FlexTrans.config</span> in the top-level folder) to signal <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use the replacement file. Change the applicable line to look like this: <span style="font-family:Courier New; font-size:100%; ">BilingualDictReplacementFile=..\replace.dix</span></p>
       <h3 style=""><a name="sInflVariantTgt"></a>9.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
-      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
+      <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
@@ -2198,7 +2213,7 @@
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
       </p>
       <h3 style=""><a name="sInflVariantSrc"></a>9.3.4&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
-      <p>To learn how FT can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
+      <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
@@ -2216,7 +2231,7 @@
       <h1 style=""><a name="sStartFlextools"></a>A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></h1>
       <p>Here are the steps:</p>
       <ol style="list-style-type:decimal; ">
-         <li>Navigate to the installation folder (typically <span style="font-style:italic; ">Documents\FlexTools2.0</span>).
+         <li>Navigate to the installation folder (typically <span style="font-style:italic; ">Documents\FlexTools2.0-FLExTrans\WorkProjects\[YourProject]</span>).
          </li>
          <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
          </li>
@@ -2266,13 +2281,13 @@
          <tr>
             <td valign="top"><a name="nInputFile">[5]</a></td>
             <td>
-               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span>. It is the friendly view of the file <span style="font-style:italic; ">source_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Otic&#769;i1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
+               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span>. It is the friendly view of the file <span style="font-style:italic; ">source_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Otic&#769;i1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>
             <td valign="top"><a name="nOutputFile">[6]</a></td>
             <td>
-               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> and click the <span style="font-style:normal; font-weight:bold; ">Target</span> button. It is the friendly view of the file <span style="font-style:italic; ">target_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
+               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> and click the <span style="font-style:normal; font-weight:bold; ">Target</span> button. It is the friendly view of the file <span style="font-style:italic; ">target_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>

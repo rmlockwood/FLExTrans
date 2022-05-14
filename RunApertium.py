@@ -3,6 +3,9 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 3.5 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.4.1 - 3/5/22 - Ron Lockwood
 #    Use a config file setting for the transfer rules file. Make it an 
 #    environment variable that the makefile can use.
@@ -40,14 +43,15 @@
 #
 
 import Utils
+import os
 from FTModuleClass import *
-
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  
@@ -56,14 +60,20 @@ docs = {FTM_Name       : "Run Apertium",
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
-    # Run the makefile to run Apertium tools to do the transfer
-    # component of FLExTrans. Pass in the folder of the bash
-    # file to run. The current directory is FlexTools
-    ret = Utils.run_makefile(Utils.OUTPUT_FOLDER, report)
+    # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
+    
+    # Get parent folder of the folder flextools.ini is in and add \Build to it
+    buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+    ret = Utils.run_makefile(buildFolder, report)
     
     if ret:
-        report.Error('An error happened when running the Apertium tools.')
-   
+        report.Error('An error happened when running the Apertium tools. The contents of apertium_error.txt is:')
+        try:
+            f = open(os.path.join(buildFolder, Utils.APERTIUM_ERROR_FILE), encoding='utf-8')
+            lines = f.readlines()
+            report.Error('\n'.join(lines))
+        except:
+            pass
 
 #----------------------------------------------------------------
 # define the FlexToolsModule

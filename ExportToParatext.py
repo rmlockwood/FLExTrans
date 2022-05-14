@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.5.1 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.5 - 5/3/22 - Ron Lockwood
 #    Initial version.
 #
@@ -34,6 +37,7 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
 import ChapterSelection
+from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:
@@ -43,7 +47,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -188,7 +192,10 @@ class Main(QMainWindow):
         self.setWindowTitle("Export Chapters to Paratext")
         # Load settings if available
         try:
-            f = open(PTXEXPORT_SETTINGS_FILE, 'r')
+            # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+            # Get the parent folder of flextools.ini, i.e. Config and add the settings file
+            self.settingsPath = os.path.join(os.path.dirname(CONFIG_PATH), PTXEXPORT_SETTINGS_FILE)
+            f = open(self.settingsPath, 'r')
             
             ptxProj = f.readline()
             
@@ -251,7 +258,7 @@ class Main(QMainWindow):
         self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
         
         # Save the settings to a file so the same settings can be shown next time
-        f = open(PTXEXPORT_SETTINGS_FILE, 'w')
+        f = open(self.settingsPath, 'w')
         
         f.write(projectAbbrev)
         f.close()

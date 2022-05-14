@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5 - 5/10/22 - Ron Lockwood
+#    Support multiple projects in one FlexTools folder. Folders rearranged.
+#
 #   Version 3.4.3 - 3/17/22 - Ron Lockwood
 #    Allow for a user configurable Testbed location. Issue #70.
 #
@@ -38,7 +41,10 @@
 #   Functions for reading a configuration file
 
 import re
+import os
 import unicodedata
+
+from FTPaths import CONFIG_PATH
 
 CONFIG_FILE = 'FlexTrans.config'
 
@@ -71,10 +77,14 @@ TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 
 def readConfig(report):
     try:
-        f_handle = open('../' + CONFIG_FILE, encoding='utf-8')
+        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+        # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
+        myPath = os.path.join(os.path.dirname(CONFIG_PATH), CONFIG_FILE)
+        
+        f_handle = open(myPath, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". Check that it is in the top-level folder.')
+            report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
         return None
 
     my_map = {}
@@ -112,6 +122,16 @@ def getConfigVal(my_map, key, report, giveError=True):
                 report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
+        # If the key value ends with 'File' then change the path accordingly.
+        # Also the key must have a value, otherwise ignore it.
+        if re.search('File$', key) and key in my_map and my_map[key]:
+            
+            # if we don't have an absolute path (e.g. c:\...) we need to fix up the path. FLExTrans is shipped with relative paths to the work project subfolder ('e.g. German-Swedish')
+            if not re.search(':', my_map[key]):
+                
+                # Return the parent folder of the Config folder + the relative file path. E.g. ...\German-Swedish\target_text.aper
+                return os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), my_map[key])
+      
         return my_map[key]
 
 def configValIsList(my_map, key, report):

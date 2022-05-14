@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->11 January, 2022</date
+>9 May, 2022</date
 ><version
->FLExTrans 3.3</version
+>FLExTrans 3.5</version
 ><contents
 showLevel="4"
 ></contents
@@ -262,74 +262,13 @@ id="sPrepSteps"
 >Preparatory Steps</secTitle
 ><ol
 ><li
->Edit the configuration file and change two values.<ol
+>Create a new folder for your language pair.<ol
 ><li
->Open <object
-type="tTool"
->Notepad</object
-></li
+>In File Explorer, go to the WorkProjects subfolder in the install folder (typically Documents\FlexTools2.0-FLExTrans).</li
 ><li
->Select File &gt; Open from the menu.</li
+>Copy the German-Swedish folder and Paste it where it is. You should see a new folder called German-Swedish - Copy</li
 ><li
->Navigate to the install folder (typically Documents\FlexTools2.0) and into the <object
-type="tFoldername"
->FlexTools</object
-> sub-folder.</li
-><li
->Select the <object
-type="tFilename"
->FlexTrans.config</object
-> file and hit <object
-type="tItalic"
->Enter</object
->.</li
-><li
->Change these two values:<table
-border="1"
-><tr
-><th
->Value</th
-><th
->Change to</th
-></tr
-><tr
-><td
-><object
-type="tCourier"
->SourceTextName</object
-></td
-><td
-><object
-type="tItalic"
->The title of the text you want to translate (from the source </object
-><object
-type="tFlexx"
-></object
-> <object
-type="tItalic"
->project)</object
-></td
-></tr
-><tr
-><td
-><object
-type="tCourier"
->TargetProject</object
-></td
-><td
-><object
-type="tItalic"
->The name of your target </object
-><object
-type="tFlexx"
-></object
-><object
-type="tItalic"
-> project</object
-></td
-></tr
-></table
-></li
+>Rename this folder to the language pair you will work with.</li
 ></ol
 ></li
 ><li
@@ -431,6 +370,65 @@ src="Images/DatabaseBut.PNG"
 type="tFlexx"
 ></object
 > project.</li
+><li
+>Change the settings for your new project.<ol
+><li
+>Click the Collections button</li
+><li
+>Select Tools</li
+><li
+>Select the FLExTrans.Settings module</li
+><li
+>Click the Run button</li
+><li
+>Change these two values:<table
+border="1"
+><tr
+><th
+>Value</th
+><th
+>Change to</th
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>SourceTextName</object
+></td
+><td
+><object
+type="tItalic"
+>The title of the text you want to translate (from the source </object
+><object
+type="tFlexx"
+></object
+> <object
+type="tItalic"
+>project)</object
+></td
+></tr
+><tr
+><td
+><object
+type="tCourier"
+>TargetProject</object
+></td
+><td
+><object
+type="tItalic"
+>The name of your target </object
+><object
+type="tFlexx"
+></object
+><object
+type="tItalic"
+> project</object
+></td
+></tr
+></table
+></li
+></ol
+></li
 ></ol
 ></section2
 ><section2
@@ -514,7 +512,9 @@ sec="sLinker"
 showTitle="numberOnly"
 textBefore="singular"
 ></sectionRef
->)<ol
+>) <comment
+>Need a new image</comment
+><ol
 ><li
 >For blue rows that look good, simply check the check box in the <object
 type="tBold"
@@ -549,10 +549,7 @@ id="sWriteRules"
 >In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category. We’ll modify an existing rule to do this.</p
 ><ol
 ><li
->Navigate to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder in your installation folder.</li
+>Navigate to your installation folder.</li
 ><li
 >Open the file <object
 type="tFilename"
@@ -813,7 +810,9 @@ type="tSenseLinker"
 > is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
->:</p
+>: <comment
+>Need a new image and explain new stuff like, hiding proper nouns, and the search box!</comment
+></p
 ><example
 num="xLinkerToolShot"
 ><chart
@@ -1665,10 +1664,7 @@ type="tFlexx"
 ><li
 >We will be writing new transfer rules so let’s rename the current rule file.<ol
 ><li
->Go to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder and rename the file <object
+>Go to the top-level folder and rename the file <object
 type="tFilename"
 >transfer_rules.t1x</object
 > to <object
@@ -1682,18 +1678,7 @@ type="tFoldername"
 > folder again and copy the file <object
 type="tFilename"
 >transfer_rules.t1x</object
-> to the <object
-type="tFoldername"
->FlexTools\Output</object
-> folder.</li
-><li
->Delete the files <object
-type="tFilename"
->transfer_rules.t1x.bin</object
-> and <object
-type="tFilename"
->tr.t1x</object
-> if they exist.</li
+> to the top-level folder.</li
 ><li
 >Open <object
 type="tFilename"
@@ -1707,10 +1692,7 @@ type="tXMLmindXMLEditor"
 ><li
 >We will be changing the configuration file so let’s rename the current one.<ol
 ><li
->Go to the <object
-type="tFoldername"
->FlexTools</object
-> folder and rename the file <object
+>Go to the top-level folder and rename the file <object
 type="tFilename"
 >FlexTrans.config</object
 > to <object
@@ -1724,10 +1706,7 @@ type="tFoldername"
 > folder again and copy the file <object
 type="tFilename"
 >FlexTrans.config</object
-> to the <object
-type="tFoldername"
->FlexTools</object
-> folder.</li
+> to the top-level folder.</li
 ></ol
 ></li
 ><li
@@ -2673,7 +2652,7 @@ src="Images/RulesTutCatList.PNG"
 letter="xOutput1"
 num="xOutput1"
 ></exampleRef
-> (“pos: 1” means the word in position 1). We are not outputting the word in position 2. The result is that our <langData
+> (“item: 1” means the first item or word). We are not outputting the 2nd word. The result is that our <langData
 lang="lVernacular"
 >biti<object
 type="tSubscript"
@@ -2683,10 +2662,6 @@ type="tSubscript"
 ><example
 num="xOutput1"
 ><chart
-><img
-cssSpecial="Height:60%"
-src="Images/RulesTutOutput0.PNG"
-></img
 ></chart
 ></example
 ></li
@@ -3591,7 +3566,7 @@ type="tItalic"
 ><li
 >Now set the <object
 type="tRuleElemInXXE"
->pos</object
+>item</object
 > property to 1 and we will be getting the capitalization from the first word.<br
 ></br
 ><br
@@ -3884,10 +3859,7 @@ type="tTool"
 >Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
 type="tFilename"
 >testbed.xml</object
-> which is in the <object
-type="tFoldername"
->Output</object
-> folder in the <object
+> which is in the top-level folder in the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</li
@@ -3997,10 +3969,7 @@ type="tLiveRuleTester"
 >. If you need to edit or delete a test, edit the file <object
 type="tFilename"
 >testbed.xml</object
-> in the <object
-type="tFoldername"
->Output</object
-> folder with the <object
+> in the top-level folder with the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</p
@@ -4034,7 +4003,7 @@ id="sTransferRuleHowTos"
 >Transfer Rule How To’s</secTitle
 ><p
 ><comment
->How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use and or and not has part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. </comment
+>How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
 id="sCategory"
@@ -4269,7 +4238,10 @@ type="tRuleElemInXXE"
 > part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <object
 type="tRuleElemInXXE"
 >output</object
-> element of our transfer rule. The bare minimum we need for a lexical unit is the word-sense and the grammatical category. If we are manually outputting a word-sense, we need to use a <object
+> element of our transfer rule. <object
+type="tUnderline"
+>The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</object
+> If we are manually outputting a word-sense, we need to use a <object
 type="tRuleElemInXXE"
 >literal string</object
 > element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
@@ -4324,7 +4296,7 @@ num="xLetBlank"
 num="xLetBlank"
 ><chart
 ><img
-cssSpecial="Height:63%"
+cssSpecial="Height:67%"
 src="Images/LetBlank.PNG"
 ></img
 ></chart
@@ -4462,9 +4434,12 @@ id="sRepl"
 >You can handle this by using the <object
 type="tFilename"
 >replace.dix</object
-> file to add additional mappings to the bilingual lexicon.</p
+> file to add additional mappings to the bilingual lexicon. This file is your install folder.</p
 ><p
->The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon, although there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
+>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon. That's the way <object
+type="tFlextrans"
+></object
+> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual lexicon is shown in <exampleRef
 letter="xBilingEntries"
 num="xBilingEntries"
 ></exampleRef
@@ -4496,7 +4471,7 @@ src="Images/BilingalEntries2.PNG"
 >In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
 type="tFilename"
 >replace.dix</object
-> you will see something like <exampleRef
+> in the install folder, you will see something like <exampleRef
 letter="xReplacement"
 num="xReplacement"
 ></exampleRef
@@ -4510,10 +4485,16 @@ src="Images/Replacement_In_XXE2.PNG"
 ></chart
 ></example
 ><p
->The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because that gets generated automatically by <object
+>The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because it gets generated automatically by <object
 type="tFlextrans"
 > </object
->.</p
+>. After <object
+type="tFlextrans"
+></object
+> generates it, <object
+type="tFlextrans"
+></object
+> replaces and appends entries from the replacement file.</p
 ><p
 >Let’s say that we want to map the past tense of the entry for <langData
 lang="lVernacular"
@@ -4547,7 +4528,7 @@ lang="lVernacular"
 >v</langData
 > just like the bilingual file, but it also has a new symbol <langData
 lang="lVernacular"
->PST</langData
+>pst</langData
 >. This is the gloss for the past suffix in German. By adding this suffix, we are telling <object
 type="tFlextrans"
 ></object
@@ -4557,27 +4538,16 @@ lang="lVernacular"
 > to something else. The new Swedish word is listed for the <object
 type="tRuleElemInXXE"
 >right</object
-> element. Note that we also had to add two new symbol definitions so that <object
+> element. Note that we also had to add a new symbol definition, <langData
+lang="lVernacular"
+>pst</langData
+> so that <object
 type="tFlextrans"
 ></object
-> knows what they are. Any symbols you use in a section of the replacement file, have to be defined under the <object
+> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <object
 type="tRuleElemInXXE"
 >Symbols</object
 > element.</p
-><p
->You also have to make a change to the configuration file (<object
-type="tFilename"
->FlexTrans.config</object
-> in the <object
-type="tFoldername"
->FlexTools</object
-> folder) to signal <object
-type="tFlextrans"
-></object
-> to use the replacement file. Change the applicable line to look like this: <object
-type="tCourier"
->BilingualDictReplacementFile=Output\replace.dix</object
-></p
 ></section3
 ><section3
 id="sInflVariantTgt"
@@ -4587,7 +4557,10 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->To learn how FT can handle these kind of variants, please watch this <link
+>To learn how <object
+type="tFlextrans"
+></object
+> can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
 >video</link
 >.</p
@@ -4610,7 +4583,10 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->To learn how FT can handle these kind of variants, please watch this <link
+>To learn how <object
+type="tFlextrans"
+></object
+> can handle these kind of variants, please watch this <link
 href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
 >video</link
 >.</p
@@ -4677,7 +4653,7 @@ type="tFlexxTools"
 ><li
 >Navigate to the installation folder (typically <object
 type="tFilename"
->Documents\FlexTools2.0</object
+>Documents\FlexTools2.0\WorkProjects\[YourProject]</object
 >).</li
 ><li
 >Double-click on the file <object
@@ -5018,7 +4994,7 @@ id="tUnderline"
 xsl-foSpecial="text-decoration=&quot;underline&quot;"
 ></type
 ><comment
->Add your custom types here.</comment
+>Add your custom types here.'</comment
 ><type
 font-style="normal"
 font-weight="bold"
