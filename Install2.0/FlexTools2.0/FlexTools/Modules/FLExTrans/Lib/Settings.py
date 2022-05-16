@@ -61,7 +61,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.testbed_result_button, 23, 3, 1, 1)
         self.chose_source_discontiguous_compex = CheckableComboBox(QtWidgets.QComboBox(self.scrollAreaWidgetContents))
         self.chose_source_discontiguous_compex.setObjectName("chose_source_discontiguous_compex")
-        self.chose_source_discontiguous_compex.addItem("")
         self.gridLayout_2.addWidget(self.chose_source_discontiguous_compex, 17, 1, 1, 3)
         self.source_complex_types = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.source_complex_types.setObjectName("source_complex_types")
@@ -87,7 +86,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.bilingual_dictionary_output_file, 10, 0, 1, 1)
         self.chose_skipped_source_words = CheckableComboBox(QtWidgets.QComboBox(self.scrollAreaWidgetContents))
         self.chose_skipped_source_words.setObjectName("chose_skipped_source_words")
-        self.chose_skipped_source_words.addItem("")
         self.gridLayout_2.addWidget(self.chose_skipped_source_words, 18, 1, 1, 3)
         self.output_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
         self.output_filename.setText("")
@@ -171,7 +169,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.infelction_first_element, 13, 0, 1, 1)
         self.chose_infelction_first_element = CheckableComboBox(QtWidgets.QComboBox(self.scrollAreaWidgetContents))
         self.chose_infelction_first_element.setObjectName("chose_infelction_first_element")
-        self.chose_infelction_first_element.addItem("")
         self.gridLayout_2.addWidget(self.chose_infelction_first_element, 13, 1, 1, 3)
         self.transfer_result_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
         self.transfer_result_filename.setText("")
@@ -193,7 +190,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.transfer_result_file, 8, 0, 1, 1)
         self.chose_infelction_second_element = CheckableComboBox(QtWidgets.QComboBox(self.scrollAreaWidgetContents))
         self.chose_infelction_second_element.setObjectName("chose_infelction_second_element")
-        self.chose_infelction_second_element.addItem("")
         self.gridLayout_2.addWidget(self.chose_infelction_second_element, 14, 1, 1, 3)
         self.cleanup_target_words = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.cleanup_target_words.setObjectName("cleanup_target_words")
@@ -274,20 +270,18 @@ class Ui_MainWindow(object):
         self.cleanup_yes.setText(_translate("MainWindow", "Yes"))
         self.transfer_rules_button.setText(_translate("MainWindow", "Browse file..."))
         self.testbed_result_button.setText(_translate("MainWindow", "Browse file..."))
-        self.chose_source_discontiguous_compex.setItemText(0, _translate("MainWindow", "..."))
         self.source_complex_types.setText(_translate("MainWindow", "Source Complex Form Types"))
         self.taget_affix_gloss_list_file.setText(_translate("MainWindow", "Target Affix Gloss List File"))
         self.output_ANA_file.setText(_translate("MainWindow", "Target Output ANA File"))
         self.entry_link.setText(_translate("MainWindow", "Source Custom Field for Entry Link"))
         self.tretran_insert_words_button.setText(_translate("MainWindow", "Browse file..."))
         self.bilingual_dictionary_output_file.setText(_translate("MainWindow", "Bilingual Dictionary Output File"))
-        self.chose_skipped_source_words.setItemText(0, _translate("MainWindow", "..."))
         self.testbed_file.setText(_translate("MainWindow", "Testbed File"))
         self.ana_file_button.setText(_translate("MainWindow", "Browse file..."))
         self.transfer_rules_file.setText(_translate("MainWindow", "Transfer Rules File"))
         self.bi_dictionary_replacefile_button.setText(_translate("MainWindow", "Browse file..."))
         self.infelction_second_element.setText(_translate("MainWindow", "Target Complex Form Types \n"
-"with Inflection on 1st Element"))
+"with Inflection on 2nd Element"))
         self.treetran_insert_words_file.setText(_translate("MainWindow", "TreeTran Insert Words File"))
         self.output_syn_file.setText(_translate("MainWindow", "Target Output Synthesis File"))
         self.target_affix_list_button.setText(_translate("MainWindow", "Browse file..."))
@@ -324,3 +318,63 @@ class Ui_MainWindow(object):
         self.a_treetran_output_file.setText(_translate("MainWindow", "Analyzed Text TreeTran Output File"))
         self.apply_button.setText(_translate("MainWindow", "Apply"))
         self.reset_button.setText(_translate("MainWindow", "Reset"))
+        #ToolTip
+        self.chose_sourc_text.setToolTip("The name of the text (in the first analysis writing system)\n"+
+                                         "in the source FLEx project to be translated.")
+        self.a_text_button.setToolTip("The path and name of the file which holds\n"+
+                                      "the extracted source text.")
+        self.ana_file_button.setToolTip("The path and name of the file holding\n"+
+                                        "the intermediary text in STAMP format.")
+        self.syn_file_button.setToolTip("The path and name of the file holding\n"+
+                                        "the intermediary synthesized file.")
+        self.transfer_result_file_button.setToolTip("The path and name of the file which holds the text contents\n"+
+                                                    "after going through the transfer process.")
+        self.chose_source_compex_types.setToolTip("One or more complex types from the source FLEx project.\n"+
+                                                  "These types will be treated as a lexical unit in FLExTrans and whenever\n"+
+                                                  "the components that make up this type of complex form are found sequentially\n"+
+                                                  "in the source text, they will be converted to one lexical unit.")
+        self.chose_entry_link.setToolTip("The name of the custom field in the source FLEx project that\n"+
+                                         "holds the link information to entries in the target FLEx project.")
+        self.chose_sense_number.setToolTip("The name of the custom field in the source FLEx project\n"+
+                                           "that holds the sense number of the target entry.")
+        self.bi_dictionary_uotfile_button.setToolTip("The path and name of the file which holds the bilingual lexicon.")
+        self.bi_dictionary_replacefile_button.setToolTip("The path and name of the file which holds replacement\n"+
+                                                         "entry pairs for the bilingual lexicon.")
+        self.chose_target_project.setToolTip("The name of the target FLEx project.")
+        self.target_affix_list_button.setToolTip("The ancillary file that hold a list of affix\n"+
+                                                 "glosses from the target FLEx project.")
+        self.chose_infelction_first_element.setToolTip("One or more complex types from the target FLEx project.\n"+
+                                                       "These types, when occurring in the text file to be synthesized,\n"+
+                                                       "will be broken down into their constituent entries. Use this property\n"+
+                                                       "for the types that have inflection on the first element of the complex form.")
+        self.chose_infelction_second_element.setToolTip("Same as above. Use this property for the types that have inflection\n"+
+                                                        "on the second element of the complex form.")
+        self.chose_target_morpheme_types.setToolTip("Morpheme types in the target FLEx project that are to be considered\n"+
+                                                    "as some kind of root. In other words, non-affixes and non-clitics.")
+        self.chose_source_morpheme_types.setToolTip("Morpheme types in the source FLEx project that are to be considered\n"+
+                                                    "as some kind of root. In other words, non-affixes and non-clitics.")
+        self.chose_source_discontiguous_compex.setToolTip("One or more complex types from the source FLEx project.\n"+
+                                                          "These types will allow one intervening word between the first\n"+
+                                                          "and second words of the complex type, yet will still be treated\n"+
+                                                          "as a lexical unit.")
+        self.chose_skipped_source_words.setToolTip("One or more grammatical categories that can intervene in the above complex types.")
+        self.a_tretran_outfile_button.setToolTip("The path and name of the file that holds the output from TreeTran.")
+        self.tretran_insert_words_button.setToolTip("The path and name of the file that has a list of\n"+
+                                                    "words that can be inserted with a TreeTran rule.")
+        self.transfer_rules_button.setToolTip("The path and name of the file containing the transfer rules.")
+        self.testbed_button.setToolTip("The path and name of the testbed file.")
+        self.testbed_result_button.setToolTip("The path and name of the testbed results file.")
+        self.category_abbreviation_one.setToolTip("One or more pairs of grammatical categories where the first category\n"+
+                                                  "is the “from” category in the source FLEx project and the second category\n"+
+                                                  "is the “to” category in the target FLEx project. Use the abbreviations of\n"+
+                                                  "the FLEx categories. The substitution happens in the bilingual lexicon.")
+        self.category_abbreviation_two.setToolTip("One or more pairs of grammatical categories where the first category\n" +
+                                                  "is the “from” category in the source FLEx project and the second category\n" +
+                                                  "is the “to” category in the target FLEx project. Use the abbreviations of\n" +
+                                                  "the FLEx categories. The substitution happens in the bilingual lexicon.")
+        self.cleanup_yes.setToolTip("Indicates if the system should remove preceding @ signs\n"+
+                                    "and numbers in the form N.N following words in the target text.")
+        self.cleanup_no.setToolTip("Indicates if the system should remove preceding @ signs\n" +
+                                   "and numbers in the form N.N following words in the target text.")
+        self.punctuation.setToolTip("A list of punctuation that ends a sentence.\n"+
+                                    "In transfer rules you can check for the end of a sentence.")

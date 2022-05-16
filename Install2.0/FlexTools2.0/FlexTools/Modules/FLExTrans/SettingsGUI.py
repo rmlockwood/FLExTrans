@@ -20,7 +20,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.Core.Text import TsStringUtils
 from UIProjectChooser import ProjectChooser
 
-from PyQt5 import QtCore
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
 
 from Settings import Ui_MainWindow
@@ -69,6 +69,7 @@ class Main(QMainWindow):
         self.ui.transfer_rules_button.clicked.connect(self.open_transfer_rules)
         self.ui.testbed_button.clicked.connect(self.open_testbed)
         self.ui.testbed_result_button.clicked.connect(self.open_testbed_result)
+        self.ui.reset_button.clicked.connect(self.reset)
 
         self.report = report
         self.configMap = configMap
@@ -78,25 +79,25 @@ class Main(QMainWindow):
         self.init_load()
 
     def open_a_text(self):
-        self.browse(self.ui.output_filename, "(*.aper)")
+        self.browse(self.ui.output_filename, "(*.*)")
 
     def open_ana_file(self):
-        self.browse(self.ui.output_ANA_filename, "(*.ana)")
+        self.browse(self.ui.output_ANA_filename, "(*.*)")
 
     def open_syn_file(self):
-        self.browse(self.ui.output_syn_filename, "(*.syn)")
+        self.browse(self.ui.output_syn_filename, "(*.*)")
 
     def open_tranfer_result(self):
-        self.browse(self.ui.transfer_result_filename, "(*.aper)")
+        self.browse(self.ui.transfer_result_filename, "(*.*)")
 
     def open_bi_dic_file(self):
-        self.browse(self.ui.bilingual_dictionary_output_filename, "(*.dix)")
+        self.browse(self.ui.bilingual_dictionary_output_filename, "(*.*)")
 
     def open_bi_dic_replacefile(self):
-        self.browse(self.ui.bilingual_dictionary_repalce_file_2, "(*.dix)")
+        self.browse(self.ui.bilingual_dictionary_repalce_file_2, "(*.*)")
 
     def open_affix_list(self):
-        self.browse(self.ui.taget_affix_gloss_list_filename, "(*.txt)")
+        self.browse(self.ui.taget_affix_gloss_list_filename, "(*.*)")
 
     def open_a_treetran(self):
         self.browse(self.ui.a_treetran_output_filename, "(*.*)")
@@ -105,23 +106,42 @@ class Main(QMainWindow):
         self.browse(self.ui.treetran_insert_words_file_2, "(*.*)")
 
     def open_transfer_rules(self):
-        self.browse(self.ui.transfer_rules_filename, "(*.t1x)")
+        self.browse(self.ui.transfer_rules_filename, "(*.*)")
 
     def open_testbed(self):
-        self.browse(self.ui.testbed_filename, "(*.xml)")
+        self.browse(self.ui.testbed_filename, "(*.*)")
 
     def open_testbed_result(self):
-        self.browse(self.ui.testbed_result_filename, "(*.xml)")
+        self.browse(self.ui.testbed_result_filename, "(*.*)")
 
     def browse(self, name, end):
         filename, _ = QFileDialog.getOpenFileName(self, "Open file", "", end)
         if filename:
-            name.setText(os.path.abspath(filename))
+            name.setText(os.path.relpath(filename))
+            name.setToolTip(os.path.abspath(filename))
 
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
     def init_load(self):
+        #Clear all
+        self.ui.chose_sourc_text.clear()
+        self.ui.chose_entry_link.clear()
+        self.ui.chose_sense_number.clear()
+        self.ui.chose_target_project.clear()
+        self.ui.chose_source_compex_types.clear()
+        self.ui.chose_source_compex_types.addItem("...")
+        self.ui.chose_infelction_first_element.clear()
+        self.ui.chose_infelction_second_element.clear()
+        self.ui.chose_target_morpheme_types.clear()
+        self.ui.chose_source_morpheme_types.clear()
+        self.ui.chose_source_discontiguous_compex.clear()
+        self.ui.chose_skipped_source_words.clear()
+        self.ui.category_abbreviation_one.clear()
+        self.ui.category_abbreviation_one.addItem("...")
+        self.ui.category_abbreviation_two.clear()
+        self.ui.category_abbreviation_two.addItem("...")
+        #load all
         i = 0
         for item in self.targetDB.ObjectsIn(ITextRepository):
             self.ui.chose_sourc_text.addItem(str(item))
@@ -137,7 +157,7 @@ class Main(QMainWindow):
             if item[1] == self.read('SourceCustomFieldForSenseNum'):
                 self.ui.chose_sense_number.setCurrentIndex(i)
             i += 1
-        i = 0
+        i = 0 #TODO Make this disable the other stuff that uses target??
         for item in GetProjectNames():
             self.ui.chose_target_project.addItem(item)
             if item == self.read('TargetProject'):
@@ -145,9 +165,13 @@ class Main(QMainWindow):
             i += 1
         #TODO: Some kind of safe file thing ??
         self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile'))
+        self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')))
         self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile'))
+        self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')))
         self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile'))
+        self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')))
         self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile'))
+        self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')))
         #From the Complex Form Types list
         i = 1
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
@@ -157,8 +181,11 @@ class Main(QMainWindow):
                     self.ui.chose_source_compex_types.setCurrentIndex(i)
             i += 1
         self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile'))
+        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')))
         self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile'))
+        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')))
         self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile'))
+        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')))
         #From the Complex Form Types list
         #TODO: how to make multiple select??
         array = []
@@ -218,11 +245,16 @@ class Main(QMainWindow):
                         self.ui.chose_skipped_source_words.check(string)
         if self.read('AnalyzedTextTreeTranOutputFile'):
             self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile'))
+            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')))
         if self.read('TreeTranInsertWordsFile'):
             self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile'))
+            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')))
         self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile'))
+        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')))
         self.ui.testbed_filename.setText(self.read('TestbedFile'))
+        self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')))
         self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile'))
+        self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')))
         #From the category abbreviation list.
         #TODO: be able to select more pairs??
         i = 1
@@ -244,12 +276,13 @@ class Main(QMainWindow):
         if self.read('CleanUpUnknownTargetWords') == 'y':
             self.ui.cleanup_yes.setChecked(True)
         self.ui.punctuation.setText(self.read('SentencePunctuation'))
+        self.ui.punctuation.setAlignment(Qt.AlignLeft) #TODO make this work
 
     def save(self):
         n='n'
         if self.ui.cleanup_yes.isChecked():
             n='y'
-        f = open("FlexTrans.config", "w")
+        f = open("FlexTrans.config", "w", encoding='utf-8')
         f.write("SourceTextName="+self.ui.chose_sourc_text.currentText()+"\n"+
                 "AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
@@ -279,6 +312,7 @@ class Main(QMainWindow):
                 "SentencePunctuation="+self.ui.punctuation.text()+"\n")
         f.close()
         pymsgbox.alert('Your file has been successfully saved.', 'Save successful')
+        self.init_load()
 
     def optional(self, string):
         write = ''
@@ -291,11 +325,10 @@ class Main(QMainWindow):
         if array:
             for text in array:
                 write += text + ","
-            write = write[:-1]
         return write
 
     def reset(self):
-        f = open("FlexTrans.config", "w")
+        f = open("FlexTrans.config", "w", encoding='utf-8')
         f.write("SourceTextName=Text1\n" +
                 "AnalyzedTextOutputFile=Output\\source_text.aper\n" +
                 "TargetOutputANAFile=Output\\myText.ana\n" +
@@ -304,10 +337,10 @@ class Main(QMainWindow):
                 "SourceComplexTypes=\n" +
                 "SourceCustomFieldForEntryLink=Target Equivalent\n" +
                 "SourceCustomFieldForSenseNum=Target Sense Number\n" +
-                "TargetAffixGlossListFile=Output\\target_affix_glosses.txt\n" +
                 "BilingualDictOutputFile=Output\\bilingual.dix\n" +
                 "BilingualDictReplacementFile=..\\replace.dix\n" +
-                "TargetProject=Swedish-FLExTrans-Sample\n" +
+                "TargetProject=German-FLExTrans-Sample\n" +
+                "TargetAffixGlossListFile=Output\\target_affix_glosses.txt\n" +
                 "TargetComplexFormsWithInflectionOn1stElement=\n" +
                 "TargetComplexFormsWithInflectionOn2ndElement=\n" +
                 "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n" +
@@ -324,6 +357,7 @@ class Main(QMainWindow):
                 "CleanUpUnknownTargetWords=n\n" +
                 "SentencePunctuation=.?;:!\"\'\n")
         f.close()
+        self.init_load()
 
 
 
@@ -351,7 +385,10 @@ def MainFunction(DB, report, modify=True):
     window = Main(configMap, report, TargetDB, DB)
 
     window.show()
+
     app.exec_()
+    if pymsgbox.confirm(text='Do you want to save before you leave?', title='Save?', buttons=['Yes', 'No']) == "Yes":
+        window.save()
 
 
 # ----------------------------------------------------------------
