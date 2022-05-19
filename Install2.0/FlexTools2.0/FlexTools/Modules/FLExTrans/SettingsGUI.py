@@ -54,6 +54,7 @@ class Main(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.config = "FlexTrans.config" #TODO "Config\\FlexTrans.config"
 
         #Buttons
         self.ui.apply_button.clicked.connect(self.save)
@@ -282,7 +283,7 @@ class Main(QMainWindow):
         n='n'
         if self.ui.cleanup_yes.isChecked():
             n='y'
-        f = open("FlexTrans.config", "w", encoding='utf-8')
+        f = open(self.config, "w", encoding='utf-8')
         f.write("SourceTextName="+self.ui.chose_sourc_text.currentText()+"\n"+
                 "AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
@@ -328,7 +329,7 @@ class Main(QMainWindow):
         return write
 
     def reset(self):
-        f = open("FlexTrans.config", "w", encoding='utf-8')
+        f = open(self.config, "w", encoding='utf-8') # TODO change here when new standard
         f.write("SourceTextName=Text1\n" +
                 "AnalyzedTextOutputFile=Output\\source_text.aper\n" +
                 "TargetOutputANAFile=Output\\myText.ana\n" +
