@@ -78,20 +78,23 @@ tags="xyz"
 ></section-def-attrs
 ><section-def-vars
 ><def-var
-n="v_var1"
+n="v_sample"
 ></def-var
 ></section-def-vars
 ><section-def-lists
 ><def-list
-n="l_list1"
+n="l_sample"
 ><list-item
-v="stuff"
+v="stuff1"
+></list-item
+><list-item
+v="stuff2"
 ></list-item
 ></def-list
 ></section-def-lists
 ><section-def-macros
 ><def-macro
-n="m_macro1"
+n="m_sample"
 npar="1"
 ><choose
 ><when
@@ -191,6 +194,192 @@ v="agr3"
 ></out
 ></otherwise
 ></choose
+><!--If X and Y output A--><choose
+><when
+><test
+><!--Use the and block to see if two conditions are true. You can add more equal blocks if desired.--><and
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="xyz"
+></lit-tag
+></equal
+></and
+></test
+><!--Whatever follows the test block will be done if the above --><!--condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If X or Y output A--><choose
+><when
+><test
+><!--Use the or block to see if two conditions are true. You can add more equal blocks if desired.--><or
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="xyz"
+></lit-tag
+></equal
+></or
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If not X output A--><choose
+><when
+><test
+><!--Use the not block to check if two things are not equal--><not
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+></not
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If with other things besides equals--><choose
+><when
+><test
+><and
+><begins-with
+><!--Use begins with if you just want to match the beginning of something, like in the case, the grammatical category--><clip
+part="a_gram_cat"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="x"
+></lit-tag
+></begins-with
+><ends-with
+><!--Use ends with if you just want to match the end of something, like in the case, the lemma. Remember all lemmas are going to end in X.X--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><lit
+v="ing1.1"
+></lit
+></ends-with
+><begins-with-list
+><!--Use begins with list if you want to match the beginning of the first thing. The text to match can be anything in the given list. The list is defined above.--><var
+n="v_sample"
+></var
+><list
+n="l_sample"
+></list
+></begins-with-list
+><ends-with-list
+><!--Use ends with list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><list
+n="l_sample"
+></list
+></ends-with-list
+><contains-substring
+><!--With contains substring you can check if the second listed string is somewhere in the first thing.--><var
+n="v_sample"
+></var
+><lit
+v="abc"
+></lit
+></contains-substring
+><in
+><!--Use in list to see if the first thing is one of the things in the given list.--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><list
+n="l_sample"
+></list
+></in
+></and
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
 ><!--Delete an affix from a lexical unit using a let element.--><let
 ><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
 part="a_sample"
@@ -270,6 +459,23 @@ v="pl"
 ></lit-tag
 ></lu
 ></out
+><!--Peform the steps in the macro defined above. Give zero, one or more 'with item' lines to have the macro operate on those input items. --><call-macro
+n="m_sample"
+><with-param
+pos="1"
+></with-param
+></call-macro
+><!--Change the case of the first thing (lemma) to match the case of the second thing. You could use a variable to have the lemma match the case of the variable.
+This following will capitalize the lemma. Using 'aa' will make it lowercase. 'AA' would make the lemma all uppercase.--><modify-case
+><clip
+part="lem"
+pos="1"
+side="tl"
+></clip
+><lit
+v="Aa"
+></lit
+></modify-case
 ></action
 ></rule
 ><rule
