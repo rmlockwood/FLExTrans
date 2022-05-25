@@ -7,26 +7,19 @@
 #
 
 import os
-import re
-import tempfile
 import sys
-import pymsgbox
 
 
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
-from SIL.LCModel.Core.Text import TsStringUtils
-from UIProjectChooser import ProjectChooser
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
 
 from Settings import Ui_MainWindow
-from ComboBox import CheckableComboBox
 from flexlibs.FLExProject import FLExProject, GetProjectNames
-import xml.etree.ElementTree as ET
 
 import Utils
 import ReadConfig
@@ -118,8 +111,8 @@ class Main(QMainWindow):
     def browse(self, name, end):
         filename, _ = QFileDialog.getOpenFileName(self, "Open file", "", end)
         if filename:
-            name.setText(os.path.relpath(filename))
-            name.setToolTip(os.path.abspath(filename))
+            name.setText(os.path.relpath(filename).replace(os.sep, '/'))
+            name.setToolTip(os.path.abspath(filename).replace(os.sep, '/'))
 
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
@@ -131,7 +124,6 @@ class Main(QMainWindow):
         self.ui.chose_sense_number.clear()
         self.ui.chose_target_project.clear()
         self.ui.chose_source_compex_types.clear()
-        self.ui.chose_source_compex_types.addItem("...")
         self.ui.chose_infelction_first_element.clear()
         self.ui.chose_infelction_second_element.clear()
         self.ui.chose_target_morpheme_types.clear()
@@ -143,14 +135,15 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_two.clear()
         self.ui.category_abbreviation_two.addItem("...")
         #load all
+        #TODO: Find the files in source?
         i = 0
-        for item in self.targetDB.ObjectsIn(ITextRepository):
+        for item in self.DB.ObjectsIn(ITextRepository):
             self.ui.chose_sourc_text.addItem(str(item))
             if str(item) == self.read('SourceTextName'):
                 self.ui.chose_sourc_text.setCurrentIndex(i)
             i += 1
         i = 0
-        for item in self.targetDB.LexiconGetSenseCustomFields():
+        for item in self.DB.LexiconGetSenseCustomFields():
             self.ui.chose_entry_link.addItem(str(item[1]))
             self.ui.chose_sense_number.addItem(str(item[1]))
             if item[1] == self.read('SourceCustomFieldForEntryLink'):
@@ -165,28 +158,30 @@ class Main(QMainWindow):
                 self.ui.chose_target_project.setCurrentIndex(i)
             i += 1
         #TODO: Some kind of safe file thing ??
-        self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile'))
-        self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')))
-        self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile'))
-        self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')))
-        self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile'))
-        self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')))
-        self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile'))
-        self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')))
-        #From the Complex Form Types list
-        i = 1
+        self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile').replace(os.sep, '/'))
+        self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
+        self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile').replace(os.sep, '/'))
+        self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
+        self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile').replace(os.sep, '/'))
+        self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
+        self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile').replace(os.sep, '/'))
+        self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
+        #From the Complex Form Types list TODO make multiple select
+        array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
-            self.ui.chose_source_compex_types.addItem(str(item))
+            array.append(str(item))
+        self.ui.chose_source_compex_types.addItems(array)
+        for string in array:
             if self.read('SourceComplexTypes'):
-                if str(item) == self.read('SourceComplexTypes'):
-                    self.ui.chose_source_compex_types.setCurrentIndex(i)
-            i += 1
-        self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile'))
-        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')))
-        self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile'))
-        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')))
-        self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile'))
-        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')))
+                for test in self.read('SourceComplexTypes'):
+                    if string == test:
+                        self.ui.chose_source_compex_types.check(string)
+        self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile').replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile').replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
+        self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile').replace(os.sep, '/'))
+        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
         #From the Complex Form Types list
         #TODO: how to make multiple select??
         array = []
@@ -245,17 +240,17 @@ class Main(QMainWindow):
                     if string == test:
                         self.ui.chose_skipped_source_words.check(string)
         if self.read('AnalyzedTextTreeTranOutputFile'):
-            self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile'))
-            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')))
+            self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile').replace(os.sep, '/'))
+            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')).replace(os.sep, '/'))
         if self.read('TreeTranInsertWordsFile'):
-            self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile'))
-            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')))
-        self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile'))
-        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')))
-        self.ui.testbed_filename.setText(self.read('TestbedFile'))
-        self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')))
-        self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile'))
-        self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')))
+            self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile').replace(os.sep, '/'))
+            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')).replace(os.sep, '/'))
+        self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile').replace(os.sep, '/'))
+        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')).replace(os.sep, '/'))
+        self.ui.testbed_filename.setText(self.read('TestbedFile').replace(os.sep, '/'))
+        self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')).replace(os.sep, '/'))
+        self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile').replace(os.sep, '/'))
+        self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
         #From the category abbreviation list.
         #TODO: be able to select more pairs??
         i = 1
@@ -312,8 +307,10 @@ class Main(QMainWindow):
                 "CleanUpUnknownTargetWords="+n+"\n"+
                 "SentencePunctuation="+self.ui.punctuation.text()+"\n")
         f.close()
-        pymsgbox.alert('Your file has been successfully saved.', 'Save successful')
-        self.init_load()
+        msgBox = QMessageBox()
+        msgBox.setText("Your file has been successfully saved.")
+        msgBox.setWindowTitle("Successful save")
+        msgBox.exec()
 
     def optional(self, string):
         write = ''
@@ -380,15 +377,26 @@ def MainFunction(DB, report, modify=True):
     except:
         raise
 
+    #sourceDB = FLExProject()
+    #try:
+        # Open the source database
+    #    sourceProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+    #     if not sourceProj:
+    #        return
+    #    sourceDB.OpenProject(sourceProj, False)
+    #except:
+    #    raise
+
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(configMap, report, TargetDB, DB)
+    window = Main(configMap, report, TargetDB, DB,) #sourceDB
 
     window.show()
 
     app.exec_()
-    if pymsgbox.confirm(text='Do you want to save before you leave?', title='Save?', buttons=['Yes', 'No']) == "Yes":
+    msgBox = QMessageBox()
+    if QMessageBox().question(msgBox, 'Save?', "Do you want to save before you leave?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
         window.save()
 
 
