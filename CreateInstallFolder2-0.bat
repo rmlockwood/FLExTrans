@@ -115,6 +115,11 @@ copy Light_green_check.png Install2.0\FlexTools2.0\FLExTools
 copy Red_x.png             Install2.0\FlexTools2.0\FLExTools             
 copy Yellow_triangle.png   Install2.0\FlexTools2.0\FLExTools    
 
+rem Settings tool
+copy SettingsGUI.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans
+copy Settings.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\Lib
+copy ComboBox.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\lib
+
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0\FLExTools\Modules\FLExTrans
 
