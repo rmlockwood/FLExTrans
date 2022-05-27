@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.8 - 5/19/22 - Ron Lockwood
+#    Close FLEx project and reopen on Rebuild Bilingual Lexicon button.
+#    This clears the cache in LCM and allows the rebuild function to use the
+#    latest FLEx data. Fixes #122.
+#
 #   Version 3.5.7 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -180,6 +185,7 @@ from System import String
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from flexlibs.FLExProject import FLExProject
 
 import os
 import re
@@ -532,6 +538,19 @@ class Main(QMainWindow):
     def RebuildBilingLexButtonClicked(self):
         
         self.setCursor(QtCore.Qt.WaitCursor)
+        
+        # Open the project fresh
+        projname = self.__DB.ProjectName()
+        
+        try:
+            # Delete the old project (i.e. close it)
+            del self.__DB
+            
+            # Open the database
+            self.__DB = FLExProject()
+            self.__DB.OpenProject(projname, writeEnabled=False)
+        except: 
+            raise
         
         # Extract the bilingual lexicon        
         error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
