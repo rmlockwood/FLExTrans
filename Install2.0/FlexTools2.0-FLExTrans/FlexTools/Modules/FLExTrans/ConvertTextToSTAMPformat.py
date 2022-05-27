@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5 - 5/13/22 - Ron Lockwood
+#    Keep checking for components even if the entry is a variant. Fixes #119.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -151,7 +154,7 @@ from flexlibs.FLExProject import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -622,8 +625,8 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                             
                                 comp_list.append(currANAInfo)
                             first_root = False
-                break
-        break
+                continue
+        continue
     
 def write_non_complex(myAnaInfo, irrInflVarMap, fAna):
     
