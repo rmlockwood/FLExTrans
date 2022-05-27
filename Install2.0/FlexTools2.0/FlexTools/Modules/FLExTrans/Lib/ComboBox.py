@@ -111,6 +111,7 @@ class CheckableComboBox(QComboBox):
         self.model().appendRow(item)
 
     def addItems(self, texts, datalist=None):
+        texts.sort()
         for i, text in enumerate(texts):
             try:
                 data = datalist[i]
