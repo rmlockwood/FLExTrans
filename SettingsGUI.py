@@ -19,6 +19,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
 
 from Settings import Ui_MainWindow
+from ComboBox import CheckableComboBox
 from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 import Utils
