@@ -74,7 +74,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
   Var /GLOBAL OUT_FOLDER
   Push "$Profile"
-  Push "Choose where to put you files"
+  Push "Choose where to put your files"
   Push "$Desktop"
   Call BrowseForFolder
   pop $0
