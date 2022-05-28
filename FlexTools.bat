@@ -6,7 +6,7 @@ REM or call FLExTools.py manually with the correct Python.exe.
 
 rem Edit FTPaths.py with the current work project
 cd Build
-%python3%\python SetWorkingProject.py
+python SetWorkingProject.py
 
 rem change flextools default and go to the flextools folder before running
 cd ..\..\..\FlexTools
