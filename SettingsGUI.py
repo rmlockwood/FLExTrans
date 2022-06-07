@@ -24,6 +24,7 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 
 import Utils
 import ReadConfig
+from FTPaths import CONFIG_PATH
 
 # ----------------------------------------------------------------
 # Documentation that the user sees:
@@ -48,7 +49,12 @@ class Main(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.config = "Config\\FlexTrans.config" #TODO "FlexTrans.config"
+        
+        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+        # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
+        myPath = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
+        
+        self.config = myPath
 
         #Buttons
         self.ui.apply_button.clicked.connect(self.save)
