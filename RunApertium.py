@@ -66,14 +66,13 @@ docs = {FTM_Name       : "Run Apertium",
 # The main processing function
 def MainFunction(DB, report, modify=True):
 
-    # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
-    
-    # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
-    Utils.stripRulesFile(report)
-    
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
 
+    # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+    Utils.stripRulesFile(report, buildFolder)
+    
+    # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
     ret = Utils.run_makefile(buildFolder, report)
     
     if ret:

@@ -1464,7 +1464,7 @@ def run_makefile(absPathToBuildFolder, report):
     cmd = [fullPathMake]
     return subprocess.call(cmd)
 
-def stripRulesFile(report):
+def stripRulesFile(report, buildFolder):
     
     configMap = MyReadConfig.readConfig(report)
     if not configMap:
@@ -1479,7 +1479,7 @@ def stripRulesFile(report):
     f.close()
     
     # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(os.path.dirname(tranferRulePath), STRIPPED_RULES) ,"w", encoding='utf-8')
+    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
     
     # Go through the existing rule file and write everything to the new file except Doctype stuff.
     for line in lines:
