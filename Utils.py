@@ -218,7 +218,7 @@ from System import String
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig 
 from FTPaths import CONFIG_PATH

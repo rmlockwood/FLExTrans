@@ -185,7 +185,7 @@ from System import String
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs.FLExProject import FLExProject
+from flexlibs import FLExProject
 
 import os
 import re
