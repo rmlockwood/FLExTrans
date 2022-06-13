@@ -45,7 +45,6 @@ rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0-FLExTrans\FlexTools\Modules
 copy stamp32.exe Install2.0\FlexTools2.0-FLExTrans\FlexTools
 copy Makefile Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
-copy fix.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
 copy FlexTools.vbs Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish
 copy source_text.txt Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Output
 
