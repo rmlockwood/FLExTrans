@@ -107,10 +107,10 @@ copy ComboBox.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\l
 copy SettingsGUI.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
 
 rem Apertium files
-copy Apertium4Windows\*.* Install2.0\FlexTools2.0-FLExTrans
+copy Apertium4Windows\*.* Install2.0\FlexTools2.0-FLExTrans\FLExTools
 
 rem Make for Windows files
-copy Make4Windows\*.* Install2.0\FlexTools2.0-FLExTrans
+copy Make4Windows\*.* Install2.0\FlexTools2.0-FLExTrans\FLExTools
 
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
