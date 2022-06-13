@@ -9,9 +9,9 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_VERSION "3.5"
 
-!define PRODUCT_ZIP_FILE "FLExTools20WithFLExTrans${PRODUCT_VERSION}.zip"
+!define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
-!define FLEX_TOOLS_WITH_VERSION "FlexTools2.0-FLExTrans"
+!define FLEX_TOOLS_WITH_VERSION "FLExTrans"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -69,7 +69,7 @@ InitPluginsDir
   endGitSync:
 
 
-  # Unzip FLExTools to documents folder $DOCUMENTS\FLExTools2.0
+  # Unzip FLExTrans to the desired folder
   # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
   File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
   Var /GLOBAL OUT_FOLDER
