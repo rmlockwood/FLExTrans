@@ -106,6 +106,12 @@ copy Settings.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\Lib
 copy ComboBox.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\lib
 copy SettingsGUI.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans
 
+rem Apertium files
+copy Apertium4Windows\* Install2.0\FlexTools2.0\FLExTools
+
+rem Make for Windows files
+copy Make4Windows\* Install2.0\FlexTools2.0\FLExTools
+
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
 copy SetWorkingProject.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
