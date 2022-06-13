@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.5.1 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   Version 3.5 - 4/2/22 - Ron Lockwood
 #    Added a search box to select target words from the list box. Fixes #106.
 #
@@ -117,7 +120,7 @@ from FTModuleClass import FlexToolsModuleClass
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig
 import Utils
@@ -144,7 +147,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -895,7 +898,7 @@ def MainFunction(DB, report, modify=True):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in GetProjectNames():
+    if targetProj not in AllProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
         return
 

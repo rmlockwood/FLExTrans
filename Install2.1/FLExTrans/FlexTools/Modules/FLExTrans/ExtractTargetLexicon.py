@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.1 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Added a parameter useCacheIfAvailable and default it to false so that the
 #    LiveRuleTester can force the rebuild of the lexicon files.  Fixes #56.
@@ -129,13 +132,13 @@ import Utils
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -575,7 +578,7 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         return error_list
     
     # See if the target project is a valid database name.
-    if targetProj not in GetProjectNames():
+    if targetProj not in AllProjectNames():
         error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
         return error_list
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.4 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   Version 3.5.3 - 6/13/22 - Ron Lockwood
 #    Run make file changes to support the Windows version of the Apertium tools. Fixes #143.
 #    This includes creating a batch file instead of a bash file and stripping out 
