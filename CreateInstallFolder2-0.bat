@@ -18,9 +18,9 @@ mkdir Install2.1\FLExTrans\WorkProjects\German-Swedish\Config
 mkdir Install2.1\FLExTrans\WorkProjects\German-Swedish\Config\Collections
 mkdir Install2.1\FLExTrans\WorkProjects\German-Swedish\Output
 
-xcopy FlexTools2.0\* Install2.1\FLExTrans 
-xcopy FlexTools2.0\FlexTools\* Install2.1\FLExTrans\FlexTools 
-xcopy /s FlexTools2.0\FlexTools\__icons\* Install2.1\FLExTrans\FlexTools\__icons
+xcopy FlexTools2.1\requirements.txt Install2.1\FLExTrans 
+xcopy FlexTools2.1\FlexTools\* Install2.1\FLExTrans\FlexTools 
+xcopy /s FlexTools2.1\FlexTools\__icons\* Install2.1\FLExTrans\FlexTools\__icons
 echo fuzzywuzzy >> Install2.1\FLExTrans\requirements.txt
 echo Levenshtein >> Install2.1\FLExTrans\requirements.txt
 echo PyQt5==5.14 >> Install2.1\FLExTrans\requirements.txt
