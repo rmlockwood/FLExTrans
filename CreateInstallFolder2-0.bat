@@ -102,15 +102,15 @@ copy ParatextChapSelectionDlg.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Mod
 copy ChapterSelection.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem Settings tool
-copy Settings.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\Lib
-copy ComboBox.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\lib
-copy SettingsGUI.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans
+copy Settings.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ComboBox.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\lib
+copy SettingsGUI.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
 
 rem Apertium files
-copy Apertium4Windows\* Install2.0\FlexTools2.0\FLExTools
+copy Apertium4Windows\*.* Install2.0\FlexTools2.0-FLExTrans
 
 rem Make for Windows files
-copy Make4Windows\* Install2.0\FlexTools2.0\FLExTools
+copy Make4Windows\*.* Install2.0\FlexTools2.0-FLExTrans
 
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans

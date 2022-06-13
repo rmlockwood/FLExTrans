@@ -1,9 +1,9 @@
 target_text.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
-	cat source_text.aper | apertium-transfer -t tr.t1x transfer_rules.t1x.bin bilingual.bin > target_text.aper 2>apertium_log.txt
+	${FLEXTOOLS_PATH}\apertium-transfer -t transfer_rules.t1x transfer_rules.t1x.bin bilingual.bin source_text.aper > target_text.aper 2>apertium_log.txt
 bilingual.bin: bilingual.dix
-	lt-comp lr bilingual.dix bilingual.bin
+	${FLEXTOOLS_PATH}\lt-comp lr bilingual.dix bilingual.bin
 transfer_rules.t1x.bin: transfer_rules.t1x
-	python3 fix.py transfer_rules.t1x tr.t1x
-	apertium-preprocess-transfer tr.t1x transfer_rules.t1x.bin
+	${FLEXTOOLS_PATH}\apertium-preprocess-transfer transfer_rules.t1x transfer_rules.t1x.bin
 clean:
-	rm -f target_text.aper bilingual.bin transfer_rules.t1x.bin
+	del target_text.aper bilingual.bin transfer_rules.t1x.bin
+	

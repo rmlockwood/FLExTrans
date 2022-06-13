@@ -3,6 +3,11 @@
 #
 #   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
 #
+#   Version 3.5.1 - 6/13/22 - Ron Lockwood
+#    Changes to support the Windows version of the Apertium tools. Fixes #143.
+#    Run a function called stripRulesFile to remove DocType from the transfer 
+#    rules file before applying aperitum tools.
+#
 #   Version 3.5 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -43,6 +48,7 @@
 #
 
 import Utils
+import ReadConfig
 import os
 from FTModuleClass import *
 from FTPaths import CONFIG_PATH
@@ -59,11 +65,15 @@ docs = {FTM_Name       : "Run Apertium",
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
-    
+
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
+    
+    # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+    Utils.stripRulesFile(report)
     
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+
     ret = Utils.run_makefile(buildFolder, report)
     
     if ret:

@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.3 - 6/13/22 - Ron Lockwood
+#    Run make file changes to support the Windows version of the Apertium tools. Fixes #143.
+#    This includes creating a batch file instead of a bash file and stripping out 
+#    the DocType info. from the rules file within code here instead of the old fix.py.
+#
 #   Version 3.5.2 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -215,14 +220,15 @@ from flexlibs.FLExProject import FLExProject, GetProjectNames
 import ReadConfig as MyReadConfig 
 from FTPaths import CONFIG_PATH
 
-MAKEFILE_RULES_VARIABLE = 'TRANSFER_RULE_PATH'
 MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
 MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
 MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
+MAKEFILE_FLEXTOOLS_VARIABLE = 'FLEXTOOLS_PATH'
 APERTIUM_ERROR_FILE = 'apertium_error.txt'
-DO_MAKE_SCRIPT_FILE = 'do_make_direct.sh'
+DO_MAKE_SCRIPT_FILE = 'do_make.bat'
 CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
 TESTBED_CACHE_FILE = 'testbed_cache.txt'
+STRIPPED_RULES = 'tr.t1x'
 
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
@@ -1375,21 +1381,18 @@ class FlexTransTestbedResultsFile():
     def write(self):
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
-def turnPathIntoEnvironPath(myPath):
+# Get relative path to the given build folder and file
+def turnPathIntoEnvironPath(absPathToBuildFolder, myPath):
     
     # See if we have an absolute path
     if os.path.isabs(myPath):
         
-        buildDir = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), BUILD_FOLDER)
-        
-        relPath = os.path.relpath(myPath, buildDir)
+        relPath = os.path.relpath(myPath, absPathToBuildFolder)
     
     # If it's not an absolute path, we assume it's relative to the work project subfolder (e.g. WorkProjects\German-Swedish)
     # So from doing the make from the Build folder, we need to add ..\ to all of the paths we get from the config file.
     else:
         relPath = os.path.join('..', myPath)
-        
-    relPath = re.sub(r'\\','/',relPath) # change to forward slashes
         
     return relPath
     
@@ -1403,78 +1406,91 @@ def run_makefile(absPathToBuildFolder, report):
     if not configMap:
         return True
 
-    # Get the path to the transfer rules file
-    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-
-    tranferRulePath = turnPathIntoEnvironPath(tranferRulePath)
-    
     # Get the path to the dictionary file
     dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not dictionaryPath:
         return True
     
-    dictionaryPath = turnPathIntoEnvironPath(dictionaryPath)
+    dictionaryPath = turnPathIntoEnvironPath(absPathToBuildFolder, dictionaryPath)
     
     # Get the path to the source apertium file
     analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
     if not analyzedPath:
         return True
     
-    analyzedPath = turnPathIntoEnvironPath(analyzedPath)
+    analyzedPath = turnPathIntoEnvironPath(absPathToBuildFolder, analyzedPath)
     
     # Get the path to the target apertium file
     transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
     if not transferResultsPath:
         return True
     
-    transferResultsPath = turnPathIntoEnvironPath(transferResultsPath)
-    
-    # Change path to bash based on the architecture
-    is32bit = (platform.architecture()[0] == '32bit')
-    system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if is32bit else 'System32')
-    bash = os.path.join(system32, 'bash.exe')
+    transferResultsPath = turnPathIntoEnvironPath(absPathToBuildFolder, transferResultsPath)
 
-    # Get the current working directory
-    cwd = os.getcwd()
-    cwd = re.sub(r'\\','/',cwd) # change to forward slashes
+    # Create the batch file which merely cds to the appropriate 
+    # directory and runs make. 
+    fullPathMake = os.path.join(absPathToBuildFolder, DO_MAKE_SCRIPT_FILE)
+    f = open(fullPathMake, 'w', encoding='utf-8')
     
-    (drive, tail) = os.path.splitdrive(absPathToBuildFolder) # split off drive letter
-    drive = re.sub(':','',drive) # remove colon
-    
-    # Build a unix path to the build folder
-    tail = re.sub(r'\\','/',tail) # change to forward slashes
-    cwdUnix = "/mnt/"+drive.lower()+tail
-    dir_path = cwdUnix
-    full_path = "'"+dir_path+f"/{DO_MAKE_SCRIPT_FILE}'"
-    
-    # Create the bash file which merely cds to the appropriate 
-    # directory and runs make. Open as a binary file so that
-    # we get unix line feeds not windows carriage return line feeds
-    f = open(absPathToBuildFolder+f'\\{DO_MAKE_SCRIPT_FILE}', 'wb')
-    outStr = '#!/bin/sh\n'
-    
-    # make a variable for where the transfer rules file should be found
-    # go up one level since the transfer rule path is relative to the FlexTools folder
-    outStr += f"export {MAKEFILE_RULES_VARIABLE}='{tranferRulePath}'\n" 
-
     # make a variable for where the bilingual dictionary file should be found
-    outStr += f"export {MAKEFILE_DICT_VARIABLE}='{dictionaryPath}'\n" 
+    outStr = f'set {MAKEFILE_DICT_VARIABLE}={dictionaryPath}\n' 
     
     # make a variable for where the analyzed text file should be found
-    outStr += f"export {MAKEFILE_SOURCE_VARIABLE}='{analyzedPath}'\n" 
+    outStr += f'set {MAKEFILE_SOURCE_VARIABLE}={analyzedPath}\n' 
     
     # make a variable for where the transfer results file should be found
-    outStr += f"export {MAKEFILE_TARGET_VARIABLE}='{transferResultsPath}'\n" 
+    outStr += f'set {MAKEFILE_TARGET_VARIABLE}={transferResultsPath}\n' 
     
-    outStr += f"cd '{dir_path}'\n"
-    outStr += f'make 2>{APERTIUM_ERROR_FILE}\n'
+    # Get the current working directory which should be the FlexTools folder
+    cwd = os.getcwd()
     
-    f.write(bytes(outStr, 'ascii'))
+    flexToolsPath = turnPathIntoEnvironPath(absPathToBuildFolder, cwd)
+
+    # make a variable for where the apertium executable files and dlls are found
+    outStr += f'set {MAKEFILE_FLEXTOOLS_VARIABLE}={flexToolsPath}\n' 
+    
+    # Put quotes around the path in case there's a space
+    outStr += f'cd "{absPathToBuildFolder}"\n'
+    
+    #fullPathErrFile = os.path.join(absPathToBuildFolder, APERTIUM_ERROR_FILE)
+    outStr += f'"{cwd}\\make" 2>"{APERTIUM_ERROR_FILE}"\n'
+    
+    f.write(outStr)
     f.close()
     
-    cmd = [bash, '-c', full_path]
+    cmd = [fullPathMake]
     return subprocess.call(cmd)
 
+def stripRulesFile(report):
+    
+    configMap = MyReadConfig.readConfig(report)
+    if not configMap:
+        return True
+
+    # Get the path to the transfer rules file
+    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
+    # Open the existing rule file and read all the lines
+    f = open(tranferRulePath ,"r", encoding='utf-8')
+    lines = f.readlines()
+    f.close()
+    
+    # Create a new file tr.t1x to be used by Apertium
+    f = open(os.path.join(os.path.dirname(tranferRulePath), STRIPPED_RULES) ,"w", encoding='utf-8')
+    
+    # Go through the existing rule file and write everything to the new file except Doctype stuff.
+    for line in lines:
+        strippedLine = line.strip()
+        if strippedLine != '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' and \
+               strippedLine != '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' and \
+               strippedLine != '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' and \
+               strippedLine != '"transfer.dtd">' and \
+               strippedLine != '"interchunk.dtd">' and \
+               strippedLine != '"postchunk.dtd">':
+            f.write(line)
+    f.close()
+    
+    
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
