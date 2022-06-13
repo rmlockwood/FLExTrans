@@ -77,7 +77,6 @@ copy LiveRuleTester.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExT
 copy UpArrow.png Install2.0\FlexTools2.0-FLExTrans\FLExTools
 copy DownArrow.png Install2.0\FlexTools2.0-FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
-copy fix.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans

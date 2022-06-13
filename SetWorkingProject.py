@@ -13,7 +13,7 @@
 #
 import os
 
-FTPATHS_FILE = '../../../FlexTools/FTPaths.py'
+FTPATHS_FILE = '..\\..\\..\\FlexTools\\FTPaths.py'
 COLLECTIONS_PATH_STR = 'COLLECTIONS_PATH'
 CONFIG_STR = 'CONFIG_PATH'
 FLEX_TOOLS_INI = '"flextools.ini"'
@@ -27,10 +27,10 @@ if __name__ == '__main__':
 	currFolder = os.getcwd()
 	
 	# Get the parent folder
-	parentFolder = os.path.dirname(currFolder).replace('\\','/')
+	parentFolder = os.path.dirname(currFolder)
 	
 	# Add the Config folder name to the path, after going up one level
-	localConfigFolder = parentFolder + '/' + LOCAL_CONFIG_PATH_STR
+	localConfigFolder = os.path.join(parentFolder, LOCAL_CONFIG_PATH_STR).replace('\\','\\\\')
 	
 	# Open the FTPaths.py file
 	f = open(FTPATHS_FILE, "r", encoding='utf-8')
