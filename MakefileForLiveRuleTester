@@ -1,8 +1,9 @@
-${BUILD_PATH}\target_text.aper: ${BUILD_PATH}\bilingual.bin ${BUILD_PATH}\transfer_rules.t1x.bin ${BUILD_PATH}\source_text.aper
-	apertium-transfer -t ${BUILD_PATH}\transfer_rules.t1x ${BUILD_PATH}\transfer_rules.t1x.bin ${BUILD_PATH}\bilingual.bin ${BUILD_PATH}\source_text.aper > ${BUILD_PATH}\target_text.aper 2>${BUILD_PATH}\apertium_log.txt
-${BUILD_PATH}\bilingual.bin: ${BUILD_PATH}\bilingual.dix
-	lt-comp lr ${BUILD_PATH}\bilingual.dix ${BUILD_PATH}\bilingual.bin
-${BUILD_PATH}\transfer_rules.t1x.bin: ${BUILD_PATH}\transfer_rules.t1x
-	apertium-preprocess-transfer ${BUILD_PATH}\transfer_rules.t1x ${BUILD_PATH}\transfer_rules.t1x.bin
+target_text.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
+	${FLEXTOOLS_PATH}\apertium-transfer -t transfer_rules.t1x transfer_rules.t1x.bin bilingual.bin source_text.aper > target_text.aper 2>apertium_log.txt
+bilingual.bin: bilingual.dix
+	${FLEXTOOLS_PATH}\lt-comp lr bilingual.dix bilingual.bin
+transfer_rules.t1x.bin: transfer_rules.t1x
+	${FLEXTOOLS_PATH}\apertium-preprocess-transfer transfer_rules.t1x transfer_rules.t1x.bin
 clean:
-	rm -f ${BUILD_PATH}\target_text.aper ${BUILD_PATH}\bilingual.bin ${BUILD_PATH}\transfer_rules.t1x.bin
+	del target_text.aper bilingual.bin transfer_rules.t1x.bin
+	
