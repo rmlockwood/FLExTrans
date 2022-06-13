@@ -2845,7 +2845,7 @@ def openTargetProject(configMap, report):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in GetProjectNames():
+    if targetProj not in AllProjectNames():
         if report:
             report.Error('The Target Database does not exist. Please check the configuration file.')
         return
