@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   28/3/2022
 #
+#   Version 3.5.1 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   To make it easier to change the configfile
 #
 
@@ -20,7 +23,7 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication,
 
 from Settings import Ui_MainWindow
 from ComboBox import CheckableComboBox
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
 
 import Utils
 import ReadConfig
@@ -30,15 +33,14 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "1.0",
+        FTM_Version: "3.5.1",
         FTM_ModifiesDB: False,
-        FTM_Synopsis: "Configuration settings",
+        FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
         FTM_Description:
             """
-            
+Change FLExTrans settings.            
             """}
-
 
 # ----------------------------------------------------------------
 # The main processing function
@@ -159,7 +161,7 @@ class Main(QMainWindow):
                 self.ui.chose_sense_number.setCurrentIndex(i)
             i += 1
         i = 0 #TODO Make this disable the other stuff that uses target??
-        for item in GetProjectNames():
+        for item in AllProjectNames():
             self.ui.chose_target_project.addItem(item)
             if item == self.read('TargetProject'):
                 self.ui.chose_target_project.setCurrentIndex(i)

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.5.3 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   Version 3.5.2 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -23,7 +26,8 @@ from FTModuleClass import *
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.Core.Text import TsStringUtils
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
+
 import ReadConfig
 import Utils
 import ChapterSelection
@@ -49,7 +53,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",

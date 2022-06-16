@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.4 - 6/13/22 - Ron Lockwood
+#    import change for flexlibs for FlexTools2.1
+#
 #   Version 3.5.3 - 6/13/22 - Ron Lockwood
 #    Run make file changes to support the Windows version of the Apertium tools. Fixes #143.
 #    This includes creating a batch file instead of a bash file and stripping out 
@@ -215,7 +218,7 @@ from System import String
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from SIL.LCModel.DomainServices import SegmentServices
-from flexlibs.FLExProject import FLExProject, GetProjectNames
+from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig 
 from FTPaths import CONFIG_PATH
@@ -2842,7 +2845,7 @@ def openTargetProject(configMap, report):
         return
     
     # See if the target project is a valid database name.
-    if targetProj not in GetProjectNames():
+    if targetProj not in AllProjectNames():
         if report:
             report.Error('The Target Database does not exist. Please check the configuration file.')
         return

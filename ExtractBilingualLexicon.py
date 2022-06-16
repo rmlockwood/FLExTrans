@@ -178,8 +178,6 @@ import Utils
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs.FLExProject import FLExProject, GetProjectNames
-
 
 DONT_CACHE = False
 
