@@ -103,6 +103,11 @@ copy ExportToParatext.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLE
 copy ParatextChapSelectionDlg.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy ChapterSelection.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
+rem Settings tool
+copy Settings.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\Lib
+copy ComboBox.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\lib
+copy SettingsGUI.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans
+
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
 copy SetWorkingProject.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
