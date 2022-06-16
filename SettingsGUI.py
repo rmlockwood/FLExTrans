@@ -65,7 +65,6 @@ class Main(QMainWindow):
         self.ui.testbed_button.clicked.connect(self.open_testbed)
         self.ui.testbed_result_button.clicked.connect(self.open_testbed_result)
         self.ui.reset_button.clicked.connect(self.reset)
-
         self.report = report
         self.configMap = configMap
         self.targetDB = targetDB
@@ -342,8 +341,8 @@ class Main(QMainWindow):
                 "TargetAffixGlossListFile=Build\\target_affix_glosses.txt\n" +
                 "TargetComplexFormsWithInflectionOn1stElement=\n" +
                 "TargetComplexFormsWithInflectionOn2ndElement=\n" +
-                "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n" +
-                "SourceMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase\n" +
+                "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
+                "SourceMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
                 "SourceDiscontigousComplexTypes=\n" +
                 "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories=\n" +
                 "AnalyzedTextTreeTranOutputFile=\n" +
@@ -377,16 +376,6 @@ def MainFunction(DB, report, modify=True):
         TargetDB.OpenProject(targetProj, False)
     except:
         raise
-
-    #sourceDB = FLExProject()
-    #try:
-        # Open the source database
-    #    sourceProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
-    #     if not sourceProj:
-    #        return
-    #    sourceDB.OpenProject(sourceProj, False)
-    #except:
-    #    raise
 
     # Show the window
     app = QApplication(sys.argv)
