@@ -45,7 +45,6 @@ rem other stuff
 copy /Y subdirs.pth Install2.0\FlexTools2.0-FLExTrans\FlexTools\Modules
 copy stamp32.exe Install2.0\FlexTools2.0-FLExTrans\FlexTools
 copy Makefile Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
-copy fix.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build
 copy FlexTools.vbs Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish
 copy source_text.txt Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Output
 
@@ -77,7 +76,6 @@ copy LiveRuleTester.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExT
 copy UpArrow.png Install2.0\FlexTools2.0-FLExTrans\FLExTools
 copy DownArrow.png Install2.0\FlexTools2.0-FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
-copy fix.py Install2.0\FlexTools2.0-FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
@@ -104,9 +102,15 @@ copy ParatextChapSelectionDlg.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Mod
 copy ChapterSelection.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem Settings tool
-copy Settings.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\Lib
-copy ComboBox.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans\lib
-copy SettingsGUI.py Install2.0\FlexTools2.0\FLExTools\Moduels\FLExTrans
+copy Settings.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ComboBox.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans\lib
+copy SettingsGUI.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
+
+rem Apertium files
+copy Apertium4Windows\*.* Install2.0\FlexTools2.0-FLExTrans\FLExTools
+
+rem Make for Windows files
+copy Make4Windows\*.* Install2.0\FlexTools2.0-FLExTrans\FLExTools
 
 rem Other Tools
 copy CleanFiles.py Install2.0\FlexTools2.0-FLExTrans\FLExTools\Modules\FLExTrans
