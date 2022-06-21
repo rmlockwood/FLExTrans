@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.5 - 6/21/22 - Ron Lockwood
+#    Bump version number for FlexTools 3.5
+#
 #   Version 3.4.1 - 3/17/22 - Ron Lockwood
 #    Allow for a user configurable Testbed location. Issue #70.
 #
@@ -81,7 +84,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
