@@ -1,7 +1,9 @@
 #
 #   RunApertium
 #
-#   Runs the makefile that calls Apertium using the Windows Subsystem for Linux (WSL)
+#   Ron Lockwood
+#   SIL International
+#   1/1/17
 #
 #   Version 3.5.1 - 6/13/22 - Ron Lockwood
 #    Changes to support the Windows version of the Apertium tools. Fixes #143.
@@ -45,6 +47,7 @@
 #   Version 1.0 10/10/2017 - Marc Penner
 #      Extracted call to run Apertium commands
 #
+#   Runs the makefile that calls Apertium 
 #
 
 import Utils

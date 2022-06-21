@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.5 - 6/21/22 - Ron Lockwood
+#    Bump version number for FlexTools 3.5
+#
 #   Version 3.4.1 - 3/17/22 - Ron Lockwood
 #    Allow for a user configurable Testbed location. Issue #70.
 #
@@ -44,7 +47,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "End Testbed",
-        FTM_Version    : "3.4.1",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Conclude a testbed log result.",
         FTM_Help   : "",
