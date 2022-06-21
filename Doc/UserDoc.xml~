@@ -264,9 +264,21 @@ id="sPrepSteps"
 ><li
 >Create a new folder for your language pair.<ol
 ><li
->In File Explorer, go to the WorkProjects subfolder in the install folder (typically Documents\FlexTools2.0-FLExTrans).</li
+>In File Explorer, go to the <object
+type="tFoldername"
+>WorkProjects</object
+> subfolder of the installation folder (typically <object
+type="tFoldername"
+>Documents\FlexTools2.0-FLExTrans</object
+>).</li
 ><li
->Copy the German-Swedish folder and Paste it where it is. You should see a new folder called German-Swedish - Copy</li
+>Copy the <object
+type="tFoldername"
+>German-Swedish</object
+> folder and Paste it where it is. You should see a new folder called <object
+type="tFoldername"
+>German-Swedish - Copy</object
+></li
 ><li
 >Rename this folder to the language pair you will work with.</li
 ></ol
@@ -373,13 +385,48 @@ type="tFlexx"
 ><li
 >Change the settings for your new project.<ol
 ><li
->Click the Collections button</li
+>Click on the <img
+cssSpecial="Width:5%"
+src="Images/CollectionsBut.PNG"
+></img
+> button which will bring up a list of collections as shown in <exampleRef
+letter="xLinkerInCollections"
+num="xLinkerInCollections"
+></exampleRef
+>.<example
+num="xLinkerInCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
 ><li
->Select Tools</li
+>Double-click on <object
+type="tCollection"
+>FLExTrans Tools</object
+> in the list and you’ll see this:<example
+num="xToolsCollection"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial="Height:60%"
+src="Images/ToolsCollection.png"
+></img
+></chart
+></example
+></li
 ><li
->Select the FLExTrans.Settings module</li
+>Select the FLExTrans.Settings module.</li
 ><li
->Click the Run button</li
+>Click the <img
+cssSpecial="Width:5%"
+src="Images/RunBut.png"
+></img
+> button.</li
 ><li
 >Change these two values:<table
 border="1"
@@ -398,7 +445,7 @@ type="tCourier"
 ><td
 ><object
 type="tItalic"
->The title of the text you want to translate (from the source </object
+>The title of the text you want to translate (from the lists of texts in the source </object
 ><object
 type="tFlexx"
 ></object
@@ -445,32 +492,12 @@ src="Images/CollectionsBut.PNG"
 letter="xLinkerInCollections"
 num="xLinkerInCollections"
 ></exampleRef
->.<example
-num="xLinkerInCollections"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
-src="Images/LinkerInCollections.png"
-></img
-></chart
-></example
-></li
+>.</li
 ><li
 >Double-click on <object
 type="tCollection"
 >FLExTrans Tools</object
-> in the list and you’ll see this:<example
-num="xToolsCollection"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
-src="Images/ToolsCollection.png"
-></img
-></chart
-></example
-></li
+> in the list and you’ll see list of Tools modules:</li
 ><li
 >Click on <object
 type="tCollection"
@@ -549,7 +576,7 @@ id="sWriteRules"
 >In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category. We’ll modify an existing rule to do this.</p
 ><ol
 ><li
->Navigate to your installation folder.</li
+>Navigate to your work project folder.</li
 ><li
 >Open the file <object
 type="tFilename"
@@ -1662,15 +1689,32 @@ type="tFlexx"
 ></object
 > projects,</li
 ><li
->We will be writing new transfer rules so let’s rename the current rule file.<ol
+>Create a new folder for your language pair.<ol
 ><li
->Go to the top-level folder and rename the file <object
-type="tFilename"
->transfer_rules.t1x</object
-> to <object
-type="tFilename"
->transfer_rules_saved.t1x</object
+>In File Explorer, go to the <object
+type="tFoldername"
+>WorkProjects</object
+> subfolder of the installation folder (typically <object
+type="tFoldername"
+>Documents\FlexTools2.0-FLExTrans</object
+>).</li
+><li
+>Copy the <object
+type="tFoldername"
+>German-Swedish</object
+> folder and Paste it where it is. You should see a new folder called <object
+type="tFoldername"
+>German-Swedish - Copy</object
+></li
+><li
+>Rename this folder to <object
+type="tFoldername"
+>Croatian-English</object
 >.</li
+></ol
+></li
+><li
+>We will be writing new transfer rules so let’s start from scratch.<ol
 ><li
 >Go to the <object
 type="tFoldername"
@@ -1678,7 +1722,10 @@ type="tFoldername"
 > folder again and copy the file <object
 type="tFilename"
 >transfer_rules.t1x</object
-> to the top-level folder.</li
+> to <object
+type="tFoldername"
+>German-Swedish</object
+> folder.</li
 ><li
 >Open <object
 type="tFilename"
@@ -1690,23 +1737,20 @@ type="tXMLmindXMLEditor"
 ></ol
 ></li
 ><li
->We will be changing the configuration file so let’s rename the current one.<ol
-><li
->Go to the top-level folder and rename the file <object
-type="tFilename"
->FlexTrans.config</object
-> to <object
-type="tFilename"
->FlexTrans_saved.config</object
->.</li
+>Let's change the configuration file.<ol
 ><li
 >Go to the <object
 type="tFoldername"
 >FLExTrans Documentation\Transfer Rules Tutorial</object
-> folder again and copy the file <object
+> folder again.</li
+><li
+>Copy the file <object
 type="tFilename"
 >FlexTrans.config</object
-> to the top-level folder.</li
+> to the <object
+type="tFoldername"
+>German-Swedish\Config</object
+> folder.</li
 ></ol
 ></li
 ><li
@@ -1811,7 +1855,7 @@ type="tFilename"
 >source_text.aper</object
 > in the <object
 type="tFoldername"
->Output</object
+>project</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -1919,7 +1963,7 @@ type="tFilename"
 >target_text.aper</object
 > in the <object
 type="tFoldername"
->Output</object
+>project</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -3859,7 +3903,7 @@ type="tTool"
 >Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <object
 type="tFilename"
 >testbed.xml</object
-> which is in the top-level folder in the <object
+> which is in the project folder in the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</li
@@ -3969,7 +4013,7 @@ type="tLiveRuleTester"
 >. If you need to edit or delete a test, edit the file <object
 type="tFilename"
 >testbed.xml</object
-> in the top-level folder with the <object
+> in the project folder with the <object
 type="tXMLmindXMLEditor"
 ></object
 >.</p
@@ -4411,7 +4455,7 @@ type="tFilename"
 >bilingual.dix</object
 > in the <object
 type="tFoldername"
->FlexTools\Output</object
+>Output</object
 > folder. An example portion of a bilingual lexicon is shown in <exampleRef
 letter="xBilingEntries0"
 num="xBilingEntries0"
@@ -4434,7 +4478,7 @@ id="sRepl"
 >You can handle this by using the <object
 type="tFilename"
 >replace.dix</object
-> file to add additional mappings to the bilingual lexicon. This file is your install folder.</p
+> file to add additional mappings to the bilingual lexicon. This file is your project folder.</p
 ><p
 >The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon. That's the way <object
 type="tFlextrans"
@@ -4448,7 +4492,7 @@ type="tFilename"
 >bilingual.dix</object
 > in the <object
 type="tFoldername"
->FlexTools\Output</object
+>Output</object
 > folder. Both the <object
 type="tFilename"
 >replace.dix</object
@@ -4471,7 +4515,7 @@ src="Images/BilingalEntries2.PNG"
 >In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
 type="tFilename"
 >replace.dix</object
-> in the install folder, you will see something like <exampleRef
+> in the project folder, you will see something like <exampleRef
 letter="xReplacement"
 num="xReplacement"
 ></exampleRef
@@ -4653,7 +4697,7 @@ type="tFlexxTools"
 ><li
 >Navigate to the installation folder (typically <object
 type="tFilename"
->Documents\FlexTools2.0\WorkProjects\[YourProject]</object
+>Documents\FlexTools2.0-FLExTrans\WorkProjects\[YourProject]</object
 >).</li
 ><li
 >Double-click on the file <object

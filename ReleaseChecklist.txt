@@ -1,0 +1,22 @@
+Do these things when making a new release
+-Finish code changes and commit
+-Edit createInstallFolder2.0.bat and set the version # at the top.
+-Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
+-Run createInstallFolder2.0.bat to rebuild zip files
+-Do another commit that has the install changes
+-Finish merging all pull requests
+-Fetch changes to the local master branch (IMPORTANT so that latest install file scripts get downloaded)
+-Rebuild the install executable
+-Test the install
+-Make a new .download_info file changing the relevant data. 3 changes.
+-Make a new post on the website for announcing the new release.
+-Upload the new FLExTransX.X.exe file and the .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+-Create the release in Git with the new version string. 
+ -Go to tags, switch to Releases
+ -Click draft new release
+ -Fill out Title
+ -Auto-generate release notes.
+ -Edit release notes.
+-(Update release notes page on the website)
+-update the previous versions page?
+-announce the new release on the FLEx list
