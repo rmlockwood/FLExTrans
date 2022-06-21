@@ -3,6 +3,12 @@
 #   Lærke Roager Christensen
 #   28/3/2022
 #
+#   Version 3.5.2 - 6/21/22 - Ron Lockwood
+#    Fixes for #141 and #144. Alphabetize source text list. Correctly load
+#    and save source complex types. Also change double loop code for multiple
+#    select settings to use x in y instead of the outer loop. This is easier to
+#    understand and is maybe more efficient.
+#
 #   Version 3.5.1 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
@@ -33,7 +39,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.1",
+        FTM_Version: "3.5.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -144,10 +150,16 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_two.addItem("...")
         #load all
         #TODO: Find the files in source?
-        i = 0
+        source_list = []
         for item in self.DB.ObjectsIn(ITextRepository):
-            self.ui.chose_sourc_text.addItem(str(item))
-            if str(item) == self.read('SourceTextName'):
+            source_list.append(str(item).strip())
+        sorted_source_list = sorted(source_list, key=str.casefold)
+        
+        i = 0
+        config_source = self.read('SourceTextName')
+        for item_str in sorted_source_list:
+            self.ui.chose_sourc_text.addItem(item_str)
+            if item_str == config_source:
                 self.ui.chose_sourc_text.setCurrentIndex(i)
             i += 1
         i = 0
@@ -179,11 +191,10 @@ class Main(QMainWindow):
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
         self.ui.chose_source_compex_types.addItems(array)
-        for string in array:
-            if self.read('SourceComplexTypes'):
-                for test in self.read('SourceComplexTypes'):
-                    if string == test:
-                        self.ui.chose_source_compex_types.check(string)
+        if self.read('SourceComplexTypes'):
+            for test in self.read('SourceComplexTypes'):
+                if test in array:
+                    self.ui.chose_source_compex_types.check(test)
         self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile').replace(os.sep, '/'))
         self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
         self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile').replace(os.sep, '/'))
@@ -197,44 +208,40 @@ class Main(QMainWindow):
             array.append(str(item))
         self.ui.chose_infelction_first_element.addItems(array)
         self.ui.chose_infelction_second_element.addItems(array)
-        for string in array:
-            if self.read('TargetComplexFormsWithInflectionOn1stElement'):
-                for test in self.read('TargetComplexFormsWithInflectionOn1stElement'):
-                    if string == test:
-                        self.ui.chose_infelction_first_element.check(string)
-            if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-                for test in self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-                    if string == test:
-                        self.ui.chose_infelction_second_element.check(string)
+        if self.read('TargetComplexFormsWithInflectionOn1stElement'):
+            for test in self.read('TargetComplexFormsWithInflectionOn1stElement'):
+                if test in array:
+                    self.ui.chose_infelction_first_element.check(test)
+        if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+            for test in self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+                if test in array:
+                    self.ui.chose_infelction_second_element.check(test)
         #From the Morpheme Types list
         #TODO: select multiple
         array = []
         for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
             array.append(str(item).strip("-=~*"))
         self.ui.chose_target_morpheme_types.addItems(array)
-        for string in array:
-            for test in self.read('TargetMorphNamesCountedAsRoots'):
-                if string == test:
-                    self.ui.chose_target_morpheme_types.check(string)
+        for test in self.read('TargetMorphNamesCountedAsRoots'):
+            if test in array:
+                self.ui.chose_target_morpheme_types.check(test)
         array = []
         for item in self.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
             array.append(str(item).strip("-=~*"))
         self.ui.chose_source_morpheme_types.addItems(array)
-        for string in array:
-            for test in self.read('SourceMorphNamesCountedAsRoots'):
-                if string == test:
-                    self.ui.chose_source_morpheme_types.check(string)
+        for test in self.read('SourceMorphNamesCountedAsRoots'):
+            if test in array:
+                self.ui.chose_source_morpheme_types.check(test)
         #From the Complex Form Types list.
         #TODO: Mulitiple select
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
         self.ui.chose_source_discontiguous_compex.addItems(array)
-        for string in array:
-            if self.read('SourceDiscontigousComplexTypes'):
-                for test in self.read('SourceDiscontigousComplexTypes'):
-                    if string == test:
-                        self.ui.chose_source_discontiguous_compex.check(string)
+        if self.read('SourceDiscontigousComplexTypes'):
+            for test in self.read('SourceDiscontigousComplexTypes'):
+                if test in array:
+                    self.ui.chose_source_discontiguous_compex.check(test)
         #From the category abbreviation list.
         #TODO: make multiple select
         array = []
@@ -242,11 +249,10 @@ class Main(QMainWindow):
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             array.append(posAbbrStr)
         self.ui.chose_skipped_source_words.addItems(array)
-        for string in array:
-            if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-                for test in self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-                    if string == test:
-                        self.ui.chose_skipped_source_words.check(string)
+        if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+            for test in self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+                if test in array:
+                    self.ui.chose_skipped_source_words.check(test)
         if self.read('AnalyzedTextTreeTranOutputFile'):
             self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile').replace(os.sep, '/'))
             self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')).replace(os.sep, '/'))
@@ -292,7 +298,7 @@ class Main(QMainWindow):
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
                 "TargetOutputSynthesisFile="+self.ui.output_syn_filename.text()+"\n"+
                 "TargetTranferResultsFile="+self.ui.transfer_result_filename.text()+"\n"+
-                "SourceComplexTypes="+self.optional(self.ui.chose_source_compex_types)+"\n"+
+                "SourceComplexTypes="+self.optional_mul(self.ui.chose_source_compex_types.currentData())+"\n"+
                 "SourceCustomFieldForEntryLink="+self.ui.chose_entry_link.currentText()+"\n"+
                 "SourceCustomFieldForSenseNum="+self.ui.chose_sense_number.currentText()+"\n"+
                 "TargetAffixGlossListFile="+self.ui.taget_affix_gloss_list_filename.text()+"\n"+
@@ -372,6 +378,7 @@ def MainFunction(DB, report, modify=True):
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
+        report.error('Error reading configuration file.')
         return
 
     TargetDB = FLExProject()
