@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.5 - 6/21/22 - Ron Lockwood
+#    Bump version number for FlexTools 3.5
+#
 #   Version 3.4.1 - 3/22/22 - Ron Lockwood
 #    Fixed bug #99. Give an error if the file isn't in the format that XXE
 #    makes the xml file. Otherwise it's hard to find the right section of the
@@ -57,7 +60,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : "3.4",
+        FTM_Version    : "3.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",
