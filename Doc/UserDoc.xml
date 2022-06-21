@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->9 May, 2022</date
+>21 June, 2022</date
 ><version
 >FLExTrans 3.5</version
 ><contents
@@ -269,7 +269,7 @@ type="tFoldername"
 >WorkProjects</object
 > subfolder of the installation folder (typically <object
 type="tFoldername"
->Documents\FlexTools2.0-FLExTrans</object
+>Documents\FLExTrans</object
 >).</li
 ><li
 >Copy the <object
@@ -1696,7 +1696,7 @@ type="tFoldername"
 >WorkProjects</object
 > subfolder of the installation folder (typically <object
 type="tFoldername"
->Documents\FlexTools2.0-FLExTrans</object
+>Documents\FLExTrans</object
 >).</li
 ><li
 >Copy the <object
@@ -4697,7 +4697,7 @@ type="tFlexxTools"
 ><li
 >Navigate to the installation folder (typically <object
 type="tFilename"
->Documents\FlexTools2.0-FLExTrans\WorkProjects\[YourProject]</object
+>Documents\FLExTrans\WorkProjects\[YourProject]</object
 >).</li
 ><li
 >Double-click on the file <object
