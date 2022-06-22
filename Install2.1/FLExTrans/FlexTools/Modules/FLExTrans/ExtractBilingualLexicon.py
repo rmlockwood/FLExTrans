@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.1 - 6/22/22 - Ron Lockwood
+#    Change in FlexTools 2.1 means that an empty string gets returned now from
+#    a custom field that has nothing in it. Before it was None. Fixes #156
+#
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Put the code that does the main work into its own function so it can be
 #    called by the Live Rule Tester. This means that a possible null report 
@@ -179,7 +183,7 @@ from FTModuleClass import *
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
-DONT_CACHE = False
+DONT_CACHE = True
 
 DICTIONARY = 'dictionary'
 REPLDICTIONARY = 'repldictionary'
@@ -188,7 +192,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -740,7 +744,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                       
                             # If we have a link to a target entry, process it
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-                            if equiv != None:
+                            if equiv:
                                 
                                 # Parse the link to get the guid
                                 u = equiv.index('guid')
@@ -767,16 +771,17 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                         targetHeadWord += '1'
                                     
                                     # An empty sense number means default to sense 1
-                                    senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField)
-                                    if senseNum == None:
+                                    senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField).strip()
+                                    if not senseNum:
                                         trgtSense = 1
                                     elif is_number(senseNum):
                                         trgtSense = int(senseNum)
                                     else:
-                                        error_list.append(('Sense number: '+trgtSense+\
+                                        error_list.append(('Sense number: '+senseNum+\
                                                        ' is not valid for target headword: '+\
                                                        ITsString(targetEntry.HeadWord).Text+\
                                                        ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                        continue
                                     
                                     # Make sure that sense number is valid    
                                     if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:

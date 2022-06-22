@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.1 - 6/22/22 - Ron Lockwood
+#    Error message fix.
+#
 #   Version 3.5 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -84,7 +87,7 @@ def readConfig(report):
         f_handle = open(myPath, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
+            report.Error('Error reading the file: "' + os.path.dirname(CONFIG_PATH)+ '/' + CONFIG_FILE + '". Check that it exists.')
         return None
 
     my_map = {}
