@@ -14,9 +14,9 @@ Do these things when making a new release
 -Create the release in Git with the new version string. 
  -Go to tags, switch to Releases
  -Click draft new release
- -Fill out Title
+ -Fill out Title (e.g. 3.5 - xyz)
  -Auto-generate release notes.
+ -Publish
  -Edit release notes.
--(Update release notes page on the website)
--update the previous versions page?
+-Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
 -announce the new release on the FLEx list

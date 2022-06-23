@@ -301,13 +301,16 @@ type="tFlexx"
 >Custom Field Name: Target Equivalent<endnote
 id="nCustomFieldNames"
 ><p
->You may choose different names for the custom fields, but you also have to update the configuration file to match these names. The names <object
+>You may choose different names for the custom fields, but you also have to update the <object
+type="tFlextrans"
+></object
+> settings to match these names. The names <object
 type="tBold"
 >Target Equivalent</object
 > and <object
 type="tBold"
 >Target Sense Number</object
-> are already set in the configuration file that gets installed with <object
+> are already set in the settings that get installed with <object
 type="tFlextrans"
 ></object
 >.</p
@@ -834,7 +837,7 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >: <comment
@@ -977,12 +980,15 @@ id="sTesterOther"
 ><secTitle
 >Other Parts of the Tool</secTitle
 ><p
->By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration file. The transfer rules file and the bilingual lexicon file can be changed if desired by clicking the corresponding <object
-type="tButton"
->Browse</object
-> buttons.</p
+>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
+type="tFlextrans"
+></object
+> settings. </p
 ><p
->In this version of the tool, you can’t change the Source Text Name. You will have to edit the configuration file, change the SourceTextName value and re-run the tool.</p
+>In this version of the tool, you can’t change the Source Text Name. You will have to run the <object
+type="tModule"
+>Settings Tool</object
+>, change the SourceText Name value and re-run the tool.</p
 ><p
 >You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
@@ -1737,7 +1743,7 @@ type="tXMLmindXMLEditor"
 ></ol
 ></li
 ><li
->Let's change the configuration file.<ol
+>Let's set up the configuration file.<ol
 ><li
 >Go to the <object
 type="tFoldername"
@@ -4643,7 +4649,10 @@ type="tFilename"
 > in the <object
 type="tFoldername"
 >Doc\Irregular Form</object
-> folder. Note: be sure to set the SourceTextName property in the configuration file to “Text2”.</p
+> folder. Note: be sure to set the Source Text Name property in the <object
+type="tFlextrans"
+></object
+> settings to “Text2”.</p
 ></section3
 ></section2
 ></section1
