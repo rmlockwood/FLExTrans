@@ -277,7 +277,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Settings"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Settings"))
         self.source_discountiguous_complex.setText(_translate("MainWindow", "Source Discontiguous Complex Form Types"))
         self.cleanup_yes.setText(_translate("MainWindow", "Yes"))
         self.transfer_rules_button.setText(_translate("MainWindow", "Browse file..."))

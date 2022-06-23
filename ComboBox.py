@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate
+from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate, QApplication
 from PyQt5.QtGui import QPalette, QStandardItem, QFontMetrics
 from PyQt5.QtCore import QEvent, Qt
 
@@ -19,9 +19,9 @@ class CheckableComboBox(QComboBox):
         self.setEditable(True)
         self.lineEdit().setReadOnly(True)
         # Make the lineedit the same color as QPushButton
-        #palette = qApp.palette()
-        #palette.setBrush(QPalette.Base, palette.button())
-        #self.lineEdit().setPalette(palette)
+        palette = QApplication.palette()
+        palette.setBrush(QPalette.Base, palette.button())
+        self.lineEdit().setPalette(palette)
 
         # Use custom delegate
         self.setItemDelegate(CheckableComboBox.Delegate())

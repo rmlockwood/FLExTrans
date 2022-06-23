@@ -149,7 +149,6 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_two.clear()
         self.ui.category_abbreviation_two.addItem("...")
         #load all
-        #TODO: Find the files in source?
         source_list = []
         for item in self.DB.ObjectsIn(ITextRepository):
             source_list.append(str(item).strip())
@@ -178,15 +177,15 @@ class Main(QMainWindow):
                 self.ui.chose_target_project.setCurrentIndex(i)
             i += 1
         #TODO: Some kind of safe file thing ??
-        self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile').replace(os.sep, '/'))
+        self.ui.output_filename.setText(os.path.relpath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
         self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
-        self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile').replace(os.sep, '/'))
+        self.ui.output_ANA_filename.setText(os.path.relpath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
         self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
-        self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile').replace(os.sep, '/'))
+        self.ui.output_syn_filename.setText(os.path.relpath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
         self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
-        self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile').replace(os.sep, '/'))
+        self.ui.transfer_result_filename.setText(os.path.relpath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
         self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
-        #From the Complex Form Types list TODO make multiple select
+        #From the Complex Form Types list
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
@@ -195,14 +194,13 @@ class Main(QMainWindow):
             for test in self.read('SourceComplexTypes'):
                 if test in array:
                     self.ui.chose_source_compex_types.check(test)
-        self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile').replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_output_filename.setText(os.path.relpath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
         self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile').replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_repalce_file_2.setText(os.path.relpath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
         self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
-        self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile').replace(os.sep, '/'))
+        self.ui.taget_affix_gloss_list_filename.setText(os.path.relpath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
         self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
         #From the Complex Form Types list
-        #TODO: how to make multiple select??
         array = []
         for item in self.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
@@ -217,7 +215,6 @@ class Main(QMainWindow):
                 if test in array:
                     self.ui.chose_infelction_second_element.check(test)
         #From the Morpheme Types list
-        #TODO: select multiple
         array = []
         for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
             array.append(str(item).strip("-=~*"))
@@ -233,7 +230,6 @@ class Main(QMainWindow):
             if test in array:
                 self.ui.chose_source_morpheme_types.check(test)
         #From the Complex Form Types list.
-        #TODO: Mulitiple select
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
@@ -243,7 +239,6 @@ class Main(QMainWindow):
                 if test in array:
                     self.ui.chose_source_discontiguous_compex.check(test)
         #From the category abbreviation list.
-        #TODO: make multiple select
         array = []
         for pos in self.DB.lp.AllPartsOfSpeech:
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
@@ -259,14 +254,13 @@ class Main(QMainWindow):
         if self.read('TreeTranInsertWordsFile'):
             self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile').replace(os.sep, '/'))
             self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')).replace(os.sep, '/'))
-        self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile').replace(os.sep, '/'))
+        self.ui.transfer_rules_filename.setText(os.path.relpath(self.read('TransferRulesFile')).replace(os.sep, '/'))
         self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')).replace(os.sep, '/'))
-        self.ui.testbed_filename.setText(self.read('TestbedFile').replace(os.sep, '/'))
+        self.ui.testbed_filename.setText(os.path.relpath(self.read('TestbedFile')).replace(os.sep, '/'))
         self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')).replace(os.sep, '/'))
-        self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile').replace(os.sep, '/'))
+        self.ui.testbed_result_filename.setText(os.path.relpath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
         self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
         #From the category abbreviation list.
-        #TODO: be able to select more pairs??
         i = 1
         for pos in self.DB.lp.AllPartsOfSpeech:
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
@@ -286,7 +280,7 @@ class Main(QMainWindow):
         if self.read('CleanUpUnknownTargetWords') == 'y':
             self.ui.cleanup_yes.setChecked(True)
         self.ui.punctuation.setText(self.read('SentencePunctuation'))
-        self.ui.punctuation.setAlignment(Qt.AlignLeft) #TODO make this work
+        self.ui.punctuation.setAlignment(Qt.AlignLeft)
 
     def save(self):
         n='n'
