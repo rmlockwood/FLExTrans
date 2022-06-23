@@ -79,6 +79,8 @@ class Main(QMainWindow):
         self.ui.testbed_button.clicked.connect(self.open_testbed)
         self.ui.testbed_result_button.clicked.connect(self.open_testbed_result)
         self.ui.reset_button.clicked.connect(self.reset)
+        
+        # RL code review 23Jun22: I think it is good practice to put assigning of parameter values at the top of the method
         self.report = report
         self.configMap = configMap
         self.targetDB = targetDB
@@ -86,6 +88,7 @@ class Main(QMainWindow):
 
         self.init_load()
 
+    # RL code review 23Jun22: Could connect() calls above call browse() directly?
     def open_a_text(self):
         self.browse(self.ui.output_filename, "(*.*)")
 
@@ -132,6 +135,8 @@ class Main(QMainWindow):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
     def init_load(self):
+        
+        # RL code review 23Jun22: I prefer a space after #
         #Clear all
         self.ui.chose_sourc_text.clear()
         self.ui.chose_entry_link.clear()
@@ -148,23 +153,32 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_one.addItem("...")
         self.ui.category_abbreviation_two.clear()
         self.ui.category_abbreviation_two.addItem("...")
-        #load all
+        #load all               # RL code review 23Jun22: I'm also a big proponent of white space to make code more readable. 
         source_list = []
         for item in self.DB.ObjectsIn(ITextRepository):
             source_list.append(str(item).strip())
         sorted_source_list = sorted(source_list, key=str.casefold)
         
-        i = 0
+        i = 0 # RL code review 23Jun22: below is how I might add whitespace, not a must, but it could help other people who are reading the code
         config_source = self.read('SourceTextName')
+        
         for item_str in sorted_source_list:
+            
             self.ui.chose_sourc_text.addItem(item_str)
+            
             if item_str == config_source:
+                
                 self.ui.chose_sourc_text.setCurrentIndex(i)
+                
             i += 1
+        
+        # RL code review 23Jun22: in Python you can also do: 
+        #for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
+        
         i = 0
         for item in self.DB.LexiconGetSenseCustomFields():
-            self.ui.chose_entry_link.addItem(str(item[1]))
-            self.ui.chose_sense_number.addItem(str(item[1]))
+            self.ui.chose_entry_link.addItem(str(item[1]))            # RL code review 23Jun22: why item[1]? maybe explain
+            self.ui.chose_sense_number.addItem(str(item[1]))          # RL code review 23Jun22: why convert to a str, but not in the next line?
             if item[1] == self.read('SourceCustomFieldForEntryLink'):
                 self.ui.chose_entry_link.setCurrentIndex(i)
             if item[1] == self.read('SourceCustomFieldForSenseNum'):
@@ -176,7 +190,11 @@ class Main(QMainWindow):
             if item == self.read('TargetProject'):
                 self.ui.chose_target_project.setCurrentIndex(i)
             i += 1
-        #TODO: Some kind of safe file thing ??
+        #TODO: Some kind of safe file thing ?? # RL code review 23Jun22: I like having TODOs like this, the comment could explain a little better
+        
+        # RL code review 23Jun22: for easier maintenance of the code, it would be better have something like x = self.read('AnalyzedTextOutputFile')
+        # and then use x twice in the next two lines. This way if the 'AnalyzedTextOutputFile' changes, you only have to change it once.
+        # Also, it's nice if we could use constants for all these strings, in fact you will find most of them in ReadConfig.py so you could use ReadConfig.ANALYZED_TEXT_FILE, etc.
         self.ui.output_filename.setText(os.path.relpath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
         self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
         self.ui.output_ANA_filename.setText(os.path.relpath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
@@ -185,11 +203,14 @@ class Main(QMainWindow):
         self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
         self.ui.transfer_result_filename.setText(os.path.relpath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
         self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
-        #From the Complex Form Types list
+        #From the Complex Form Types list  # RL code review 23Jun22: It would be nice to explain in a comment which setting is being loaded as well as 
+        #                                  # what you have here saying the data comes from the Complex Form Types list
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
             array.append(str(item))
         self.ui.chose_source_compex_types.addItems(array)
+        
+        # RL code review 23Jun22: Again for maintenance it would be better to have something like settingStr = self.read('SourceComplexTypes') then use settingStr twice
         if self.read('SourceComplexTypes'):
             for test in self.read('SourceComplexTypes'):
                 if test in array:
@@ -217,7 +238,7 @@ class Main(QMainWindow):
         #From the Morpheme Types list
         array = []
         for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-            array.append(str(item).strip("-=~*"))
+            array.append(str(item).strip("-=~*")) # RL code review 23Jun22: explain the strip()
         self.ui.chose_target_morpheme_types.addItems(array)
         for test in self.read('TargetMorphNamesCountedAsRoots'):
             if test in array:
@@ -283,10 +304,17 @@ class Main(QMainWindow):
         self.ui.punctuation.setAlignment(Qt.AlignLeft)
 
     def save(self):
+        # RL code review 23Jun22: maybe a better variable name
         n='n'
         if self.ui.cleanup_yes.isChecked():
             n='y'
         f = open(self.config, "w", encoding='utf-8')
+        
+        # RL code review 23Jun22: I personally would prefer each line to have f.write(...), but this is ok
+        # this is going to hard to maintain since we don't know which setting is connect to which ui element and what kind of data will be coming from that ui element
+        # The only solution might be too much work, but somehow have a list with the setting string, the ui element, and a type and then use a loop to put out the appropriate 
+        # string based on it's type. In theory it might make it easier to add new settings just at the top and the rest of the code does loops over the master list.
+        # Just an idea.
         f.write("SourceTextName="+self.ui.chose_sourc_text.currentText()+"\n"+
                 "AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
