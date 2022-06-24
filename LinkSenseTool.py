@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.5.2 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5.1 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
@@ -147,7 +150,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -931,6 +934,8 @@ def MainFunction(DB, report, modify=True):
     #myData = process_interlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, ENTRIES_SCALE_FACTOR, bundles_scale)
 
     retVal, myData = process_interlinear_new(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText)
+
+    TargetDB.CloseProject()
 
     if retVal == False:
         return 

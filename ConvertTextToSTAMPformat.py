@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.1 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5 - 5/13/22 - Ron Lockwood
 #    Keep checking for components even if the entry is a variant. Fixes #119.
 #
@@ -154,7 +157,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -1082,6 +1085,8 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     error_list.append((str(count)+' records exported in ANA format.', 0))
     f_ana.close()
     
+    TargetDB.CloseProject()
+
     return error_list
 
 def MainFunction(DB, report, modifyAllowed):

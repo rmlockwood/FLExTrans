@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   28/3/2022
 #
+#   Version 3.5.3 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5.2 - 6/21/22 - Ron Lockwood
 #    Fixes for #141 and #144. Alphabetize source text list. Correctly load
 #    and save source complex types. Also change double loop code for multiple
@@ -39,7 +42,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.2",
+        FTM_Version: "3.5.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -404,6 +407,7 @@ def MainFunction(DB, report, modify=True):
     if QMessageBox().question(msgBox, 'Save?', "Do you want to save before you leave?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
         window.save()
 
+    TargetDB.CloseProject()
 
 # ----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

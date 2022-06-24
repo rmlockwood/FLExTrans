@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.1 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5 - 4/1/22 - Ron Lockwood
 #    Added a parameter useCacheIfAvailable and default it to false so that the
 #    LiveRuleTester can force the rebuild of the affix list.
@@ -85,7 +88,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -145,6 +148,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: 
+        error_list.append(('Problem opening the target project.', 2))
         raise
     
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
@@ -219,6 +223,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     glossAndTypeList.append((morphType, myGloss))
                     
     seen = set()
+    
+    TargetDB.CloseProject()
     
     # Sort by type and then by gloss
     for tupType, tupGloss in sorted(glossAndTypeList):

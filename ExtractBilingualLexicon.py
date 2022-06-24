@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.2 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5.1 - 6/22/22 - Ron Lockwood
 #    Change in FlexTools 2.1 means that an empty string gets returned now from
 #    a custom field that has nothing in it. Before it was None. Fixes #156
@@ -192,7 +195,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -621,8 +624,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             error_list.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
             return error_list
 
-    TargetDB = Utils.openTargetProject(configMap, report)
-
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
     senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
@@ -647,6 +648,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         error_list.append((f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.', 2))
         return error_list
     
+    TargetDB = Utils.openTargetProject(configMap, report)
+
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and useCacheIfAvailable and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
         
@@ -674,6 +677,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         if Utils.get_categories(DB, TargetDB, report, posMap) == True:
             
             error_list.append(('Error retrieving categories.'), 2)
+            TargetDB.CloseProject()
             return error_list
 
         # save target features so they can go in the symbol definition section
@@ -909,8 +913,10 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         if do_replacements(configMap, report, fullPathBilingFile, replFile) == True:
             
             error_list.append(('Error processing the replacement file.', 2))
+            TargetDB.CloseProject()
             return error_list
-        
+    
+    TargetDB.CloseProject()
     return error_list
 
 def MainFunction(DB, report, modifyAllowed):

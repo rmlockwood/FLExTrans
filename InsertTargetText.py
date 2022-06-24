@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.2 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5.1 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
@@ -62,7 +65,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -154,6 +157,9 @@ def MainFunction(DB, report, modify=True):
     text.Name.AnalysisDefaultWritingSystem = tss
     
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
+    
+    TargetDB.CloseProject()
+
  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

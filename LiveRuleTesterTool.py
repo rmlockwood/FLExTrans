@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.9 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5.8 - 5/19/22 - Ron Lockwood
 #    Close FLEx project and reopen on Rebuild Bilingual Lexicon button.
 #    This clears the cache in LCM and allows the rebuild function to use the
@@ -220,7 +223,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.7",
+        FTM_Version    : "3.5.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -544,7 +547,7 @@ class Main(QMainWindow):
         
         try:
             # Delete the old project (i.e. close it)
-            del self.__DB
+            self.__DB.CloseProject()
             
             # Open the database
             self.__DB = FLExProject()
@@ -554,6 +557,7 @@ class Main(QMainWindow):
         
         # Extract the bilingual lexicon        
         error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]
@@ -1208,6 +1212,8 @@ class Main(QMainWindow):
         
         f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
         f.close()
+        
+        self.__DB.CloseProject()
         
     def BilingBrowseClicked(self):
         # Bring up file select dialog

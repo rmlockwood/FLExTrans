@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.5.1 - 6/24/22 - Ron Lockwood
+#    Call CloseProject() for FlexTools2.1.1 fixes #159
+#
 #   Version 3.5 - 6/21/22 - Ron Lockwood
 #    Bump version number for FlexTools 3.5
 #
@@ -60,7 +63,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Grammatical Categories",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",
@@ -95,8 +98,11 @@ def MainFunction(DB, report, modify=True):
     
     # Get all source and target categories
     if Utils.get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+        TargetDB.CloseProject()
         return
 
+    TargetDB.CloseProject()
+    
     # Make a backup copy of the transfer rule file
     try:
         shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
