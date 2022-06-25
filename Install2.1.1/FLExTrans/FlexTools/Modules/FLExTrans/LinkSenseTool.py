@@ -849,125 +849,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
             matchList = save_map[gloss]
     return matchList
 
-def MainFunction(DB, report, modify=True):
-        
-    if not modify:
-        report.Error('You need to run this module in "modify mode."')
-        return
-    
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # Get need configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
-    linkField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
-    numField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
-    targetMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
-
-    if not (text_desired_eng and linkField and numField and text_desired_eng and sourceMorphNames):
-        return
-    
-    # Find the desired text
-    foundText = False
-    for interlinText in DB.ObjectsIn(ITextRepository):
-        if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
-            foundText = True
-            break;
-        
-    if not foundText:
-        report.Error('The text named: '+text_desired_eng+' not found.')
-        return
-
-    senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
-    senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
-    
-    if not (senseEquivField):
-        report.Error(linkField + " field doesn't exist. Please read the instructions.")
-
-    if not (senseNumField):
-        report.Error(numField + " field doesn't exist. Please read the instructions.")
-
-    if not (senseEquivField and senseNumField):
-        return
-
-    TargetDB = FLExProject()
-
-    # Open the target database
-    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-    if not targetProj:
-        return
-    
-    # See if the target project is a valid database name.
-    if targetProj not in AllProjectNames():
-        report.Error('The Target Database does not exist. Please check the configuration file.')
-        return
-
-    report.Info('Opening: '+targetProj+' as the target database.')
-
-    try:
-        TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-        raise
-
-    report.Info("Starting " + docs[FTM_Name] + " for text: " + text_desired_eng + ".")
-
-    preGuidStr = 'silfw://localhost/link?database%3d'
-    preGuidStr += re.sub('\s','+', targetProj)
-    preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
-     
-    gloss_map = {}
-    tgtLexList = []
-
-    TargetDB_tot = TargetDB.LexiconNumberOfEntries() 
-
-    # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, interlinText, TargetDB_tot)
-
-    # Create a map of glosses to target senses and their number and a list of target lexical senses
-    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
-        return
-
-    # Go through the interlinear words
-    #myData = process_interlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, ENTRIES_SCALE_FACTOR, bundles_scale)
-
-    retVal, myData = process_interlinear_new(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText)
-
-    TargetDB.CloseProject()
-
-    if retVal == False:
-        return 
-
-    # Check to see if there is any data to link
-    if len(myData) == 0:
-                                        
-        report.Warning('There were no senses found for linking.')
-    else:
-    
-        if DUMP_VOCAB_WORDS:
-            
-            dump_vocab(myData)
-
-        # Show the window
-        app = QApplication(sys.argv)
-        
-        myHeaderData = ["Link It!", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
-                        'Target Head Word', 'Target Cat.', 'Target Gloss']
-        
-        tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList)
-        
-        window.show()
-        app.exec_()
-        
-        # Update the source database with the correct links
-        if window.ret_val: # True = make the changes        
-            
-            update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
-
-def process_interlinear_new(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText):
+def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText):
         
     save_map = {}
     processed_map = {}
@@ -1114,127 +996,6 @@ def process_interlinear_new(report, DB, configMap, senseEquivField, senseNumFiel
     
     return True, myData
 
-# def process_interlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, ENTRIES_SCALE_FACTOR, bundles_scale):
-#         
-#     save_map = {}
-#     processed_map = {}
-#     myData = []
-#     warning_list = []
-# 
-#     ss = SegmentServices.StTextAnnotationNavigator(interlinText.ContentsOA)
-#     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
-#        
-#         report.ProgressUpdate(int(ENTRIES_SCALE_FACTOR)+int(prog_cnt/bundles_scale))
-# 
-#         if analysisOccurance.Analysis.ClassName == "PunctuationForm":
-#             continue
-#         if analysisOccurance.Analysis.ClassName == "WfiGloss":
-#             wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
-#         elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
-#             wfiAnalysis = analysisOccurance.Analysis
-#         # We get into this block if there are no analyses for the word or a analysis suggestion hasn't been accepted.
-#         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
-#             outStr = ITsString(analysisOccurance.Analysis.Form.BestVernacularAlternative).Text
-#             if outStr not in warning_list:
-#                 report.Warning('No analysis found for the word: "'+ outStr + '". Skipping.')
-#                 warning_list.append(outStr)
-#             continue
-#         else:
-#             wfiAnalysis = None
-#             
-#         # Go through each morpheme in the word (i.e. bundle)
-#         for bundle in wfiAnalysis.MorphBundlesOS:
-#             if bundle.SenseRA and bundle.MsaRA and bundle.MorphRA and bundle.MorphRA.Owner:
-#                 # Get the LexEntry object, set a sense variable
-#                 e = bundle.MorphRA.Owner
-#                 mySense = bundle.SenseRA
-#                     
-#                 # For a stem we just want the headword and it's POS
-#                 if bundle.MsaRA.ClassName == 'MoStemMsa' and bundle.MorphRA:
-#                     # Follow variants back to an entry with a sense
-#                     e = GetEntryWithSense(e)    
-#                     
-#                     if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
-#                         # If we have processed this sense already, we will just re-add it to the list
-#                         if mySense not in processed_map:
-#                             # Get gloss
-#                             srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
-#     
-#                             # Get headword and set homograph # if necessary
-#                             srcHeadWord = ITsString(e.HeadWord).Text
-#                             
-#                             # Get the POS
-#                             if bundle.MsaRA.PartOfSpeechRA:
-#                                 srcPOS =  ITsString(bundle.MsaRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-#                             else:
-#                                 srcPOS = 'UNK'
-#                             
-#                             # Create a headword-POS-gloss object and initialize a Link object with this
-#                             # as the source sense info.
-#                             myHPG = HPG(mySense, srcHeadWord, srcPOS, srcGloss)
-#                             myLink = Link(myHPG)
-#                             
-#                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-#                             senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
-# 
-#                             # equiv now holds the url to the target, see if it is valid
-#                             if equiv:
-#                                 # If no sense number, assume it is 1
-#                                 if senseNum == None or not senseNum.isdigit():
-#                                     senseNum = '1'
-#                                 
-#                                 # Get the guid from the url
-#                                 u = equiv.index('guid')
-#                                 guid = equiv[u+7:u+7+36]
-#                             
-#                                 # Get sense information for the guid, this returns None if not found
-#                                 tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
-#                                 
-#                                 # Set the target part of the Link object and add it to the list
-#                                 myLink.set_tgtHPG(tgtHPG)
-#                                 myData.append(myLink)
-#                                 processed_map[mySense] = myLink
-#                                 
-#                             else: # no link url present
-#                               
-#                                 if myHPG.getPOS() == 'nprop':
-#                                     continue
-#                                   
-#                                 # Find matches for the current gloss using fuzzy compare if needed
-#                                 matchedSenseList = getMatchesOnGloss(srcGloss, gloss_map, save_map)
-#                                 
-#                                 # Process all the matches
-#                                 if len(matchedSenseList) > 0:
-#                                     
-#                                     for i, matchHPG in enumerate(matchedSenseList):
-#                                         
-#                                         if i == 0: # use the Link object already created
-#                                             myLink.set_tgtHPG(matchHPG)
-#                                             matchLink = myLink
-#                                         else:
-#                                             matchLink = Link(myHPG, matchHPG)
-#                                         
-#                                         # See if we have an exact match
-#                                         if matchLink.get_srcGloss().lower() == matchLink.get_tgtGloss().lower():
-#                                             
-#                                             matchLink.set_initial_status(INITIAL_STATUS_EXACT_SUGGESTION)
-#                                         else:
-#                                             matchLink.set_initial_status(INITIAL_STATUS_FUZZY_SUGGESTION)
-# 
-#                                         myData.append(matchLink)
-#                                         processed_map[mySense] = matchLink
-#                                         
-#                                 # No matches
-#                                 else:
-#                                     # add a Link object that has no target information
-#                                     myData.append(myLink)
-#                                     processed_map[mySense] = myLink
-#                                     
-#                         else: # we've processed this sense before, add it to the list again
-#                             myLink = processed_map[mySense]
-#                             myData.append(myLink)
-#     return myData
-
 def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
     updated_senses = {}
@@ -1357,6 +1118,120 @@ def dump_vocab(myData):
                   
             processed[myHeadword] = 1
     fz.close()
+
+def MainFunction(DB, report, modify=True):
+        
+    if not modify:
+        report.Error('You need to run this module in "modify mode."')
+        return
+    
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Get need configuration file properties
+    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
+    linkField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
+    numField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
+    targetMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
+
+    if not (text_desired_eng and linkField and numField and text_desired_eng and sourceMorphNames):
+        return
+    
+    # Find the desired text
+    foundText = False
+    for interlinText in DB.ObjectsIn(ITextRepository):
+        if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
+            foundText = True
+            break;
+        
+    if not foundText:
+        report.Error('The text named: '+text_desired_eng+' not found.')
+        return
+
+    senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
+    senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
+    
+    if not (senseEquivField):
+        report.Error(linkField + " field doesn't exist. Please read the instructions.")
+
+    if not (senseNumField):
+        report.Error(numField + " field doesn't exist. Please read the instructions.")
+
+    if not (senseEquivField and senseNumField):
+        return
+
+    TargetDB = FLExProject()
+
+    # Open the target database
+    targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+    if not targetProj:
+        return
+    
+    # See if the target project is a valid database name.
+    if targetProj not in AllProjectNames():
+        report.Error('The Target Database does not exist. Please check the configuration file.')
+        return
+
+    report.Info('Opening: '+targetProj+' as the target database.')
+
+    try:
+        TargetDB.OpenProject(targetProj, True)
+    except: #FDA_DatabaseError, e:
+        raise
+
+    report.Info("Starting " + docs[FTM_Name] + " for text: " + text_desired_eng + ".")
+
+    preGuidStr = 'silfw://localhost/link?database%3d'
+    preGuidStr += re.sub('\s','+', targetProj)
+    preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
+     
+    gloss_map = {}
+    tgtLexList = []
+
+    TargetDB_tot = TargetDB.LexiconNumberOfEntries() 
+
+    # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
+    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, interlinText, TargetDB_tot)
+
+    # Create a map of glosses to target senses and their number and a list of target lexical senses
+    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+        return
+
+    # Go through the interlinear words
+    retVal, myData = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText)
+
+    if retVal == False:
+        return 
+
+    # Check to see if there is any data to link
+    if len(myData) == 0:
+                                        
+        report.Warning('There were no senses found for linking.')
+    else:
+    
+        if DUMP_VOCAB_WORDS:
+            
+            dump_vocab(myData)
+
+        # Show the window
+        app = QApplication(sys.argv)
+        
+        myHeaderData = ["Link It!", 'Source Head Word', 'Source Cat.', 'Source Gloss',  
+                        'Target Head Word', 'Target Cat.', 'Target Gloss']
+        
+        tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
+        window = Main(myData, myHeaderData, tgtLexList)
+        
+        window.show()
+        app.exec_()
+        
+        # Update the source database with the correct links
+        if window.ret_val: # True = make the changes        
+            
+            update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
