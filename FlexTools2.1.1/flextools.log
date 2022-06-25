@@ -1,0 +1,33 @@
+INFO:__main__:FLExTools 2.1.1
+INFO:flexlibs.code.FLExInit:flexlibs version: 1.1.3
+INFO:flexlibs.code.FLExInit:Python version: 3.7.4 (tags/v3.7.4:e09359112e, Jul  8 2019, 20:34:20) [MSC v.1916 64 bit (AMD64)]
+INFO:flexlibs.code.FLExGlobals:.NET version: 4.0.30319.42000
+INFO:flexlibs.code.FLExGlobals:Looking for FieldWorks 9, 64bit...
+INFO:flexlibs.code.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_CURRENT_USER\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.code.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_LOCAL_MACHINE\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.code.FLExGlobals:sys.path = C:\Users\rlboo\Downloads\flextools-master (7)\flextools-master\FlexTools
+	c:\Python27
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\python37.zip
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\DLLs
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\lib
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37
+	C:\Users\rlboo\AppData\Roaming\Python\Python37\site-packages
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\lib\site-packages
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\lib\site-packages\win32
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\lib\site-packages\win32\lib
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python37\lib\site-packages\Pythonwin
+	C:\Windows\Microsoft.NET\Framework64\v4.0.30319\
+	C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.code.FLExGlobals:Found FieldWorks installation
+INFO:flexlibs.code.FLExGlobals:FWCodeDir = C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.code.FLExGlobals:FWProjectsDir = C:\ProgramData\SIL\FieldWorks\Projects\
+INFO:flexlibs.code.FLExGlobals:FWShortVersion = 9.1.12
+INFO:flexlibs.code.FLExGlobals:FWLongVersion = Version: 9.1.12.604 Beta  2022/06/17  (64 bit)
+INFO:FTModules:From library Chinese: ['Generate_Reversal_Sort_Field_Only', 'Update_Pinyin_Fields', 'Update_Reversal_Sort_Field', 'Update_Tonenumber_Fields']
+INFO:FTModules:From library Duplicates: ['Find_Duplicate_Definitions', 'Find_Duplicate_Entries', 'Merge_Entries', 'Merge_Senses', '__DuplicatesConfig']
+INFO:FTModules:From library Examples: ['Example_Check_Punctuation', 'Example_Programming_Errors', '__Template']
+INFO:FTModules:From library Export: ['Dump_All_Headwords_To_File', 'Dump_Published_Headwords_To_File', 'Dump_SemanticDomains_To_File', 'Dump_Texts_To_File']
+INFO:FTModules:From library Integrity Checks: ['Check_Count_of_Lexemes_in_Corpus']
+INFO:FTModules:From library Reports: ['Incomplete_Analyses', 'Lexeme_Usage_In_Corpus', 'Lexicon_Statistics', 'Project_Information', 'Text_Statistics']
+INFO:FTModules:From library Utilities: ['Approve_Spelling_of_Numbers']
+INFO:FTModules:From library : []
