@@ -309,8 +309,28 @@ XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 reObjAddOne = re.compile('\d$', re.A) # ASCII-only match
 reDataStream = re.compile('(>[^$<])')  
 reTestID = re.compile('test id=".+?"')
+reSpace = re.compile(r'\s') 
+rePeriod = re.compile(r'\.') 
+reForwardSlash = re.compile(r'/') 
+reHyphen = re.compile(r'-') 
 
 NGRAM_SIZE = 5
+
+# Invalid category characters & descriptions & messages & replacements
+catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
+           [r'\.', 'period', 'removed', '', rePeriod],
+           [r'/', 'slash', 'converted to a vertical bar', '|', reForwardSlash]
+#          [r'X', 'x char', 'fatal', '']
+          ]
+
+def convertProblemChars(trgtAbbrev):                                                
+
+    # Convert spaces to underscores and remove periods and convert slash to bar, etc.
+    for catDat in catData:
+        
+        trgtAbbrev = catDat[4].sub(catDat[3], trgtAbbrev)
+    
+    return trgtAbbrev
 
 # Search for a text name in the list of texts in FLEx
 def findTextName(TargetDB, myTextName, textNameList):
@@ -2298,7 +2318,7 @@ class TextWord():
         if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                return ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                return convertProblemChars(ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text)
         return self.getUnknownPOS()
     def getSense(self, i):
         if self.hasSenses() and i < len(self.__senseList):
@@ -2880,13 +2900,6 @@ def get_sub_inflection_classes(mySubClasses):
             ic_list.extend(icl)
             
     return ic_list
-
-# Invalid category characters & descriptions & messages & replacements
-catData = [[r'\s', 'space', 'converted to an underscore', '_'],
-           [r'\.', 'period', 'removed', ''],
-           [r'/', 'slash', 'converted to a vertical bar', '|']
-#          [r'X', 'x char', 'fatal', '']
-          ]
 
 def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
 
