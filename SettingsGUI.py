@@ -311,7 +311,7 @@ class Main(QMainWindow):
         f = open(self.config, "w", encoding='utf-8')
         
         # RL code review 23Jun22: I personally would prefer each line to have f.write(...), but this is ok
-        # this is going to hard to maintain since we don't know which setting is connect to which ui element and what kind of data will be coming from that ui element
+        # this is going to hard to maintain since we don't know which setting is connected to which ui element and what kind of data will be coming from that ui element
         # The only solution might be too much work, but somehow have a list with the setting string, the ui element, and a type and then use a loop to put out the appropriate 
         # string based on it's type. In theory it might make it easier to add new settings just at the top and the rest of the code does loops over the master list.
         # Just an idea.
