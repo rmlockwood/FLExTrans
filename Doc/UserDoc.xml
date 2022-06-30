@@ -1053,22 +1053,22 @@ type="tTool"
 >Apertium</object
 > files <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > or <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 > very often, but sometimes you may find it useful to see what got extracted from the source <object
 type="tFlexx"
 ></object
 > project into <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > or to see what the transfer rules produced after running the <object
 type="tModule"
 >RunApertium</object
 > module in the form of <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 >. Run this tool to see the contents of these files. <exampleRef
 letter="xViewSrcTgt"
 num="xViewSrcTgt"
@@ -1101,7 +1101,7 @@ type="tBold"
 >Target</object
 > button, you will see the contents of <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 >.</p
 ></section1
 ><section1
@@ -1858,7 +1858,7 @@ type="tModule"
 >View Source/Target Apertium File Tool</object
 >. It is the friendly view of the file <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > in the <object
 type="tFoldername"
 >project</object
@@ -1966,7 +1966,7 @@ type="tButton"
 >Target</object
 > button. It is the friendly view of the file <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 > in the <object
 type="tFoldername"
 >project</object
@@ -3345,7 +3345,7 @@ id="nLexUnit"
 ><p
 >In our <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 > file it puts a <langData
 lang="lVernacular"
 >^</langData
@@ -3365,7 +3365,7 @@ id="nTagSeq"
 ><p
 >In our <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 > file each tag starts with a <langData
 lang="lVernacular"
 >&lt;</langData
@@ -3972,7 +3972,7 @@ type="tCollection"
 >FLExTrans Run Testbed</object
 > collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > file.</p
 ></section3
 ><section3
@@ -3988,7 +3988,7 @@ type="tCollection"
 >FLExTrans Run Testbed</object
 > collection. It takes the results of running the transfer and synthesis processes (the <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > file) and adds the tests run and whether they passed or not to the testbed log.</p
 ></section3
 ><section3
@@ -4761,10 +4761,10 @@ type="tTool"
 >View Source/Target Apertium File Tool</object
 > for a more friendly view of the data stream format found in the files <object
 type="tFilename"
->source_text.aper</object
+>source_text.txt</object
 > and <object
 type="tFilename"
->target_text.aper</object
+>target_text.txt</object
 >.</p
 ></endnote
 ><endnote
