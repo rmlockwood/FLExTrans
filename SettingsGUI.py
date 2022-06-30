@@ -1,7 +1,7 @@
 #
 #   Settings GUI
 #   Lærke Roager Christensen
-#   28/3/2022
+#   3/28/22
 #
 #   Version 3.5.2 - 6/21/22 - Ron Lockwood
 #    Fixes for #141 and #144. Alphabetize source text list. Correctly load
@@ -54,6 +54,11 @@ class Main(QMainWindow):
 
     def __init__(self, configMap, report, targetDB, DB):
         QMainWindow.__init__(self)
+        # RL code review 23Jun22: I think it is good practice to put assigning of parameter values at the top of the method
+        self.report = report
+        self.configMap = configMap
+        self.targetDB = targetDB
+        self.DB = DB
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -79,12 +84,6 @@ class Main(QMainWindow):
         self.ui.testbed_button.clicked.connect(self.open_testbed)
         self.ui.testbed_result_button.clicked.connect(self.open_testbed_result)
         self.ui.reset_button.clicked.connect(self.reset)
-        
-        # RL code review 23Jun22: I think it is good practice to put assigning of parameter values at the top of the method
-        self.report = report
-        self.configMap = configMap
-        self.targetDB = targetDB
-        self.DB = DB
 
         self.init_load()
 
@@ -137,7 +136,7 @@ class Main(QMainWindow):
     def init_load(self):
         
         # RL code review 23Jun22: I prefer a space after #
-        #Clear all
+        # Clear all
         self.ui.chose_sourc_text.clear()
         self.ui.chose_entry_link.clear()
         self.ui.chose_sense_number.clear()
@@ -153,161 +152,269 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_one.addItem("...")
         self.ui.category_abbreviation_two.clear()
         self.ui.category_abbreviation_two.addItem("...")
-        #load all               # RL code review 23Jun22: I'm also a big proponent of white space to make code more readable. 
+
+        # load all               # RL code review 23Jun22: I'm also a big proponent of white space to make code more readable.
+        # Source Text name
         source_list = []
         for item in self.DB.ObjectsIn(ITextRepository):
+
             source_list.append(str(item).strip())
+
         sorted_source_list = sorted(source_list, key=str.casefold)
         
-        i = 0 # RL code review 23Jun22: below is how I might add whitespace, not a must, but it could help other people who are reading the code
-        config_source = self.read('SourceTextName')
+        # RL code review 23Jun22: below is how I might add whitespace, not a must, but it could help other people who are reading the code
+        config_source = self.read(ReadConfig.SOURCE_TEXT_NAME)
         
-        for item_str in sorted_source_list:
+        for i, item_str in enumerate(sorted_source_list):
             
             self.ui.chose_sourc_text.addItem(item_str)
             
             if item_str == config_source:
                 
                 self.ui.chose_sourc_text.setCurrentIndex(i)
-                
-            i += 1
         
         # RL code review 23Jun22: in Python you can also do: 
-        #for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
-        
-        i = 0
-        for item in self.DB.LexiconGetSenseCustomFields():
+        # for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
+        # Source Custom field for Entry Link and Sense number
+        for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
+
+            # Add the element to the comboBox, item[1] is because item is some sort of tuple value
             self.ui.chose_entry_link.addItem(str(item[1]))            # RL code review 23Jun22: why item[1]? maybe explain
             self.ui.chose_sense_number.addItem(str(item[1]))          # RL code review 23Jun22: why convert to a str, but not in the next line?
-            if item[1] == self.read('SourceCustomFieldForEntryLink'):
+
+            # Check the currently selected value
+            if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY):
                 self.ui.chose_entry_link.setCurrentIndex(i)
-            if item[1] == self.read('SourceCustomFieldForSenseNum'):
+
+            if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM):
                 self.ui.chose_sense_number.setCurrentIndex(i)
-            i += 1
-        i = 0 #TODO Make this disable the other stuff that uses target??
-        for item in AllProjectNames():
+
+        # Target Projects
+        #TODO Make this disable the other stuff that uses target??
+        for i, item in enumerate(AllProjectNames()):
             self.ui.chose_target_project.addItem(item)
             if item == self.read('TargetProject'):
                 self.ui.chose_target_project.setCurrentIndex(i)
-            i += 1
-        #TODO: Some kind of safe file thing ?? # RL code review 23Jun22: I like having TODOs like this, the comment could explain a little better
         
         # RL code review 23Jun22: for easier maintenance of the code, it would be better have something like x = self.read('AnalyzedTextOutputFile')
         # and then use x twice in the next two lines. This way if the 'AnalyzedTextOutputFile' changes, you only have to change it once.
         # Also, it's nice if we could use constants for all these strings, in fact you will find most of them in ReadConfig.py so you could use ReadConfig.ANALYZED_TEXT_FILE, etc.
-        self.ui.output_filename.setText(os.path.relpath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
-        self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
-        self.ui.output_ANA_filename.setText(os.path.relpath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
-        self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
-        self.ui.output_syn_filename.setText(os.path.relpath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
-        self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
-        self.ui.transfer_result_filename.setText(os.path.relpath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
-        self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
-        #From the Complex Form Types list  # RL code review 23Jun22: It would be nice to explain in a comment which setting is being loaded as well as 
-        #                                  # what you have here saying the data comes from the Complex Form Types list
+        # Analyzed Text file
+        analyzedText = self.read(ReadConfig.ANALYZED_TEXT_FILE)
+        self.ui.output_filename.setText(os.path.relpath(analyzedText).replace(os.sep, '/'))
+        self.ui.output_filename.setToolTip(os.path.abspath(analyzedText).replace(os.sep, '/'))
+
+        # Output ANA file
+        ANAFile = self.read(ReadConfig.TARGET_ANA_FILE)
+        self.ui.output_ANA_filename.setText(os.path.relpath(ANAFile).replace(os.sep, '/'))
+        self.ui.output_ANA_filename.setToolTip(os.path.abspath(ANAFile).replace(os.sep, '/'))
+
+        # Output Synthesis file
+        synFile = self.read(ReadConfig.TARGET_SYNTHESIS_FILE)
+        self.ui.output_syn_filename.setText(os.path.relpath(synFile).replace(os.sep, '/'))
+        self.ui.output_syn_filename.setToolTip(os.path.abspath(synFile).replace(os.sep, '/'))
+
+        # Transfer result file
+        transferFile = self.read(ReadConfig.TRANSFER_RESULTS_FILE)
+        self.ui.transfer_result_filename.setText(os.path.relpath(transferFile).replace(os.sep, '/'))
+        self.ui.transfer_result_filename.setToolTip(os.path.abspath(transferFile).replace(os.sep, '/'))
+
+        # RL code review 23Jun22: It would be nice to explain in a comment which setting is being loaded as well as
+        # what you have here saying the data comes from the Complex Form Types list
+        # From the Complex Form Types list
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+
             array.append(str(item))
+
         self.ui.chose_source_compex_types.addItems(array)
         
         # RL code review 23Jun22: Again for maintenance it would be better to have something like settingStr = self.read('SourceComplexTypes') then use settingStr twice
-        if self.read('SourceComplexTypes'):
-            for test in self.read('SourceComplexTypes'):
+        # Source Complex Types
+        complexType = self.read(ReadConfig.SOURCE_COMPLEX_TYPES)
+        if complexType:
+
+            for test in complexType:
+
                 if test in array:
                     self.ui.chose_source_compex_types.check(test)
-        self.ui.bilingual_dictionary_output_filename.setText(os.path.relpath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_repalce_file_2.setText(os.path.relpath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
-        self.ui.taget_affix_gloss_list_filename.setText(os.path.relpath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
-        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
+
+        # Bilingual Dictionary output file
+        biDictFile = self.read(ReadConfig.BILINGUAL_DICTIONARY_FILE)
+        self.ui.bilingual_dictionary_output_filename.setText(os.path.relpath(biDictFile).replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(biDictFile).replace(os.sep, '/'))
+
+        # Bilingual Dictionary replace file
+        biDictReplaceFile = self.read(ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE)
+        self.ui.bilingual_dictionary_repalce_file_2.setText(os.path.relpath(biDictReplaceFile).replace(os.sep, '/'))
+        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(biDictReplaceFile).replace(os.sep, '/'))
+
+        # Affix Gloss list file
+        affixGlossFile = self.read(ReadConfig.TARGET_AFFIX_GLOSS_FILE)
+        self.ui.taget_affix_gloss_list_filename.setText(os.path.relpath(affixGlossFile).replace(os.sep, '/'))
+        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(affixGlossFile).replace(os.sep, '/'))
+
         #From the Complex Form Types list
         array = []
         for item in self.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+
             array.append(str(item))
+
+        # Forms for inflection
+        # Add items to both first and second element
         self.ui.chose_infelction_first_element.addItems(array)
         self.ui.chose_infelction_second_element.addItems(array)
-        if self.read('TargetComplexFormsWithInflectionOn1stElement'):
-            for test in self.read('TargetComplexFormsWithInflectionOn1stElement'):
+
+        # Check the elements on first element
+        firstElm = self.read(ReadConfig.TARGET_FORMS_INFLECTION_1ST)
+        if firstElm:
+
+            for test in firstElm:
+
                 if test in array:
                     self.ui.chose_infelction_first_element.check(test)
-        if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-            for test in self.read('TargetComplexFormsWithInflectionOn2ndElement'):
+
+        # Check the elements on second element
+        secondElm = self.read(ReadConfig.TARGET_FORMS_INFLECTION_2ND)
+        if secondElm:
+
+            for test in secondElm:
+
                 if test in array:
                     self.ui.chose_infelction_second_element.check(test)
-        #From the Morpheme Types list
+
+        # From the Morpheme Types list
+        # Target Morpheme Names Counted As Roots
         array = []
         for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+
+            # Strip is because morpheme types come with some add-ons that are not necessary for the user in this case
             array.append(str(item).strip("-=~*")) # RL code review 23Jun22: explain the strip()
+
         self.ui.chose_target_morpheme_types.addItems(array)
-        for test in self.read('TargetMorphNamesCountedAsRoots'):
+
+        for test in self.read(ReadConfig.TARGET_MORPHNAMES):
+
             if test in array:
+
                 self.ui.chose_target_morpheme_types.check(test)
+
+        # Source Morpheme Names Counted As Roots
         array = []
         for item in self.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+
+            # Strip is because morpheme types come with some add-ons that are not necessary for the user in this case
             array.append(str(item).strip("-=~*"))
+
         self.ui.chose_source_morpheme_types.addItems(array)
-        for test in self.read('SourceMorphNamesCountedAsRoots'):
+
+        for test in self.read(ReadConfig.SOURCE_MORPHNAMES):
+
             if test in array:
+
                 self.ui.chose_source_morpheme_types.check(test)
-        #From the Complex Form Types list.
+
+
+        # From the Complex Form Types list.
+        # Source Discontigous Complex Types
         array = []
         for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+
             array.append(str(item))
+
         self.ui.chose_source_discontiguous_compex.addItems(array)
-        if self.read('SourceDiscontigousComplexTypes'):
-            for test in self.read('SourceDiscontigousComplexTypes'):
+
+        disComplexTypes = self.read(ReadConfig.SOURCE_DISCONTIG_TYPES)
+        if disComplexTypes:
+            for test in disComplexTypes:
+
                 if test in array:
+
                     self.ui.chose_source_discontiguous_compex.check(test)
-        #From the category abbreviation list.
+
+        # From the category abbreviation list.
+        # Source Discontigous Complex Form Skipped Word Grammatical Categories
         array = []
         for pos in self.DB.lp.AllPartsOfSpeech:
+
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             array.append(posAbbrStr)
+
         self.ui.chose_skipped_source_words.addItems(array)
-        if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-            for test in self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
+
+        disSkipped = self.read(ReadConfig.SOURCE_DISCONTIG_SKIPPED)
+        if disSkipped:
+            for test in disSkipped:
+
                 if test in array:
+
                     self.ui.chose_skipped_source_words.check(test)
-        if self.read('AnalyzedTextTreeTranOutputFile'):
-            self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile').replace(os.sep, '/'))
-            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')).replace(os.sep, '/'))
-        if self.read('TreeTranInsertWordsFile'):
-            self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile').replace(os.sep, '/'))
-            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')).replace(os.sep, '/'))
-        self.ui.transfer_rules_filename.setText(os.path.relpath(self.read('TransferRulesFile')).replace(os.sep, '/'))
-        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')).replace(os.sep, '/'))
-        self.ui.testbed_filename.setText(os.path.relpath(self.read('TestbedFile')).replace(os.sep, '/'))
-        self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')).replace(os.sep, '/'))
-        self.ui.testbed_result_filename.setText(os.path.relpath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
-        self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
-        #From the category abbreviation list.
-        i = 1
-        for pos in self.DB.lp.AllPartsOfSpeech:
+
+        # Analyzed text treeTran output file, if there are any
+        analyzedTreeTran = self.read(ReadConfig.ANALYZED_TREETRAN_TEXT_FILE)
+        if analyzedTreeTran:
+            self.ui.a_treetran_output_filename.setText(os.path.relpath(analyzedTreeTran).replace(os.sep, '/'))
+            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(analyzedTreeTran).replace(os.sep, '/'))
+
+        # TreeTran insert words file, if there are any
+        treeTranFile = self.read(ReadConfig.TREETRAN_INSERT_WORDS_FILE)
+        if treeTranFile:
+            self.ui.treetran_insert_words_file_2.setText(os.path.relpath(treeTranFile).replace(os.sep, '/'))
+            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(treeTranFile).replace(os.sep, '/'))
+
+        # Transfer Rules file
+        transferRulesFile = self.read(ReadConfig.TRANSFER_RULES_FILE)
+        self.ui.transfer_rules_filename.setText(os.path.relpath(transferRulesFile).replace(os.sep, '/'))
+        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(transferRulesFile).replace(os.sep, '/'))
+
+        # Testbed File
+        testbedFile = self.read(ReadConfig.TESTBED_FILE)
+        self.ui.testbed_filename.setText(os.path.relpath(testbedFile).replace(os.sep, '/'))
+        self.ui.testbed_filename.setToolTip(os.path.abspath(testbedFile).replace(os.sep, '/'))
+
+        # Testbed Result file
+        testbedResultFile = self.read(ReadConfig.TESTBED_RESULTS_FILE)
+        self.ui.testbed_result_filename.setText(os.path.relpath(testbedResultFile).replace(os.sep, '/'))
+        self.ui.testbed_result_filename.setToolTip(os.path.abspath(testbedResultFile).replace(os.sep, '/'))
+
+        # From the category abbreviation list.
+        # Category Abbreviation Substitution List, check if chosen
+        catAbbrevList = self.read(ReadConfig.CATEGORY_ABBREV_SUB_LIST)
+        for i, pos in enumerate(self.DB.lp.AllPartsOfSpeech):
+
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             self.ui.category_abbreviation_one.addItem(posAbbrStr)
-            if self.read('CategoryAbbrevSubstitutionList'):
-                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[0]:
+
+            if catAbbrevList:
+                if posAbbrStr == catAbbrevList[0]: # The first one in the config file
+
                     self.ui.category_abbreviation_one.setCurrentIndex(i)
-            i += 1
-        i = 1
-        for pos in self.targetDB.lp.AllPartsOfSpeech:
+
+        for i, pos in enumerate(self.targetDB.lp.AllPartsOfSpeech):
+
             posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             self.ui.category_abbreviation_two.addItem(posAbbrStr)
-            if self.read('CategoryAbbrevSubstitutionList'):
-                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[1]:
+
+            if catAbbrevList:
+                if posAbbrStr == catAbbrevList[1]: # The second one in the config file
+
                     self.ui.category_abbreviation_two.setCurrentIndex(i)
-            i += 1
-        if self.read('CleanUpUnknownTargetWords') == 'y':
+
+        # Clean Up Unknown target Words
+        if self.read(ReadConfig.CLEANUP_UNKNOWN_WORDS) == 'y':
+
             self.ui.cleanup_yes.setChecked(True)
-        self.ui.punctuation.setText(self.read('SentencePunctuation'))
+
+        # Punctuation
+        self.ui.punctuation.setText(self.read(ReadConfig.SENTENCE_PUNCTUATION))
+        # Align left as default
         self.ui.punctuation.setAlignment(Qt.AlignLeft)
 
     def save(self):
         # RL code review 23Jun22: maybe a better variable name
-        n='n'
+        punctSelected='n'
         if self.ui.cleanup_yes.isChecked():
-            n='y'
+            punctSelected='y'
         f = open(self.config, "w", encoding='utf-8')
         
         # RL code review 23Jun22: I personally would prefer each line to have f.write(...), but this is ok
@@ -340,7 +447,7 @@ class Main(QMainWindow):
                 "TestbedResultsFile="+self.ui.testbed_result_filename.text()+"\n"+
                 "# This property is in the form source_cat,target_cat. Multiple pairs can be defined\n"+
                 "CategoryAbbrevSubstitutionList="+self.optional(self.ui.category_abbreviation_one)+","+self.optional(self.ui.category_abbreviation_two)+"\n"+
-                "CleanUpUnknownTargetWords="+n+"\n"+
+                "CleanUpUnknownTargetWords="+punctSelected+"\n"+
                 "SentencePunctuation="+self.ui.punctuation.text()+"\n")
         f.close()
         msgBox = QMessageBox()
