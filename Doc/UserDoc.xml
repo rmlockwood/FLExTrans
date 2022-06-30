@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->21 June, 2022</date
+>30 June, 2022</date
 ><version
->FLExTrans 3.5</version
+>FLExTrans 3.5.3</version
 ><contents
 showLevel="4"
 ></contents
@@ -1730,7 +1730,7 @@ type="tFilename"
 >transfer_rules.t1x</object
 > to <object
 type="tFoldername"
->German-Swedish</object
+>Croatian-English</object
 > folder.</li
 ><li
 >Open <object
@@ -1755,7 +1755,7 @@ type="tFilename"
 >FlexTrans.config</object
 > to the <object
 type="tFoldername"
->German-Swedish\Config</object
+>Croatian-English\Config</object
 > folder.</li
 ></ol
 ></li
