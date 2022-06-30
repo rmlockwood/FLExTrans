@@ -983,7 +983,7 @@ id="sTesterOther"
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
 type="tFlextrans"
 ></object
-> settings. </p
+> settings.</p
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to run the <object
 type="tModule"
@@ -3740,7 +3740,7 @@ type="tLiveRuleTester"
 >, but this time check only the Croatian word <object
 type="tItalic"
 >pozdrava</object
->.</p
+>. Note: if you refresh the rules, the new Nouns rule will not automatically get checked in the rule list. Check the box for the new rule before testing it.</p
 ><p
 >Starting with:</p
 ><example

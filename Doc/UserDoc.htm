@@ -502,8 +502,8 @@
       <p></p>
       <p></p>
       <h1 style=""><a name="sLinker"></a>3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file
-         and lists every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>: 
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists
+         every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>: 
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -603,11 +603,9 @@
       </ol>
       <h2 style=""><a name="sTesterOther"></a>4.2&nbsp;Other Parts of the Tool
       </h2>
-      <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration
-         file. The transfer rules file and the bilingual lexicon file can be changed if desired by clicking the corresponding <span style="font-style:normal; font-weight:bold; ">Browse</span> buttons.
+      <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings.
       </p>
-      <p>In this version of the tool, you can&#8217;t change the Source Text Name. You will have to edit the configuration file, change the
-         SourceTextName value and re-run the tool.
+      <p>In this version of the tool, you can&#8217;t change the Source Text Name. You will have to run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, change the SourceText Name value and re-run the tool.
       </p>
       <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses)
          directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">12</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
@@ -944,7 +942,7 @@
                </li>
             </ol>
          </li>
-         <li>Let's change the configuration file.
+         <li>Let's set up the configuration file.
             <ol style="list-style-type:lower-alpha; ">
                <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again.
                </li>
@@ -1789,7 +1787,8 @@
                   </tr>
                </table>
             </div>
-            <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check only the Croatian word <span style="font-style:italic; ">pozdrava</span>.
+            <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check only the Croatian word <span style="font-style:italic; ">pozdrava</span>. Note: if you refresh the rules, the new Nouns rule will not automatically get checked in the rule list. Check the box for
+               the new rule before testing it.
             </p>
             <p>Starting with:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2218,7 +2217,7 @@
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
       </p>
-      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the SourceTextName property in the configuration file to &#8220;Text2&#8221;.
+      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the Source Text Name property in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to &#8220;Text2&#8221;.
       </p>
       <h1 style=""><a name="sReferenceDocs"></a>10&nbsp;Reference documents
       </h1>
@@ -2258,8 +2257,7 @@
          <tr>
             <td valign="top"><a name="nCustomFieldNames">[2]</a></td>
             <td>
-               <p>You may choose different names for the custom fields, but you also have to update the configuration file to match these names.
-                  The names <span style="font-weight:bold; ">Target Equivalent</span> and <span style="font-weight:bold; ">Target Sense Number</span> are already set in the configuration file that gets installed with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
+               <p>You may choose different names for the custom fields, but you also have to update the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to match these names. The names <span style="font-weight:bold; ">Target Equivalent</span> and <span style="font-weight:bold; ">Target Sense Number</span> are already set in the settings that get installed with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
                </p>
             </td>
          </tr>
