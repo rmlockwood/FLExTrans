@@ -135,7 +135,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
 
     if not morphNames:
-        error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
+        error_list.append((f'Problem reading the configuration file for the property: {ReadConfig.TARGET_MORPHNAMES}', 2))
         return error_list
     
     TargetDB = FLExProject()
