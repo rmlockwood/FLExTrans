@@ -30,7 +30,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
 
-from Settings import Ui_MainWindow
+import Settings
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
 
@@ -63,7 +63,7 @@ class Main(QMainWindow):
         self.targetDB = targetDB
         self.DB = DB
 
-        self.ui = Ui_MainWindow()
+        self.ui = Settings.Ui_MainWindow()
         self.ui.setupUi(self)
         
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
@@ -136,27 +136,8 @@ class Main(QMainWindow):
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
-    def init_load(self):
+    def loadSourceTextList(self, widget):
         
-        # RL code review 23Jun22: I prefer a space after #
-        # Clear all
-        self.ui.chose_sourc_text.clear()
-        self.ui.chose_entry_link.clear()
-        self.ui.chose_sense_number.clear()
-        self.ui.chose_target_project.clear()
-        self.ui.chose_source_compex_types.clear()
-        self.ui.chose_infelction_first_element.clear()
-        self.ui.chose_infelction_second_element.clear()
-        self.ui.chose_target_morpheme_types.clear()
-        self.ui.chose_source_morpheme_types.clear()
-        self.ui.chose_source_discontiguous_compex.clear()
-        self.ui.chose_skipped_source_words.clear()
-        self.ui.category_abbreviation_one.clear()
-        self.ui.category_abbreviation_one.addItem("...")
-        self.ui.category_abbreviation_two.clear()
-        self.ui.category_abbreviation_two.addItem("...")
-
-        # load all               # RL code review 23Jun22: I'm also a big proponent of white space to make code more readable.
         # Source Text name
         source_list = []
         for item in self.DB.ObjectsIn(ITextRepository):
@@ -170,27 +151,118 @@ class Main(QMainWindow):
         
         for i, item_str in enumerate(sorted_source_list):
             
-            self.ui.chose_sourc_text.addItem(item_str)
+            widget.addItem(item_str)
             
             if item_str == config_source:
                 
-                self.ui.chose_sourc_text.setCurrentIndex(i)
+                widget.setCurrentIndex(i)
+
+    def loadCustomFieldEntry(self, widget):
         
-        # RL code review 23Jun22: in Python you can also do: 
-        # for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
         # Source Custom field for Entry Link and Sense number
         for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
 
             # Add the element to the comboBox, item[1] is because item is some sort of tuple value
-            self.ui.chose_entry_link.addItem(str(item[1]))            # RL code review 23Jun22: why item[1]? maybe explain
-            self.ui.chose_sense_number.addItem(str(item[1]))          # RL code review 23Jun22: why convert to a str, but not in the next line?
+            widget.addItem(str(item[1]))           
 
             # Check the currently selected value
             if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY):
-                self.ui.chose_entry_link.setCurrentIndex(i)
+                
+                widget.setCurrentIndex(i)
 
+    def loadCustomFieldSenseNum(self, widget):
+        
+        # Source Custom field for Entry Link and Sense number
+        for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
+
+            # Add the element to the comboBox, item[1] is because item is some sort of tuple value
+            widget.addItem(str(item[1]))           
+
+            # Check the currently selected value
             if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM):
-                self.ui.chose_sense_number.setCurrentIndex(i)
+                
+                widget.setCurrentIndex(i)
+
+    def init_load(self):
+        
+        # RL code review 23Jun22: I prefer a space after #
+        # Clear all
+        for i in range(0, len(self.ui.widgetList)):
+            
+            widgInfo = self.ui.widgetList[i]
+            widgInfo[Settings.WIDGET1_OBJ].clear()
+            
+#        self.ui.chose_sourc_text.clear()
+#         self.ui.chose_entry_link.clear()
+#         self.ui.chose_sense_number.clear()
+        self.ui.chose_target_project.clear()
+        self.ui.chose_source_compex_types.clear()
+        self.ui.chose_infelction_first_element.clear()
+        self.ui.chose_infelction_second_element.clear()
+        self.ui.chose_target_morpheme_types.clear()
+        self.ui.chose_source_morpheme_types.clear()
+        self.ui.chose_source_discontiguous_compex.clear()
+        self.ui.chose_skipped_source_words.clear()
+        self.ui.category_abbreviation_one.clear()
+        self.ui.category_abbreviation_one.addItem("...")
+        self.ui.category_abbreviation_two.clear()
+        self.ui.category_abbreviation_two.addItem("...")
+
+        func_map = {
+                     'choose_source_text': self.loadSourceTextList,\
+                     'choose_entry_link': self.loadCustomFieldEntry,\
+                     'chose_sense_number': self.loadCustomFieldSenseNum
+                    }
+        
+        # Set functions that go with each widget
+        for i in range(0, len(self.ui.widgetList)):
+            
+            widgInfo = self.ui.widgetList[i]
+            
+            widgInfo[Settings.FUNCT] = func_map[widgInfo[Settings.WIDGET1_OBJ_NAME]]
+                
+        # load all the widgets, calling the applicable load function
+        for i in range(0, len(self.ui.widgetList)):
+            
+            widgInfo = self.ui.widgetList[i]
+            
+            # Call the load function for this widget, pass in the widget object
+            widgInfo[Settings.FUNCT](widgInfo[Settings.WIDGET1_OBJ])
+            
+#         # Source Text name
+#         source_list = []
+#         for item in self.DB.ObjectsIn(ITextRepository):
+# 
+#             source_list.append(str(item).strip())
+# 
+#         sorted_source_list = sorted(source_list, key=str.casefold)
+#         
+#         # RL code review 23Jun22: below is how I might add whitespace, not a must, but it could help other people who are reading the code
+#         config_source = self.read(ReadConfig.SOURCE_TEXT_NAME)
+#         
+#         for i, item_str in enumerate(sorted_source_list):
+#             
+#             self.ui.widgetList[0][len(self.ui.widgetList[0])-1].addItem(item_str)
+#             
+#             if item_str == config_source:
+#                 
+#                 self.ui.widgetList[0][len(self.ui.widgetList[0])-1].setCurrentIndex(i)
+        
+        # RL code review 23Jun22: in Python you can also do: 
+        # for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
+#         # Source Custom field for Entry Link and Sense number
+#         for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
+# 
+#             # Add the element to the comboBox, item[1] is because item is some sort of tuple value
+#             self.ui.chose_entry_link.addItem(str(item[1]))            # RL code review 23Jun22: why item[1]? maybe explain
+#             self.ui.chose_sense_number.addItem(str(item[1]))          # RL code review 23Jun22: why convert to a str, but not in the next line?
+# 
+#             # Check the currently selected value
+#             if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY):
+#                 self.ui.chose_entry_link.setCurrentIndex(i)
+# 
+#             if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM):
+#                 self.ui.chose_sense_number.setCurrentIndex(i)
 
         # Target Projects
         #TODO Make this disable the other stuff that uses target??
@@ -425,14 +497,25 @@ class Main(QMainWindow):
         # The only solution might be too much work, but somehow have a list with the setting string, the ui element, and a type and then use a loop to put out the appropriate 
         # string based on it's type. In theory it might make it easier to add new settings just at the top and the rest of the code does loops over the master list.
         # Just an idea.
-        f.write("SourceTextName="+self.ui.chose_sourc_text.currentText()+"\n"+
-                "AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
+        
+        for i in range(0, len(self.ui.widgetList)):
+            
+            widgInfo = self.ui.widgetList[i]
+            
+            if widgInfo[Settings.WIDGET_TYPE] == Settings.COMBO_BOX:
+                
+                outStr = widgInfo[Settings.CONFIG_NAME]+'='+widgInfo[Settings.WIDGET_OBJ1].currentText()
+                
+            f.write(outStr+'\n')
+            
+        #f.write("SourceTextName="+self.ui.widgetList[0][len(self.ui.widgetList[0])-1].currentText()+"\n"+
+        f.write("AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
                 "TargetOutputSynthesisFile="+self.ui.output_syn_filename.text()+"\n"+
                 "TargetTranferResultsFile="+self.ui.transfer_result_filename.text()+"\n"+
                 "SourceComplexTypes="+self.optional_mul(self.ui.chose_source_compex_types.currentData())+"\n"+
-                "SourceCustomFieldForEntryLink="+self.ui.chose_entry_link.currentText()+"\n"+
-                "SourceCustomFieldForSenseNum="+self.ui.chose_sense_number.currentText()+"\n"+
+#                "SourceCustomFieldForEntryLink="+self.ui.chose_entry_link.currentText()+"\n"+
+#                "SourceCustomFieldForSenseNum="+self.ui.chose_sense_number.currentText()+"\n"+
                 "TargetAffixGlossListFile="+self.ui.taget_affix_gloss_list_filename.text()+"\n"+
                 "BilingualDictOutputFile="+self.ui.bilingual_dictionary_output_filename.text()+"\n"+
                 "BilingualDictReplacementFile="+self.ui.bilingual_dictionary_repalce_file_2.text()+"\n"+
@@ -473,14 +556,21 @@ class Main(QMainWindow):
 
     def reset(self):
         f = open(self.config, "w", encoding='utf-8') # TODO change here when new standard
-        f.write("SourceTextName=Text1\n" +
-                "AnalyzedTextOutputFile=Output\\source_text.aper\n" +
+        
+        for i in range(0, len(self.ui.widgetList)):
+            
+            widgInfo = self.ui.widgetList[i]
+            
+            f.write(widgInfo[Settings.CONFIG_NAME]+'='+widgInfo[Settings.DEFAULT_VALUE]+'\n')
+         
+        #f.write("SourceTextName=Text1\n" +
+#                 "SourceCustomFieldForEntryLink=Target Equivalent\n" +
+#                 "SourceCustomFieldForSenseNum=Target Sense Number\n" +
+        f.write("AnalyzedTextOutputFile=Output\\source_text.aper\n" +
                 "TargetOutputANAFile=Build\\myText.ana\n" +
                 "TargetOutputSynthesisFile=Output\\myText.syn\n" +
                 "TargetTranferResultsFile=Output\\target_text.aper\n" +
                 "SourceComplexTypes=\n" +
-                "SourceCustomFieldForEntryLink=Target Equivalent\n" +
-                "SourceCustomFieldForSenseNum=Target Sense Number\n" +
                 "BilingualDictOutputFile=Output\\bilingual.dix\n" +
                 "BilingualDictReplacementFile=replace.dix\n" +
                 "TargetProject=Swedish-FLExTrans-Sample\n" +

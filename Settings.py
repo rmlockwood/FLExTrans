@@ -1,19 +1,42 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'Settings.ui'
 #
-# Created by: Lærke Roager Christensen
-# The file was created with the PyQt5 UI code generator 5.14.0 at first,
-# but I have made too many manual changes for the ui file, 'Settings.ui', to work anymore.
-# Any changes should be made manually
+#   Settings
+#
+#   Lærke Roager Christensen
+#   6/30/22
+#
+#   Version 3.5.1 - 7/1/22 - Ron Lockwood
+#    xxxxxxxxxxxx
+#
+#   Form implementation generated from reading ui file 'Settings.ui'
+#
+#   The file was created with the PyQt5 UI code generator 5.14.0 at first,
+#   but I have made too many manual changes for the ui file, 'Settings.ui', to work anymore.
+#   Any changes should be made manually
 #
 
 from ComboBox import CheckableComboBox
 from PyQt5 import QtCore, QtGui, QtWidgets
+import ReadConfig as MyReadConfig 
 
+LABEL_OBJ_NAME = 0
+LABEL_TEXT = 1
+WIDGET1_OBJ_NAME = 2
+WIDGET2_OBJ_NAME = 3
+WIDGET_TYPE = 4
+LABEL_OBJ = 5
+WIDGET1_OBJ = 6
+WIDGET2_OBJ = 7
+FUNCT = 8
+CONFIG_NAME = 9
+DEFAULT_VALUE = 10
+WIDGET_TOOLTIP = 11
+
+COMBO_BOX = "combobox"
 
 class Ui_MainWindow(object):
+    
     def setupUi(self, MainWindow):
+        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(899, 756)
 
@@ -50,7 +73,6 @@ class Ui_MainWindow(object):
         self.gridLayout_2.setObjectName("gridLayout_2")
 
         # Reset button, apply button and scroll area
-
         self.reset_button = QtWidgets.QPushButton(self.centralwidget)
         self.reset_button.setObjectName("reset_button")
         self.gridLayout.addWidget(self.reset_button, 0, 2, 1, 1)
@@ -65,36 +87,64 @@ class Ui_MainWindow(object):
         # Set up for the fields in the config file
         # They are placed in the order they are displayed when the program is opened
         # The addWidget function takes 5 parameters.
-        # addWidget(Object, row, column, height, length)
+        # addWidget(Object, row, column, row-span, column-span)
         # In gridLayout_2 there are 26 rows (starting from 1), and 4 columns (starting from 0)
         # Both length and height is in "blocks"
 
-        self.source_text_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.source_text_name.setObjectName("source_text_name")
-        self.gridLayout_2.addWidget(self.source_text_name, 1, 0, 1, 1)
+        
+        self.widgetList = [
+                           ["source_text_name", "Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, object, MyReadConfig.SOURCE_TEXT_NAME, 'Text1',\
+                            "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
+                           
+                           ["entry_link", "Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, object, MyReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, 'Target Equivalent',\
+                            "The name of the custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
+                           
+                           ["sense_number", "Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, object, MyReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, 'Target Sense Number',\
+                            "The name of the custom field in the source FLEx project\nthat holds the sense number of the target entry."]
+                          ]
 
-        self.chose_sourc_text = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
-        self.chose_sourc_text.setObjectName("chose_sourc_text")
-        self.chose_sourc_text.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
-        self.gridLayout_2.addWidget(self.chose_sourc_text, 1, 1, 1, 3)
+        for i in range(0, len(self.widgetList)):
+            
+            widgInfo = self.widgetList[i]
+            newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+            newObj.setObjectName(widgInfo[LABEL_OBJ_NAME])
+            self.gridLayout_2.addWidget(newObj, i+1, 0, 1, 1)
+            widgInfo[LABEL_OBJ] = newObj
 
-        self.entry_link = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.entry_link.setObjectName("entry_link")
-        self.gridLayout_2.addWidget(self.entry_link, 2, 0, 1, 1)
+            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+#         self.source_text_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.source_text_name.setObjectName("source_text_name")
+#         self.gridLayout_2.addWidget(self.source_text_name, 1, 0, 1, 1)
+# 
+#         self.chose_sourc_text = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_sourc_text.setObjectName("chose_sourc_text")
+#         self.chose_sourc_text.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.gridLayout_2.addWidget(self.chose_sourc_text, 1, 1, 1, 3)
 
-        self.chose_entry_link = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
-        self.chose_entry_link.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
-        self.chose_entry_link.setObjectName("chose_entry_link")
-        self.gridLayout_2.addWidget(self.chose_entry_link, 2, 1, 1, 3)
+#         self.entry_link = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.entry_link.setObjectName("entry_link")
+#         self.gridLayout_2.addWidget(self.entry_link, 2, 0, 1, 1)
+# 
+#         self.chose_entry_link = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_entry_link.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.chose_entry_link.setObjectName("chose_entry_link")
+#         self.gridLayout_2.addWidget(self.chose_entry_link, 2, 1, 1, 3)
 
-        self.sense_number = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.sense_number.setObjectName("sense_number")
-        self.gridLayout_2.addWidget(self.sense_number, 3, 0, 1, 1)
-
-        self.chose_sense_number = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
-        self.chose_sense_number.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
-        self.chose_sense_number.setObjectName("chose_sense_number")
-        self.gridLayout_2.addWidget(self.chose_sense_number, 3, 1, 1, 3)
+#         self.sense_number = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.sense_number.setObjectName("sense_number")
+#         self.gridLayout_2.addWidget(self.sense_number, 3, 0, 1, 1)
+# 
+#         self.chose_sense_number = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_sense_number.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.chose_sense_number.setObjectName("chose_sense_number")
+#         self.gridLayout_2.addWidget(self.chose_sense_number, 3, 1, 1, 3)
 
         self.target_project = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.target_project.setObjectName("target_project")
@@ -369,12 +419,18 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Settings"))
 
+        for i in range(0, len(self.widgetList)):
+            
+            widgInfo = self.widgetList[i]
+            widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
+            widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
         # Setting texts, in same order as they appear on the tool
-        self.source_text_name.setText(_translate("MainWindow", "Source Text Name"))
+#        self.source_text_name.setText(_translate("MainWindow", "Source Text Name"))
 
-        self.entry_link.setText(_translate("MainWindow", "Source Custom Field for Entry Link"))
+#        self.entry_link.setText(_translate("MainWindow", "Source Custom Field for Entry Link"))
 
-        self.sense_number.setText(_translate("MainWindow", "Source Custom Field for Sense Number"))
+#        self.sense_number.setText(_translate("MainWindow", "Source Custom Field for Sense Number"))
 
         self.target_project.setText(_translate("MainWindow", "Target Project"))
 
@@ -449,8 +505,8 @@ class Ui_MainWindow(object):
         self.reset_button.setText(_translate("MainWindow", "Reset"))
 
         # ToolTip
-        self.chose_sourc_text.setToolTip("The name of the text (in the first analysis writing system)\n"+
-                                         "in the source FLEx project to be translated.")
+#        self.chose_sourc_text.setToolTip("The name of the text (in the first analysis writing system)\n"+
+#                                         "in the source FLEx project to be translated.")
 
         self.a_text_button.setToolTip("The path and name of the file which holds\n"+
                                       "the extracted source text.")
@@ -469,11 +525,11 @@ class Ui_MainWindow(object):
                                                   "the components that make up this type of complex form are found sequentially\n"+
                                                   "in the source text, they will be converted to one lexical unit.")
 
-        self.chose_entry_link.setToolTip("The name of the custom field in the source FLEx project that\n"+
-                                         "holds the link information to entries in the target FLEx project.")
-
-        self.chose_sense_number.setToolTip("The name of the custom field in the source FLEx project\n"+
-                                           "that holds the sense number of the target entry.")
+#         self.chose_entry_link.setToolTip("The name of the custom field in the source FLEx project that\n"+
+#                                          "holds the link information to entries in the target FLEx project.")
+# 
+#         self.chose_sense_number.setToolTip("The name of the custom field in the source FLEx project\n"+
+#                                            "that holds the sense number of the target entry.")
 
         self.bi_dictionary_uotfile_button.setToolTip("The path and name of the file which holds the bilingual lexicon.")
 
