@@ -28,9 +28,9 @@ from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
 
-import Settings
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
 
@@ -48,11 +48,627 @@ docs = {FTM_Name: "Settings Tool",
         FTM_Help: "",
         FTM_Description:
             """
-Change FLExTrans settings.            
+Change FLExTrans settings. If you want to change the filename for one of the settings,
+type the new name in the text box.             
             """}
 
-# ----------------------------------------------------------------
-# The main processing function
+LABEL_OBJ_NAME = 0
+LABEL_TEXT = 1
+WIDGET1_OBJ_NAME = 2
+WIDGET2_OBJ_NAME = 3
+WIDGET_TYPE = 4
+LABEL_OBJ = 5
+WIDGET1_OBJ = 6
+WIDGET2_OBJ = 7
+LOAD_FUNC = 8
+CONFIG_NAME = 9
+DEFAULT_VALUE = 10
+WIDGET_TOOLTIP = 11
+WIDGET_TOOLTIP = 11
+
+COMBO_BOX = "combobox"
+
+def loadSourceTextList(widget, wind):
+    
+    # Source Text name
+    sourceList = []
+    for item in wind.DB.ObjectsIn(ITextRepository):
+
+        sourceList.append(str(item).strip())
+
+    sortedSourceList = sorted(sourceList, key=str.casefold)
+    
+    # Get the source name from the config file
+    configSource = wind.read(ReadConfig.SOURCE_TEXT_NAME)
+    
+    # Add items and when we find the one that matches the config file. Set that one to be displayed.
+    for i, itemStr in enumerate(sortedSourceList):
+        
+        widget.addItem(itemStr)
+        
+        if itemStr == configSource:
+            
+            widget.setCurrentIndex(i)
+
+def loadCustomFieldEntry(widget, wind):
+    
+    # Get the custom field to link to target entry
+    customTarget = wind.read(ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY)
+    
+    # Add items and when we find the one that matches the config file. Set that one to be displayed.
+    for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
+
+        # item is a tuple, (id, name)
+        widget.addItem(str(item[1]))           
+
+        if item[1] == customTarget:
+            
+            widget.setCurrentIndex(i)
+
+def loadCustomFieldSenseNum(widget, wind):
+    
+    # Get the custom field to link to target sense number
+    customTarget = wind.read(ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM)
+    
+    # Add items and when we find the one that matches the config file. Set that one to be displayed.
+    for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
+
+        # item is a tuple, (id, name)
+        widget.addItem(str(item[1]))           
+
+        if item[1] == customTarget:
+            
+            widget.setCurrentIndex(i)
+
+class Ui_MainWindow(object):
+    
+    def setupUi(self, MainWindow):
+        
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(899, 756)
+
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setMinimumSize(QtCore.QSize(870, 650))
+        self.scrollArea.setMaximumSize(QtCore.QSize(870, 650))
+
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setPointSize(12)
+
+        self.scrollArea.setFont(font)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+
+        # Reset button, apply button and scroll area
+        self.reset_button = QtWidgets.QPushButton(self.centralwidget)
+        self.reset_button.setObjectName("reset_button")
+        self.gridLayout.addWidget(self.reset_button, 0, 2, 1, 1)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.gridLayout.addWidget(self.scrollArea, 1, 2, 1, 1)
+
+        self.apply_button = QtWidgets.QPushButton(self.centralwidget)
+        self.apply_button.setObjectName("apply_button")
+        self.gridLayout.addWidget(self.apply_button, 2, 2, 1, 1)
+
+        # Set up for the fields in the config file
+        # They are placed in the order they are displayed when the program is opened
+        # The addWidget function takes 5 parameters.
+        # addWidget(Object, row, column, row-span, column-span)
+        # In gridLayout_2 there are 26 rows (starting from 1), and 4 columns (starting from 0)
+        # Both length and height is in "blocks"
+
+        
+
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+            newObj.setObjectName(widgInfo[LABEL_OBJ_NAME])
+            self.gridLayout_2.addWidget(newObj, i+1, 0, 1, 1)
+            widgInfo[LABEL_OBJ] = newObj
+
+            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+#         self.source_text_name = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.source_text_name.setObjectName("source_text_name")
+#         self.gridLayout_2.addWidget(self.source_text_name, 1, 0, 1, 1)
+# 
+#         self.chose_sourc_text = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_sourc_text.setObjectName("chose_sourc_text")
+#         self.chose_sourc_text.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.gridLayout_2.addWidget(self.chose_sourc_text, 1, 1, 1, 3)
+
+#         self.entry_link = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.entry_link.setObjectName("entry_link")
+#         self.gridLayout_2.addWidget(self.entry_link, 2, 0, 1, 1)
+# 
+#         self.chose_entry_link = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_entry_link.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.chose_entry_link.setObjectName("chose_entry_link")
+#         self.gridLayout_2.addWidget(self.chose_entry_link, 2, 1, 1, 3)
+
+#         self.sense_number = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.sense_number.setObjectName("sense_number")
+#         self.gridLayout_2.addWidget(self.sense_number, 3, 0, 1, 1)
+# 
+#         self.chose_sense_number = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+#         self.chose_sense_number.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+#         self.chose_sense_number.setObjectName("chose_sense_number")
+#         self.gridLayout_2.addWidget(self.chose_sense_number, 3, 1, 1, 3)
+
+        self.target_project = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.target_project.setObjectName("target_project")
+        self.gridLayout_2.addWidget(self.target_project, 4, 0, 1, 1)
+
+        self.chose_target_project = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+        self.chose_target_project.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_target_project.setObjectName("chose_target_project")
+        self.gridLayout_2.addWidget(self.chose_target_project, 4, 1, 1, 3)
+
+        self.analyzed_output = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.analyzed_output.setObjectName("analyzed_output")
+        self.gridLayout_2.addWidget(self.analyzed_output, 5, 0, 1, 1)
+
+        self.output_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.output_filename.setText("")
+        self.output_filename.setObjectName("output_filename")
+        self.gridLayout_2.addWidget(self.output_filename, 5, 1, 1, 2)
+
+        self.a_text_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.a_text_button.setObjectName("a_text_button")
+        self.gridLayout_2.addWidget(self.a_text_button, 5, 3, 1, 1)
+
+        self.output_ANA_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.output_ANA_file.setObjectName("output_ANA_file")
+        self.gridLayout_2.addWidget(self.output_ANA_file, 6, 0, 1, 1)
+
+        self.output_ANA_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.output_ANA_filename.setText("")
+        self.output_ANA_filename.setObjectName("output_ANA_filename")
+        self.gridLayout_2.addWidget(self.output_ANA_filename, 6, 1, 1, 2)
+
+        self.ana_file_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.ana_file_button.setObjectName("ana_file_button")
+        self.gridLayout_2.addWidget(self.ana_file_button, 6, 3, 1, 1)
+
+        self.output_syn_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.output_syn_file.setObjectName("output_syn_file")
+        self.gridLayout_2.addWidget(self.output_syn_file, 7, 0, 1, 1)
+
+        self.output_syn_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.output_syn_filename.setText("")
+        self.output_syn_filename.setObjectName("output_syn_filename")
+        self.gridLayout_2.addWidget(self.output_syn_filename, 7, 1, 1, 2)
+
+        self.syn_file_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.syn_file_button.setObjectName("syn_file_button")
+        self.gridLayout_2.addWidget(self.syn_file_button, 7, 3, 1, 1)
+
+        self.transfer_result_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.transfer_result_file.setObjectName("transfer_result_file")
+        self.gridLayout_2.addWidget(self.transfer_result_file, 8, 0, 1, 1)
+
+        self.transfer_result_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.transfer_result_filename.setText("")
+        self.transfer_result_filename.setObjectName("transfer_result_filename")
+        self.gridLayout_2.addWidget(self.transfer_result_filename, 8, 1, 1, 2)
+
+        self.transfer_result_file_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.transfer_result_file_button.setObjectName("transfer_result_file_button")
+        self.gridLayout_2.addWidget(self.transfer_result_file_button, 8, 3, 1, 1)
+
+        self.source_complex_types = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.source_complex_types.setObjectName("source_complex_types")
+        self.gridLayout_2.addWidget(self.source_complex_types, 9, 0, 1, 1)
+
+        self.chose_source_compex_types = CheckableComboBox()
+        self.chose_source_compex_types.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_source_compex_types.setObjectName("chose_source_compex_types")
+        self.gridLayout_2.addWidget(self.chose_source_compex_types, 9, 1, 1, 3)
+
+        self.bilingual_dictionary_output_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.bilingual_dictionary_output_file.setObjectName("bilingual_dictionary_output_file")
+        self.gridLayout_2.addWidget(self.bilingual_dictionary_output_file, 10, 0, 1, 1)
+
+        self.bilingual_dictionary_output_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.bilingual_dictionary_output_filename.setText("")
+        self.bilingual_dictionary_output_filename.setObjectName("bilingual_dictionary_output_filename")
+        self.gridLayout_2.addWidget(self.bilingual_dictionary_output_filename, 10, 1, 1, 2)
+
+        self.bi_dictionary_uotfile_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.bi_dictionary_uotfile_button.setObjectName("bi_dictionary_uotfile_button")
+        self.gridLayout_2.addWidget(self.bi_dictionary_uotfile_button, 10, 3, 1, 1)
+
+        self.bilingual_dictionary_repalce_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.bilingual_dictionary_repalce_file.setObjectName("bilingual_dictionary_repalce_file")
+        self.gridLayout_2.addWidget(self.bilingual_dictionary_repalce_file, 11, 0, 1, 1)
+
+        self.bilingual_dictionary_repalce_file_2 = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.bilingual_dictionary_repalce_file_2.setText("")
+        self.bilingual_dictionary_repalce_file_2.setObjectName("bilingual_dictionary_repalce_file_2")
+        self.gridLayout_2.addWidget(self.bilingual_dictionary_repalce_file_2, 11, 1, 1, 2)
+
+        self.bi_dictionary_replacefile_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.bi_dictionary_replacefile_button.setObjectName("bi_dictionary_replacefile_button")
+        self.gridLayout_2.addWidget(self.bi_dictionary_replacefile_button, 11, 3, 1, 1)
+
+        self.taget_affix_gloss_list_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.taget_affix_gloss_list_file.setObjectName("taget_affix_gloss_list_file")
+        self.gridLayout_2.addWidget(self.taget_affix_gloss_list_file, 12, 0, 1, 1)
+
+        self.taget_affix_gloss_list_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.taget_affix_gloss_list_filename.setText("")
+        self.taget_affix_gloss_list_filename.setObjectName("taget_affix_gloss_list_filename")
+        self.gridLayout_2.addWidget(self.taget_affix_gloss_list_filename, 12, 1, 1, 2)
+
+        self.target_affix_list_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.target_affix_list_button.setObjectName("target_affix_list_button")
+        self.gridLayout_2.addWidget(self.target_affix_list_button, 12, 3, 1, 1)
+
+        self.infelction_first_element = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.infelction_first_element.setObjectName("infelction_first_element")
+        self.gridLayout_2.addWidget(self.infelction_first_element, 13, 0, 1, 1)
+
+        self.chose_infelction_first_element = CheckableComboBox()
+        self.chose_infelction_first_element.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_infelction_first_element.setObjectName("chose_infelction_first_element")
+        self.gridLayout_2.addWidget(self.chose_infelction_first_element, 13, 1, 1, 3)
+
+        self.infelction_second_element = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.infelction_second_element.setObjectName("infelction_second_element")
+        self.gridLayout_2.addWidget(self.infelction_second_element, 14, 0, 1, 1)
+
+        self.chose_infelction_second_element = CheckableComboBox()
+        self.chose_infelction_second_element.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_infelction_second_element.setObjectName("chose_infelction_second_element")
+        self.gridLayout_2.addWidget(self.chose_infelction_second_element, 14, 1, 1, 3)
+
+        self.target_morpheme_types = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.target_morpheme_types.setObjectName("target_morpheme_types")
+        self.gridLayout_2.addWidget(self.target_morpheme_types, 15, 0, 1, 1)
+
+        self.chose_target_morpheme_types = CheckableComboBox()
+        self.chose_target_morpheme_types.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_target_morpheme_types.setObjectName("chose_target_morpheme_types")
+        self.gridLayout_2.addWidget(self.chose_target_morpheme_types, 15, 1, 1, 3)
+
+        self.source_morpheme_types = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.source_morpheme_types.setObjectName("source_morpheme_types")
+        self.gridLayout_2.addWidget(self.source_morpheme_types, 16, 0, 1, 1)
+
+        self.chose_source_morpheme_types = CheckableComboBox()
+        self.chose_source_morpheme_types.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_source_morpheme_types.setObjectName("chose_source_morpheme_types")
+        self.gridLayout_2.addWidget(self.chose_source_morpheme_types, 16, 1, 1, 3)
+
+        self.source_discountiguous_complex = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.source_discountiguous_complex.setObjectName("source_discountiguous_complex")
+        self.gridLayout_2.addWidget(self.source_discountiguous_complex, 17, 0, 1, 1)
+
+        self.chose_source_discontiguous_compex = CheckableComboBox()
+        self.chose_source_discontiguous_compex.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_source_discontiguous_compex.setObjectName("chose_source_discontiguous_compex")
+        self.gridLayout_2.addWidget(self.chose_source_discontiguous_compex, 17, 1, 1, 3)
+
+        self.skipped_source_words = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.skipped_source_words.setObjectName("skipped_source_words")
+        self.gridLayout_2.addWidget(self.skipped_source_words, 18, 0, 1, 1)
+
+        self.chose_skipped_source_words = CheckableComboBox()
+        self.chose_skipped_source_words.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.chose_skipped_source_words.setObjectName("chose_skipped_source_words")
+        self.gridLayout_2.addWidget(self.chose_skipped_source_words, 18, 1, 1, 3)
+
+        self.a_treetran_output_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.a_treetran_output_file.setObjectName("a_treetran_output_file")
+        self.gridLayout_2.addWidget(self.a_treetran_output_file, 19, 0, 1, 1)
+
+        self.a_treetran_output_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.a_treetran_output_filename.setObjectName("a_treetran_output_filename")
+        self.gridLayout_2.addWidget(self.a_treetran_output_filename, 19, 1, 1, 2)
+
+        self.a_tretran_outfile_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.a_tretran_outfile_button.setObjectName("a_tretran_outfile_button")
+        self.gridLayout_2.addWidget(self.a_tretran_outfile_button, 19, 3, 1, 1)
+
+        self.treetran_insert_words_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.treetran_insert_words_file.setObjectName("treetran_insert_words_file")
+        self.gridLayout_2.addWidget(self.treetran_insert_words_file, 20, 0, 1, 1)
+
+        self.treetran_insert_words_file_2 = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.treetran_insert_words_file_2.setObjectName("treetran_insert_words_file_2")
+        self.gridLayout_2.addWidget(self.treetran_insert_words_file_2, 20, 1, 1, 2)
+
+        self.tretran_insert_words_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.tretran_insert_words_button.setObjectName("tretran_insert_words_button")
+        self.gridLayout_2.addWidget(self.tretran_insert_words_button, 20, 3, 1, 1)
+
+        self.transfer_rules_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.transfer_rules_file.setObjectName("transfer_rules_file")
+        self.gridLayout_2.addWidget(self.transfer_rules_file, 21, 0, 1, 1)
+
+        self.transfer_rules_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.transfer_rules_filename.setText("")
+        self.transfer_rules_filename.setObjectName("transfer_rules_filename")
+        self.gridLayout_2.addWidget(self.transfer_rules_filename, 21, 1, 1, 2)
+
+        self.transfer_rules_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.transfer_rules_button.setObjectName("transfer_rules_button")
+        self.gridLayout_2.addWidget(self.transfer_rules_button, 21, 3, 1, 1)
+
+        self.testbed_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.testbed_file.setObjectName("testbed_file")
+        self.gridLayout_2.addWidget(self.testbed_file, 22, 0, 1, 1)
+
+        self.testbed_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.testbed_filename.setText("")
+        self.testbed_filename.setObjectName("testbed_filename")
+        self.gridLayout_2.addWidget(self.testbed_filename, 22, 1, 1, 2)
+
+        self.testbed_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.testbed_button.setObjectName("testbed_button")
+        self.gridLayout_2.addWidget(self.testbed_button, 22, 3, 1, 1)
+
+        self.testbed_result_file = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.testbed_result_file.setObjectName("testbed_result_file")
+        self.gridLayout_2.addWidget(self.testbed_result_file, 23, 0, 1, 1)
+
+        self.testbed_result_filename = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.testbed_result_filename.setText("")
+        self.testbed_result_filename.setObjectName("testbed_result_filename")
+        self.gridLayout_2.addWidget(self.testbed_result_filename, 23, 1, 1, 2)
+
+        self.testbed_result_button = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        self.testbed_result_button.setObjectName("testbed_result_button")
+        self.gridLayout_2.addWidget(self.testbed_result_button, 23, 3, 1, 1)
+
+        self.category_abbreviation_pairs = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.category_abbreviation_pairs.setObjectName("category_abbreviation_pairs")
+        self.gridLayout_2.addWidget(self.category_abbreviation_pairs, 24, 0, 1, 1)
+
+        self.category_abbreviation_one = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+        self.category_abbreviation_one.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.category_abbreviation_one.setObjectName("category_abbreviation_one")
+        self.category_abbreviation_one.addItem("")
+        self.gridLayout_2.addWidget(self.category_abbreviation_one, 24, 1, 1, 1)
+
+        self.category_abbreviation_two = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+        self.category_abbreviation_two.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.category_abbreviation_two.setObjectName("category_abbreviation_two")
+        self.category_abbreviation_two.addItem("")
+        self.gridLayout_2.addWidget(self.category_abbreviation_two, 24, 2, 1, 1)
+
+        self.cleanup_target_words = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.cleanup_target_words.setObjectName("cleanup_target_words")
+        self.gridLayout_2.addWidget(self.cleanup_target_words, 25, 0, 1, 1)
+
+        self.cleanup_yes = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+        self.cleanup_yes.setObjectName("cleanup_yes")
+        self.gridLayout_2.addWidget(self.cleanup_yes, 25, 1, 1, 1)
+
+        self.cleanup_no = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+        self.cleanup_no.setChecked(True)
+        self.cleanup_no.setObjectName("cleanup_no")
+        self.gridLayout_2.addWidget(self.cleanup_no, 25, 2, 1, 1)
+
+        self.sentence_punctuation = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.sentence_punctuation.setObjectName("sentence_punctuation")
+        self.gridLayout_2.addWidget(self.sentence_punctuation, 26, 0, 1, 1)
+
+        self.punctuation = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+        self.punctuation.setText("")
+        self.punctuation.setObjectName("punctuation")
+        self.gridLayout_2.addWidget(self.punctuation, 26, 1, 1, 3)
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Settings"))
+
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
+            widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
+        # Setting texts, in same order as they appear on the tool
+#        self.source_text_name.setText(_translate("MainWindow", "Source Text Name"))
+
+#        self.entry_link.setText(_translate("MainWindow", "Source Custom Field for Entry Link"))
+
+#        self.sense_number.setText(_translate("MainWindow", "Source Custom Field for Sense Number"))
+
+        self.target_project.setText(_translate("MainWindow", "Target Project"))
+
+        self.analyzed_output.setText(_translate("MainWindow", "Analyzed Text Output File"))
+        self.a_text_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.output_ANA_file.setText(_translate("MainWindow", "Target Output ANA File"))
+        self.ana_file_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.output_syn_file.setText(_translate("MainWindow", "Target Output Synthesis File"))
+        self.syn_file_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.transfer_result_file.setText(_translate("MainWindow", "Target Transfer Results File"))
+        self.transfer_result_file_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.source_complex_types.setText(_translate("MainWindow", "Source Complex Form Types"))
+
+        self.bilingual_dictionary_output_file.setText(_translate("MainWindow", "Bilingual Dictionary Output File"))
+        self.bi_dictionary_uotfile_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.bilingual_dictionary_repalce_file.setText(_translate("MainWindow", "Bilingual Dictionary Replacement File"))
+        self.bi_dictionary_replacefile_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.taget_affix_gloss_list_file.setText(_translate("MainWindow", "Target Affix Gloss List File"))
+        self.target_affix_list_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.infelction_first_element.setText(_translate("MainWindow", "Target Complex Form Types \n"
+                                                                       "with Inflection on 1st Element"))
+        self.chose_infelction_first_element.setItemText(0, _translate("MainWindow", "..."))
+
+        self.infelction_second_element.setText(_translate("MainWindow", "Target Complex Form Types \n"
+                                                                        "with Inflection on 2nd Element"))
+        self.chose_infelction_second_element.setItemText(0, _translate("MainWindow", "..."))
+
+        self.target_morpheme_types.setText(_translate("MainWindow", "Target Morpheme Types \n"
+                                                                    "Counted As Roots"))
+
+        self.source_morpheme_types.setText(_translate("MainWindow", "Source Morpheme Types \n"
+                                                                    "Counted As Roots"))
+
+        self.source_discountiguous_complex.setText(_translate("MainWindow", "Source Discontiguous Complex Form Types"))
+
+        self.skipped_source_words.setText(_translate("MainWindow", "Source Skipped Word Grammatical \n"
+                                                                   "Categories for Discontigous Complex Forms"))
+
+        self.a_treetran_output_file.setText(_translate("MainWindow", "Analyzed Text TreeTran Output File"))
+        self.a_tretran_outfile_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.treetran_insert_words_file.setText(_translate("MainWindow", "TreeTran Insert Words File"))
+        self.tretran_insert_words_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.transfer_rules_file.setText(_translate("MainWindow", "Transfer Rules File"))
+        self.transfer_rules_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.testbed_file.setText(_translate("MainWindow", "Testbed File"))
+        self.testbed_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.testbed_result_file.setText(_translate("MainWindow", "Testbed Results File"))
+        self.testbed_result_button.setText(_translate("MainWindow", "Browse file..."))
+
+        self.category_abbreviation_pairs.setText(_translate("MainWindow", "Category Abbreviation Pairs"))
+        self.category_abbreviation_one.setItemText(0, _translate("MainWindow", "..."))
+        self.category_abbreviation_two.setItemText(0, _translate("MainWindow", "..."))
+
+        self.cleanup_target_words.setText(_translate("MainWindow", "Cleanup Unknown Target Words"))
+        self.cleanup_no.setText(_translate("MainWindow", "No"))
+        self.cleanup_yes.setText(_translate("MainWindow", "Yes"))
+
+        self.sentence_punctuation.setText(_translate("MainWindow", "Sentence Punctuation"))
+
+        self.apply_button.setText(_translate("MainWindow", "Apply"))
+        self.reset_button.setText(_translate("MainWindow", "Reset"))
+
+        # ToolTip
+#        self.chose_sourc_text.setToolTip("The name of the text (in the first analysis writing system)\n"+
+#                                         "in the source FLEx project to be translated.")
+
+        self.a_text_button.setToolTip("The path and name of the file which holds\n"+
+                                      "the extracted source text.")
+
+        self.ana_file_button.setToolTip("The path and name of the file holding\n"+
+                                        "the intermediary text in STAMP format.")
+
+        self.syn_file_button.setToolTip("The path and name of the file holding\n"+
+                                        "the intermediary synthesized file.")
+
+        self.transfer_result_file_button.setToolTip("The path and name of the file which holds the text contents\n"+
+                                                    "after going through the transfer process.")
+
+        self.chose_source_compex_types.setToolTip("One or more complex types from the source FLEx project.\n"+
+                                                  "These types will be treated as a lexical unit in FLExTrans and whenever\n"+
+                                                  "the components that make up this type of complex form are found sequentially\n"+
+                                                  "in the source text, they will be converted to one lexical unit.")
+
+#         self.chose_entry_link.setToolTip("The name of the custom field in the source FLEx project that\n"+
+#                                          "holds the link information to entries in the target FLEx project.")
+# 
+#         self.chose_sense_number.setToolTip("The name of the custom field in the source FLEx project\n"+
+#                                            "that holds the sense number of the target entry.")
+
+        self.bi_dictionary_uotfile_button.setToolTip("The path and name of the file which holds the bilingual lexicon.")
+
+        self.bi_dictionary_replacefile_button.setToolTip("The path and name of the file which holds replacement\n"+
+                                                         "entry pairs for the bilingual lexicon.")
+
+        self.chose_target_project.setToolTip("The name of the target FLEx project.")
+
+        self.target_affix_list_button.setToolTip("The ancillary file that hold a list of affix\n"+
+                                                 "glosses from the target FLEx project.")
+
+        self.chose_infelction_first_element.setToolTip("One or more complex types from the target FLEx project.\n"+
+                                                       "These types, when occurring in the text file to be synthesized,\n"+
+                                                       "will be broken down into their constituent entries. Use this property\n"+
+                                                       "for the types that have inflection on the first element of the complex form.")
+
+        self.chose_infelction_second_element.setToolTip("Same as above. Use this property for the types that have inflection\n"+
+                                                        "on the second element of the complex form.")
+
+        self.chose_target_morpheme_types.setToolTip("Morpheme types in the target FLEx project that are to be considered\n"+
+                                                    "as some kind of root. In other words, non-affixes and non-clitics.")
+
+        self.chose_source_morpheme_types.setToolTip("Morpheme types in the source FLEx project that are to be considered\n"+
+                                                    "as some kind of root. In other words, non-affixes and non-clitics.")
+
+        self.chose_source_discontiguous_compex.setToolTip("One or more complex types from the source FLEx project.\n"+
+                                                          "These types will allow one intervening word between the first\n"+
+                                                          "and second words of the complex type, yet will still be treated\n"+
+                                                          "as a lexical unit.")
+
+        self.chose_skipped_source_words.setToolTip("One or more grammatical categories that can intervene in the above complex types.")
+
+        self.a_tretran_outfile_button.setToolTip("The path and name of the file that holds the output from TreeTran.")
+
+        self.tretran_insert_words_button.setToolTip("The path and name of the file that has a list of\n"+
+                                                    "words that can be inserted with a TreeTran rule.")
+
+        self.transfer_rules_button.setToolTip("The path and name of the file containing the transfer rules.")
+
+        self.testbed_button.setToolTip("The path and name of the testbed file.")
+
+        self.testbed_result_button.setToolTip("The path and name of the testbed results file.")
+
+        self.category_abbreviation_one.setToolTip("One or more pairs of grammatical categories where the first category\n"+
+                                                  "is the “from” category in the source FLEx project and the second category\n"+
+                                                  "is the “to” category in the target FLEx project. Use the abbreviations of\n"+
+                                                  "the FLEx categories. The substitution happens in the bilingual lexicon.")
+
+        self.category_abbreviation_two.setToolTip("One or more pairs of grammatical categories where the first category\n" +
+                                                  "is the “from” category in the source FLEx project and the second category\n" +
+                                                  "is the “to” category in the target FLEx project. Use the abbreviations of\n" +
+                                                  "the FLEx categories. The substitution happens in the bilingual lexicon.")
+
+        self.cleanup_yes.setToolTip("Indicates if the system should remove preceding @ signs\n"+
+                                    "and numbers in the form N.N following words in the target text.")
+
+        self.cleanup_no.setToolTip("Indicates if the system should remove preceding @ signs\n" +
+                                   "and numbers in the form N.N following words in the target text.")
+
+        self.punctuation.setToolTip("A list of punctuation that ends a sentence.\n"+
+                                    "In transfer rules you can check for the end of a sentence.")
+
 class Main(QMainWindow):
 
     def __init__(self, configMap, report, targetDB, DB):
@@ -63,7 +679,7 @@ class Main(QMainWindow):
         self.targetDB = targetDB
         self.DB = DB
 
-        self.ui = Settings.Ui_MainWindow()
+        self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
@@ -136,61 +752,14 @@ class Main(QMainWindow):
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
-    def loadSourceTextList(self, widget):
-        
-        # Source Text name
-        source_list = []
-        for item in self.DB.ObjectsIn(ITextRepository):
-
-            source_list.append(str(item).strip())
-
-        sorted_source_list = sorted(source_list, key=str.casefold)
-        
-        # RL code review 23Jun22: below is how I might add whitespace, not a must, but it could help other people who are reading the code
-        config_source = self.read(ReadConfig.SOURCE_TEXT_NAME)
-        
-        for i, item_str in enumerate(sorted_source_list):
-            
-            widget.addItem(item_str)
-            
-            if item_str == config_source:
-                
-                widget.setCurrentIndex(i)
-
-    def loadCustomFieldEntry(self, widget):
-        
-        # Source Custom field for Entry Link and Sense number
-        for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
-
-            # Add the element to the comboBox, item[1] is because item is some sort of tuple value
-            widget.addItem(str(item[1]))           
-
-            # Check the currently selected value
-            if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY):
-                
-                widget.setCurrentIndex(i)
-
-    def loadCustomFieldSenseNum(self, widget):
-        
-        # Source Custom field for Entry Link and Sense number
-        for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):
-
-            # Add the element to the comboBox, item[1] is because item is some sort of tuple value
-            widget.addItem(str(item[1]))           
-
-            # Check the currently selected value
-            if item[1] == self.read(ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM):
-                
-                widget.setCurrentIndex(i)
-
     def init_load(self):
         
         # RL code review 23Jun22: I prefer a space after #
         # Clear all
-        for i in range(0, len(self.ui.widgetList)):
+        for i in range(0, len(widgetList)):
             
-            widgInfo = self.ui.widgetList[i]
-            widgInfo[Settings.WIDGET1_OBJ].clear()
+            widgInfo = widgetList[i]
+            widgInfo[WIDGET1_OBJ].clear()
             
 #        self.ui.chose_sourc_text.clear()
 #         self.ui.chose_entry_link.clear()
@@ -208,29 +777,16 @@ class Main(QMainWindow):
         self.ui.category_abbreviation_two.clear()
         self.ui.category_abbreviation_two.addItem("...")
 
-        func_map = {
-                     'choose_source_text': self.loadSourceTextList,\
-                     'choose_entry_link': self.loadCustomFieldEntry,\
-                     'chose_sense_number': self.loadCustomFieldSenseNum
-                    }
-        
-        # Set functions that go with each widget
-        for i in range(0, len(self.ui.widgetList)):
-            
-            widgInfo = self.ui.widgetList[i]
-            
-            widgInfo[Settings.FUNCT] = func_map[widgInfo[Settings.WIDGET1_OBJ_NAME]]
-                
         # load all the widgets, calling the applicable load function
-        for i in range(0, len(self.ui.widgetList)):
+        for i in range(0, len(widgetList)):
             
-            widgInfo = self.ui.widgetList[i]
+            widgInfo = widgetList[i]
             
-            # Call the load function for this widget, pass in the widget object
-            widgInfo[Settings.FUNCT](widgInfo[Settings.WIDGET1_OBJ])
+            # Call the load function for this widget, pass in the widget object and this window object
+            widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], self)
             
 #         # Source Text name
-#         source_list = []
+#         sourceList = []
 #         for item in self.DB.ObjectsIn(ITextRepository):
 # 
 #             source_list.append(str(item).strip())
@@ -242,11 +798,11 @@ class Main(QMainWindow):
 #         
 #         for i, item_str in enumerate(sorted_source_list):
 #             
-#             self.ui.widgetList[0][len(self.ui.widgetList[0])-1].addItem(item_str)
+#             widgetList[0][len(widgetList[0])-1].addItem(item_str)
 #             
 #             if item_str == config_source:
 #                 
-#                 self.ui.widgetList[0][len(self.ui.widgetList[0])-1].setCurrentIndex(i)
+#                 widgetList[0][len(widgetList[0])-1].setCurrentIndex(i)
         
         # RL code review 23Jun22: in Python you can also do: 
         # for i, item in enumerate(self.DB.LexiconGetSenseCustomFields()):  - this way you don't have to initialize i or increment i
@@ -498,17 +1054,17 @@ class Main(QMainWindow):
         # string based on it's type. In theory it might make it easier to add new settings just at the top and the rest of the code does loops over the master list.
         # Just an idea.
         
-        for i in range(0, len(self.ui.widgetList)):
+        for i in range(0, len(widgetList)):
             
-            widgInfo = self.ui.widgetList[i]
+            widgInfo = widgetList[i]
             
-            if widgInfo[Settings.WIDGET_TYPE] == Settings.COMBO_BOX:
+            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                outStr = widgInfo[Settings.CONFIG_NAME]+'='+widgInfo[Settings.WIDGET_OBJ1].currentText()
+                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
                 
             f.write(outStr+'\n')
             
-        #f.write("SourceTextName="+self.ui.widgetList[0][len(self.ui.widgetList[0])-1].currentText()+"\n"+
+        #f.write("SourceTextName="+widgetList[0][len(widgetList[0])-1].currentText()+"\n"+
         f.write("AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
                 "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
                 "TargetOutputSynthesisFile="+self.ui.output_syn_filename.text()+"\n"+
@@ -557,11 +1113,11 @@ class Main(QMainWindow):
     def reset(self):
         f = open(self.config, "w", encoding='utf-8') # TODO change here when new standard
         
-        for i in range(0, len(self.ui.widgetList)):
+        for i in range(0, len(widgetList)):
             
-            widgInfo = self.ui.widgetList[i]
+            widgInfo = widgetList[i]
             
-            f.write(widgInfo[Settings.CONFIG_NAME]+'='+widgInfo[Settings.DEFAULT_VALUE]+'\n')
+            f.write(widgInfo[CONFIG_NAME]+'='+widgInfo[DEFAULT_VALUE]+'\n')
          
         #f.write("SourceTextName=Text1\n" +
 #                 "SourceCustomFieldForEntryLink=Target Equivalent\n" +
@@ -628,11 +1184,24 @@ def MainFunction(DB, report, modify=True):
 
     TargetDB.CloseProject()
 
+
 # ----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
+widgetList = [
+   ["source_text_name", "Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME, 'Text1',\
+    "The name of the text (in the first analysis writing system)\n in the source FLEx project to be translated."],\
+   
+   ["entry_link", "Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomFieldEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, 'Target Equivalent',\
+    "The name of the custom field in the source FLEx project that\n holds the link information to entries in the target FLEx project."],\
+   
+   ["sense_number", "Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomFieldSenseNum, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, 'Target Sense Number',\
+    "The name of the custom field in the source FLEx project\n that holds the sense number of the target entry."]
+              ]
+
 # ----------------------------------------------------------------
+# The main processing function
 if __name__ == '__main__':
     FlexToolsModule.Help()
