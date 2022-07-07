@@ -68,6 +68,8 @@ WIDGET_TOOLTIP = 11
 COMBO_BOX = "combobox"
 SIDE_BY_SIDE_COMBO_BOX = "side by side"
 CHECK_COMBO_BOX = "checkable_combobox"
+YES_NO = "yes no"
+TEXT_BOX = "textbox"
 FILE = "file"
 
 targetComplexTypes = []
@@ -270,10 +272,30 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
 
-def loadFile(widget, path):            
+def loadYesNo(widget, wind, settingName):            
 
-    widget.setText(os.path.relpath(path).replace(os.sep, '/'))
-    widget.setToolTip(os.path.abspath(path).replace(os.sep, '/'))
+    yesNo = wind.read(settingName)
+    
+    if yesNo == 'y':
+        
+        widget.setChecked(True)
+
+def loadTextBox(widget, wind, settingName):            
+
+    text = wind.read(settingName)
+    
+    if text:
+        
+        widget.setText(text)
+
+def loadFile(widget, wind, settingName):            
+
+    path = wind.read(settingName)
+    
+    if path:
+
+        widget.setText(os.path.relpath(path).replace(os.sep, '/'))
+        widget.setToolTip(os.path.abspath(path).replace(os.sep, '/'))
 
 def make_open_file(wind, myWidgInfo):
     def open_file():
@@ -310,8 +332,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
-        self.scrollArea.setMinimumSize(QtCore.QSize(870, 650))
-        self.scrollArea.setMaximumSize(QtCore.QSize(870, 650))
+        self.scrollArea.setMinimumSize(QtCore.QSize(900, 650))
+        self.scrollArea.setMaximumSize(QtCore.QSize(900, 650))
 
         font = QtGui.QFont()
         font.setFamily("Arial")
@@ -365,6 +387,13 @@ class Ui_MainWindow(object):
                 self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
             
+            elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
+                
+                newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
@@ -382,6 +411,21 @@ class Ui_MainWindow(object):
                 
                 # Add a blank item
                 newObj.addItem("")
+                self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
+                widgInfo[WIDGET2_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                # Yes radio button
+                newObj = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 1)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+                # No radio button - checked
+                newObj = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
+                newObj.setChecked(True)
                 self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
             
@@ -680,27 +724,27 @@ class Ui_MainWindow(object):
 #         self.category_abbreviation_two.addItem("")
 #         self.gridLayout_2.addWidget(self.category_abbreviation_two, 24, 2, 1, 1)
 
-        self.cleanup_target_words = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.cleanup_target_words.setObjectName("cleanup_target_words")
-        self.gridLayout_2.addWidget(self.cleanup_target_words, 25, 0, 1, 1)
-
-        self.cleanup_yes = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
-        self.cleanup_yes.setObjectName("cleanup_yes")
-        self.gridLayout_2.addWidget(self.cleanup_yes, 25, 1, 1, 1)
-
-        self.cleanup_no = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
-        self.cleanup_no.setChecked(True)
-        self.cleanup_no.setObjectName("cleanup_no")
-        self.gridLayout_2.addWidget(self.cleanup_no, 25, 2, 1, 1)
-
-        self.sentence_punctuation = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.sentence_punctuation.setObjectName("sentence_punctuation")
-        self.gridLayout_2.addWidget(self.sentence_punctuation, 26, 0, 1, 1)
-
-        self.punctuation = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
-        self.punctuation.setText("")
-        self.punctuation.setObjectName("punctuation")
-        self.gridLayout_2.addWidget(self.punctuation, 26, 1, 1, 3)
+#         self.cleanup_target_words = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.cleanup_target_words.setObjectName("cleanup_target_words")
+#         self.gridLayout_2.addWidget(self.cleanup_target_words, 25, 0, 1, 1)
+# 
+#         self.cleanup_yes = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+#         self.cleanup_yes.setObjectName("cleanup_yes")
+#         self.gridLayout_2.addWidget(self.cleanup_yes, 25, 1, 1, 1)
+# 
+#         self.cleanup_no = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+#         self.cleanup_no.setChecked(True)
+#         self.cleanup_no.setObjectName("cleanup_no")
+#         self.gridLayout_2.addWidget(self.cleanup_no, 25, 2, 1, 1)
+# 
+#         self.sentence_punctuation = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+#         self.sentence_punctuation.setObjectName("sentence_punctuation")
+#         self.gridLayout_2.addWidget(self.sentence_punctuation, 26, 0, 1, 1)
+# 
+#         self.punctuation = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+#         self.punctuation.setText("")
+#         self.punctuation.setObjectName("punctuation")
+#         self.gridLayout_2.addWidget(self.punctuation, 26, 1, 1, 3)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -728,8 +772,14 @@ class Ui_MainWindow(object):
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
-            else:
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
+                widgInfo[WIDGET1_OBJ].setText(_translate("MainWindow", "Yes"))
+                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "No"))
+                widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
+            else:
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
         # Setting texts, in same order as they appear on the tool
@@ -802,11 +852,11 @@ class Ui_MainWindow(object):
 #         self.category_abbreviation_one.setItemText(0, _translate("MainWindow", "..."))
 #         self.category_abbreviation_two.setItemText(0, _translate("MainWindow", "..."))
 
-        self.cleanup_target_words.setText(_translate("MainWindow", "Cleanup Unknown Target Words"))
-        self.cleanup_no.setText(_translate("MainWindow", "No"))
-        self.cleanup_yes.setText(_translate("MainWindow", "Yes"))
-
-        self.sentence_punctuation.setText(_translate("MainWindow", "Sentence Punctuation"))
+#         self.cleanup_target_words.setText(_translate("MainWindow", "Cleanup Unknown Target Words"))
+#         self.cleanup_no.setText(_translate("MainWindow", "No"))
+#         self.cleanup_yes.setText(_translate("MainWindow", "Yes"))
+# 
+#         self.sentence_punctuation.setText(_translate("MainWindow", "Sentence Punctuation"))
 
         self.apply_button.setText(_translate("MainWindow", "Apply"))
         self.reset_button.setText(_translate("MainWindow", "Reset"))
@@ -892,14 +942,14 @@ class Ui_MainWindow(object):
 #                                                   "is the “to” category in the target FLEx project. Use the abbreviations of\n" +
 #                                                   "the FLEx categories. The substitution happens in the bilingual lexicon.")
 
-        self.cleanup_yes.setToolTip("Indicates if the system should remove preceding @ signs\n"+
-                                    "and numbers in the form N.N following words in the target text.")
-
-        self.cleanup_no.setToolTip("Indicates if the system should remove preceding @ signs\n" +
-                                   "and numbers in the form N.N following words in the target text.")
-
-        self.punctuation.setToolTip("A list of punctuation that ends a sentence.\n"+
-                                    "In transfer rules you can check for the end of a sentence.")
+#         self.cleanup_yes.setToolTip("Indicates if the system should remove preceding @ signs\n"+
+#                                     "and numbers in the form N.N following words in the target text.")
+# 
+#         self.cleanup_no.setToolTip("Indicates if the system should remove preceding @ signs\n" +
+#                                    "and numbers in the form N.N following words in the target text.")
+# 
+#         self.punctuation.setToolTip("A list of punctuation that ends a sentence.\n"+
+#                                     "In transfer rules you can check for the end of a sentence.")
 
 class Main(QMainWindow):
 
@@ -1040,26 +1090,17 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
-            if widgInfo[WIDGET_TYPE] == COMBO_BOX or  widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+            if widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                # pass two widgets
+                widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], widgInfo[WIDGET2_OBJ], self, widgInfo[CONFIG_NAME])
+
+            else:
                 
                 # Call the load function for this widget, pass in the widget object and this window object
                 # Also pass the config file setting name
                 widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], self, widgInfo[CONFIG_NAME])
 
-            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
-                
-                # pass two widgets
-                widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], widgInfo[WIDGET2_OBJ], self, widgInfo[CONFIG_NAME])
-
-            elif widgInfo[WIDGET_TYPE] == FILE:
-                
-                # The typical load function sets the line edit and the tooltip for it.
-                configPath = self.read(widgInfo[CONFIG_NAME])
-                
-                if configPath:
-                    
-                    widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], configPath)
-            
 #         # Source Text name
 #         sourceList = []
 #         for item in self.DB.ObjectsIn(ITextRepository):
@@ -1307,14 +1348,14 @@ class Main(QMainWindow):
 #                     self.ui.category_abbreviation_two.setCurrentIndex(i)
 
         # Clean Up Unknown target Words
-        if self.read(ReadConfig.CLEANUP_UNKNOWN_WORDS) == 'y':
-
-            self.ui.cleanup_yes.setChecked(True)
-
-        # Punctuation
-        self.ui.punctuation.setText(self.read(ReadConfig.SENTENCE_PUNCTUATION))
-        # Align left as default
-        self.ui.punctuation.setAlignment(Qt.AlignLeft)
+#         if self.read(ReadConfig.CLEANUP_UNKNOWN_WORDS) == 'y':
+# 
+#             self.ui.cleanup_yes.setChecked(True)
+# 
+#         # Punctuation
+#         self.ui.punctuation.setText(self.read(ReadConfig.SENTENCE_PUNCTUATION))
+#         # Align left as default
+#         self.ui.punctuation.setAlignment(Qt.AlignLeft)
 
     def save(self):
         # RL code review 23Jun22: maybe a better variable name
@@ -1352,9 +1393,19 @@ class Main(QMainWindow):
                     
                 outStr = widgInfo[CONFIG_NAME]+'='+valStr
                 
-            elif widgInfo[WIDGET_TYPE] == FILE:
+            elif widgInfo[WIDGET_TYPE] == FILE or widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text()
+                
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                if widgInfo[WIDGET1_OBJ].isChecked():
+                    
+                    selected='y'
+                else:
+                    selected='n'
+            
+                outStr = widgInfo[CONFIG_NAME]+'='+selected
                 
             f.write(outStr+'\n')
             
@@ -1555,8 +1606,14 @@ widgetList = [
     "The path and name of the testbed results file"],\
 
    ["category_abbreviation_pairs", "Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST, 'Target Equivalent',\
-    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."]
+    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
    
+   ["cleanup_target_words", "Cleanup Unknown Target Words", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, 'Output\\target_text.aper', \
+    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."],\
+
+   ["sentence_punctuation", "Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, 'Output\\target_text.aper', \
+    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."]
+
               ]
 
 # ----------------------------------------------------------------
