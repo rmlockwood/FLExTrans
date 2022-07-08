@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.4 - 7/8/22 - Ron Lockwood
+#    Rewrite of this module to have a master list of settings and associated
+#    widgets. Loop through the widget list in various places to set up the window
+#    and process data coming in and going out. Fixes #151. Fixes #153. Fixes #137.
+#
 #   Version 3.5.3 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -41,7 +46,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.3",
+        FTM_Version: "3.5.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -50,6 +55,8 @@ docs = {FTM_Name: "Settings Tool",
 Change FLExTrans settings. If you want to change the filename for one of the settings,
 type the new name in the text box.             
             """}
+
+### See widget list at the bottom and instructions for adding a new setting ###
 
 LABEL_OBJ_NAME = 0
 LABEL_TEXT = 1
@@ -61,8 +68,7 @@ WIDGET1_OBJ = 6
 WIDGET2_OBJ = 7
 LOAD_FUNC = 8
 CONFIG_NAME = 9
-DEFAULT_VALUE = 10
-WIDGET_TOOLTIP = 11
+WIDGET_TOOLTIP = 10
 
 COMBO_BOX = "combobox"
 SIDE_BY_SIDE_COMBO_BOX = "side by side"
@@ -295,8 +301,13 @@ def loadFile(widget, wind, settingName):
         set_paths(widget, path)
 
 def make_open_file(wind, myWidgInfo):
+    
+    # create a new function that will call do_browse with the given parameters
     def open_file():
+        
         do_browse(wind, myWidgInfo)
+        wind.set_modified_flag()
+        
     return open_file
     
     do_browse(wind, myWidgInfo)
@@ -318,7 +329,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(899, 756)
+        MainWindow.resize(800, 756)
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -334,12 +345,12 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
-        self.scrollArea.setMinimumSize(QtCore.QSize(850, 650))
-        self.scrollArea.setMaximumSize(QtCore.QSize(850, 650))
+        self.scrollArea.setMinimumSize(QtCore.QSize(750, 650))
+        self.scrollArea.setMaximumSize(QtCore.QSize(750, 650))
 
         font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(12)
+#         font.setFamily("Arial")
+        font.setPointSize(9)
 
         self.scrollArea.setFont(font)
         self.scrollArea.setWidgetResizable(True)
@@ -352,17 +363,14 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName("gridLayout_2")
 
-        # Reset button, apply button and scroll area
-        self.reset_button = QtWidgets.QPushButton(self.centralwidget)
-        self.reset_button.setObjectName("reset_button")
-        self.gridLayout.addWidget(self.reset_button, 0, 2, 1, 1)
-
+        # Set up scroll area
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollArea, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.scrollArea, 0, 2, 1, 1)
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
-        self.gridLayout.addWidget(self.apply_button, 2, 2, 1, 1)
+        #self.apply_button.setMaximumWidth(60)
+        self.gridLayout.addWidget(self.apply_button, 1, 2, 1, 1)
 
         # Set up for the fields in the config file
         # They are placed in the order according to the widgetList
@@ -494,7 +502,6 @@ class Ui_MainWindow(object):
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
         self.apply_button.setText(_translate("MainWindow", "Apply"))
-        self.reset_button.setText(_translate("MainWindow", "Reset"))
 
 class Main(QMainWindow):
 
@@ -510,6 +517,11 @@ class Main(QMainWindow):
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # Load the widgets with data        
+        self.init_load()
+
+        self.modified = False
         
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
         # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
@@ -517,21 +529,48 @@ class Main(QMainWindow):
         
         self.config = myPath
 
-        # connect buttons to functions
+        # Loop through all settings
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
             
+            # Connect browse buttons to functions
             if widgInfo[WIDGET_TYPE] == FILE:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(make_open_file(self, widgInfo))
-             
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+
+            # Connect all widgets to a function the sets the modified flag
+            # This is so that any clicking on objects will prompt the user to save on exit
+            elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
+                
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                widgInfo[WIDGET1_OBJ].toggled.connect(self.set_modified_flag)
+                
         # Apply button
         self.ui.apply_button.clicked.connect(self.save)
-#        self.ui.reset_button.clicked.connect(self.reset)
 
-        self.init_load()
-
+    def set_modified_flag(self):
+        
+        self.modified = True
+        
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
@@ -615,10 +654,10 @@ class Main(QMainWindow):
             f.write(outStr+'\n')
             
         f.close()
-        msgBox = QMessageBox()
-        msgBox.setText("Your file has been successfully saved.")
-        msgBox.setWindowTitle("Successful save")
-        msgBox.exec()
+        
+        self.modified = False
+        
+        QMessageBox.information(self, 'Save Settings', 'Settings saved.')
 
     def optional_mul(self, array):
         write = ''
@@ -626,45 +665,6 @@ class Main(QMainWindow):
             for text in array:
                 write += text + ","
         return write
-
-    def reset(self):
-        f = open(self.config, "w", encoding='utf-8') # TODO change here when new standard
-        
-        for i in range(0, len(widgetList)):
-            
-            widgInfo = widgetList[i]
-            
-            f.write(widgInfo[CONFIG_NAME]+'='+widgInfo[DEFAULT_VALUE]+'\n')
-         
-        #f.write("SourceTextName=Text1\n" +
-#                 "SourceCustomFieldForEntryLink=Target Equivalent\n" +
-#                 "SourceCustomFieldForSenseNum=Target Sense Number\n" +
-        f.write("AnalyzedTextOutputFile=Output\\source_text.aper\n" +
-                "TargetOutputANAFile=Build\\myText.ana\n" +
-                "TargetOutputSynthesisFile=Output\\myText.syn\n" +
-                "TargetTranferResultsFile=Output\\target_text.aper\n" +
-                "SourceComplexTypes=\n" +
-                "BilingualDictOutputFile=Output\\bilingual.dix\n" +
-                "BilingualDictReplacementFile=replace.dix\n" +
-                "TargetProject=Swedish-FLExTrans-Sample\n" +
-                "TargetAffixGlossListFile=Build\\target_affix_glosses.txt\n" +
-                "TargetComplexFormsWithInflectionOn1stElement=\n" +
-                "TargetComplexFormsWithInflectionOn2ndElement=\n" +
-                "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
-                "SourceMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
-                "SourceDiscontigousComplexTypes=\n" +
-                "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories=\n" +
-                "AnalyzedTextTreeTranOutputFile=\n" +
-                "TreeTranInsertWordsFile=\n" +
-                "TransferRulesFile=transfer_rules.t1x\n" +
-                "TestbedFile=testbed.xml\n" +
-                "TestbedResultsFile=Output\\testbed_results.xml\n" +
-                "# This property is in the form source_cat,target_cat. Multiple pairs can be defined\n" +
-                "CategoryAbbrevSubstitutionList=\n" +
-                "CleanUpUnknownTargetWords=n\n" +
-                "SentencePunctuation=.?;:!\"\'\n")
-        f.close()
-        self.init_load()
 
 def MainFunction(DB, report, modify=True): 
     # Read the configuration file which we assume is in the current directory.
@@ -683,7 +683,8 @@ def MainFunction(DB, report, modify=True):
             return
         TargetDB.OpenProject(targetProj, False)
     except:
-        raise
+        report.Error('Could not open the target project.')
+        return
 
     # Show the window
     app = QApplication(sys.argv)
@@ -693,10 +694,14 @@ def MainFunction(DB, report, modify=True):
     window.show()
 
     app.exec_()
-    msgBox = QMessageBox()
-    if QMessageBox().question(msgBox, 'Save?', "Do you want to save before you leave?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
-        window.save()
+    
+    # Prompt the user to save changes, if needed
+    if window.modified == True:
+        
+        if QMessageBox.question(window, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
+            window.save()
+    
     TargetDB.CloseProject()
 
 
@@ -705,19 +710,27 @@ def MainFunction(DB, report, modify=True):
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
+#### Instructions for adding a new setting ####
+#
+# Copy and paste an existing line that has the same type as the new setting you want.
+# Give new names for the various text strings.
+# If necessary write a new load function at the top of this file.
+# Set the config key name to a value from the ReadConfig.py file.
+# If a new type of widget is needed, more work needed to add to each part of the code where the widgetList is iterated
+
 widgetList = [
-   # label obj name      label text          obj1 name        obj2 name type     label   obj1    obj2     load function       config key name              default value
-   ["source_text_name", "Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME, 'Text1',\
-   # tooltip text
+   # label obj name      label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
+   ["source_text_name", "Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
+    # tooltip text
     "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
    
-   ["entry_link", "Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, 'Target Equivalent',\
+   ["entry_link", "Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     "The name of the custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
    
-   ["sense_number", "Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, 'Target Sense Number',\
+   ["sense_number", "Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
     "The name of the custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
 
-   ["target_project", "Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT, 'Swedish-FLExTrans-Sample',\
+   ["target_project", "Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
    ["source_morpheme_types", "Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES, '',\
@@ -735,7 +748,7 @@ widgetList = [
    ["inflection_second_element", "Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND, '',\
     "Same as above. Use this property for the types that have inflection\non the second element of the complex form."],\
 
-   ["sentence_punctuation", "Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, 'Output\\target_text.aper', \
+   ["sentence_punctuation", "Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
     "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."],\
 
    ["source_discontiguous_complex", "Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
@@ -744,54 +757,53 @@ widgetList = [
    ["skipped_source_words", "Source Skipped Word Grammatical\nCategories for Discontigous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
     "One or more grammatical categories that can intervene in the above complex types."],\
 
-   ["cleanup_target_words", "Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, 'Output\\target_text.aper', \
+   ["cleanup_target_words", "Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
     "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."],\
 
-   ["cache_data", "Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, 'Output\\target_text.aper', \
+   ["cache_data", "Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
 
-   ["category_abbreviation_pairs", "Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST, 'Target Equivalent',\
+   ["category_abbreviation_pairs", "Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
    
-   ["transfer_rules_file", "Transfer Rules File", "transfer_rules_filename", "transfer_rules_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, 'Output\\target_text.aper', \
+   ["transfer_rules_file", "Transfer Rules File", "transfer_rules_filename", "transfer_rules_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
     "The path and name of the file containing the transfer rules."],\
 
-   ["analyzed_output", "Analyzed Text Output File", "output_filename", "a_text_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE, 'Output\\source_text.txt',\
+   ["analyzed_output", "Analyzed Text Output File", "output_filename", "a_text_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
     "The path and name of the file which holds\nthe extracted source text."],\
 
-   ["bilingual_dictionary_output_file", "Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "bi_dictionary_outfile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE, 'Output\\target_text.aper',\
+   ["bilingual_dictionary_output_file", "Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "bi_dictionary_outfile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
     "The path and name of the file which holds the bilingual lexicon."],\
 
-   ["bilingual_dictionary_replace_file", "Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "bi_dictionary_replacefile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, 'Output\\target_text.aper', \
+   ["bilingual_dictionary_replace_file", "Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "bi_dictionary_replacefile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
     "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."],\
 
-   ["transfer_result_file", "Target Transfer Results File", "transfer_result_filename", "transfer_result_file_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, 'Output\\target_text.aper', \
+   ["transfer_result_file", "Target Transfer Results File", "transfer_result_filename", "transfer_result_file_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
     "The path and name of the file which holds the text contents\nafter going through the transfer process."],\
 
-   ["taget_affix_gloss_list_file", "Target Affix Gloss List File", "taget_affix_gloss_list_filename", "target_affix_list_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, 'Output\\target_text.aper', \
+   ["taget_affix_gloss_list_file", "Target Affix Gloss List File", "taget_affix_gloss_list_filename", "target_affix_list_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
     "The ancillary file that hold a list of affix\nglosses from the target FLEx project."],\
 
-   ["output_ANA_file", "Target Output ANA File", "output_ANA_filename", "ana_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE, 'Build\\myText.ana',\
+   ["output_ANA_file", "Target Output ANA File", "output_ANA_filename", "ana_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
     "The path and name of the file holding\nthe intermediary text in STAMP format."],\
 
-   ["output_syn_file", "Target Output Synthesis File", "output_syn_filename", "syn_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE, 'Output\\myText.syn',\
+   ["output_syn_file", "Target Output Synthesis File", "output_syn_filename", "syn_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
     "The path and name of the file holding\nthe intermediary synthesized file."],\
 
-   ["testbed_file", "Testbed File", "testbed_filename", "testbed_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, 'Output\\target_text.aper', \
+   ["testbed_file", "Testbed File", "testbed_filename", "testbed_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
     "The path and name of the testbed file."],\
 
-   ["testbed_result_file", "Testbed Results File", "testbed_result_filename", "testbed_result_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, 'Output\\target_text.aper', \
+   ["testbed_result_file", "Testbed Results File", "testbed_result_filename", "testbed_result_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     "The path and name of the testbed results file"],\
 
-   ["treetran_rules", "TreeTran Rules File", "treetran_rules_filename", "treetran_rules_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, 'Output\\target_text.aper', \
+   ["treetran_rules", "TreeTran Rules File", "treetran_rules_filename", "treetran_rules_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
     "The path and name of the TreeTran rules file"],\
 
-   ["treetran_output_file", "Analyzed Text TreeTran Output File", "treetran_output_filename", "a_treetran_outfile_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, 'Output\\target_text.aper', \
+   ["treetran_output_file", "Analyzed Text TreeTran Output File", "treetran_output_filename", "a_treetran_outfile_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran."],\
 
-   ["treetran_insert_words_file", "TreeTran Insert Words File", "treetran_insert_words_filename", "treetran_insert_words_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, 'Output\\target_text.aper', \
+   ["treetran_insert_words_file", "TreeTran Insert Words File", "treetran_insert_words_filename", "treetran_insert_words_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
     "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."]
-
               ]
 
 # ----------------------------------------------------------------
