@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.5.3 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -150,7 +153,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -538,6 +541,8 @@ class Main(QMainWindow):
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.ret_val = 0
         self.cols = 7
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         

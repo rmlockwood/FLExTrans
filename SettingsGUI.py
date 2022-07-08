@@ -506,6 +506,8 @@ class Main(QMainWindow):
         self.targetDB = targetDB
         self.DB = DB
 
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
