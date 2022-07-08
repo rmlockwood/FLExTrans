@@ -292,8 +292,7 @@ def loadFile(widget, wind, settingName):
     
     if path:
 
-        widget.setText(os.path.relpath(path).replace(os.sep, '/'))
-        widget.setToolTip(os.path.abspath(path).replace(os.sep, '/'))
+        set_paths(widget, path)
 
 def make_open_file(wind, myWidgInfo):
     def open_file():
@@ -306,8 +305,13 @@ def do_browse(wind, myWidgInfo):
 
         filename, _ = QFileDialog.getOpenFileName(wind, "Open file", "", "(*.*)")
         if filename:
-            myWidgInfo[WIDGET1_OBJ].setText(os.path.relpath(filename).replace(os.sep, '/'))
-            myWidgInfo[WIDGET1_OBJ].setToolTip(os.path.abspath(filename).replace(os.sep, '/'))
+            
+            set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+
+def set_paths(widget, path):
+    
+    widget.setText(os.path.abspath(path).replace(os.sep, '\\'))
+    widget.setToolTip(os.path.abspath(path).replace(os.sep, '\\'))
     
 class Ui_MainWindow(object):
     
@@ -571,7 +575,7 @@ class Main(QMainWindow):
                 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentData()
+                outStr = widgInfo[CONFIG_NAME]+'='+self.optional_mul(widgInfo[WIDGET1_OBJ].currentData())
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
@@ -605,12 +609,6 @@ class Main(QMainWindow):
         msgBox.setText("Your file has been successfully saved.")
         msgBox.setWindowTitle("Successful save")
         msgBox.exec()
-
-    def optional(self, string):
-        write = ''
-        if string.currentText() != '...':
-            write = string.currentText()
-        return write
 
     def optional_mul(self, array):
         write = ''
@@ -658,12 +656,12 @@ class Main(QMainWindow):
         f.close()
         self.init_load()
 
-def MainFunction(DB, report, modify=True):
+def MainFunction(DB, report, modify=True): 
     # Read the configuration file which we assume is in the current directory.
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        report.error('Error reading configuration file.')
+        report.Error('Error reading configuration file.')
         return
 
     TargetDB = FLExProject()
