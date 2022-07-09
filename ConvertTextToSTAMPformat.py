@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.2 - 7/9/22 - Ron Lockwood
+#    Use a new config setting for using cache. Fixes #115.
+#    Also more calls to CloseProject when there's an error.
+#
 #   Version 3.5.1 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -157,7 +161,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -739,7 +743,7 @@ IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
 
 
 class ConversionData():
-    def __init__(self, database, report, complexFormTypeMap):
+    def __init__(self, database, report, complexFormTypeMap, doCacheing):
         
         self.project = database
         self.report = report
@@ -749,7 +753,8 @@ class ConversionData():
         self.complexFormTypeMap
         
         # If the validator cache file exists
-        if self.cacheExists():
+        if doCacheing and self.cacheExists():
+            
             # check if it's out of date
             if self.isCacheOutOfDate() == False:
                 
@@ -759,7 +764,10 @@ class ConversionData():
                     return
                 
         self.readDatabaseValues()
-        self.saveToCache()
+        
+        if doCacheing:
+            
+            self.saveToCache()
     
     def getData(self):
         return (self.complex_map, self.irr_infl_var_map)
@@ -787,6 +795,7 @@ class ConversionData():
         f.write(guid+'\n')
     
     def writeAbbrList(self, f, abbList):
+        
         # Write out the number of abbreviations we have
         f.write(str(len(abbList))+'\n')
         
@@ -796,6 +805,7 @@ class ConversionData():
             f.write(abbValue+'\n')
             
     def saveToCache(self):
+        
         f = open(self.getCacheFilePath(), 'w', encoding='utf-8')
         
         # TODO: HANDLE writing all forms for each headword
@@ -808,6 +818,7 @@ class ConversionData():
             self.writeEntry(f, self.complex_map[headWord])
             
         f.write(IRR_INFL_VARIANTS+'\n')
+        
         for headWord in sorted(self.irr_infl_var_map.keys()):
             
             # output head word
@@ -827,6 +838,7 @@ class ConversionData():
         f.close()
         
     def getAbbrList(self, indx, lines):
+        
         a_list = []
         
         # Get number of abbreviations to read in
@@ -858,6 +870,7 @@ class ConversionData():
         return e
     
     def loadFromCache(self):
+        
         f = open(self.getCacheFilePath(), encoding='utf-8')
         
         complex_lines = []
@@ -955,14 +968,19 @@ class ConversionData():
                                     
             # Store all the complex entries by creating a map from headword to the complex entry
             if e.EntryRefsOS.Count > 0: # only process complex forms
+                
                 for entryRef in e.EntryRefsOS:
+                    
                     if entryRef.ComponentLexemesRS and \
                        entryRef.ComponentLexemesRS.Count > 1 and \
                        entryRef.RefType == 1: # 1=complex form, 0=variant # At least 2 components
+                        
                         if entryRef.ComplexEntryTypesRS:
+                            
                             # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
                             # just see if one of them is Phrasal Verb
                             for complexType in entryRef.ComplexEntryTypesRS:
+                                
                                 if ITsString(complexType.Name.BestAnalysisAlternative).Text in self.complexFormTypeMap:
             
                                     self.complex_map[headWord] = e
@@ -971,21 +989,32 @@ class ConversionData():
             
             # Store all the entries that have inflectional variants with features assigned
             if e.VariantFormEntries.Count > 0:
+                
                 for variantForm in e.VariantFormEntries:
+                    
                     for entryRef in variantForm.EntryRefsOS:
+                        
                         if entryRef.RefType == 0: # we have a variant
                             
                             # Collect any inflection features that are assigned to the special
                             # variant types called Irregularly Inflected Form
                             for varType in entryRef.VariantEntryTypesRS:
+                                
                                 if varType.ClassName == "LexEntryInflType":
+                                    
                                     if varType.InflFeatsOA:
+                                        
                                         my_feat_abbr_list = []
+                                        
                                         # The features might be complex, make a recursive function call to find all features
                                         get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
+                                        
                                         if len(my_feat_abbr_list) > 0:
+                                            
                                             myTuple = (variantForm, my_feat_abbr_list)
+                                            
                                             if headWord not in self.irr_infl_var_map:
+                                                
                                                 self.irr_infl_var_map[headWord] = [myTuple]
                                             else:
                                                 self.irr_infl_var_map[headWord].append(myTuple)
@@ -1016,7 +1045,6 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         if not targetProj:
             error_list.append(('Problem accessing the target project.', 2))
             return error_list
-        #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
 #         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
@@ -1043,11 +1071,25 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     
     if len(err_list) > 0:
         error_list.extend(err_list)
+        TargetDB.CloseProject()
         return error_list
 
+    # Get cache data setting
+    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+    if not cacheData:
+        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        TargetDB.CloseProject()
+        return error_list
+
+    if cacheData == 'y':
+        
+        doCacheing = True
+    else:
+        doCacheing = False
+        
     # Get the complex forms and inflectional variants
     # This may be slow if the data is not in the cache
-    convData = ConversionData(TargetDB, report, complexFormTypeMap)
+    convData = ConversionData(TargetDB, report, complexFormTypeMap, doCacheing)
     
     (complex_map, irr_infl_var_map) = convData.getData()
         
