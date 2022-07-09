@@ -275,13 +275,15 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
 
-def loadYesNo(widget, wind, settingName):            
+def loadYesNo(widget, widget2, wind, settingName):            
 
     yesNo = wind.read(settingName)
     
     if yesNo == 'y':
         
         widget.setChecked(True)
+    else:
+        widget2.setChecked(True)
 
 def loadTextBox(widget, wind, settingName):            
 
@@ -596,7 +598,7 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
-            if widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+            if widgInfo[WIDGET_TYPE] in [SIDE_BY_SIDE_COMBO_BOX, YES_NO]:
                 
                 # pass two widgets
                 widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], widgInfo[WIDGET2_OBJ], self, widgInfo[CONFIG_NAME])
