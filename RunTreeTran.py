@@ -6,7 +6,7 @@
 #   6/10/19
 #
 #   Version 3.5.1 - 7/9/22 - Ron Lockwood
-#    Use a new config setting for the TreeTran rules path.
+#    Use a new config setting for the TreeTran rules path. Fixes #121.
 #
 #   Version 3.5 - 5/13/22 - Ron Lockwood
 #    Look for the rules file in the project folder instead of Output
