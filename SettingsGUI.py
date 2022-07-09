@@ -58,17 +58,16 @@ type the new name in the text box.
 
 ### See widget list at the bottom and instructions for adding a new setting ###
 
-LABEL_OBJ_NAME = 0
-LABEL_TEXT = 1
-WIDGET1_OBJ_NAME = 2
-WIDGET2_OBJ_NAME = 3
-WIDGET_TYPE = 4
-LABEL_OBJ = 5
-WIDGET1_OBJ = 6
-WIDGET2_OBJ = 7
-LOAD_FUNC = 8
-CONFIG_NAME = 9
-WIDGET_TOOLTIP = 10
+LABEL_TEXT = 0
+WIDGET1_OBJ_NAME = 1
+WIDGET2_OBJ_NAME = 2
+WIDGET_TYPE = 3
+LABEL_OBJ = 4
+WIDGET1_OBJ = 5
+WIDGET2_OBJ = 6
+LOAD_FUNC = 7
+CONFIG_NAME = 8
+WIDGET_TOOLTIP = 9
 
 COMBO_BOX = "combobox"
 SIDE_BY_SIDE_COMBO_BOX = "side by side"
@@ -380,7 +379,6 @@ class Ui_MainWindow(object):
             
             widgInfo = widgetList[i]
             newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-            newObj.setObjectName(widgInfo[LABEL_OBJ_NAME])
             self.gridLayout_2.addWidget(newObj, i+1, 0, 1, 1)
             widgInfo[LABEL_OBJ] = newObj
 
@@ -719,90 +717,90 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 # If a new type of widget is needed, more work needed to add to each part of the code where the widgetList is iterated
 
 widgetList = [
-   # label obj name      label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
-   ["source_text_name", "Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
+   # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
+   ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text
     "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
    
-   ["entry_link", "Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+   ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     "The name of the custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
    
-   ["sense_number", "Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
+   ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
     "The name of the custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
 
-   ["target_project", "Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+   ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
-   ["source_morpheme_types", "Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES, '',\
+   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES, '',\
     "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["target_morpheme_types", "Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES, '',\
+   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES, '',\
     "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["source_complex_types", "Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES, '',\
+   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES, '',\
     "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."],\
 
-   ["inflection_first_element", "Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST, '',\
+   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST, '',\
     "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."],\
 
-   ["inflection_second_element", "Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND, '',\
+   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND, '',\
     "Same as above. Use this property for the types that have inflection\non the second element of the complex form."],\
 
-   ["sentence_punctuation", "Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
+   ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
     "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."],\
 
-   ["source_discontiguous_complex", "Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
+   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
     "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."],\
 
-   ["skipped_source_words", "Source Skipped Word Grammatical\nCategories for Discontigous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
+   ["Source Skipped Word Grammatical\nCategories for Discontigous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
     "One or more grammatical categories that can intervene in the above complex types."],\
 
-   ["cleanup_target_words", "Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
+   ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
     "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."],\
 
-   ["cache_data", "Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
+   ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
 
-   ["category_abbreviation_pairs", "Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
+   ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
    
-   ["transfer_rules_file", "Transfer Rules File", "transfer_rules_filename", "transfer_rules_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
+   ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
     "The path and name of the file containing the transfer rules."],\
 
-   ["analyzed_output", "Analyzed Text Output File", "output_filename", "a_text_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
+   ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
     "The path and name of the file which holds\nthe extracted source text."],\
 
-   ["bilingual_dictionary_output_file", "Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "bi_dictionary_outfile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
+   ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
     "The path and name of the file which holds the bilingual lexicon."],\
 
-   ["bilingual_dictionary_replace_file", "Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "bi_dictionary_replacefile_button", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
+   ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
     "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."],\
 
-   ["transfer_result_file", "Target Transfer Results File", "transfer_result_filename", "transfer_result_file_button", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
+   ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
     "The path and name of the file which holds the text contents\nafter going through the transfer process."],\
 
-   ["taget_affix_gloss_list_file", "Target Affix Gloss List File", "taget_affix_gloss_list_filename", "target_affix_list_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
+   ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
     "The ancillary file that hold a list of affix\nglosses from the target FLEx project."],\
 
-   ["output_ANA_file", "Target Output ANA File", "output_ANA_filename", "ana_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
+   ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
     "The path and name of the file holding\nthe intermediary text in STAMP format."],\
 
-   ["output_syn_file", "Target Output Synthesis File", "output_syn_filename", "syn_file_button", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
+   ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
     "The path and name of the file holding\nthe intermediary synthesized file."],\
 
-   ["testbed_file", "Testbed File", "testbed_filename", "testbed_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
+   ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
     "The path and name of the testbed file."],\
 
-   ["testbed_result_file", "Testbed Results File", "testbed_result_filename", "testbed_result_button", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
+   ["Testbed Results File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     "The path and name of the testbed results file"],\
 
-   ["treetran_rules", "TreeTran Rules File", "treetran_rules_filename", "treetran_rules_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
+   ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
     "The path and name of the TreeTran rules file"],\
 
-   ["treetran_output_file", "Analyzed Text TreeTran Output File", "treetran_output_filename", "a_treetran_outfile_button", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
+   ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran."],\
 
-   ["treetran_insert_words_file", "TreeTran Insert Words File", "treetran_insert_words_filename", "treetran_insert_words_button", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
+   ["TreeTran Insert Words File", "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
     "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."]
               ]
 
