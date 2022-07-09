@@ -154,14 +154,16 @@ def MainFunction(DB, report, modify=True):
     tempPath = tempfile.gettempdir()
     
     # Remove target dictionary files
+    stampFiles = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report, giveError=False)
+    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report, giveError=False)
     try:
-        for p in Path(tempPath).glob("*_rt.dic"):
+        for p in Path(stampFiles).glob(targetProject+"*.*"):
             p.unlink()
     except:
         pass # ignore errors
-    
+
     try:
-        for p in Path(tempPath).glob(f"*{Utils.CONVERSION_TO_STAMP_CACHE_FILE}"):
+        for p in Path(stampFiles).glob(f"*{Utils.CONVERSION_TO_STAMP_CACHE_FILE}"):
             p.unlink()
     except:
         pass # ignore errors
@@ -177,7 +179,7 @@ def MainFunction(DB, report, modify=True):
         for p in Path('.').glob(f"{buildFolder}LiveRuleTester\\*"):
             
             
-            if re.search('fix.py', p.name) or re.search('Makefile', p.name):
+            if re.search('Makefile', p.name):
                 continue
             
             p.unlink()

@@ -75,6 +75,7 @@ CHECK_COMBO_BOX = "checkable_combobox"
 YES_NO = "yes no"
 TEXT_BOX = "textbox"
 FILE = "file"
+FOLDER = "folder"
 
 targetComplexTypes = []
 sourceComplexTypes = []
@@ -313,12 +314,33 @@ def make_open_file(wind, myWidgInfo):
     
     do_browse(wind, myWidgInfo)
     
+def make_open_folder(wind, myWidgInfo):
+    
+    # create a new function that will call do_browse with the given parameters
+    def open_folder():
+        
+        do_folder_browse(wind, myWidgInfo)
+        wind.set_modified_flag()
+        
+    return open_folder
+    
+    do_browse(wind, myWidgInfo)
+    
 def do_browse(wind, myWidgInfo):
 
         filename, _ = QFileDialog.getOpenFileName(wind, "Open file", "", "(*.*)")
+        
         if filename:
             
             set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+
+def do_folder_browse(wind, myWidgInfo):
+
+        dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", wind.projFolder, options=QFileDialog.ShowDirsOnly)
+        
+        if dirName:
+            
+            set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
 
 def set_paths(widget, path):
     
@@ -450,7 +472,7 @@ class Ui_MainWindow(object):
                 self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
             
-            elif widgInfo[WIDGET_TYPE] == FILE:
+            elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER]:
                 
                 # line edit part
                 newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
@@ -482,6 +504,11 @@ class Ui_MainWindow(object):
             if widgInfo[WIDGET_TYPE] == FILE:
                 
                 widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse file..."))
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                
+            if widgInfo[WIDGET_TYPE] == FOLDER:
+                
+                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse folder..."))
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
@@ -528,7 +555,12 @@ class Main(QMainWindow):
         myPath = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
         
         self.config = myPath
-
+        
+        # Get the project folder which is the parent of the config path
+        myPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+        
+        self.projFolder = myPath
+        
         # Loop through all settings
         for i in range(0, len(widgetList)):
             
@@ -538,6 +570,11 @@ class Main(QMainWindow):
             if widgInfo[WIDGET_TYPE] == FILE:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(make_open_file(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+
+            elif widgInfo[WIDGET_TYPE] == FOLDER:
+                
+                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_folder(self, widgInfo))
                 widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
 
             # Connect all widgets to a function the sets the modified flag
@@ -637,7 +674,7 @@ class Main(QMainWindow):
                     
                 outStr = widgInfo[CONFIG_NAME]+'='+valStr
                 
-            elif widgInfo[WIDGET_TYPE] == FILE or widgInfo[WIDGET_TYPE] == TEXT_BOX:
+            elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER, TEXT_BOX]:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text()
                 
@@ -754,7 +791,7 @@ widgetList = [
    ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
     "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."],\
 
-   ["Source Skipped Word Grammatical\nCategories for Discontigous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
+   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
     "One or more grammatical categories that can intervene in the above complex types."],\
 
    ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
@@ -786,6 +823,9 @@ widgetList = [
 
    ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
     "The path and name of the file holding\nthe intermediary text in STAMP format."],\
+
+   ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
+    "The path where lexicon files and other STAMP files are created"],\
 
    ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
     "The path and name of the file holding\nthe intermediary synthesized file."],\

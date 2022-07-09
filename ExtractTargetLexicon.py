@@ -575,14 +575,42 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
 def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
-    TargetDB = FLExProject()
+    morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
+    if not morphNames: 
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
+    
+    # Create a path to the temporary folder + project name
+#    partPath = os.path.join(tempfile.gettempdir(), targetProject)
 
-    # Open the target database
+    # Get the target project name
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         error_list.append(('Configuration file problem with TargetProject.', 2))
         return error_list
     
+    # Get lexicon files folder setting
+    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+    if not lexFolder:
+        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        return error_list
+
+    # Check that we have a valid folder
+    if os.path.isdir(lexFolder) == False:
+        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        return error_list
+
+    # Have all files start with targetProject
+    partPath = os.path.join(lexFolder, targetProj)
+    
+    # Get cache data setting
+    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+    if not cacheData:
+        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        return error_list
+
+    TargetDB = FLExProject()
+
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
@@ -600,23 +628,6 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
         raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
-
-    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-    morphNames    = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
-    if not (targetProject and morphNames): 
-        error_list.append(('Configuration file problem.', 2))
-        TargetDB.CloseProject()
-        return error_list
-    
-    # Create a path to the temporary folder + project name
-    partPath = os.path.join(tempfile.gettempdir(), targetProject)
-
-    # Get cache data setting
-    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
-    if not cacheData:
-        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
-        TargetDB.CloseProject()
-        return error_list
 
     # If the target database hasn't changed since we created the root databse file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
@@ -684,8 +695,21 @@ def synthesize(configMap, anaFile, synFile, report=None):
     else:
         cleanUpText = False
 
+    # Get lexicon files folder setting
+    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+    if not lexFolder:
+        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        return error_list
+    
+    # Check that we have a valid folder
+    if os.path.isdir(lexFolder) == False:
+        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        return error_list
+
+    # Have all files start with targetProject
+    partPath = os.path.join(lexFolder, targetProject)
+    
     # Create other files we need for STAMP
-    partPath = os.path.join(tempfile.gettempdir(), targetProject)
     cmdFileName = create_synthesis_files(partPath)
 
     # Synthesize the target text
