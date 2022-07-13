@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.4 - 7/13/22 - Ron Lockwood
+#    Give error if fail to open target DB.
+#
 #   Version 3.5.3 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -42,7 +45,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.3",
+        FTM_Version: "3.5.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -522,6 +525,7 @@ def MainFunction(DB, report, modify=True):
             return
         TargetDB.OpenProject(targetProj, False)
     except:
+        report.Error('Failed to open the target database.')
         raise
 
     # Show the window
