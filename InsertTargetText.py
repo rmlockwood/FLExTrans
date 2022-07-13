@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.3 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -65,7 +68,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -102,6 +105,7 @@ def MainFunction(DB, report, modify=True):
             return
         TargetDB.OpenProject(targetProj, True)
     except: 
+        report.Error('Failed to open the target database.')
         raise
 
     report.Info('Using: '+targetProj+' as the target database.')
@@ -109,6 +113,7 @@ def MainFunction(DB, report, modify=True):
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (sourceTextName and targetSynthesis):
+        TargetDB.CloseProject()
         return
     
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
@@ -117,6 +122,7 @@ def MainFunction(DB, report, modify=True):
     try:
         f = open(synFile, encoding='utf-8')
     except:
+        TargetDB.CloseProject()
         report.Error('Could not open the file: "'+synFile+'".')
 
     # Figure out the naming of the text file. Use the source text name by default,

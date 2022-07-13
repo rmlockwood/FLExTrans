@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.3 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -141,7 +144,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -592,8 +595,7 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
+        report.Error('Failed to open the target database.')
         raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
@@ -601,6 +603,7 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     morphNames    = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
     if not (targetProject and morphNames): 
+        TargetDB.CloseProject()
         error_list.append(('Configuration file problem.', 2))
         return error_list
     
@@ -609,6 +612,7 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
 
     # If the target database hasn't changed since we created the root databse file, don't do anything.
     if useCacheIfAvailable and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
+        TargetDB.CloseProject()
         error_list.append(('Target lexicon files are up to date.', 0))
         return error_list
 

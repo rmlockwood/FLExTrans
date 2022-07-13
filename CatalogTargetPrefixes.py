@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.3 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
 #   Version 3.5.2 - 7/9/22 - Ron Lockwood
 #    Use a new config setting for using cache. Fixes #115.
 #    Also more calls to CloseProject when there's an error.
@@ -92,7 +95,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -170,14 +173,15 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_affix_file_out_of_date(TargetDB, myPath) == False:
-        error_list.append(('Affix list is up to date.', 0))
         TargetDB.CloseProject()
+        error_list.append(('Affix list is up to date.', 0))
         return error_list
     
     # Open the file for writing.
     try:
         f_out = open(myPath, 'w', encoding='utf-8') 
     except IOError as e:
+        TargetDB.CloseProject()
         error_list.append(('There was a problem creating the Target Prefix Gloss List File: '+myPath+'. Please check the configuration file setting.', 2))# 0=info,1=warn.,2=error
         TargetDB.CloseProject()
         return error_list

@@ -1,4 +1,13 @@
-from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate
+# CheckableComboBox
+# Lærke Roager Christensen
+# 6/30/22
+#
+# This is a costume ComboBox where you can select multiple items on a list.
+# Used in the Settings Tool.
+# The code is found on: https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
+# with some modifications made by Lærke.
+
+from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate, QApplication
 from PyQt5.QtGui import QPalette, QStandardItem, QFontMetrics
 from PyQt5.QtCore import QEvent, Qt
 
@@ -19,9 +28,9 @@ class CheckableComboBox(QComboBox):
         self.setEditable(True)
         self.lineEdit().setReadOnly(True)
         # Make the lineedit the same color as QPushButton
-        #palette = qApp.palette()
-        #palette.setBrush(QPalette.Base, palette.button())
-        #self.lineEdit().setPalette(palette)
+        palette = QApplication.palette()
+        palette.setBrush(QPalette.Base, palette.button())
+        self.lineEdit().setPalette(palette)
 
         # Use custom delegate
         self.setItemDelegate(CheckableComboBox.Delegate())

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.5.4 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
 #   Version 3.5.3 - 7/8/22 - Ron Lockwood
 #    Set Window Icon to be the FLExTrans Icon
 #
@@ -153,7 +156,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1185,6 +1188,7 @@ def MainFunction(DB, report, modify=True):
     try:
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
+        report.Error('Failed to open the target database.')
         raise
 
     report.Info("Starting " + docs[FTM_Name] + " for text: " + text_desired_eng + ".")
@@ -1203,6 +1207,7 @@ def MainFunction(DB, report, modify=True):
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
     if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+        TargetDB.CloseProject()
         return
 
     # Go through the interlinear words
@@ -1237,6 +1242,8 @@ def MainFunction(DB, report, modify=True):
         if window.ret_val: # True = make the changes        
             
             update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
+
+    TargetDB.CloseProject()
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
