@@ -182,7 +182,7 @@ Function nsDialogsPage
         
         StrCpy $OUT_FOLDER "C:\"
 
-        ${NSD_CreateLabel} 0 60 100% 12u "Chose where to put FLExTools"
+        ${NSD_CreateLabel} 0 60 100% 12u "Choose where to put FLExTrans folder."
         ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
         pop $DESTTEXT
         ${NSD_CreateBrowseButton} 320 80 20% 12u "Browse"
