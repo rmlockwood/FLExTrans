@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.2 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
 #   Version 3.5.1 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -157,7 +160,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Create a text file in STAMP format",
         FTM_Help  : "", 
@@ -1019,8 +1022,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         #TargetDB.OpenDatabase(targetProj, verbose = True)
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
+        report.Error('Failed to open the target database.')
         raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
@@ -1042,6 +1044,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     err_list = convertIt(anaFileName, affixFileName, transferResultsFile, report, sentPunct)
     
     if len(err_list) > 0:
+        TargetDB.CloseProject()
         error_list.extend(err_list)
         return error_list
 
