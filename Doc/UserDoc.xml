@@ -884,13 +884,13 @@ border="1"
 ></tr
 ><tr
 ><td
->Light Blue</td
+>Very Light Blue</td
 ><td
 >A target sense has been suggested for this source sense through a partial match of the glosses.</td
 ></tr
 ><tr
 ><td
->Blue</td
+>Light Blue</td
 ><td
 >A target sense has been suggested for this source sense through an exact match of the glosses.</td
 ></tr
@@ -908,9 +908,9 @@ border="1"
 ></tr
 ></table
 ><p
->For suggested sense links (colored in blue), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color.</p
+>For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color. You can use the search text box to find the appropriate target sense.</p
 ><p
->If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p
+>If you only want to see the senses that need to be linked, check the box Show Only Unlinked. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box Hide Proper Nouns.</p
 ></section2
 ><section2
 id="sRuleTester"
