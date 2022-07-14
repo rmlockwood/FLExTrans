@@ -746,7 +746,7 @@ IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
 
 
 class ConversionData():
-    def __init__(self, database, report, complexFormTypeMap, doCacheing):
+    def __init__(self, database, report, complexFormTypeMap, doCacheing, lexFolder):
         
         self.project = database
         self.report = report
@@ -754,6 +754,7 @@ class ConversionData():
         self.irr_infl_var_map = {}
         self.complexFormTypeMap = complexFormTypeMap
         self.complexFormTypeMap
+        self.lexFolder = lexFolder
         
         # If the validator cache file exists
         if doCacheing and self.cacheExists():
@@ -945,8 +946,8 @@ class ConversionData():
         return True
            
     def getCacheFilePath(self):
-        # build the path in the temp dir using project name + testbed_cache.txt
-        return os.path.join(tempfile.gettempdir(), str(self.project.lp)+'_'+Utils.CONVERSION_TO_STAMP_CACHE_FILE)
+        # build the path in the build dir using project name + testbed_cache.txt
+        return os.path.join(self.lexFolder, str(self.project.lp)+'_'+Utils.CONVERSION_TO_STAMP_CACHE_FILE)
     
     def cacheExists(self):
         return os.path.exists(self.getCacheFilePath())
@@ -1077,6 +1078,17 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         TargetDB.CloseProject()
         return error_list
 
+    # Get lexicon files folder setting
+    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+    if not lexFolder:
+        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        return error_list
+    
+    # Check that we have a valid folder
+    if os.path.isdir(lexFolder) == False:
+        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        return error_list
+
     # Get cache data setting
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
@@ -1092,7 +1104,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         
     # Get the complex forms and inflectional variants
     # This may be slow if the data is not in the cache
-    convData = ConversionData(TargetDB, report, complexFormTypeMap, doCacheing)
+    convData = ConversionData(TargetDB, report, complexFormTypeMap, doCacheing, lexFolder)
     
     (complex_map, irr_infl_var_map) = convData.getData()
         
@@ -1149,6 +1161,13 @@ def MainFunction(DB, report, modifyAllowed):
         # Try the old config value name
         affixFile = ReadConfig.getConfigVal(configMap, 'TargetPrefixGlossListFile', report)
         
+    # Verify that the affix file exist.
+    if not os.path.exists(affixFile):
+        
+        report.Error(f'File not found: {affixFile}')
+        report.Error(f'Run the Catalog module first.')
+        return
+    
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
 
     error_list = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report)
