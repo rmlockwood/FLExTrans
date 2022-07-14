@@ -5,8 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.5.3 - 7/13/22 - Ron Lockwood
+#   Version 3.5.4 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
+#
+#   Version 3.5.3 - 7/9/22 - Ron Lockwood
+#    Use a new config setting for using cache. Fixes #115.
 #
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
@@ -144,7 +147,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -605,12 +608,21 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     if not (targetProject and morphNames): 
         TargetDB.CloseProject()
         error_list.append(('Configuration file problem.', 2))
+        TargetDB.CloseProject()
         return error_list
     
     # Create a path to the temporary folder + project name
     partPath = os.path.join(tempfile.gettempdir(), targetProject)
 
+    # Get cache data setting
+    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+    if not cacheData:
+        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        TargetDB.CloseProject()
+        return error_list
+
     # If the target database hasn't changed since we created the root databse file, don't do anything.
+    if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
     if useCacheIfAvailable and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         TargetDB.CloseProject()
         error_list.append(('Target lexicon files are up to date.', 0))

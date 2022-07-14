@@ -37,7 +37,7 @@ Page custom nsDialogsPage
 !insertmacro MUI_LANGUAGE "English"
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\FLExTransIcon32.ico"
+Icon "${GIT_FOLDER}\FLExTransInstallIcon32.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"

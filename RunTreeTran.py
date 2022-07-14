@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.5.1 - 7/9/22 - Ron Lockwood
+#    Use a new config setting for the TreeTran rules path. Fixes #121.
+#
 #   Version 3.5 - 5/13/22 - Ron Lockwood
 #    Look for the rules file in the project folder instead of Output
 #
@@ -60,7 +63,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",
@@ -75,7 +78,6 @@ This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. 
 """ }
                  
-TREE_TRAN_RULES = 'tree_tran_rules.xml'
 INVOKER_FILE = 'Invoker.xml'   
 VALID_PARSES_FILE = 'valid_parses_for_tree_tran.xml'
 
@@ -166,9 +168,15 @@ def MainFunction(DB, report, modify=True):
         report.Error('There is a problem with the TreeTran input file: '+filteredFile+'. Has the PC-PATR with FLEx program been run correctly?')
         return
     
+    # Get the TreeTran rules file path
+    treeTranRules = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_RULES_FILE, report)
+    if not treeTranRules:
+        report.Error(f'You have not specified a value in the configuration file for {ReadConfig.TREETRAN_RULES_FILE}.')
+        return 
+    
     # Get parent folder of the folder flextools.ini (Config) is in. This should give us the working project folder. E.g. German-Swedish
     # Assume that the rules file is in the folder.
-    rulesFilePath = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), TREE_TRAN_RULES)
+    rulesFilePath = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), treeTranRules)
 
     # verify the filtered file exists
     if os.path.exists(rulesFilePath) == False:

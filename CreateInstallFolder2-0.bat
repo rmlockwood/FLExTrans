@@ -68,6 +68,7 @@ copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Instal
 rem Sense Linker pieces
 copy LinkSenseTool.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
 copy Linker.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy FLExTransWindowIcon.ico Install2.1.1\FLExTrans\FLExTools
 
 rem Live Rule Tester pieces
 mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
