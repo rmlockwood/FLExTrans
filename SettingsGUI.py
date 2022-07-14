@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.5 - 7/13/22 - Ron Lockwood
+#    Give error if fail to open target DB.
+#
 #   Version 3.5.4 - 7/8/22 - Ron Lockwood
 #    Rewrite of this module to have a master list of settings and associated
 #    widgets. Loop through the widget list in various places to set up the window
@@ -720,8 +723,8 @@ def MainFunction(DB, report, modify=True):
             return
         TargetDB.OpenProject(targetProj, False)
     except:
-        report.Error('Could not open the target project.')
-        return
+        report.Error('Failed to open the target database.')
+        raise
 
     # Show the window
     app = QApplication(sys.argv)
