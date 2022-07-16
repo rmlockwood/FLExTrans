@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->30 June, 2022</date
+>13 July, 2022</date
 ><version
 >FLExTrans 3.5.3</version
 ><contents
@@ -827,6 +827,13 @@ type="tFlexx"
 ></section2
 ></section1
 ><section1
+id="sTools"
+><secTitle
+><object
+type="tFlextrans"
+></object
+> Tools</secTitle
+><section2
 id="sLinker"
 ><secTitle
 >The <object
@@ -877,13 +884,13 @@ border="1"
 ></tr
 ><tr
 ><td
->Light Blue</td
+>Very Light Blue</td
 ><td
 >A target sense has been suggested for this source sense through a partial match of the glosses.</td
 ></tr
 ><tr
 ><td
->Blue</td
+>Light Blue</td
 ><td
 >A target sense has been suggested for this source sense through an exact match of the glosses.</td
 ></tr
@@ -901,11 +908,11 @@ border="1"
 ></tr
 ></table
 ><p
->For suggested sense links (colored in blue), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color.</p
+>For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color. You can use the search text box to find the appropriate target sense.</p
 ><p
->If you only want to see the senses that need to be linked, check the box that says Show Only Unlinked.</p
-></section1
-><section1
+>If you only want to see the senses that need to be linked, check the box Show Only Unlinked. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box Hide Proper Nouns.</p
+></section2
+><section2
 id="sRuleTester"
 ><secTitle
 >The <object
@@ -930,7 +937,7 @@ src="Images/LiveRuleTester.png"
 ></img
 ></chart
 ></example
-><section2
+><section3
 id="sTesterQuickGuide"
 ><secTitle
 >Quick Guide</secTitle
@@ -974,8 +981,8 @@ type="tFlextrans"
 ></object
 > you can run the Testbed to see if you are still getting the results you expect.</li
 ></ol
-></section2
-><section2
+></section3
+><section3
 id="sTesterOther"
 ><secTitle
 >Other Parts of the Tool</secTitle
@@ -1032,9 +1039,9 @@ type="tButton"
 type="tFlextrans"
 ></object
 > will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
+></section3
 ></section2
-></section1
-><section1
+><section2
 id="sViewSrcTgt"
 ><secTitle
 >The <object
@@ -1103,8 +1110,8 @@ type="tBold"
 type="tFilename"
 >target_text.txt</object
 >.</p
-></section1
-><section1
+></section2
+><section2
 id="sSetupGramCat"
 ><secTitle
 >The <object
@@ -1153,6 +1160,7 @@ src="Images/SetupGramCat.PNG"
 ></img
 ></chart
 ></example
+></section2
 ></section1
 ><section1
 id="sTransferTutorial"

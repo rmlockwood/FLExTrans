@@ -261,6 +261,8 @@ class Main(QMainWindow):
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
         
+        self.setWindowTitle("Import Paratext Chapters")
+
         # Load settings if available
         try:
             # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
