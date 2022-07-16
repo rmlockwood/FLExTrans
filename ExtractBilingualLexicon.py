@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.3 - 7/9/22 - Ron Lockwood
+#    Use a new config setting for using cache. Fixes #115.
+#
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -195,7 +198,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -666,6 +669,17 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     
     TargetDB = Utils.openTargetProject(configMap, report)
 
+    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+    if not cacheData:
+        error_list.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
+        return error_list
+    
+    if cacheData == 'y':
+        
+        DONT_CACHE = False
+    else:
+        DONT_CACHE = True
+    
     # If the target database hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and useCacheIfAvailable and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
         

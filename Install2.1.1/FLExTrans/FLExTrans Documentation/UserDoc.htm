@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>21 June, 2022</small></center>
-      <center><small>Version: FLExTrans 3.5</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>30 June, 2022</small></center>
+      <center><small>Version: FLExTrans 3.5.3</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -502,8 +502,8 @@
       <p></p>
       <p></p>
       <h1 style=""><a name="sLinker"></a>3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h1>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the configuration file
-         and lists every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>: 
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists
+         every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>: 
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -603,11 +603,9 @@
       </ol>
       <h2 style=""><a name="sTesterOther"></a>4.2&nbsp;Other Parts of the Tool
       </h2>
-      <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the configuration
-         file. The transfer rules file and the bilingual lexicon file can be changed if desired by clicking the corresponding <span style="font-style:normal; font-weight:bold; ">Browse</span> buttons.
+      <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings.
       </p>
-      <p>In this version of the tool, you can&#8217;t change the Source Text Name. You will have to edit the configuration file, change the
-         SourceTextName value and re-run the tool.
+      <p>In this version of the tool, you can&#8217;t change the Source Text Name. You will have to run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, change the SourceText Name value and re-run the tool.
       </p>
       <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses)
          directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">12</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
@@ -623,7 +621,7 @@
          have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.
       </p>
       <h1 style=""><a name="sViewSrcTgt"></a>5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h1>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.aper</span> or <span style="font-style:italic; ">target_text.aper</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.aper</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:navy; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.aper</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(15)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(16)</a>.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.txt</span> or <span style="font-style:italic; ">target_text.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:navy; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(15)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(16)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -654,7 +652,7 @@
          </table>
       </div>
       <p>You have the options of changing the font, increasing the zoom level, displaying the text right-to-left or opening a similar
-         view in the default web browser. If you click on the <span style="font-weight:bold; ">Target</span> button, you will see the contents of <span style="font-style:italic; ">target_text.aper</span>.
+         view in the default web browser. If you click on the <span style="font-weight:bold; ">Target</span> button, you will see the contents of <span style="font-style:italic; ">target_text.txt</span>.
       </p>
       <h1 style=""><a name="sSetupGramCat"></a>6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span> is a tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer
@@ -938,17 +936,17 @@
          </li>
          <li>We will be writing new transfer rules so let&#8217;s start from scratch.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish</span> folder.
+               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English</span> folder.
                </li>
                <li>Open <span style="font-style:italic; ">transfer_rules.t1x</span> in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
                </li>
             </ol>
          </li>
-         <li>Let's change the configuration file.
+         <li>Let's set up the configuration file.
             <ol style="list-style-type:lower-alpha; ">
                <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again.
                </li>
-               <li>Copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish\Config</span> folder.
+               <li>Copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English\Config</span> folder.
                </li>
             </ol>
          </li>
@@ -1789,7 +1787,8 @@
                   </tr>
                </table>
             </div>
-            <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check only the Croatian word <span style="font-style:italic; ">pozdrava</span>.
+            <p>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>, but this time check only the Croatian word <span style="font-style:italic; ">pozdrava</span>. Note: if you refresh the rules, the new Nouns rule will not automatically get checked in the rule list. Check the box for
+               the new rule before testing it.
             </p>
             <p>Starting with:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -1920,10 +1919,10 @@
          </table>
       </div>
       <h3 style=""><a name="sStartTestbed"></a>8.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></h3>
-      <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-style:italic; ">source_text.aper</span> file.
+      <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-style:italic; ">source_text.txt</span> file.
       </p>
       <h3 style=""><a name="sEndTestbed"></a>8.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></h3>
-      <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.aper</span> file) and adds the tests run and whether they passed or not to the testbed log.
+      <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.txt</span> file) and adds the tests run and whether they passed or not to the testbed log.
       </p>
       <h3 style=""><a name="sTestbedLRT"></a>8.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a good place to add new tests to the testbed. See &#8220;<a href="#sRuleTester">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a>&#8221; for more details.
@@ -2218,7 +2217,7 @@
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
          Form variants that match exactly the suffixes that would normally be used.
       </p>
-      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the SourceTextName property in the configuration file to &#8220;Text2&#8221;.
+      <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the Source Text Name property in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to &#8220;Text2&#8221;.
       </p>
       <h1 style=""><a name="sReferenceDocs"></a>10&nbsp;Reference documents
       </h1>
@@ -2258,8 +2257,7 @@
          <tr>
             <td valign="top"><a name="nCustomFieldNames">[2]</a></td>
             <td>
-               <p>You may choose different names for the custom fields, but you also have to update the configuration file to match these names.
-                  The names <span style="font-weight:bold; ">Target Equivalent</span> and <span style="font-weight:bold; ">Target Sense Number</span> are already set in the configuration file that gets installed with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
+               <p>You may choose different names for the custom fields, but you also have to update the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to match these names. The names <span style="font-weight:bold; ">Target Equivalent</span> and <span style="font-weight:bold; ">Target Sense Number</span> are already set in the settings that get installed with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
                </p>
             </td>
          </tr>
@@ -2281,13 +2279,13 @@
          <tr>
             <td valign="top"><a name="nInputFile">[5]</a></td>
             <td>
-               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span>. It is the friendly view of the file <span style="font-style:italic; ">source_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Otic&#769;i1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
+               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span>. It is the friendly view of the file <span style="font-style:italic; ">source_text.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Otic&#769;i1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>
             <td valign="top"><a name="nOutputFile">[6]</a></td>
             <td>
-               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> and click the <span style="font-style:normal; font-weight:bold; ">Target</span> button. It is the friendly view of the file <span style="font-style:italic; ">target_text.aper</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
+               <p>You would see this if you use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> and click the <span style="font-style:normal; font-weight:bold; ">Target</span> button. It is the friendly view of the file <span style="font-style:italic; ">target_text.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">project</span> folder. The actual content looks like this: <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</span></p>
             </td>
          </tr>
          <tr>
@@ -2308,20 +2306,20 @@
          <tr>
             <td valign="top"><a name="nLexUnit">[9]</a></td>
             <td>
-               <p>In our <span style="font-style:italic; ">target_text.aper</span> file it puts a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^</span> and <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">$</span> before and after the contents contained within it.
+               <p>In our <span style="font-style:italic; ">target_text.txt</span> file it puts a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">^</span> and <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">$</span> before and after the contents contained within it.
                </p>
             </td>
          </tr>
          <tr>
             <td valign="top"><a name="nTagSeq">[10]</a></td>
             <td>
-               <p>In our <span style="font-style:italic; ">target_text.aper</span> file each tag starts with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&lt;</span>, ends with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&gt;.</span></p>
+               <p>In our <span style="font-style:italic; ">target_text.txt</span> file each tag starts with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&lt;</span>, ends with a <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">&gt;.</span></p>
             </td>
          </tr>
          <tr>
             <td valign="top"><a name="nToolToView">[11]</a></td>
             <td>
-               <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.aper</span> and <span style="font-style:italic; ">target_text.aper</span>.
+               <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.txt</span> and <span style="font-style:italic; ">target_text.txt</span>.
                </p>
             </td>
          </tr>

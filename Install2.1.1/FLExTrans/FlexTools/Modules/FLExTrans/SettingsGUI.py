@@ -1,7 +1,15 @@
 #
 #   Settings GUI
 #   Lærke Roager Christensen
-#   28/3/2022
+#   3/28/22
+#
+#   Version 3.5.5 - 7/13/22 - Ron Lockwood
+#    Give error if fail to open target DB.
+#
+#   Version 3.5.4 - 7/8/22 - Ron Lockwood
+#    Rewrite of this module to have a master list of settings and associated
+#    widgets. Loop through the widget list in various places to set up the window
+#    and process data coming in and going out. Fixes #151. Fixes #153. Fixes #137.
 #
 #   Version 3.5.3 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
@@ -21,16 +29,15 @@
 import os
 import sys
 
-
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication, QFileDialog
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
 
-from Settings import Ui_MainWindow
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
 
@@ -42,298 +49,655 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.3",
+        FTM_Version: "3.5.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
         FTM_Description:
             """
-Change FLExTrans settings.            
+Change FLExTrans settings. If you want to change the filename for one of the settings,
+type the new name in the text box.             
             """}
 
-# ----------------------------------------------------------------
-# The main processing function
+### See widget list at the bottom and instructions for adding a new setting ###
+
+LABEL_TEXT = 0
+WIDGET1_OBJ_NAME = 1
+WIDGET2_OBJ_NAME = 2
+WIDGET_TYPE = 3
+LABEL_OBJ = 4
+WIDGET1_OBJ = 5
+WIDGET2_OBJ = 6
+LOAD_FUNC = 7
+CONFIG_NAME = 8
+WIDGET_TOOLTIP = 9
+
+COMBO_BOX = "combobox"
+SIDE_BY_SIDE_COMBO_BOX = "side by side"
+CHECK_COMBO_BOX = "checkable_combobox"
+YES_NO = "yes no"
+TEXT_BOX = "textbox"
+FILE = "file"
+FOLDER = "folder"
+
+targetComplexTypes = []
+sourceComplexTypes = []
+categoryList = []
+
+def getCategoryList(wind):
+    
+    if len(categoryList) == 0:
+        
+        for pos in wind.DB.lp.AllPartsOfSpeech:
+            
+            catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            categoryList.append(catStr)
+            
+    return categoryList
+            
+def getTargetComplexTypes(wind):
+    
+    if len(targetComplexTypes) == 0:
+        
+        for item in wind.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+            
+            targetComplexTypes.append(str(item))
+            
+    return targetComplexTypes
+            
+def getSourceComplexTypes(wind):
+    
+    if len(sourceComplexTypes) == 0:
+        
+        for item in wind.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+            
+            sourceComplexTypes.append(str(item))
+            
+    return sourceComplexTypes
+            
+def loadSourceTextList(widget, wind, settingName):
+    
+    sourceList = []
+    for item in wind.DB.ObjectsIn(ITextRepository):
+
+        sourceList.append(str(item).strip())
+
+    sortedSourceList = sorted(sourceList, key=str.casefold)
+    
+    # Get the source name from the config file
+    configSource = wind.read(settingName)
+    
+    if configSource:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, itemStr in enumerate(sortedSourceList):
+            
+            widget.addItem(itemStr)
+            
+            if itemStr == configSource:
+                
+                widget.setCurrentIndex(i)
+
+def loadCustomEntry(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customTarget = wind.read(settingName)
+    
+    if customTarget:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customTarget:
+                
+                widget.setCurrentIndex(i)
+
+def loadTargetProjects(widget, wind, settingName):
+
+    targetProject = wind.read(settingName)
+    
+    if targetProject:
+
+        # TODO: Make this disable the other stuff that uses target??
+        for i, item in enumerate(AllProjectNames()):
+            
+            widget.addItem(item)
+            
+            if item == targetProject:
+                
+                widget.setCurrentIndex(i)
+            
+def loadSourceComplexFormTypes(widget, wind, settingName):
+
+    typesList = getSourceComplexTypes(wind)
+
+    widget.addItems(typesList)
+    
+    complexType = wind.read(settingName)
+    
+    if complexType:
+
+        for comType in complexType:
+
+            if comType in typesList:
+                
+                widget.check(comType)
+
+def loadTargetComplexFormTypes(widget, wind, settingName):
+
+    typesList = getTargetComplexTypes(wind)
+
+    widget.addItems(typesList)
+    
+    complexType = wind.read(settingName)
+    
+    if complexType:
+
+        for comType in complexType:
+
+            if comType in typesList:
+                
+                widget.check(comType)
+
+def loadSourceMorphemeTypes(widget, wind, settingName):
+
+    typesList = []
+    for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+
+        # Strip is because morpheme types come with symbols
+        typesList.append(str(item).strip("-=~*"))
+    
+    widget.addItems(typesList)
+    
+    morphNames = wind.read(settingName)
+    
+    if morphNames:
+
+        for morphName in morphNames:
+
+            if morphName in typesList:
+                
+                widget.check(morphName)
+
+def loadTargetMorphemeTypes(widget, wind, settingName):
+
+    typesList = []
+    for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
+
+        # Strip is because morpheme types come with symbols
+        typesList.append(str(item).strip("-=~*"))
+    
+    widget.addItems(typesList)
+    
+    morphNames = wind.read(settingName)
+    
+    if morphNames:
+
+        for morphName in morphNames:
+
+            if morphName in typesList:
+                
+                widget.check(morphName)
+
+def loadSourceCategories(widget, wind, settingName):
+
+    catList = getCategoryList(wind)
+    
+    widget.addItems(catList)
+    
+    disComplexTypes = wind.read(settingName)
+    
+    if disComplexTypes:
+
+        for cat in disComplexTypes:
+
+            if cat in catList:
+                
+                widget.check(cat)
+
+def loadCategorySubLists(widget1, widget2, wind, settingName):
+
+    catList = getCategoryList(wind)
+    
+    widget1.addItems(catList)
+    widget2.addItems(catList)
+    
+    catPair = wind.read(settingName)
+    
+    if catPair:
+
+        for i, cat in enumerate(catList):
+            
+            if cat == catPair[0]: # The first one in the config file
+                
+                widget1.setCurrentIndex(i+1) # ... is the first item
+
+            if cat == catPair[1]: # The second one in the config file
+                
+                widget2.setCurrentIndex(i+1) # ... is the first item
+
+def loadYesNo(widget, widget2, wind, settingName):            
+
+    yesNo = wind.read(settingName)
+    
+    if yesNo == 'y':
+        
+        widget.setChecked(True)
+    else:
+        widget2.setChecked(True)
+
+def loadTextBox(widget, wind, settingName):            
+
+    text = wind.read(settingName)
+    
+    if text:
+        
+        widget.setText(text)
+
+def loadFile(widget, wind, settingName):            
+
+    path = wind.read(settingName)
+    
+    if path:
+
+        set_paths(widget, path)
+
+def make_open_file(wind, myWidgInfo):
+    
+    # create a new function that will call do_browse with the given parameters
+    def open_file():
+        
+        do_browse(wind, myWidgInfo)
+        wind.set_modified_flag()
+        
+    return open_file
+    
+    do_browse(wind, myWidgInfo)
+    
+def make_open_folder(wind, myWidgInfo):
+    
+    # create a new function that will call do_browse with the given parameters
+    def open_folder():
+        
+        do_folder_browse(wind, myWidgInfo)
+        wind.set_modified_flag()
+        
+    return open_folder
+    
+    do_browse(wind, myWidgInfo)
+    
+def do_browse(wind, myWidgInfo):
+
+        filename, _ = QFileDialog.getOpenFileName(wind, "Open file", "", "(*.*)")
+        
+        if filename:
+            
+            set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+
+def do_folder_browse(wind, myWidgInfo):
+
+        dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", wind.projFolder, options=QFileDialog.ShowDirsOnly)
+        
+        if dirName:
+            
+            set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
+
+def set_paths(widget, path):
+    
+    widget.setText(os.path.abspath(path).replace(os.sep, '\\'))
+    widget.setToolTip(os.path.abspath(path).replace(os.sep, '\\'))
+    
+class Ui_MainWindow(object):
+    
+    def setupUi(self, MainWindow):
+        
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 756)
+
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+
+        self.scrollArea.setSizePolicy(sizePolicy)
+        self.scrollArea.setMinimumSize(QtCore.QSize(750, 650))
+        self.scrollArea.setMaximumSize(QtCore.QSize(750, 650))
+
+        font = QtGui.QFont()
+#         font.setFamily("Arial")
+        font.setPointSize(9)
+
+        self.scrollArea.setFont(font)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
+
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+
+        # Set up scroll area
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+        self.gridLayout.addWidget(self.scrollArea, 0, 2, 1, 1)
+
+        self.apply_button = QtWidgets.QPushButton(self.centralwidget)
+        self.apply_button.setObjectName("apply_button")
+        #self.apply_button.setMaximumWidth(60)
+        self.gridLayout.addWidget(self.apply_button, 1, 2, 1, 1)
+
+        # Set up for the fields in the config file
+        # They are placed in the order according to the widgetList
+        # AddWidget function takes 5 parameters.
+        # addWidget(Object, row, column, row-span, column-span)
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+            self.gridLayout_2.addWidget(newObj, i+1, 0, 1, 1)
+            widgInfo[LABEL_OBJ] = newObj
+
+            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
+                
+                newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                
+                # Add a blank item
+                newObj.addItem("")
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 1)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+                newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                
+                # Add a blank item
+                newObj.addItem("")
+                self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
+                widgInfo[WIDGET2_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                # Yes radio button
+                newObj = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                
+                # Create a button group so these two radio buttons can be distinct from any subsequent ones
+                buttonGroup=QtWidgets.QButtonGroup(self.scrollAreaWidgetContents)
+                
+                # Add the button to the button group
+                buttonGroup.addButton(newObj)
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 1)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+                # No radio button - checked
+                newObj = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
+
+                # Add the button to the button group
+                buttonGroup.addButton(newObj)
+                self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
+                widgInfo[WIDGET2_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                newObj = CheckableComboBox()
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                widgInfo[WIDGET1_OBJ] = newObj
+            
+            elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER]:
+                
+                # line edit part
+                newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
+                newObj.setText("")
+                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 2)
+                widgInfo[WIDGET1_OBJ] = newObj
+                
+                # browse button
+                newObj = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+                newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
+                self.gridLayout_2.addWidget(newObj, i+1, 3, 1, 1)
+                widgInfo[WIDGET2_OBJ] = newObj
+            
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Settings"))
+
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
+
+            if widgInfo[WIDGET_TYPE] == FILE:
+                
+                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse file..."))
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                
+            if widgInfo[WIDGET_TYPE] == FOLDER:
+                
+                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse folder..."))
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].setItemText(0, _translate("MainWindow", "..."))
+                widgInfo[WIDGET2_OBJ].setItemText(0, _translate("MainWindow", "..."))
+                widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                widgInfo[WIDGET1_OBJ].setText(_translate("MainWindow", "Yes"))
+                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "No"))
+                widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+                widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
+            else:
+                widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
+
+        self.apply_button.setText(_translate("MainWindow", "Apply"))
+
 class Main(QMainWindow):
 
     def __init__(self, configMap, report, targetDB, DB):
         QMainWindow.__init__(self)
 
+        self.report = report
+        self.configMap = configMap
+        self.targetDB = targetDB
+        self.DB = DB
+
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # Load the widgets with data        
+        self.init_load()
+
+        self.modified = False
         
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
         # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
         myPath = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
         
         self.config = myPath
+        
+        # Get the project folder which is the parent of the config path
+        myPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+        
+        self.projFolder = myPath
+        
+        # Loop through all settings
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            # Connect browse buttons to functions
+            if widgInfo[WIDGET_TYPE] == FILE:
+                
+                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_file(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
 
-        #Buttons
+            elif widgInfo[WIDGET_TYPE] == FOLDER:
+                
+                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_folder(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+
+            # Connect all widgets to a function the sets the modified flag
+            # This is so that any clicking on objects will prompt the user to save on exit
+            elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
+                
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                widgInfo[WIDGET1_OBJ].toggled.connect(self.set_modified_flag)
+                
+        # Apply button
         self.ui.apply_button.clicked.connect(self.save)
-        self.ui.a_text_button.clicked.connect(self.open_a_text)
-        self.ui.ana_file_button.clicked.connect(self.open_ana_file)
-        self.ui.syn_file_button.clicked.connect(self.open_syn_file)
-        self.ui.transfer_result_file_button.clicked.connect(self.open_tranfer_result)
-        self.ui.bi_dictionary_uotfile_button.clicked.connect(self.open_bi_dic_file)
-        self.ui.bi_dictionary_replacefile_button.clicked.connect(self.open_bi_dic_replacefile)
-        self.ui.target_affix_list_button.clicked.connect(self.open_affix_list)
-        self.ui.a_tretran_outfile_button.clicked.connect(self.open_a_treetran)
-        self.ui.tretran_insert_words_button.clicked.connect(self.open_insert_words)
-        self.ui.transfer_rules_button.clicked.connect(self.open_transfer_rules)
-        self.ui.testbed_button.clicked.connect(self.open_testbed)
-        self.ui.testbed_result_button.clicked.connect(self.open_testbed_result)
-        self.ui.reset_button.clicked.connect(self.reset)
-        self.report = report
-        self.configMap = configMap
-        self.targetDB = targetDB
-        self.DB = DB
 
-        self.init_load()
-
-    def open_a_text(self):
-        self.browse(self.ui.output_filename, "(*.*)")
-
-    def open_ana_file(self):
-        self.browse(self.ui.output_ANA_filename, "(*.*)")
-
-    def open_syn_file(self):
-        self.browse(self.ui.output_syn_filename, "(*.*)")
-
-    def open_tranfer_result(self):
-        self.browse(self.ui.transfer_result_filename, "(*.*)")
-
-    def open_bi_dic_file(self):
-        self.browse(self.ui.bilingual_dictionary_output_filename, "(*.*)")
-
-    def open_bi_dic_replacefile(self):
-        self.browse(self.ui.bilingual_dictionary_repalce_file_2, "(*.*)")
-
-    def open_affix_list(self):
-        self.browse(self.ui.taget_affix_gloss_list_filename, "(*.*)")
-
-    def open_a_treetran(self):
-        self.browse(self.ui.a_treetran_output_filename, "(*.*)")
-
-    def open_insert_words(self):
-        self.browse(self.ui.treetran_insert_words_file_2, "(*.*)")
-
-    def open_transfer_rules(self):
-        self.browse(self.ui.transfer_rules_filename, "(*.*)")
-
-    def open_testbed(self):
-        self.browse(self.ui.testbed_filename, "(*.*)")
-
-    def open_testbed_result(self):
-        self.browse(self.ui.testbed_result_filename, "(*.*)")
-
-    def browse(self, name, end):
-        filename, _ = QFileDialog.getOpenFileName(self, "Open file", "", end)
-        if filename:
-            name.setText(os.path.relpath(filename).replace(os.sep, '/'))
-            name.setToolTip(os.path.abspath(filename).replace(os.sep, '/'))
-
+    def set_modified_flag(self):
+        
+        self.modified = True
+        
     def read(self, key):
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
     def init_load(self):
-        #Clear all
-        self.ui.chose_sourc_text.clear()
-        self.ui.chose_entry_link.clear()
-        self.ui.chose_sense_number.clear()
-        self.ui.chose_target_project.clear()
-        self.ui.chose_source_compex_types.clear()
-        self.ui.chose_infelction_first_element.clear()
-        self.ui.chose_infelction_second_element.clear()
-        self.ui.chose_target_morpheme_types.clear()
-        self.ui.chose_source_morpheme_types.clear()
-        self.ui.chose_source_discontiguous_compex.clear()
-        self.ui.chose_skipped_source_words.clear()
-        self.ui.category_abbreviation_one.clear()
-        self.ui.category_abbreviation_one.addItem("...")
-        self.ui.category_abbreviation_two.clear()
-        self.ui.category_abbreviation_two.addItem("...")
-        #load all
-        #TODO: Find the files in source?
-        source_list = []
-        for item in self.DB.ObjectsIn(ITextRepository):
-            source_list.append(str(item).strip())
-        sorted_source_list = sorted(source_list, key=str.casefold)
         
-        i = 0
-        config_source = self.read('SourceTextName')
-        for item_str in sorted_source_list:
-            self.ui.chose_sourc_text.addItem(item_str)
-            if item_str == config_source:
-                self.ui.chose_sourc_text.setCurrentIndex(i)
-            i += 1
-        i = 0
-        for item in self.DB.LexiconGetSenseCustomFields():
-            self.ui.chose_entry_link.addItem(str(item[1]))
-            self.ui.chose_sense_number.addItem(str(item[1]))
-            if item[1] == self.read('SourceCustomFieldForEntryLink'):
-                self.ui.chose_entry_link.setCurrentIndex(i)
-            if item[1] == self.read('SourceCustomFieldForSenseNum'):
-                self.ui.chose_sense_number.setCurrentIndex(i)
-            i += 1
-        i = 0 #TODO Make this disable the other stuff that uses target??
-        for item in AllProjectNames():
-            self.ui.chose_target_project.addItem(item)
-            if item == self.read('TargetProject'):
-                self.ui.chose_target_project.setCurrentIndex(i)
-            i += 1
-        #TODO: Some kind of safe file thing ??
-        self.ui.output_filename.setText(self.read('AnalyzedTextOutputFile').replace(os.sep, '/'))
-        self.ui.output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextOutputFile')).replace(os.sep, '/'))
-        self.ui.output_ANA_filename.setText(self.read('TargetOutputANAFile').replace(os.sep, '/'))
-        self.ui.output_ANA_filename.setToolTip(os.path.abspath(self.read('TargetOutputANAFile')).replace(os.sep, '/'))
-        self.ui.output_syn_filename.setText(self.read('TargetOutputSynthesisFile').replace(os.sep, '/'))
-        self.ui.output_syn_filename.setToolTip(os.path.abspath(self.read('TargetOutputSynthesisFile')).replace(os.sep, '/'))
-        self.ui.transfer_result_filename.setText(self.read('TargetTranferResultsFile').replace(os.sep, '/'))
-        self.ui.transfer_result_filename.setToolTip(os.path.abspath(self.read('TargetTranferResultsFile')).replace(os.sep, '/'))
-        #From the Complex Form Types list TODO make multiple select
-        array = []
-        for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
-            array.append(str(item))
-        self.ui.chose_source_compex_types.addItems(array)
-        if self.read('SourceComplexTypes'):
-            for test in self.read('SourceComplexTypes'):
-                if test in array:
-                    self.ui.chose_source_compex_types.check(test)
-        self.ui.bilingual_dictionary_output_filename.setText(self.read('BilingualDictOutputFile').replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_output_filename.setToolTip(os.path.abspath(self.read('BilingualDictOutputFile')).replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_repalce_file_2.setText(self.read('BilingualDictReplacementFile').replace(os.sep, '/'))
-        self.ui.bilingual_dictionary_repalce_file_2.setToolTip(os.path.abspath(self.read('BilingualDictReplacementFile')).replace(os.sep, '/'))
-        self.ui.taget_affix_gloss_list_filename.setText(self.read('TargetAffixGlossListFile').replace(os.sep, '/'))
-        self.ui.taget_affix_gloss_list_filename.setToolTip(os.path.abspath(self.read('TargetAffixGlossListFile')).replace(os.sep, '/'))
-        #From the Complex Form Types list
-        #TODO: how to make multiple select??
-        array = []
-        for item in self.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
-            array.append(str(item))
-        self.ui.chose_infelction_first_element.addItems(array)
-        self.ui.chose_infelction_second_element.addItems(array)
-        if self.read('TargetComplexFormsWithInflectionOn1stElement'):
-            for test in self.read('TargetComplexFormsWithInflectionOn1stElement'):
-                if test in array:
-                    self.ui.chose_infelction_first_element.check(test)
-        if self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-            for test in self.read('TargetComplexFormsWithInflectionOn2ndElement'):
-                if test in array:
-                    self.ui.chose_infelction_second_element.check(test)
-        #From the Morpheme Types list
-        #TODO: select multiple
-        array = []
-        for item in self.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-            array.append(str(item).strip("-=~*"))
-        self.ui.chose_target_morpheme_types.addItems(array)
-        for test in self.read('TargetMorphNamesCountedAsRoots'):
-            if test in array:
-                self.ui.chose_target_morpheme_types.check(test)
-        array = []
-        for item in self.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-            array.append(str(item).strip("-=~*"))
-        self.ui.chose_source_morpheme_types.addItems(array)
-        for test in self.read('SourceMorphNamesCountedAsRoots'):
-            if test in array:
-                self.ui.chose_source_morpheme_types.check(test)
-        #From the Complex Form Types list.
-        #TODO: Mulitiple select
-        array = []
-        for item in self.DB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
-            array.append(str(item))
-        self.ui.chose_source_discontiguous_compex.addItems(array)
-        if self.read('SourceDiscontigousComplexTypes'):
-            for test in self.read('SourceDiscontigousComplexTypes'):
-                if test in array:
-                    self.ui.chose_source_discontiguous_compex.check(test)
-        #From the category abbreviation list.
-        #TODO: make multiple select
-        array = []
-        for pos in self.DB.lp.AllPartsOfSpeech:
-            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-            array.append(posAbbrStr)
-        self.ui.chose_skipped_source_words.addItems(array)
-        if self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-            for test in self.read('SourceDiscontigousComplexFormSkippedWordGrammaticalCategories'):
-                if test in array:
-                    self.ui.chose_skipped_source_words.check(test)
-        if self.read('AnalyzedTextTreeTranOutputFile'):
-            self.ui.a_treetran_output_filename.setText(self.read('AnalyzedTextTreeTranOutputFile').replace(os.sep, '/'))
-            self.ui.a_treetran_output_filename.setToolTip(os.path.abspath(self.read('AnalyzedTextTreeTranOutputFile')).replace(os.sep, '/'))
-        if self.read('TreeTranInsertWordsFile'):
-            self.ui.treetran_insert_words_file_2.setText(self.read('TreeTranInsertWordsFile').replace(os.sep, '/'))
-            self.ui.treetran_insert_words_file_2.setToolTip(os.path.abspath(self.read('TreeTranInsertWordsFile')).replace(os.sep, '/'))
-        self.ui.transfer_rules_filename.setText(self.read('TransferRulesFile').replace(os.sep, '/'))
-        self.ui.transfer_rules_filename.setToolTip(os.path.abspath(self.read('TransferRulesFile')).replace(os.sep, '/'))
-        self.ui.testbed_filename.setText(self.read('TestbedFile').replace(os.sep, '/'))
-        self.ui.testbed_filename.setToolTip(os.path.abspath(self.read('TestbedFile')).replace(os.sep, '/'))
-        self.ui.testbed_result_filename.setText(self.read('TestbedResultsFile').replace(os.sep, '/'))
-        self.ui.testbed_result_filename.setToolTip(os.path.abspath(self.read('TestbedResultsFile')).replace(os.sep, '/'))
-        #From the category abbreviation list.
-        #TODO: be able to select more pairs??
-        i = 1
-        for pos in self.DB.lp.AllPartsOfSpeech:
-            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-            self.ui.category_abbreviation_one.addItem(posAbbrStr)
-            if self.read('CategoryAbbrevSubstitutionList'):
-                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[0]:
-                    self.ui.category_abbreviation_one.setCurrentIndex(i)
-            i += 1
-        i = 1
-        for pos in self.targetDB.lp.AllPartsOfSpeech:
-            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-            self.ui.category_abbreviation_two.addItem(posAbbrStr)
-            if self.read('CategoryAbbrevSubstitutionList'):
-                if posAbbrStr == self.read('CategoryAbbrevSubstitutionList')[1]:
-                    self.ui.category_abbreviation_two.setCurrentIndex(i)
-            i += 1
-        if self.read('CleanUpUnknownTargetWords') == 'y':
-            self.ui.cleanup_yes.setChecked(True)
-        self.ui.punctuation.setText(self.read('SentencePunctuation'))
-        self.ui.punctuation.setAlignment(Qt.AlignLeft) #TODO make this work
+        # Clear combo boxes
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET_TYPE] in [COMBO_BOX, CHECK_COMBO_BOX]:
+                
+                widgInfo[WIDGET1_OBJ].clear()
+            
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].clear()
+                widgInfo[WIDGET2_OBJ].clear()
+
+                widgInfo[WIDGET1_OBJ].addItem("...")
+                widgInfo[WIDGET2_OBJ].addItem("...")
+            
+        # load all the widgets, calling the applicable load function defined widgetList
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET_TYPE] in [SIDE_BY_SIDE_COMBO_BOX, YES_NO]:
+                
+                # pass two widgets
+                widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], widgInfo[WIDGET2_OBJ], self, widgInfo[CONFIG_NAME])
+
+            else:
+                
+                # Call the load function for this widget, pass in the widget object and this window object
+                # Also pass the config file setting name
+                widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], self, widgInfo[CONFIG_NAME])
 
     def save(self):
-        n='n'
-        if self.ui.cleanup_yes.isChecked():
-            n='y'
-        f = open(self.config, "w", encoding='utf-8')
-        f.write("SourceTextName="+self.ui.chose_sourc_text.currentText()+"\n"+
-                "AnalyzedTextOutputFile="+self.ui.output_filename.text()+"\n"+
-                "TargetOutputANAFile="+self.ui.output_ANA_filename.text()+"\n"+
-                "TargetOutputSynthesisFile="+self.ui.output_syn_filename.text()+"\n"+
-                "TargetTranferResultsFile="+self.ui.transfer_result_filename.text()+"\n"+
-                "SourceComplexTypes="+self.optional_mul(self.ui.chose_source_compex_types.currentData())+"\n"+
-                "SourceCustomFieldForEntryLink="+self.ui.chose_entry_link.currentText()+"\n"+
-                "SourceCustomFieldForSenseNum="+self.ui.chose_sense_number.currentText()+"\n"+
-                "TargetAffixGlossListFile="+self.ui.taget_affix_gloss_list_filename.text()+"\n"+
-                "BilingualDictOutputFile="+self.ui.bilingual_dictionary_output_filename.text()+"\n"+
-                "BilingualDictReplacementFile="+self.ui.bilingual_dictionary_repalce_file_2.text()+"\n"+
-                "TargetProject="+self.ui.chose_target_project.currentText()+"\n"+
-                "TargetComplexFormsWithInflectionOn1stElement="+self.optional_mul(self.ui.chose_infelction_first_element.currentData())+"\n"+
-                "TargetComplexFormsWithInflectionOn2ndElement="+self.optional_mul(self.ui.chose_infelction_second_element.currentData())+"\n"+
-                "TargetMorphNamesCountedAsRoots="+self.optional_mul(self.ui.chose_target_morpheme_types.currentData())+"\n"+ #stem,bound stem,root,bound root,phrase
-                "SourceMorphNamesCountedAsRoots="+self.optional_mul(self.ui.chose_source_morpheme_types.currentData())+"\n"+#stem,bound stem,root,bound root,phrase
-                "SourceDiscontigousComplexTypes="+self.optional_mul(self.ui.chose_source_discontiguous_compex.currentData())+"\n"+
-                "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories="+self.optional_mul(self.ui.chose_skipped_source_words.currentData())+"\n"+
-                "AnalyzedTextTreeTranOutputFile="+self.ui.a_treetran_output_filename.text()+"\n"+
-                "TreeTranInsertWordsFile="+self.ui.treetran_insert_words_file_2.text()+"\n"+
-                "TransferRulesFile="+self.ui.transfer_rules_filename.text()+"\n"+
-                "TestbedFile="+self.ui.testbed_filename.text()+"\n"+
-                "TestbedResultsFile="+self.ui.testbed_result_filename.text()+"\n"+
-                "# This property is in the form source_cat,target_cat. Multiple pairs can be defined\n"+
-                "CategoryAbbrevSubstitutionList="+self.optional(self.ui.category_abbreviation_one)+","+self.optional(self.ui.category_abbreviation_two)+"\n"+
-                "CleanUpUnknownTargetWords="+n+"\n"+
-                "SentencePunctuation="+self.ui.punctuation.text()+"\n")
-        f.close()
-        msgBox = QMessageBox()
-        msgBox.setText("Your file has been successfully saved.")
-        msgBox.setWindowTitle("Successful save")
-        msgBox.exec()
 
-    def optional(self, string):
-        write = ''
-        if string.currentText() != '...':
-            write = string.currentText()
-        return write
+        f = open(self.config, "w", encoding='utf-8')
+        
+        # Write out the config file according to each type
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
+                
+                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
+                
+            elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                outStr = widgInfo[CONFIG_NAME]+'='+self.optional_mul(widgInfo[WIDGET1_OBJ].currentData())
+                
+            elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
+                
+                valStr = widgInfo[WIDGET1_OBJ].currentText()+','+widgInfo[WIDGET2_OBJ].currentText()
+                
+                # If the user selected ..., set the value to blank
+                if '...' in valStr:
+                    
+                    valStr = ''
+                    
+                outStr = widgInfo[CONFIG_NAME]+'='+valStr
+                
+            elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER, TEXT_BOX]:
+                
+                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text()
+                
+            elif widgInfo[WIDGET_TYPE] == YES_NO:
+                
+                if widgInfo[WIDGET1_OBJ].isChecked():
+                    
+                    selected='y'
+                else:
+                    selected='n'
+            
+                outStr = widgInfo[CONFIG_NAME]+'='+selected
+                
+            f.write(outStr+'\n')
+            
+        f.close()
+        
+        self.modified = False
+        
+        QMessageBox.information(self, 'Save Settings', 'Settings saved.')
 
     def optional_mul(self, array):
         write = ''
@@ -342,46 +706,12 @@ class Main(QMainWindow):
                 write += text + ","
         return write
 
-    def reset(self):
-        f = open(self.config, "w", encoding='utf-8') # TODO change here when new standard
-        f.write("SourceTextName=Text1\n" +
-                "AnalyzedTextOutputFile=Output\\source_text.aper\n" +
-                "TargetOutputANAFile=Build\\myText.ana\n" +
-                "TargetOutputSynthesisFile=Output\\myText.syn\n" +
-                "TargetTranferResultsFile=Output\\target_text.aper\n" +
-                "SourceComplexTypes=\n" +
-                "SourceCustomFieldForEntryLink=Target Equivalent\n" +
-                "SourceCustomFieldForSenseNum=Target Sense Number\n" +
-                "BilingualDictOutputFile=Output\\bilingual.dix\n" +
-                "BilingualDictReplacementFile=replace.dix\n" +
-                "TargetProject=Swedish-FLExTrans-Sample\n" +
-                "TargetAffixGlossListFile=Build\\target_affix_glosses.txt\n" +
-                "TargetComplexFormsWithInflectionOn1stElement=\n" +
-                "TargetComplexFormsWithInflectionOn2ndElement=\n" +
-                "TargetMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
-                "SourceMorphNamesCountedAsRoots=stem,bound stem,root,bound root,phrase,\n" +
-                "SourceDiscontigousComplexTypes=\n" +
-                "SourceDiscontigousComplexFormSkippedWordGrammaticalCategories=\n" +
-                "AnalyzedTextTreeTranOutputFile=\n" +
-                "TreeTranInsertWordsFile=\n" +
-                "TransferRulesFile=transfer_rules.t1x\n" +
-                "TestbedFile=testbed.xml\n" +
-                "TestbedResultsFile=Output\\testbed_results.xml\n" +
-                "# This property is in the form source_cat,target_cat. Multiple pairs can be defined\n" +
-                "CategoryAbbrevSubstitutionList=\n" +
-                "CleanUpUnknownTargetWords=n\n" +
-                "SentencePunctuation=.?;:!\"\'\n")
-        f.close()
-        self.init_load()
-
-
-
-def MainFunction(DB, report, modify=True):
+def MainFunction(DB, report, modify=True): 
     # Read the configuration file which we assume is in the current directory.
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        report.error('Error reading configuration file.')
+        report.Error('Error reading configuration file.')
         return
 
     TargetDB = FLExProject()
@@ -393,6 +723,7 @@ def MainFunction(DB, report, modify=True):
             return
         TargetDB.OpenProject(targetProj, False)
     except:
+        report.Error('Failed to open the target database.')
         raise
 
     # Show the window
@@ -403,17 +734,122 @@ def MainFunction(DB, report, modify=True):
     window.show()
 
     app.exec_()
-    msgBox = QMessageBox()
-    if QMessageBox().question(msgBox, 'Save?', "Do you want to save before you leave?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No) == QMessageBox.Yes:
-        window.save()
+    
+    # Prompt the user to save changes, if needed
+    if window.modified == True:
+        
+        if QMessageBox.question(window, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
+            window.save()
+    
     TargetDB.CloseProject()
+
 
 # ----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
+#### Instructions for adding a new setting ####
+#
+# Copy and paste an existing line that has the same type as the new setting you want.
+# Give new names for the various text strings.
+# If necessary write a new load function at the top of this file.
+# Set the config key name to a value from the ReadConfig.py file.
+# If a new type of widget is needed, more work needed to add to each part of the code where the widgetList is iterated
+
+widgetList = [
+   # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
+   ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
+    # tooltip text
+    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
+   
+   ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+    "The name of the custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
+   
+   ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
+    "The name of the custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
+
+   ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+    "The name of the target FLEx project."],\
+
+   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES, '',\
+    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
+
+   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES, '',\
+    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
+
+   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES, '',\
+    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."],\
+
+   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST, '',\
+    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."],\
+
+   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND, '',\
+    "Same as above. Use this property for the types that have inflection\non the second element of the complex form."],\
+
+   ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
+    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."],\
+
+   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
+    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."],\
+
+   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
+    "One or more grammatical categories that can intervene in the above complex types."],\
+
+   ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
+    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."],\
+
+   ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
+    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
+
+   ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
+    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
+   
+   ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
+    "The path and name of the file containing the transfer rules."],\
+
+   ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
+    "The path and name of the file which holds\nthe extracted source text."],\
+
+   ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
+    "The path and name of the file which holds the bilingual lexicon."],\
+
+   ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
+    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."],\
+
+   ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
+    "The path and name of the file which holds the text contents\nafter going through the transfer process."],\
+
+   ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
+    "The ancillary file that hold a list of affix\nglosses from the target FLEx project."],\
+
+   ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
+    "The path and name of the file holding\nthe intermediary text in STAMP format."],\
+
+   ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
+    "The path where lexicon files and other STAMP files are created"],\
+
+   ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
+    "The path and name of the file holding\nthe intermediary synthesized file."],\
+
+   ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
+    "The path and name of the testbed file."],\
+
+   ["Testbed Results File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
+    "The path and name of the testbed results file"],\
+
+   ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
+    "The path and name of the TreeTran rules file"],\
+
+   ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
+    "The path and name of the file that holds the output from TreeTran."],\
+
+   ["TreeTran Insert Words File", "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
+    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."]
+              ]
+
 # ----------------------------------------------------------------
+# The main processing function
 if __name__ == '__main__':
     FlexToolsModule.Help()

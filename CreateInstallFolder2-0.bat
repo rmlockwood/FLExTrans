@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.5.2
+SET FLEXTRANS_VERSION=3.5.5
 rem Delete everything in Install2.1.1
 rd /s /q Install2.1.1
 
@@ -61,13 +61,14 @@ copy "Doc\Agreement\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Agreement
 copy "Doc\Irregular Form\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Irregular Form"
 
 rem SampleProjects
-mkdir "Install2.1.1\FLExTrans\SampleProjects"
-copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install2.1.1\FLExTrans\SampleProjects"
-copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Install2.1.1\FLExTrans\SampleProjects"
+mkdir "Install2.1.1\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
 
 rem Sense Linker pieces
 copy LinkSenseTool.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
 copy Linker.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy FLExTransWindowIcon.ico Install2.1.1\FLExTrans\FLExTools
 
 rem Live Rule Tester pieces
 mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester

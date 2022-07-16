@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.5.1 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5 - 6/21/22 - Ron Lockwood
 #    Bump version number for FlexTools 3.5
 #
@@ -84,7 +87,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -565,6 +568,8 @@ class LogViewerMain(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.testbedPath = testbedPath
         self.__model = TestbedLogModel(resultsXMLObj)
