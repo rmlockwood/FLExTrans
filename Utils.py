@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.5.5 - 7/16/22 - Ron Lockwood
+#    Fixes #142 (preceding spaces in entries)
+#
 #   Version 3.5.4 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
