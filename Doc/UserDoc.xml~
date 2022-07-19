@@ -294,11 +294,23 @@ type="tFlexx"
 ></object
 > project, go to the Lexicon area</li
 ><li
->From the menu select Tools &gt; Configure &gt; Custom Fields</li
+>From the menu select <object
+type="tMenu"
+>Tools</object
+> &gt; <object
+type="tMenu"
+>Configure</object
+> &gt; <object
+type="tMenu"
+>Custom Fields</object
+></li
 ><li
 >Click Add and use the following settings:<ol
 ><li
->Custom Field Name: Target Equivalent<endnote
+>Custom Field Name: <object
+type="tUnderline"
+>Target Equivalent</object
+><endnote
 id="nCustomFieldNames"
 ><p
 >You may choose different names for the custom fields, but you also have to update the <object
@@ -322,15 +334,24 @@ type="tUnderline"
 >Sense</object
 ></li
 ><li
->Type: Single-line Text</li
+>Type: <object
+type="tUnderline"
+>Single-line Text</object
+></li
 ><li
->Writing Systems(s): First Analysis Writing System</li
+>Writing Systems(s): <object
+type="tUnderline"
+>First Analysis Writing System</object
+></li
 ></ol
 ></li
 ><li
 >Click Add again and use the following settings for a second custom field:<ol
 ><li
->Custom Field Name: Target Sense Number<endnoteRef
+>Custom Field Name: <object
+type="tUnderline"
+>Target Sense Number</object
+><endnoteRef
 note="nCustomFieldNames"
 ></endnoteRef
 ></li
@@ -340,9 +361,15 @@ type="tUnderline"
 >Sense</object
 ></li
 ><li
->Type: Single-line Text</li
+>Type: <object
+type="tUnderline"
+>Single-line Text</object
+></li
 ><li
->Writing Systems(s): First Analysis Writing System</li
+>Writing Systems(s): <object
+type="tUnderline"
+>First Analysis Writing System</object
+></li
 ></ol
 ></li
 ><li
@@ -429,21 +456,34 @@ src="Images/ToolsCollection.png"
 cssSpecial="Width:5%"
 src="Images/RunBut.png"
 ></img
-> button.</li
+> button and you should see the <object
+type="tSettings"
+></object
+> that looks like this: <example
+num="xPrepSettings"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/SettingsWindow.png"
+></img
+></chart
+></example
+></li
 ><li
->Change these two values:<table
+>Change these two settings:<table
 border="1"
 ><tr
 ><th
->Value</th
+>Setting</th
 ><th
 >Change to</th
 ></tr
 ><tr
 ><td
 ><object
-type="tCourier"
->SourceTextName</object
+type="tBoldArial"
+>Source Text Name</object
 ></td
 ><td
 ><object
@@ -454,14 +494,14 @@ type="tFlexx"
 ></object
 > <object
 type="tItalic"
->project)</object
+>project).</object
 ></td
 ></tr
 ><tr
 ><td
 ><object
-type="tCourier"
->TargetProject</object
+type="tBoldArial"
+>Target Project</object
 ></td
 ><td
 ><object
@@ -472,7 +512,10 @@ type="tFlexx"
 ></object
 ><object
 type="tItalic"
-> project</object
+> project (from the list of <object
+type="tFlexx"
+></object
+> projects).</object
 ></td
 ></tr
 ></table
@@ -542,9 +585,7 @@ sec="sLinker"
 showTitle="numberOnly"
 textBefore="singular"
 ></sectionRef
->) <comment
->Need a new image</comment
-><ol
+>) <ol
 ><li
 >For blue rows that look good, simply check the check box in the <object
 type="tBold"
@@ -606,7 +647,7 @@ src="Images/RulesSampleInitial.PNG"
 >Expand the <object
 type="tRuleElemInXXE"
 >rule </object
-> element and also the <object
+> element for Verbs and also the <object
 type="tRuleElemInXXE"
 >output</object
 > element so that it looks like <exampleRef
@@ -847,9 +888,7 @@ type="tSenseLinker"
 > is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
->: <comment
->Need a new image and explain new stuff like, hiding proper nouns, and the search box!</comment
-></p
+>:</p
 ><example
 num="xLinkerToolShot"
 ><chart
@@ -1042,6 +1081,35 @@ type="tFlextrans"
 ></section3
 ></section2
 ><section2
+id="sSettings"
+><secTitle
+>The <object
+type="tSettings"
+></object
+></secTitle
+><p
+>The <object
+type="tSettings"
+></object
+> is a tool that helps get <object
+type="tFlextrans"
+></object
+> configured the way you want it. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
+type="tSettings"
+></object
+>, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+><example
+num="xSettings"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/SettingsWindow.png"
+></img
+></chart
+></example
+></section2
+><section2
 id="sViewSrcTgt"
 ><secTitle
 >The <object
@@ -1110,6 +1178,136 @@ type="tBold"
 type="tFilename"
 >target_text.txt</object
 >.</p
+></section2
+><section2
+id="sParatext"
+><secTitle
+><object
+type="tTool"
+>Paratext</object
+> Import and Export Tools</secTitle
+><p
+>To import <object
+type="tTool"
+>Paratext</object
+> chapters into the source <object
+type="tFlexx"
+></object
+> project, use the <object
+type="tTool"
+>Import Text From Paratext</object
+> module. Fill out the <object
+type="tTool"
+>Paratext</object
+> project abbreviation in the first box. Note: this must be a project that you are at least an <object
+type="tItalic"
+>Observer</object
+> on in <object
+type="tTool"
+>Paratext</object
+>. You cannot import from <object
+type="tTool"
+>Paratext</object
+> resources. Use the <object
+type="tTool"
+>Paratext</object
+> book abbreviation in the second box. You can import multiple chapters.</p
+><p
+>After importing, you will have a new text in the source <object
+type="tFlexx"
+></object
+> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended.</p
+><p
+>Additional options are the following:</p
+><ul
+><li
+><object
+type="tBoldItalic"
+>Include footnotes</object
+> - include all the text involved with foototes</li
+><li
+><object
+type="tBoldItalic"
+>Make a new text the active text</object
+> - the newly created text will be configured to be the active source text in <object
+type="tFlextrans"
+></object
+>. This means <object
+type="tFlextrans"
+></object
+> modules will use it.</li
+><li
+><object
+type="tBoldItalic"
+>Use full English book name for title</object
+> - e.g. JHN will change to John.</li
+></ul
+><example
+num="xParatextImport"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ParatextImport.png"
+></img
+></chart
+></example
+><p
+>To export chapters to <object
+type="tTool"
+>Paratext</object
+> from the active text, use the <object
+type="tTool"
+>Export Text From Paratext</object
+> module. This tool is designed to work well with a text that you have previously imported with the <object
+type="tTool"
+>Import Text From Paratext</object
+> module. In other words, the export tool expects the active source text to be in the form John 03-04 or JHN 03-04. Use the <object
+type="tSettings"
+></object
+> tool if you need to change the active source text. The tool will find the book and chapters in the given <object
+type="tTool"
+>Paratext</object
+> project and replace the text that was there with the text created by <object
+type="tFlextrans"
+></object
+>.<endnote
+id="nSynFile"
+><p
+>The text will be taken from the <object
+type="tItalic"
+>Target Output Synthesis File</object
+> as defined in the <object
+type="tSettings"
+></object
+>. This is the file created by the <object
+type="tTool"
+>Extract Target Lexicon</object
+> module.</p
+></endnote
+> Note: the <object
+type="tTool"
+>Paratext</object
+> project must be a project that you are at least a <object
+type="tItalic"
+>Translator</object
+> on. Also, the <object
+type="tTool"
+>Paratext</object
+> book must already exist.</p
+><p
+>Normally this module should be run after the <object
+type="tTool"
+>Extract Target Lexicon</object
+> module.</p
+><example
+num="xParatextExport"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ParatextExport.png"
+></img
+></chart
+></example
 ></section2
 ><section2
 id="sSetupGramCat"
@@ -4844,7 +5042,7 @@ id="rApertium"
 >Departament de Llenguatges i Sistemes Informàtics Universitat d’Alacant</institution
 ></ms
 ><url
->http://xixona.dlsi.ua.es/~fran/apertium2-documentation.pdf</url
+>https://wiki.apertium.org/wiki/File:Apertium2-documentation.pdf</url
 ></refWork
 ></refAuthor
 ><refAuthor
@@ -4976,6 +5174,11 @@ id="hr"
 ><type
 font-weight="bold"
 id="tBold"
+></type
+><type
+font-family="Arial"
+font-weight="bold"
+id="tBoldArial"
 ></type
 ><type
 font-style="italic"
@@ -5135,6 +5338,12 @@ font-size="90%"
 id="tluPunctuation"
 ></type
 ><type
+color="#009933"
+font-family="Courier New"
+font-weight="bold"
+id="tMenu"
+></type
+><type
 color="navy"
 font-family="Courier New"
 font-weight="bold"
@@ -5155,6 +5364,11 @@ types="tBold"
 ><type
 after="Sense Linker Tool"
 id="tSenseLinker"
+types="tTool"
+></type
+><type
+after="Settings Tool"
+id="tSettings"
 types="tTool"
 ></type
 ><type

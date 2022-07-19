@@ -294,11 +294,23 @@ type="tFlexx"
 ></object
 > project, go to the Lexicon area</li
 ><li
->From the menu select Tools &gt; Configure &gt; Custom Fields</li
+>From the menu select <object
+type="tMenu"
+>Tools</object
+> &gt; <object
+type="tMenu"
+>Configure</object
+> &gt; <object
+type="tMenu"
+>Custom Fields</object
+></li
 ><li
 >Click Add and use the following settings:<ol
 ><li
->Custom Field Name: Target Equivalent<endnote
+>Custom Field Name: <object
+type="tUnderline"
+>Target Equivalent</object
+><endnote
 id="nCustomFieldNames"
 ><p
 >You may choose different names for the custom fields, but you also have to update the <object
@@ -322,15 +334,24 @@ type="tUnderline"
 >Sense</object
 ></li
 ><li
->Type: Single-line Text</li
+>Type: <object
+type="tUnderline"
+>Single-line Text</object
+></li
 ><li
->Writing Systems(s): First Analysis Writing System</li
+>Writing Systems(s): <object
+type="tUnderline"
+>First Analysis Writing System</object
+></li
 ></ol
 ></li
 ><li
 >Click Add again and use the following settings for a second custom field:<ol
 ><li
->Custom Field Name: Target Sense Number<endnoteRef
+>Custom Field Name: <object
+type="tUnderline"
+>Target Sense Number</object
+><endnoteRef
 note="nCustomFieldNames"
 ></endnoteRef
 ></li
@@ -340,9 +361,15 @@ type="tUnderline"
 >Sense</object
 ></li
 ><li
->Type: Single-line Text</li
+>Type: <object
+type="tUnderline"
+>Single-line Text</object
+></li
 ><li
->Writing Systems(s): First Analysis Writing System</li
+>Writing Systems(s): <object
+type="tUnderline"
+>First Analysis Writing System</object
+></li
 ></ol
 ></li
 ><li
@@ -429,21 +456,34 @@ src="Images/ToolsCollection.png"
 cssSpecial="Width:5%"
 src="Images/RunBut.png"
 ></img
-> button.</li
+> button and you should see the <object
+type="tSettings"
+></object
+> that looks like this: <example
+num="xPrepSettings"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/SettingsWindow.png"
+></img
+></chart
+></example
+></li
 ><li
->Change these two values:<table
+>Change these two settings:<table
 border="1"
 ><tr
 ><th
->Value</th
+>Setting</th
 ><th
 >Change to</th
 ></tr
 ><tr
 ><td
 ><object
-type="tCourier"
->SourceTextName</object
+type="tBoldArial"
+>Source Text Name</object
 ></td
 ><td
 ><object
@@ -454,14 +494,14 @@ type="tFlexx"
 ></object
 > <object
 type="tItalic"
->project)</object
+>project).</object
 ></td
 ></tr
 ><tr
 ><td
 ><object
-type="tCourier"
->TargetProject</object
+type="tBoldArial"
+>Target Project</object
 ></td
 ><td
 ><object
@@ -472,7 +512,10 @@ type="tFlexx"
 ></object
 ><object
 type="tItalic"
-> project</object
+> project (from the list of <object
+type="tFlexx"
+></object
+> projects).</object
 ></td
 ></tr
 ></table
@@ -542,9 +585,7 @@ sec="sLinker"
 showTitle="numberOnly"
 textBefore="singular"
 ></sectionRef
->) <comment
->Need a new image</comment
-><ol
+>) <ol
 ><li
 >For blue rows that look good, simply check the check box in the <object
 type="tBold"
@@ -606,7 +647,7 @@ src="Images/RulesSampleInitial.PNG"
 >Expand the <object
 type="tRuleElemInXXE"
 >rule </object
-> element and also the <object
+> element for Verbs and also the <object
 type="tRuleElemInXXE"
 >output</object
 > element so that it looks like <exampleRef
@@ -847,7 +888,7 @@ type="tSenseLinker"
 > is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
 type="tSenseLinker"
 ></object
->: </p
+>:</p
 ><example
 num="xLinkerToolShot"
 ><chart
@@ -988,12 +1029,15 @@ id="sTesterOther"
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
 type="tFlextrans"
 ></object
-> settings.</p
+> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
+type="tButton"
+>Rebuild Bilingual Lexicon</object
+> button.</p
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to run the <object
-type="tModule"
->Settings Tool</object
->, change the SourceText Name value and re-run the tool.</p
+type="tSettings"
+></object
+>, change the SourceText Name setting and re-run the tool.</p
 ><p
 >You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
@@ -5001,7 +5045,7 @@ id="rApertium"
 >Departament de Llenguatges i Sistemes Informàtics Universitat d’Alacant</institution
 ></ms
 ><url
->http://xixona.dlsi.ua.es/~fran/apertium2-documentation.pdf</url
+>https://wiki.apertium.org/wiki/File:Apertium2-documentation.pdf</url
 ></refWork
 ></refAuthor
 ><refAuthor
@@ -5133,6 +5177,11 @@ id="hr"
 ><type
 font-weight="bold"
 id="tBold"
+></type
+><type
+font-family="Arial"
+font-weight="bold"
+id="tBoldArial"
 ></type
 ><type
 font-style="italic"
@@ -5290,6 +5339,12 @@ color="#FFC000"
 font-family="Courier New"
 font-size="90%"
 id="tluPunctuation"
+></type
+><type
+color="#009933"
+font-family="Courier New"
+font-weight="bold"
+id="tMenu"
 ></type
 ><type
 color="navy"
