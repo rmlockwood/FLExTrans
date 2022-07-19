@@ -114,7 +114,13 @@ def readConfig(report):
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
             return
-        (prop, value) = line.split('=')
+        
+        try:
+            (prop, value) = line.split('=')
+        except:
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+            return
+        
         value = value.rstrip()
         # if the value has commas, save it as a list
         if re.search(',', value):
