@@ -1029,12 +1029,15 @@ id="sTesterOther"
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
 type="tFlextrans"
 ></object
-> settings.</p
+> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
+type="tButton"
+>Rebuild Bilingual Lexicon</object
+> button.</p
 ><p
 >In this version of the tool, you can’t change the Source Text Name. You will have to run the <object
-type="tModule"
->Settings Tool</object
->, change the SourceText Name value and re-run the tool.</p
+type="tSettings"
+></object
+>, change the SourceText Name setting and re-run the tool.</p
 ><p
 >You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
