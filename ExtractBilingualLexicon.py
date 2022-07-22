@@ -648,11 +648,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
     if not (senseEquivField):
-        error_list.append((linkField + " field doesn't exist. Please read the instructions.", 2))
+        error_list.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
     if not (senseSenseNumField):
-        error_list.append((senseNumField + " field doesn't exist. Please read the instructions.", 2))
+        error_list.append((f"Custom field: {senseNumField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
