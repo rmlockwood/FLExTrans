@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.6 - 7/27/22 - Ron Lockwood
+#    Use relative paths now. One thing this helps with, is if a project folder
+#    gets copied from one place to another, the file paths will be to the new
+#    files in the new folder since the paths are relative. Fixes #194.
+#
 #   Version 3.5.5 - 7/13/22 - Ron Lockwood
 #    Give error if fail to open target DB.
 #
@@ -49,7 +54,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.4",
+        FTM_Version: "3.5.6",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -331,24 +336,40 @@ def make_open_folder(wind, myWidgInfo):
     
 def do_browse(wind, myWidgInfo):
 
-        filename, _ = QFileDialog.getOpenFileName(wind, "Open file", "", "(*.*)")
+    # if folder exists for the current setting, use it. set the starting directory for the open dialog 
+    startDir = os.path.dirname(wind.read(myWidgInfo[CONFIG_NAME]))
+    
+    if not os.path.isdir(startDir):
         
-        if filename:
-            
-            set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+        startDir = ""
+                   
+    filename, _ = QFileDialog.getOpenFileName(wind, "Select file", startDir, "(*.*)")
+    
+    if filename:
+        
+        set_paths(myWidgInfo[WIDGET1_OBJ], filename)
 
 def do_folder_browse(wind, myWidgInfo):
 
-        dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", wind.projFolder, options=QFileDialog.ShowDirsOnly)
+    # if folder exists for the current setting, use it. set the starting directory for the open dialog 
+    startDir = wind.read(myWidgInfo[CONFIG_NAME])
+    
+    if not os.path.isdir(startDir):
         
-        if dirName:
-            
-            set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
+        startDir = ""
+                   
+    dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.ShowDirsOnly)
+    
+    if dirName:
+        
+        set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
 
 def set_paths(widget, path):
     
-    widget.setText(os.path.abspath(path).replace(os.sep, '\\'))
-    widget.setToolTip(os.path.abspath(path).replace(os.sep, '\\'))
+    # start the rel path relative to the project folder which is the parent of the config folder
+    startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+    widget.setText(os.path.relpath(path, startPath))
+    widget.setToolTip(os.path.relpath(path, startPath))
     
 class Ui_MainWindow(object):
     
