@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.7 - 7/30/22 - Ron Lockwood
+#    Fixes #199. On certain settings allow the list box to load even if the
+#    setting is blank.
+#
 #   Version 3.5.6 - 7/27/22 - Ron Lockwood
 #    Use relative paths now. One thing this helps with, is if a project folder
 #    gets copied from one place to another, the file paths will be to the new
@@ -54,7 +58,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.6",
+        FTM_Version: "3.5.7",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -132,7 +136,7 @@ def loadSourceTextList(widget, wind, settingName):
     # Get the source name from the config file
     configSource = wind.read(settingName)
     
-    if configSource:
+    if configSource is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, itemStr in enumerate(sortedSourceList):
@@ -148,7 +152,7 @@ def loadCustomEntry(widget, wind, settingName):
     # Get the custom field to link to target entry
     customTarget = wind.read(settingName)
     
-    if customTarget:
+    if customTarget is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
@@ -164,7 +168,7 @@ def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
     
-    if targetProject:
+    if targetProject is not None:
 
         # TODO: Make this disable the other stuff that uses target??
         for i, item in enumerate(AllProjectNames()):
@@ -298,7 +302,7 @@ def loadTextBox(widget, wind, settingName):
 
     text = wind.read(settingName)
     
-    if text:
+    if text is not None:
         
         widget.setText(text)
 
@@ -364,12 +368,12 @@ def do_folder_browse(wind, myWidgInfo):
         
         set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
 
-def set_paths(widget, path):
+def set_paths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
     startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
-    widget.setText(os.path.relpath(path, startPath))
-    widget.setToolTip(os.path.relpath(path, startPath))
+    widget.setText(os.path.relpath(myPath, startPath))
+    widget.setToolTip(os.path.relpath(myPath, startPath))
     
 class Ui_MainWindow(object):
     
