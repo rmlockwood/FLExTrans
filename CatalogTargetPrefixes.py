@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.2 - 6/24/22 - Ron Lockwood
+#    Error message fix.
+#
 #   Version 3.5.1 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -88,7 +91,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
