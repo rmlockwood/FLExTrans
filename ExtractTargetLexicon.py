@@ -524,12 +524,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     # Write out morphname field
                     f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
                     
-                    # change spaces to underscores
-                    abbrev = re.sub('\s', '_', abbrev)
-
-                    # remove periods
-                    abbrev = re.sub('\.', '', abbrev)
-
+                    abbrev = Utils.convertProblemChars(abbrev)
+                    
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 

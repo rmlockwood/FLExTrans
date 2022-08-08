@@ -1,1 +1,0 @@
-To install, extract the contents of this zip file to the FlexAppsN.N.N folder.
