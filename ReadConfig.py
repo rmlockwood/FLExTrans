@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.3 - 8/8/22 - Ron Lockwood
+#    Don't allow two equals signs in the config file.
+#
 #   Version 3.5.2 - 7/14/22 - Ron Lockwood
 #    New constants for cacheing data, treetran rules file and lexicon folder. Fixes #184
 #    Also check for Folder at the end of the setting name and if so return a path.
