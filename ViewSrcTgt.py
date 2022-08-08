@@ -5,6 +5,10 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.5.2 - 8/8/22 - Ron Lockwood
+#    Kludge fix to prevent extra blank lines in the target text.
+#    Also have tree write directly to utf-16.
+#
 #   Version 3.5.1 - 7/8/22 - Ron Lockwood
 #    Set Window Icon to be the FLExTrans Icon
 #
@@ -68,7 +72,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.5.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a more readable source or target text file.",    
         FTM_Help   : "",
@@ -199,6 +203,18 @@ class Main(QMainWindow):
             QMessageBox.warning(self, 'File Error', 'There was a problem opening the file: '+self.viewFile+'. ')
             return
         
+        # Remove extra carriage returns apertium is giving us in the target file.
+        if self.viewFile != self.src:
+            fileContent = f.read()
+            f.close()
+            
+            fileContent = re.sub('\n\n', '\n', fileContent)
+            f = open(self.viewFile, 'w', encoding='utf-8')
+            f.write(fileContent)
+            f.close()
+            
+            f = open(self.viewFile, encoding='utf-8')
+
         # Create the root element
         root = ET.Element('html')
         body = ET.SubElement(root, 'body')
@@ -334,20 +350,7 @@ class Main(QMainWindow):
                     Utils.output_span(list_item, Utils.PUNC_COLOR, tokens[-1].rstrip(), rtl_flag)
                 
         # Write out the html file as utf-8
-        tree.write(self.html, 'UTF-8', None, None, 'html')
-        
-        # Convert the file to utf-16. Using utf-16 to write the tree above doesn't seem to work
-        # The webView widget seems to only display non-ascii characters if it is
-        # in utf-16
-        utf16_name = self.html+'16'
-        original = open(self.html, encoding='utf-8')
-        utf16 = open(utf16_name, "w", encoding='utf-16')
-
-        utf16.write(original.read())
-        original.close()
-        utf16.close()
-        shutil.copy2(utf16_name, self.html)
-        f.close()
+        tree.write(self.html, encoding='utf-16', xml_declaration=None, default_namespace=None, method='html')
         
         # Give the html file location to the web viewer widget
         self.ui.webView.setUrl(QtCore.QUrl("file:///"+re.sub(r'\\','/',self.html)))
