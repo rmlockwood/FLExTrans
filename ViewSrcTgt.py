@@ -6,7 +6,7 @@
 #   12/28/17
 #
 #   Version 3.5.2 - 8/8/22 - Ron Lockwood
-#    Kludge fix to prevent extra blank lines in the target text.
+#    Kludge fix to prevent extra blank lines in the target text. Fixes #203
 #    Also have tree write directly to utf-16.
 #
 #   Version 3.5.1 - 7/8/22 - Ron Lockwood
