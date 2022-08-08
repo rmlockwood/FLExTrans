@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.4 - 8/8/22 - Ron Lockwood
+#    Fixes #142. Warn when entries start with a space.
+#
 #   Version 3.5.3 - 7/9/22 - Ron Lockwood
 #    Use a new config setting for using cache. Fixes #115.
 #
@@ -198,7 +201,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
