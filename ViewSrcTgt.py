@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.5.1 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5 - 6/21/22 - Ron Lockwood
 #    Bump version number for FlexTools 3.5
 #
@@ -52,7 +55,7 @@ import unicodedata
 from FTModuleClass import FlexToolsModuleClass
 from FTModuleClass import *                                                 
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from SrcTgtViewer import Ui_MainWindow
@@ -65,7 +68,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a more readable source or target text file.",    
         FTM_Help   : "",
@@ -88,6 +91,8 @@ class Main(QMainWindow):
         self.tgt = tgtFile
         self.html = htmlFile
         self.advanced = advanced
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)

@@ -5,6 +5,15 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.5 - 7/14/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
+#   Version 3.5.4 - 7/13/22 - Ron Lockwood
+#    More CloseProject() calls for FlexTools2.1.1
+#
+#   Version 3.5.3 - 7/9/22 - Ron Lockwood
+#    Use a new config setting for using cache. Fixes #115.
+#
 #   Version 3.5.2 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -141,7 +150,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -515,12 +524,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     # Write out morphname field
                     f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
                     
-                    # change spaces to underscores
-                    abbrev = re.sub('\s', '_', abbrev)
-
-                    # remove periods
-                    abbrev = re.sub('\.', '', abbrev)
-
+                    abbrev = Utils.convertProblemChars(abbrev)
+                    
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 
@@ -572,14 +577,42 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
 def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
-    TargetDB = FLExProject()
+    morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
+    if not morphNames: 
+        error_list.append(('Configuration file problem.', 2))
+        return error_list
+    
+    # Create a path to the temporary folder + project name
+#    partPath = os.path.join(tempfile.gettempdir(), targetProject)
 
-    # Open the target database
+    # Get the target project name
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
         error_list.append(('Configuration file problem with TargetProject.', 2))
         return error_list
     
+    # Get lexicon files folder setting
+    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+    if not lexFolder:
+        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        return error_list
+
+    # Check that we have a valid folder
+    if os.path.isdir(lexFolder) == False:
+        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        return error_list
+
+    # Have all files start with targetProject
+    partPath = os.path.join(lexFolder, targetProj)
+    
+    # Get cache data setting
+    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+    if not cacheData:
+        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        return error_list
+
+    TargetDB = FLExProject()
+
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
@@ -592,23 +625,14 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-#         error_list.append(('There was an error opening target database: '+targetProj+'.', 2))
-#         error_list.append((e.message, 2))
+        report.Error('Failed to open the target database.')
         raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
 
-    targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-    morphNames    = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
-    if not (targetProject and morphNames): 
-        error_list.append(('Configuration file problem.', 2))
-        return error_list
-    
-    # Create a path to the temporary folder + project name
-    partPath = os.path.join(tempfile.gettempdir(), targetProject)
-
     # If the target database hasn't changed since we created the root databse file, don't do anything.
-    if useCacheIfAvailable and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
+    if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
+        TargetDB.CloseProject()
         error_list.append(('Target lexicon files are up to date.', 0))
         return error_list
 
@@ -672,8 +696,21 @@ def synthesize(configMap, anaFile, synFile, report=None):
     else:
         cleanUpText = False
 
+    # Get lexicon files folder setting
+    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+    if not lexFolder:
+        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        return error_list
+    
+    # Check that we have a valid folder
+    if os.path.isdir(lexFolder) == False:
+        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        return error_list
+
+    # Have all files start with targetProject
+    partPath = os.path.join(lexFolder, targetProject)
+    
     # Create other files we need for STAMP
-    partPath = os.path.join(tempfile.gettempdir(), targetProject)
     cmdFileName = create_synthesis_files(partPath)
 
     # Synthesize the target text

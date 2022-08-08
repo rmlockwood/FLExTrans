@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.5.10 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5.9 - 6/24/22 - Ron Lockwood
 #    Call CloseProject() for FlexTools2.1.1 fixes #159
 #
@@ -201,7 +204,7 @@ from subprocess import call
 
 #import win32gui
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
@@ -223,7 +226,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.9",
+        FTM_Version    : "3.5.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -331,6 +334,8 @@ class Main(QMainWindow):
         self.__convertIt = True
         self.__extractIt = True
         self.__doCatalog = True
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None

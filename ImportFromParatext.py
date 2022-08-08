@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.5.4 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5.3 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
@@ -39,7 +42,7 @@ import winreg
 import json
 from shutil import copyfile
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
@@ -53,7 +56,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -255,12 +258,16 @@ class Main(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
         
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
         
+        self.setWindowTitle("Import Paratext Chapters")
+
         # Load settings if available
         try:
             # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config

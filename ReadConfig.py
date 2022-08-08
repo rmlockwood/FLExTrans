@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.5.3 - 8/8/22 - Ron Lockwood
+#    Don't allow two equals signs in the config file.
+#
+#   Version 3.5.2 - 7/14/22 - Ron Lockwood
+#    New constants for cacheing data, treetran rules file and lexicon folder. Fixes #184
+#    Also check for Folder at the end of the setting name and if so return a path.
+#
 #   Version 3.5.1 - 6/22/22 - Ron Lockwood
 #    Error message fix.
 #
@@ -56,6 +63,7 @@ ANALYZED_TREETRAN_TEXT_FILE = 'AnalyzedTextTreeTranOutputFile'
 BILINGUAL_DICTIONARY_FILE = 'BilingualDictOutputFile'
 BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
+CACHE_DATA = 'CacheData'
 CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
@@ -69,6 +77,7 @@ TARGET_AFFIX_GLOSS_FILE = 'TargetAffixGlossListFile'
 TARGET_ANA_FILE = 'TargetOutputANAFile'
 TARGET_FORMS_INFLECTION_1ST = 'TargetComplexFormsWithInflectionOn1stElement'
 TARGET_FORMS_INFLECTION_2ND = 'TargetComplexFormsWithInflectionOn2ndElement'
+TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
@@ -77,6 +86,7 @@ TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
 TRANSFER_RULES_FILE = 'TransferRulesFile'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
+TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
 def readConfig(report):
     try:
@@ -87,7 +97,7 @@ def readConfig(report):
         f_handle = open(myPath, encoding='utf-8')
     except:
         if report is not None:
-            report.Error('Error reading the file: "' + os.path.dirname(CONFIG_PATH)+ '/' + CONFIG_FILE + '". Check that it exists.')
+            report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
         return None
 
     my_map = {}
@@ -107,7 +117,13 @@ def readConfig(report):
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
             return
-        (prop, value) = line.split('=')
+        
+        try:
+            (prop, value) = line.split('=')
+        except:
+            report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+            return
+        
         value = value.rstrip()
         # if the value has commas, save it as a list
         if re.search(',', value):
@@ -127,7 +143,7 @@ def getConfigVal(my_map, key, report, giveError=True):
     else:
         # If the key value ends with 'File' then change the path accordingly.
         # Also the key must have a value, otherwise ignore it.
-        if re.search('File$', key) and key in my_map and my_map[key]:
+        if (re.search('File$', key) or re.search('Folder$', key)) and key in my_map and my_map[key]:
             
             # if we don't have an absolute path (e.g. c:\...) we need to fix up the path. FLExTrans is shipped with relative paths to the work project subfolder ('e.g. German-Swedish')
             if not re.search(':', my_map[key]):

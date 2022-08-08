@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.5.3 - 7/8/22 - Ron Lockwood
+#    Set Window Icon to be the FLExTrans Icon
+#
 #   Version 3.5.2 - 6/13/22 - Ron Lockwood
 #    import change for flexlibs for FlexTools2.1
 #
@@ -35,7 +38,7 @@ import winreg
 import json
 from shutil import copyfile
 
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
@@ -50,7 +53,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.5.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -171,6 +174,8 @@ class Main(QMainWindow):
 
         self.chapSel = None
         self.retVal = False
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
