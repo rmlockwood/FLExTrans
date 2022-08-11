@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6 - 8/11/22 - Ron Lockwood
+#    Fixes #65. Decompose the replacement file before combining with bilingual lexicon.
+#
 #   Version 3.5.4 - 8/8/22 - Ron Lockwood
 #    Fixes #142. Warn when entries start with a space.
 #
@@ -201,7 +204,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -348,21 +351,31 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # Save a copy of the bilingual dictionary
     shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
 
+    # Make a temporary copy of the replacement file so we can decompose it
+    tmpReplFile = replFile+'.tmp'
+    shutil.copy2(replFile, tmpReplFile)
+
+    # Convert the replacement file to decomposed (NFD)
+    Utils.decompose(tmpReplFile)
+    
     # Parse the replacement file as XML
     try:
-        replEtree = ET.parse(replFile)
+        replEtree = ET.parse(tmpReplFile)
     except IOError:
         if report:
             report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return True
     
     # Determine the Doctype
-    f = open(replFile, encoding='utf-8')
+    f = open(tmpReplFile, encoding='utf-8')
     
     # Read two lines
     f.readline()
     line = f.readline()
     f.close()
+    
+    # Remove the temp file
+    os.remove(tmpReplFile)
     
     toks = line.split()
 
