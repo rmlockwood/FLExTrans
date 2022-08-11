@@ -5,7 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.5.6 - 8/10/22 - Ron Lockwood
+#   Version 3.6.1 - 8/11/22 - Ron Lockwood
+#    Save transfer rule file in decomposed unicode.
+#
+#   Version 3.6 - 8/10/22 - Ron Lockwood
 #    Save testbed file in composed or decomposed unicode depending on the config.
 #    setting. Always convert the file to decomposed when first reading it.
 #
@@ -1549,17 +1552,41 @@ def stripRulesFile(report, buildFolder):
     
     # Go through the existing rule file and write everything to the new file except Doctype stuff.
     for line in lines:
+        
         strippedLine = line.strip()
-        if strippedLine != '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' and \
-               strippedLine != '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' and \
-               strippedLine != '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' and \
-               strippedLine != '"transfer.dtd">' and \
-               strippedLine != '"interchunk.dtd">' and \
-               strippedLine != '"postchunk.dtd">':
-            f.write(line)
+        
+        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
+               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
+               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+               strippedLine == '"transfer.dtd">' or \
+               strippedLine == '"interchunk.dtd">' or \
+               strippedLine == '"postchunk.dtd">':
+            continue
+        
+        # Always write transfer rule data as decomposed
+        f.write(unicodedata.normalize('NFD', line))
     f.close()
     
+def decompose(myFile):
     
+    try:
+        # Open the file and read all the lines
+        f = open(myFile , "r", encoding='utf-8')
+    except:
+        raise ValueError(f'Could not open the file {myFile} when converting to NFD.')
+
+    lines = f.readlines()
+    f.close()
+    
+    f = open(myFile ,"w", encoding='utf-8')
+    
+    # Go through the existing rule file and write everything to the new file except Doctype stuff.
+    for line in lines:
+
+        # Always convert lines to decomposed unicode
+        f.write(unicodedata.normalize('NFD', line))
+    f.close()
+        
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
