@@ -145,7 +145,6 @@ from FTModuleClass import *
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs import FLExProject, AllProjectNames
-from builtins import None, True
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
