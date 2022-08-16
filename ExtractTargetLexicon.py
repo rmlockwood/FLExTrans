@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6 - 8/16/22 - Ron Lockwood
+#    Fixes #164. STAMP dictionaries now have constraints and properties for
+#    inflection classes and stem names. Now synthesis with STAMP will take into
+#    account the inflection classes that apply and the stem names. One difference
+#    currently with FLEx, is that secondary allomorph don't get the negation of
+#    the stem name environment of the previous allomorph.
+#
 #   Version 3.5.5 - 7/14/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -227,64 +234,74 @@ def haveFeatureMatch(specsA, specsB):
     
     return False
     
-def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList, morphType):
+def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
     
+    # Put out normal allomorph stuff
+    if output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType) == False:
+        
+        return
+    
+    ## Now put out the one-time stuff for the entry
     if sense is not None:
         
         msa = sense.MorphoSyntaxAnalysisRA
     else:
         msa = None
         
+    # Deal with affix stem name stuff.
+    # A stem name goes on an affix only if the stem name category matches the category of this msa object
+    # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
+    if msa:
+        
+        if morphType != STEM_TYPE: # non-stems only
+
+            found = False
+            
+            for stemName in stemNameList:
+                
+                if msa.PartOfSpeechRA == stemName[CATEGORY_STR]:
+                    
+                    for featureSet in stemName[FEATURES_STR]:
+                        
+                        if msa.InflFeatsOA and haveFeatureMatch(msa.InflFeatsOA.FeatureSpecsOC, featureSet.FeatureSpecsOC):
+                            
+                            f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
+                            found = True
+                            break
+                if found:
+                    break
+    
+        # Write out inflection class as a morpheme property if we have a stem
+        else: # stems only
+            
+            if msa.InflectionClassRA:
+                
+                inflClassStr = ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
+                
+                f_handle.write(f'\\mp {inflClassStr}\n')
+
+def output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
+    
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
     # If there is nothing for any WS we get ***
     if amorph == '***' or amorph == None:
         # Suppress this warning for now. 
         #report.Warning('No allomorph found. Skipping 1 allomorph for Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
-        return
+        return False
     
-    # Deal with affix stem name stuff.
-    # A stem name goes on an affix only if the stem name category matches the category of this msa object
-    # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
-    if msa and morphType != STEM_TYPE: # non-stems only
-
-        found = False
-        
-        for stemName in stemNameList:
-            
-            if msa.PartOfSpeechRA == stemName[CATEGORY_STR]:
-                
-                for featureSet in stemName[FEATURES_STR]:
-                    
-                    if msa.InflFeatsOA and haveFeatureMatch(msa.InflFeatsOA.FeatureSpecsOC, featureSet.FeatureSpecsOC):
-                        
-                        f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
-                        found = True
-                        break
-            if found:
-                break
-        
-    # Write out inflection class as a morpheme property if we have a stem
-    if msa and morphType == STEM_TYPE: # stems only
-        
-        if msa.InflectionClassRA:
-            
-            inflClassStr = ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
-            
-            f_handle.write(f'\\mp {inflClassStr}\n')
-
     # Convert spaces between words to underscores, these have to be removed later.
     amorph = Utils.underscores(amorph)
     f_handle.write('\\a '+amorph+' ')
     
     # Negate other stem name constraints
-    for prevStem in prevStemList:
-        
-        negatedStem = re.sub('_', '~_', prevStem)
-        f_handle.write(negatedStem) 
+#     for prevStem in prevStemList:
+#         
+#         negatedStem = re.sub(' _ ', ' ~_ ', prevStem)
+#         f_handle.write(negatedStem) 
     
     # Write out stem name stuff if we have a stem
-    if msa and morphType == STEM_TYPE: # stems only
+    if morphType == STEM_TYPE: # stems only
 
         if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
@@ -296,15 +313,10 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList
             prevStemList.append(env1)
             prevStemList.append(env2)
             
-    # Write out negated environments from previous allomorphs
-    for prevEnv in envList:
-        
-        f_handle.write('~'+prevEnv+' ') 
-        
-    if msa and morphType != STEM_TYPE: # non-stems only
+    else: # non-stems only
         
         # Write out each inflection class constraint
-        for inflClass in morph.InflectionClassesRC.ToArray():
+        for inflClass in morph.InflectionClassesRC:
             
             inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
             
@@ -314,6 +326,11 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList
                 
             else:
                 f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
+        
+    # Write out negated environments from previous allomorphs
+    for prevEnv in envList:
+        
+        f_handle.write('~'+prevEnv+' ') 
         
     # Write out each phonological environment constraint
     for env in morph.PhoneEnvRC:
@@ -348,7 +365,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
         
         if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == PREFIX_TYPE:
             
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, stemNameList, PREFIX_TYPE)
+            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, PREFIX_TYPE)
     
     f_pf.write('\n')
     
@@ -366,7 +383,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
         
         if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == SUFFIX_TYPE:
             
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, stemNameList, SUFFIX_TYPE)
+            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, SUFFIX_TYPE)
     
     f_sf.write('\n')
 
@@ -407,10 +424,10 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, sense, stemNameList, myType)
+        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, sense, myType)
     
     # Now process the lexeme form which is the default allomorph
-    output_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, stemNameList, myType)
+    output_default_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, myType)
     f_handle.write('\n')
 
 def define_some_names(partPath):
@@ -491,6 +508,8 @@ def create_synthesis_files(partPath):
 
 def output_cat_info(TargetDB, f_dec):
     
+    inflClassList = []
+        
     # loop through all target categories and write them to the dec file
     for pos in TargetDB.lp.AllPartsOfSpeech:
         
@@ -509,7 +528,7 @@ def output_cat_info(TargetDB, f_dec):
         f_dec.write('\\ca ' + posAbbr + '\n')
 
         # get stem name info.
-        for stemNameObj in pos.StemNamesOC.ToArray():
+        for stemNameObj in pos.StemNamesOC:
             
             if stemNameObj.Abbreviation and stemNameObj.RegionsOC:
                 
@@ -522,9 +541,7 @@ def output_cat_info(TargetDB, f_dec):
                 stemNameList.append(stemNameMap)
             
         # get inflection class info.
-        inflClassList = []
-            
-        for inflClassObj in pos.InflectionClassesOC.ToArray():
+        for inflClassObj in pos.InflectionClassesOC:
             
             if inflClassObj.Abbreviation:
                 
@@ -891,7 +908,7 @@ def synthesize(configMap, anaFile, synFile, report=None):
     # Synthesize the target text
     error_list.append(('Synthesizing the target text...', 0))
 
-    # run STAMP to synthesize the results. E.g. stamp32" -f Gilaki-Thesis_ctrl_files. txt -i pes_verbs.ana -o pes_verbs.syn
+    # run STAMP to synthesize the results. E.g. stamp32" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
     # this assumes stamp32.exe is in the current working directory.
     call(['stamp32.exe', '-f', cmdFileName, '-i', anaFile, '-o', synFile])
 
