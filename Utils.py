@@ -5,6 +5,13 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.1 - 8/11/22 - Ron Lockwood
+#    Save transfer rule file in decomposed unicode.
+#
+#   Version 3.6 - 8/10/22 - Ron Lockwood
+#    Save testbed file in composed or decomposed unicode depending on the config.
+#    setting. Always convert the file to decomposed when first reading it.
+#
 #   Version 3.5.5 - 7/16/22 - Ron Lockwood
 #    Fixes #142 (preceding spaces in entries)
 #
@@ -213,6 +220,7 @@ import xml.etree.ElementTree as ET
 import platform
 import subprocess
 import uuid
+import unicodedata
 from datetime import datetime
 import TestbedValidator
 from System import Guid
@@ -1158,14 +1166,23 @@ class FlexTransTestbedFile():
         if not configMap:
             raise ValueError()
     
-        testbedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_FILE, report)
-        if not testbedPath:
+        self.__testbedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TESTBED_FILE, report)
+        if not self.__testbedPath:
             raise ValueError()
         
-        self.__testbedPath = testbedPath
+        # Get the composed characters setting
+        composed = MyReadConfig.getConfigVal(configMap, MyReadConfig.COMPOSED_CHARACTERS, report)
+        if not composed:
+            raise ValueError()
         
+        if composed == 'y':
+            
+            self.composed = True
+        else:
+            self.composed = False
+            
         # check if the file exists
-        if os.path.exists(testbedPath) == False:
+        if os.path.exists(self.__testbedPath) == False:
             
             # we will create it
             self.__isNew = True
@@ -1174,9 +1191,27 @@ class FlexTransTestbedFile():
             self.__testbedTree = ET.ElementTree(myRoot)
         else:
             try:
-                self.__testbedTree = ET.parse(testbedPath)
+                # Open the testbed file
+                f = open(self.__testbedPath, encoding='utf-8')
+                lines = f.readlines()
+                f.close()
+                
+                # Convert the file to decomposed form. All the FLEx values are decomposed so standardize on NFD when we read it in.
+                for i in range(0, len(lines)):
+                    
+                    lines[i] = unicodedata.normalize('NFD', lines[i])
+                        
+                f = open(self.__testbedPath, 'w', encoding='utf-8')
+                f.writelines(lines)
+                f.close()
+                
             except:
-                raise ValueError('The testbed file: ' + testbedPath + ' is invalid.')
+                raise ValueError('The testbed file: ' + self.__testbedPath + ' could not be read or written.')
+            
+            try:
+                self.__testbedTree = ET.parse(self.__testbedPath)
+            except:
+                raise ValueError('The testbed file: ' + self.__testbedPath + ' is invalid.')
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1201,10 +1236,21 @@ class FlexTransTestbedFile():
     def write(self):
         self.__testbedTree.write(self.__testbedPath, encoding='utf-8', xml_declaration=True)
         
-        # Add the DOCTYPE declaration
+        # Re-open the testbed file
         f = open(self.__testbedPath, encoding='utf-8')
         lines = f.readlines()
         f.close()
+        
+        # Convert the file to composed or decomposed as set in the config file.
+        for i in range(0, len(lines)):
+            
+            if self.composed == True:
+                
+                lines[i] = unicodedata.normalize('NFC', lines[i])
+            else:
+                lines[i] = unicodedata.normalize('NFD', lines[i])
+                
+        # Add the DOCTYPE declaration
         lines.insert(1, '<!DOCTYPE FLExTransTestbed PUBLIC "-//XMLmind//DTD FLExTransTestbed//EN" "FLExTransTestbed.dtd">\n')
         f = open(self.__testbedPath, 'w', encoding='utf-8')
         f.writelines(lines)
@@ -1506,17 +1552,41 @@ def stripRulesFile(report, buildFolder):
     
     # Go through the existing rule file and write everything to the new file except Doctype stuff.
     for line in lines:
+        
         strippedLine = line.strip()
-        if strippedLine != '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' and \
-               strippedLine != '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' and \
-               strippedLine != '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' and \
-               strippedLine != '"transfer.dtd">' and \
-               strippedLine != '"interchunk.dtd">' and \
-               strippedLine != '"postchunk.dtd">':
-            f.write(line)
+        
+        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
+               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
+               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+               strippedLine == '"transfer.dtd">' or \
+               strippedLine == '"interchunk.dtd">' or \
+               strippedLine == '"postchunk.dtd">':
+            continue
+        
+        # Always write transfer rule data as decomposed
+        f.write(unicodedata.normalize('NFD', line))
     f.close()
     
+def decompose(myFile):
     
+    try:
+        # Open the file and read all the lines
+        f = open(myFile , "r", encoding='utf-8')
+    except:
+        raise ValueError(f'Could not open the file {myFile} when converting to NFD.')
+
+    lines = f.readlines()
+    f.close()
+    
+    f = open(myFile ,"w", encoding='utf-8')
+    
+    # Go through the existing rule file and write everything to the new file except Doctype stuff.
+    for line in lines:
+
+        # Always convert lines to decomposed unicode
+        f.write(unicodedata.normalize('NFD', line))
+    f.close()
+        
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     

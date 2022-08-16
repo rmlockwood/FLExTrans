@@ -5,7 +5,10 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.5.11 - 7/8/22 - Ron Lockwood
+#   Version 3.6.1 - 8/11/22 - Ron Lockwood
+#    Save transfer rule file in decomposed unicode.
+#
+#   Version 3.6 - 8/8/22 - Ron Lockwood
 #    New buttons to view/edit the bilingual lexicon, the transfer rule file and
 #    the replacement file. Fixes #196
 #
@@ -230,7 +233,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.11",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1546,6 +1549,9 @@ class Main(QMainWindow):
         
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+        
+        # Convert the file to be decomposed unicode
+        Utils.decompose(tr_file)
         
         ## Display the results
         

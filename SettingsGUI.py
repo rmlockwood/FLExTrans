@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.9 - 8/10/22 - Ron Lockwood
+#    Added new setting for composed characters.
+#
 #   Version 3.5.8 - 8/8/22 - Ron Lockwood
 #    Fixes #188. Missing tooltip for checkable combos. Extra blank string in the
 #    master list removed.
@@ -62,7 +65,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.8",
+        FTM_Version: "3.5.9",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -831,6 +834,9 @@ widgetList = [
 
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
+
+   ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
+    "When editing the testbed, if Yes, characters with diacritics will be composed (NFC) to \nsingle characters (where possible). If No, characters will be decomposed (NFD)."],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
