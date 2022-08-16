@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.2 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
 #   Version 3.6.1 - 8/11/22 - Ron Lockwood
 #    Save transfer rule file in decomposed unicode.
 #
@@ -233,7 +236,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1472,7 +1475,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-                rule_file = self.__transferRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
                 source_file = os.path.join(self.testerFolder, 'target_text1.aper')
@@ -1482,7 +1485,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
-                rule_file = self.__interChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
                 source_file = os.path.join(self.testerFolder, 'target_text2.aper')
@@ -1492,7 +1495,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
-                rule_file = self.__postChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
             source_file = os.path.join(self.testerFolder, 'source_text.aper')
@@ -1502,8 +1505,11 @@ class Main(QMainWindow):
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-            rule_file = self.__transferRuleFileXMLtree.getroot()
+            ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
             
+        # Check for attribute definition issues
+        Utils.checkRuleAttributesXML(self.__report, ruleFileRoot)
+        
         # Save the source text to the tester folder
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
@@ -1531,7 +1537,7 @@ class Main(QMainWindow):
         # Recreate the section-rules element
         new_sr_element = ET.SubElement(myRoot, 'section-rules')
         
-        rules_element = rule_file.find('section-rules')
+        rules_element = ruleFileRoot.find('section-rules')
 
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):

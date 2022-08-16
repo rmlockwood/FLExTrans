@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.2 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
 #   Version 3.6.1 - 8/11/22 - Ron Lockwood
 #    Save transfer rule file in decomposed unicode.
 #
@@ -1533,15 +1536,8 @@ def run_makefile(absPathToBuildFolder, report):
     cmd = [fullPathMake]
     return subprocess.call(cmd)
 
-def stripRulesFile(report, buildFolder):
+def stripRulesFile(report, buildFolder, tranferRulePath):
     
-    configMap = MyReadConfig.readConfig(report)
-    if not configMap:
-        return True
-
-    # Get the path to the transfer rules file
-    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-
     # Open the existing rule file and read all the lines
     f = open(tranferRulePath ,"r", encoding='utf-8')
     lines = f.readlines()
@@ -1587,6 +1583,39 @@ def decompose(myFile):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
         
+def checkRuleAttributes(report, tranferRulePath):
+    
+    # Verify we have a valid transfer file.
+    try:
+        rulesTree = ET.parse(tranferRulePath)
+    except:
+        report.Error('Invalid File', f'The transfer file: {tranferRulePath} is invalid.')
+        return
+    
+    # Find the attributes element
+    myRoot = rulesTree.getroot()
+    
+    checkRuleAttributesXML(report, myRoot)
+
+def checkRuleAttributesXML(report, myRoot):
+        
+    def_attrs_element = myRoot.find('section-def-attrs')
+    
+    if def_attrs_element:
+        
+        # Loop through each attribute definition
+        for def_attr_el in def_attrs_element:
+            
+            # Loop through each attribute
+            for attr_item_el in def_attr_el:
+            
+                attribStr = attr_item_el.attrib['tags']
+                
+                # Make sure there are no periods in the attribute, if there are give a warning
+                if attribStr and re.search(r'\.', attribStr):
+                    
+                    report.Warning(f'In the Attributes section of your transfer rules, the attribute: {attribStr} has a period in it. It needs to be an underscore. Your rules may not work as expected.')
+                
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
