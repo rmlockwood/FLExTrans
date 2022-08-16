@@ -169,10 +169,14 @@ as being used. Actually the target database is being used.
 """ }
 
 DONT_CACHE = False
-CATEGORY = 'category'
-FEATURES = 'features'
+CATEGORY_STR = 'category'
+FEATURES_STR= 'features'
 STEM_STR = 'stemString'
-AFFIX = 'Affix'
+AFFIX_STR = 'Affix'
+PREFIX_TYPE = 'prefixType'
+SUFFIX_TYPE = 'suffixType'
+INFIX_TYPE = 'infixType'
+STEM_TYPE = 'stemType'
 
 stemNameList = []
 
@@ -223,7 +227,7 @@ def haveFeatureMatch(specsA, specsB):
     
     return False
     
-def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList):
+def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList, morphType):
     
     if sense is not None:
         
@@ -242,65 +246,74 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList
     # Deal with affix stem name stuff.
     # A stem name goes on an affix only if the stem name category matches the category of this msa object
     # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
-    if msa and msa.ClassName != 'MoStemMsa': # non-stems only
+    if msa and morphType != STEM_TYPE: # non-stems only
 
         found = False
         
         for stemName in stemNameList:
             
-            if msa.PartOfSpeechRA == stemName[CATEGORY]:
+            if msa.PartOfSpeechRA == stemName[CATEGORY_STR]:
                 
-                for featureSet in stemName[FEATURES]:
+                for featureSet in stemName[FEATURES_STR]:
                     
-                    if haveFeatureMatch(msa.MsFeaturesOA.FeatureSpecsOC, featureSet.FeatureSpecsOC):
+                    if msa.InflFeatsOA and haveFeatureMatch(msa.InflFeatsOA.FeatureSpecsOC, featureSet.FeatureSpecsOC):
                         
-                        f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX}\n')
+                        f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
                         found = True
                         break
             if found:
                 break
         
     # Write out inflection class as a morpheme property if we have a stem
-    if msa and msa.ClassName == 'MoStemMsa': # stems only
+    if msa and morphType == STEM_TYPE: # stems only
         
-        if msa.InflextionClassRA:
+        if msa.InflectionClassRA:
             
-            inflClassStr = ITsString(msa.InflextionClassRA.Abbreviation.BestAnalysisAlternative).Text
+            inflClassStr = ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
             
             f_handle.write(f'\\mp {inflClassStr}\n')
 
     # Convert spaces between words to underscores, these have to be removed later.
-    amorph = re.sub(r' ', r'_', amorph)
+    amorph = Utils.underscores(amorph)
     f_handle.write('\\a '+amorph+' ')
     
-    # Negate other stemname constraints
+    # Negate other stem name constraints
     for prevStem in prevStemList:
         
-        f_handle.write(f'~{prevStem} ') 
+        negatedStem = re.sub('_', '~_', prevStem)
+        f_handle.write(negatedStem) 
     
     # Write out stem name stuff if we have a stem
-    if msa and msa.ClassName == 'MoStemMsa': # stems only
+    if msa and morphType == STEM_TYPE: # stems only
 
         if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
             stemNameStr = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
-            mp = f'{{{stemNameStr}{AFFIX}}}' # {{ means one { i.e. we want the string to be {xyzAffix}
+            mp = f'{{{stemNameStr}{AFFIX_STR}}}' # {{ means one { i.e. we want the string to be {xyzAffix}
             env1 = f'+/ {mp} ... _ '
             env2 = f'+/ _ ... {mp} '
-            f_handle.write(f'+/ {env1} ... _ +/ _ ... {env2} ') 
+            f_handle.write(f'{env1}{env2}') 
+            prevStemList.append(env1)
+            prevStemList.append(env2)
             
     # Write out negated environments from previous allomorphs
     for prevEnv in envList:
         
         f_handle.write('~'+prevEnv+' ') 
         
-    if msa and msa.ClassName != 'MoStemMsa': # non-stems only
+    if msa and morphType != STEM_TYPE: # non-stems only
         
         # Write out each inflection class constraint
-        for inflClass in morph.InflectionClassesRC:
+        for inflClass in morph.InflectionClassesRC.ToArray():
             
             inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
-            f_handle.write(f'+/ {{{inflClassStr}}} ... _ ') # {{ means one {
+            
+            if morphType == PREFIX_TYPE or morphType == INFIX_TYPE:
+                
+                f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
+                
+            else:
+                f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
         
     # Write out each phonological environment constraint
     for env in morph.PhoneEnvRC:
@@ -315,14 +328,14 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, stemNameList
 # Write the 1st allomorph to the prefix file and the 2nd to the suffix file
 # Modify the glosses for each using the convention used in the module ConvertTextToSTAMPformat
 # GLOSS_cfx_part_X where X is a or b
-def process_circumfix(e, f_pf, f_sf, myGloss, myType, sense):
+def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     # Convert dots to underscores in the gloss if it's not a root/stem
-    if (myType == 'non-stem'):
-        myGloss = re.sub(r'\.', r'_', myGloss)
+    myGloss = Utils.underscores(myGloss)
 
     # Output gloss
     if myGloss:
+        
         f_pf.write('\\g ' + myGloss+'_cfx_part_a' + '\n')
     else:
         f_pf.write('\\g \n')
@@ -330,9 +343,12 @@ def process_circumfix(e, f_pf, f_sf, myGloss, myType, sense):
     # 1st allomorph for the prefix file
     allEnvs = []
     allStemEnvs = []
+    
     for allomorph in e.AlternateFormsOS:
-        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'prefix':
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, stemNameList)
+        
+        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == PREFIX_TYPE:
+            
+            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, stemNameList, PREFIX_TYPE)
     
     f_pf.write('\n')
     
@@ -345,45 +361,56 @@ def process_circumfix(e, f_pf, f_sf, myGloss, myType, sense):
     # 2nd allomorph for the suffix file
     allEnvs = []
     allStemEnvs = []
+    
     for allomorph in e.AlternateFormsOS:
-        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'suffix':
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, stemNameList)
+        
+        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == SUFFIX_TYPE:
+            
+            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, stemNameList, SUFFIX_TYPE)
     
     f_sf.write('\n')
 
 def process_allomorphs(e, f_handle, myGloss, myType, sense):
     
     # Convert dots to underscores in the gloss if it's not a root/stem
-    if (myType == 'non-stem'):
-        myGloss = re.sub(r'\.', r'_', myGloss)
+    if (myType != STEM_TYPE):
+        
+        myGloss = Utils.underscores(myGloss)
 
     # Output gloss
     if myGloss:
+        
         f_handle.write('\\g ' + myGloss + '\n')
     else:
         f_handle.write('\\g \n')
     
     # For infixes, we need to output the infix positions field
-    if ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'infix':
+    if myType == INFIX_TYPE:
+        
         # AMPLE's ANA spec. says you need to specify the morpheme type that the
         # infix applies to, FLEx doesn't restrict the infix to just one type,
         # so use all three types when building the position field for the
         # ANA file. 
         morphTypesStr = 'prefix suffix root ' 
         f_handle.write('\\l ' + morphTypesStr)
+        
         for position in e.LexemeFormOA.PositionRS:
+            
             positionStr = ITsString(position.StringRepresentation).Text
             f_handle.write(positionStr+' ')
+            
         f_handle.write('\n')
         
     # Loop through all the allomorphs
     allEnvs = []
     allStemEnvs = []
+    
     for allomorph in e.AlternateFormsOS:
-        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, sense, stemNameList)
+        
+        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, sense, stemNameList, myType)
     
     # Now process the lexeme form which is the default allomorph
-    output_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, stemNameList)
+    output_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, stemNameList, myType)
     f_handle.write('\n')
 
 def define_some_names(partPath):
@@ -448,7 +475,7 @@ def create_synthesis_files(partPath):
         f_sycd.write(r'\ch "\mp" "P"'+'\n')
         f_sycd.write(r'\ch "\mcc" "Z"'+'\n')
         f_sycd.write(r'\ch "\!" "!"'+'\n')
-        if i != 3: # only for affixes
+        if i != 3: # only for AFFIX_STRes
             f_sycd.write(r'\ch "\o" "O"'+'\n') 
         if i == 0: # only for infixes
             f_sycd.write(r'\ch "\l" "L"'+'\n') # This is the infix location field
@@ -482,36 +509,33 @@ def output_cat_info(TargetDB, f_dec):
         f_dec.write('\\ca ' + posAbbr + '\n')
 
         # get stem name info.
-        if pos.StemNamesOC is not None:
+        for stemNameObj in pos.StemNamesOC.ToArray():
             
-            for stemNameObj in pos.StemNamesOC:
+            if stemNameObj.Abbreviation and stemNameObj.RegionsOC:
                 
-                if stemNameObj.Abbreviation and stemNameObj.RegionsOC:
-                    
-                    stemNameMap = {}
-                
-                    stemNameMap[CATEGORY] = pos
-                    stemNameMap[STEM_STR] = ITsString(stemNameObj.Abbreviation.BestAnalysisAlternative).Text
-                    stemNameMap[FEATURES] = stemNameObj.RegionsOC
+                stemNameMap = {}
             
-            stemNameList.append(stemNameMap)
+                stemNameMap[CATEGORY_STR] = pos
+                stemNameMap[STEM_STR] = ITsString(stemNameObj.Abbreviation.BestAnalysisAlternative).Text
+                stemNameMap[FEATURES_STR] = stemNameObj.RegionsOC
+        
+                stemNameList.append(stemNameMap)
             
         # get inflection class info.
         inflClassList = []
-        if pos.InflectionClassesOC is not None:
             
-            for inflClassObj in pos.InflectionClassesOC:
+        for inflClassObj in pos.InflectionClassesOC.ToArray():
+            
+            if inflClassObj.Abbreviation:
                 
-                if inflClassObj.Abbreviation:
-                    
-                    inflClassList.append(ITsString(inflClassObj.Abbreviation.BestAnalysisAlternative).Text)
+                inflClassList.append(ITsString(inflClassObj.Abbreviation.BestAnalysisAlternative).Text)
                 
     f_dec.write('\\ca _variant_\n') # for variant entries
     
     # write stem names as \mp's (morpheme properties)
     for myStemNameMap in stemNameList:
         
-        f_dec.write(f'\\mp {myStemNameMap[STEM_STR]}\n')
+        f_dec.write(f'\\mp {myStemNameMap[STEM_STR]}{AFFIX_STR}\n')
         
     # write inflection classes as \mp's (morpheme properties)
     for myInflClass in inflClassList:
@@ -658,43 +682,65 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 
-                    process_allomorphs(e, f_rt, gloss, 'stem', mySense)
+                    process_allomorphs(e, f_rt, gloss, STEM_TYPE, mySense)
                     rt_cnt +=1
 
                 # Now process non-roots
                 else:
                     if gloss == None:
+                        
                         err_list.append(('No gloss. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        
                     elif e.LexemeFormOA == None:
+                        
                         err_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        
                     elif e.LexemeFormOA.MorphTypeRA == None:
+                        
                         err_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+\
                                        ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text, 1, TargetDB.BuildGotoURL(e)))
+                        
                     elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                        
+                        # TODO: Don't have hard-coded English types.
                         if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
+                            
                             if morphType in ['prefix', 'prefixing interfix']:
-                                process_allomorphs(e, f_pf, gloss, 'non-stem', mySense)
+                                
+                                process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
                                 pf_cnt += 1
+                                
                             elif morphType in ['suffix', 'suffixing interfix']:
-                                process_allomorphs(e, f_sf, gloss, 'non-stem', mySense)
+                                
+                                process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
                                 sf_cnt += 1
+                                
                             elif morphType in ['infix', 'infixing interfix']:
-                                process_allomorphs(e, f_if, gloss, 'non-stem', mySense)
+                                
+                                process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense)
                                 if_cnt += 1
+                                
                             elif morphType == 'circumfix':
-                                process_circumfix(e, f_pf, f_sf, gloss, 'non-stem', mySense)
+                                
+                                process_circumfix(e, f_pf, f_sf, gloss, mySense)
                                 pf_cnt += 1
                                 sf_cnt += 1
                             else:
                                 err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
                         else:
                             err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
+                            
                     elif morphType not in morphNames:
+                        
+                        # TODO: Don't have hard-coded English types.
                         if morphType == 'proclitic':
-                            process_allomorphs(e, f_pf, gloss, 'non-stem', mySense)
+                            
+                            process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
                             pf_cnt += 1
+                            
                         elif morphType == 'enclitic':
-                            process_allomorphs(e, f_sf, gloss, 'non-stem', mySense)
+                            
+                            process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
                             sf_cnt += 1
                         else:
                             err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
@@ -775,10 +821,6 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     # Output natural class info.
     #error_list.append(('Outputting natural class information...', 0))
     err_list = output_nat_class_info(TargetDB, f_dec)
-    error_list.extend(err_list)
-    
-    # Output inflection class info.
-    err_list = output_inflection_class_info(TargetDB, f_dec)
     error_list.extend(err_list)
     
     # Put data into the STAMP dictionaries
