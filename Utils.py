@@ -5,6 +5,12 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.3 - 8/18/22 - Ron Lockwood
+#    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
+#    The tooltip display the entry or entries for the word that are found in the
+#    bilingual lexicon. For Utils this meant pulling out some code from process lexical unit()
+#    and making a new function. Then a new function to convert XML to colored string was added.
+#
 #   Version 3.6.2 - 8/11/22 - Ron Lockwood
 #    Fixes #198. Warn the user for periods in attribute definitions.
 #
@@ -336,6 +342,48 @@ catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
            [r'/', 'slash', 'converted to a vertical bar', '|', reForwardSlash]
 #          [r'X', 'x char', 'fatal', '']
           ]
+
+def convertXMLEntryToColoredString(entryElement, isRtl):
+    
+    fullLemma = entryElement.text
+    
+    # Create a <p> html element
+    paragraph_element = ET.Element('p')
+    
+    # Collect all the symbols
+    symbols = []
+    for symbol in entryElement:
+        
+        # the symbol looks like: <s n="n" />, so get the 'n' attribute
+        symbols.append(symbol.attrib['n'])
+
+    colorInnerLU(fullLemma, symbols, paragraph_element, isRtl, show_unk=True)
+    
+    retStr = '<p>'
+    
+    # Instead of using toString, build the string manually, this way we can substitute
+    # in the text portion stuff for better display
+    for spanEl in paragraph_element:
+        
+        retStr += f'<{spanEl.tag} '
+        
+        for key, val in spanEl.attrib.items():
+            
+            retStr += f'{key}="{val}" '
+            
+        retStr += 'style="white-space: nowrap;"'
+        retStr += f'>'
+        
+        # substitute a space for a non-breaking space and a hypen with a non-breaking hyphen
+        textPart = re.sub(' ', '&nbsp;', spanEl.text)
+        textPart = re.sub('-', '&#8209;', textPart)
+        
+        retStr += textPart
+        retStr += f'</{spanEl.tag}>'
+        
+    retStr += '</p>'
+    
+    return retStr
 
 def convertProblemChars(trgtAbbrev):                                                
 
@@ -1674,15 +1722,8 @@ def process_chunk_lexical_unit(lu_str, parent_element, rtl):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
-# Split a compound from one lexical unit containing multiple words to multiple
-def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
-    # Split off the symbols from the lemma in the lexical unit (which is i+1)
-    symbols = re.split('<|>', lu_str)
-    symbols = [_f for _f in symbols if _f] # filter out the empty strings
-    
-    # Lemma is the first one
-    lemma = symbols.pop(0)
-    
+def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
+
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
     lemma_parts = re.split('(\d+\.\d+)', lemma, re.A) # last item is empty, re.A=ASCII only match
     
@@ -1729,6 +1770,17 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
+# Split a compound from one lexical unit containing multiple words to multiple
+def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
+    # Split off the symbols from the lemma in the lexical unit (which is i+1)
+    symbols = re.split('<|>', lu_str)
+    symbols = [_f for _f in symbols if _f] # filter out the empty strings
+    
+    # Lemma is the first one
+    lemma = symbols.pop(0)
+    
+    colorInnerLU(lemma, symbols, parent_element, rtl, show_unk)
+    
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
