@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.4 - 8/18/22 - Ron Lockwood
+#    New function getXMLEntryText to get the string part of a left or right element
+#    of the bilingual lexicon entry. Uses tail to get the text after <b/>
+#
 #   Version 3.6.3 - 8/18/22 - Ron Lockwood
 #    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
 #    The tooltip display the entry or entries for the word that are found in the
@@ -343,19 +347,36 @@ catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
 #          [r'X', 'x char', 'fatal', '']
           ]
 
+def getXMLEntryText(node):
+    
+    # Start with nodeText as the text part of the left node
+    nodeText = node.text
+    
+    # But there is potentially more data. <b />'s which represent blanks might be there
+    # Each b has a tail portion that needs to be concatenated to the nodeText
+    for bElement in node.findall('b'):
+        
+        if bElement.tail:
+            
+            nodeText += ' ' + bElement.tail
+
+    return nodeText
+    
 def convertXMLEntryToColoredString(entryElement, isRtl):
     
-    fullLemma = entryElement.text
+    fullLemma = getXMLEntryText(entryElement)
     
     # Create a <p> html element
     paragraph_element = ET.Element('p')
     
     # Collect all the symbols
     symbols = []
-    for symbol in entryElement:
+    for symbol in entryElement.findall('s'):
         
-        # the symbol looks like: <s n="n" />, so get the 'n' attribute
-        symbols.append(symbol.attrib['n'])
+        # the symbol looks like: <s n="pro" />, so get the 'n' attribute
+        if 'n' in symbol.attrib:
+            
+            symbols.append(symbol.attrib['n'])
 
     colorInnerLU(fullLemma, symbols, paragraph_element, isRtl, show_unk=True)
     
@@ -374,7 +395,7 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
         retStr += 'style="white-space: nowrap;"'
         retStr += f'>'
         
-        # substitute a space for a non-breaking space and a hypen with a non-breaking hyphen
+        # substitute a space with a non-breaking space and a hypen with a non-breaking hyphen
         textPart = re.sub(' ', '&nbsp;', spanEl.text)
         textPart = re.sub('-', '&#8209;', textPart)
         
