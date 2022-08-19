@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.4 - 8/19/22 - Ron Lockwood
+#    Fixed bugs in last feature added. Now entries with spaces work as well as
+#    entries that have sfm markers or other stuff before the lexical unit.
+#    Use the new function getXMLEntryText.
+#
 #   Version 3.6.3 - 8/18/22 - Ron Lockwood
 #    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
 #    The tooltip display the entry or entries for the word that are found in the
@@ -242,7 +247,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.3",
+        FTM_Version    : "3.6.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -499,9 +504,6 @@ class Main(QMainWindow):
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
         
-        # Simulate a click on the sentence list box
-        self.listSentComboClicked()
-        
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
@@ -576,26 +578,9 @@ class Main(QMainWindow):
             # Get the right part
             right = entry.find('p/r')
             
-            # Make a copy that we can modify
-            keyLeft = copy.deepcopy(left)
-    
-            # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with 
-            # a space <l>abc</b>xyzN.N</l>
-            symbolElements = keyLeft.findall('s')
+            # Get just the text part of the left entry. Note: it's not as easy as left.text
+            key = Utils.getXMLEntryText(left)
             
-            for symb in symbolElements:
-                
-                keyLeft.remove(symb)
-    
-            # create the key string
-            key = ET.tostring(keyLeft, encoding='unicode')
-            
-            # remove the <l> and </l>
-            key = key[3:-4]
-            
-            # remove possible blank space elements
-            key = re.sub('</b>', '', key)
-        
             # See if we have the source entry already
             if key not in self.__bilingMap:
                 
@@ -1216,33 +1201,46 @@ class Main(QMainWindow):
             ret = self.ui.ManualEdit.toPlainText()
         return ret
     def __ClearAllChecks(self):
+        
         for check in self.__checkBoxList:
             check.setVisible(False)
             check.setChecked(False)
+            
     # set global variables to the appropriate list variables
     # change interface as needed.
     def __MakeVisible(self, isVisible):
+        
         # hide or unhide the sentence drop-down box, list box, check box area
         self.ui.SentCombo.setVisible(isVisible)
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
+        
     def __CopyStuff(self):
+        
         # copy text from results to the source boxes
         self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
         self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
         self.__ClearStuff()
+        
     def __ClearStuff(self):
+        
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
         self.ui.SynthTextEdit.setPlainText('')
+        
     def sourceTabClicked(self):
-#         if self.ui.tabSource.currentIndex() == 0: # check boxes
-#             self.SourceCheckBoxClicked()
-#         elif self.ui.tabSource.currentIndex() == 0: # sentences
-#             self.listSentClicked()
-        pass            
+        
+        if self.ui.tabSource.currentIndex() == 0: # check boxes
+            
+            self.ui.selectWordsHintLabel.setVisible(True)
+            
+        else: # sentences or manual
+            
+            self.ui.selectWordsHintLabel.setVisible(False)
+            
     def rulesTabClicked(self):
+        
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 self.__ruleModel = self.__transferModel
@@ -1370,17 +1368,28 @@ class Main(QMainWindow):
 
     def getTargetsInBilingMap(self, wrdTup):
         
-        dataStreamStr = wrdTup[1].strip() # of the form ^word1.2<v><3sg>$
+        dataStreamStr = wrdTup[1].strip() # of the form (\\v 1) ^word1.2<v><3sg>$
         
-        toks = re.split('<', dataStreamStr)
-        
-        # The lemma is the first token and ignmore the ^
-        lemma = toks[0][1:] 
-        
-        if lemma in self.__bilingMap:
+        # Find the lexical unit. There should only be one, but there might be non-lexical unit stuff like format markers
+        aper_toks = re.split('\^|\$', dataStreamStr) 
+
+        # one of the tokens will have the lexical unit
+        for aper_tok in aper_toks:
             
-            return self.__bilingMap[lemma]
-        
+            # A valid lexical unit will have <x> in it
+            if re.search('<.+>', aper_tok):
+                
+                # Split off the lemma part, it's the first token
+                toks = re.split('<', aper_tok)
+                lemma = toks[0]
+            
+                if lemma in self.__bilingMap:
+                    
+                    return self.__bilingMap[lemma]
+                
+                # If we found <>, stop looking
+                break
+            
         return None
                 
     def formatTextForToolTip(self, srcTrgtPairsList):
