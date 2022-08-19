@@ -124,6 +124,7 @@ cd XXEaddon
 "%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
 "%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
 "%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
+"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
 
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
