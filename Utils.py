@@ -7,7 +7,8 @@
 #
 #   Version 3.6.4 - 8/18/22 - Ron Lockwood
 #    New function getXMLEntryText to get the string part of a left or right element
-#    of the bilingual lexicon entry. Uses tail to get the text after <b/>
+#    of the bilingual lexicon entry. Uses tail to get the text after <b/>. Modified the new
+#    convertXMLEntryToColoredString
 #
 #   Version 3.6.3 - 8/18/22 - Ron Lockwood
 #    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
