@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.2 - 8/20/22 - Ron Lockwood
+#    Removed logging
+#
 #   Version 3.6.1 - 8/20/22 - Ron Lockwood
 #    Fix bug in last feature. Don't try to process inflection classes for clitics
 #
@@ -138,8 +141,6 @@
 #   of the previous allomorph(s).
 #
 
-import logging
-
 import os
 import sys
 import re 
@@ -162,7 +163,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -611,8 +612,6 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
     
-    logging.basicConfig(filename="mylog.log", encoding='utf-8')
-    
     # Loop through all the entries
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
@@ -711,9 +710,6 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     
                     # Process all allomorphs and their environments 
                     process_allomorphs(e, f_rt, gloss, STEM_TYPE, mySense)
-                    
-                    logging.warning(headWord)
-                    
                     rt_cnt +=1
 
                 # Now process non-roots
