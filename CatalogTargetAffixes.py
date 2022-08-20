@@ -1,9 +1,12 @@
 #
-#   CatalogTargetPrefixes
+#   CatalogTargetAffixes.py
 #
 #   Ron Lockwood
 #   University of Washington, SIL International
 #   12/5/14
+#
+#   Version 3.6 - 8/20/22 - Ron Lockwood
+#    Renamed this module.
 #
 #   Version 3.5.4 - 8/8/22 - Ron Lockwood
 #    Error message fix.
@@ -78,7 +81,7 @@
 #    No changes to this module.
 #
 #   Go through the database and extract the gloss field and morpheme type
-#   for each affix. Do this per sense. Write one gloss and type per line.
+#   for each affix. Do this per sense. Write one gloss and morphtype per line.
 #
 
 import os
@@ -98,15 +101,15 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
+        FTM_Synopsis   : "Creates a list of all the affix glosses and morphtypes in the target database.",
         FTM_Help  : "",
         FTM_Description:
 """
-The target database set in the configuration file will be used. This module will output all 
-the gloss and morphtype fields for the best analysis writing system for all affixes. 
-NOTE: messages and the task bar will show the SOURCE database
+This module creates the file target_affix_glosses.txt which has a list of all the affix glosses and morphtypes in the target database. 
+This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
+NOTE: messages in the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
 

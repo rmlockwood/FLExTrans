@@ -1,9 +1,12 @@
 #
-#   ExtractTargetLexicon
+#   SynthesizeText.py
 #
 #   Ron Lockwood
 #   University of Washington, SIL International
 #   12/5/14
+#
+#   Version 3.6 - 8/20/22 - Ron Lockwood
+#    Renamed this module.
 #
 #   Version 3.5.5 - 7/14/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
@@ -152,19 +155,16 @@ from flexlibs import FLExProject, AllProjectNames
 docs = {FTM_Name       : "Extract Target Lexicon",
         FTM_Version    : "3.5.5",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
+        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
         FTM_Help       :"",
         FTM_Description:  
 """
-The target database set in the configuration file will be used. This module will create a three target language lexicons. One for
-roots, one for prefixes and one for suffixes. They are in the CARLA style
-which is suitable for input to STAMP for synthesis. They use the standard
+This module will creates target language lexicons files. One for
+roots, prefixes, suffixes and infixes. They are in the CARLA format
+which are suitable for input to STAMP for synthesis. They use the standard
 format marker type of formatting.
-This module then creates the STAMP declaration file which contains the grammatical
-category names and the natural classes for the target language. These are
-extracted from the FLEx database.
-Lastly this module creates other files STAMP needs and runs STAMP to create the
-synthesized text. NOTE: messages and the task bar will show the SOURCE database
+This module also creates other files STAMP needs and then runs STAMP to create the
+synthesized text. NOTE: Messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
 

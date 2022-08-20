@@ -217,9 +217,9 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication,
 
 import Utils
 import ReadConfig
-import CatalogTargetPrefixes
+import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
-import ExtractTargetLexicon
+import SynthesizeTargetText
 import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
