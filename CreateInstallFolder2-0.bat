@@ -27,14 +27,14 @@ echo PyQt5==5.14 >> Install2.1.1\FLExTrans\requirements.txt
 echo PyQtWebEngine==5.14 >> Install2.1.1\FLExTrans\requirements.txt
 
 rem core models
-copy CatalogTargetPrefixes.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ConvertTextToSTAMPformat.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractBilingualLexicon.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractSourceText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractTargetLexicon.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy InsertTargetText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunApertium.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunTreeTran.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
+copy CatalogTargetPrefixes.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy ConvertTextToSTAMPformat.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy ExtractBilingualLexicon.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy ExtractSourceText.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy ExtractTargetLexicon.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy InsertTargetText.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy RunApertium.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
+copy RunTreeTran.py Install2.1.1\FLExTrans\FlexTools\FLExTrans
 
 rem libraries
 copy readconfig.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans\Lib
@@ -66,46 +66,46 @@ copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans
 copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
 
 rem Sense Linker pieces
-copy LinkSenseTool.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy LinkSenseTool.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy Linker.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy FLExTransWindowIcon.ico Install2.1.1\FLExTrans\FLExTools
 
 rem Live Rule Tester pieces
 mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
-copy LiveRuleTesterTool.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy LiveRuleTesterTool.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy LiveRuleTester.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install2.1.1\FLExTrans\FLExTools
 copy DownArrow.png Install2.1.1\FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
 
 rem View Source-Target pieces
-copy ViewSrcTgt.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy ViewSrcTgt.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy SrcTgtViewer.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem SetUp Gramm Categories pieces
-copy SetUpTransferRuleGramCat.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy SetUpTransferRuleGramCat.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 
 rem Testbed pieces
 copy TestbedValidator.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy StartTestbed.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
-copy EndTestbed.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy StartTestbed.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
+copy EndTestbed.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy OverWriteTestDlg.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy TestbedLogViewer.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy TestbedLogViewer.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy TestbedLog.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy Light_green_check.png Install2.1.1\FLExTrans\FLExTools   
 copy Red_x.png             Install2.1.1\FLExTrans\FLExTools             
 copy Yellow_triangle.png   Install2.1.1\FLExTrans\FLExTools    
 
 rem Paratext Import/Export Tools
-copy ImportFromParatext.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
-copy ExportToParatext.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy ImportFromParatext.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
+copy ExportToParatext.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 copy ParatextChapSelectionDlg.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy ChapterSelection.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem Settings tool
 copy Settings.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy ComboBox.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\lib
-copy SettingsGUI.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
+copy SettingsGUI.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
 
 rem Apertium files
 copy Apertium4Windows\*.* Install2.1.1\FLExTrans\FLExTools
@@ -114,8 +114,8 @@ rem Make for Windows files
 copy Make4Windows\*.* Install2.1.1\FLExTrans\FLExTools
 
 rem Other Tools
-copy CleanFiles.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans
-copy SetWorkingProject.py Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
+copy CleanFiles.py Install2.1.1\FLExTrans\FLExTools\FLExTrans
+copy SetWorkingProject.py Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
