@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.1 - 8/20/22 - Ron Lockwood
+#    Fix bug in last feature. Don't try to process inflection classes for clitics
+#
 #   Version 3.6 - 8/16/22 - Ron Lockwood
 #    Fixes #164. STAMP dictionaries now have constraints and properties for
 #    inflection classes and stem names. Now synthesis with STAMP will take into
@@ -135,6 +138,8 @@
 #   of the previous allomorph(s).
 #
 
+import logging
+
 import os
 import sys
 import re 
@@ -157,7 +162,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5.5",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -315,18 +320,22 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
             
     else: # non-stems only
         
-        # Write out each inflection class constraint
-        for inflClass in morph.InflectionClassesRC:
+        # clitics, event though we treat them as affixes, have FLEx type MoStemAllomorph
+        # and won't have inflection classes so don't try to process them
+        if morph.ClassName != 'MoStemAllomorph' and morph.InflectionClassesRC:
             
-            inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
+            # Write out each inflection class constraint
+            for inflClass in morph.InflectionClassesRC:
+                
+                inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
+                
+                if morphType == PREFIX_TYPE or morphType == INFIX_TYPE:
+                    
+                    f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
+                    
+                else:
+                    f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
             
-            if morphType == PREFIX_TYPE or morphType == INFIX_TYPE:
-                
-                f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
-                
-            else:
-                f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
-        
     # Write out negated environments from previous allomorphs
     for prevEnv in envList:
         
@@ -602,6 +611,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
     
+    logging.basicConfig(filename="mylog.log", encoding='utf-8')
+    
     # Loop through all the entries
     for i,e in enumerate(TargetDB.LexiconAllEntries()):
     
@@ -646,7 +657,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     f_rt.write('\\c '+"_variant_"+'\n')
 
                     # Process all allomorphs and their environments
-                    process_allomorphs(e, f_rt, "", 'stem', sense=None)
+                    process_allomorphs(e, f_rt, "", STEM_TYPE, sense=None)
                     rt_cnt +=1
 
         if e.SensesOS.Count > 0: # Entry with senses
@@ -700,6 +711,9 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     
                     # Process all allomorphs and their environments 
                     process_allomorphs(e, f_rt, gloss, STEM_TYPE, mySense)
+                    
+                    logging.warning(headWord)
+                    
                     rt_cnt +=1
 
                 # Now process non-roots
