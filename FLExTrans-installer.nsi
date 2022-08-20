@@ -80,7 +80,6 @@ InitPluginsDir
 
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
-  File "${GIT_FOLDER}\FlexTools.bat"
   
   #CopyFiles "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FlexTrans.config" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTrans.config"
   
@@ -88,6 +87,7 @@ InitPluginsDir
   
   File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
+  File "${GIT_FOLDER}\FlexTools.bat"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\FlexTrans All Steps.ini"
