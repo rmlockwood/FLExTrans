@@ -100,7 +100,7 @@ from flexlibs import FLExProject
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Catalog Target Prefixes",
+docs = {FTM_Name       : "Catalog Target Affixes",
         FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morphtypes in the target database.",
