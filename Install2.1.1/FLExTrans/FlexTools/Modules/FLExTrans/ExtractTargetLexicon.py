@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.5.1 - 8/23/22 - Ron Lockwood
+#    Fixes #231. Check for a valid lexeme form object before processing sub objects.
+#
 #   Version 3.5.5 - 7/14/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -150,7 +153,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.5.5",
+        FTM_Version    : "3.5.5.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -438,6 +441,11 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
         if report is not None:
             report.ProgressUpdate(i)
             
+        # Check that the objects we need are valid
+        if not e.LexemeFormOA or not e.LexemeFormOA.MorphTypeRA or not e.LexemeFormOA.MorphTypeRA.Name:
+            
+            continue
+
         morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
         # Process inflectional variants even if they have senses.
@@ -524,12 +532,8 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     # Write out morphname field
                     f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
                     
-                    # change spaces to underscores
-                    abbrev = re.sub('\s', '_', abbrev)
-
-                    # remove periods
-                    abbrev = re.sub('\.', '', abbrev)
-
+                    abbrev = Utils.convertProblemChars(abbrev)
+                    
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 
