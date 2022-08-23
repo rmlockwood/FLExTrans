@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.3.1 - 8/23/22 - Ron Lockwood
+#    Fixes #231. Check for a valid lexeme form object before processing sub objects.
+#
 #   Version 3.5.3 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -95,7 +98,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.5.3.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -200,8 +203,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         
         processIt = False
         
-        # Make sure we have a valid MorphType object
-        if e.LexemeFormOA.MorphTypeRA:
+        # Make sure we have a valid LexemeForm object and MorphType object
+        if e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
           
             morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
             
