@@ -62,8 +62,8 @@ copy "Doc\Irregular Form\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Irre
 
 rem SampleProjects
 mkdir "Install2.1.1\FLExTrans\SampleFLExProjects"
-copy "Sample Projects\German-FLExTrans-Sample 2016-10-19 2109.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
-copy "Sample Projects\Swedish-FLExTrans-Sample 2016-10-19 2110.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
 
 rem Sense Linker pieces
 copy LinkSenseTool.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans

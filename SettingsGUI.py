@@ -3,6 +3,22 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.5.9 - 8/10/22 - Ron Lockwood
+#    Added new setting for composed characters.
+#
+#   Version 3.5.8 - 8/8/22 - Ron Lockwood
+#    Fixes #188. Missing tooltip for checkable combos. Extra blank string in the
+#    master list removed.
+#
+#   Version 3.5.7 - 7/30/22 - Ron Lockwood
+#    Fixes #199. On certain settings allow the list box to load even if the
+#    setting is blank.
+#
+#   Version 3.5.6 - 7/27/22 - Ron Lockwood
+#    Use relative paths now. One thing this helps with, is if a project folder
+#    gets copied from one place to another, the file paths will be to the new
+#    files in the new folder since the paths are relative. Fixes #194.
+#
 #   Version 3.5.5 - 7/13/22 - Ron Lockwood
 #    Give error if fail to open target DB.
 #
@@ -49,7 +65,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.5.4",
+        FTM_Version: "3.5.9",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -127,7 +143,7 @@ def loadSourceTextList(widget, wind, settingName):
     # Get the source name from the config file
     configSource = wind.read(settingName)
     
-    if configSource:
+    if configSource is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, itemStr in enumerate(sortedSourceList):
@@ -143,7 +159,7 @@ def loadCustomEntry(widget, wind, settingName):
     # Get the custom field to link to target entry
     customTarget = wind.read(settingName)
     
-    if customTarget:
+    if customTarget is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
@@ -159,7 +175,7 @@ def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
     
-    if targetProject:
+    if targetProject is not None:
 
         # TODO: Make this disable the other stuff that uses target??
         for i, item in enumerate(AllProjectNames()):
@@ -293,7 +309,7 @@ def loadTextBox(widget, wind, settingName):
 
     text = wind.read(settingName)
     
-    if text:
+    if text is not None:
         
         widget.setText(text)
 
@@ -331,24 +347,40 @@ def make_open_folder(wind, myWidgInfo):
     
 def do_browse(wind, myWidgInfo):
 
-        filename, _ = QFileDialog.getOpenFileName(wind, "Open file", "", "(*.*)")
+    # if folder exists for the current setting, use it. set the starting directory for the open dialog 
+    startDir = os.path.dirname(wind.read(myWidgInfo[CONFIG_NAME]))
+    
+    if not os.path.isdir(startDir):
         
-        if filename:
-            
-            set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+        startDir = ""
+                   
+    filename, _ = QFileDialog.getOpenFileName(wind, "Select file", startDir, "(*.*)")
+    
+    if filename:
+        
+        set_paths(myWidgInfo[WIDGET1_OBJ], filename)
 
 def do_folder_browse(wind, myWidgInfo):
 
-        dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", wind.projFolder, options=QFileDialog.ShowDirsOnly)
-        
-        if dirName:
-            
-            set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
-
-def set_paths(widget, path):
+    # if folder exists for the current setting, use it. set the starting directory for the open dialog 
+    startDir = wind.read(myWidgInfo[CONFIG_NAME])
     
-    widget.setText(os.path.abspath(path).replace(os.sep, '\\'))
-    widget.setToolTip(os.path.abspath(path).replace(os.sep, '\\'))
+    if not os.path.isdir(startDir):
+        
+        startDir = ""
+                   
+    dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.ShowDirsOnly)
+    
+    if dirName:
+        
+        set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
+
+def set_paths(widget, myPath):
+    
+    # start the rel path relative to the project folder which is the parent of the config folder
+    startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+    widget.setText(os.path.relpath(myPath, startPath))
+    widget.setToolTip(os.path.relpath(myPath, startPath))
     
 class Ui_MainWindow(object):
     
@@ -773,28 +805,28 @@ widgetList = [
    ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
-   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES, '',\
+   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
     "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES, '',\
+   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
     "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES, '',\
+   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
     "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."],\
 
-   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST, '',\
+   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
     "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."],\
 
-   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND, '',\
+   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
     "Same as above. Use this property for the types that have inflection\non the second element of the complex form."],\
 
    ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
     "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."],\
 
-   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES, '',\
+   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
     "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."],\
 
-   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED, '',\
+   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
     "One or more grammatical categories that can intervene in the above complex types."],\
 
    ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
@@ -802,6 +834,9 @@ widgetList = [
 
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
+
+   ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
+    "When editing the testbed, if Yes, characters with diacritics will be composed (NFC) to \nsingle characters (where possible). If No, characters will be decomposed (NFD)."],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\

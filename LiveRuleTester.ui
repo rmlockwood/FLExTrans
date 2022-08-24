@@ -674,12 +674,12 @@
      <rect>
       <x>630</x>
       <y>670</y>
-      <width>201</width>
+      <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Refresh Target &amp;Lexicon</string>
+     <string>Refresh &amp;Target Lexicon</string>
     </property>
    </widget>
    <widget class="QPushButton" name="addToTestbedButton">
@@ -687,7 +687,7 @@
      <rect>
       <x>160</x>
       <y>778</y>
-      <width>151</width>
+      <width>161</width>
       <height>31</height>
      </rect>
     </property>
@@ -716,7 +716,7 @@
      <rect>
       <x>754</x>
       <y>778</y>
-      <width>151</width>
+      <width>161</width>
       <height>31</height>
      </rect>
     </property>
@@ -732,7 +732,7 @@
      <rect>
       <x>940</x>
       <y>778</y>
-      <width>181</width>
+      <width>161</width>
       <height>31</height>
      </rect>
     </property>
@@ -766,7 +766,46 @@
      </rect>
     </property>
     <property name="text">
-     <string>Rebuild Bilingual Lexicon</string>
+     <string>Rebuild &amp;Bilingual Lexicon</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editTransferRulesButton">
+    <property name="geometry">
+     <rect>
+      <x>1090</x>
+      <y>348</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>E&amp;dit Transfer Rules</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="viewBilingualLexiconButton">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>68</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;View Bilingual Lexicon</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="editReplacementButton">
+    <property name="geometry">
+     <rect>
+      <x>1090</x>
+      <y>68</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Edit Replacement &amp;File</string>
     </property>
    </widget>
   </widget>

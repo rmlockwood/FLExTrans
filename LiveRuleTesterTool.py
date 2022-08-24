@@ -5,6 +5,16 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.2 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
+#   Version 3.6.1 - 8/11/22 - Ron Lockwood
+#    Save transfer rule file in decomposed unicode.
+#
+#   Version 3.6 - 8/8/22 - Ron Lockwood
+#    New buttons to view/edit the bilingual lexicon, the transfer rule file and
+#    the replacement file. Fixes #196
+#
 #   Version 3.5.10 - 7/8/22 - Ron Lockwood
 #    Set Window Icon to be the FLExTrans Icon
 #
@@ -226,7 +236,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.5.10",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -330,6 +340,7 @@ class Main(QMainWindow):
         self.__configMap = configMap
         self.__report = report
         self.__transfer_rules_file = None
+        self.__replFile = None
         self.advancedTransfer = False
         self.__convertIt = True
         self.__extractIt = True
@@ -381,6 +392,9 @@ class Main(QMainWindow):
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
         self.ui.rebuildBilingLexButton.clicked.connect(self.RebuildBilingLexButtonClicked)
+        self.ui.viewBilingualLexiconButton.clicked.connect(self.ViewBilingualLexiconButtonClicked)
+        self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
+        self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -483,7 +497,14 @@ class Main(QMainWindow):
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
             return 
-
+        
+        # Get replacement file name.
+        self.__replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
+        if not self.__replFile:
+            self.ret_val = False
+            self.close()
+            return 
+        
         ## Testbed preparation
         # Disable buttons as needed.
         self.ui.addToTestbedButton.setEnabled(False)
@@ -506,6 +527,45 @@ class Main(QMainWindow):
         # Start out with all rules checked. 
         self.checkThemAll()
         
+    def ViewBilingualLexiconButtonClicked(self):
+        
+        if os.path.exists(self.__biling_file) == False:
+
+            QMessageBox.warning(self, 'Not Found Error', f'Bilingual file: {self.__biling_file} does not exist.')
+            return 
+        
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        call([xxe, self.__biling_file])
+            
+    def EditTransferRulesButtonClicked(self):
+        
+        if os.path.exists(self.__transfer_rules_file) == False:
+
+            QMessageBox.warning(self, 'Not Found Error', f'Transfer rule file: {self.__transfer_rules_file} does not exist.')
+            return 
+        
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        call([xxe, self.__transfer_rules_file])
+            
+    def EditReplacementButton(self):
+        
+        if os.path.exists(self.__replFile) == False:
+
+            QMessageBox.warning(self, 'Not Found Error', f'Transfer rule file: {self.__replFile} does not exist.')
+            return 
+        
+        progFilesFolder = os.environ['ProgramFiles(x86)']
+        
+        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
+        
+        call([xxe, self.__replFile])
+            
     def checkThemAll(self):
             
             if self.advancedTransfer:
@@ -1415,7 +1475,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-                rule_file = self.__transferRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
                 source_file = os.path.join(self.testerFolder, 'target_text1.aper')
@@ -1425,7 +1485,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
-                rule_file = self.__interChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
                 source_file = os.path.join(self.testerFolder, 'target_text2.aper')
@@ -1435,7 +1495,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
-                rule_file = self.__postChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
             source_file = os.path.join(self.testerFolder, 'source_text.aper')
@@ -1445,8 +1505,11 @@ class Main(QMainWindow):
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-            rule_file = self.__transferRuleFileXMLtree.getroot()
+            ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
             
+        # Check for attribute definition issues
+        Utils.checkRuleAttributesXML(self.__report, ruleFileRoot)
+        
         # Save the source text to the tester folder
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
@@ -1474,7 +1537,7 @@ class Main(QMainWindow):
         # Recreate the section-rules element
         new_sr_element = ET.SubElement(myRoot, 'section-rules')
         
-        rules_element = rule_file.find('section-rules')
+        rules_element = ruleFileRoot.find('section-rules')
 
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):
@@ -1492,6 +1555,9 @@ class Main(QMainWindow):
         
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+        
+        # Convert the file to be decomposed unicode
+        Utils.decompose(tr_file)
         
         ## Display the results
         
