@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.6 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
 #   Version 3.5.1 - 6/13/22 - Ron Lockwood
 #    Changes to support the Windows version of the Apertium tools. Fixes #143.
 #    Run a function called stripRulesFile to remove DocType from the transfer 
@@ -60,7 +63,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 descr = "Run Apertium commands."
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
         FTM_Help  : "",  
@@ -72,8 +75,18 @@ def MainFunction(DB, report, modify=True):
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
 
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return True
+
+    # Get the path to the transfer rules file
+    tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
     # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
-    Utils.stripRulesFile(report, buildFolder)
+    Utils.stripRulesFile(report, buildFolder, tranferRulePath)
+    
+    # Check if attributes are well-formed. Warnings will be reported in the function
+    Utils.checkRuleAttributes(report, tranferRulePath)
     
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
     ret = Utils.run_makefile(buildFolder, report)
