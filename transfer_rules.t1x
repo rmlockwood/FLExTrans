@@ -426,8 +426,6 @@ side="tl"
 ><!--You normally will want to output a space between lexical units.--><b
 ></b
 ><lu
-><b
-></b
 ><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
 part="whole"
 pos="2"
