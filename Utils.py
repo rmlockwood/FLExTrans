@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.5 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against static name in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.6.4 - 8/18/22 - Ron Lockwood
 #    New function getXMLEntryText to get the string part of a left or right element
 #    of the bilingual lexicon entry. Uses tail to get the text after <b/>. Modified the new
@@ -2569,11 +2573,11 @@ class TextWord():
             return    
 
     def isProlitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic')
+        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('proclitic')
     def isClitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
+        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('proclitic','enclitic')
     def isEnclitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('enclitic')
+        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:

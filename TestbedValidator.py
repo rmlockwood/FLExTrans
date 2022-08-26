@@ -5,6 +5,10 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.6 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against static name in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.4 - 2/17/22 - Ron Lockwood
 #    Use ReadConfig file constants.
 #
@@ -192,7 +196,7 @@ class TestbedValidator():
         # Loop through all the entries
         for i,e in enumerate(self.db.LexiconAllEntries()):
         
-            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
+            morphType = e.LexemeFormOA.MorphTypeRA.NameHierarchyString
             
             # If no senses, skip it
             if e.SensesOS.Count == 0:

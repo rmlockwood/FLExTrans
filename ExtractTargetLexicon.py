@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.4 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against static name in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.6.3 - 8/26/22 - Ron Lockwood
 #    Fixes #245. Warn if the morpheme type or lexeme form is null.
 #
@@ -169,7 +173,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.6.3",
+        FTM_Version    : "3.6.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -379,7 +383,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == PREFIX_TYPE:
+        if allomorph.MorphTypeRA.NameHierarchyString == PREFIX_TYPE:
             
             output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, PREFIX_TYPE)
     
@@ -397,7 +401,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        if ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text == SUFFIX_TYPE:
+        if allomorph.MorphTypeRA.NameHierarchyString == SUFFIX_TYPE:
             
             output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, SUFFIX_TYPE)
     
@@ -641,7 +645,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 
             continue
             
-        morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
+        morphType = e.LexemeFormOA.MorphTypeRA.NameHierarchyString
         
         # Process inflectional variants even if they have senses.
         if True:

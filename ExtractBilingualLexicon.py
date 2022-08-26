@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.2 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against static name in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.6.1 - 8/19/22 - Ron Lockwood
 #    Use new new function getXMLEntryText which should be more efficient.
 #
@@ -207,7 +211,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -740,10 +744,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 report.ProgressUpdate(entry_cnt)
             
             # Don't process affixes, clitics
-            if e.LexemeFormOA and \
-               e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
-               MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
+            if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+               e.LexemeFormOA.MorphTypeRA and e.LexemeFormOA.MorphTypeRA.NameHierarchyString in sourceMorphNames:
             
                 # Get the headword string
                 headWord = ITsString(e.HeadWord).Text
@@ -930,10 +932,10 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     
                     error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
                 
-                elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
+                elif e.LexemeFormOA.MorphTypeRA.NameHierarchyString not in sourceMorphNames:
                     # Don't report this. We've documented it.
                     #report.Warning('Skipping entry because the morph type is: '+\
-                    #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
+                    #e.LexemeFormOA.MorphTypeRA.NameHierarchyString, DB.BuildGotoURL(e))
                     pass
            
         f_out.write('    <!-- SECTION: Punctuation -->\n')
