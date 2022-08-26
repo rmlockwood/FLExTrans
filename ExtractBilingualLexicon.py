@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.1 - 8/19/22 - Ron Lockwood
+#    Use new new function getXMLEntryText which should be more efficient.
+#
 #   Version 3.6 - 8/11/22 - Ron Lockwood
 #    Fixes #65. Decompose the replacement file before combining with bilingual lexicon.
 #
@@ -204,7 +207,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -314,20 +317,9 @@ def get_repl_entry_key(left, newDocType):
                 key += ET.tostring(myElement, encoding='unicode')
     else:
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
             
-            keyLeft.remove(symb)
-        
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-     
     return key
 
 # Use the replacement file specified by BilingualDictReplacmentFile in the
@@ -469,21 +461,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         # Create string with the old contents of the entry. 
         oldEntryStr = ET.tostring(entry, encoding='unicode')
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l> (same as above)
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
-            
-            keyLeft.remove(symb)
-
-        # create the key string
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-    
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
+                
         # See if we have a match for replacing the entry
         if key in replMap:
             

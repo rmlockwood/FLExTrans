@@ -1,4 +1,5 @@
 Do these things when making a new release
+-Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
