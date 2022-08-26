@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.3 - 8/26/22 - Ron Lockwood
+#    Fixes #245. Warn if the morpheme type or lexeme form is null.
+#
 #   Version 3.6.2 - 8/20/22 - Ron Lockwood
 #    Removed logging
 #
@@ -166,7 +169,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Target Lexicon",
-        FTM_Version    : "3.6.2",
+        FTM_Version    : "3.6.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts STAMP-style lexicons for the target language, then runs STAMP",
         FTM_Help       :"",
@@ -622,10 +625,22 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             report.ProgressUpdate(i)
             
         # Check that the objects we need are valid
-        if not e.LexemeFormOA or not e.LexemeFormOA.MorphTypeRA or not e.LexemeFormOA.MorphTypeRA.Name:
+        if not e.LexemeFormOA:
             
+            if e.HeadWord:
+                
+                err_list.append(('Skipping sense because the lexeme form is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                
             continue
-
+            
+        if not e.LexemeFormOA.MorphTypeRA or not e.LexemeFormOA.MorphTypeRA.Name:
+            
+            if e.HeadWord:
+                
+                err_list.append(('Skipping sense because the morpheme type is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                
+            continue
+            
         morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
         
         # Process inflectional variants even if they have senses.
