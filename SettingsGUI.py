@@ -808,37 +808,13 @@ widgetList = [
    ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
-   ["Source Morpheme Types\nCounted As Roots", "choose_source_root_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
+   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
     "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["Source Morpheme Types\nCounted As Prefixes", "choose_source_prefix_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_PREFIXES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of prefix. Generally include proclitics."],\
-
-   ["Source Morpheme Types\nCounted As Suffixes", "choose_source_suffix_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_SUFFIXES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of suffix. Generally include enclitics."],\
-
-   ["Source Morpheme Types\nCounted As Infixes", "choose_source_infix_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_INFIXES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of infix."],\
-
-   ["Source Morpheme Types\nCounted As Circumfixes", "choose_source_circumfix_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_CIRCUMFIXES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of circumfix."],\
-
-   ["Target Morpheme Types\nCounted As Roots", "choose_target_root_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
+   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
     "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["Target Morpheme Types\nCounted As Prefixes", "choose_target_prefix_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_PREFIXES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of prefix. Generally include proclitics."],\
-
-   ["Target Morpheme Types\nCounted As Suffixes", "choose_target_suffix_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_SUFFIXES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of suffix. Generally include enclitics."],\
-
-   ["Target Morpheme Types\nCounted As Infixes", "choose_target_infix_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_INFIXES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of infix."],\
-
-   ["Target Morpheme Types\nCounted As Circumfixes", "choose_target_circumfix_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_CIRCUMFIXES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of circumfix."],\
-
-   ["Source Complex Form Types", "choose_source_complex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
     "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."],\
 
    ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
