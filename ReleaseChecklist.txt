@@ -1,6 +1,5 @@
 Do these things when making a new release
 -Finish code changes and commit
--Make the config file utf-8
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
 -Run createInstallFolder2.0.bat to rebuild zip files

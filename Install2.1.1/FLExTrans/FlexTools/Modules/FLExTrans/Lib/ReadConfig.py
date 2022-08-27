@@ -5,9 +5,6 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.5.3 - 8/8/22 - Ron Lockwood
-#    Don't allow two equals signs in the config file.
-#
 #   Version 3.5.2 - 7/14/22 - Ron Lockwood
 #    New constants for cacheing data, treetran rules file and lexicon folder. Fixes #184
 #    Also check for Folder at the end of the setting name and if so return a path.
@@ -65,7 +62,6 @@ BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
 CACHE_DATA = 'CacheData'
 CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
-COMPOSED_CHARACTERS = 'UseComposedCharacters'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
@@ -118,13 +114,7 @@ def readConfig(report):
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
             return
-        
-        try:
-            (prop, value) = line.split('=')
-        except:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
-            return
-        
+        (prop, value) = line.split('=')
         value = value.rstrip()
         # if the value has commas, save it as a list
         if re.search(',', value):

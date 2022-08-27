@@ -4,6 +4,6 @@
 
 Set WshShell = CreateObject("WScript.Shell")
 
-WshShell.Run "Config\FlexTools.bat", 0, True
+WshShell.Run "FlexTools.bat", 0, True
 
 WshShell = Null

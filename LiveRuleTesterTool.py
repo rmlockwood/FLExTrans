@@ -219,7 +219,7 @@ import Utils
 import ReadConfig
 import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
-import SynthesizeText
+import SynthesizeTargetText
 import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
