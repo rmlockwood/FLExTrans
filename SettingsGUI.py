@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.1 - 8/27/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#   Also don't load types that aren't in the broad category of 'stem'.
+#
 #   Version 3.6 - 8/24/22 - Ron Lockwood
 #    Added 'sense-level' to the tool tip for the custom fields
 #
@@ -224,10 +229,17 @@ def loadTargetComplexFormTypes(widget, wind, settingName):
 def loadSourceMorphemeTypes(widget, wind, settingName):
 
     typesList = []
+    
     for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
 
-        # Strip is because morpheme types come with symbols
-        typesList.append(str(item).strip("-=~*"))
+        # Only load things that can be stems
+        if item.IsStemType == True:
+            
+            # convert this item's id to a string
+            myGuid = item.Guid.ToString()
+            morphTypeStr = Utils.morphTypeMap[myGuid]
+            
+            typesList.append(morphTypeStr)
     
     widget.addItems(typesList)
     
@@ -244,10 +256,17 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
+    
     for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
 
-        # Strip is because morpheme types come with symbols
-        typesList.append(str(item).strip("-=~*"))
+        # Only load things that can be stems
+        if item.IsStemType == True:
+            
+            # convert this item's id to a string
+            myGuid = item.Guid.ToString()
+            morphTypeStr = Utils.morphTypeMap[myGuid]
+            
+            typesList.append(morphTypeStr)
     
     widget.addItems(typesList)
     

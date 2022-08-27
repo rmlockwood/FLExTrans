@@ -6,8 +6,9 @@
 #   7/23/2014
 #
 #   Version 3.6.5 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
+#   Added a guid map for morpheme types.
 #
 #   Version 3.6.4 - 8/18/22 - Ron Lockwood
 #    New function getXMLEntryText to get the string part of a left or right element
@@ -344,6 +345,25 @@ reForwardSlash = re.compile(r'/')
 reHyphen = re.compile(r'-') 
 
 NGRAM_SIZE = 5
+
+morphTypeMap = {
+"d7f713e4-e8cf-11d3-9764-00c04f186933": "bound root",
+"d7f713e7-e8cf-11d3-9764-00c04f186933": "bound stem",
+"d7f713df-e8cf-11d3-9764-00c04f186933": "circumfix",
+"c2d140e5-7ca9-41f4-a69a-22fc7049dd2c": "clitic",
+"0cc8c35a-cee9-434d-be58-5d29130fba5b": "discontiguous phrase",
+"d7f713e1-e8cf-11d3-9764-00c04f186933": "enclitic",
+"d7f713da-e8cf-11d3-9764-00c04f186933": "infix",
+"18d9b1c3-b5b6-4c07-b92c-2fe1d2281bd4": "infixing interfix",
+"56db04bf-3d58-44cc-b292-4c8aa68538f4": "particle",
+"a23b6faa-1052-4f4d-984b-4b338bdaf95f": "phrase",
+"d7f713db-e8cf-11d3-9764-00c04f186933": "prefix",
+"af6537b0-7175-4387-ba6a-36547d37fb13": "prefixing interfix",
+"d7f713e2-e8cf-11d3-9764-00c04f186933": "proclitic",
+"d7f713e5-e8cf-11d3-9764-00c04f186933": "root",
+"d7f713e8-e8cf-11d3-9764-00c04f186933": "stem",
+"d7f713dd-e8cf-11d3-9764-00c04f186933": "suffix",
+"3433683d-08a9-4bae-ae53-2a7798f64068": "suffixing interfix"} 
 
 # Invalid category characters & descriptions & messages & replacements
 catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
@@ -2572,12 +2592,6 @@ class TextWord():
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
 
-    def isProlitic(self, myEntry):
-        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('proclitic')
-    def isClitic(self, myEntry):
-        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('proclitic','enclitic')
-    def isEnclitic(self, myEntry):
-        return myEntry.LexemeFormOA.MorphTypeRA.NameHierarchyString in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:

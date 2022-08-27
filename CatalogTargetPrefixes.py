@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.5.5 - 8/8/22 - Ron Lockwood
@@ -217,7 +217,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         # Make sure we have a valid LexemeForm object and MorphType object
         if e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
           
-            morphType = e.LexemeFormOA.MorphTypeRA.NameHierarchyString
+            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = Utils.morphTypeMap[morphGuidStr]
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
@@ -233,7 +234,9 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphType = allomorph.MorphTypeRA.NameHierarchyString
+                    morphGuidStr = allomorph.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                    morphType = Utils.morphTypeMap[morphGuidStr]
+            
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
                        (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
             

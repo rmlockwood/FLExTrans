@@ -6,7 +6,7 @@
 #   12/4/14
 #
 #   Version 3.6.2 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.6.1 - 8/19/22 - Ron Lockwood
@@ -745,7 +745,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             
             # Don't process affixes, clitics
             if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               e.LexemeFormOA.MorphTypeRA and e.LexemeFormOA.MorphTypeRA.NameHierarchyString in sourceMorphNames:
+               e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
             
                 # Get the headword string
                 headWord = ITsString(e.HeadWord).Text
@@ -932,12 +932,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     
                     error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
                 
-                elif e.LexemeFormOA.MorphTypeRA.NameHierarchyString not in sourceMorphNames:
-                    # Don't report this. We've documented it.
-                    #report.Warning('Skipping entry because the morph type is: '+\
-                    #e.LexemeFormOA.MorphTypeRA.NameHierarchyString, DB.BuildGotoURL(e))
-                    pass
-           
         f_out.write('    <!-- SECTION: Punctuation -->\n')
         
         # Create a regular expression string for the punctuation characters

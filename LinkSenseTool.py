@@ -6,7 +6,7 @@
 #   7/18/15
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.5.4 - 7/13/22 - Ron Lockwood
@@ -745,9 +745,8 @@ def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, 
         report.ProgressUpdate(int(entry_cnt/scale_factor))
         
         # Don't process affixes, clitics
-        if e.LexemeFormOA and \
-           e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           e.LexemeFormOA.MorphTypeRA and e.LexemeFormOA.MorphTypeRA.NameHierarchyString in targetMorphNames:
+        if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+           e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in targetMorphNames:
         
             # Loop through senses
             for senseNum, mySense in enumerate(e.SensesOS):
@@ -913,7 +912,10 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                             # If we have processed this sense already, we will just re-add it to the list
                             if mySense not in processed_map:
                                 
-                                if entry.LexemeFormOA.MorphTypeRA.NameHierarchyString in sourceMorphNames:
+                                morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                                morphType = Utils.morphTypeMap[morphGuidStr]
+            
+                                if morphType in sourceMorphNames:
                                     
                                     # Get gloss
                                     srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text    

@@ -6,7 +6,7 @@
 #   6/6/2018
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.4 - 2/17/22 - Ron Lockwood
@@ -195,8 +195,9 @@ class TestbedValidator():
 
         # Loop through all the entries
         for i,e in enumerate(self.db.LexiconAllEntries()):
-        
-            morphType = e.LexemeFormOA.MorphTypeRA.NameHierarchyString
+            
+            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = Utils.morphTypeMap[morphGuidStr]
             
             # If no senses, skip it
             if e.SensesOS.Count == 0:
@@ -210,9 +211,7 @@ class TestbedValidator():
                     
                     # Process roots
                     # Don't process clitics in this block
-                    if e.LexemeFormOA and \
-                       e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-                       e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
+                    if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
                     
                         # Set the headword value and the homograph #, if necessary
                         headWord = ITsString(e.HeadWord).Text

@@ -6,8 +6,9 @@
 #   12/5/14
 #
 #   Version 3.6.4 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
+#   Reformatted, indented the main loop.
 #
 #   Version 3.6.3 - 8/26/22 - Ron Lockwood
 #    Fixes #245. Warn if the morpheme type or lexeme form is null.
@@ -250,10 +251,10 @@ def haveFeatureMatch(specsA, specsB):
     
     return False
     
-def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
+def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morphCategory):
     
     # Put out normal allomorph stuff
-    if output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType) == False:
+    if output_allomorph(morph, envList, prevStemList, f_handle, morphCategory) == False:
         
         return
     
@@ -269,7 +270,7 @@ def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morp
     # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
     if msa:
         
-        if morphType != STEM_TYPE: # non-stems only
+        if morphCategory != STEM_TYPE: # non-stems only
 
             found = False
             
@@ -296,14 +297,13 @@ def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morp
                 
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
-def output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
+def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
     
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
     # If there is nothing for any WS we get ***
     if amorph == '***' or amorph == None:
-        # Suppress this warning for now. 
-        #report.Warning('No allomorph found. Skipping 1 allomorph for Headword: '+ITsString(e.HeadWord).Text, TargetDB.BuildGotoURL(e))
+        
         return False
     
     # Convert spaces between words to underscores, these have to be removed later.
@@ -317,7 +317,7 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
 #         f_handle.write(negatedStem) 
     
     # Write out stem name stuff if we have a stem
-    if morphType == STEM_TYPE: # stems only
+    if morphCategory == STEM_TYPE: # stems only
 
         if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
@@ -340,7 +340,7 @@ def output_allomorph(morph, envList, prevStemList, f_handle, sense, morphType):
                 
                 inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
                 
-                if morphType == PREFIX_TYPE or morphType == INFIX_TYPE:
+                if morphCategory == PREFIX_TYPE or morphCategory == INFIX_TYPE:
                     
                     f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
                     
@@ -383,7 +383,10 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        if allomorph.MorphTypeRA.NameHierarchyString == PREFIX_TYPE:
+        morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+            
+        if morphType == 'prefix':
             
             output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, PREFIX_TYPE)
     
@@ -401,7 +404,10 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        if allomorph.MorphTypeRA.NameHierarchyString == SUFFIX_TYPE:
+        morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+            
+        if morphType == SUFFIX_TYPE:
             
             output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, SUFFIX_TYPE)
     
@@ -645,48 +651,50 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 
             continue
             
-        morphType = e.LexemeFormOA.MorphTypeRA.NameHierarchyString
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
         
         # Process inflectional variants even if they have senses.
-        if True:
-            
-            got_one = False
-            
-            # Process roots
-            # Don't process clitics in this block
-            if e.LexemeFormOA and \
-               e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
-            
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        
-                        # we only are going to output inflectional variants
-                        for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType":
-                                got_one = True
-                                break
-                        
-                        if got_one:
-                            break
+        got_one = False
+        
+        # Process roots
+        # Don't process clitics in this block
+        if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
+        
+            for entryRef in e.EntryRefsOS:
                 
-                if got_one:                
-                    # Set the headword value and the homograph #, if necessary
-                    headWord = ITsString(e.HeadWord).Text
-                    headWord = Utils.add_one(headWord)
-                    headWord = headWord.lower()
-                    # change spaces to underscores
-                    headWord = re.sub('\s', '_', headWord)
-    
-                    # Write out morphname field (no sense number for variants)
-                    f_rt.write('\\m '+headWord+'\n')
-                    f_rt.write('\\c '+"_variant_"+'\n')
+                if entryRef.RefType == 0: # we have a variant
+                    
+                    # we only are going to output inflectional variants
+                    for varType in entryRef.VariantEntryTypesRS:
+                        
+                        if varType.ClassName == "LexEntryInflType":
+                            
+                            got_one = True
+                            break
+                    
+                    if got_one:
+                        break
+            
+            if got_one:                
+                
+                # Set the headword value and the homograph #, if necessary
+                headWord = ITsString(e.HeadWord).Text
+                headWord = Utils.add_one(headWord)
+                headWord = headWord.lower()
+                # change spaces to underscores
+                headWord = re.sub('\s', '_', headWord)
 
-                    # Process all allomorphs and their environments
-                    process_allomorphs(e, f_rt, "", STEM_TYPE, sense=None)
-                    rt_cnt +=1
+                # Write out morphname field (no sense number for variants)
+                f_rt.write('\\m '+headWord+'\n')
+                f_rt.write('\\c '+"_variant_"+'\n')
+
+                # Process all allomorphs and their environments
+                process_allomorphs(e, f_rt, "", STEM_TYPE, sense=None)
+                rt_cnt +=1
 
         if e.SensesOS.Count > 0: # Entry with senses
+            
             # Loop through senses
             for i, mySense in enumerate(e.SensesOS):
                 
@@ -694,9 +702,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 
                 # Process roots
                 # Don't process clitics in this block
-                if e.LexemeFormOA and \
-                   e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-                   e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
+                if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
                 
                     # Set the headword value and the homograph #, if necessary
                     headWord = ITsString(e.HeadWord).Text
@@ -711,21 +717,17 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                             
-                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
-                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                      Abbreviation.BestAnalysisAlternative).Text
+                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:  
+                                          
+                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                err_list.append(('Skipping sense because the POS is unknown: '+\
-                                               ' while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                                err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                                 continue
-                                                      
                         else:
-                            err_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append((f'Skipping sense that is of class: {mySense.MorphoSyntaxAnalysisRA.ClassName} for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                             continue
                     else:
-                        err_list.append(('Skipping sense that has no Morpho-syntax analysis.'+\
-                                       ' Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append(('Skipping sense that has no Morpho-syntax analysis. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                         continue
     
                     # Write out morphname field
@@ -751,12 +753,10 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         
                     elif e.LexemeFormOA.MorphTypeRA == None:
                         
-                        err_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+\
-                                       ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append((f'No Morph Type. Skipping.{ITsString(e.HeadWord).Text} Best Vern: {ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text}', 1, TargetDB.BuildGotoURL(e)))
                         
                     elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         
-                        # TODO: Don't have hard-coded English types.
                         if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
                             
                             if morphType in ['prefix', 'prefixing interfix']:
@@ -786,7 +786,6 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             
                     elif morphType not in morphNames:
                         
-                        # TODO: Don't have hard-coded English types.
                         if morphType == 'proclitic':
                             
                             process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)

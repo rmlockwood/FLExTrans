@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against static name in the object instead of
+#   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.5.3 - 7/13/22 - Ron Lockwood
@@ -490,19 +490,35 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     return error_list
 
 def is_proclitic(e):
+    
     ret_val = False
+    
     # What might be passed in for a component could be a sense which isn't a clitic
-    if e.ClassName == 'LexEntry' and \
-       e.LexemeFormOA.MorphTypeRA.NameHierarchyString == 'proclitic':
-        ret_val = True
+    if e.ClassName == 'LexEntry' and e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'proclitic':
+        
+            ret_val = True
+            
     return ret_val
     
 def is_enclitic(e):
+
     ret_val = False
+    
     # What might be passed in for a component could be a sense which isn't a clitic
-    if e.ClassName == 'LexEntry' and \
-       e.LexemeFormOA.MorphTypeRA.NameHierarchyString == 'enclitic':
-        ret_val = True
+    if e.ClassName == 'LexEntry' and e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'enclitic':
+        
+            ret_val = True
+            
     return ret_val
 
 # Get the gloss from the first sense
