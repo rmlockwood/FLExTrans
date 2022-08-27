@@ -450,7 +450,7 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
     
     for allomorph in e.AlternateFormsOS:
         
-        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, sense, myType)
+        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, myType)
     
     # Now process the lexeme form which is the default allomorph
     output_default_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, myType)

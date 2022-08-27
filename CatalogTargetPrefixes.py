@@ -234,7 +234,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphGuidStr = allomorph.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                    morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
                     morphType = Utils.morphTypeMap[morphGuidStr]
             
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
