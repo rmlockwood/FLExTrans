@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.5.5 - 8/8/22 - Ron Lockwood
 #   Fixes #90 Ignore duplicate glosses As long as they are affixes in the same 
 #   entry with the same morphtype. E.g. 3 suffixes named pl.
@@ -105,7 +109,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -213,7 +217,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         # Make sure we have a valid LexemeForm object and MorphType object
         if e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
           
-            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
+            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = Utils.morphTypeMap[morphGuidStr]
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
@@ -229,7 +234,9 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphType = ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text
+                    morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
+                    morphType = Utils.morphTypeMap[morphGuidStr]
+            
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
                        (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
             
