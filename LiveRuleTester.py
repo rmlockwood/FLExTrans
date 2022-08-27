@@ -263,6 +263,9 @@ class Ui_MainWindow(object):
         self.editReplacementButton = QtWidgets.QPushButton(self.centralwidget)
         self.editReplacementButton.setGeometry(QtCore.QRect(1090, 68, 161, 31))
         self.editReplacementButton.setObjectName("editReplacementButton")
+        self.selectWordsHintLabel = QtWidgets.QLabel(self.centralwidget)
+        self.selectWordsHintLabel.setGeometry(QtCore.QRect(320, 303, 501, 23))
+        self.selectWordsHintLabel.setObjectName("selectWordsHintLabel")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -305,3 +308,4 @@ class Ui_MainWindow(object):
         self.editTransferRulesButton.setText(_translate("MainWindow", "E&dit Transfer Rules"))
         self.viewBilingualLexiconButton.setText(_translate("MainWindow", "&View Bilingual Lexicon"))
         self.editReplacementButton.setText(_translate("MainWindow", "Edit Replacement &File"))
+        self.selectWordsHintLabel.setText(_translate("MainWindow", "Hover over a word to see its bilingual dictionary entry."))

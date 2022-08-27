@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.1 - 8/19/22 - Ron Lockwood
+#    Use new new function getXMLEntryText which should be more efficient.
+#
+#   Version 3.6 - 8/11/22 - Ron Lockwood
+#    Fixes #65. Decompose the replacement file before combining with bilingual lexicon.
+#
 #   Version 3.5.4 - 8/8/22 - Ron Lockwood
 #    Fixes #142. Warn when entries start with a space.
 #
@@ -201,7 +207,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -311,20 +317,9 @@ def get_repl_entry_key(left, newDocType):
                 key += ET.tostring(myElement, encoding='unicode')
     else:
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
             
-            keyLeft.remove(symb)
-        
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-     
     return key
 
 # Use the replacement file specified by BilingualDictReplacmentFile in the
@@ -348,21 +343,31 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # Save a copy of the bilingual dictionary
     shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
 
+    # Make a temporary copy of the replacement file so we can decompose it
+    tmpReplFile = replFile+'.tmp'
+    shutil.copy2(replFile, tmpReplFile)
+
+    # Convert the replacement file to decomposed (NFD)
+    Utils.decompose(tmpReplFile)
+    
     # Parse the replacement file as XML
     try:
-        replEtree = ET.parse(replFile)
+        replEtree = ET.parse(tmpReplFile)
     except IOError:
         if report:
             report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return True
     
     # Determine the Doctype
-    f = open(replFile, encoding='utf-8')
+    f = open(tmpReplFile, encoding='utf-8')
     
     # Read two lines
     f.readline()
     line = f.readline()
     f.close()
+    
+    # Remove the temp file
+    os.remove(tmpReplFile)
     
     toks = line.split()
 
@@ -456,21 +461,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         # Create string with the old contents of the entry. 
         oldEntryStr = ET.tostring(entry, encoding='unicode')
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l> (same as above)
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
-            
-            keyLeft.remove(symb)
-
-        # create the key string
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-    
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
+                
         # See if we have a match for replacing the entry
         if key in replMap:
             

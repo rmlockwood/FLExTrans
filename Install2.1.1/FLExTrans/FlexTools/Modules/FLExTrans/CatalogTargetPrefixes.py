@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.5.5 - 8/8/22 - Ron Lockwood
+#   Fixes #90 Ignore duplicate glosses As long as they are affixes in the same 
+#   entry with the same morphtype. E.g. 3 suffixes named pl.
+#
+#   Version 3.5.4 - 8/8/22 - Ron Lockwood
+#    Error message fix.
+#
 #   Version 3.5.3.1 - 8/23/22 - Ron Lockwood
 #    Fixes #231. Check for a valid lexeme form object before processing sub objects.
 #
@@ -98,7 +105,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Prefixes",
-        FTM_Version    : "3.5.3.1",
+        FTM_Version    : "3.5.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a text file with all the affix glosses and morphtypes of the target database.",
         FTM_Help  : "",
@@ -145,7 +152,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
 
     if not morphNames:
-        error_list.append(('Problem reading the configuration file for the property: TargetMorphNamesCountedAsRoots', 2))
+        error_list.append((f'Problem reading the configuration file for the property: {ReadConfig.TARGET_MORPHNAMES}', 2))
         return error_list
     
     TargetDB = FLExProject()
@@ -232,6 +239,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             # Process affixes or clitics (stems that aren't in the morphNames list)
             if processIt:
             
+                localMap = {}
+                
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
                     
@@ -240,9 +249,13 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
                     
-                    # Save the gloss and morph type
-                    glossAndTypeList.append((morphType, myGloss))
-                    
+                    # Don't add to the list if it's a duplicate. Same gloss and same morph type will just make duplicate entries in the affix dictionary.
+                    # If we add each of them, the user will get an error for having duplicates, but within an entry it doesn't matter.
+                    if (morphType, myGloss) not in localMap:
+                        
+                        # Save the gloss and morph type
+                        glossAndTypeList.append((morphType, myGloss))
+                        localMap[(morphType, myGloss)] = 1
     seen = set()
     
     TargetDB.CloseProject()
