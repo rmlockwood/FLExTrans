@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.6 - 8/27/22 - Ron Lockwood
+#   Made isProClitic, etc. global functions.
+#
 #   Version 3.6.5 - 8/26/22 - Ron Lockwood
 #   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
@@ -371,6 +374,42 @@ catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
            [r'/', 'slash', 'converted to a vertical bar', '|', reForwardSlash]
 #          [r'X', 'x char', 'fatal', '']
           ]
+
+def isClitic(myEntry):
+    
+    return isProclitic(myEntry) or isEnclitic(myEntry)
+
+def isProclitic(entry):
+    
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'proclitic':
+        
+            ret_val = True
+            
+    return ret_val
+    
+def isEnclitic(entry):
+
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'enclitic':
+        
+            ret_val = True
+            
+    return ret_val
 
 def getXMLEntryText(node):
     
@@ -2858,7 +2897,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             
                             # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
                             # in this case, treat it as a root
-                            if myWord.isClitic(tempEntry) == True and not (myWord.isEnclitic(tempEntry) and myWord.hasEntries() == False):
+                            if isClitic(tempEntry) == True and not (isEnclitic(tempEntry) and myWord.hasEntries() == False):
                                 # Get the clitic gloss.
                                 myWord.addAffix(bundle.SenseRA.Gloss)
                                 
