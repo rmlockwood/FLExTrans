@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.5 - 8/27/22 - Ron Lockwood
+#    If the tooltip word is Title case and not found in the bilingual map, try
+#    lowercasing the first letter to find it.
+#
 #   Version 3.6.4 - 8/19/22 - Ron Lockwood
 #    Fixed bugs in last feature added. Now entries with spaces work as well as
 #    entries that have sfm markers or other stuff before the lexical unit.
@@ -247,7 +251,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.4",
+        FTM_Version    : "3.6.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -264,9 +268,15 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
-
 MAX_CHECKBOXES = 80
-                 
+
+def firstLower(myStr):
+    
+    if myStr:
+        return myStr[0].lower() + myStr[1:]
+    else:
+        return myStr
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
     
@@ -1386,6 +1396,14 @@ class Main(QMainWindow):
                 if lemma in self.__bilingMap:
                     
                     return self.__bilingMap[lemma]
+                
+                # try lowercasing the first letter if we don't find it at first
+                else:
+                    lowerLemma = firstLower(lemma)
+                    
+                    if lowerLemma in self.__bilingMap:
+                    
+                        return self.__bilingMap[lowerLemma]
                 
                 # If we found <>, stop looking
                 break
