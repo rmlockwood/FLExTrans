@@ -7,7 +7,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.5.5"
+!define PRODUCT_VERSION "3.6"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -78,6 +78,7 @@ InitPluginsDir
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
   SetOverwrite off
 
+  File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   
@@ -85,6 +86,7 @@ InitPluginsDir
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
   
+  File "${GIT_FOLDER}\SetWorkingProject.py"
   File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
   File "${GIT_FOLDER}\FlexTools.bat"

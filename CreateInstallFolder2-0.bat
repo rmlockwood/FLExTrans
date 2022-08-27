@@ -45,7 +45,7 @@ rem other stuff
 copy /Y subdirs.pth Install2.1.1\FLExTrans\FlexTools\Modules
 copy stamp32.exe Install2.1.1\FLExTrans\FlexTools
 copy Makefile Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
-copy FlexTools.vbs Install2.1.1\FLExTrans\WorkProjects\German-Swedish
+rem copy FlexTools.vbs Install2.1.1\FLExTrans\WorkProjects\German-Swedish
 copy source_text.txt Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Output
 
 rem Documentation
@@ -115,7 +115,7 @@ copy Make4Windows\*.* Install2.1.1\FLExTrans\FLExTools
 
 rem Other Tools
 copy CleanFiles.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy SetWorkingProject.py Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config
+rem copy SetWorkingProject.py Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
