@@ -182,7 +182,7 @@ Function nsDialogsPage
                 Abort
         ${EndIf}
         
-        StrCpy $OUT_FOLDER "C:\"
+        StrCpy $OUT_FOLDER $DOCUMENTS
 
         ${NSD_CreateLabel} 0 60 100% 12u "Choose where to put FLExTrans folder."
         ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
@@ -196,7 +196,7 @@ nsDialogs::Show
 FunctionEnd
 
 Function Browsedest
-nsDialogs::SelectFolderDialog "Select Destination Folder" "c:\"
+nsDialogs::SelectFolderDialog "Select Destination Folder" $DOCUMENTS
 Pop $OUT_FOLDER
 ${NSD_SetText} $DESTTEXT $OUT_FOLDER
 FunctionEnd
