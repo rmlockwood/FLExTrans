@@ -219,7 +219,7 @@ import Utils
 import ReadConfig
 import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
-import SynthesizeTargetText
+import SynthesizeText
 import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
@@ -847,7 +847,7 @@ class Main(QMainWindow):
         if self.__doCatalog:
             
             try:
-                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+                error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
                 self.unsetCursor()
@@ -882,7 +882,7 @@ class Main(QMainWindow):
         if self.__extractIt == True:
             
             # Redo the catalog of prefixes in case the user changed an affix
-            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+            error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
@@ -890,7 +890,7 @@ class Main(QMainWindow):
                 return
             
             # Extract the lexicon        
-            error_list = ExtractTargetLexicon.extract_target_lex(self.__DB, self.__configMap)
+            error_list = SynthesizeText.extract_target_lex(self.__DB, self.__configMap)
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
@@ -899,7 +899,7 @@ class Main(QMainWindow):
                     return
         
         ## SYNTHESIZE
-        error_list = ExtractTargetLexicon.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
+        error_list = SynthesizeText.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]

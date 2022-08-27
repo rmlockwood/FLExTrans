@@ -152,7 +152,7 @@ from flexlibs import FLExProject, AllProjectNames
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Extract Target Lexicon",
+docs = {FTM_Name       : "Synthesize Text",
         FTM_Version    : "3.5.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
