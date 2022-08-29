@@ -219,7 +219,7 @@ import Utils
 import ReadConfig
 import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
-import SynthesizeText
+import DoStampSynthesis
 import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
@@ -890,7 +890,7 @@ class Main(QMainWindow):
                 return
             
             # Extract the lexicon        
-            error_list = SynthesizeText.extract_target_lex(self.__DB, self.__configMap)
+            error_list = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
@@ -899,7 +899,7 @@ class Main(QMainWindow):
                     return
         
         ## SYNTHESIZE
-        error_list = SynthesizeText.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
+        error_list = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]

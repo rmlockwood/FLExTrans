@@ -1,5 +1,5 @@
 #
-#   SynthesizeText.py
+#   DoStampSynthesis.py
 #
 #   Ron Lockwood
 #   University of Washington, SIL International
@@ -152,8 +152,8 @@ from flexlibs import FLExProject, AllProjectNames
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.5.5",
+docs = {FTM_Name       : "Synthesize Text with STAMP",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
         FTM_Help       :"",

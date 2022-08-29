@@ -31,7 +31,7 @@ copy CatalogTargetAffixes.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy ConvertTextToSTAMPformat.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy ExtractBilingualLexicon.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy ExtractSourceText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy SynthesizeText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
+copy DoStampSynthesis.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy InsertTargetText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy RunApertium.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
 copy RunTreeTran.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
