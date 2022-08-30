@@ -78,16 +78,18 @@ InitPluginsDir
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
   SetOverwrite off
 
+  File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
-  File "${GIT_FOLDER}\FlexTools.bat"
   
   #CopyFiles "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FlexTrans.config" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTrans.config"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
   
+  File "${GIT_FOLDER}\SetWorkingProject.py"
   File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
+  File "${GIT_FOLDER}\FlexTools.bat"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\FlexTrans All Steps.ini"
@@ -180,7 +182,7 @@ Function nsDialogsPage
                 Abort
         ${EndIf}
         
-        StrCpy $OUT_FOLDER "C:\"
+        StrCpy $OUT_FOLDER $DOCUMENTS
 
         ${NSD_CreateLabel} 0 60 100% 12u "Choose where to put FLExTrans folder."
         ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
@@ -194,7 +196,7 @@ nsDialogs::Show
 FunctionEnd
 
 Function Browsedest
-nsDialogs::SelectFolderDialog "Select Destination Folder" "c:\"
+nsDialogs::SelectFolderDialog "Select Destination Folder" $DOCUMENTS
 Pop $OUT_FOLDER
 ${NSD_SetText} $DESTTEXT $OUT_FOLDER
 FunctionEnd

@@ -43,24 +43,42 @@ tags="samp.*.pst.*"
 ></section-def-cats
 ><section-def-attrs
 ><def-attr
-n="a_num"
+n="a_gender"
 ><attr-item
-tags="sg"
+tags="m"
 ></attr-item
 ><attr-item
-tags="pl"
+tags="f"
+></attr-item
+><attr-item
+tags="neut"
 ></attr-item
 ></def-attr
 ><def-attr
 n="a_gram_cat"
 ><!--If you would like this list to be automatically populated (one time), run the FLExTrans module: Set Up Transfer Rule Grammatical Categories--><attr-item
+tags="adj"
+></attr-item
+><attr-item
+tags="adv"
+></attr-item
+><attr-item
 tags="n"
+></attr-item
+><attr-item
+tags="prep"
 ></attr-item
 ><attr-item
 tags="v"
 ></attr-item
+></def-attr
+><def-attr
+n="a_num"
 ><attr-item
-tags="prep"
+tags="SG"
+></attr-item
+><attr-item
+tags="PL"
 ></attr-item
 ></def-attr
 ><def-attr
@@ -420,8 +438,6 @@ side="tl"
 ><!--You normally will want to output a space between lexical units.--><b
 ></b
 ><lu
-><b
-></b
 ><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
 part="whole"
 pos="2"
