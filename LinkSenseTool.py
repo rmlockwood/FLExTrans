@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.6 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.5.4 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -156,7 +160,7 @@ FUZZ_THRESHOLD = 74
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -741,10 +745,8 @@ def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, 
         report.ProgressUpdate(int(entry_cnt/scale_factor))
         
         # Don't process affixes, clitics
-        if e.LexemeFormOA and \
-           e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
-           MorphTypeRA.Name.BestAnalysisAlternative).Text in targetMorphNames:
+        if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+           e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in targetMorphNames:
         
             # Loop through senses
             for senseNum, mySense in enumerate(e.SensesOS):
@@ -910,7 +912,10 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                             # If we have processed this sense already, we will just re-add it to the list
                             if mySense not in processed_map:
                                 
-                                if ITsString(entry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
+                                morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                                morphType = Utils.morphTypeMap[morphGuidStr]
+            
+                                if morphType in sourceMorphNames:
                                     
                                     # Get gloss
                                     srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text    

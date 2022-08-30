@@ -5,6 +5,28 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.6 - 8/27/22 - Ron Lockwood
+#   Made isProClitic, etc. global functions.
+#
+#   Version 3.6.5 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#   Added a guid map for morpheme types.
+#
+#   Version 3.6.4 - 8/18/22 - Ron Lockwood
+#    New function getXMLEntryText to get the string part of a left or right element
+#    of the bilingual lexicon entry. Uses tail to get the text after <b/>. Modified the new
+#    convertXMLEntryToColoredString
+#
+#   Version 3.6.3 - 8/18/22 - Ron Lockwood
+#    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
+#    The tooltip display the entry or entries for the word that are found in the
+#    bilingual lexicon. For Utils this meant pulling out some code from process lexical unit()
+#    and making a new function. Then a new function to convert XML to colored string was added.
+#
+#   Version 3.6.2 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
 #   Version 3.6.1 - 8/11/22 - Ron Lockwood
 #    Save transfer rule file in decomposed unicode.
 #
@@ -327,12 +349,126 @@ reHyphen = re.compile(r'-')
 
 NGRAM_SIZE = 5
 
+morphTypeMap = {
+"d7f713e4-e8cf-11d3-9764-00c04f186933": "bound root",
+"d7f713e7-e8cf-11d3-9764-00c04f186933": "bound stem",
+"d7f713df-e8cf-11d3-9764-00c04f186933": "circumfix",
+"c2d140e5-7ca9-41f4-a69a-22fc7049dd2c": "clitic",
+"0cc8c35a-cee9-434d-be58-5d29130fba5b": "discontiguous phrase",
+"d7f713e1-e8cf-11d3-9764-00c04f186933": "enclitic",
+"d7f713da-e8cf-11d3-9764-00c04f186933": "infix",
+"18d9b1c3-b5b6-4c07-b92c-2fe1d2281bd4": "infixing interfix",
+"56db04bf-3d58-44cc-b292-4c8aa68538f4": "particle",
+"a23b6faa-1052-4f4d-984b-4b338bdaf95f": "phrase",
+"d7f713db-e8cf-11d3-9764-00c04f186933": "prefix",
+"af6537b0-7175-4387-ba6a-36547d37fb13": "prefixing interfix",
+"d7f713e2-e8cf-11d3-9764-00c04f186933": "proclitic",
+"d7f713e5-e8cf-11d3-9764-00c04f186933": "root",
+"d7f713e8-e8cf-11d3-9764-00c04f186933": "stem",
+"d7f713dd-e8cf-11d3-9764-00c04f186933": "suffix",
+"3433683d-08a9-4bae-ae53-2a7798f64068": "suffixing interfix"} 
+
 # Invalid category characters & descriptions & messages & replacements
 catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
            [r'\.', 'period', 'removed', '', rePeriod],
            [r'/', 'slash', 'converted to a vertical bar', '|', reForwardSlash]
 #          [r'X', 'x char', 'fatal', '']
           ]
+
+def isClitic(myEntry):
+    
+    return isProclitic(myEntry) or isEnclitic(myEntry)
+
+def isProclitic(entry):
+    
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'proclitic':
+        
+            ret_val = True
+            
+    return ret_val
+    
+def isEnclitic(entry):
+
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'enclitic':
+        
+            ret_val = True
+            
+    return ret_val
+
+def getXMLEntryText(node):
+    
+    # Start with nodeText as the text part of the left node
+    nodeText = node.text
+    
+    # But there is potentially more data. <b />'s which represent blanks might be there
+    # Each b has a tail portion that needs to be concatenated to the nodeText
+    for bElement in node.findall('b'):
+        
+        if bElement.tail:
+            
+            nodeText += ' ' + bElement.tail
+
+    return nodeText
+    
+def convertXMLEntryToColoredString(entryElement, isRtl):
+    
+    fullLemma = getXMLEntryText(entryElement)
+    
+    # Create a <p> html element
+    paragraph_element = ET.Element('p')
+    
+    # Collect all the symbols
+    symbols = []
+    for symbol in entryElement.findall('s'):
+        
+        # the symbol looks like: <s n="pro" />, so get the 'n' attribute
+        if 'n' in symbol.attrib:
+            
+            symbols.append(symbol.attrib['n'])
+
+    colorInnerLU(fullLemma, symbols, paragraph_element, isRtl, show_unk=True)
+    
+    retStr = '<p>'
+    
+    # Instead of using toString, build the string manually, this way we can substitute
+    # in the text portion stuff for better display
+    for spanEl in paragraph_element:
+        
+        retStr += f'<{spanEl.tag} '
+        
+        for key, val in spanEl.attrib.items():
+            
+            retStr += f'{key}="{val}" '
+            
+        retStr += 'style="white-space: nowrap;"'
+        retStr += f'>'
+        
+        # substitute a space with a non-breaking space and a hypen with a non-breaking hyphen
+        textPart = re.sub(' ', '&nbsp;', spanEl.text)
+        textPart = re.sub('-', '&#8209;', textPart)
+        
+        retStr += textPart
+        retStr += f'</{spanEl.tag}>'
+        
+    retStr += '</p>'
+    
+    return retStr
 
 def convertProblemChars(trgtAbbrev):                                                
 
@@ -1533,15 +1669,8 @@ def run_makefile(absPathToBuildFolder, report):
     cmd = [fullPathMake]
     return subprocess.call(cmd)
 
-def stripRulesFile(report, buildFolder):
+def stripRulesFile(report, buildFolder, tranferRulePath):
     
-    configMap = MyReadConfig.readConfig(report)
-    if not configMap:
-        return True
-
-    # Get the path to the transfer rules file
-    tranferRulePath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-
     # Open the existing rule file and read all the lines
     f = open(tranferRulePath ,"r", encoding='utf-8')
     lines = f.readlines()
@@ -1587,6 +1716,39 @@ def decompose(myFile):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
         
+def checkRuleAttributes(report, tranferRulePath):
+    
+    # Verify we have a valid transfer file.
+    try:
+        rulesTree = ET.parse(tranferRulePath)
+    except:
+        report.Error('Invalid File', f'The transfer file: {tranferRulePath} is invalid.')
+        return
+    
+    # Find the attributes element
+    myRoot = rulesTree.getroot()
+    
+    checkRuleAttributesXML(report, myRoot)
+
+def checkRuleAttributesXML(report, myRoot):
+        
+    def_attrs_element = myRoot.find('section-def-attrs')
+    
+    if def_attrs_element:
+        
+        # Loop through each attribute definition
+        for def_attr_el in def_attrs_element:
+            
+            # Loop through each attribute
+            for attr_item_el in def_attr_el:
+            
+                attribStr = attr_item_el.attrib['tags']
+                
+                # Make sure there are no periods in the attribute, if there are give a warning
+                if attribStr and re.search(r'\.', attribStr):
+                    
+                    report.Warning(f'In the Attributes section of your transfer rules, the attribute: {attribStr} has a period in it. It needs to be an underscore. Your rules may not work as expected.')
+                
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     
@@ -1645,15 +1807,8 @@ def process_chunk_lexical_unit(lu_str, parent_element, rtl):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
-# Split a compound from one lexical unit containing multiple words to multiple
-def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
-    # Split off the symbols from the lemma in the lexical unit (which is i+1)
-    symbols = re.split('<|>', lu_str)
-    symbols = [_f for _f in symbols if _f] # filter out the empty strings
-    
-    # Lemma is the first one
-    lemma = symbols.pop(0)
-    
+def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
+
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
     lemma_parts = re.split('(\d+\.\d+)', lemma, re.A) # last item is empty, re.A=ASCII only match
     
@@ -1700,6 +1855,17 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
         # output the symbol
         output_span(parent_element, symbol_color, ' '+symb, rtl)
 
+# Split a compound from one lexical unit containing multiple words to multiple
+def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
+    # Split off the symbols from the lemma in the lexical unit (which is i+1)
+    symbols = re.split('<|>', lu_str)
+    symbols = [_f for _f in symbols if _f] # filter out the empty strings
+    
+    # Lemma is the first one
+    lemma = symbols.pop(0)
+    
+    colorInnerLU(lemma, symbols, parent_element, rtl, show_unk)
+    
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
@@ -2465,12 +2631,6 @@ class TextWord():
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
 
-    def isProlitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic')
-    def isClitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
-    def isEnclitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:
@@ -2737,7 +2897,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             
                             # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
                             # in this case, treat it as a root
-                            if myWord.isClitic(tempEntry) == True and not (myWord.isEnclitic(tempEntry) and myWord.hasEntries() == False):
+                            if isClitic(tempEntry) == True and not (isEnclitic(tempEntry) and myWord.hasEntries() == False):
                                 # Get the clitic gloss.
                                 myWord.addAffix(bundle.SenseRA.Gloss)
                                 

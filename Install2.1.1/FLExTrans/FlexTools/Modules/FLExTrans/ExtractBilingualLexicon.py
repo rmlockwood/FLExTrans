@@ -5,6 +5,15 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.1 - 8/19/22 - Ron Lockwood
+#    Use new new function getXMLEntryText which should be more efficient.
+#
+#   Version 3.6 - 8/11/22 - Ron Lockwood
+#    Fixes #65. Decompose the replacement file before combining with bilingual lexicon.
+#
+#   Version 3.5.4 - 8/8/22 - Ron Lockwood
+#    Fixes #142. Warn when entries start with a space.
+#
 #   Version 3.5.3 - 7/9/22 - Ron Lockwood
 #    Use a new config setting for using cache. Fixes #115.
 #
@@ -198,7 +207,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -308,20 +317,9 @@ def get_repl_entry_key(left, newDocType):
                 key += ET.tostring(myElement, encoding='unicode')
     else:
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l>
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
             
-            keyLeft.remove(symb)
-        
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-     
     return key
 
 # Use the replacement file specified by BilingualDictReplacmentFile in the
@@ -345,21 +343,31 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # Save a copy of the bilingual dictionary
     shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
 
+    # Make a temporary copy of the replacement file so we can decompose it
+    tmpReplFile = replFile+'.tmp'
+    shutil.copy2(replFile, tmpReplFile)
+
+    # Convert the replacement file to decomposed (NFD)
+    Utils.decompose(tmpReplFile)
+    
     # Parse the replacement file as XML
     try:
-        replEtree = ET.parse(replFile)
+        replEtree = ET.parse(tmpReplFile)
     except IOError:
         if report:
             report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
         return True
     
     # Determine the Doctype
-    f = open(replFile, encoding='utf-8')
+    f = open(tmpReplFile, encoding='utf-8')
     
     # Read two lines
     f.readline()
     line = f.readline()
     f.close()
+    
+    # Remove the temp file
+    os.remove(tmpReplFile)
     
     toks = line.split()
 
@@ -453,21 +461,9 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         # Create string with the old contents of the entry. 
         oldEntryStr = ET.tostring(entry, encoding='unicode')
         
-        keyLeft = copy.deepcopy(left)
-
-        # remove any symbol elements so we are left with just <l>abcN.N</l> or possibly something with a space <l>abc</b>xyzN.N</l> (same as above)
-        symbolElements = keyLeft.findall('s')
-        
-        for symb in symbolElements:
-            
-            keyLeft.remove(symb)
-
-        # create the key string
-        key = ET.tostring(keyLeft, encoding='unicode')
-        
-        # remove the <l> and </l>
-        key = key[3:-4]
-    
+        # Get just the text part of the left entry. Note: it's not as easy as left.text
+        key = Utils.getXMLEntryText(left)
+                
         # See if we have a match for replacing the entry
         if key in replMap:
             
@@ -592,6 +588,22 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             feat_abbr_list.append((featGrpName, abbValue))
     return
             
+def processSpaces(headWord, DB, e, error_list):
+    
+    # Check for preceding or ending spaces
+    strippedHeadword = headWord.strip()
+    
+    if strippedHeadword != headWord.strip():
+        
+        # Give a warning if there were spaces, but use the stripped version
+        error_list.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
+                           +ITsString(e.HeadWord).Text, DB.BuildGotoURL(e)+'. The spaces were removed, but please correct this in the lexicon', 1))
+    
+    # Substitute any medial spaces with <b/> (blank space element)    
+    headWord = re.sub(r' ', r'<b/>', strippedHeadword)
+    
+    return headWord
+
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     error_list = []
@@ -632,11 +644,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
     if not (senseEquivField):
-        error_list.append((linkField + " field doesn't exist. Please read the instructions.", 2))
+        error_list.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
     if not (senseSenseNumField):
-        error_list.append((senseNumField + " field doesn't exist. Please read the instructions.", 2))
+        error_list.append((f"Custom field: {senseNumField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
@@ -733,12 +745,14 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
                MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
             
-                # Set the headword value and the homograph #
-                headWord = re.sub(r' ', r'<b/>',ITsString(e.HeadWord).Text)
+                # Get the headword string
+                headWord = ITsString(e.HeadWord).Text
+                
+                # Deal with spaces in the headword
+                headWord = processSpaces(headWord, DB, e, error_list)
                 
                 # If there is not a homograph # at the end, make it 1
-                if not re.search('\d$', headWord, re.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
-                    headWord += '1'
+                headWord = Utils.add_one(headWord)
                 
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
@@ -755,6 +769,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
                                 abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                       Abbreviation.BestAnalysisAlternative).Text
+                                                      
+                                abbrev = Utils.convertProblemChars(abbrev)
                             else:
                                 error_list.append(('Skipping sense because the POS is unknown: '+\
                                                ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
@@ -806,39 +822,44 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     
                                         # Get the POS abbreviation for the target sense, assuming we have a stem
                                         targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
+                                        
                                         if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                                             
                                             if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                                                trgtFound = True
-                                                # Get target pos abbreviation
-                                                trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
-                                                                      Abbreviation.BestAnalysisAlternative).Text
                                                 
-                                                # Convert spaces to underscores and remove periods and convert slash to bar
-                                                trgtAbbrev = re.sub(r'\s', '_', trgtAbbrev)
-                                                trgtAbbrev = re.sub(r'\.', '', trgtAbbrev)
-                                                trgtAbbrev = re.sub(r'/', '|', trgtAbbrev)
+                                                trgtFound = True
+                                                
+                                                # Get target pos abbreviation
+                                                trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                                
+                                                # Deal with problem characters like spaces, periods, and slashes
+                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev)
                                                 
                                                 # Get target inflection class
                                                 trgtInflCls =''
                                                 if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                                    
                                                     trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
                                                                           Abbreviation.BestAnalysisAlternative).Text+s4a         
                                                 
                                                 # Get target features                                                     
                                                 featStr = ''
                                                 if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                                                    
                                                     feat_abbr_list = []
+                                                    
                                                     # The features might be complex, make a recursive function call to find all leaf features
                                                     get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
                                                     
                                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                                     for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                        
                                                         featStr += s2 + Utils.underscores(abb) + s4a
                                                 
                                                 # output the bilingual dictionary line (the sX is xml stuff)
                                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
                                                           str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
+                                                          
                                                 f_out.write(out_str)
                                                 records_dumped_cnt += 1
                                         
@@ -879,12 +900,15 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                         # the target category name is different even though essentially the categories are equivalent.
                         out_str = ''
                         for tup in catSubList:
+                            
                             if tup[0] == abbrev:
+                                
                                 temp_str = headWord + '.'+str(i+1)
                                 out_str = s1+temp_str+s2+tup[0]+s3+temp_str+s2+tup[1]+s4+'\n'
                                 break
                             
                         if out_str == '':
+                            
                             out_str = headWord+'.'+str(i+1)+s2+abbrev        
                             out_str = s1i+out_str+s4i+'\n'
                             
@@ -893,13 +917,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                         
             else:
                 if e.LexemeFormOA == None:
+                    
                     error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                    
                 elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                    
                     # We've documented that affixes are skipped. Don't report this
                     #report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName)
                     pass
+                
                 elif e.LexemeFormOA.MorphTypeRA == None:
+                    
                     error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
+                
                 elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
                     # Don't report this. We've documented it.
                     #report.Warning('Skipping entry because the morph type is: '+\

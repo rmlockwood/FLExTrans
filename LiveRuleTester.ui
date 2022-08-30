@@ -756,6 +756,19 @@
      <string>Edit Replacement &amp;File</string>
     </property>
    </widget>
+   <widget class="QLabel" name="selectWordsHintLabel">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>303</y>
+      <width>501</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hover over a word to see its bilingual dictionary entry.</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -3,6 +3,14 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.1 - 8/27/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#   Also don't load types that aren't in the broad category of 'stem'.
+#
+#   Version 3.6 - 8/24/22 - Ron Lockwood
+#    Added 'sense-level' to the tool tip for the custom fields
+#
 #   Version 3.5.9 - 8/10/22 - Ron Lockwood
 #    Added new setting for composed characters.
 #
@@ -221,10 +229,17 @@ def loadTargetComplexFormTypes(widget, wind, settingName):
 def loadSourceMorphemeTypes(widget, wind, settingName):
 
     typesList = []
+    
     for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
 
-        # Strip is because morpheme types come with symbols
-        typesList.append(str(item).strip("-=~*"))
+        # Only load things that can be stems
+        if item.IsStemType == True:
+            
+            # convert this item's id to a string
+            myGuid = item.Guid.ToString()
+            morphTypeStr = Utils.morphTypeMap[myGuid]
+            
+            typesList.append(morphTypeStr)
     
     widget.addItems(typesList)
     
@@ -241,10 +256,17 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
+    
     for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
 
-        # Strip is because morpheme types come with symbols
-        typesList.append(str(item).strip("-=~*"))
+        # Only load things that can be stems
+        if item.IsStemType == True:
+            
+            # convert this item's id to a string
+            myGuid = item.Guid.ToString()
+            morphTypeStr = Utils.morphTypeMap[myGuid]
+            
+            typesList.append(morphTypeStr)
     
     widget.addItems(typesList)
     
@@ -797,10 +819,10 @@ widgetList = [
     "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
    
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    "The name of the custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
+    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
    
    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
-    "The name of the custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
+    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
 
    ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\

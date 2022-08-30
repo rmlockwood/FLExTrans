@@ -5,6 +5,24 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.5 - 8/27/22 - Ron Lockwood
+#    If the tooltip word is Title case and not found in the bilingual map, try
+#    lowercasing the first letter to find it.
+#
+#   Version 3.6.4 - 8/19/22 - Ron Lockwood
+#    Fixed bugs in last feature added. Now entries with spaces work as well as
+#    entries that have sfm markers or other stuff before the lexical unit.
+#    Use the new function getXMLEntryText.
+#
+#   Version 3.6.3 - 8/18/22 - Ron Lockwood
+#    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
+#    The tooltip display the entry or entries for the word that are found in the
+#    bilingual lexicon. To do this the bilingual lexicon has to be converted to a map
+#    on initialization and whenever the bilingual lexicon is rebuilt.
+#
+#   Version 3.6.2 - 8/11/22 - Ron Lockwood
+#    Fixes #198. Warn the user for periods in attribute definitions.
+#
 #   Version 3.6.1 - 8/11/22 - Ron Lockwood
 #    Save transfer rule file in decomposed unicode.
 #
@@ -233,7 +251,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -249,7 +267,16 @@ transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed. 
 You can run the testbed to check that you are getting the results you expect.
 """ }
-                 
+
+MAX_CHECKBOXES = 80
+
+def firstLower(myStr):
+    
+    if myStr:
+        return myStr[0].lower() + myStr[1:]
+    else:
+        return myStr
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
     
@@ -342,6 +369,7 @@ class Main(QMainWindow):
         self.__convertIt = True
         self.__extractIt = True
         self.__doCatalog = True
+        self.__bilingMap = {}
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
@@ -412,7 +440,7 @@ class Main(QMainWindow):
         
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
-        for i in range(0,50):
+        for i in range(0, MAX_CHECKBOXES):
             myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
@@ -480,11 +508,11 @@ class Main(QMainWindow):
             # this doesn't seem to be working
             self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
             
+        # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
+        self.ReadBilingualLexicon()
+        
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
-        
-        # Simulate a click on the sentence list box
-        self.listSentComboClicked()
         
         # Copy bilingual file to the tester folder
         try:
@@ -519,10 +547,56 @@ class Main(QMainWindow):
         if os.path.exists(self.__testbedPath) == False:
             self.ui.editTestbedButton.setEnabled(False)
 
-        self.ret_val = True
-
         # Start out with all rules checked. 
         self.checkThemAll()
+        
+        self.ret_val = True
+
+    # Read the bilingual lexicon and make a map from source entries to one or more target entries
+    def ReadBilingualLexicon(self):
+        
+        # Clear the map
+        self.__bilingMap.clear()
+        
+        # Read the XML file
+        try:
+            bilingEtree = ET.parse(self.__biling_file)
+            
+        except IOError:
+            
+            QMessageBox.warning(self, 'Read Error', f'Bilingual file: {self.__biling_file} could not be read.')
+            return        
+        
+        # Get the root node
+        bilingRoot = bilingEtree.getroot()
+            
+        # Get the section element
+        biling_section = bilingRoot.find('section')
+        
+        # Loop through all the bilingual entries
+        for entry in biling_section:
+            
+            ## <e> (entry) should either have <p><l>abc</l><r>xyz</r></p>) or <i> (p = pair, l = left, r = right)
+            
+            # Get the left part 
+            left = entry.find('p/l')
+        
+            # If we can't find it, it must be an <i> (identity), skip it
+            if left == None:
+                continue
+            
+            # Get the right part
+            right = entry.find('p/r')
+            
+            # Get just the text part of the left entry. Note: it's not as easy as left.text
+            key = Utils.getXMLEntryText(left)
+            
+            # See if we have the source entry already
+            if key not in self.__bilingMap:
+                
+                self.__bilingMap[key] = [(left, right)]
+            else:
+                self.__bilingMap[key].append((left, right))
         
     def ViewBilingualLexiconButtonClicked(self):
         
@@ -634,6 +708,9 @@ class Main(QMainWindow):
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
             return 
+        
+        # Reload the bilingual map for showing tooltips
+        self.ReadBilingualLexicon()
         
         self.__ClearStuff()
         
@@ -1134,33 +1211,46 @@ class Main(QMainWindow):
             ret = self.ui.ManualEdit.toPlainText()
         return ret
     def __ClearAllChecks(self):
+        
         for check in self.__checkBoxList:
             check.setVisible(False)
             check.setChecked(False)
+            
     # set global variables to the appropriate list variables
     # change interface as needed.
     def __MakeVisible(self, isVisible):
+        
         # hide or unhide the sentence drop-down box, list box, check box area
         self.ui.SentCombo.setVisible(isVisible)
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
+        
     def __CopyStuff(self):
+        
         # copy text from results to the source boxes
         self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
         self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
         self.__ClearStuff()
+        
     def __ClearStuff(self):
+        
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
         self.ui.SynthTextEdit.setPlainText('')
+        
     def sourceTabClicked(self):
-#         if self.ui.tabSource.currentIndex() == 0: # check boxes
-#             self.SourceCheckBoxClicked()
-#         elif self.ui.tabSource.currentIndex() == 0: # sentences
-#             self.listSentClicked()
-        pass            
+        
+        if self.ui.tabSource.currentIndex() == 0: # check boxes
+            
+            self.ui.selectWordsHintLabel.setVisible(True)
+            
+        else: # sentences or manual
+            
+            self.ui.selectWordsHintLabel.setVisible(False)
+            
     def rulesTabClicked(self):
+        
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 self.__ruleModel = self.__transferModel
@@ -1220,6 +1310,7 @@ class Main(QMainWindow):
             self.__prevTab = self.ui.tabRules.currentIndex()
 
     def listSentComboClicked(self):
+        
         mySent = self.__sent_model.getCurrentSent()
         space_val = 10
         y_spacing = 30
@@ -1233,7 +1324,12 @@ class Main(QMainWindow):
         
         i=0
         # Position a check box for each "word" in the sentence
-        for i,wrdTup in enumerate(mySent):
+        for i, wrdTup in enumerate(mySent):
+            
+            # Bail out if we have more words than available check boxes
+            if i >= len(self.__checkBoxList):
+                break
+            
             # Get the ith checkbox
             myCheck = self.__checkBoxList[i]
                         
@@ -1245,26 +1341,97 @@ class Main(QMainWindow):
             myCheck.setText(wrdTup[0])
             
             # get the width of the box and text (maybe have to add icon size)
-            width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5 #\
-                    #myCheck.getIconSize().width()
+            width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5 
             
             # set the position, if it's too wide to fit make a new row
             if width + x > self.ui.scrollArea.width():
+                
                 y += y_spacing
                 x = x_margin
             
             if self.__sent_model.getRTL():
+                
                 xval = self.ui.scrollArea.width() - x - width
                 myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
+                
             else:
                 xval = x
+                
             myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
             x += width + space_val
             
+            # If this word has a target(s) in the bilingual lexicon, show as a tooltip
+            srcTrgPairsList = self.getTargetsInBilingMap(wrdTup)
+            
+            if srcTrgPairsList:
+                
+                tipText = self.formatTextForToolTip(srcTrgPairsList)
+            else:
+                tipText = '---'
+            
+            self.__checkBoxList[i].setToolTip(tipText)
+            
         # Make the rest of the unused check boxes invisible
         for j in range(i+1,len(self.__checkBoxList)):
+            
             self.__checkBoxList[j].setVisible(False)
-             
+
+    def getTargetsInBilingMap(self, wrdTup):
+        
+        dataStreamStr = wrdTup[1].strip() # of the form (\\v 1) ^word1.2<v><3sg>$
+        
+        # Find the lexical unit. There should only be one, but there might be non-lexical unit stuff like format markers
+        aper_toks = re.split('\^|\$', dataStreamStr) 
+
+        # one of the tokens will have the lexical unit
+        for aper_tok in aper_toks:
+            
+            # A valid lexical unit will have <x> in it
+            if re.search('<.+>', aper_tok):
+                
+                # Split off the lemma part, it's the first token
+                toks = re.split('<', aper_tok)
+                lemma = toks[0]
+            
+                if lemma in self.__bilingMap:
+                    
+                    return self.__bilingMap[lemma]
+                
+                # try lowercasing the first letter if we don't find it at first
+                else:
+                    lowerLemma = firstLower(lemma)
+                    
+                    if lowerLemma in self.__bilingMap:
+                    
+                        return self.__bilingMap[lowerLemma]
+                
+                # If we found <>, stop looking
+                break
+            
+        return None
+                
+    def formatTextForToolTip(self, srcTrgtPairsList):
+        
+        tipStr = ''
+        isRtl = self.__sent_model.getRTL()
+        
+        # Between the source and target we want an arrow, choose left or right arrows depending on the text direction
+        if isRtl:
+            
+            arrowStr = '\u2B60'
+        else:
+            arrowStr = '\u2B62'
+            
+        # Go through all pairs and add them to the tool tip
+        for source, target in srcTrgtPairsList:
+            
+            # Combine source and target into one paragraph html string
+            tipStr += Utils.convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
+            tipStr += f'&nbsp;{arrowStr}&nbsp;' # right arrow
+            tipStr += Utils.convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
+            
+        return tipStr.strip()
+    
     def closeEvent(self, event):
         
         rulesTab = self.ui.tabRules.currentIndex()
@@ -1472,7 +1639,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-                rule_file = self.__transferRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
                 source_file = os.path.join(self.testerFolder, 'target_text1.aper')
@@ -1482,7 +1649,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
-                rule_file = self.__interChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
                 source_file = os.path.join(self.testerFolder, 'target_text2.aper')
@@ -1492,7 +1659,7 @@ class Main(QMainWindow):
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
-                rule_file = self.__postChunkRuleFileXMLtree.getroot()
+                ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
             source_file = os.path.join(self.testerFolder, 'source_text.aper')
@@ -1502,8 +1669,11 @@ class Main(QMainWindow):
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
-            rule_file = self.__transferRuleFileXMLtree.getroot()
+            ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
             
+        # Check for attribute definition issues
+        Utils.checkRuleAttributesXML(self.__report, ruleFileRoot)
+        
         # Save the source text to the tester folder
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
@@ -1531,7 +1701,7 @@ class Main(QMainWindow):
         # Recreate the section-rules element
         new_sr_element = ET.SubElement(myRoot, 'section-rules')
         
-        rules_element = rule_file.find('section-rules')
+        rules_element = ruleFileRoot.find('section-rules')
 
         # Loop through all the selected rules
         for i, rule_el in enumerate(rules_element):
