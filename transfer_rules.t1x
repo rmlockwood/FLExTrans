@@ -43,15 +43,6 @@ tags="samp.*.pst.*"
 ></section-def-cats
 ><section-def-attrs
 ><def-attr
-n="a_num"
-><attr-item
-tags="sg"
-></attr-item
-><attr-item
-tags="pl"
-></attr-item
-></def-attr
-><def-attr
 n="a_gram_cat"
 ><!--If you would like this list to be automatically populated (one time), run the FLExTrans module: Set Up Transfer Rule Grammatical Categories--><attr-item
 tags="adj"
@@ -67,6 +58,15 @@ tags="prep"
 ></attr-item
 ><attr-item
 tags="v"
+></attr-item
+></def-attr
+><def-attr
+n="a_num"
+><attr-item
+tags="SG"
+></attr-item
+><attr-item
+tags="PL"
 ></attr-item
 ></def-attr
 ><def-attr

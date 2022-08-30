@@ -54,13 +54,19 @@ tags="pl"
 ><def-attr
 n="a_gram_cat"
 ><!--If you would like this list to be automatically populated (one time), run the FLExTrans module: Set Up Transfer Rule Grammatical Categories--><attr-item
+tags="adj"
+></attr-item
+><attr-item
+tags="adv"
+></attr-item
+><attr-item
 tags="n"
 ></attr-item
 ><attr-item
-tags="v"
+tags="prep"
 ></attr-item
 ><attr-item
-tags="prep"
+tags="v"
 ></attr-item
 ></def-attr
 ><def-attr
@@ -420,8 +426,6 @@ side="tl"
 ><!--You normally will want to output a space between lexical units.--><b
 ></b
 ><lu
-><b
-></b
 ><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
 part="whole"
 pos="2"
