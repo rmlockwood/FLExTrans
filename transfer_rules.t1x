@@ -43,6 +43,18 @@ tags="samp.*.pst.*"
 ></section-def-cats
 ><section-def-attrs
 ><def-attr
+n="a_gender"
+><attr-item
+tags="m"
+></attr-item
+><attr-item
+tags="f"
+></attr-item
+><attr-item
+tags="neut"
+></attr-item
+></def-attr
+><def-attr
 n="a_gram_cat"
 ><!--If you would like this list to be automatically populated (one time), run the FLExTrans module: Set Up Transfer Rule Grammatical Categories--><attr-item
 tags="adj"
