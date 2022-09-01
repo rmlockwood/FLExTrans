@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.3 - 9/1/22 - Ron Lockwood
+#   Fixes #254. Convert * to _ in stems.
+#
 #   Version 3.6.2 - 8/26/22 - Ron Lockwood
 #   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
@@ -211,7 +214,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.6.2",
+        FTM_Version    : "3.6.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -756,6 +759,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
                 
+                # Convert problem chars in the headWord
+                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+                
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
                     
@@ -772,7 +778,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                       Abbreviation.BestAnalysisAlternative).Text
                                                       
-                                abbrev = Utils.convertProblemChars(abbrev)
+                                abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
                                 error_list.append(('Skipping sense because the POS is unknown: '+\
                                                ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
@@ -835,7 +841,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                 trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                                 
                                                 # Deal with problem characters like spaces, periods, and slashes
-                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev)
+                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
                                                 
                                                 # Get target inflection class
                                                 trgtInflCls =''
