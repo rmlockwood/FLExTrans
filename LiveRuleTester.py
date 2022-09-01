@@ -244,7 +244,7 @@ class Ui_MainWindow(object):
         self.editReplacementButton.setGeometry(QtCore.QRect(1090, 43, 161, 31))
         self.editReplacementButton.setObjectName("editReplacementButton")
         self.selectWordsHintLabel = QtWidgets.QLabel(self.centralwidget)
-        self.selectWordsHintLabel.setGeometry(QtCore.QRect(320, 303, 501, 23))
+        self.selectWordsHintLabel.setGeometry(QtCore.QRect(320, 278, 501, 23))
         self.selectWordsHintLabel.setObjectName("selectWordsHintLabel")
         MainWindow.setCentralWidget(self.centralwidget)
 
