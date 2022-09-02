@@ -1732,7 +1732,7 @@ class Main(QMainWindow):
         # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
         subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER))
         
-        # Substitute symbols with problem characters with fixed ones
+        # Substitute symbols with problem characters with fixed ones in the transfer file
         Utils.subProbSymbols('.', tr_file, subPairs)
         
         # Run the makefile to run Apertium tools to do the transfer

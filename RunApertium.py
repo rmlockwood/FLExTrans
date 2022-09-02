@@ -138,7 +138,7 @@ def MainFunction(DB, report, modify=True):
     # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
     subPairs = Utils.fixProblemChars(dictionaryPath)
     
-    # Substitute symbols with problem characters with fixed ones
+    # Substitute symbols with problem characters with fixed ones in the transfer file
     Utils.subProbSymbols(buildFolder, STRIPPED_RULES, subPairs)
     
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
