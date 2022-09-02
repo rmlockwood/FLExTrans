@@ -354,8 +354,8 @@ reForwardSlash = re.compile(r'/')
 reHyphen = re.compile(r'-') 
 reAsterisk = re.compile(r'\*') 
 # the key is to find non-left or right angle brackets for the alphanumeric parts of the symbol
-reSlashInSymbol = re.compile(r'(n="[^<>]+?)/([^<>]+?")')
-reDoubleBarInSymbol = re.compile(r'(<[^<>]+?)\|\|([^<>]+?>)')
+reSlashInSymbol = re.compile(r'(="[^<>=]+?)(/)([^<>=]+?")')
+reSLASHInSymbol = re.compile(r'(<[^<>]+?)SLASH([^<>]+?>)')
 reDoubleNewline = re.compile(r'\n\n')
 
 NGRAM_SIZE = 5
@@ -389,10 +389,10 @@ catProbData = [['space', 'converted to an underscore', '_', reSpace],
 lemmaProbData = [['asterisk', 'converted to an underscore', '_', reAsterisk]
             ]
                         
-bilingFixSymbProbData = [['slash', 'converted to double bar', r'\1||\2', reSlashInSymbol]
+bilingFixSymbProbData = [['slash', 'converted to SLASH', r'\1SLASH\3', reSlashInSymbol]
                         ]
 
-bilingUnFixSymbProbData = [['double bar', 'converted to slash', r'\1/\2', reDoubleBarInSymbol],
+bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSymbol],
                            ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
                           ]
 
@@ -418,13 +418,20 @@ def getListOfSymbolSubPairs(convertStr, problemDataList):
 
         foundList = probDataRow[3].findall(convertStr)
     
-        # remove n=" at beg. and " at the end
-        trimmedList = [entry[3:-1] for entry in foundList]
+        # remove duplicates
+        foundList = list(set(foundList))
         
-        for myItem in trimmedList:
+        # Assume we are getting a tuple because of the capture elements
+        if len(foundList) > 0 and isinstance(foundList[0], tuple) == False:
+            return []  
+        
+        for myItem in foundList:
             
-            replStr = probDataRow[3].sub(probDataRow[2], myItem)
-            masterList.append((myItem, replStr))
+            # join the tuple into a string
+            trimmedItem = ''.join(myItem)
+            
+            replStr = probDataRow[3].sub(probDataRow[2], trimmedItem)
+            masterList.append((trimmedItem, replStr))
     
     # return a list with duplicates removed
     return masterList

@@ -76,23 +76,6 @@ docs = {FTM_Name       : "Run Apertium",
 
 STRIPPED_RULES = 'tr.t1x'
 
-def subProbSymbols(buildFolder, subPairs):
-
-    f = open(os.path.join(buildFolder, STRIPPED_RULES), encoding='utf-8')
-    
-    contentsStr = f.read()
-    f.close()
-    
-    # go through all problem symbols
-    for pair in subPairs:
-        
-        # substitute all occurrences
-        contentsStr = re.sub(pair[0], pair[1], contentsStr)
-
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
-    f.write(contentsStr)
-    f.close()
-    
 def stripRulesFile(buildFolder, tranferRulePath):
     
     # Open the existing rule file and read all the lines
@@ -118,6 +101,23 @@ def stripRulesFile(buildFolder, tranferRulePath):
         
         # Always write transfer rule data as decomposed
         f.write(unicodedata.normalize('NFD', line))
+    f.close()
+    
+def subProbSymbols(buildFolder, subPairs):
+
+    f = open(os.path.join(buildFolder, STRIPPED_RULES), encoding='utf-8')
+    
+    contentsStr = f.read()
+    f.close()
+    
+    # go through all problem symbols
+    for pair in subPairs:
+        
+        # substitute all occurrences
+        contentsStr = re.sub(pair[0], pair[1], contentsStr)
+
+    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
+    f.write(contentsStr)
     f.close()
     
 #----------------------------------------------------------------
