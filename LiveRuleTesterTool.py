@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.6 - 9/2/22 - Ron Lockwood
+#    Fixes #255. Convert slashes in symbols before running Apertium
+#
 #   Version 3.6.5 - 8/27/22 - Ron Lockwood
 #    If the tooltip word is Title case and not found in the bilingual map, try
 #    lowercasing the first letter to find it.
@@ -251,7 +254,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.5",
+        FTM_Version    : "3.6.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -269,6 +272,7 @@ You can run the testbed to check that you are getting the results you expect.
 """ }
 
 MAX_CHECKBOXES = 80
+BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
 
 def firstLower(myStr):
     
@@ -517,7 +521,7 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
+            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
@@ -1687,9 +1691,6 @@ class Main(QMainWindow):
         sf.write(myStr)
         sf.close()
         
-        # Save the transfer rules file with the selected rules present
-        #rf = open(tr_file, 'w', encoding='utf-8')
-        
         # Copy the xml structure to a new object
         myRoot = myTree.getroot()
         
@@ -1728,6 +1729,12 @@ class Main(QMainWindow):
         # Clear the results box
         self.ui.TargetTextEdit.setText('') 
 
+        # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
+        subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER))
+        
+        # Substitute symbols with problem characters with fixed ones
+        Utils.subProbSymbols('.', tr_file, subPairs)
+        
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
@@ -1738,6 +1745,9 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
         
+        # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
+        Utils.unfixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER), tgt_file)
+
         # Load the target text contents into the results edit box
         tgtf = open(tgt_file, encoding='utf-8')
         target_output = tgtf.read()
