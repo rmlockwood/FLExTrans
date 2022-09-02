@@ -103,23 +103,6 @@ def stripRulesFile(buildFolder, tranferRulePath):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
     
-def subProbSymbols(buildFolder, subPairs):
-
-    f = open(os.path.join(buildFolder, STRIPPED_RULES), encoding='utf-8')
-    
-    contentsStr = f.read()
-    f.close()
-    
-    # go through all problem symbols
-    for pair in subPairs:
-        
-        # substitute all occurrences
-        contentsStr = re.sub(pair[0], pair[1], contentsStr)
-
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
-    f.write(contentsStr)
-    f.close()
-    
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -156,7 +139,7 @@ def MainFunction(DB, report, modify=True):
     subPairs = Utils.fixProblemChars(dictionaryPath)
     
     # Substitute symbols with problem characters with fixed ones
-    subProbSymbols(buildFolder, subPairs)
+    Utils.subProbSymbols(buildFolder, STRIPPED_RULES, subPairs)
     
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
     ret = Utils.run_makefile(buildFolder, report)

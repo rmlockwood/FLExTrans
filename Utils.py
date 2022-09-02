@@ -1761,6 +1761,23 @@ def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
     # Delete the temporary dictionary file
     os.remove(fullDictionaryPath+'.before_fix')
     
+def subProbSymbols(buildFolder, ruleFile, subPairs):
+
+    f = open(os.path.join(buildFolder, ruleFile), encoding='utf-8')
+    
+    contentsStr = f.read()
+    f.close()
+    
+    # go through all problem symbols
+    for pair in subPairs:
+        
+        # substitute all occurrences
+        contentsStr = re.sub(pair[0], pair[1], contentsStr)
+
+    f = open(os.path.join(buildFolder, ruleFile) ,"w", encoding='utf-8')
+    f.write(contentsStr)
+    f.close()
+    
 def decompose(myFile):
     
     try:
