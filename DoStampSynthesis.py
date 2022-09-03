@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.8 - 9/3/22 - Ron Lockwood
+#   Fixes #250. Don't create empty STAMP control files if they already exist.
+#   This allows someone to use modifications to these files for whatever purpose.
+#   JH requested this.
+#
 #   Version 3.6.7 - 9/1/22 - Ron Lockwood
 #   Fixes #254. Convert * to _ in stems.
 #
@@ -183,7 +188,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.7",
+        FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
         FTM_Help       :"",
@@ -537,8 +542,9 @@ def create_synthesis_files(partPath):
 
     # Create the blank files we need
     for b in blankFileNameList:
-        f = open(b,'w', encoding="utf-8")
-        f.close()
+        if not os.path.isfile(b):
+            f = open(b,'w', encoding="utf-8")
+            f.close()
     
     return cmdFileName
 
