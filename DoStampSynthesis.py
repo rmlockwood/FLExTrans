@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.7 - 9/1/22 - Ron Lockwood
+#   Fixes #254. Convert * to _ in stems.
+#
 #   Version 3.6.6 - 8/20/22 - Ron Lockwood
 #    Fixes #256. Handle various null morpheme renderings.
 #
@@ -180,7 +183,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.6",
+        FTM_Version    : "3.6.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
         FTM_Help       :"",
@@ -741,7 +744,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     # Write out morphname field
                     f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
                     
-                    abbrev = Utils.convertProblemChars(abbrev)
+                    abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                     
                     f_rt.write('\\c '+abbrev+'\n')
                     
