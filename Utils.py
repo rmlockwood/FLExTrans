@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.8 - 9/2/22 - Ron Lockwood
+#    Fixes #255. Convert slashes in symbols before running Apertium
+#
 #   Version 3.6.7 - 9/1/22 - Ron Lockwood
 #   Fixes #254. Convert * to _ in stems.
 #   Also reworked the convert problem chars function and calling functions.
@@ -239,11 +242,10 @@
 #   Shared functions
 
 import re
-import copy
 import tempfile
 import os
+import shutil
 import xml.etree.ElementTree as ET
-import platform
 import subprocess
 import uuid
 import unicodedata
@@ -351,6 +353,10 @@ rePeriod = re.compile(r'\.')
 reForwardSlash = re.compile(r'/') 
 reHyphen = re.compile(r'-') 
 reAsterisk = re.compile(r'\*') 
+# the key is to find non-left or right angle brackets for the alphanumeric parts of the symbol
+reSlashInSymbol = re.compile(r'(="[^<>=]+?)(/)([^<>=]+?")')
+reSLASHInSymbol = re.compile(r'(<[^<>]+?)SLASH([^<>]+?>)')
+reDoubleNewline = re.compile(r'\n\n')
 
 NGRAM_SIZE = 5
 
@@ -382,7 +388,54 @@ catProbData = [['space', 'converted to an underscore', '_', reSpace],
 
 lemmaProbData = [['asterisk', 'converted to an underscore', '_', reAsterisk]
             ]
+                        
+bilingFixSymbProbData = [['slash', 'converted to SLASH', r'\1SLASH\3', reSlashInSymbol]
+                        ]
 
+bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSymbol],
+                           ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
+                          ]
+
+def convertProblemChars(convertStr, problemDataList, doMultiLine=False):                                                
+
+    # Convert spaces to underscores and remove periods and convert slash to bar, etc.
+    for probDataRow in problemDataList:
+        
+        if doMultiLine:
+            # 3 = the compiled RE, 2 = the string to replace with
+            convertStr = probDataRow[3].sub(probDataRow[2], convertStr, re.RegexFlag.MULTILINE)
+        else:
+            # 3 = the compiled RE, 2 = the string to replace with
+            convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
+        
+    return convertStr
+
+def getListOfSymbolSubPairs(convertStr, problemDataList):
+
+    masterList = []
+    
+    for probDataRow in problemDataList:
+
+        foundList = probDataRow[3].findall(convertStr)
+    
+        # remove duplicates
+        foundList = list(set(foundList))
+        
+        # Assume we are getting a tuple because of the capture elements
+        if len(foundList) > 0 and isinstance(foundList[0], tuple) == False:
+            return []  
+        
+        for myItem in foundList:
+            
+            # join the tuple into a string
+            trimmedItem = ''.join(myItem)
+            
+            replStr = probDataRow[3].sub(probDataRow[2], trimmedItem)
+            masterList.append((trimmedItem, replStr))
+    
+    # return a list with duplicates removed
+    return masterList
+    
 def isClitic(myEntry):
     
     return isProclitic(myEntry) or isEnclitic(myEntry)
@@ -477,16 +530,6 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
     retStr += '</p>'
     
     return retStr
-
-def convertProblemChars(convertStr, problemDataList):                                                
-
-    # Convert spaces to underscores and remove periods and convert slash to bar, etc.
-    for probDataRow in problemDataList:
-        
-        # 3 = the compiled RE, 2 = the string to replace with
-        convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
-    
-    return convertStr
 
 # Search for a text name in the list of texts in FLEx
 def findTextName(TargetDB, myTextName, textNameList):
@@ -1675,34 +1718,64 @@ def run_makefile(absPathToBuildFolder, report):
     f.write(outStr)
     f.close()
     
-    cmd = [fullPathMake]
-    return subprocess.call(cmd)
-
-def stripRulesFile(report, buildFolder, tranferRulePath):
+    retVal = subprocess.call([fullPathMake])
     
-    # Open the existing rule file and read all the lines
-    f = open(tranferRulePath ,"r", encoding='utf-8')
-    lines = f.readlines()
+    return retVal
+
+def fixProblemChars(fullDictionaryPath):
+    
+    # Save a copy of the bilingual dictionary
+    shutil.copy2(fullDictionaryPath, fullDictionaryPath+'.before_fix')
+    
+    f = open(fullDictionaryPath, encoding='utf-8')
+    contentsStr = f.read()
     f.close()
     
-    # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
+    subPairs = getListOfSymbolSubPairs(contentsStr, bilingFixSymbProbData)
     
-    # Go through the existing rule file and write everything to the new file except Doctype stuff.
-    for line in lines:
+    # Replace / with || 
+    contentsStr = convertProblemChars(contentsStr, bilingFixSymbProbData, doMultiLine=True)
+
+    f = open(fullDictionaryPath, 'w', encoding='utf-8')
+    f.write(contentsStr)
+    f.close()
+    
+    return subPairs
+
+def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
+
+    f = open(fullTransferResultsPath, encoding='utf-8')
+    contentsStr = f.read()
+    f.close()
+    
+    # Replace || with /
+    contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData, doMultiLine=True)
+
+    f = open(fullTransferResultsPath, 'w', encoding='utf-8')
+    f.write(contentsStr)
+    f.close()
+
+    # Save a copy of the bilingual dictionary
+    shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
+
+    # Delete the temporary dictionary file
+    os.remove(fullDictionaryPath+'.before_fix')
+    
+def subProbSymbols(buildFolder, ruleFile, subPairs):
+
+    f = open(os.path.join(buildFolder, ruleFile), encoding='utf-8')
+    
+    contentsStr = f.read()
+    f.close()
+    
+    # go through all problem symbols
+    for pair in subPairs:
         
-        strippedLine = line.strip()
-        
-        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
-               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
-               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
-               strippedLine == '"transfer.dtd">' or \
-               strippedLine == '"interchunk.dtd">' or \
-               strippedLine == '"postchunk.dtd">':
-            continue
-        
-        # Always write transfer rule data as decomposed
-        f.write(unicodedata.normalize('NFD', line))
+        # substitute all occurrences
+        contentsStr = re.sub(pair[0], pair[1], contentsStr)
+
+    f = open(os.path.join(buildFolder, ruleFile) ,"w", encoding='utf-8')
+    f.write(contentsStr)
     f.close()
     
 def decompose(myFile):
