@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.7 - 9/2/22 - Ron Lockwood
+#    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
+#
 #   Version 3.6.6 - 9/2/22 - Ron Lockwood
 #    Fixes #255. Convert slashes in symbols before running Apertium
 #
@@ -254,7 +257,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.6",
+        FTM_Version    : "3.6.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -416,7 +419,7 @@ class Main(QMainWindow):
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
-        self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
+        self.ui.refreshTargetLexiconButton.clicked.connect(self.RefreshTargetLexiconButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
@@ -716,6 +719,9 @@ class Main(QMainWindow):
         # Reload the bilingual map for showing tooltips
         self.ReadBilingualLexicon()
         
+        # Force reload of the tooltips
+        self.listSentComboClicked()
+        
         self.__ClearStuff()
         
         self.unsetCursor()
@@ -908,7 +914,7 @@ class Main(QMainWindow):
                 return True
         return False
 
-    def RefreshLexButtonClicked(self):
+    def RefreshTargetLexiconButtonClicked(self):
         self.ui.SynthTextEdit.setPlainText('')
         self.__extractIt = True
         self.__doCatalog = True
