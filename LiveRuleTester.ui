@@ -617,7 +617,7 @@
      <string>&amp;Synthesize</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="refreshLexButton">
+   <widget class="QPushButton" name="refreshTargetLexiconButton">
     <property name="geometry">
      <rect>
       <x>630</x>
