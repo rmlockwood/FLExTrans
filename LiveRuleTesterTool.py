@@ -419,7 +419,7 @@ class Main(QMainWindow):
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
-        self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
+        self.ui.refreshTargetLexiconButton.clicked.connect(self.RefreshTargetLexiconButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
@@ -914,7 +914,7 @@ class Main(QMainWindow):
                 return True
         return False
 
-    def RefreshLexButtonClicked(self):
+    def RefreshTargetLexiconButtonClicked(self):
         self.ui.SynthTextEdit.setPlainText('')
         self.__extractIt = True
         self.__doCatalog = True
