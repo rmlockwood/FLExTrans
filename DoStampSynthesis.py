@@ -5,8 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.6.6 - 9/1/22 - Ron Lockwood
+#   Version 3.6.7 - 9/1/22 - Ron Lockwood
 #   Fixes #254. Convert * to _ in stems.
+#
+#   Version 3.6.6 - 8/20/22 - Ron Lockwood
+#    Fixes #256. Handle various null morpheme renderings.
 #
 #   Version 3.6.5 - 8/20/22 - Ron Lockwood
 #    Renamed this module.
@@ -180,7 +183,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.6",
+        FTM_Version    : "3.6.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
         FTM_Help       :"",
@@ -309,6 +312,11 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
         
         return False
     
+    # Handle documented ways to do null morphemes in FLEx
+    if amorph == '^0' or amorph == '&0' or amorph == '*0' or amorph == '\u2205':
+        
+        amorph ='0'
+
     # Convert spaces between words to underscores, these have to be removed later.
     amorph = Utils.underscores(amorph)
     f_handle.write('\\a '+amorph+' ')
