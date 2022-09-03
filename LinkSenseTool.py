@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.6.2 - 9/3/22 - Ron Lockwood
+#   Fixes #213. Show the source text name at the top of the window. 
+#
 #   Version 3.6.1 - 9/3/22 - Ron Lockwood
 #   Fixes #233. Give errors if config file settings like source morpheme types are null.
 #
@@ -147,7 +150,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -529,7 +532,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData):
+    def __init__(self, myData, headerData, comboData, sourceTextName):
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
@@ -555,6 +558,9 @@ class Main(QMainWindow):
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ComboClicked()
+        
+        # Set the source text
+        self.ui.sourceTextNameLabel.setText(f'Source Text Name: {sourceTextName}')
         
         myHPG = self.__combo_model.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
@@ -1262,7 +1268,7 @@ def MainFunction(DB, report, modify=True):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName)
         
         window.show()
         app.exec_()
