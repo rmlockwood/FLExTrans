@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.6.1 - 9/2/22 - Ron Lockwood
+#    Fixes #255. Convert slashes in symbols before running Apertium
+#
 #   Version 3.6 - 8/11/22 - Ron Lockwood
 #    Fixes #198. Warn the user for periods in attribute definitions.
 #
@@ -56,18 +59,52 @@
 import Utils
 import ReadConfig
 import os
+import re
+import unicodedata
 from FTModuleClass import *
 from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Run Apertium commands."
+descr = """This module executes lexical transfer based on links from source to target sense you have established and then executes structural transfer which
+runs the transfer rules you have made to transform source morphemes into target morphemes.
+"""
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : descr,
+        FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
         FTM_Description:    descr}     
+
+STRIPPED_RULES = 'tr.t1x'
+
+def stripRulesFile(buildFolder, tranferRulePath):
+    
+    # Open the existing rule file and read all the lines
+    f = open(tranferRulePath ,"r", encoding='utf-8')
+    lines = f.readlines()
+    f.close()
+    
+    # Create a new file tr.t1x to be used by Apertium
+    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
+    
+    # Go through the existing rule file and write everything to the new file except Doctype stuff.
+    for line in lines:
+        
+        strippedLine = line.strip()
+        
+        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
+               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
+               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+               strippedLine == '"transfer.dtd">' or \
+               strippedLine == '"interchunk.dtd">' or \
+               strippedLine == '"postchunk.dtd">':
+            continue
+        
+        # Always write transfer rule data as decomposed
+        f.write(unicodedata.normalize('NFD', line))
+    f.close()
+    
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -81,12 +118,30 @@ def MainFunction(DB, report, modify=True):
 
     # Get the path to the transfer rules file
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+    if not tranferRulePath:
+        return True
 
+    # Get the path to the dictionary file
+    dictionaryPath = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    if not dictionaryPath:
+        return True
+    
+    # Get the path to the target apertium file
+    transferResultsPath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
+    if not transferResultsPath:
+        return True
+    
     # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
-    Utils.stripRulesFile(report, buildFolder, tranferRulePath)
+    stripRulesFile(buildFolder, tranferRulePath)
     
     # Check if attributes are well-formed. Warnings will be reported in the function
     Utils.checkRuleAttributes(report, tranferRulePath)
+    
+    # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
+    subPairs = Utils.fixProblemChars(dictionaryPath)
+    
+    # Substitute symbols with problem characters with fixed ones in the transfer file
+    Utils.subProbSymbols(buildFolder, STRIPPED_RULES, subPairs)
     
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
     ret = Utils.run_makefile(buildFolder, report)
@@ -100,6 +155,10 @@ def MainFunction(DB, report, modify=True):
         except:
             pass
 
+    # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
+    Utils.unfixProblemChars(dictionaryPath, transferResultsPath)
+
+    
 #----------------------------------------------------------------
 # define the FlexToolsModule
 

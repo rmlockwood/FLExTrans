@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.6.3 - 9/1/22 - Ron Lockwood
+#   Fixes #254. Convert * to _ in stems.
+#
+#   Version 3.6.2 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.6.1 - 8/19/22 - Ron Lockwood
 #    Use new new function getXMLEntryText which should be more efficient.
 #
@@ -207,45 +214,21 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
         FTM_Description:
 """
-The source database should be chosen for this module. This module will create a bilingual 
+This module will create a bilingual 
 lexicon for two projects. The
-database that FlexTools is set to is your source project. Set the TargetProject
-property in the FlexTrans.config file to the name of your target project.
-FlexTrans.config should be in the FlexTools folder. This module requires
-two sense-level custom fields in your source project. They should be simple text fields.
-One is to link to an entry in the target project and the other is to indicate a sense
-number number in that entry. Set the FlexTrans.config file properties 
-SourceCustomFieldForEntryLink
-and SourceCustomFieldForSenseNum to the corresponding custom field names. 
-The link field should contain a hyperlink to the target entry. Use the menu
-option Edit->Copy Location as Hyperlink in the target project to put the 
-hyperlink on the clipboard. The sense number field should correspond to the target 
-sense number. The sense number defaults to one if the field is left blank. 
-If no link is present in the 
-link field, the source entry will be used for the target entry as well. 
-Leaving the link field blank is appropriate when the source and target entries
-are identical. The kind of root entries that are processed is determined by the configuration 
-file property SourceMorphNamesCountedAsRoots. Set this to a comma separated list of the morphnames to 
-include. 
+database that FlexTools is set to is your source project. Set the Target Project
+in Settings to the name of your target project.
+This module creates the bilingual lexicon based on the links from source senses to target senses
+that are in your source project. Use the Sense Linker Module to create these link.
 
-The bilingual lexicon will be outputted to the file defined in the BilingualDictOutputFile 
-property in the FlexTrans.config file.
-
-You can make custom changes to the bilingual lexicon. To do this, set the FLExTrans.config 
-property BilingualDictReplacementFile to the name of a file that contains the custom changes.
-A sample file called replace.dix is provided in the installation of FLExTrans. It has three
-sections. A section for new lines which will be added to the bilingual lexicon. A section for 
-replacing existing lines that are in the bilingual lexicon and a section for adding symbol 
-definitions for any of the symbols you are using in the additional or replacement lines. When 
-this module is run, the original bilingual lexicon before additions or replacements were made 
-is stored 
-in the file named according to the BilingualDictReplacementFile property plus ".old".
+You can make custom changes to the bilingual lexicon by using a replacement file. See the help
+document for more details.
 """ }
 
 #----------------------------------------------------------------
@@ -740,10 +723,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 report.ProgressUpdate(entry_cnt)
             
             # Don't process affixes, clitics
-            if e.LexemeFormOA and \
-               e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               e.LexemeFormOA.MorphTypeRA and ITsString(e.LexemeFormOA.\
-               MorphTypeRA.Name.BestAnalysisAlternative).Text in sourceMorphNames:
+            if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+               e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
             
                 # Get the headword string
                 headWord = ITsString(e.HeadWord).Text
@@ -753,6 +734,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
+                
+                # Convert problem chars in the headWord
+                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
                 
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
@@ -770,7 +754,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                                       Abbreviation.BestAnalysisAlternative).Text
                                                       
-                                abbrev = Utils.convertProblemChars(abbrev)
+                                abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
                                 error_list.append(('Skipping sense because the POS is unknown: '+\
                                                ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
@@ -833,7 +817,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                 trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                                 
                                                 # Deal with problem characters like spaces, periods, and slashes
-                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev)
+                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
                                                 
                                                 # Get target inflection class
                                                 trgtInflCls =''
@@ -930,12 +914,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     
                     error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
                 
-                elif ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text not in ('stem','bound stem','root','phrase'):
-                    # Don't report this. We've documented it.
-                    #report.Warning('Skipping entry because the morph type is: '+\
-                    #ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text, DB.BuildGotoURL(e))
-                    pass
-           
         f_out.write('    <!-- SECTION: Punctuation -->\n')
         
         # Create a regular expression string for the punctuation characters

@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Bump version number.
+#
 #   Version 3.5 - 6/21/22 - Ron Lockwood
 #    Bump version number for FlexTools 3.5
 #
@@ -176,23 +179,22 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB: False,
-        FTM_Synopsis  : "Extracts an Analyzed FLEx Text into Apertium format.",
+        FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
         FTM_Description :
 """
-The source database should be chosen for this module. This module will first check 
+This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
-fully analyzed an error will be generated.
+fully analyzed you will get a warning.
 Next, this module will go through each bundle in the interlinear text and export
 information in the format that Apertium needs. The general idea is that
 affixes and clitics will be exported as <gloss> and root/stems will be exported
-as head_word<pos><feat1>...<featN><class>. Where feat1 to featN are one or more 
+as head_word<pos><feat1>...<featN><class1>...<classN>. Where feat1 to featN are one or more 
 inflection features that may be present for the root/stem 
-and class is an inflection class that may be present on the stem.
-This Module assumes the file FlexTrans.config is in the FlexTools folder.
+and class1 to classN are inflection classes that may be present on the stem.
 """ }
 
 #----------------------------------------------------------------

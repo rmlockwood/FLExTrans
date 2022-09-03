@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Bump version number.
+#
 #   Version 3.5.4 - 7/8/22 - Ron Lockwood
 #    Set Window Icon to be the FLExTrans Icon
 #
@@ -56,7 +59,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.5.4",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",

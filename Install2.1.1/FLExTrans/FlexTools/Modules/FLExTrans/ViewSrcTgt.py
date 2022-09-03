@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Bump version number.
+#
 #   Version 3.5.2 - 8/8/22 - Ron Lockwood
 #    Kludge fix to prevent extra blank lines in the target text. Fixes #203
 #    Also have tree write directly to utf-16.
@@ -72,15 +75,14 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.5.2",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "View a more readable source or target text file.",    
+        FTM_Synopsis   : "View a readable source or target text file.",    
         FTM_Help   : "",
         FTM_Description: 
 """
 This module will display a more readable view of the Apertium source or target 
-file. The lexical unit (^$) and symbol (<>) notation is removed and parts of 
-the lexical unit are color coded as follows: black-lemma, blue-grammatical 
+file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. 
 """ }

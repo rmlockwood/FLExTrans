@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Bump version number.
+#
 #   Version 3.5.1 - 7/9/22 - Ron Lockwood
 #    Use a new config setting for the TreeTran rules path. Fixes #121.
 #
@@ -63,7 +66,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.5.1",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",

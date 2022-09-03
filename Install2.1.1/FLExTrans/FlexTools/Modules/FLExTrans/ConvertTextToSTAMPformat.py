@@ -5,6 +5,13 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.1 - 8/27/22 - Ron Lockwood
+#   Made isProClitic, etc. global functions.
+#
+#   Version 3.6 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#
 #   Version 3.5.3 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -164,14 +171,14 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Create a text file in STAMP format",
+        FTM_Synopsis   : "Convert the file produced by RunApertium into a text file in STAMP format",
         FTM_Help  : "", 
         FTM_Description:  
 """
-The target database set in the configuration file will be used. This module will 
-create a text file in STAMP format using the Apertium transfer results. 
+The target database set in the Settings be used. This module will take the Target Transfer Results File created
+by Apertium and convert it to STAMP format. 
 NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
@@ -485,24 +492,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     
     return error_list
 
-def is_proclitic(e):
-    ret_val = False
-    # What might be passed in for a component could be a sense which isn't a clitic
-    if e.ClassName == 'LexEntry' and \
-       ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'proclitic':
-        ret_val = True
-    return ret_val
-    
-def is_enclitic(e):
-    ret_val = False
-    # What might be passed in for a component could be a sense which isn't a clitic
-    if e.ClassName == 'LexEntry' and \
-       ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text == 'enclitic':
-        ret_val = True
-    return ret_val
-
 # Get the gloss from the first sense
-
 def get_gloss(e):    
     # follow the chain of variants to get an entry with a sense
     e = GetEntryWithSense(e)
@@ -577,19 +567,25 @@ def get_ana_data_from_entry(comp_e):
 # Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection
 # This is a recursive function
 def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list):
+    
     # Get the entry that has components
     # TODO: Handle roots that have more than one complex entry associated with it
     e = complex_map[root]
     
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
+        
         if entryRef.RefType == 1: # 1=complex form, 0=variant
+            
             for complexType in entryRef.ComplexEntryTypesRS:
+                
                 formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
+                
                 if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
                     
                     # See where the inflection is to go
                     if complexFormTypeMap[formType] == 0:
+                        
                         inflectionOnFirst = True
                         inflectionOnLast = False
                     else:
@@ -598,16 +594,18 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                         
                     first_root = True
                     enclGloss = proGloss = ''
+                    
                     # Write out all the components
                     for lex_index, comp_e in enumerate(entryRef.ComponentLexemesRS):
                         
                         # If the component is a proclitic, save the gloss string (with a space on the end)
-                        if is_proclitic(comp_e):
+                        if Utils.isProclitic(comp_e):
+                            
                             proGloss = get_gloss(comp_e)+' '
-                            continue
                         
                         # If the component is an enclitic, save it with a preceding space
-                        elif is_enclitic(comp_e):
+                        elif Utils.isEnclitic(comp_e):
+                            
                             enclGloss = ' '+get_gloss(comp_e)
                             
                         # Otherwise we have a root
@@ -617,12 +615,13 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                             
                             # See if this head word has components itself and call this function recursively
                             if head_word in complex_map:
+                                
                                 gather_components(head_word, complexFormTypeMap, complex_map, anaInfo, comp_list)
                             else:
                                 # See if we are at the beginning or the end, depending on where the
                                 # inflection goes, write out all the stuff with inflection
-                                if (inflectionOnFirst and first_root) or \
-                                   (inflectionOnLast and lex_index==entryRef.ComponentLexemesRS.Count-1):
+                                if (inflectionOnFirst and first_root) or (inflectionOnLast and lex_index==entryRef.ComponentLexemesRS.Count-1):
+                                    
                                     # Build the an ANA Info object
                                     currANAInfo = ANAInfo([proGloss]+anaInfo.getAnalysisPrefixes(), 
                                                           anaInfo.getAnalysisSuffixes()+[enclGloss], \
@@ -634,6 +633,7 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                                     currANAInfo = ANAInfo([], [], gram_cat_abbrev, head_word + '.' + sense_num)
                             
                                 comp_list.append(currANAInfo)
+                                
                             first_root = False
                 continue
         continue

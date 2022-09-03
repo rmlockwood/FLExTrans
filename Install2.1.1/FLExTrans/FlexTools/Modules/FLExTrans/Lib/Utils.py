@@ -5,6 +5,21 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.8 - 9/2/22 - Ron Lockwood
+#    Fixes #255. Convert slashes in symbols before running Apertium
+#
+#   Version 3.6.7 - 9/1/22 - Ron Lockwood
+#   Fixes #254. Convert * to _ in stems.
+#   Also reworked the convert problem chars function and calling functions.
+#
+#   Version 3.6.6 - 8/27/22 - Ron Lockwood
+#   Made isProClitic, etc. global functions.
+#
+#   Version 3.6.5 - 8/26/22 - Ron Lockwood
+#   Fixes #215 Check morpheme type against guid in the object instead of
+#   the analysis writing system so we aren't dependent on an English WS.
+#   Added a guid map for morpheme types.
+#
 #   Version 3.6.4 - 8/18/22 - Ron Lockwood
 #    New function getXMLEntryText to get the string part of a left or right element
 #    of the bilingual lexicon entry. Uses tail to get the text after <b/>. Modified the new
@@ -227,11 +242,10 @@
 #   Shared functions
 
 import re
-import copy
 import tempfile
 import os
+import shutil
 import xml.etree.ElementTree as ET
-import platform
 import subprocess
 import uuid
 import unicodedata
@@ -338,15 +352,125 @@ reSpace = re.compile(r'\s')
 rePeriod = re.compile(r'\.') 
 reForwardSlash = re.compile(r'/') 
 reHyphen = re.compile(r'-') 
+reAsterisk = re.compile(r'\*') 
+# the key is to find non-left or right angle brackets for the alphanumeric parts of the symbol
+reSlashInSymbol = re.compile(r'(="[^<>=]+?)(/)([^<>=]+?")')
+reSLASHInSymbol = re.compile(r'(<[^<>]+?)SLASH([^<>]+?>)')
+reDoubleNewline = re.compile(r'\n\n')
 
 NGRAM_SIZE = 5
 
+morphTypeMap = {
+"d7f713e4-e8cf-11d3-9764-00c04f186933": "bound root",
+"d7f713e7-e8cf-11d3-9764-00c04f186933": "bound stem",
+"d7f713df-e8cf-11d3-9764-00c04f186933": "circumfix",
+"c2d140e5-7ca9-41f4-a69a-22fc7049dd2c": "clitic",
+"0cc8c35a-cee9-434d-be58-5d29130fba5b": "discontiguous phrase",
+"d7f713e1-e8cf-11d3-9764-00c04f186933": "enclitic",
+"d7f713da-e8cf-11d3-9764-00c04f186933": "infix",
+"18d9b1c3-b5b6-4c07-b92c-2fe1d2281bd4": "infixing interfix",
+"56db04bf-3d58-44cc-b292-4c8aa68538f4": "particle",
+"a23b6faa-1052-4f4d-984b-4b338bdaf95f": "phrase",
+"d7f713db-e8cf-11d3-9764-00c04f186933": "prefix",
+"af6537b0-7175-4387-ba6a-36547d37fb13": "prefixing interfix",
+"d7f713e2-e8cf-11d3-9764-00c04f186933": "proclitic",
+"d7f713e5-e8cf-11d3-9764-00c04f186933": "root",
+"d7f713e8-e8cf-11d3-9764-00c04f186933": "stem",
+"d7f713dd-e8cf-11d3-9764-00c04f186933": "suffix",
+"3433683d-08a9-4bae-ae53-2a7798f64068": "suffixing interfix"} 
+
 # Invalid category characters & descriptions & messages & replacements
-catData = [[r'\s', 'space', 'converted to an underscore', '_', reSpace],
-           [r'\.', 'period', 'removed', '', rePeriod],
-           [r'/', 'slash', 'converted to a vertical bar', '|', reForwardSlash]
-#          [r'X', 'x char', 'fatal', '']
+catProbData = [['space', 'converted to an underscore', '_', reSpace],
+           ['period', 'removed', '', rePeriod],
+           ['slash', 'converted to a vertical bar', '|', reForwardSlash]
+#          ['x char', 'fatal', '']
           ]
+
+lemmaProbData = [['asterisk', 'converted to an underscore', '_', reAsterisk]
+            ]
+                        
+bilingFixSymbProbData = [['slash', 'converted to SLASH', r'\1SLASH\3', reSlashInSymbol]
+                        ]
+
+bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSymbol],
+                           ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
+                          ]
+
+def convertProblemChars(convertStr, problemDataList, doMultiLine=False):                                                
+
+    # Convert spaces to underscores and remove periods and convert slash to bar, etc.
+    for probDataRow in problemDataList:
+        
+        if doMultiLine:
+            # 3 = the compiled RE, 2 = the string to replace with
+            convertStr = probDataRow[3].sub(probDataRow[2], convertStr, re.RegexFlag.MULTILINE)
+        else:
+            # 3 = the compiled RE, 2 = the string to replace with
+            convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
+        
+    return convertStr
+
+def getListOfSymbolSubPairs(convertStr, problemDataList):
+
+    masterList = []
+    
+    for probDataRow in problemDataList:
+
+        foundList = probDataRow[3].findall(convertStr)
+    
+        # remove duplicates
+        foundList = list(set(foundList))
+        
+        # Assume we are getting a tuple because of the capture elements
+        if len(foundList) > 0 and isinstance(foundList[0], tuple) == False:
+            return []  
+        
+        for myItem in foundList:
+            
+            # join the tuple into a string
+            trimmedItem = ''.join(myItem)
+            
+            replStr = probDataRow[3].sub(probDataRow[2], trimmedItem)
+            masterList.append((trimmedItem, replStr))
+    
+    # return a list with duplicates removed
+    return masterList
+    
+def isClitic(myEntry):
+    
+    return isProclitic(myEntry) or isEnclitic(myEntry)
+
+def isProclitic(entry):
+    
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'proclitic':
+        
+            ret_val = True
+            
+    return ret_val
+    
+def isEnclitic(entry):
+
+    ret_val = False
+    
+    # What might be passed in for a component could be a sense which isn't a clitic
+    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+        
+        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = morphTypeMap[morphGuidStr]
+        
+        if morphType  == 'enclitic':
+        
+            ret_val = True
+            
+    return ret_val
 
 def getXMLEntryText(node):
     
@@ -406,15 +530,6 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
     retStr += '</p>'
     
     return retStr
-
-def convertProblemChars(trgtAbbrev):                                                
-
-    # Convert spaces to underscores and remove periods and convert slash to bar, etc.
-    for catDat in catData:
-        
-        trgtAbbrev = catDat[4].sub(catDat[3], trgtAbbrev)
-    
-    return trgtAbbrev
 
 # Search for a text name in the list of texts in FLEx
 def findTextName(TargetDB, myTextName, textNameList):
@@ -1603,34 +1718,64 @@ def run_makefile(absPathToBuildFolder, report):
     f.write(outStr)
     f.close()
     
-    cmd = [fullPathMake]
-    return subprocess.call(cmd)
-
-def stripRulesFile(report, buildFolder, tranferRulePath):
+    retVal = subprocess.call([fullPathMake])
     
-    # Open the existing rule file and read all the lines
-    f = open(tranferRulePath ,"r", encoding='utf-8')
-    lines = f.readlines()
+    return retVal
+
+def fixProblemChars(fullDictionaryPath):
+    
+    # Save a copy of the bilingual dictionary
+    shutil.copy2(fullDictionaryPath, fullDictionaryPath+'.before_fix')
+    
+    f = open(fullDictionaryPath, encoding='utf-8')
+    contentsStr = f.read()
     f.close()
     
-    # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
+    subPairs = getListOfSymbolSubPairs(contentsStr, bilingFixSymbProbData)
     
-    # Go through the existing rule file and write everything to the new file except Doctype stuff.
-    for line in lines:
+    # Replace / with || 
+    contentsStr = convertProblemChars(contentsStr, bilingFixSymbProbData, doMultiLine=True)
+
+    f = open(fullDictionaryPath, 'w', encoding='utf-8')
+    f.write(contentsStr)
+    f.close()
+    
+    return subPairs
+
+def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
+
+    f = open(fullTransferResultsPath, encoding='utf-8')
+    contentsStr = f.read()
+    f.close()
+    
+    # Replace || with /
+    contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData, doMultiLine=True)
+
+    f = open(fullTransferResultsPath, 'w', encoding='utf-8')
+    f.write(contentsStr)
+    f.close()
+
+    # Save a copy of the bilingual dictionary
+    shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
+
+    # Delete the temporary dictionary file
+    os.remove(fullDictionaryPath+'.before_fix')
+    
+def subProbSymbols(buildFolder, ruleFile, subPairs):
+
+    f = open(os.path.join(buildFolder, ruleFile), encoding='utf-8')
+    
+    contentsStr = f.read()
+    f.close()
+    
+    # go through all problem symbols
+    for pair in subPairs:
         
-        strippedLine = line.strip()
-        
-        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
-               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
-               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
-               strippedLine == '"transfer.dtd">' or \
-               strippedLine == '"interchunk.dtd">' or \
-               strippedLine == '"postchunk.dtd">':
-            continue
-        
-        # Always write transfer rule data as decomposed
-        f.write(unicodedata.normalize('NFD', line))
+        # substitute all occurrences
+        contentsStr = re.sub(pair[0], pair[1], contentsStr)
+
+    f = open(os.path.join(buildFolder, ruleFile) ,"w", encoding='utf-8')
+    f.write(contentsStr)
     f.close()
     
 def decompose(myFile):
@@ -2488,13 +2633,13 @@ class TextWord():
         return self.__initPunc
     def getLemma(self, i):
         if i < len(self.__lemmaList):
-            return self.__lemmaList[i]
+            return convertProblemChars(self.__lemmaList[i], lemmaProbData)
         return ''
     def getPOS(self, i):
         if self.hasSenses() and i < len(self.__senseList):
             mySense = self.__senseList[i]
             if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                return convertProblemChars(ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text)
+                return convertProblemChars(ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text, catProbData)
         return self.getUnknownPOS()
     def getSense(self, i):
         if self.hasSenses() and i < len(self.__senseList):
@@ -2568,12 +2713,6 @@ class TextWord():
             self.__report.Error('Could not find the sense for word in the inserted word list.')
             return    
 
-    def isProlitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic')
-    def isClitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('proclitic','enclitic')
-    def isEnclitic(self, myEntry):
-        return ITsString(myEntry.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text in ('enclitic')
     def isSentPunctutationWord(self):
         # assume no compound roots for this word
         if len(self.__affixLists) > 0 and len(self.__affixLists[0]) > 0:
@@ -2840,7 +2979,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             
                             # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
                             # in this case, treat it as a root
-                            if myWord.isClitic(tempEntry) == True and not (myWord.isEnclitic(tempEntry) and myWord.hasEntries() == False):
+                            if isClitic(tempEntry) == True and not (isEnclitic(tempEntry) and myWord.hasEntries() == False):
                                 # Get the clitic gloss.
                                 myWord.addAffix(bundle.SenseRA.Gloss)
                                 
@@ -3088,7 +3227,7 @@ def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflec
         dbType = dbTup[1]
         
         # initialize a list of error counters to 0
-        countList = [0]*len(catData)
+        countList = [0]*len(catProbData)
             
         # loop through all database categories
         for pos in dbObj.lp.AllPartsOfSpeech:
@@ -3150,33 +3289,37 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
     haveError = False
     
     # loop through the possible invalid characters
-    for i, outStrings in enumerate(catData):
+    for i, outStrings in enumerate(catProbData):
         
-        invalidChar = outStrings[0]
-        charName = outStrings[1]
-        message = outStrings[2]
-        replChar = outStrings[3]
+        charName = outStrings[0]
+        message = outStrings[1]
+        replChar = outStrings[2]
+        invalidCharCompiledRE = outStrings[3]
         
         # give a warning if we find an invalid character
-        if re.search(invalidChar, posAbbrStr):
+        if invalidCharCompiledRE.search(posAbbrStr):
             
             # check for a fatal error
             if message == 'fatal':
                 
                 if report:
-                    report.Error("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' can't have a " + charName + \
-                                 " in it. Could not complete, please correct this category in the " + dbType + " database.")
+                    report.Error(f"The abbreviation: '{posAbbrStr}' for category: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this category in the {dbType} database.")
                 haveError = True
                 
                 # show all fatal errors
                 continue
-                
+            
+            oldAbbrStr = posAbbrStr
+            
+            # do the conversion    
+            posAbbrStr = invalidCharCompiledRE.sub(replChar, posAbbrStr)
+
             # If we are under the max errors to show number, give a warning
             if countList[i] < numCatErrorsToShow:
                 
                 if report:
-                    report.Warning("The abbreviation: '"+posAbbrStr+"' for category: '"+posFullNameStr+"' in the " + dbType + " database can't have a " + charName + " in it. The " + charName + \
-                                   " has been " + message + ". Keep this in mind when referring to this category in transfer rules.")
+                    report.Warning(f"The abbreviation: '{oldAbbrStr}' for category: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
+                                   f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this category in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
             elif countList[i] == numCatErrorsToShow:
@@ -3184,7 +3327,6 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
                 if report:
                     report.Info("Suppressing further warnings of this type.")
                 
-            posAbbrStr = re.sub(invalidChar, replChar, posAbbrStr)
             countList[i] += 1
     
     if haveError:

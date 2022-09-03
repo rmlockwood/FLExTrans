@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Bump version number.
+#
 #   Version 3.5.3 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
 #
@@ -68,7 +71,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.5.3",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",

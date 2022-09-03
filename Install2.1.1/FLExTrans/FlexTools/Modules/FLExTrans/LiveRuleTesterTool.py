@@ -5,6 +5,16 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.7 - 9/2/22 - Ron Lockwood
+#    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
+#
+#   Version 3.6.6 - 9/2/22 - Ron Lockwood
+#    Fixes #255. Convert slashes in symbols before running Apertium
+#
+#   Version 3.6.5 - 8/27/22 - Ron Lockwood
+#    If the tooltip word is Title case and not found in the bilingual map, try
+#    lowercasing the first letter to find it.
+#
 #   Version 3.6.4 - 8/19/22 - Ron Lockwood
 #    Fixed bugs in last feature added. Now entries with spaces work as well as
 #    entries that have sfm markers or other stuff before the lexical unit.
@@ -231,9 +241,9 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication,
 
 import Utils
 import ReadConfig
-import CatalogTargetPrefixes
+import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
-import ExtractTargetLexicon
+import DoStampSynthesis
 import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
@@ -247,7 +257,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.4",
+        FTM_Version    : "3.6.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -264,9 +274,16 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
-
 MAX_CHECKBOXES = 80
-                 
+BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
+
+def firstLower(myStr):
+    
+    if myStr:
+        return myStr[0].lower() + myStr[1:]
+    else:
+        return myStr
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
     
@@ -402,7 +419,7 @@ class Main(QMainWindow):
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
-        self.ui.refreshLexButton.clicked.connect(self.RefreshLexButtonClicked)
+        self.ui.refreshTargetLexiconButton.clicked.connect(self.RefreshTargetLexiconButtonClicked)
         self.ui.addToTestbedButton.clicked.connect(self.AddTestbedButtonClicked)
         self.ui.viewTestbedLogButton.clicked.connect(self.ViewTestbedLogButtonClicked)
         self.ui.editTestbedButton.clicked.connect(self.EditTestbedLogButtonClicked)
@@ -507,7 +524,7 @@ class Main(QMainWindow):
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
-            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
+            shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
@@ -702,6 +719,9 @@ class Main(QMainWindow):
         # Reload the bilingual map for showing tooltips
         self.ReadBilingualLexicon()
         
+        # Force reload of the tooltips
+        self.listSentComboClicked()
+        
         self.__ClearStuff()
         
         self.unsetCursor()
@@ -894,7 +914,7 @@ class Main(QMainWindow):
                 return True
         return False
 
-    def RefreshLexButtonClicked(self):
+    def RefreshTargetLexiconButtonClicked(self):
         self.ui.SynthTextEdit.setPlainText('')
         self.__extractIt = True
         self.__doCatalog = True
@@ -914,7 +934,7 @@ class Main(QMainWindow):
         if self.__doCatalog:
             
             try:
-                error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+                error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
                 self.unsetCursor()
@@ -949,7 +969,7 @@ class Main(QMainWindow):
         if self.__extractIt == True:
             
             # Redo the catalog of prefixes in case the user changed an affix
-            error_list = CatalogTargetPrefixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+            error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             if triplet[1] == 2: # error code
                 msg = triplet[0]
                 QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
@@ -957,7 +977,7 @@ class Main(QMainWindow):
                 return
             
             # Extract the lexicon        
-            error_list = ExtractTargetLexicon.extract_target_lex(self.__DB, self.__configMap)
+            error_list = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
@@ -966,7 +986,7 @@ class Main(QMainWindow):
                     return
         
         ## SYNTHESIZE
-        error_list = ExtractTargetLexicon.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
+        error_list = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]
@@ -1387,6 +1407,14 @@ class Main(QMainWindow):
                     
                     return self.__bilingMap[lemma]
                 
+                # try lowercasing the first letter if we don't find it at first
+                else:
+                    lowerLemma = firstLower(lemma)
+                    
+                    if lowerLemma in self.__bilingMap:
+                    
+                        return self.__bilingMap[lowerLemma]
+                
                 # If we found <>, stop looking
                 break
             
@@ -1669,9 +1697,6 @@ class Main(QMainWindow):
         sf.write(myStr)
         sf.close()
         
-        # Save the transfer rules file with the selected rules present
-        #rf = open(tr_file, 'w', encoding='utf-8')
-        
         # Copy the xml structure to a new object
         myRoot = myTree.getroot()
         
@@ -1710,6 +1735,12 @@ class Main(QMainWindow):
         # Clear the results box
         self.ui.TargetTextEdit.setText('') 
 
+        # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
+        subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER))
+        
+        # Substitute symbols with problem characters with fixed ones in the transfer file
+        Utils.subProbSymbols('.', tr_file, subPairs)
+        
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
@@ -1720,6 +1751,9 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
         
+        # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
+        Utils.unfixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER), tgt_file)
+
         # Load the target text contents into the results edit box
         tgtf = open(tgt_file, encoding='utf-8')
         target_output = tgtf.read()

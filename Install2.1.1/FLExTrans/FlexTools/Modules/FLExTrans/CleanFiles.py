@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.6 - 9/3/22 - Ron Lockwood
+#    Fixes #235. Clean all STAMP files regardless of project name prefix.
+#
 #   Version 3.5 - 5/10/22 - Ron Lockwood
 #    Support multiple projects in one FlexTools folder. Folders rearranged.
 #
@@ -40,12 +43,12 @@ from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Remove generated files to force each FLExTrans module to regenerate everything."
+descr = "Remove generated files to force each FLExTrans modules to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.5",
+        FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : descr,
-        FTM_Help  : "Remove generated files to force each FLExTrans module to regenerate everything.",  
+        FTM_Help  : "Remove generated files to force each FLExTrans modules to regenerate everything.",  
         FTM_Description:    descr}     
 #----------------------------------------------------------------
 
@@ -161,6 +164,17 @@ def MainFunction(DB, report, modify=True):
             p.unlink()
     except:
         pass # ignore errors
+    
+    # Delete other dictionary files that could be there from copying and pasting a project folder
+    try:
+        for endStr in ['_ctrl_files.txt', '_outtx.ctl', '_sycd.chg', '_synt.chg', '_XXXtr.chg', \
+                       '_if.dic', '_pf.dic', '_sf.dic', '_rt.dic', '_stamp.dec']:
+            
+            for p in Path(stampFiles).glob(f'*{endStr}'):
+                p.unlink()
+    except:
+        pass # ignore errors
+    
 
     try:
         for p in Path(stampFiles).glob(f"*{Utils.CONVERSION_TO_STAMP_CACHE_FILE}"):
