@@ -220,39 +220,15 @@ docs = {FTM_Name       : "Extract Bilingual Lexicon",
         FTM_Help   : "",
         FTM_Description:
 """
-The source database should be chosen for this module. This module will create a bilingual 
+This module will create a bilingual 
 lexicon for two projects. The
-database that FlexTools is set to is your source project. Set the TargetProject
-property in the FlexTrans.config file to the name of your target project.
-FlexTrans.config should be in the FlexTools folder. This module requires
-two sense-level custom fields in your source project. They should be simple text fields.
-One is to link to an entry in the target project and the other is to indicate a sense
-number number in that entry. Set the FlexTrans.config file properties 
-SourceCustomFieldForEntryLink
-and SourceCustomFieldForSenseNum to the corresponding custom field names. 
-The link field should contain a hyperlink to the target entry. Use the menu
-option Edit->Copy Location as Hyperlink in the target project to put the 
-hyperlink on the clipboard. The sense number field should correspond to the target 
-sense number. The sense number defaults to one if the field is left blank. 
-If no link is present in the 
-link field, the source entry will be used for the target entry as well. 
-Leaving the link field blank is appropriate when the source and target entries
-are identical. The kind of root entries that are processed is determined by the configuration 
-file property SourceMorphNamesCountedAsRoots. Set this to a comma separated list of the morphnames to 
-include. 
+database that FlexTools is set to is your source project. Set the Target Project
+in Settings to the name of your target project.
+This module creates the bilingual lexicon based on the links from source senses to target senses
+that are in your source project. Use the Sense Linker Module to create these link.
 
-The bilingual lexicon will be outputted to the file defined in the BilingualDictOutputFile 
-property in the FlexTrans.config file.
-
-You can make custom changes to the bilingual lexicon. To do this, set the FLExTrans.config 
-property BilingualDictReplacementFile to the name of a file that contains the custom changes.
-A sample file called replace.dix is provided in the installation of FLExTrans. It has three
-sections. A section for new lines which will be added to the bilingual lexicon. A section for 
-replacing existing lines that are in the bilingual lexicon and a section for adding symbol 
-definitions for any of the symbols you are using in the additional or replacement lines. When 
-this module is run, the original bilingual lexicon before additions or replacements were made 
-is stored 
-in the file named according to the BilingualDictReplacementFile property plus ".old".
+You can make custom changes to the bilingual lexicon by using a replacement file. See the help
+document for more details.
 """ }
 
 #----------------------------------------------------------------

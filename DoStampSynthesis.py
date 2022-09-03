@@ -190,15 +190,13 @@ from flexlibs import FLExProject, AllProjectNames
 docs = {FTM_Name       : "Synthesize Text with STAMP",
         FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
+        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
         FTM_Description:  
 """
-This module will creates target language lexicons files. One for
-roots, prefixes, suffixes and infixes. They are in the CARLA format
-which are suitable for input to STAMP for synthesis. They use the standard
-format marker type of formatting.
-This module also creates other files STAMP needs and then runs STAMP to create the
+This module creates target language lexicons files. One for
+roots, prefixes, suffixes and infixes. They are in the STAMP for synthesis. 
+This module also runs STAMP to create the
 synthesized text. NOTE: Messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }

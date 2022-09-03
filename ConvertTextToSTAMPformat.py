@@ -173,12 +173,12 @@ from flexlibs import FLExProject
 docs = {FTM_Name       : "Convert Text to STAMP Format",
         FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Create a text file in STAMP format",
+        FTM_Synopsis   : "Convert the file produced by RunApertium into a text file in STAMP format",
         FTM_Help  : "", 
         FTM_Description:  
 """
-The target database set in the configuration file will be used. This module will 
-create a text file in STAMP format using the Apertium transfer results. 
+The target database set in the Settings be used. This module will take the Target Transfer Results File created
+by Apertium and convert it to STAMP format. 
 NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
