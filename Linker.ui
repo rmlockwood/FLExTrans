@@ -140,6 +140,19 @@
      <string>Type the beginning of an entry, then double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
+   <widget class="QLabel" name="sourceTextNameLabel">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>16</y>
+      <width>151</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Source Textname: XYZ</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

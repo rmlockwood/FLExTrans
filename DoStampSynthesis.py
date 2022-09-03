@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.8 - 9/3/22 - Ron Lockwood
+#   Fixes #250. Don't create empty STAMP control files if they already exist.
+#   This allows someone to use modifications to these files for whatever purpose.
+#   JH requested this.
+#
 #   Version 3.6.7 - 9/1/22 - Ron Lockwood
 #   Fixes #254. Convert * to _ in stems.
 #
@@ -183,17 +188,15 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.7",
+        FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text.",
+        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
         FTM_Description:  
 """
-This module will creates target language lexicons files. One for
-roots, prefixes, suffixes and infixes. They are in the CARLA format
-which are suitable for input to STAMP for synthesis. They use the standard
-format marker type of formatting.
-This module also creates other files STAMP needs and then runs STAMP to create the
+This module creates target language lexicons files. One for
+roots, prefixes, suffixes and infixes. They are in the STAMP for synthesis. 
+This module also runs STAMP to create the
 synthesized text. NOTE: Messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
@@ -537,8 +540,9 @@ def create_synthesis_files(partPath):
 
     # Create the blank files we need
     for b in blankFileNameList:
-        f = open(b,'w', encoding="utf-8")
-        f.close()
+        if not os.path.isfile(b):
+            f = open(b,'w', encoding="utf-8")
+            f.close()
     
     return cmdFileName
 

@@ -66,11 +66,13 @@ from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Run Apertium commands."
+descr = """This module executes lexical transfer based on links from source to target sense you have established and then executes structural transfer which
+runs the transfer rules you have made to transform source morphemes into target morphemes.
+"""
 docs = {FTM_Name       : "Run Apertium",
         FTM_Version    : "3.6.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : descr,
+        FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
         FTM_Description:    descr}     
 

@@ -103,11 +103,11 @@ from flexlibs import FLExProject
 docs = {FTM_Name       : "Catalog Target Affixes",
         FTM_Version    : "3.6",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates a list of all the affix glosses and morphtypes in the target database.",
+        FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
         FTM_Description:
 """
-This module creates the file target_affix_glosses.txt which has a list of all the affix glosses and morphtypes in the target database. 
+This module creates the file target_affix_glosses.txt which has a list of all the affix glosses and morpheme types in the target database. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the task bar will show the SOURCE database
 as being used. Actually the target database is being used.

@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.6.2 - 9/3/22 - Ron Lockwood
+#   Fixes #213. Show the source text name at the top of the window. 
+#
+#   Version 3.6.1 - 9/3/22 - Ron Lockwood
+#   Fixes #233. Give errors if config file settings like source morpheme types are null.
+#
 #   Version 3.6 - 8/26/22 - Ron Lockwood
 #   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
@@ -141,33 +147,17 @@ import Utils
 from Linker import Ui_MainWindow
 
 #----------------------------------------------------------------
-# Configurables:
-PROPER_NOUN_ABBREV = 'nprop'
-DUMP_VOCAB_WORDS = False
-
-
-# The minimum length a word should have before doing a fuzzy compare
-# otherwise an exact comparision is used
-MIN_GLOSS_LEN_FOR_FUZZ = 5
-# Only do a fuzzy compare if the difference in the lengths of the strings
-# is less than this number
-MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
-# The percentage or higher in similarity that two words must have in  
-# order to be outputted as a possible match. 
-FUZZ_THRESHOLD = 74
-
-#----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
         FTM_Description:  
 """
-The source database should be chosen for this module. This module will create links 
-in the source project to senses in the target project. This module will show a window
+This module will create links 
+in the source project to senses in the target project. It will show a window
 with a list of all the senses in the text. White background rows indicate links that
 already exist. blue background rows indicate suggested links based on an exact match
 on gloss, light blue background rows indicate suggested links based on a close match on
@@ -179,21 +169,30 @@ Unchecking a checkbox for white row will unlink the specified sense from its tar
 Close matches are only attempted for words with five letters or longer.
 For suggested sense pairs where
 there is a mismatch in the grammatical category, both categories are colored red. This
-is to indicate you may not want to link the two sense even though the glosses match. The
-database that FlexTools should be set to is your source project. Set the TargetProject
-property in the FlexTrans.config file to the name of your target project.
-FlexTrans.config should be in the FlexTools folder. This module requires
+is to indicate you may not want to link the two sense even though the glosses match. 
+This module requires
 two sense-level custom fields in your source project. They should be simple text fields.
 One is to link to an entry in the target project and the other is to indicate a sense
-number number in that entry. Set the FlexTrans.config file properties 
-SourceCustomFieldForEntryLink
-and SourceCustomFieldForSenseNum to the corresponding custom field names. Created links
-will appear in the field named in SourceCustomFieldForEntryLink. If the sense number
-being linked to is not sense number one, the field named in SourceCustomFieldForSenseNum
-will be set to the corresponding sense number. 
+number number in that entry. Set these in the Settings tool. 
+Created links will appear in the custom field set in your settings. If the sense number
+being linked to is not sense number one, the custom field for sense number set in your Settings
+will be set to the corresponding sense number, otherwise it will be blank.
 """ }
                  
 #----------------------------------------------------------------
+# Configurables:
+PROPER_NOUN_ABBREV = 'nprop'
+DUMP_VOCAB_WORDS = False
+
+# The minimum length a word should have before doing a fuzzy compare
+# otherwise an exact comparision is used
+MIN_GLOSS_LEN_FOR_FUZZ = 5
+# Only do a fuzzy compare if the difference in the lengths of the strings
+# is less than this number
+MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
+# The percentage or higher in similarity that two words must have in  
+# order to be outputted as a possible match. 
+FUZZ_THRESHOLD = 74
 
 SEARCH_HERE = 'Search target senses here'
 INITIAL_STATUS_UNLINKED = 0
@@ -533,7 +532,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData):
+    def __init__(self, myData, headerData, comboData, sourceTextName):
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
@@ -559,6 +558,9 @@ class Main(QMainWindow):
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ComboClicked()
+        
+        # Set the source text
+        self.ui.sourceTextNameLabel.setText(f'Source Text Name: {sourceTextName}')
         
         myHPG = self.__combo_model.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
@@ -1143,25 +1145,53 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
 
+    haveConfigError = False
+    
     # Get need configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
+    sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     linkField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
     numField = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
     targetMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
+    sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
 
-    if not (text_desired_eng and linkField and numField and text_desired_eng and sourceMorphNames):
+    if not sourceTextName:
+        
+        report.Error('No Source Text Name has been set. Please go to Settings and fix this.')
+        haveConfigError = True
+    
+    if not linkField:
+        
+        report.Error('No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.')
+        haveConfigError = True
+    
+    if not numField:
+        
+        report.Error('No Source Custom Field for Sense Number has been set. Please go to Settings and fix this.')
+        haveConfigError = True
+    
+    # Give an error if there are no morphnames
+    if not sourceMorphNames or len(sourceMorphNames) < 1:
+        
+        report.Error('No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.')
+        haveConfigError = True
+    
+    if not targetMorphNames or len(targetMorphNames) < 1:
+        
+        report.Error('No Target Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.')
+        haveConfigError = True
+    
+    if haveConfigError:
         return
     
     # Find the desired text
     foundText = False
     for interlinText in DB.ObjectsIn(ITextRepository):
-        if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
+        if sourceTextName == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
             foundText = True
             break;
         
     if not foundText:
-        report.Error('The text named: '+text_desired_eng+' not found.')
+        report.Error('The text named: '+sourceTextName+' not found.')
         return
 
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
@@ -1196,7 +1226,7 @@ def MainFunction(DB, report, modify=True):
         report.Error('Failed to open the target database.')
         raise
 
-    report.Info("Starting " + docs[FTM_Name] + " for text: " + text_desired_eng + ".")
+    report.Info("Starting " + docs[FTM_Name] + " for text: " + sourceTextName + ".")
 
     preGuidStr = 'silfw://localhost/link?database%3d'
     preGuidStr += re.sub('\s','+', targetProj)
@@ -1238,7 +1268,7 @@ def MainFunction(DB, report, modify=True):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName)
         
         window.show()
         app.exec_()
