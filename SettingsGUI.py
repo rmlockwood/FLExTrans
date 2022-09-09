@@ -778,9 +778,12 @@ def MainFunction(DB, report, modify=True):
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        
         if not targetProj:
-            return
-        TargetDB.OpenProject(targetProj, False)
+            
+            TargetDB = None
+        else:
+            TargetDB.OpenProject(targetProj, False)
     except:
         report.Error('Failed to open the target database.')
         TargetDB = None
@@ -802,7 +805,9 @@ def MainFunction(DB, report, modify=True):
 
             window.save()
     
-    TargetDB.CloseProject()
+    if TargetDB:
+        
+        TargetDB.CloseProject()
 
 
 # ----------------------------------------------------------------
