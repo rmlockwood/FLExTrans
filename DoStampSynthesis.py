@@ -260,10 +260,10 @@ def haveFeatureMatch(specsA, specsB):
     
     return False
     
-def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morphCategory):
+def output_default_allomorph(morph, envList, allInflClasses, f_handle, sense, morphCategory):
     
     # Put out normal allomorph stuff
-    if output_allomorph(morph, envList, prevStemList, f_handle, morphCategory) == False:
+    if output_allomorph(morph, envList, allInflClasses, f_handle, morphCategory) == False:
         
         return
     
@@ -306,7 +306,7 @@ def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morp
                 
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
-def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
+def output_allomorph(morph, envList, allInflClasses, f_handle, morphCategory):
     
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
@@ -324,12 +324,6 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
     amorph = Utils.underscores(amorph)
     f_handle.write('\\a '+amorph+' ')
     
-    # Negate other stem name constraints
-#     for prevStem in prevStemList:
-#         
-#         negatedStem = re.sub(' _ ', ' ~_ ', prevStem)
-#         f_handle.write(negatedStem) 
-    
     # Write out stem name stuff if we have a stem
     if morphCategory == STEM_TYPE: # stems only
 
@@ -340,12 +334,10 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
             env1 = f'+/ {mp} ... _ '
             env2 = f'+/ _ ... {mp} '
             f_handle.write(f'{env1}{env2}') 
-            prevStemList.append(env1)
-            prevStemList.append(env2)
             
     else: # non-stems only
         
-        # clitics, event though we treat them as affixes, have FLEx type MoStemAllomorph
+        # clitics, even though we treat them as affixes, have FLEx type MoStemAllomorph
         # and won't have inflection classes so don't try to process them
         if morph.ClassName != 'MoStemAllomorph' and morph.InflectionClassesRC:
             
@@ -360,11 +352,17 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
                     
                 else:
                     f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
+                    
+                allInflClasses.append(inflClassStr)
+                
+    # If all the inflection classes are not the same, don't put out negative phonological environment. This matches what FLEx does.
+    # In other words, if the classes are all the same, put out the negative environments
+    if len(set(allInflClasses)) <= 1:
+                
+        # Write out negated environments from previous allomorphs
+        for prevEnv in envList:
             
-    # Write out negated environments from previous allomorphs
-    for prevEnv in envList:
-        
-        f_handle.write('~'+prevEnv+' ') 
+            f_handle.write('~'+prevEnv+' ') 
         
     # Write out each phonological environment constraint
     for env in morph.PhoneEnvRC:
@@ -393,7 +391,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     # 1st allomorph for the prefix file
     allEnvs = []
-    allStemEnvs = []
+    allInflClasses = []
     
     for allomorph in e.AlternateFormsOS:
         
@@ -402,7 +400,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
             
         if morphType == 'prefix':
             
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, PREFIX_TYPE)
+            output_allomorph(allomorph, allEnvs, allInflClasses, f_pf, sense, PREFIX_TYPE)
     
     f_pf.write('\n')
     
@@ -414,7 +412,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     # 2nd allomorph for the suffix file
     allEnvs = []
-    allStemEnvs = []
+    allInflClasses = []
     
     for allomorph in e.AlternateFormsOS:
         
@@ -423,7 +421,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
             
         if morphType == SUFFIX_TYPE:
             
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, SUFFIX_TYPE)
+            output_allomorph(allomorph, allEnvs, allInflClasses, f_sf, sense, SUFFIX_TYPE)
     
     f_sf.write('\n')
 
@@ -460,14 +458,14 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
         
     # Loop through all the allomorphs
     allEnvs = []
-    allStemEnvs = []
+    allInflClasses = []
     
     for allomorph in e.AlternateFormsOS:
         
-        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, myType)
+        output_allomorph(allomorph, allEnvs, allInflClasses, f_handle, myType)
     
     # Now process the lexeme form which is the default allomorph
-    output_default_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, myType)
+    output_default_allomorph(e.LexemeFormOA, allEnvs, allInflClasses, f_handle, sense, myType)
     f_handle.write('\n')
 
 def define_some_names(partPath):
