@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.9 - 9/2/22 - Ron Lockwood
+#    Slash fix had a problem passing re MULTILINE to a pre-compiled regex.
+#    It was actually passing 8 to the sub function to only do 8 substitutions.
+#    Did away with the MULTILINE since it wasn't needed.
+#
 #   Version 3.6.8 - 9/2/22 - Ron Lockwood
 #    Fixes #255. Convert slashes in symbols before running Apertium
 #
@@ -396,17 +401,13 @@ bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSy
                            ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
                           ]
 
-def convertProblemChars(convertStr, problemDataList, doMultiLine=False):                                                
+def convertProblemChars(convertStr, problemDataList):                                                
 
     # Convert spaces to underscores and remove periods and convert slash to bar, etc.
     for probDataRow in problemDataList:
         
-        if doMultiLine:
-            # 3 = the compiled RE, 2 = the string to replace with
-            convertStr = probDataRow[3].sub(probDataRow[2], convertStr, re.RegexFlag.MULTILINE)
-        else:
-            # 3 = the compiled RE, 2 = the string to replace with
-            convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
+        # 3 = the compiled RE, 2 = the string to replace with
+        convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
         
     return convertStr
 
@@ -1734,7 +1735,7 @@ def fixProblemChars(fullDictionaryPath):
     subPairs = getListOfSymbolSubPairs(contentsStr, bilingFixSymbProbData)
     
     # Replace / with || 
-    contentsStr = convertProblemChars(contentsStr, bilingFixSymbProbData, doMultiLine=True)
+    contentsStr = convertProblemChars(contentsStr, bilingFixSymbProbData)
 
     f = open(fullDictionaryPath, 'w', encoding='utf-8')
     f.write(contentsStr)
@@ -1749,7 +1750,7 @@ def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
     f.close()
     
     # Replace || with /
-    contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData, doMultiLine=True)
+    contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData)
 
     f = open(fullTransferResultsPath, 'w', encoding='utf-8')
     f.write(contentsStr)
