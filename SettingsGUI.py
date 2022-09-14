@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.2 - 9/7/22 - Ron Lockwood
+#   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
+#
 #   Version 3.6.1 - 8/27/22 - Ron Lockwood
 #   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
@@ -73,7 +76,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.1",
+        FTM_Version: "3.6.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -123,9 +126,11 @@ def getTargetComplexTypes(wind):
     
     if len(targetComplexTypes) == 0:
         
-        for item in wind.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
-            
-            targetComplexTypes.append(str(item))
+        if wind.targetDB:
+        
+            for item in wind.targetDB.lp.LexDbOA.ComplexEntryTypesOA.PossibilitiesOS:
+                
+                targetComplexTypes.append(str(item))
             
     return targetComplexTypes
             
@@ -183,16 +188,14 @@ def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
     
-    if targetProject is not None:
-
-        # TODO: Make this disable the other stuff that uses target??
-        for i, item in enumerate(AllProjectNames()):
+    # TODO: Make this disable the other stuff that uses target??
+    for i, item in enumerate(AllProjectNames()):
+        
+        widget.addItem(item)
+        
+        if targetProject and item == targetProject:
             
-            widget.addItem(item)
-            
-            if item == targetProject:
-                
-                widget.setCurrentIndex(i)
+            widget.setCurrentIndex(i)
             
 def loadSourceComplexFormTypes(widget, wind, settingName):
 
@@ -257,28 +260,30 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
     
-    for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-
-        # Only load things that can be stems
-        if item.IsStemType == True:
-            
-            # convert this item's id to a string
-            myGuid = item.Guid.ToString()
-            morphTypeStr = Utils.morphTypeMap[myGuid]
-            
-            typesList.append(morphTypeStr)
+    if wind.targetDB:
+        
+        for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
     
-    widget.addItems(typesList)
-    
-    morphNames = wind.read(settingName)
-    
-    if morphNames:
-
-        for morphName in morphNames:
-
-            if morphName in typesList:
+            # Only load things that can be stems
+            if item.IsStemType == True:
                 
-                widget.check(morphName)
+                # convert this item's id to a string
+                myGuid = item.Guid.ToString()
+                morphTypeStr = Utils.morphTypeMap[myGuid]
+                
+                typesList.append(morphTypeStr)
+        
+        widget.addItems(typesList)
+        
+        morphNames = wind.read(settingName)
+        
+        if morphNames:
+    
+            for morphName in morphNames:
+    
+                if morphName in typesList:
+                    
+                    widget.check(morphName)
 
 def loadSourceCategories(widget, wind, settingName):
 
@@ -773,12 +778,16 @@ def MainFunction(DB, report, modify=True):
     try:
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        
         if not targetProj:
-            return
-        TargetDB.OpenProject(targetProj, False)
+            
+            TargetDB = None
+        else:
+            TargetDB.OpenProject(targetProj, False)
     except:
         report.Error('Failed to open the target database.')
-        raise
+        TargetDB = None
+        #raise
 
     # Show the window
     app = QApplication(sys.argv)
@@ -796,7 +805,9 @@ def MainFunction(DB, report, modify=True):
 
             window.save()
     
-    TargetDB.CloseProject()
+    if TargetDB:
+        
+        TargetDB.CloseProject()
 
 
 # ----------------------------------------------------------------
