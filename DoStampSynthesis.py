@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.10 - 10/19/22 - Ron Lockwood
+#   Handle msa's that are not MoInflAffMsa, by skipping them. Also skip null
+#   environment strings. Fixes #280
+#
 #   Version 3.6.9 - 9/17/22 - Ron Lockwood
 #   Overhaul of writing allomorphs to support proper negating of environment
 #   constraints when inflection classes and/or stem names are present.
@@ -192,7 +196,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.9",
+        FTM_Version    : "3.6.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -267,8 +271,8 @@ def haveFeatureMatch(specsA, specsB):
 def output_final_allomorph_info(f_handle, sense, morphCategory):
     
     ## Now put out the one-time stuff for the entry
-    if sense is not None:
-        
+    if sense is not None and sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+          
         msa = sense.MorphoSyntaxAnalysisRA
     else:
         msa = None
@@ -381,8 +385,9 @@ def output_all_allomorphs(masterAlloList, f_handle):
         # Write out each phonological environment constraints
         for envStr in environList:
             
-            f_handle.write(envStr+' ')
-            
+            if envStr is not None:
+                
+                f_handle.write(envStr+' ')
         
         ## Write out negated environments from previous allomorphs if necessary
         
