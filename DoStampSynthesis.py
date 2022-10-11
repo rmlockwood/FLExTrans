@@ -5,9 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.6.10 - 10/19/22 - Ron Lockwood
-#   Handle msa's that are not MoInflAffMsa, by skipping them. Also skip null
-#   environment strings. Fixes #280
+#   Version 3.6.10 - 10/11/22 - Ron Lockwood
+#   Handle msa's that are not MoInflAffMsa or MoStemMsa, by skipping them. Also skip null
+#   environment strings. Also skip clitics. Fixes #280
 #
 #   Version 3.6.9 - 9/17/22 - Ron Lockwood
 #   Overhaul of writing allomorphs to support proper negating of environment
@@ -271,12 +271,20 @@ def haveFeatureMatch(specsA, specsB):
 def output_final_allomorph_info(f_handle, sense, morphCategory):
     
     ## Now put out the one-time stuff for the entry
-    if sense is not None and sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+
+    # We will only process inflectional affixes and stems (i.e. not derrivational affixes, etc.)
+    if sense is not None and (sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' or \
+                              sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa'):
           
         msa = sense.MorphoSyntaxAnalysisRA
     else:
-        msa = None
+        return
         
+    # Skip clitics which we are giving a category of SUFFIX or PREFIX, but the class name is Stem
+    if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa' and morphCategory != STEM_TYPE:
+        
+        return
+    
     # Deal with affix stem name stuff.
     # A stem name goes on an affix only if the stem name category matches the category of this msa object
     # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
@@ -361,7 +369,7 @@ def output_all_allomorphs(masterAlloList, f_handle):
             amorph ='0'
     
         # Convert spaces between words to underscores, these have to be removed later.
-        amorph = Utils.underscores(amorph)
+        amorph = re.sub(r' ', r'_', amorph)
         f_handle.write('\\a '+amorph+' ')
         
         # Write out stem name stuff if we have a stem
