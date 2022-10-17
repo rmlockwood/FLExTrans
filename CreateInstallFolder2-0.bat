@@ -1,121 +1,131 @@
-SET FLEXTRANS_VERSION=3.6
-rem Delete everything in Install2.1.1
-rd /s /q Install2.1.1
+SET FLEXTRANS_VERSION=3.6.1
+SET INSTALL_FOLDER_VERSION=2.1.2
+rem Delete everything in Install%INSTALL_FOLDER_VERSION%
+rd /s /q Install%INSTALL_FOLDER_VERSION%
 
-rem Delete everything in Install2.1.1
-rd /s /q Install2.1.1
+rem Delete everything in Install%INSTALL_FOLDER_VERSION%
+rd /s /q Install%INSTALL_FOLDER_VERSION%
 
 rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker all in one file
-rem mkdir Install2.1.1\FLExTrans\FlexTools\Collections
-rem mkdir Install2.1.1\FLExTrans\FlexTools\Output
-mkdir Install2.1.1\FLExTrans\FlexTools\__icons
-mkdir Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-mkdir Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-mkdir Install2.1.1\FLExTrans\WorkProjects
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config\Collections
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Output
+rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Collections
+rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Output
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\__icons
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\Collections
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
-xcopy FlexTools2.1.1\requirements.txt Install2.1.1\FLExTrans 
-xcopy FlexTools2.1.1\FlexTools\* Install2.1.1\FLExTrans\FlexTools 
-xcopy /s FlexTools2.1.1\FlexTools\__icons\* Install2.1.1\FLExTrans\FlexTools\__icons
-echo fuzzywuzzy >> Install2.1.1\FLExTrans\requirements.txt
-echo Levenshtein >> Install2.1.1\FLExTrans\requirements.txt
-echo PyQt5==5.14 >> Install2.1.1\FLExTrans\requirements.txt
-echo PyQtWebEngine==5.14 >> Install2.1.1\FLExTrans\requirements.txt
+xcopy flextools-%INSTALL_FOLDER_VERSION%\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
+xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools 
+xcopy /s flextools-%INSTALL_FOLDER_VERSION%\FlexTools\__icons\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\__icons
+echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo PyQt5==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo PyQtWebEngine==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 
 rem core models
-copy CatalogTargetAffixes.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ConvertTextToSTAMPformat.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractBilingualLexicon.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractSourceText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy DoStampSynthesis.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy InsertTargetText.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunApertium.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunTreeTran.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
+copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ConvertTextToSTAMPformat.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ExtractBilingualLexicon.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ExtractSourceText.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy DoStampSynthesis.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy InsertTargetText.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy RunApertium.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy RunTreeTran.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
 rem libraries
-copy readconfig.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy Utils.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy MyTableView.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy readconfig.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy Utils.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy MyTableView.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 
 rem other stuff
-copy /Y subdirs.pth Install2.1.1\FLExTrans\FlexTools\Modules
-copy stamp32.exe Install2.1.1\FLExTrans\FlexTools
-copy Makefile Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
-rem copy FlexTools.vbs Install2.1.1\FLExTrans\WorkProjects\German-Swedish
-copy source_text.txt Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Output
+copy /Y subdirs.pth Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules
+copy stamp32.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
+copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
+copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
+copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
 rem Documentation
-mkdir "Install2.1.1\FLExTrans\FLExTrans Documentation"
-mkdir "Install2.1.1\FLExTrans\FLExTrans Documentation\Images"
-mkdir "Install2.1.1\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial"
-mkdir "Install2.1.1\FLExTrans\FLExTrans Documentation\Agreement"
-mkdir "Install2.1.1\FLExTrans\FLExTrans Documentation\Irregular Form"
-copy Doc\*.htm "Install2.1.1\FLExTrans\FLExTrans Documentation"
-copy Doc\Images\* "Install2.1.1\FLExTrans\FLExTrans Documentation\Images"
-copy "Doc\Transfer Rules Tutorial\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial"
-copy "Doc\Agreement\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Agreement"
-copy "Doc\Irregular Form\*" "Install2.1.1\FLExTrans\FLExTrans Documentation\Irregular Form"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Images"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Agreement"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Irregular Form"
+copy Doc\*.htm "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
+copy Doc\Images\* "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Images"
+copy "Doc\Transfer Rules Tutorial\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial"
+copy "Doc\Agreement\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Agreement"
+copy "Doc\Irregular Form\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Irregular Form"
 
 rem SampleProjects
-mkdir "Install2.1.1\FLExTrans\SampleFLExProjects"
-copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
-copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" "Install2.1.1\FLExTrans\SampleFLExProjects"
+mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
 
 rem Sense Linker pieces
-copy LinkSenseTool.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy Linker.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy FLExTransWindowIcon.ico Install2.1.1\FLExTrans\FLExTools
+copy LinkSenseTool.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy Linker.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy FLExTransWindowIcon.ico Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 
 rem Live Rule Tester pieces
-mkdir Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
-copy LiveRuleTesterTool.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy LiveRuleTester.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy UpArrow.png Install2.1.1\FLExTrans\FLExTools
-copy DownArrow.png Install2.1.1\FLExTrans\FLExTools
-copy MakefileForLiveRuleTester Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester
+copy LiveRuleTesterTool.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy LiveRuleTester.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy UpArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
+copy DownArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
+copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
+copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester\Makefile
 
 rem View Source-Target pieces
-copy ViewSrcTgt.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy SrcTgtViewer.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ViewSrcTgt.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy SrcTgtViewer.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem SetUp Gramm Categories pieces
-copy SetUpTransferRuleGramCat.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
+copy SetUpTransferRuleGramCat.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
 rem Testbed pieces
-copy TestbedValidator.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy StartTestbed.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy EndTestbed.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy OverWriteTestDlg.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy TestbedLogViewer.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy TestbedLog.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy Light_green_check.png Install2.1.1\FLExTrans\FLExTools   
-copy Red_x.png             Install2.1.1\FLExTrans\FLExTools             
-copy Yellow_triangle.png   Install2.1.1\FLExTrans\FLExTools    
+copy TestbedValidator.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy StartTestbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy EndTestbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy OverWriteTestDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy TestbedLogViewer.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy TestbedLog.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy Light_green_check.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools   
+copy Red_x.png             Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools             
+copy Yellow_triangle.png   Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools    
 
 rem Paratext Import/Export Tools
-copy ImportFromParatext.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExportToParatext.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-copy ParatextChapSelectionDlg.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy ChapterSelection.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ImportFromParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ExportToParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ParatextChapSelectionDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ChapterSelection.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 
 rem Settings tool
-copy Settings.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy ComboBox.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\lib
-copy SettingsGUI.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
+copy Settings.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
+copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
 rem Apertium files
-copy Apertium4Windows\*.* Install2.1.1\FLExTrans\FLExTools
+copy Apertium4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 
 rem Make for Windows files
-copy Make4Windows\*.* Install2.1.1\FLExTrans\FLExTools
+copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 
 rem Other Tools
-copy CleanFiles.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans
-rem copy SetWorkingProject.py Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Config
+copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+rem copy SetWorkingProject.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
+rem copy SetWorkingProject.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
@@ -132,7 +142,7 @@ del %ADD_ON_ZIP_FILE%
 cd ..
 
 SET ZIP_FILE=FLExToolsWithFLExTrans%FLEXTRANS_VERSION%.zip
-cd Install2.1.1
+cd Install%INSTALL_FOLDER_VERSION%
 "%SEVENZ_PATH%"\7z a %ZIP_FILE% FLExTrans
 copy /Y %ZIP_FILE% ..
 copy /Y %ZIP_FILE% ..\"previous versions"
