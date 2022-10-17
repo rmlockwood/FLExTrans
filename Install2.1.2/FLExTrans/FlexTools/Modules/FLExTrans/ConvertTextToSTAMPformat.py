@@ -154,7 +154,6 @@
 #   
 import re 
 import os
-import tempfile
 from datetime import datetime
 from System import Guid
 from System import String
@@ -214,13 +213,13 @@ class ANAInfo(object):
     def getAnalysisSuffixes(self):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getPreDotRoot(self): # in other words the headword
-        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, re.A) # re.A=ASCII-only match
+        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, re.RegexFlag.A) # re.RegexFlag.A=ASCII-only match
         if g:
             ret = self.removeUnderscores(g.group(1))
             return ret
         return None
     def getSenseNum(self):
-        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, re.A).group(1) # re.A=ASCII-only match
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
     def getAfterPunc(self):
         return self.AfterPunc
     def getBeforePunc(self):
@@ -324,7 +323,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     f_afx.close()
 
     try:
-        f_test = open(out_name, 'r', encoding='utf-8')
+        open(out_name, 'r', encoding='utf-8')
     except IOError:
         error_list.append(('The file: '+out_name+' was not found.', 2))
         return error_list
@@ -542,7 +541,7 @@ def get_ana_data_from_entry(comp_e):
                 abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
                    
         # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-        sense_num = re.search(r'(\d*) \(',ITsString(comp_sense.HeadWord).Text, re.A).group(1) # re.A=ASCII-only match
+        sense_num = re.search(r'(\d*) \(',ITsString(comp_sense.HeadWord).Text, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
         
         # No number found, so use sense 1
         if sense_num == '':
@@ -669,7 +668,7 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
         if spec.ClassID == 53: # FsComplexValue
-            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+            get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
             
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
@@ -850,7 +849,7 @@ class ConversionData():
         indx += 1
         
         # read in the name value pairs in consecutive lines
-        for i in range(0, num_abbr):
+        for _ in range(0, num_abbr):
             name = lines[indx].rstrip()
             val = lines[indx+1].rstrip()
             indx += 2
@@ -925,7 +924,7 @@ class ConversionData():
             i += 2
             var_list = []
             
-            for j in range(0, num_variants):
+            for _ in range(0, num_variants):
                 guid = infl_lines[i].rstrip()
                 e = self.getEntry(guid)
                 

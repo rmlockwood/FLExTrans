@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.10 - 10/11/22 - Ron Lockwood
+#   Handle msa's that are not MoInflAffMsa or MoStemMsa, by skipping them. Also skip null
+#   environment strings. Also skip clitics. Fixes #280
+#
+#   Version 3.6.9 - 9/17/22 - Ron Lockwood
+#   Overhaul of writing allomorphs to support proper negating of environment
+#   constraints when inflection classes and/or stem names are present.
+#
 #   Version 3.6.8 - 9/3/22 - Ron Lockwood
 #   Fixes #250. Don't create empty STAMP control files if they already exist.
 #   This allows someone to use modifications to these files for whatever purpose.
@@ -188,7 +196,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.8",
+        FTM_Version    : "3.6.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -260,20 +268,23 @@ def haveFeatureMatch(specsA, specsB):
     
     return False
     
-def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morphCategory):
+def output_final_allomorph_info(f_handle, sense, morphCategory):
     
-    # Put out normal allomorph stuff
-    if output_allomorph(morph, envList, prevStemList, f_handle, morphCategory) == False:
+    ## Now put out the one-time stuff for the entry
+
+    # We will only process inflectional affixes and stems (i.e. not derrivational affixes, etc.)
+    if sense is not None and (sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' or \
+                              sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa'):
+          
+        msa = sense.MorphoSyntaxAnalysisRA
+    else:
+        return
+        
+    # Skip clitics which we are giving a category of SUFFIX or PREFIX, but the class name is Stem
+    if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa' and morphCategory != STEM_TYPE:
         
         return
     
-    ## Now put out the one-time stuff for the entry
-    if sense is not None:
-        
-        msa = sense.MorphoSyntaxAnalysisRA
-    else:
-        msa = None
-        
     # Deal with affix stem name stuff.
     # A stem name goes on an affix only if the stem name category matches the category of this msa object
     # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
@@ -306,7 +317,11 @@ def output_default_allomorph(morph, envList, prevStemList, f_handle, sense, morp
                 
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
-def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
+def gather_allomorph_data(morph, masterAlloList, morphCategory):
+    
+    stemName = ''
+    environList = []
+    inflClassList = []
     
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
@@ -315,33 +330,12 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
         
         return False
     
-    # Handle documented ways to do null morphemes in FLEx
-    if amorph == '^0' or amorph == '&0' or amorph == '*0' or amorph == '\u2205':
-        
-        amorph ='0'
-
-    # Convert spaces between words to underscores, these have to be removed later.
-    amorph = Utils.underscores(amorph)
-    f_handle.write('\\a '+amorph+' ')
-    
-    # Negate other stem name constraints
-#     for prevStem in prevStemList:
-#         
-#         negatedStem = re.sub(' _ ', ' ~_ ', prevStem)
-#         f_handle.write(negatedStem) 
-    
-    # Write out stem name stuff if we have a stem
+    # Save the stem name if we have a stem
     if morphCategory == STEM_TYPE: # stems only
 
         if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
-            stemNameStr = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
-            mp = f'{{{stemNameStr}{AFFIX_STR}}}' # {{ means one { i.e. we want the string to be {xyzAffix}
-            env1 = f'+/ {mp} ... _ '
-            env2 = f'+/ _ ... {mp} '
-            f_handle.write(f'{env1}{env2}') 
-            prevStemList.append(env1)
-            prevStemList.append(env2)
+            stemName = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
             
     else: # non-stems only
         
@@ -349,32 +343,122 @@ def output_allomorph(morph, envList, prevStemList, f_handle, morphCategory):
         # and won't have inflection classes so don't try to process them
         if morph.ClassName != 'MoStemAllomorph' and morph.InflectionClassesRC:
             
-            # Write out each inflection class constraint
+            # Save each inflection class 
             for inflClass in morph.InflectionClassesRC:
                 
                 inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
                 
-                if morphCategory == PREFIX_TYPE or morphCategory == INFIX_TYPE:
-                    
-                    f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
-                    
-                else:
-                    f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
-            
-    # Write out negated environments from previous allomorphs
-    for prevEnv in envList:
-        
-        f_handle.write('~'+prevEnv+' ') 
-        
-    # Write out each phonological environment constraint
+                inflClassList.append(inflClassStr)
+                
+    # Save each phonological environment 
     for env in morph.PhoneEnvRC:
         
         envStr = ITsString(env.StringRepresentation).Text
-        f_handle.write(envStr+' ')
-        envList.append(envStr)
-        
-    f_handle.write('\n')
+        environList.append(envStr)
 
+    masterAlloList.append((amorph, stemName, environList, inflClassList, morphCategory))
+    
+def output_all_allomorphs(masterAlloList, f_handle):
+    
+    # Loop through all the allomorphs we saved
+    for currAllomNum, (amorph, stemName, environList, inflClassList, morphCategory) in enumerate(masterAlloList):
+        
+        # Handle documented ways to do null morphemes in FLEx
+        if amorph == '^0' or amorph == '&0' or amorph == '*0' or amorph == '\u2205':
+            
+            amorph ='0'
+    
+        # Convert spaces between words to underscores, these have to be removed later.
+        amorph = re.sub(r' ', r'_', amorph)
+        f_handle.write('\\a '+amorph+' ')
+        
+        # Write out stem name stuff if we have a stem
+        if stemName:
+    
+            mp = f'{{{stemName}{AFFIX_STR}}}' # {{ means one { i.e. we want the string to be {xyzAffix}
+            env1 = f'+/ {mp} ... _ '
+            env2 = f'+/ _ ... {mp} '
+            f_handle.write(f'{env1}{env2}') 
+                
+        # Write out inflection class stuff
+        for inflClassStr in inflClassList:
+            
+            if morphCategory == PREFIX_TYPE or morphCategory == INFIX_TYPE:
+                
+                f_handle.write(f'+/ _ ... {{{inflClassStr}}} ') # {{ means one {
+                
+            else:
+                f_handle.write(f'+/ {{{inflClassStr}}} ... _ ')
+                
+        # Write out each phonological environment constraints
+        for envStr in environList:
+            
+            if envStr is not None:
+                
+                f_handle.write(envStr+' ')
+        
+        ## Write out negated environments from previous allomorphs if necessary
+        
+        # If we have at least one current inflection class
+        if len(inflClassList) > 0:
+        
+            didIt = False
+            
+            # Loop through all inflection classes for all allmorphs except the current ones
+            for j, (_, _, _, myInflClList, _) in enumerate(masterAlloList):
+                
+                if currAllomNum != j: 
+                    
+                    for myInflCl in myInflClList:
+                        
+                        # If current inflection class matches an inflection class from any other allomorph
+                        if myInflCl in inflClassList:
+            
+                            # Generate negative environments
+                            writeNegEnvironments(f_handle, currAllomNum, environList, masterAlloList)
+                            didIt = True
+                            break
+                    
+                    if didIt:
+                        break
+                        
+        # If we have a current stem name
+        elif len(stemName) > 0:
+            
+            # Loop through all stem names from previous allomorphs
+            for j, (_, myStemName, _, _, _) in enumerate(masterAlloList):
+                
+                if currAllomNum != j:
+                    
+                    # If current stem name matches a stem name from a previous allomorph
+                    if myStemName == stemName:
+                        
+                        # Generate negative environments
+                        writeNegEnvironments(f_handle, currAllomNum, environList, masterAlloList)
+                        break
+        
+        # Otherwise if we don't have an current inflection class or stem name
+        else:
+            
+            # Generate negative environments
+            writeNegEnvironments(f_handle, currAllomNum, environList, masterAlloList)
+        
+        f_handle.write('\n')
+
+def writeNegEnvironments(f_handle, currAllomNum, currEnvironList, masterAlloList):   
+    
+    # If the current environment string doesn't match an environment string from another allomorph negate that other environment
+    for n, (_, _, environList, _, _) in enumerate(masterAlloList):    
+        
+        # We only write negative environments for the previous allomorphs
+        if n < currAllomNum:
+            
+            for envirStr in environList:
+                
+                if envirStr not in currEnvironList:
+                    
+                    f_handle.write(f'~{envirStr} ')
+            
 # A circumfix has two parts a prefix part and a suffix part
 # Write the 1st allomorph to the prefix file and the 2nd to the suffix file
 # Modify the glosses for each using the convention used in the module ConvertTextToSTAMPformat
@@ -391,10 +475,9 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     else:
         f_pf.write('\\g \n')
     
+    masterAlloList = []
+
     # 1st allomorph for the prefix file
-    allEnvs = []
-    allStemEnvs = []
-    
     for allomorph in e.AlternateFormsOS:
         
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
@@ -402,7 +485,12 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
             
         if morphType == 'prefix':
             
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_pf, sense, PREFIX_TYPE)
+            gather_allomorph_data(allomorph, masterAlloList, PREFIX_TYPE)
+    
+    # Write the data
+    output_all_allomorphs(masterAlloList, f_pf)
+
+    output_final_allomorph_info(f_pf, sense, PREFIX_TYPE)
     
     f_pf.write('\n')
     
@@ -412,18 +500,23 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     else:
         f_sf.write('\\g \n')
     
-    # 2nd allomorph for the suffix file
-    allEnvs = []
-    allStemEnvs = []
     
+    masterAlloList = []
+
+    # 2nd allomorph for the suffix file
     for allomorph in e.AlternateFormsOS:
         
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
         morphType = Utils.morphTypeMap[morphGuidStr]
             
         if morphType == SUFFIX_TYPE:
-            
-            output_allomorph(allomorph, allEnvs, allStemEnvs, f_sf, sense, SUFFIX_TYPE)
+
+            gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE)
+
+    # Write the data
+    output_all_allomorphs(masterAlloList, f_sf)
+
+    output_final_allomorph_info(f_sf, sense, SUFFIX_TYPE)
     
     f_sf.write('\n')
 
@@ -459,15 +552,20 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
         f_handle.write('\n')
         
     # Loop through all the allomorphs
-    allEnvs = []
-    allStemEnvs = []
+    masterAlloList = []
     
     for allomorph in e.AlternateFormsOS:
         
-        output_allomorph(allomorph, allEnvs, allStemEnvs, f_handle, myType)
+        gather_allomorph_data(allomorph, masterAlloList, myType)
     
     # Now process the lexeme form which is the default allomorph
-    output_default_allomorph(e.LexemeFormOA, allEnvs, allStemEnvs, f_handle, sense, myType)
+    gather_allomorph_data(e.LexemeFormOA, masterAlloList, myType)
+
+    # Write the data
+    output_all_allomorphs(masterAlloList, f_handle)
+    
+    output_final_allomorph_info(f_handle, sense, myType)
+    
     f_handle.write('\n')
 
 def define_some_names(partPath):

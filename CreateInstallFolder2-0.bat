@@ -18,6 +18,11 @@ mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Buil
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\Collections
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
 xcopy flextools-%INSTALL_FOLDER_VERSION%\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools 
@@ -46,8 +51,9 @@ rem other stuff
 copy /Y subdirs.pth Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules
 copy stamp32.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
-rem copy FlexTools.vbs Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish
+copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
 copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
 rem Documentation
 mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
@@ -73,11 +79,13 @@ copy FLExTransWindowIcon.ico Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 
 rem Live Rule Tester pieces
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester
 copy LiveRuleTesterTool.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 copy LiveRuleTester.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 copy DownArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
+copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester\Makefile
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
@@ -117,6 +125,7 @@ copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 rem Other Tools
 copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 rem copy SetWorkingProject.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
+rem copy SetWorkingProject.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
