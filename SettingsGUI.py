@@ -869,7 +869,7 @@ widgetList = [
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
 
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    "When editing the testbed, if Yes, characters with diacritics will be composed (NFC) to \nsingle characters (where possible). If No, characters will be decomposed (NFD)."],\
+    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD)."],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
