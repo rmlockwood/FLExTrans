@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.3 - 10/17/22 - Ron Lockwood
+#   Two new transfer rule file settings for advanced transfer.
+#
 #   Version 3.6.2 - 9/7/22 - Ron Lockwood
 #   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
 #
@@ -76,7 +79,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.2",
+        FTM_Version: "3.6.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -906,6 +909,12 @@ widgetList = [
 
    ["Testbed Results File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     "The path and name of the testbed results file"],\
+
+   ["Transfer Rules File 2 (Advanced Transfer)", "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
+    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer."],\
+
+   ["Transfer Rules File 3 (Advanced Transfer)", "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
+    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer."],\
 
    ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
     "The path and name of the TreeTran rules file"],\

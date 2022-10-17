@@ -45,6 +45,7 @@ rem other stuff
 copy /Y subdirs.pth Install2.1.1\FLExTrans\FlexTools\Modules
 copy stamp32.exe Install2.1.1\FLExTrans\FlexTools
 copy Makefile Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
+copy Makefile.advanced Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build
 rem copy FlexTools.vbs Install2.1.1\FLExTrans\WorkProjects\German-Swedish
 copy source_text.txt Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Output
 
@@ -77,6 +78,7 @@ copy LiveRuleTester.py Install2.1.1\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy UpArrow.png Install2.1.1\FLExTrans\FLExTools
 copy DownArrow.png Install2.1.1\FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
+copy MakefileForLiveRuleTester.advanced Install2.1.1\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install2.1.1\FLExTrans\FlexTools\Modules\FLExTrans

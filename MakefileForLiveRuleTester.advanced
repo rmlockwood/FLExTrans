@@ -1,0 +1,23 @@
+target_text.aper: transfer_rules.t3x.bin target_text2.aper
+	${FLEXTOOLS_PATH}\apertium-postchunk -t transfer_rules.t3x transfer_rules.t3x.bin target_text2.aper > target_text.aper 2>apertium_log3.txt
+target_text2.aper: transfer_rules.t2x.bin target_text1.aper
+	${FLEXTOOLS_PATH}\apertium-interchunk -t transfer_rules.t2x transfer_rules.t2x.bin target_text1.aper > target_text2.aper 2>apertium_log2.txt
+target_text1.aper: bilingual.bin transfer_rules.t1x.bin source_text.aper
+	${FLEXTOOLS_PATH}\apertium-transfer -t transfer_rules.t1x transfer_rules.t1x.bin bilingual.bin source_text.aper > target_text1.aper 2>apertium_log.txt
+bilingual.bin: bilingual.dix
+	${FLEXTOOLS_PATH}\lt-comp lr bilingual.dix bilingual.bin
+transfer_rules.t1x.bin: transfer_rules.t1x
+	${FLEXTOOLS_PATH}\apertium-preprocess-transfer transfer_rules.t1x transfer_rules.t1x.bin
+transfer_rules.t2x.bin: transfer_rules.t2x
+	${FLEXTOOLS_PATH}\apertium-preprocess-transfer transfer_rules.t2x transfer_rules.t2x.bin
+transfer_rules.t3x.bin: transfer_rules.t3x
+	${FLEXTOOLS_PATH}\apertium-preprocess-transfer transfer_rules.t3x transfer_rules.t3x.bin
+clean:
+	del *.bin target_*.aper *log
+clean_all:
+	rm -f *.bin target_*.aper source_text.aper tr.t*x log err_log bilingual.dix
+trace2: transfer_rules.t2x.bin target_text1.aper
+	cat target_text1.aper | ${FLEXTOOLS_PATH}\apertium-interchunk -t tr.t2x transfer_rules.t2x.bin > target_text2.aper 
+trace1: bilingual.bin transfer_rules.t1x.bin source_text.aper
+	cat source_text.aper | ${FLEXTOOLS_PATH}\apertium-transfer -t transfer_rules.t1x transfer_rules.t1x.bin bilingual.bin > target_text1.aper
+

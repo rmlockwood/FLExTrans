@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.8 - 10/17/22 - Ron Lockwood
+#   Get advanced rule file info. from files defined by new settings.
+#
 #   Version 3.6.7 - 9/2/22 - Ron Lockwood
 #    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
 #
@@ -257,7 +260,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.7",
+        FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -531,7 +534,7 @@ class Main(QMainWindow):
             return 
         
         # Get replacement file name.
-        self.__replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
+        self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
         if not self.__replFile:
             self.ret_val = False
             self.close()
@@ -1507,14 +1510,14 @@ class Main(QMainWindow):
             self.ui.TransferFileEdit.setText('')
             return False
         
-        # Check if we have an interchunk rules file (.t2x)
-        
         # build the interchunk rules file name
-        rest = self.__transfer_rules_file[0:-4] #os.path.splitext(self.__transfer_rules_file.toStdString())
-        interchunk_rules_file = rest + '.t2x'
+        #rest = self.__transfer_rules_file[0:-4] #os.path.splitext(self.__transfer_rules_file.toStdString())
+        #interchunk_rules_file = rest + '.t2x'
         
-        # Check if the file exists. If it does, we assume we have advanced transfer going on
-        if os.path.isfile(interchunk_rules_file):
+        # Check if the interchunk file exists. If it does, we assume we have advanced transfer going on
+        interchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE2, self.__report, giveError=False)
+        
+        if interchunk_rules_file and os.path.isfile(interchunk_rules_file):
             
             # Verify we have a valid transfer file.
             try:
@@ -1538,10 +1541,12 @@ class Main(QMainWindow):
                 return False
             
             # build the postchunk rules file name
-            postchunk_rules_file = rest + '.t3x'
+            #postchunk_rules_file = rest + '.t3x'
+            
+            postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
             
             # Check if the file exists. If it does, we assume we have advanced transfer going on
-            if os.path.isfile(postchunk_rules_file):
+            if postchunk_rules_file and os.path.isfile(postchunk_rules_file):
                 
                 # Verify we have a valid transfer file.
                 try:

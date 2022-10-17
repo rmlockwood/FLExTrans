@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.6.2 - 10/17/22 - Ron Lockwood
+#   Strip advanced rule files if they exist. Error handling if can't open file to strip.
+#
 #   Version 3.6.1 - 9/2/22 - Ron Lockwood
 #    Fixes #255. Convert slashes in symbols before running Apertium
 #
@@ -70,23 +73,30 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
         FTM_Description:    descr}     
 
-STRIPPED_RULES = 'tr.t1x'
+STRIPPED_RULES  = 'tr.t1x'
+STRIPPED_RULES2 = 'tr.t2x'
+STRIPPED_RULES3 = 'tr.t3x'
 
-def stripRulesFile(buildFolder, tranferRulePath):
+def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
     
     # Open the existing rule file and read all the lines
-    f = open(tranferRulePath ,"r", encoding='utf-8')
+    try:
+        f = open(tranferRulePath ,"r", encoding='utf-8')
+    except:
+        report.Error(f'Error in opening the file: "{tranferRulePath}", check that it exists.')
+        return True
+
     lines = f.readlines()
     f.close()
     
     # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
+    f = open(os.path.join(buildFolder, strippedRulesFileName) ,"w", encoding='utf-8')
     
     # Go through the existing rule file and write everything to the new file except Doctype stuff.
     for line in lines:
@@ -105,6 +115,8 @@ def stripRulesFile(buildFolder, tranferRulePath):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
     
+    return False
+    
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -114,11 +126,6 @@ def MainFunction(DB, report, modify=True):
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return True
-
-    # Get the path to the transfer rules file
-    tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-    if not tranferRulePath:
         return True
 
     # Get the path to the dictionary file
@@ -131,9 +138,33 @@ def MainFunction(DB, report, modify=True):
     if not transferResultsPath:
         return True
     
+    # Get the path to the transfer rules file
+    tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+    if not tranferRulePath:
+        return True
+
     # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
-    stripRulesFile(buildFolder, tranferRulePath)
+    if stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
+        return True
     
+    ## Advanced transfer files
+    
+    # Get the path to the 2nd transfer rules file (could be blank)
+    tranferRulePath2 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE2, report, giveError=False)
+    if tranferRulePath2:
+
+        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        if stripRulesFile(report, buildFolder, tranferRulePath2, STRIPPED_RULES2) == True:
+            return True
+
+    # Get the path to the 3rd transfer rules file (could be blank)
+    tranferRulePath3 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report, giveError=False)
+    if tranferRulePath3:
+
+        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        if stripRulesFile(report, buildFolder, tranferRulePath3, STRIPPED_RULES3) == True:
+            return True
+
     # Check if attributes are well-formed. Warnings will be reported in the function
     Utils.checkRuleAttributes(report, tranferRulePath)
     
