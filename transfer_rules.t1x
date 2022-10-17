@@ -13,6 +13,15 @@ tags="adj.*"
 ></cat-item
 ></def-cat
 ><def-cat
+n="c_n"
+><cat-item
+tags="n"
+></cat-item
+><cat-item
+tags="n.*"
+></cat-item
+></def-cat
+><def-cat
 n="c_v"
 ><cat-item
 tags="v"
