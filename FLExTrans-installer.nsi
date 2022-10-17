@@ -8,7 +8,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.6"
+!define PRODUCT_VERSION "3.6.1"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -70,11 +70,11 @@ InitPluginsDir
   endPythonSync:
 
   # Install Git
-  MessageBox MB_YESNO "Install Git for Windows? $\nUse the default settings." /SD IDYES IDNO endGitSync
-        File "Git-2.31.1-64-bit.exe"
-        ExecWait "$INSTDIR\install_files\Git-2.31.1-64-bit.exe"
-        Goto endGitSync
-  endGitSync:
+#  MessageBox MB_YESNO "Install Git for Windows? $\nUse the default settings." /SD IDYES IDNO endGitSync
+#        File "Git-2.31.1-64-bit.exe"
+#        ExecWait "$INSTDIR\install_files\Git-2.31.1-64-bit.exe"
+#        Goto endGitSync
+#  endGitSync:
   
   Var /GLOBAL OUT_FOLDER
   # Unzip FLExTrans to the desired folder
@@ -100,9 +100,9 @@ InitPluginsDir
   File "${GIT_FOLDER}\FlexTools.bat"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\FLExTrans All Steps.ini"
-  File "${GIT_FOLDER}\FLExTrans Run Testbed.ini"
-  File "${GIT_FOLDER}\FLExTrans Tools.ini"
+  File "${GIT_FOLDER}\All Steps.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
   SetOverwrite on
 
   # Rename modules in the .ini (for old installs)
@@ -113,9 +113,14 @@ InitPluginsDir
   !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
 
   # Attempt to run pip to install FlexTools dependencies
+  !define mycmd '"$LocalAppdata\Programs\Python\Python37\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
-  Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
+  # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
+  ExecWait '${mycmd}'
+  # if the above failed, call the command.bat to do the same thing, but if this was the first time run, pip won't be in the path.
+  IfErrors 0 +2
+        Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
 
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
