@@ -3,11 +3,11 @@ Do these things when making a new release
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Change config file to utf-8
 -Run createInstallFolder2.0.bat to rebuild zip files
 -Do another commit that has the install changes
 -Finish merging all pull requests
 -Fetch changes to the local master branch (IMPORTANT so that latest install file scripts get downloaded)
+-Change config file to utf-8
 -Rebuild the install executable
 -Test the install
 -Make a new .download_info file changing the relevant data. 3 changes.
