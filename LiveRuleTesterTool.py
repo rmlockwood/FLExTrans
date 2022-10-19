@@ -7,6 +7,7 @@
 #
 #   Version 3.6.8 - 10/19/22 - Ron Lockwood
 #    Fixes #244. Give a warning if an attribute matches a grammatical category.
+#    Fixes #246. Allow unchecking of all rules. Also give message when there's no output.
 #
 #   Version 3.6.7 - 9/2/22 - Ron Lockwood
 #    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
@@ -517,7 +518,7 @@ class Main(QMainWindow):
         if found_rtl:
             # this doesn't seem to be working
             self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
-            
+
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         self.ReadBilingualLexicon()
         
@@ -1004,6 +1005,10 @@ class Main(QMainWindow):
         # if RTL text, prepend the RTL mark
         if self.has_RTL_data(synthText[:len(synthText)//2]): # just check the 1st half of the string.
             synthText = '\u200F' + synthText
+            
+        # If we got no output, give a string to the user to indicate it.
+        if len(synthText) == 0:
+            synthText = 'Synthesis produced no output.'
             
         self.ui.SynthTextEdit.setPlainText(synthText)
         
@@ -1719,13 +1724,23 @@ class Main(QMainWindow):
             if self.__ruleModel.item(i).checkState():
                 new_sr_element.append(rule_el) 
             
-        # Give an error if no rules were selected
+        # If no rules were selected, create a dummy rule
         if len(list(new_sr_element)) < 1:
             
-            self.ui.TargetTextEdit.setPlainText('At least one rule must be selected.')
-            self.unsetCursor()
-            return
-        
+            # Create a dummy rule that does nothing
+            ruleElement = ET.SubElement(new_sr_element, 'rule')
+            patternElement = ET.SubElement(ruleElement, 'pattern')
+            patternItemElement = ET.SubElement(patternElement, 'pattern-item')
+            patternItemElement.attrib['n'] = 'c_dummy'
+            ET.SubElement(ruleElement, 'action')
+            
+            # Create a dummy category to go with the rule
+            sectionDefCatsElement = myRoot.find('section-def-cats')
+            defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
+            defCatElement.attrib['n'] = 'c_dummy'
+            catItemElement = ET.SubElement(defCatElement, 'cat-item')
+            catItemElement.attrib['tags'] = 'dummy'
+
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
         
@@ -1748,9 +1763,11 @@ class Main(QMainWindow):
         
             error_list = Utils.checkRuleAttributesXML(ruleFileRoot)
     
-#            for triplet in error_list:
-#                self.ui.warningLabel.SetText('hi ron')
-                #self.ui.warningLabel.SetText(self.ui.TestsAddedLabel.GetText()+triplet[0]+'\n')
+            for i, triplet in enumerate(error_list):
+                if i == 0:
+                    self.ui.warningLabel.setText(triplet[0])
+                else:
+                    self.ui.warningLabel.setText(self.ui.warningLabel.text()+'\n'+triplet[0])
 
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
@@ -1862,6 +1879,11 @@ class Main(QMainWindow):
         # The p element now has one or more <span> children, turn them into an html string        
         htmlVal = ET.tostring(pElem, encoding='unicode')
 
+        # If we only have a paragraph element, we got no output.
+        if htmlVal == '<p />':
+            
+            htmlVal = 'The rules produced no output.'
+            
         self.ui.TargetTextEdit.setText(htmlVal)
         
         tgtf.close()

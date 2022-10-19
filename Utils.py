@@ -1874,12 +1874,12 @@ def checkRuleAttributesXML(myRoot):
                     
                     if attribStr in gramCatSet:
                     
-                        error_list.append((f'In the Attributes section of your transfer rules, the attribute: {attribStr} is the same as a grammatical category (defined in a_gram_cat). Your rules may not work as expected.', 1))
+                        error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" is the same as a gramm. cat. Your rules may not work as expected.', 1))
 
                 # Make sure there are no periods in the attribute, if there are give a warning
                 if attribStr and re.search(r'\.', attribStr):
                     
-                    error_list.append((f'In the Attributes section of your transfer rules, the attribute: {attribStr} has a period in it. It needs to be an underscore. Your rules may not work as expected.', 1))
+                    error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" has a period in it. It needs to be an underscore. Your rules may not work as expected.', 1))
     return error_list
 
 # Create a span element and set the color and text

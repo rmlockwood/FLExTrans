@@ -773,9 +773,9 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>482</y>
+      <y>476</y>
       <width>640</width>
-      <height>31</height>
+      <height>42</height>
      </rect>
     </property>
     <property name="palette">
@@ -822,7 +822,7 @@
      <enum>Qt::AutoText</enum>
     </property>
     <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
     <property name="wordWrap">
      <bool>true</bool>
