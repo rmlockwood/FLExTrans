@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.6.10 - 10/19/22 - Ron Lockwood
+#    Fixes #244. Give a warning if an attribute matches a grammatical category.
+#
 #   Version 3.6.9 - 9/2/22 - Ron Lockwood
 #    Slash fix had a problem passing re MULTILINE to a pre-compiled regex.
 #    It was actually passing 8 to the sub function to only do 8 substitutions.
@@ -267,6 +270,8 @@ from flexlibs import FLExProject, AllProjectNames
 import ReadConfig as MyReadConfig 
 from FTPaths import CONFIG_PATH
 
+GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
+
 MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
 MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
 MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
@@ -437,6 +442,18 @@ def getListOfSymbolSubPairs(convertStr, problemDataList):
     # return a list with duplicates removed
     return masterList
     
+def processErrorList(report, error_list):    
+    # output info, warnings, errors
+    for msg in error_list:
+        
+        # msg is a pair -- string & code
+        if msg[1] == 0:
+            report.Info(msg[0])
+        elif msg[1] == 1:
+            report.Warning(msg[0])
+        else: # error=2
+            report.Error(msg[0])
+
 def isClitic(myEntry):
     
     return isProclitic(myEntry) or isEnclitic(myEntry)
@@ -1799,26 +1816,51 @@ def decompose(myFile):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
         
-def checkRuleAttributes(report, tranferRulePath):
+def checkRuleAttributes(tranferRulePath):
+    
+    error_list = []
     
     # Verify we have a valid transfer file.
     try:
         rulesTree = ET.parse(tranferRulePath)
     except:
-        report.Error('Invalid File', f'The transfer file: {tranferRulePath} is invalid.')
-        return
+        error_list.append(('Invalid File', f'The transfer file: {tranferRulePath} is invalid.', 2))
+        return error_list
     
     # Find the attributes element
     myRoot = rulesTree.getroot()
     
-    checkRuleAttributesXML(report, myRoot)
+    func_err_list = checkRuleAttributesXML(myRoot)
+    
+    error_list.extend(func_err_list)
+    
+    return error_list
 
-def checkRuleAttributesXML(report, myRoot):
+def checkRuleAttributesXML(myRoot):
         
+    error_list = []
+    
     def_attrs_element = myRoot.find('section-def-attrs')
     
     if def_attrs_element:
         
+        gramCatSet = set()
+        
+        # Loop through each attribute definition
+        for def_attr_el in def_attrs_element:
+            
+            # If we have the special attribute for grammatical categories, add them to a list
+            if def_attr_el.attrib['n'] == GRAM_CAT_ATTRIBUTE:
+                
+                # Loop through each grammatical category
+                for attr_item_el in def_attr_el:
+                
+                    # Add the next one to the list
+                    gramCatSet.add(attr_item_el.attrib['tags'])
+                
+                # Once we found the grammatical category, stop
+                break
+                    
         # Loop through each attribute definition
         for def_attr_el in def_attrs_element:
             
@@ -1827,11 +1869,19 @@ def checkRuleAttributesXML(report, myRoot):
             
                 attribStr = attr_item_el.attrib['tags']
                 
+                # If the attribute is the same as a grammatical category, give a warning. Of course don't check the gram cat attribute itself for this warning.
+                if def_attr_el.attrib['n'] != GRAM_CAT_ATTRIBUTE:
+                    
+                    if attribStr in gramCatSet:
+                    
+                        error_list.append((f'In the Attributes section of your transfer rules, the attribute: {attribStr} is the same as a grammatical category (defined in a_gram_cat). Your rules may not work as expected.', 1))
+
                 # Make sure there are no periods in the attribute, if there are give a warning
                 if attribStr and re.search(r'\.', attribStr):
                     
-                    report.Warning(f'In the Attributes section of your transfer rules, the attribute: {attribStr} has a period in it. It needs to be an underscore. Your rules may not work as expected.')
-                
+                    error_list.append((f'In the Attributes section of your transfer rules, the attribute: {attribStr} has a period in it. It needs to be an underscore. Your rules may not work as expected.', 1))
+    return error_list
+
 # Create a span element and set the color and text
 def output_span(parent, color, text_str, rtl):
     

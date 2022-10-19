@@ -352,7 +352,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>509</y>
+      <y>500</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -365,7 +365,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>45</y>
+      <y>55</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -399,7 +399,7 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>502</y>
+      <y>483</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -412,7 +412,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>314</y>
+      <y>326</y>
       <width>211</width>
       <height>23</height>
      </rect>
@@ -425,7 +425,7 @@
     <property name="geometry">
      <rect>
       <x>800</x>
-      <y>316</y>
+      <y>326</y>
       <width>141</width>
       <height>23</height>
      </rect>
@@ -500,7 +500,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>UpArrow.png</normaloff>UpArrow.png</iconset>
+      <normaloff>../../.designer/backup/UpArrow.png</normaloff>../../.designer/backup/UpArrow.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="downButton">
@@ -517,7 +517,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>DownArrow.png</normaloff>DownArrow.png</iconset>
+      <normaloff>../../.designer/backup/DownArrow.png</normaloff>../../.designer/backup/DownArrow.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="ChooseSourceButton">
@@ -553,9 +553,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>539</y>
+      <y>520</y>
       <width>1231</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
@@ -574,7 +574,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>594</y>
+      <y>606</y>
       <width>161</width>
       <height>23</height>
      </rect>
@@ -767,6 +767,65 @@
     </property>
     <property name="text">
      <string>Hover over a word to see its bilingual dictionary entry.</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="warningLabel">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>482</y>
+      <width>640</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>120</red>
+          <green>120</green>
+          <blue>120</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="text">
+     <string>This is warning text.</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::AutoText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

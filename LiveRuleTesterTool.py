@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.8 - 10/19/22 - Ron Lockwood
+#    Fixes #244. Give a warning if an attribute matches a grammatical category.
+#
 #   Version 3.6.7 - 9/2/22 - Ron Lockwood
 #    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
 #
@@ -257,7 +260,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.7",
+        FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -439,9 +442,6 @@ class Main(QMainWindow):
         self.synthesisFilePath = self.testerFolder + '\\myText.syn'
         self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
         
-        # Blank out the tests added feedback label
-        self.ui.TestsAddedLabel.setText('')
-        
         # Right align some text boxes
         self.ui.SourceFileEdit.home(False)
         
@@ -462,6 +462,9 @@ class Main(QMainWindow):
         # Make sure we are on right tabs
         ruleTab = 0
         sourceTab = 0
+        
+        # Clear text boxes and labels
+        self.__ClearStuff()
         
         # Open a settings file to see which tabs were last used.
         try:
@@ -1245,9 +1248,11 @@ class Main(QMainWindow):
         
     def __ClearStuff(self):
         
+        self.ui.TestsAddedLabel.setText('')
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
         self.ui.SynthTextEdit.setPlainText('')
+        self.ui.warningLabel.setText('')
         
     def sourceTabClicked(self):
         
@@ -1681,9 +1686,6 @@ class Main(QMainWindow):
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
             ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
             
-        # Check for attribute definition issues
-        Utils.checkRuleAttributesXML(self.__report, ruleFileRoot)
-        
         # Save the source text to the tester folder
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
@@ -1741,6 +1743,15 @@ class Main(QMainWindow):
         # Substitute symbols with problem characters with fixed ones in the transfer file
         Utils.subProbSymbols('.', tr_file, subPairs)
         
+        # Check if attributes are well-formed. Warnings will be reported in the function
+        if not self.advancedTransfer:
+        
+            error_list = Utils.checkRuleAttributesXML(ruleFileRoot)
+    
+#            for triplet in error_list:
+#                self.ui.warningLabel.SetText('hi ron')
+                #self.ui.warningLabel.SetText(self.ui.TestsAddedLabel.GetText()+triplet[0]+'\n')
+
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
