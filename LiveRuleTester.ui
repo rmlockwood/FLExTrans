@@ -500,7 +500,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../../.designer/backup/UpArrow.png</normaloff>../../.designer/backup/UpArrow.png</iconset>
+      <normaloff>UpArrow.png</normaloff>UpArrow.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="downButton">
@@ -517,7 +517,7 @@
     </property>
     <property name="icon">
      <iconset>
-      <normaloff>../../.designer/backup/DownArrow.png</normaloff>../../.designer/backup/DownArrow.png</iconset>
+      <normaloff>DownArrow.png</normaloff>DownArrow.png</iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="ChooseSourceButton">
