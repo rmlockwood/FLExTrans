@@ -5,12 +5,15 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.2 - 10/19/22 - Ron Lockwood
+#    Fixes #187. Give an error when the Affix file is missing.
+#
 #   Version 3.6.1 - 8/27/22 - Ron Lockwood
-#   Made isProClitic, etc. global functions.
+#    Made isProClitic, etc. global functions.
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.5.3 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
@@ -170,9 +173,9 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Convert the file produced by RunApertium into a text file in STAMP format",
+        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 
         FTM_Description:  
 """
@@ -1163,8 +1166,7 @@ def MainFunction(DB, report, modifyAllowed):
     # Verify that the affix file exist.
     if not os.path.exists(affixFile):
         
-        report.Error(f'File not found: {affixFile}')
-        report.Error(f'Run the Catalog module first.')
+        report.Error(f'The Catalog Target Affixes module must be run before this module. The {ReadConfig.TARGET_AFFIX_GLOSS_FILE}: {affixFile} does not exist.')
         return
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
