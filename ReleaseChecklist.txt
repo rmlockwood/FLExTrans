@@ -7,7 +7,7 @@ Do these things when making a new release
 -Do another commit that has the install changes
 -Finish merging all pull requests
 -Fetch changes to the local master branch (IMPORTANT so that latest install file scripts get downloaded)
--Change config file to utf-8
+-Change config file to utf-8 if needed and verify with Notepad++
 -Rebuild the install executable
 -Test the install
 -Make a new .download_info file changing the relevant data. 3 changes.
