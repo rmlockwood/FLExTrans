@@ -57,7 +57,7 @@ class Ui_MainWindow(object):
         self.searchTargetEdit.setFont(font)
         self.searchTargetEdit.setObjectName("searchTargetEdit")
         self.sourceTextNameLabel = QtWidgets.QLabel(self.centralwidget)
-        self.sourceTextNameLabel.setGeometry(QtCore.QRect(860, 16, 151, 20))
+        self.sourceTextNameLabel.setGeometry(QtCore.QRect(860, 16, 501, 20))
         self.sourceTextNameLabel.setObjectName("sourceTextNameLabel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
