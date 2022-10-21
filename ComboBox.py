@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.6 - 10/21/22 - Ron Lockwood
+#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
+#
 #   Version 3.5.1 - 7/1/22 - Ron Lockwood
 #    Undo color change to lineEdit part
 #

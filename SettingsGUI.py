@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.3 - 10/21/22 - Ron Lockwood
+#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
+#
 #   Version 3.6.2 - 9/7/22 - Ron Lockwood
 #   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
 #
@@ -76,7 +79,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.2",
+        FTM_Version: "3.6.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
