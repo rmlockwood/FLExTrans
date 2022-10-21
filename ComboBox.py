@@ -29,6 +29,8 @@ class CheckableComboBox(QComboBox):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.modified = False
+
         # Make the combo editable to set a custom text, but readonly
         self.setEditable(True)
         self.lineEdit().setReadOnly(True)
@@ -79,6 +81,9 @@ class CheckableComboBox(QComboBox):
         super().showPopup()
         # When the popup is displayed, a click on the lineedit should close it
         self.closeOnLineEditClick = True
+
+        # Assume if the user pop's up the list, they changed something
+        self.modified = True
 
     def hidePopup(self):
         super().hidePopup()
