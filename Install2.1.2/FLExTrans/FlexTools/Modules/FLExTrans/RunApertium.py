@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.6.2 - 10/19/22 - Ron Lockwood
+#    Fixes #244. Give a warning if an attribute matches a grammatical category.
+#
 #   Version 3.6.1 - 9/2/22 - Ron Lockwood
 #    Fixes #255. Convert slashes in symbols before running Apertium
 #
@@ -70,7 +73,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.6.1",
+        FTM_Version    : "3.6.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -135,8 +138,10 @@ def MainFunction(DB, report, modify=True):
     stripRulesFile(buildFolder, tranferRulePath)
     
     # Check if attributes are well-formed. Warnings will be reported in the function
-    Utils.checkRuleAttributes(report, tranferRulePath)
-    
+    error_list = Utils.checkRuleAttributes(tranferRulePath)
+
+    Utils.processErrorList(report, error_list)
+
     # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
     subPairs = Utils.fixProblemChars(dictionaryPath)
     

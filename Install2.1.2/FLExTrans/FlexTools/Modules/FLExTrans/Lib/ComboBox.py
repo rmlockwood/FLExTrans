@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.6 - 10/21/22 - Ron Lockwood
+#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
+#
 #   Version 3.5.1 - 7/1/22 - Ron Lockwood
 #    Undo color change to lineEdit part
 #
@@ -28,6 +31,8 @@ class CheckableComboBox(QComboBox):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.modified = False
 
         # Make the combo editable to set a custom text, but readonly
         self.setEditable(True)
@@ -79,6 +84,9 @@ class CheckableComboBox(QComboBox):
         super().showPopup()
         # When the popup is displayed, a click on the lineedit should close it
         self.closeOnLineEditClick = True
+
+        # Assume if the user pop's up the list, they changed something
+        self.modified = True
 
     def hidePopup(self):
         super().hidePopup()
