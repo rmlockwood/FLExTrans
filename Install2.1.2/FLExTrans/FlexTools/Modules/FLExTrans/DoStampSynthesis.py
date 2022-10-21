@@ -5,21 +5,24 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.11 - 10/19/22 - Ron Lockwood
+#    Fixes #187. Give an error when the ANA file is missing.
+#
 #   Version 3.6.10 - 10/11/22 - Ron Lockwood
-#   Handle msa's that are not MoInflAffMsa or MoStemMsa, by skipping them. Also skip null
-#   environment strings. Also skip clitics. Fixes #280
+#    Handle msa's that are not MoInflAffMsa or MoStemMsa, by skipping them. Also skip null
+#    environment strings. Also skip clitics. Fixes #280
 #
 #   Version 3.6.9 - 9/17/22 - Ron Lockwood
-#   Overhaul of writing allomorphs to support proper negating of environment
-#   constraints when inflection classes and/or stem names are present.
+#    Overhaul of writing allomorphs to support proper negating of environment
+#    constraints when inflection classes and/or stem names are present.
 #
 #   Version 3.6.8 - 9/3/22 - Ron Lockwood
-#   Fixes #250. Don't create empty STAMP control files if they already exist.
-#   This allows someone to use modifications to these files for whatever purpose.
-#   JH requested this.
+#    Fixes #250. Don't create empty STAMP control files if they already exist.
+#    This allows someone to use modifications to these files for whatever purpose.
+#    JH requested this.
 #
 #   Version 3.6.7 - 9/1/22 - Ron Lockwood
-#   Fixes #254. Convert * to _ in stems.
+#    Fixes #254. Convert * to _ in stems.
 #
 #   Version 3.6.6 - 8/20/22 - Ron Lockwood
 #    Fixes #256. Handle various null morpheme renderings.
@@ -28,9 +31,9 @@
 #    Renamed this module.
 #
 #   Version 3.6.4 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
-#   Reformatted, indented the main loop.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
+#    Reformatted, indented the main loop.
 #
 #   Version 3.6.3 - 8/26/22 - Ron Lockwood
 #    Fixes #245. Warn if the morpheme type or lexeme form is null.
@@ -196,7 +199,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.10",
+        FTM_Version    : "3.6.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -1082,6 +1085,11 @@ def MainFunction(DB, report, modifyAllowed):
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (targetANA and targetSynthesis):
         return 
+    
+    # Verify that the ana file exists.
+    if os.path.exists(targetANA) == False:
+        report.Error(f'The Convert Text to STAMP Format module must be run before this module. The {ReadConfig.TARGET_ANA_FILE}: {targetANA} does not exist.')
+        return
     
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)

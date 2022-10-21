@@ -5,6 +5,11 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.8 - 10/19/22 - Ron Lockwood
+#    Fixes #244. Give a warning if an attribute matches a grammatical category.
+#    Fixes #246. Allow unchecking of all rules. Also give message when there's no output.
+#    Fixes #237. Build the bilingual dictionary if it is missing. 
+#
 #   Version 3.6.7 - 9/2/22 - Ron Lockwood
 #    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
 #
@@ -257,7 +262,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.7",
+        FTM_Version    : "3.6.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -439,9 +444,6 @@ class Main(QMainWindow):
         self.synthesisFilePath = self.testerFolder + '\\myText.syn'
         self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
         
-        # Blank out the tests added feedback label
-        self.ui.TestsAddedLabel.setText('')
-        
         # Right align some text boxes
         self.ui.SourceFileEdit.home(False)
         
@@ -462,6 +464,9 @@ class Main(QMainWindow):
         # Make sure we are on right tabs
         ruleTab = 0
         sourceTab = 0
+        
+        # Clear text boxes and labels
+        self.__ClearStuff()
         
         # Open a settings file to see which tabs were last used.
         try:
@@ -514,9 +519,10 @@ class Main(QMainWindow):
         if found_rtl:
             # this doesn't seem to be working
             self.ui.TargetTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
-            
+
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
-        self.ReadBilingualLexicon()
+        if self.ReadBilingualLexicon() == False:
+            return
         
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
@@ -571,8 +577,18 @@ class Main(QMainWindow):
             
         except IOError:
             
+            # Try and build the bilingual lexicon
+            if self.ExtractBilingLex() == False:
+                return False
+            
+        # try to read the XML file again
+        try:
+            bilingEtree = ET.parse(self.__biling_file)
+            
+        except IOError:
+            
             QMessageBox.warning(self, 'Read Error', f'Bilingual file: {self.__biling_file} could not be read.')
-            return        
+            return False
         
         # Get the root node
         bilingRoot = bilingEtree.getroot()
@@ -605,6 +621,8 @@ class Main(QMainWindow):
             else:
                 self.__bilingMap[key].append((left, right))
         
+        return True
+    
     def ViewBilingualLexiconButtonClicked(self):
         
         if os.path.exists(self.__biling_file) == False:
@@ -681,6 +699,20 @@ class Main(QMainWindow):
         
         return myObj
     
+    def ExtractBilingLex(self):
+        
+        # Extract the bilingual lexicon        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        
+        for triplet in error_list:
+            if triplet[1] == 2: # error code
+                msg = triplet[0]
+                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', msg + '\nRun the Extract Bilingual Lexicon module separately for more details.')
+                return False
+        
+        self.__report.Info('Built the bilingual lexicon, since it was missing.')
+        return True
+        
     def RebuildBilingLexButtonClicked(self):
         
         self.setCursor(QtCore.Qt.WaitCursor)
@@ -698,15 +730,10 @@ class Main(QMainWindow):
         except: 
             raise
         
-        # Extract the bilingual lexicon        
-        error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        # Reload the bilingual map for showing tooltips
+        if self.ReadBilingualLexicon() == False:
+            return
         
-        for triplet in error_list:
-            if triplet[1] == 2: # error code
-                msg = triplet[0]
-                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', msg + '\nRun the Extract Bilingual Lexicon module separately for more details.')
-                return
-
         # Copy bilingual file to the tester folder
         try:
             # always name the local version bilingual.dix which is what the Makefile has
@@ -715,9 +742,6 @@ class Main(QMainWindow):
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
             self.ret_val = False
             return 
-        
-        # Reload the bilingual map for showing tooltips
-        self.ReadBilingualLexicon()
         
         # Force reload of the tooltips
         self.listSentComboClicked()
@@ -1002,6 +1026,10 @@ class Main(QMainWindow):
         if self.has_RTL_data(synthText[:len(synthText)//2]): # just check the 1st half of the string.
             synthText = '\u200F' + synthText
             
+        # If we got no output, give a string to the user to indicate it.
+        if len(synthText) == 0:
+            synthText = 'Synthesis produced no output.'
+            
         self.ui.SynthTextEdit.setPlainText(synthText)
         
         if self.has_RTL_data(synthText[:len(synthText)//2]):
@@ -1245,9 +1273,11 @@ class Main(QMainWindow):
         
     def __ClearStuff(self):
         
+        self.ui.TestsAddedLabel.setText('')
         self.ui.TargetTextEdit.setPlainText('')
         self.ui.LogEdit.setPlainText('')
         self.ui.SynthTextEdit.setPlainText('')
+        self.ui.warningLabel.setText('')
         
     def sourceTabClicked(self):
         
@@ -1681,9 +1711,6 @@ class Main(QMainWindow):
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
             ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
             
-        # Check for attribute definition issues
-        Utils.checkRuleAttributesXML(self.__report, ruleFileRoot)
-        
         # Save the source text to the tester folder
         sf = open(source_file, 'w', encoding='utf-8')
         myStr = self.getActiveLexicalUnits()
@@ -1717,13 +1744,23 @@ class Main(QMainWindow):
             if self.__ruleModel.item(i).checkState():
                 new_sr_element.append(rule_el) 
             
-        # Give an error if no rules were selected
+        # If no rules were selected, create a dummy rule
         if len(list(new_sr_element)) < 1:
             
-            self.ui.TargetTextEdit.setPlainText('At least one rule must be selected.')
-            self.unsetCursor()
-            return
-        
+            # Create a dummy rule that does nothing
+            ruleElement = ET.SubElement(new_sr_element, 'rule')
+            patternElement = ET.SubElement(ruleElement, 'pattern')
+            patternItemElement = ET.SubElement(patternElement, 'pattern-item')
+            patternItemElement.attrib['n'] = 'c_dummy'
+            ET.SubElement(ruleElement, 'action')
+            
+            # Create a dummy category to go with the rule
+            sectionDefCatsElement = myRoot.find('section-def-cats')
+            defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
+            defCatElement.attrib['n'] = 'c_dummy'
+            catItemElement = ET.SubElement(defCatElement, 'cat-item')
+            catItemElement.attrib['tags'] = 'dummy'
+
         # Write out the file
         myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
         
@@ -1741,6 +1778,17 @@ class Main(QMainWindow):
         # Substitute symbols with problem characters with fixed ones in the transfer file
         Utils.subProbSymbols('.', tr_file, subPairs)
         
+        # Check if attributes are well-formed. Warnings will be reported in the function
+        if not self.advancedTransfer:
+        
+            error_list = Utils.checkRuleAttributesXML(ruleFileRoot)
+    
+            for i, triplet in enumerate(error_list):
+                if i == 0:
+                    self.ui.warningLabel.setText(triplet[0])
+                else:
+                    self.ui.warningLabel.setText(self.ui.warningLabel.text()+'\n'+triplet[0])
+
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
@@ -1851,6 +1899,11 @@ class Main(QMainWindow):
         # The p element now has one or more <span> children, turn them into an html string        
         htmlVal = ET.tostring(pElem, encoding='unicode')
 
+        # If we only have a paragraph element, we got no output.
+        if htmlVal == '<p />':
+            
+            htmlVal = 'The rules produced no output.'
+            
         self.ui.TargetTextEdit.setText(htmlVal)
         
         tgtf.close()
