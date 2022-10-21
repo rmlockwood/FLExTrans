@@ -346,33 +346,33 @@ def loadFile(widget, wind, settingName):
     
     if path:
 
-        set_paths(widget, path)
+        setPaths(widget, path)
 
-def make_open_file(wind, myWidgInfo):
+def makeOpenFile(wind, myWidgInfo):
     
-    # create a new function that will call do_browse with the given parameters
+    # create a new function that will call doBrowse with the given parameters
     def open_file():
         
-        do_browse(wind, myWidgInfo)
-        wind.set_modified_flag()
+        doBrowse(wind, myWidgInfo)
+        wind.setModifiedFlag()
         
     return open_file
     
-    do_browse(wind, myWidgInfo)
+    doBrowse(wind, myWidgInfo)
     
-def make_open_folder(wind, myWidgInfo):
+def makeOpenFolder(wind, myWidgInfo):
     
-    # create a new function that will call do_browse with the given parameters
+    # create a new function that will call doBrowse with the given parameters
     def open_folder():
         
-        do_folder_browse(wind, myWidgInfo)
-        wind.set_modified_flag()
+        doFolderBrowse(wind, myWidgInfo)
+        wind.setModifiedFlag()
         
     return open_folder
     
-    do_browse(wind, myWidgInfo)
+    doBrowse(wind, myWidgInfo)
     
-def do_browse(wind, myWidgInfo):
+def doBrowse(wind, myWidgInfo):
 
     # if folder exists for the current setting, use it. set the starting directory for the open dialog 
     startDir = os.path.dirname(wind.read(myWidgInfo[CONFIG_NAME]))
@@ -385,9 +385,9 @@ def do_browse(wind, myWidgInfo):
     
     if filename:
         
-        set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+        setPaths(myWidgInfo[WIDGET1_OBJ], filename)
 
-def do_folder_browse(wind, myWidgInfo):
+def doFolderBrowse(wind, myWidgInfo):
 
     # if folder exists for the current setting, use it. set the starting directory for the open dialog 
     startDir = wind.read(myWidgInfo[CONFIG_NAME])
@@ -400,9 +400,9 @@ def do_folder_browse(wind, myWidgInfo):
     
     if dirName:
         
-        set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
+        setPaths(myWidgInfo[WIDGET1_OBJ], dirName)
 
-def set_paths(widget, myPath):
+def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
     startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
@@ -618,7 +618,7 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
 
         # Load the widgets with data        
-        self.init_load()
+        self.initLoad()
 
         self.modified = False
         
@@ -641,37 +641,37 @@ class Main(QMainWindow):
             # Connect browse buttons to functions
             if widgInfo[WIDGET_TYPE] == FILE:
                 
-                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_file(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFile(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
 
             elif widgInfo[WIDGET_TYPE] == FOLDER:
                 
-                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_folder(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFolder(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
 
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
-                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].toggled.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].toggled.connect(self.setModifiedFlag)
                 
         self.clearCheckComboBoxModifiedFlags()
         
@@ -680,7 +680,7 @@ class Main(QMainWindow):
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeMyWindow)
         
-    def set_modified_flag(self):
+    def setModifiedFlag(self):
         
         self.modified = True
         
@@ -688,7 +688,7 @@ class Main(QMainWindow):
         
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
-    def init_load(self):
+    def initLoad(self):
         
         # Clear combo boxes
         for i in range(0, len(widgetList)):
@@ -786,7 +786,7 @@ class Main(QMainWindow):
                 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+self.optional_mul(widgInfo[WIDGET1_OBJ].currentData())
+                outStr = widgInfo[CONFIG_NAME]+'='+self.addCommas(widgInfo[WIDGET1_OBJ].currentData())
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
@@ -826,12 +826,12 @@ class Main(QMainWindow):
             
             QMessageBox.information(self, 'Save Settings', 'Changes saved.')
 
-    def optional_mul(self, array):
-        write = ''
+    def addCommas(self, array):
+        retStr = ''
         if array:
             for text in array:
-                write += text + ","
-        return write
+                retStr += text + ","
+        return retStr
 
 def MainFunction(DB, report, modify=True): 
     # Read the configuration file which we assume is in the current directory.
