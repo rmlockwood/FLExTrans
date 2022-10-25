@@ -1,13 +1,13 @@
 Do these things when making a new release
--Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
--Finish code changes and commit
--Edit createInstallFolder2.0.bat and set the version # at the top.
--Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Change config file to utf-8
+x-Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
+x-Finish code changes and commit
+x-Edit createInstallFolder2.0.bat and set the version # at the top.
+x-Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
 -Run createInstallFolder2.0.bat to rebuild zip files
 -Do another commit that has the install changes
 -Finish merging all pull requests
 -Fetch changes to the local master branch (IMPORTANT so that latest install file scripts get downloaded)
+-Change config file to utf-8 if needed and verify with Notepad++
 -Rebuild the install executable
 -Test the install
 -Make a new .download_info file changing the relevant data. 3 changes.

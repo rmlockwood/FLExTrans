@@ -3,8 +3,11 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
-#   Version 3.6.3 - 10/17/22 - Ron Lockwood
+#   Version 3.6.4 - 10/25/22 - Ron Lockwood
 #   Two new transfer rule file settings for advanced transfer.
+#
+#   Version 3.6.3 - 10/21/22 - Ron Lockwood
+#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
 #
 #   Version 3.6.2 - 9/7/22 - Ron Lockwood
 #   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
@@ -215,7 +218,7 @@ def loadSourceComplexFormTypes(widget, wind, settingName):
             if comType in typesList:
                 
                 widget.check(comType)
-
+                
 def loadTargetComplexFormTypes(widget, wind, settingName):
 
     typesList = getTargetComplexTypes(wind)
@@ -349,33 +352,33 @@ def loadFile(widget, wind, settingName):
     
     if path:
 
-        set_paths(widget, path)
+        setPaths(widget, path)
 
-def make_open_file(wind, myWidgInfo):
+def makeOpenFile(wind, myWidgInfo):
     
-    # create a new function that will call do_browse with the given parameters
+    # create a new function that will call doBrowse with the given parameters
     def open_file():
         
-        do_browse(wind, myWidgInfo)
-        wind.set_modified_flag()
+        doBrowse(wind, myWidgInfo)
+        wind.setModifiedFlag()
         
     return open_file
     
-    do_browse(wind, myWidgInfo)
+    doBrowse(wind, myWidgInfo)
     
-def make_open_folder(wind, myWidgInfo):
+def makeOpenFolder(wind, myWidgInfo):
     
-    # create a new function that will call do_browse with the given parameters
+    # create a new function that will call doBrowse with the given parameters
     def open_folder():
         
-        do_folder_browse(wind, myWidgInfo)
-        wind.set_modified_flag()
+        doFolderBrowse(wind, myWidgInfo)
+        wind.setModifiedFlag()
         
     return open_folder
     
-    do_browse(wind, myWidgInfo)
+    doBrowse(wind, myWidgInfo)
     
-def do_browse(wind, myWidgInfo):
+def doBrowse(wind, myWidgInfo):
 
     # if folder exists for the current setting, use it. set the starting directory for the open dialog 
     startDir = os.path.dirname(wind.read(myWidgInfo[CONFIG_NAME]))
@@ -388,9 +391,9 @@ def do_browse(wind, myWidgInfo):
     
     if filename:
         
-        set_paths(myWidgInfo[WIDGET1_OBJ], filename)
+        setPaths(myWidgInfo[WIDGET1_OBJ], filename)
 
-def do_folder_browse(wind, myWidgInfo):
+def doFolderBrowse(wind, myWidgInfo):
 
     # if folder exists for the current setting, use it. set the starting directory for the open dialog 
     startDir = wind.read(myWidgInfo[CONFIG_NAME])
@@ -403,9 +406,9 @@ def do_folder_browse(wind, myWidgInfo):
     
     if dirName:
         
-        set_paths(myWidgInfo[WIDGET1_OBJ], dirName)
+        setPaths(myWidgInfo[WIDGET1_OBJ], dirName)
 
-def set_paths(widget, myPath):
+def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
     startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
@@ -434,7 +437,7 @@ class Ui_MainWindow(object):
 
         self.scrollArea.setSizePolicy(sizePolicy)
         self.scrollArea.setMinimumSize(QtCore.QSize(750, 650))
-        self.scrollArea.setMaximumSize(QtCore.QSize(750, 650))
+        self.scrollArea.setMaximumSize(QtCore.QSize(900, 650))
 
         font = QtGui.QFont()
 #         font.setFamily("Arial")
@@ -453,12 +456,19 @@ class Ui_MainWindow(object):
 
         # Set up scroll area
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollArea, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 6) # span 6 columns
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
-        #self.apply_button.setMaximumWidth(60)
-        self.gridLayout.addWidget(self.apply_button, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.apply_button, 1, 3, 1, 1) # put the buttons at columns 3-5 so they are on the right side
+
+        self.applyClose_button = QtWidgets.QPushButton(self.centralwidget)
+        self.applyClose_button.setObjectName("applyClose_button")
+        self.gridLayout.addWidget(self.applyClose_button, 1, 4, 1, 1)
+
+        self.Close_button = QtWidgets.QPushButton(self.centralwidget)
+        self.Close_button.setObjectName("Close_button")
+        self.gridLayout.addWidget(self.Close_button, 1, 5, 1, 1)
 
         # Set up for the fields in the config file
         # They are placed in the order according to the widgetList
@@ -594,6 +604,8 @@ class Ui_MainWindow(object):
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
         self.apply_button.setText(_translate("MainWindow", "Apply"))
+        self.applyClose_button.setText(_translate("MainWindow", "Apply and Close"))
+        self.Close_button.setText(_translate("MainWindow", "Close"))
 
 class Main(QMainWindow):
 
@@ -604,6 +616,7 @@ class Main(QMainWindow):
         self.configMap = configMap
         self.targetDB = targetDB
         self.DB = DB
+        self.giveConfirmation = True
 
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
@@ -611,7 +624,7 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
 
         # Load the widgets with data        
-        self.init_load()
+        self.initLoad()
 
         self.modified = False
         
@@ -634,49 +647,54 @@ class Main(QMainWindow):
             # Connect browse buttons to functions
             if widgInfo[WIDGET_TYPE] == FILE:
                 
-                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_file(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFile(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
 
             elif widgInfo[WIDGET_TYPE] == FOLDER:
                 
-                widgInfo[WIDGET2_OBJ].clicked.connect(make_open_folder(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFolder(self, widgInfo))
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
 
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.set_modified_flag)
-                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].toggled.connect(self.set_modified_flag)
+                widgInfo[WIDGET1_OBJ].toggled.connect(self.setModifiedFlag)
                 
+        self.clearCheckComboBoxModifiedFlags()
+        
         # Apply button
         self.ui.apply_button.clicked.connect(self.save)
-
-    def set_modified_flag(self):
+        self.ui.applyClose_button.clicked.connect(self.saveAndClose)
+        self.ui.Close_button.clicked.connect(self.closeMyWindow)
+        
+    def setModifiedFlag(self):
         
         self.modified = True
         
     def read(self, key):
+        
         return ReadConfig.getConfigVal(self.configMap, key, self.report)
 
-    def init_load(self):
+    def initLoad(self):
         
         # Clear combo boxes
         for i in range(0, len(widgetList)):
@@ -711,6 +729,54 @@ class Main(QMainWindow):
                 # Also pass the config file setting name
                 widgInfo[LOAD_FUNC](widgInfo[WIDGET1_OBJ], self, widgInfo[CONFIG_NAME])
 
+    def closeEvent(self, event):
+        
+        self.closeMyWindow()
+        
+    def closeMyWindow(self):
+        
+        if self.giveConfirmation:
+            
+            self.checkIfCheckComboChanged()
+            
+        self.close()
+        
+    def clearCheckComboBoxModifiedFlags(self):
+        
+        # If a check combo box was modified, set the modified flag for this main class so 
+        # we can prompt the user to save
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                widgInfo[WIDGET1_OBJ].modified = False
+        
+    def checkIfCheckComboChanged(self):
+        
+        # If a check combo box was modified, set the modified flag for this main class so 
+        # we can prompt the user to save
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
+                
+                if widgInfo[WIDGET1_OBJ].modified:
+                    
+                    self.modified = True
+                    
+                    # Reset them all back to False
+                    widgInfo[WIDGET1_OBJ].modified = False
+        
+    def saveAndClose(self):
+        
+        self.giveConfirmation = False
+        self.save()
+        self.report.Info('Changes saved.')
+        self.close()
+        
     def save(self):
 
         f = open(self.config, "w", encoding='utf-8')
@@ -726,7 +792,7 @@ class Main(QMainWindow):
                 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+self.optional_mul(widgInfo[WIDGET1_OBJ].currentData())
+                outStr = widgInfo[CONFIG_NAME]+'='+self.addCommas(widgInfo[WIDGET1_OBJ].currentData())
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
@@ -759,14 +825,19 @@ class Main(QMainWindow):
         
         self.modified = False
         
-        QMessageBox.information(self, 'Save Settings', 'Settings saved.')
+        # Mark the combo boxes as not having changed
+        self.clearCheckComboBoxModifiedFlags()
+        
+        if self.giveConfirmation:
+            
+            QMessageBox.information(self, 'Save Settings', 'Changes saved.')
 
-    def optional_mul(self, array):
-        write = ''
+    def addCommas(self, array):
+        retStr = ''
         if array:
             for text in array:
-                write += text + ","
-        return write
+                retStr += text + ","
+        return retStr
 
 def MainFunction(DB, report, modify=True): 
     # Read the configuration file which we assume is in the current directory.
@@ -806,7 +877,9 @@ def MainFunction(DB, report, modify=True):
         
         if QMessageBox.question(window, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
+            window.giveConfirmation = False
             window.save()
+            report.Info('Changes saved.')
     
     if TargetDB:
         
@@ -841,10 +914,10 @@ widgetList = [
    ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
-   ["Source Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
+   ["Source Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
     "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
-   ["Target Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
+   ["Target Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
     "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
 
    ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
@@ -872,7 +945,7 @@ widgetList = [
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
 
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    "When editing the testbed, if Yes, characters with diacritics will be composed (NFC) to \nsingle characters (where possible). If No, characters will be decomposed (NFD)."],\
+    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD)."],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
