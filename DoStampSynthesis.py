@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.6.12 - 10/31/22 - Ron Lockwood
+#    Fixes #302. Skip affix allomorphs of stems when processing stem names or environments.
+#
 #   Version 3.6.11 - 10/19/22 - Ron Lockwood
 #    Fixes #187. Give an error when the ANA file is missing.
 #
@@ -199,7 +202,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.11",
+        FTM_Version    : "3.6.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -331,12 +334,17 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
     # If there is nothing for any WS we get ***
     if amorph == '***' or amorph == None:
         
-        return False
+        return
     
     # Save the stem name if we have a stem
     if morphCategory == STEM_TYPE: # stems only
+        
+        # If we have an affix that is an allomorph of a stem, skip it
+        if morph.ClassName == 'MoAffixAllomorph':
+            
+            return
 
-        if morph.StemNameRA and morph.StemNameRA.Abbreviation:
+        elif morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
             stemName = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
             
