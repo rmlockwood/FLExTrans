@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.6.9 - 10/29/22 - Ron Lockwood
+#    Fixes #301. Biling lex. was not being rebuilt, just read when #237 was fixed.
+#
 #   Version 3.6.8 - 10/19/22 - Ron Lockwood
 #    Fixes #244. Give a warning if an attribute matches a grammatical category.
 #    Fixes #246. Allow unchecking of all rules. Also give message when there's no output.
@@ -262,7 +265,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.8",
+        FTM_Version    : "3.6.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -730,6 +733,10 @@ class Main(QMainWindow):
         except: 
             raise
         
+        # Try and build the bilingual lexicon
+        if self.ExtractBilingLex() == False:
+            return 
+
         # Reload the bilingual map for showing tooltips
         if self.ReadBilingualLexicon() == False:
             return
