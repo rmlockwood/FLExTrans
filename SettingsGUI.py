@@ -1,9 +1,13 @@
 #
 #   Settings GUI
-#   Lærke Roager Christensen
+#   Lærke Roager Christensen 
 #   3/28/22
 #
-#   Version 3.6.10 - 11/1/22 - Ron Lockwood
+#   Version 3.6.5 - 11/1/22 - Ron Lockwood
+#    Fixes #174. Fixes #282. Fixes #298. Disable certain target settings if the 
+#    target project is invalid or when the target project gets changed.
+#
+#   Version 3.6.4 - 11/1/22 - Ron Lockwood
 #    Fixes #284. Load only analysis titles of interlinear texts.
 #
 #   Version 3.6.3 - 10/21/22 - Ron Lockwood
@@ -82,7 +86,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.3",
+        FTM_Version: "3.6.5",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -639,7 +643,12 @@ class Main(QMainWindow):
         
         self.projFolder = myPath
         
-        # Loop through all settings
+        # If there's an invalid target DB, the member will be None, in this case disable certain target widgets.
+        if self.targetDB == None:
+            
+            self.disableTargetWidgets()
+            
+        # Loop through all settings and connect widgets to functions
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
@@ -659,8 +668,14 @@ class Main(QMainWindow):
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
-                
+                if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
+
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedAndDisableTgtWidgets)
+                    
+                else:
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+
+                                    
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
@@ -685,7 +700,22 @@ class Main(QMainWindow):
         self.ui.apply_button.clicked.connect(self.save)
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeMyWindow)
+
+    def setModifiedAndDisableTgtWidgets(self):
         
+        self.setModifiedFlag()
+        self.disableTargetWidgets()
+        
+    def disableTargetWidgets(self):
+        
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element"]:
+                
+                widgInfo[WIDGET1_OBJ].setEnabled(False)
+                
     def setModifiedFlag(self):
         
         self.modified = True
@@ -911,7 +941,7 @@ widgetList = [
    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
     "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
 
-   ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+   ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
    ["Source Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
