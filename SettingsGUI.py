@@ -3,16 +3,19 @@
 #   Lærke Roager Christensen
 #   3/28/22
 #
+#   Version 3.6.10 - 11/1/22 - Ron Lockwood
+#    Fixes #284. Load only analysis titles of interlinear texts.
+#
 #   Version 3.6.3 - 10/21/22 - Ron Lockwood
-#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
+#    Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
 #
 #   Version 3.6.2 - 9/7/22 - Ron Lockwood
-#   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
+#    Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
 #
 #   Version 3.6.1 - 8/27/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
-#   Also don't load types that aren't in the broad category of 'stem'.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
+#    Also don't load types that aren't in the broad category of 'stem'.
 #
 #   Version 3.6 - 8/24/22 - Ron Lockwood
 #    Added 'sense-level' to the tool tip for the custom fields
@@ -150,9 +153,9 @@ def getSourceComplexTypes(wind):
 def loadSourceTextList(widget, wind, settingName):
     
     sourceList = []
-    for item in wind.DB.ObjectsIn(ITextRepository):
+    for interlinText in wind.DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(str(item).strip())
+        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
 
     sortedSourceList = sorted(sourceList, key=str.casefold)
     
