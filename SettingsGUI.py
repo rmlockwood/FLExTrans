@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.6.6 - 11/1/22 - Ron Lockwood
+#    Fixes #154. Show user what settings changed.
+#
 #   Version 3.6.5 - 11/1/22 - Ron Lockwood
 #    Fixes #174. Fixes #282. Fixes #298. Disable certain target settings if the 
 #    target project is invalid or when the target project gets changed.
@@ -86,7 +89,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.5",
+        FTM_Version: "3.6.6",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -358,6 +361,31 @@ def loadFile(widget, wind, settingName):
 
         setPaths(widget, path)
 
+def reportChange(wind, mySet, myWidgInfo):
+    
+    # create a new function that will call doBrowse with the given parameters
+    def report_it():
+        
+        doReport(mySet, myWidgInfo)
+        wind.setModifiedFlag()
+        
+    return report_it
+
+def reportChangeAndDisable(wind, mySet, myWidgInfo):
+    
+    # create a new function that will call doBrowse with the given parameters
+    def report_it():
+        
+        doReport(mySet, myWidgInfo)
+        wind.setModifiedFlag()
+        wind.disableTargetWidgets()
+        
+    return report_it
+
+def doReport(mySet, myWidgInfo):
+    
+    mySet.add(myWidgInfo[LABEL_TEXT])
+    
 def makeOpenFile(wind, myWidgInfo):
     
     # create a new function that will call doBrowse with the given parameters
@@ -621,7 +649,8 @@ class Main(QMainWindow):
         self.targetDB = targetDB
         self.DB = DB
         self.giveConfirmation = True
-
+        self.changedSettingsSet = set()
+        
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui = Ui_MainWindow()
@@ -657,12 +686,12 @@ class Main(QMainWindow):
             if widgInfo[WIDGET_TYPE] == FILE:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFile(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
 
             elif widgInfo[WIDGET_TYPE] == FOLDER:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFolder(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
 
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
@@ -670,29 +699,29 @@ class Main(QMainWindow):
                 
                 if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
 
-                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedAndDisableTgtWidgets)
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChangeAndDisable(self, self.changedSettingsSet, widgInfo))
                     
                 else:
-                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
 
                                     
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
-                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].toggled.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].toggled.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
         self.clearCheckComboBoxModifiedFlags()
         
@@ -701,11 +730,6 @@ class Main(QMainWindow):
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeMyWindow)
 
-    def setModifiedAndDisableTgtWidgets(self):
-        
-        self.setModifiedFlag()
-        self.disableTargetWidgets()
-        
     def disableTargetWidgets(self):
         
         for i in range(0, len(widgetList)):
@@ -795,6 +819,7 @@ class Main(QMainWindow):
                 
                 if widgInfo[WIDGET1_OBJ].modified:
                     
+                    self.changedSettingsSet.add(widgInfo[LABEL_TEXT])
                     self.modified = True
                     
                     # Reset them all back to False
@@ -804,8 +829,13 @@ class Main(QMainWindow):
         
         self.giveConfirmation = False
         self.save()
-        self.report.Info('Changes saved.')
         self.close()
+        
+    def reportChangedSettings(self):
+        
+        for reportStr in list(self.changedSettingsSet):
+            
+            self.report.Info(f'"{reportStr}" setting changed.')
         
     def save(self):
 
@@ -853,7 +883,12 @@ class Main(QMainWindow):
             
         f.close()
         
+        self.checkIfCheckComboChanged()
+        
+        self.reportChangedSettings()
+
         self.modified = False
+        self.changedSettingsSet.clear()
         
         # Mark the combo boxes as not having changed
         self.clearCheckComboBoxModifiedFlags()
@@ -909,7 +944,7 @@ def MainFunction(DB, report, modify=True):
 
             window.giveConfirmation = False
             window.save()
-            report.Info('Changes saved.')
+            window.reportChangedSettings()
     
     if TargetDB:
         
