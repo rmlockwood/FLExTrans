@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7 - 10/29/22 - Ron Lockwood
+#    Fixes #277. Switch to same sentence between select words and select sentences tabs.
+#    Also save which sentence was selected when the LRT is closed.
+#
 #   Version 3.6.9 - 10/29/22 - Ron Lockwood
 #    Fixes #301. Biling lex. was not being rebuilt, just read when #237 was fixed.
 #
@@ -265,7 +269,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.9",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -299,8 +303,13 @@ class SentenceList(QtCore.QAbstractListModel):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.__localData = myData
         self.__currentSent = myData[0] # start out on the first one
+        self.__currentRow = 0
         self.__RTL = False
     def getCurrentSent(self):
+        return self.__currentSent
+    def getSelectedRow(self):
+        return self.__currentRow
+    def getCurrentRow(self):
         return self.__currentSent
     def setRTL(self, val):
         self.__RTL = val
@@ -309,14 +318,10 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        row = index.row()
-        mySent = self.__localData[row]
+        self.__currentRow = index.row()
+        mySent = self.__localData[self.getSelectedRow()]
         
         if role == QtCore.Qt.DisplayRole:
-            #if self.getRTL():
-            #    pass
-                #value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
-            #else:
             value = self.joinTupParts(mySent, 0)
             self.__currentSent = mySent    
             return value
@@ -467,6 +472,7 @@ class Main(QMainWindow):
         # Make sure we are on right tabs
         ruleTab = 0
         sourceTab = 0
+        selectWordsSentNum = 0
         
         # Clear text boxes and labels
         self.__ClearStuff()
@@ -477,9 +483,10 @@ class Main(QMainWindow):
             
             line = f.readline()
             
-            ruleTab, sourceTab = line.split(',')
+            ruleTab, sourceTab, selectWordsSentNum = line.split(',')
             ruleTab = int(ruleTab)
             sourceTab = int(sourceTab)
+            selectWordsSentNum = int(selectWordsSentNum)
             
             f.close()
         except:
@@ -529,6 +536,12 @@ class Main(QMainWindow):
         
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
+
+        # Set the index of the combo box and sentence list to what was saved before
+        self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
+        qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
+        self.ui.listSentences.setCurrentIndex(qIndex)
+        self.listSentClicked()
         
         # Copy bilingual file to the tester folder
         try:
@@ -1290,7 +1303,30 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
+            
+            # Set the combo box index to be the same as the list box
+            ind = self.ui.listSentences.currentIndex()
+
+            # if no selection (-1), don't set the current index
+            if ind != -1:            
+                self.ui.SentCombo.setCurrentIndex(int(ind.row()))
+                self.ui.SentCombo.update()
+            
             self.ui.selectWordsHintLabel.setVisible(True)
+        
+        elif self.ui.tabSource.currentIndex() == 1: # sentence list
+            
+            # Set the list box index to be the same as the combo box
+            myRow = self.ui.SentCombo.currentIndex()
+            
+            # if no selection (-1), don't set the current index
+            if myRow != -1:
+                qIndex = self.__sent_model.createIndex(myRow, 0)
+                self.ui.listSentences.setCurrentIndex(qIndex)
+                self.listSentClicked()
+
+            #self.ui.listSentences.setCurrentRow(self.ui.SentCombo.currentIndex())
+            self.ui.selectWordsHintLabel.setVisible(False)
             
         else: # sentences or manual
             
@@ -1484,9 +1520,17 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
         
+        # Save the selected sentence of the active tab (for manual tab, use select words)
+        if self.ui.tabSource.currentIndex() == 1: # full sentences
+            
+            ind = self.ui.listSentences.currentIndex()   
+            selectWordsSentNum = ind.row()
+        else:
+            selectWordsSentNum = self.ui.SentCombo.currentIndex()
+        
         f = open(self.windowsSettingsFile, 'w')
         
-        f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
+        f.write(f'{str(rulesTab)},{str(sourceTab)},{str(selectWordsSentNum)}\n')
         f.close()
         
         self.__DB.CloseProject()
