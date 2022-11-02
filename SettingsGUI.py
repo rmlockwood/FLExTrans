@@ -3,14 +3,14 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
-#   Version 3.6.6 - 11/1/22 - Ron Lockwood
+#   Version 3.7.2 - 11/1/22 - Ron Lockwood
 #    Fixes #154. Show user what settings changed.
 #
-#   Version 3.6.5 - 11/1/22 - Ron Lockwood
+#   Version 3.7.1 - 11/1/22 - Ron Lockwood
 #    Fixes #174. Fixes #282. Fixes #298. Disable certain target settings if the 
 #    target project is invalid or when the target project gets changed.
 #
-#   Version 3.6.4 - 11/1/22 - Ron Lockwood
+#   Version 3.7 - 11/1/22 - Ron Lockwood
 #    Fixes #284. Load only analysis titles of interlinear texts.
 #
 #   Version 3.6.3 - 10/21/22 - Ron Lockwood
@@ -89,7 +89,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.6",
+        FTM_Version: "3.7.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
