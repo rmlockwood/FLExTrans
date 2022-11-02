@@ -5,7 +5,7 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.6.10 - 10/29/22 - Ron Lockwood
+#   Version 3.7 - 10/29/22 - Ron Lockwood
 #    Fixes #277. Switch to same sentence between select words and select sentences tabs.
 #    Also save which sentence was selected when the LRT is closed.
 #
@@ -269,7 +269,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.10",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
