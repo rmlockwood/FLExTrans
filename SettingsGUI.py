@@ -1,18 +1,28 @@
 #
 #   Settings GUI
-#   Lærke Roager Christensen
+#   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.7.2 - 11/1/22 - Ron Lockwood
+#    Fixes #154. Show user what settings changed.
+#
+#   Version 3.7.1 - 11/1/22 - Ron Lockwood
+#    Fixes #174. Fixes #282. Fixes #298. Disable certain target settings if the 
+#    target project is invalid or when the target project gets changed.
+#
+#   Version 3.7 - 11/1/22 - Ron Lockwood
+#    Fixes #284. Load only analysis titles of interlinear texts.
+#
 #   Version 3.6.3 - 10/21/22 - Ron Lockwood
-#   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
+#    Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
 #
 #   Version 3.6.2 - 9/7/22 - Ron Lockwood
-#   Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
+#    Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
 #
 #   Version 3.6.1 - 8/27/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
-#   Also don't load types that aren't in the broad category of 'stem'.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
+#    Also don't load types that aren't in the broad category of 'stem'.
 #
 #   Version 3.6 - 8/24/22 - Ron Lockwood
 #    Added 'sense-level' to the tool tip for the custom fields
@@ -79,7 +89,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.6.3",
+        FTM_Version: "3.7.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -150,9 +160,9 @@ def getSourceComplexTypes(wind):
 def loadSourceTextList(widget, wind, settingName):
     
     sourceList = []
-    for item in wind.DB.ObjectsIn(ITextRepository):
+    for interlinText in wind.DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(str(item).strip())
+        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
 
     sortedSourceList = sorted(sourceList, key=str.casefold)
     
@@ -351,6 +361,31 @@ def loadFile(widget, wind, settingName):
 
         setPaths(widget, path)
 
+def reportChange(wind, mySet, myWidgInfo):
+    
+    # create a new function that will call doBrowse with the given parameters
+    def report_it():
+        
+        doReport(mySet, myWidgInfo)
+        wind.setModifiedFlag()
+        
+    return report_it
+
+def reportChangeAndDisable(wind, mySet, myWidgInfo):
+    
+    # create a new function that will call doBrowse with the given parameters
+    def report_it():
+        
+        doReport(mySet, myWidgInfo)
+        wind.setModifiedFlag()
+        wind.disableTargetWidgets()
+        
+    return report_it
+
+def doReport(mySet, myWidgInfo):
+    
+    mySet.add(myWidgInfo[LABEL_TEXT])
+    
 def makeOpenFile(wind, myWidgInfo):
     
     # create a new function that will call doBrowse with the given parameters
@@ -614,7 +649,8 @@ class Main(QMainWindow):
         self.targetDB = targetDB
         self.DB = DB
         self.giveConfirmation = True
-
+        self.changedSettingsSet = set()
+        
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui = Ui_MainWindow()
@@ -636,7 +672,12 @@ class Main(QMainWindow):
         
         self.projFolder = myPath
         
-        # Loop through all settings
+        # If there's an invalid target DB, the member will be None, in this case disable certain target widgets.
+        if self.targetDB == None:
+            
+            self.disableTargetWidgets()
+            
+        # Loop through all settings and connect widgets to functions
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
@@ -645,36 +686,42 @@ class Main(QMainWindow):
             if widgInfo[WIDGET_TYPE] == FILE:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFile(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
 
             elif widgInfo[WIDGET_TYPE] == FOLDER:
                 
                 widgInfo[WIDGET2_OBJ].clicked.connect(makeOpenFolder(self, widgInfo))
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
 
             # Connect all widgets to a function the sets the modified flag
             # This is so that any clicking on objects will prompt the user to save on exit
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
-                
+                if widgInfo[WIDGET1_OBJ_NAME] == 'choose_target_project':
+
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChangeAndDisable(self, self.changedSettingsSet, widgInfo))
+                    
+                else:
+                    widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+
+                                    
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
-                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+                widgInfo[WIDGET2_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
-                widgInfo[WIDGET1_OBJ].textChanged.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].textChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].toggled.connect(self.setModifiedFlag)
+                widgInfo[WIDGET1_OBJ].toggled.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
         self.clearCheckComboBoxModifiedFlags()
         
@@ -682,7 +729,17 @@ class Main(QMainWindow):
         self.ui.apply_button.clicked.connect(self.save)
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeMyWindow)
+
+    def disableTargetWidgets(self):
         
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element"]:
+                
+                widgInfo[WIDGET1_OBJ].setEnabled(False)
+                
     def setModifiedFlag(self):
         
         self.modified = True
@@ -762,6 +819,7 @@ class Main(QMainWindow):
                 
                 if widgInfo[WIDGET1_OBJ].modified:
                     
+                    self.changedSettingsSet.add(widgInfo[LABEL_TEXT])
                     self.modified = True
                     
                     # Reset them all back to False
@@ -771,8 +829,13 @@ class Main(QMainWindow):
         
         self.giveConfirmation = False
         self.save()
-        self.report.Info('Changes saved.')
         self.close()
+        
+    def reportChangedSettings(self):
+        
+        for reportStr in list(self.changedSettingsSet):
+            
+            self.report.Info(f'"{reportStr}" setting changed.')
         
     def save(self):
 
@@ -820,7 +883,12 @@ class Main(QMainWindow):
             
         f.close()
         
+        self.checkIfCheckComboChanged()
+        
+        self.reportChangedSettings()
+
         self.modified = False
+        self.changedSettingsSet.clear()
         
         # Mark the combo boxes as not having changed
         self.clearCheckComboBoxModifiedFlags()
@@ -876,7 +944,7 @@ def MainFunction(DB, report, modify=True):
 
             window.giveConfirmation = False
             window.save()
-            report.Info('Changes saved.')
+            window.reportChangedSettings()
     
     if TargetDB:
         
@@ -908,7 +976,7 @@ widgetList = [
    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
     "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
 
-   ["Target Project", "chose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+   ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     "The name of the target FLEx project."],\
 
    ["Source Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
