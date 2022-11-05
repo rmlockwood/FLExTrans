@@ -140,17 +140,35 @@
      <string>Type the beginning of an entry, then double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
-   <widget class="QLabel" name="sourceTextNameLabel">
+   <widget class="QComboBox" name="SourceTextCombo">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>920</x>
+      <y>10</y>
+      <width>341</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="maxVisibleItems">
+     <number>30</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
       <y>16</y>
-      <width>501</width>
-      <height>20</height>
+      <width>65</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Source Textname: XYZ</string>
+     <string>Source Text:</string>
     </property>
    </widget>
   </widget>
