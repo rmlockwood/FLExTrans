@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.1 - 11/5/22 - Ron Lockwood
+#    Fixes #197. The user can choose a different source text which triggers a restart
+#    of the module.
+#
 #   Version 3.7 - 10/29/22 - Ron Lockwood
 #    Fixes #277. Switch to same sentence between select words and select sentences tabs.
 #    Also save which sentence was selected when the LRT is closed.
@@ -261,6 +265,7 @@ import ExtractBilingualLexicon
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
 from FTPaths import CONFIG_PATH
+from PyQt5.Qt import QMainWindow
 
 #----------------------------------------------------------------
 # Configurables:
@@ -269,7 +274,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -370,17 +375,18 @@ class OverWriteDlg(QDialog):
         
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, source_text, DB, configMap, report):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.myWinId = int(self.winId())
+#        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
         self.ui.BilingFileEdit.setText(biling_file)
-        self.__source_text = source_text
-        self.ui.SourceFileEdit.setText(source_text)
+        self.__sourceText = sourceText
         self.__DB = DB
+        self.ui.SourceFileEdit.setText(sourceText)
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__DB, self.__sourceText)
         self.__configMap = configMap
         self.__report = report
         self.__transfer_rules_file = None
@@ -414,6 +420,7 @@ class Main(QMainWindow):
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
         self.rulesCheckedList = []
+        self.restartTester = False
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -440,6 +447,7 @@ class Main(QMainWindow):
         self.ui.viewBilingualLexiconButton.clicked.connect(self.ViewBilingualLexiconButtonClicked)
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
+        self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -581,6 +589,17 @@ class Main(QMainWindow):
         
         self.ret_val = True
 
+    def sourceTextComboChanged(self):
+        
+        self.restartTester = True
+        
+        # Update the source text setting in the config file
+        ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
+        
+        # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
+        
     # Read the bilingual lexicon and make a map from source entries to one or more target entries
     def ReadBilingualLexicon(self):
         
@@ -1533,8 +1552,6 @@ class Main(QMainWindow):
         f.write(f'{str(rulesTab)},{str(sourceTab)},{str(selectWordsSentNum)}\n')
         f.close()
         
-        self.__DB.CloseProject()
-        
     def BilingBrowseClicked(self):
         # Bring up file select dialog
         biling_file_tup = \
@@ -2042,65 +2059,78 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
+RESTART_MODULE = 0
+ERROR_HAPPENED = 1
+NO_ERRORS = 2
+
 def MainFunction(DB, report, modify=False):
+
+    retVal = RESTART_MODULE
+    
+    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
+    while retVal == RESTART_MODULE:
         
+        retVal = RunModule(DB, report)
+        
+def RunModule(DB, report):
+            
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return
+        return ERROR_HAPPENED
 
     # Get needed configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
 
     # check for errors
-    if not (text_desired_eng and bilingFile):
-        return
+    if not (sourceText and bilingFile):
+        return ERROR_HAPPENED
     
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
-        return
+        return ERROR_HAPPENED
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return
+        return ERROR_HAPPENED
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return
+        return ERROR_HAPPENED
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return
+        return ERROR_HAPPENED
 
     # Find the desired text
     text_list = []
     foundText = False
     for interlinText in DB.ObjectsIn(ITextRepository):
-        if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
+        if sourceText == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
             foundText = True
             contents = interlinText.ContentsOA
-        text_list.append(text_desired_eng)
+        text_list.append(sourceText)
     
     if not foundText:
         # check if it's scripture text
         for section in DB.ObjectsIn(IScrSectionRepository):
-            if text_desired_eng == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
+            if sourceText == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
                 contents = section.ContentOA
                 foundText = True
                 break
             
         if not foundText:    
-            report.Error('The text named: '+text_desired_eng+' not found.')
-            return
+            report.Error('The text named: '+sourceText+' not found.')
+            return ERROR_HAPPENED
 
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -2121,8 +2151,8 @@ def MainFunction(DB, report, modify=False):
         insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
         if insertWordsList == None: 
-            return # error already reported
-        
+            return ERROR_HAPPENED # error already reported
+
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -2130,13 +2160,13 @@ def MainFunction(DB, report, modify=False):
             f_treeTranResultFile.close()
         except:
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
-            return
+            return ERROR_HAPPENED
         
         # get the list of guids from the TreeTran results file
         treeSentList = Utils.getTreeSents(treeTranResultFile, report)
         
         if treeSentList == None: 
-            return # error already reported
+            return ERROR_HAPPENED # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
@@ -2171,7 +2201,7 @@ def MainFunction(DB, report, modify=False):
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
                     report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
-                    return
+                    return ERROR_HAPPENED
                     
                 # Output any punctuation preceding the sentence.
                 prePuncTupList = myFLExSent.getSurfaceAndDataPrecedingSentPunc()
@@ -2239,23 +2269,29 @@ def MainFunction(DB, report, modify=False):
             bilingFile = os.path.join(pwd, bilingFile)
             
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, text_desired_eng, DB, configMap, report)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report)
         
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')
-            return
+            return ERROR_HAPPENED
         
         window.show()
         app.exec_()
+        
+        # If the user changed the source text combo, the restart member is set to True
+        if window.restartTester:
+            
+            return RESTART_MODULE
     else:
         report.Error('This text has no data.')
+        return ERROR_HAPPENED
+    
+    return NO_ERRORS
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
