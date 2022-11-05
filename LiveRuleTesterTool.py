@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.2 - 11/5/22 - Ron Lockwood
+#    Fixes #310. Removed unneeded controls.
+#
 #   Version 3.7.1 - 11/5/22 - Ron Lockwood
 #    Fixes #197. The user can choose a different source text which triggers a restart
 #    of the module.
@@ -274,7 +277,7 @@ from PyQt5.Qt import QMainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -382,10 +385,8 @@ class Main(QMainWindow):
 #        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
-        self.ui.BilingFileEdit.setText(biling_file)
         self.__sourceText = sourceText
         self.__DB = DB
-        self.ui.SourceFileEdit.setText(sourceText)
         Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__DB, self.__sourceText)
         self.__configMap = configMap
         self.__report = report
@@ -429,8 +430,6 @@ class Main(QMainWindow):
         self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
         self.ui.listPostChunkRules.clicked.connect(self.rulesListClicked)
         self.ui.SentCombo.currentIndexChanged.connect(self.listSentComboClicked)
-        self.ui.TransferFileBrowseButton.clicked.connect(self.TransferBrowseClicked)
-        self.ui.BilingFileBrowseButton.clicked.connect(self.BilingBrowseClicked)
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
@@ -459,9 +458,6 @@ class Main(QMainWindow):
         self.targetAnaPath = self.testerFolder + '\\myText.ana'
         self.synthesisFilePath = self.testerFolder + '\\myText.syn'
         self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
-        
-        # Right align some text boxes
-        self.ui.SourceFileEdit.home(False)
         
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
@@ -726,7 +722,7 @@ class Main(QMainWindow):
         
     def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
         # Get the name of the text this lu came from
-        origin = self.ui.SourceFileEdit.text()
+        origin = self.__sourceText
         
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
@@ -1552,33 +1548,6 @@ class Main(QMainWindow):
         f.write(f'{str(rulesTab)},{str(sourceTab)},{str(selectWordsSentNum)}\n')
         f.close()
         
-    def BilingBrowseClicked(self):
-        # Bring up file select dialog
-        biling_file_tup = \
-         QFileDialog.getOpenFileNameAndFilter(self, 'Choose Bilingual Dictionary File',\
-            'Output', 'Dictionary Files (bilingual.dix)')
-         
-        self.__biling_file = biling_file_tup[0]
-        self.ui.BilingFileEdit.setText(self.__biling_file)
-        
-        # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(self.testerFolder, os.path.basename(self.__biling_file)))
-        
-    def TransferBrowseClicked(self):
-        # Bring up file select dialog
-        __transfer_rules_file_tup = \
-         QFileDialog.getOpenFileNameAndFilter(self, 'Choose Transfer File',\
-            'Output', 'Transfer Rules (transfer_rules.t1x)')
-        
-        self.__transfer_rules_file = __transfer_rules_file_tup[0]
-        
-        if not self.loadTransferRules():
-            self.ret_val = 0
-            self.close()
-            return False
-        
-        return True
-        
     def loadTransferRules(self):
             
         # Verify we have a valid transfer file.
@@ -1592,7 +1561,6 @@ class Main(QMainWindow):
         self.__transferRulesElement = test_rt.find('section-rules')
         
         if self.__transferRulesElement is not None:
-            self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
             self.__transferRuleFileXMLtree = test_tree
             self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
@@ -1602,7 +1570,6 @@ class Main(QMainWindow):
         else:
             QMessageBox.warning(self, 'Invalid Rules File', \
             'The transfer file has no transfer element or no section-rules element')
-            self.ui.TransferFileEdit.setText('')
             return False
         
         # Check if we have an interchunk rules file (.t2x)
@@ -1731,12 +1698,6 @@ class Main(QMainWindow):
             self.__interchunkLexicalUnitsResult = ''
         
         self.__convertIt = True
-        
-        # TODO: allow editable rule file edit box?
-        # Make sure we have a transfer file
-        if self.ui.TransferFileEdit.text() == '':
-            self.unsetCursor()
-            return
         
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
