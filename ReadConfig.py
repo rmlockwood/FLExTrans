@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7 - 11/5/22 - Ron Lockwood
+#    New function writeConfigValue to write one config value change. The rest of
+#    the lines don't change.
+#
 #   Version 3.5.3 - 8/8/22 - Ron Lockwood
 #    Don't allow two equals signs in the config file.
 #
