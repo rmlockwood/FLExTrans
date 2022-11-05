@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.3 - 11/5/22 - Ron Lockwood
+#    Fixes #309. Use saved sent number only when it's the same text as last time.
+#
 #   Version 3.7.2 - 11/5/22 - Ron Lockwood
 #    Fixes #310. Removed unneeded controls.
 #
@@ -277,7 +280,7 @@ from PyQt5.Qt import QMainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -477,20 +480,24 @@ class Main(QMainWindow):
         ruleTab = 0
         sourceTab = 0
         selectWordsSentNum = 0
+        savedSourceTextName = ''
         
         # Clear text boxes and labels
         self.__ClearStuff()
         
         # Open a settings file to see which tabs were last used.
+        # Put this in a try so that if the number of values in the users file are fewer than expected, 
+        # We won't crash and instead just ignore the saved values
         try:
             f = open(self.windowsSettingsFile)
             
             line = f.readline()
             
-            ruleTab, sourceTab, selectWordsSentNum = line.split(',')
+            ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
             ruleTab = int(ruleTab)
             sourceTab = int(sourceTab)
             selectWordsSentNum = int(selectWordsSentNum)
+            savedSourceTextName = savedSourceTextName.strip()
             
             f.close()
         except:
@@ -541,6 +548,11 @@ class Main(QMainWindow):
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
 
+        # Only use the sentence number from saved values if the text is the same one that was last saved
+        if savedSourceTextName != sourceText:
+
+            selectWordsSentNum = 0
+            
         # Set the index of the combo box and sentence list to what was saved before
         self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
         qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
@@ -1545,7 +1557,7 @@ class Main(QMainWindow):
         
         f = open(self.windowsSettingsFile, 'w')
         
-        f.write(f'{str(rulesTab)},{str(sourceTab)},{str(selectWordsSentNum)}\n')
+        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(selectWordsSentNum)}|{self.__sourceText}\n')
         f.close()
         
     def loadTransferRules(self):
