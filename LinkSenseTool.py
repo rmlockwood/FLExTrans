@@ -5,15 +5,20 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7 - 11/5/22 - Ron Lockwood
+#    Fixes #252. The user can choose a different source text which triggers a restart
+#    of the module. Added logic to detect if linking or unlinking was done. If a
+#    change happened, prompt the user to save before restarting.
+#
 #   Version 3.6.2 - 9/3/22 - Ron Lockwood
-#   Fixes #213. Show the source text name at the top of the window. 
+#    Fixes #213. Show the source text name at the top of the window. 
 #
 #   Version 3.6.1 - 9/3/22 - Ron Lockwood
-#   Fixes #233. Give errors if config file settings like source morpheme types are null.
+#    Fixes #233. Give errors if config file settings like source morpheme types are null.
 #
 #   Version 3.6 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.5.4 - 7/13/22 - Ron Lockwood
 #    More CloseProject() calls for FlexTools2.1.1
@@ -131,7 +136,7 @@ from System import Guid
 from System import String
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from FTModuleClass import *                                                 
 from FTModuleClass import FlexToolsModuleClass
@@ -150,7 +155,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.6.2",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -335,6 +340,9 @@ class LinkerTable(QtCore.QAbstractTableModel):
         self.__localData = myData
         self.__myHeaderData = headerData
         self.__selectedHPG = None
+        self.__linkingChanged = False
+    def didLinkingChange(self):
+        return self.__linkingChanged
     def getInternalData(self):
         return self.__localData
     def setInternalData(self, Data):
@@ -377,7 +385,8 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 locData.set_tgtHPG_only(self.__selectedHPG)
                 locData.linkIt = True
                 locData.tgtModified = True
-                #self.dataChanged.emit(index, index)
+
+                self.__linkingChanged = True
                 
                 return self.__selectedHPG.getHeadword()
         
@@ -468,9 +477,6 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 else:
                     val = QtCore.Qt.Unchecked
                 
-                # force an update so we get colors changing as needed
-                #self.dataChanged.emit(index, index)
-                
                 return val
              
         elif role == QtCore.Qt.TextAlignmentRole:
@@ -518,6 +524,8 @@ class LinkerTable(QtCore.QAbstractTableModel):
 
         if role == QtCore.Qt.CheckStateRole and col == 0:
             
+            self.__linkingChanged = True
+            
             row = index.row()
             
             if value == QtCore.Qt.Checked: 
@@ -532,7 +540,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report):
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
@@ -545,8 +553,12 @@ class Main(QMainWindow):
         self.ui.tableView.setModel(self.__model)
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
+        self.__report = report
         self.ret_val = 0
         self.cols = 7
+        self.restartLinker = False
+        # load the source text list
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
@@ -557,10 +569,8 @@ class Main(QMainWindow):
         self.ui.HideProperNounsCheckBox.clicked.connect(self.HideProperNounsClicked)
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
+        self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
         self.ComboClicked()
-        
-        # Set the source text
-        self.ui.sourceTextNameLabel.setText(f'Source Text Name: {sourceTextName}')
         
         myHPG = self.__combo_model.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
@@ -573,6 +583,24 @@ class Main(QMainWindow):
                 self.__combo_model.setRTL(True)
                 break
     
+    def sourceTextComboChanged(self):
+        
+        self.restartLinker = True
+        
+        # Update the source text setting in the config file
+        ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
+        
+        # Check if the user did some linking or unlinking
+        if self.__model.didLinkingChange():
+            
+            # Check if the user wants to save changes
+            if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        
+                self.ret_val = 1
+        
+        # Close the tool and it will restart
+        self.close()
+        
     def findRow(self, searchText):
         
         found = False
@@ -1134,16 +1162,29 @@ def dump_vocab(myData):
             processed[myHeadword] = 1
     fz.close()
 
-def MainFunction(DB, report, modify=True):
-        
+RESTART_MODULE = 0
+ERROR_HAPPENED = 1
+NO_ERRORS = 2
+
+def MainFunction(DB, report, modify=False):
+
     if not modify:
         report.Error('You need to run this module in "modify mode."')
         return
     
+    retVal = RESTART_MODULE
+    
+    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
+    while retVal == RESTART_MODULE:
+        
+        retVal = RunModule(DB, report)
+        
+def RunModule(DB, report):
+        
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return
+        return ERROR_HAPPENED
 
     haveConfigError = False
     
@@ -1181,7 +1222,7 @@ def MainFunction(DB, report, modify=True):
         haveConfigError = True
     
     if haveConfigError:
-        return
+        return ERROR_HAPPENED
     
     # Find the desired text
     foundText = False
@@ -1192,7 +1233,7 @@ def MainFunction(DB, report, modify=True):
         
     if not foundText:
         report.Error('The text named: '+sourceTextName+' not found.')
-        return
+        return ERROR_HAPPENED
 
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
     senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
@@ -1204,19 +1245,19 @@ def MainFunction(DB, report, modify=True):
         report.Error(numField + " field doesn't exist. Please read the instructions.")
 
     if not (senseEquivField and senseNumField):
-        return
+        return ERROR_HAPPENED
 
     TargetDB = FLExProject()
 
     # Open the target database
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
-        return
+        return ERROR_HAPPENED
     
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         report.Error('The Target Database does not exist. Please check the configuration file.')
-        return
+        return ERROR_HAPPENED
 
     report.Info('Opening: '+targetProj+' as the target database.')
 
@@ -1243,13 +1284,13 @@ def MainFunction(DB, report, modify=True):
     # Create a map of glosses to target senses and their number and a list of target lexical senses
     if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
         TargetDB.CloseProject()
-        return
+        return ERROR_HAPPENED
 
     # Go through the interlinear words
     retVal, myData = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText)
 
     if retVal == False:
-        return 
+        return ERROR_HAPPENED 
 
     # Check to see if there is any data to link
     if len(myData) == 0:
@@ -1268,7 +1309,7 @@ def MainFunction(DB, report, modify=True):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report)
         
         window.show()
         app.exec_()
@@ -1278,8 +1319,16 @@ def MainFunction(DB, report, modify=True):
             
             update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
+        # If the user changed the source text combo, the restart member is set to True
+        if window.restartLinker:
+            
+            TargetDB.CloseProject()
+            return RESTART_MODULE
+    
     TargetDB.CloseProject()
     
+    return NO_ERRORS
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
