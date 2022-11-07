@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1271</width>
-    <height>715</height>
+    <height>693</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>346</y>
+      <y>311</y>
       <width>777</width>
       <height>148</height>
      </rect>
@@ -96,98 +96,11 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>9</y>
-      <width>81</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Rules File</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="TransferFileBrowseButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>5</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Browse...</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="TransferFileEdit">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>5</y>
-      <width>171</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="BilingFileEdit">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>5</y>
-      <width>171</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="BilingFileBrowseButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>728</x>
-      <y>5</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Browse...</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>9</y>
-      <width>131</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Biling. Dict. File</string>
-    </property>
-   </widget>
    <widget class="QTabWidget" name="tabSource">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>75</y>
+      <y>40</y>
       <width>1231</width>
       <height>225</height>
      </rect>
@@ -352,7 +265,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>500</y>
+      <y>465</y>
       <width>111</width>
       <height>23</height>
      </rect>
@@ -365,8 +278,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>55</y>
-      <width>111</width>
+      <y>15</y>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
@@ -378,7 +291,7 @@
     <property name="geometry">
      <rect>
       <x>800</x>
-      <y>346</y>
+      <y>311</y>
       <width>451</width>
       <height>122</height>
      </rect>
@@ -399,7 +312,7 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>483</y>
+      <y>448</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -412,7 +325,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>326</y>
+      <y>291</y>
       <width>211</width>
       <height>23</height>
      </rect>
@@ -425,46 +338,20 @@
     <property name="geometry">
      <rect>
       <x>800</x>
-      <y>326</y>
-      <width>141</width>
+      <y>291</y>
+      <width>271</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Information</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="SourceTextName">
-    <property name="geometry">
-     <rect>
-      <x>848</x>
-      <y>9</y>
-      <width>91</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Text Name</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="SourceFileEdit">
-    <property name="geometry">
-     <rect>
-      <x>950</x>
-      <y>5</y>
-      <width>171</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
+     <string>Rule Execution Information</string>
     </property>
    </widget>
    <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>310</y>
+      <y>275</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -477,7 +364,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>310</y>
+      <y>275</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -490,7 +377,7 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>310</y>
+      <y>275</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -507,7 +394,7 @@
     <property name="geometry">
      <rect>
       <x>540</x>
-      <y>310</y>
+      <y>275</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -520,27 +407,11 @@
       <normaloff>DownArrow.png</normaloff>DownArrow.png</iconset>
     </property>
    </widget>
-   <widget class="QPushButton" name="ChooseSourceButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1130</x>
-      <y>5</y>
-      <width>101</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Choose...</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="unselectAllButton">
     <property name="geometry">
      <rect>
       <x>360</x>
-      <y>310</y>
+      <y>275</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -553,7 +424,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>520</y>
+      <y>485</y>
       <width>1231</width>
       <height>61</height>
      </rect>
@@ -574,7 +445,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>606</y>
+      <y>571</y>
       <width>161</width>
       <height>23</height>
      </rect>
@@ -587,9 +458,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>626</y>
+      <y>591</y>
       <width>1231</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="font">
@@ -608,7 +479,7 @@
     <property name="geometry">
      <rect>
       <x>490</x>
-      <y>589</y>
+      <y>554</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -621,7 +492,7 @@
     <property name="geometry">
      <rect>
       <x>630</x>
-      <y>589</y>
+      <y>554</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -634,7 +505,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>677</y>
+      <y>657</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -647,7 +518,7 @@
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>680</y>
+      <y>660</y>
       <width>391</width>
       <height>25</height>
      </rect>
@@ -663,7 +534,7 @@
     <property name="geometry">
      <rect>
       <x>754</x>
-      <y>677</y>
+      <y>657</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -679,7 +550,7 @@
     <property name="geometry">
      <rect>
       <x>940</x>
-      <y>677</y>
+      <y>657</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -695,7 +566,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>680</y>
+      <y>660</y>
       <width>131</width>
       <height>20</height>
      </rect>
@@ -707,8 +578,8 @@
    <widget class="QPushButton" name="rebuildBilingLexButton">
     <property name="geometry">
      <rect>
-      <x>554</x>
-      <y>43</y>
+      <x>670</x>
+      <y>8</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -721,7 +592,7 @@
     <property name="geometry">
      <rect>
       <x>1090</x>
-      <y>310</y>
+      <y>275</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -734,7 +605,7 @@
     <property name="geometry">
      <rect>
       <x>880</x>
-      <y>43</y>
+      <y>8</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -747,7 +618,7 @@
     <property name="geometry">
      <rect>
       <x>1090</x>
-      <y>43</y>
+      <y>8</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -760,7 +631,7 @@
     <property name="geometry">
      <rect>
       <x>320</x>
-      <y>278</y>
+      <y>243</y>
       <width>501</width>
       <height>23</height>
      </rect>
@@ -773,7 +644,7 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>476</y>
+      <y>441</y>
       <width>640</width>
       <height>42</height>
      </rect>
@@ -826,6 +697,24 @@
     </property>
     <property name="wordWrap">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="SourceTextCombo">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>10</y>
+      <width>431</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="maxVisibleItems">
+     <number>30</number>
     </property>
    </widget>
   </widget>

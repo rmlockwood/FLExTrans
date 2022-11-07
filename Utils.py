@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.7 - 11/5/22 - Ron Lockwood
+#    New function loadSourceTextList to load a combo box with source texts titles
+#
 #   Version 3.6.10 - 10/19/22 - Ron Lockwood
 #    Fixes #244. Give a warning if an attribute matches a grammatical category.
 #
@@ -3385,3 +3388,21 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
         return countList, posAbbrStr
     
     return countList, posAbbrStr
+
+def loadSourceTextList(widget, DB, sourceText):
+    
+    sourceList = []
+    for interlinText in DB.ObjectsIn(ITextRepository):
+
+        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
+
+    sortedSourceList = sorted(sourceList, key=str.casefold)
+    
+    # Add items and when we find the one that matches the config file. Set that one to be displayed.
+    for i, itemStr in enumerate(sortedSourceList):
+        
+        widget.addItem(itemStr)
+        
+        if itemStr == sourceText:
+            
+            widget.setCurrentIndex(i)
