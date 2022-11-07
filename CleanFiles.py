@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.7 - 11/7/22 - Ron Lockwood
+#    LiveRuleTester files weren't getting deleted. Delete advanced files.
+#
 #   Version 3.6 - 9/3/22 - Ron Lockwood
 #    Fixes #235. Clean all STAMP files regardless of project name prefix.
 #
@@ -45,10 +48,10 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans modules to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : descr,
-        FTM_Help  : "Remove generated files to force each FLExTrans modules to regenerate everything.",  
+        FTM_Synopsis   : "Remove generated files to force each FLExTrans modules to regenerate everything",
+        FTM_Help  : "",  
         FTM_Description:    descr}     
 #----------------------------------------------------------------
 
@@ -59,7 +62,7 @@ def MainFunction(DB, report, modify=True):
     
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
-    buildFolder += '/'
+    buildFolder += '\\'
     
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -111,6 +114,8 @@ def MainFunction(DB, report, modify=True):
     # makefile uses this target so hard code it here
     try:
         os.remove(buildFolder+'tr.t1x')
+        os.remove(buildFolder+'tr.t2x')
+        os.remove(buildFolder+'tr.t3x')
     except:
         pass # ignore errors
 
@@ -123,6 +128,10 @@ def MainFunction(DB, report, modify=True):
     # always delete transfer_rules.t1x.bin. This is what is in the Makefile
     try:
         os.remove(buildFolder+'transfer_rules.t1x.bin')
+        os.remove(buildFolder+'transfer_rules.t2x.bin')
+        os.remove(buildFolder+'transfer_rules.t3x.bin')
+        os.remove(buildFolder+'target_text1.txt')
+        os.remove(buildFolder+'target_text2.txt')
     except:
         pass # ignore errors
     
@@ -190,7 +199,7 @@ def MainFunction(DB, report, modify=True):
     
     # Remove files in the LiveRuleTester folder
     try:
-        for p in Path('.').glob(f"{buildFolder}LiveRuleTester\\*"):
+        for p in Path(buildFolder+'LiveRuleTester').glob("*.*"):
             
             
             if re.search('Makefile', p.name):

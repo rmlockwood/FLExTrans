@@ -5,6 +5,12 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.7 - 11/7/22 - Ron Lockwood
+#   Move strip rules function to Utils
+#
+#   Version 3.6.3 - 10/25/22 - Ron Lockwood
+#   Strip advanced rule files if they exist. Error handling if can't open file to strip.
+#
 #   Version 3.6.2 - 10/19/22 - Ron Lockwood
 #    Fixes #244. Give a warning if an attribute matches a grammatical category.
 #
@@ -73,41 +79,16 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.6.2",
+        FTM_Version    : "3.7,
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
         FTM_Description:    descr}     
 
-STRIPPED_RULES = 'tr.t1x'
+STRIPPED_RULES  = 'tr.t1x'
+STRIPPED_RULES2 = 'tr.t2x'
+STRIPPED_RULES3 = 'tr.t3x'
 
-def stripRulesFile(buildFolder, tranferRulePath):
-    
-    # Open the existing rule file and read all the lines
-    f = open(tranferRulePath ,"r", encoding='utf-8')
-    lines = f.readlines()
-    f.close()
-    
-    # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(buildFolder, STRIPPED_RULES) ,"w", encoding='utf-8')
-    
-    # Go through the existing rule file and write everything to the new file except Doctype stuff.
-    for line in lines:
-        
-        strippedLine = line.strip()
-        
-        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
-               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
-               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
-               strippedLine == '"transfer.dtd">' or \
-               strippedLine == '"interchunk.dtd">' or \
-               strippedLine == '"postchunk.dtd">':
-            continue
-        
-        # Always write transfer rule data as decomposed
-        f.write(unicodedata.normalize('NFD', line))
-    f.close()
-    
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -117,11 +98,6 @@ def MainFunction(DB, report, modify=True):
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return True
-
-    # Get the path to the transfer rules file
-    tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
-    if not tranferRulePath:
         return True
 
     # Get the path to the dictionary file
@@ -134,9 +110,33 @@ def MainFunction(DB, report, modify=True):
     if not transferResultsPath:
         return True
     
+    # Get the path to the transfer rules file
+    tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+    if not tranferRulePath:
+        return True
+
     # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
-    stripRulesFile(buildFolder, tranferRulePath)
+    if Utils.stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
+        return True
     
+    ## Advanced transfer files
+    
+    # Get the path to the 2nd transfer rules file (could be blank)
+    tranferRulePath2 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE2, report, giveError=False)
+    if tranferRulePath2:
+
+        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        if Utils.stripRulesFile(report, buildFolder, tranferRulePath2, STRIPPED_RULES2) == True:
+            return True
+
+    # Get the path to the 3rd transfer rules file (could be blank)
+    tranferRulePath3 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report, giveError=False)
+    if tranferRulePath3:
+
+        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        if Utils.stripRulesFile(report, buildFolder, tranferRulePath3, STRIPPED_RULES3) == True:
+            return True
+
     # Check if attributes are well-formed. Warnings will be reported in the function
     error_list = Utils.checkRuleAttributes(tranferRulePath)
 

@@ -5,6 +5,8 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.4 - 11/7/22 - Ron Lockwood
+#   Get advanced rule file info. from files defined by new settings.
 #   Version 3.7.3 - 11/5/22 - Ron Lockwood
 #    Fixes #309. Use saved sent number only when it's the same text as last time.
 #
@@ -280,7 +282,7 @@ from PyQt5.Qt import QMainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -298,6 +300,23 @@ You can run the testbed to check that you are getting the results you expect.
 """ }
 
 MAX_CHECKBOXES = 80
+LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
+TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
+ANA_FILE = 'myText.ana'
+SYNTHESIS_FILE = 'myText.txt'
+WINDOWS_SETTINGS_FILE = 'window.settings.txt'
+
+# These strings need to be identical with the Makefile in the LiveRuleTester folder
+SOURCE_APERT = 'source_text.txt'
+RULE_FILE1 = 'transfer_rules.t1x'
+TARGET_FILE1 = 'target_text1.txt'
+LOG_FILE = 'apertium_log.txt'
+RULE_FILE2 = 'transfer_rules.t2x'
+TARGET_FILE2 = 'target_text2.txt'
+LOG_FILE2 = 'apertium_log2.txt'
+RULE_FILE3 = 'transfer_rules.t3x'
+TARGET_FILE = 'target_text.txt'
+LOG_FILE3 = 'apertium_log3.txt'
 BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
 
 def firstLower(myStr):
@@ -424,6 +443,8 @@ class Main(QMainWindow):
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
         self.rulesCheckedList = []
+        self.interChunkRulesCheckedList = []
+        self.postChunkRulesCheckedList = []
         self.restartTester = False
         
         # Tie controls to functions
@@ -455,12 +476,12 @@ class Main(QMainWindow):
         # Get parent folder of the folder flextools.ini is in and add \Build to it
         self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
 
-        self.testerFolder = self.buildFolder+'\\LiveRuleTester'
-        self.affixGlossPath = self.testerFolder + '\\target_pfx_glosses.txt'
-        self.transferResultsPath = self.testerFolder + '\\target_text.aper'
-        self.targetAnaPath = self.testerFolder + '\\myText.ana'
-        self.synthesisFilePath = self.testerFolder + '\\myText.syn'
-        self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
+        self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
+        self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE
+        self.transferResultsPath = self.testerFolder + '\\' + TARGET_FILE
+        self.targetAnaPath = self.testerFolder + '\\' + ANA_FILE
+        self.synthesisFilePath = self.testerFolder + '\\' + SYNTHESIS_FILE
+        self.windowsSettingsFile = self.testerFolder + '\\' + WINDOWS_SETTINGS_FILE
         
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
@@ -569,7 +590,7 @@ class Main(QMainWindow):
             return 
         
         # Get replacement file name.
-        self.__replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
+        self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
         if not self.__replFile:
             self.ret_val = False
             self.close()
@@ -1170,34 +1191,54 @@ class Main(QMainWindow):
         self.ui.SynthTextEdit.setPlainText('')
         self.__ClearStuff()
         self.restoreChecked()
-        #self.checkThemAll()
         
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
             
-    def saveChecked(self):
-        
-        self.rulesCheckedList = []
+    def collectChecks(self, myList, myModel):
         
         # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
+        for i in range(0, myModel.rowCount()):
             
             # Save the state of each check box 
-            if self.__ruleModel.item(i).checkState():
-                self.rulesCheckedList.append(QtCore.Qt.Checked)
+            if myModel.item(i).checkState():
+                myList.append(QtCore.Qt.Checked)
             else:
-                self.rulesCheckedList.append(QtCore.Qt.Unchecked)
-                
-    def restoreChecked(self):
+                myList.append(QtCore.Qt.Unchecked)
+    
+    def saveChecked(self):
+        
+        self.rulesCheckedList.clear()
+        
+        self.collectChecks(self.rulesCheckedList, self.__transferModel)
+        
+        if self.advancedTransfer:
+            
+            self.interChunkRulesCheckedList.clear()
+            self.collectChecks(self.interChunkRulesCheckedList, self.__interChunkModel)
+
+            self.postChunkRulesCheckedList.clear()
+            self.collectChecks(self.postChunkRulesCheckedList, self.__postChunkModel)
+
+    def recheck(self, myList, myModel):
         
         # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
+        for i in range(0, myModel.rowCount()):
             
-            if i < len(self.rulesCheckedList):
+            if i < len(myList):
                 
                 # Set the state of each check box
-                self.__ruleModel.item(i).setCheckState(self.rulesCheckedList[i])
-                
+                myModel.item(i).setCheckState(myList[i])
+                        
+    def restoreChecked(self):
+        
+        self.recheck(self.rulesCheckedList, self.__transferModel)
+        
+        if self.advancedTransfer:
+            
+            self.recheck(self.interChunkRulesCheckedList, self.__interChunkModel)
+            self.recheck(self.postChunkRulesCheckedList, self.__postChunkModel)
+
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
@@ -1381,6 +1422,7 @@ class Main(QMainWindow):
                     
                 self.ui.ManualEdit.setPlainText(self.__tranferPrevSourceLUs)
     
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
                 
             elif self.ui.tabRules.currentIndex() == 1: #'tab_interchunk_rules':
@@ -1401,6 +1443,7 @@ class Main(QMainWindow):
                     self.ui.ManualEdit.setPlainText(self.__interchunkPrevSourceLUs)
                     self.__lexicalUnits = self.__interchunkPrevSourceLUs
                 
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
 
             else: # postchunk
@@ -1415,6 +1458,7 @@ class Main(QMainWindow):
                 self.ui.ManualEdit.setPlainText(self.__interchunkLexicalUnitsResult)
                 self.__lexicalUnits = self.__interchunkLexicalUnitsResult
                 
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
 
             self.__prevTab = self.ui.tabRules.currentIndex()
@@ -1584,14 +1628,10 @@ class Main(QMainWindow):
             'The transfer file has no transfer element or no section-rules element')
             return False
         
-        # Check if we have an interchunk rules file (.t2x)
+        # Check if the interchunk file exists. If it does, we assume we have advanced transfer going on
+        interchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE2, self.__report, giveError=False)
         
-        # build the interchunk rules file name
-        rest = self.__transfer_rules_file[0:-4] #os.path.splitext(self.__transfer_rules_file.toStdString())
-        interchunk_rules_file = rest + '.t2x'
-        
-        # Check if the file exists. If it does, we assume we have advanced transfer going on
-        if os.path.isfile(interchunk_rules_file):
+        if interchunk_rules_file and os.path.isfile(interchunk_rules_file):
             
             # Verify we have a valid transfer file.
             try:
@@ -1614,11 +1654,14 @@ class Main(QMainWindow):
                 'The interchunk transfer file has no transfer element or no section-rules element')
                 return False
             
-            # build the postchunk rules file name
-            postchunk_rules_file = rest + '.t3x'
+            # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+            if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+                return True
+
+            postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
             
             # Check if the file exists. If it does, we assume we have advanced transfer going on
-            if os.path.isfile(postchunk_rules_file):
+            if postchunk_rules_file and os.path.isfile(postchunk_rules_file):
                 
                 # Verify we have a valid transfer file.
                 try:
@@ -1640,6 +1683,10 @@ class Main(QMainWindow):
                     QMessageBox.warning(self, 'Invalid postchunk Rules File', \
                     'The postchunk transfer file has no transfer element or no section-rules element')
                     return False
+    
+                # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+                if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
+                    return True
     
                 # if we have interchunk and postchunk transfer rules files we are in advanced mode
                 self.advancedTransfer = True
@@ -1713,40 +1760,40 @@ class Main(QMainWindow):
         
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
-                source_file = os.path.join(self.testerFolder, 'source_text.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text1.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
+                source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE1)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE1)
+                log_file = os.path.join(self.testerFolder, LOG_FILE)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
                 ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
-                source_file = os.path.join(self.testerFolder, 'target_text1.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t2x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text2.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log2.txt')
+                source_file = os.path.join(self.testerFolder, TARGET_FILE1)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE2)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE2)
+                log_file = os.path.join(self.testerFolder, LOG_FILE2)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
                 ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
-                source_file = os.path.join(self.testerFolder, 'target_text2.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t3x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log3.txt')
+                source_file = os.path.join(self.testerFolder, TARGET_FILE2)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE3)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
+                log_file = os.path.join(self.testerFolder, LOG_FILE3)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
                 ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
-            source_file = os.path.join(self.testerFolder, 'source_text.aper')
-            tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
-            tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
-            log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
+            source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+            tr_file = os.path.join(self.testerFolder, RULE_FILE1)
+            tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
+            log_file = os.path.join(self.testerFolder, LOG_FILE)
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
