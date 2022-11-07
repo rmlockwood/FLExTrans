@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.7 - 11/7/22 - Ron Lockwood
+#    Moved function here for stripping DOCTYPE from transfer rules file.
+#
 #   Version 3.6.10 - 10/19/22 - Ron Lockwood
 #    Fixes #244. Give a warning if an attribute matches a grammatical category.
 #
@@ -3385,3 +3388,37 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
         return countList, posAbbrStr
     
     return countList, posAbbrStr
+
+def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
+    
+    # Open the existing rule file and read all the lines
+    try:
+        f = open(tranferRulePath ,"r", encoding='utf-8')
+    except:
+        report.Error(f'Error in opening the file: "{tranferRulePath}", check that it exists.')
+        return True
+
+    lines = f.readlines()
+    f.close()
+    
+    # Create a new file tr.t1x to be used by Apertium
+    f = open(os.path.join(buildFolder, strippedRulesFileName) ,"w", encoding='utf-8')
+    
+    # Go through the existing rule file and write everything to the new file except Doctype stuff.
+    for line in lines:
+        
+        strippedLine = line.strip()
+        
+        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
+               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
+               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+               strippedLine == '"transfer.dtd">' or \
+               strippedLine == '"interchunk.dtd">' or \
+               strippedLine == '"postchunk.dtd">':
+            continue
+        
+        # Always write transfer rule data as decomposed
+        f.write(unicodedata.normalize('NFD', line))
+    f.close()
+    
+    return False
