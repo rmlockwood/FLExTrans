@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.7.4 - 11/14/22 - Ron Lockwood
+#    Shorter height for the window. Fixes #321
+#
 #   Version 3.7.3 - 11/7/22 - Ron Lockwood
 #    Two new transfer rule file settings for advanced transfer.
 #
@@ -92,7 +95,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.7.3",
+        FTM_Version: "3.7.4",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -455,7 +458,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 756)
+        MainWindow.resize(800, 630)
+        MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -471,8 +475,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
 
         self.scrollArea.setSizePolicy(sizePolicy)
-        self.scrollArea.setMinimumSize(QtCore.QSize(750, 650))
-        self.scrollArea.setMaximumSize(QtCore.QSize(900, 650))
+        self.scrollArea.setMinimumSize(QtCore.QSize(750, 200))
+        self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
 
         font = QtGui.QFont()
 #         font.setFamily("Arial")
