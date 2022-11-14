@@ -853,6 +853,11 @@ class Main(QMainWindow):
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
                 
+                if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
+                    
+                    # Set the global variable
+                    CURRENT_SRC_TEXT = widgInfo[WIDGET1_OBJ].currentText()
+ 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+self.addCommas(widgInfo[WIDGET1_OBJ].currentData())

@@ -139,12 +139,12 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
 from FTModuleClass import *                                                 
-from FTModuleClass import FlexToolsModuleClass
 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs import FLExProject, AllProjectNames
+from FTPaths import CURRENT_SRC_TEXT
 
 import ReadConfig
 import Utils
@@ -589,6 +589,9 @@ class Main(QMainWindow):
         
         # Update the source text setting in the config file
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
+        
+        # Set the global variable
+        CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
         # Check if the user did some linking or unlinking
         if self.__model.didLinkingChange():
