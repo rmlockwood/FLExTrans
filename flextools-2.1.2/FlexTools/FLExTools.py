@@ -18,6 +18,7 @@ import sys
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
 
 import os
+import re
 import traceback
 
 
@@ -471,10 +472,11 @@ class FTMainForm (Form):
             progressText = "[%s: %i%%]" % (msg, self.progressPercent)
         else:
             progressText = ""
-        newText = "Collection: '%s'   Project: '%s'   %s" %\
+        newText = "Collection: '%s'   Project: '%s'  Source Text: '%s'   %s" %\
              (self.configuration.currentCollection,
               #self.configuration.currentServer
-              self.configuration.currentProject,
+              re.search(r'WorkProjects\\(.*)\\Config', FTPaths.CONFIG_PATH).group(1),
+              '' if not hasattr(FTPaths, 'CURRENT_SRC_TEXT') else FTPaths.CURRENT_SRC_TEXT,
               progressText)
         if self.StatusBar.Text != newText:
             self.StatusBar.Text = newText

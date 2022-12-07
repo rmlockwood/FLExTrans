@@ -248,7 +248,7 @@
 from System import Guid
 from System import String
 
-from FTModuleClass import *                                                 
+from FTModuleClass import *        
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs import FLExProject
@@ -266,7 +266,7 @@ from subprocess import call
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
 import Utils
 import ReadConfig
@@ -277,8 +277,7 @@ import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
-from FTPaths import CONFIG_PATH
-from PyQt5.Qt import QMainWindow
+import FTPaths 
 
 #----------------------------------------------------------------
 # Configurables:
@@ -483,7 +482,7 @@ class Main(QMainWindow):
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
-        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.BUILD_FOLDER)
 
         self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
         self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE
@@ -633,6 +632,9 @@ class Main(QMainWindow):
         
         # Update the source text setting in the config file
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
+        
+        # Set the global variable
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
         # Close the tool and it will restart
         self.closeEvent(None)
