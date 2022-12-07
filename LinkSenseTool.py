@@ -144,7 +144,7 @@ from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs import FLExProject, AllProjectNames
-from FTPaths import CURRENT_SRC_TEXT
+import FTPaths
 
 import ReadConfig
 import Utils
@@ -591,7 +591,7 @@ class Main(QMainWindow):
         ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
         
         # Set the global variable
-        CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
         # Check if the user did some linking or unlinking
         if self.__model.didLinkingChange():
