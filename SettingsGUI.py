@@ -89,7 +89,7 @@ from flexlibs import FLExProject, AllProjectNames
 
 import Utils
 import ReadConfig
-from FTPaths import CONFIG_PATH
+import FTPaths
 
 # ----------------------------------------------------------------
 # Documentation that the user sees:
@@ -449,7 +449,7 @@ def doFolderBrowse(wind, myWidgInfo):
 def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
-    startPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+    startPath = os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH))
     widget.setText(os.path.relpath(myPath, startPath))
     widget.setToolTip(os.path.relpath(myPath, startPath))
     
@@ -670,12 +670,12 @@ class Main(QMainWindow):
         
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
         # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
-        myPath = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
+        myPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), ReadConfig.CONFIG_FILE)
         
         self.config = myPath
         
         # Get the project folder which is the parent of the config path
-        myPath = os.path.dirname(os.path.dirname(CONFIG_PATH))
+        myPath = os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH))
         
         self.projFolder = myPath
         
@@ -857,6 +857,11 @@ class Main(QMainWindow):
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
                 
+                if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
+                    
+                    # Set the global variable
+                    FTPaths.CURRENT_SRC_TEXT = widgInfo[WIDGET1_OBJ].currentText()
+ 
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+self.addCommas(widgInfo[WIDGET1_OBJ].currentData())
