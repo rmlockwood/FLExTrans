@@ -5,8 +5,13 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.5 - 12/1/22 - Ron Lockwood
+#    Set the internal current row in the combo box model object and force the
+#    check boxes to get recreated. Fixes #345.
+#
 #   Version 3.7.4 - 11/7/22 - Ron Lockwood
-#   Get advanced rule file info. from files defined by new settings.
+#    Get advanced rule file info. from files defined by new settings.
+#
 #   Version 3.7.3 - 11/5/22 - Ron Lockwood
 #    Fixes #309. Use saved sent number only when it's the same text as last time.
 #
@@ -336,6 +341,10 @@ class SentenceList(QtCore.QAbstractListModel):
         self.__RTL = False
     def getCurrentSent(self):
         return self.__currentSent
+    def setCurrentSent(self, sentNum):
+        if sentNum < len(self.__localData):
+            self.__currentRow = sentNum
+            self.__currentSent = self.__localData[sentNum]
     def getSelectedRow(self):
         return self.__currentRow
     def getCurrentRow(self):
@@ -1379,8 +1388,11 @@ class Main(QMainWindow):
 
             # if no selection (-1), don't set the current index
             if ind != -1:            
+                self.__sent_model.setCurrentSent(int(ind.row()))
                 self.ui.SentCombo.setCurrentIndex(int(ind.row()))
                 self.ui.SentCombo.update()
+                self.listSentComboClicked()
+
             
             self.ui.selectWordsHintLabel.setVisible(True)
         

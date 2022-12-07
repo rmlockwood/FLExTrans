@@ -6,6 +6,10 @@
 #   7/23/2014
 #
 
+#   Version 3.7.2 - 12/1/22 - Ron Lockwood
+#    Set PATH="" in the do_make.bat file we create to prevent other make programs
+#    from being found and executed.
+#
 #   Version 3.7.1 - 11/7/22 - Ron Lockwood
 #    Moved function here for stripping DOCTYPE from transfer rules file.
 #
@@ -1733,6 +1737,9 @@ def run_makefile(absPathToBuildFolder, report):
 
     # make a variable for where the apertium executable files and dlls are found
     outStr += f'set {MAKEFILE_FLEXTOOLS_VARIABLE}={flexToolsPath}\n' 
+    
+    # set path to nothing
+    outStr += f'set PATH=""\n' 
     
     # Put quotes around the path in case there's a space
     outStr += f'cd "{absPathToBuildFolder}"\n'

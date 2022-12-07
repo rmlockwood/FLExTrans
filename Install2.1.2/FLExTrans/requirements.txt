@@ -1,6 +1,6 @@
 configparser
 cdfutils
-flexlibs>=1.1.5
+flexlibs==1.1.6
 fuzzywuzzy 
 Levenshtein 
 PyQt5==5.14 
