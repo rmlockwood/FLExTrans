@@ -5,6 +5,27 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.5 - 12/1/22 - Ron Lockwood
+#    Set the internal current row in the combo box model object and force the
+#    check boxes to get recreated. Fixes #345.
+#
+#   Version 3.7.4 - 11/7/22 - Ron Lockwood
+#    Get advanced rule file info. from files defined by new settings.
+#
+#   Version 3.7.3 - 11/5/22 - Ron Lockwood
+#    Fixes #309. Use saved sent number only when it's the same text as last time.
+#
+#   Version 3.7.2 - 11/5/22 - Ron Lockwood
+#    Fixes #310. Removed unneeded controls.
+#
+#   Version 3.7.1 - 11/5/22 - Ron Lockwood
+#    Fixes #197. The user can choose a different source text which triggers a restart
+#    of the module.
+#
+#   Version 3.7 - 10/29/22 - Ron Lockwood
+#    Fixes #277. Switch to same sentence between select words and select sentences tabs.
+#    Also save which sentence was selected when the LRT is closed.
+#
 #   Version 3.6.9 - 10/29/22 - Ron Lockwood
 #    Fixes #301. Biling lex. was not being rebuilt, just read when #237 was fixed.
 #
@@ -227,7 +248,7 @@
 from System import Guid
 from System import String
 
-from FTModuleClass import *                                                 
+from FTModuleClass import *        
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs import FLExProject
@@ -245,7 +266,7 @@ from subprocess import call
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
 import Utils
 import ReadConfig
@@ -256,7 +277,7 @@ import ExtractBilingualLexicon
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
-from FTPaths import CONFIG_PATH
+import FTPaths 
 
 #----------------------------------------------------------------
 # Configurables:
@@ -265,7 +286,7 @@ from FTPaths import CONFIG_PATH
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.6.9",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -283,6 +304,23 @@ You can run the testbed to check that you are getting the results you expect.
 """ }
 
 MAX_CHECKBOXES = 80
+LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
+TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
+ANA_FILE = 'myText.ana'
+SYNTHESIS_FILE = 'myText.txt'
+WINDOWS_SETTINGS_FILE = 'window.settings.txt'
+
+# These strings need to be identical with the Makefile in the LiveRuleTester folder
+SOURCE_APERT = 'source_text.txt'
+RULE_FILE1 = 'transfer_rules.t1x'
+TARGET_FILE1 = 'target_text1.txt'
+LOG_FILE = 'apertium_log.txt'
+RULE_FILE2 = 'transfer_rules.t2x'
+TARGET_FILE2 = 'target_text2.txt'
+LOG_FILE2 = 'apertium_log2.txt'
+RULE_FILE3 = 'transfer_rules.t3x'
+TARGET_FILE = 'target_text.txt'
+LOG_FILE3 = 'apertium_log3.txt'
 BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
 
 def firstLower(myStr):
@@ -299,8 +337,17 @@ class SentenceList(QtCore.QAbstractListModel):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.__localData = myData
         self.__currentSent = myData[0] # start out on the first one
+        self.__currentRow = 0
         self.__RTL = False
     def getCurrentSent(self):
+        return self.__currentSent
+    def setCurrentSent(self, sentNum):
+        if sentNum < len(self.__localData):
+            self.__currentRow = sentNum
+            self.__currentSent = self.__localData[sentNum]
+    def getSelectedRow(self):
+        return self.__currentRow
+    def getCurrentRow(self):
         return self.__currentSent
     def setRTL(self, val):
         self.__RTL = val
@@ -309,14 +356,10 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        row = index.row()
-        mySent = self.__localData[row]
+        self.__currentRow = index.row()
+        mySent = self.__localData[self.getSelectedRow()]
         
         if role == QtCore.Qt.DisplayRole:
-            #if self.getRTL():
-            #    pass
-                #value = myHPG.getHeadword() + ' \u200F(' + myHPG.getPOS() + ')\u200F ' + myHPG.getGloss()
-            #else:
             value = self.joinTupParts(mySent, 0)
             self.__currentSent = mySent    
             return value
@@ -365,17 +408,16 @@ class OverWriteDlg(QDialog):
         
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, source_text, DB, configMap, report):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.myWinId = int(self.winId())
+#        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
-        self.ui.BilingFileEdit.setText(biling_file)
-        self.__source_text = source_text
-        self.ui.SourceFileEdit.setText(source_text)
+        self.__sourceText = sourceText
         self.__DB = DB
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__DB, self.__sourceText)
         self.__configMap = configMap
         self.__report = report
         self.__transfer_rules_file = None
@@ -409,6 +451,9 @@ class Main(QMainWindow):
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
         self.rulesCheckedList = []
+        self.interChunkRulesCheckedList = []
+        self.postChunkRulesCheckedList = []
+        self.restartTester = False
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -417,8 +462,6 @@ class Main(QMainWindow):
         self.ui.listInterChunkRules.clicked.connect(self.rulesListClicked)
         self.ui.listPostChunkRules.clicked.connect(self.rulesListClicked)
         self.ui.SentCombo.currentIndexChanged.connect(self.listSentComboClicked)
-        self.ui.TransferFileBrowseButton.clicked.connect(self.TransferBrowseClicked)
-        self.ui.BilingFileBrowseButton.clicked.connect(self.BilingBrowseClicked)
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
@@ -435,20 +478,18 @@ class Main(QMainWindow):
         self.ui.viewBilingualLexiconButton.clicked.connect(self.ViewBilingualLexiconButtonClicked)
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
+        self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
-        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.BUILD_FOLDER)
 
-        self.testerFolder = self.buildFolder+'\\LiveRuleTester'
-        self.affixGlossPath = self.testerFolder + '\\target_pfx_glosses.txt'
-        self.transferResultsPath = self.testerFolder + '\\target_text.aper'
-        self.targetAnaPath = self.testerFolder + '\\myText.ana'
-        self.synthesisFilePath = self.testerFolder + '\\myText.syn'
-        self.windowsSettingsFile = self.testerFolder+'\\window.settings.txt'
-        
-        # Right align some text boxes
-        self.ui.SourceFileEdit.home(False)
+        self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
+        self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE
+        self.transferResultsPath = self.testerFolder + '\\' + TARGET_FILE
+        self.targetAnaPath = self.testerFolder + '\\' + ANA_FILE
+        self.synthesisFilePath = self.testerFolder + '\\' + SYNTHESIS_FILE
+        self.windowsSettingsFile = self.testerFolder + '\\' + WINDOWS_SETTINGS_FILE
         
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
@@ -467,19 +508,25 @@ class Main(QMainWindow):
         # Make sure we are on right tabs
         ruleTab = 0
         sourceTab = 0
+        selectWordsSentNum = 0
+        savedSourceTextName = ''
         
         # Clear text boxes and labels
         self.__ClearStuff()
         
         # Open a settings file to see which tabs were last used.
+        # Put this in a try so that if the number of values in the users file are fewer than expected, 
+        # We won't crash and instead just ignore the saved values
         try:
             f = open(self.windowsSettingsFile)
             
             line = f.readline()
             
-            ruleTab, sourceTab = line.split(',')
+            ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
             ruleTab = int(ruleTab)
             sourceTab = int(sourceTab)
+            selectWordsSentNum = int(selectWordsSentNum)
+            savedSourceTextName = savedSourceTextName.strip()
             
             f.close()
         except:
@@ -529,6 +576,17 @@ class Main(QMainWindow):
         
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
+
+        # Only use the sentence number from saved values if the text is the same one that was last saved
+        if savedSourceTextName != sourceText:
+
+            selectWordsSentNum = 0
+            
+        # Set the index of the combo box and sentence list to what was saved before
+        self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
+        qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
+        self.ui.listSentences.setCurrentIndex(qIndex)
+        self.listSentClicked()
         
         # Copy bilingual file to the tester folder
         try:
@@ -540,7 +598,7 @@ class Main(QMainWindow):
             return 
         
         # Get replacement file name.
-        self.__replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
+        self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
         if not self.__replFile:
             self.ret_val = False
             self.close()
@@ -568,6 +626,20 @@ class Main(QMainWindow):
         
         self.ret_val = True
 
+    def sourceTextComboChanged(self):
+        
+        self.restartTester = True
+        
+        # Update the source text setting in the config file
+        ReadConfig.writeConfigValue(self.__report, ReadConfig.SOURCE_TEXT_NAME, self.ui.SourceTextCombo.currentText())
+        
+        # Set the global variable
+        FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
+        
+        # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
+        
     # Read the bilingual lexicon and make a map from source entries to one or more target entries
     def ReadBilingualLexicon(self):
         
@@ -694,7 +766,7 @@ class Main(QMainWindow):
         
     def buildTestNodeFromInput(self, lexUnitList, synthesisResult):
         # Get the name of the text this lu came from
-        origin = self.ui.SourceFileEdit.text()
+        origin = self.__sourceText
         
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
@@ -1130,34 +1202,54 @@ class Main(QMainWindow):
         self.ui.SynthTextEdit.setPlainText('')
         self.__ClearStuff()
         self.restoreChecked()
-        #self.checkThemAll()
         
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
             
-    def saveChecked(self):
-        
-        self.rulesCheckedList = []
+    def collectChecks(self, myList, myModel):
         
         # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
+        for i in range(0, myModel.rowCount()):
             
             # Save the state of each check box 
-            if self.__ruleModel.item(i).checkState():
-                self.rulesCheckedList.append(QtCore.Qt.Checked)
+            if myModel.item(i).checkState():
+                myList.append(QtCore.Qt.Checked)
             else:
-                self.rulesCheckedList.append(QtCore.Qt.Unchecked)
-                
-    def restoreChecked(self):
+                myList.append(QtCore.Qt.Unchecked)
+    
+    def saveChecked(self):
+        
+        self.rulesCheckedList.clear()
+        
+        self.collectChecks(self.rulesCheckedList, self.__transferModel)
+        
+        if self.advancedTransfer:
+            
+            self.interChunkRulesCheckedList.clear()
+            self.collectChecks(self.interChunkRulesCheckedList, self.__interChunkModel)
+
+            self.postChunkRulesCheckedList.clear()
+            self.collectChecks(self.postChunkRulesCheckedList, self.__postChunkModel)
+
+    def recheck(self, myList, myModel):
         
         # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
+        for i in range(0, myModel.rowCount()):
             
-            if i < len(self.rulesCheckedList):
+            if i < len(myList):
                 
                 # Set the state of each check box
-                self.__ruleModel.item(i).setCheckState(self.rulesCheckedList[i])
-                
+                myModel.item(i).setCheckState(myList[i])
+                        
+    def restoreChecked(self):
+        
+        self.recheck(self.rulesCheckedList, self.__transferModel)
+        
+        if self.advancedTransfer:
+            
+            self.recheck(self.interChunkRulesCheckedList, self.__interChunkModel)
+            self.recheck(self.postChunkRulesCheckedList, self.__postChunkModel)
+
     def doLexicalUnitProcessing(self, mySent, i, paragraph_element):
         # Split compounds
         # The 2nd part of the tuple has the data stream info.
@@ -1290,7 +1382,33 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
+            
+            # Set the combo box index to be the same as the list box
+            ind = self.ui.listSentences.currentIndex()
+
+            # if no selection (-1), don't set the current index
+            if ind != -1:            
+                self.__sent_model.setCurrentSent(int(ind.row()))
+                self.ui.SentCombo.setCurrentIndex(int(ind.row()))
+                self.ui.SentCombo.update()
+                self.listSentComboClicked()
+
+            
             self.ui.selectWordsHintLabel.setVisible(True)
+        
+        elif self.ui.tabSource.currentIndex() == 1: # sentence list
+            
+            # Set the list box index to be the same as the combo box
+            myRow = self.ui.SentCombo.currentIndex()
+            
+            # if no selection (-1), don't set the current index
+            if myRow != -1:
+                qIndex = self.__sent_model.createIndex(myRow, 0)
+                self.ui.listSentences.setCurrentIndex(qIndex)
+                self.listSentClicked()
+
+            #self.ui.listSentences.setCurrentRow(self.ui.SentCombo.currentIndex())
+            self.ui.selectWordsHintLabel.setVisible(False)
             
         else: # sentences or manual
             
@@ -1318,6 +1436,7 @@ class Main(QMainWindow):
                     
                 self.ui.ManualEdit.setPlainText(self.__tranferPrevSourceLUs)
     
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
                 
             elif self.ui.tabRules.currentIndex() == 1: #'tab_interchunk_rules':
@@ -1338,6 +1457,7 @@ class Main(QMainWindow):
                     self.ui.ManualEdit.setPlainText(self.__interchunkPrevSourceLUs)
                     self.__lexicalUnits = self.__interchunkPrevSourceLUs
                 
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
 
             else: # postchunk
@@ -1352,6 +1472,7 @@ class Main(QMainWindow):
                 self.ui.ManualEdit.setPlainText(self.__interchunkLexicalUnitsResult)
                 self.__lexicalUnits = self.__interchunkLexicalUnitsResult
                 
+                self.rulesListClicked(self.TRIndex)
                 self.__ClearStuff()
 
             self.__prevTab = self.ui.tabRules.currentIndex()
@@ -1484,39 +1605,18 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
         
+        # Save the selected sentence of the active tab (for manual tab, use select words)
+        if self.ui.tabSource.currentIndex() == 1: # full sentences
+            
+            ind = self.ui.listSentences.currentIndex()   
+            selectWordsSentNum = ind.row()
+        else:
+            selectWordsSentNum = self.ui.SentCombo.currentIndex()
+        
         f = open(self.windowsSettingsFile, 'w')
         
-        f.write(f'{str(rulesTab)},{str(sourceTab)}\n')
+        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(selectWordsSentNum)}|{self.__sourceText}\n')
         f.close()
-        
-        self.__DB.CloseProject()
-        
-    def BilingBrowseClicked(self):
-        # Bring up file select dialog
-        biling_file_tup = \
-         QFileDialog.getOpenFileNameAndFilter(self, 'Choose Bilingual Dictionary File',\
-            'Output', 'Dictionary Files (bilingual.dix)')
-         
-        self.__biling_file = biling_file_tup[0]
-        self.ui.BilingFileEdit.setText(self.__biling_file)
-        
-        # Copy bilingual file to the tester folder
-        shutil.copy(self.__biling_file, os.path.join(self.testerFolder, os.path.basename(self.__biling_file)))
-        
-    def TransferBrowseClicked(self):
-        # Bring up file select dialog
-        __transfer_rules_file_tup = \
-         QFileDialog.getOpenFileNameAndFilter(self, 'Choose Transfer File',\
-            'Output', 'Transfer Rules (transfer_rules.t1x)')
-        
-        self.__transfer_rules_file = __transfer_rules_file_tup[0]
-        
-        if not self.loadTransferRules():
-            self.ret_val = 0
-            self.close()
-            return False
-        
-        return True
         
     def loadTransferRules(self):
             
@@ -1531,7 +1631,6 @@ class Main(QMainWindow):
         self.__transferRulesElement = test_rt.find('section-rules')
         
         if self.__transferRulesElement is not None:
-            self.ui.TransferFileEdit.setText(self.__transfer_rules_file)
             self.__transferRuleFileXMLtree = test_tree
             self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
@@ -1541,17 +1640,12 @@ class Main(QMainWindow):
         else:
             QMessageBox.warning(self, 'Invalid Rules File', \
             'The transfer file has no transfer element or no section-rules element')
-            self.ui.TransferFileEdit.setText('')
             return False
         
-        # Check if we have an interchunk rules file (.t2x)
+        # Check if the interchunk file exists. If it does, we assume we have advanced transfer going on
+        interchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE2, self.__report, giveError=False)
         
-        # build the interchunk rules file name
-        rest = self.__transfer_rules_file[0:-4] #os.path.splitext(self.__transfer_rules_file.toStdString())
-        interchunk_rules_file = rest + '.t2x'
-        
-        # Check if the file exists. If it does, we assume we have advanced transfer going on
-        if os.path.isfile(interchunk_rules_file):
+        if interchunk_rules_file and os.path.isfile(interchunk_rules_file):
             
             # Verify we have a valid transfer file.
             try:
@@ -1574,11 +1668,14 @@ class Main(QMainWindow):
                 'The interchunk transfer file has no transfer element or no section-rules element')
                 return False
             
-            # build the postchunk rules file name
-            postchunk_rules_file = rest + '.t3x'
+            # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+            if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+                return True
+
+            postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
             
             # Check if the file exists. If it does, we assume we have advanced transfer going on
-            if os.path.isfile(postchunk_rules_file):
+            if postchunk_rules_file and os.path.isfile(postchunk_rules_file):
                 
                 # Verify we have a valid transfer file.
                 try:
@@ -1600,6 +1697,10 @@ class Main(QMainWindow):
                     QMessageBox.warning(self, 'Invalid postchunk Rules File', \
                     'The postchunk transfer file has no transfer element or no section-rules element')
                     return False
+    
+                # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+                if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
+                    return True
     
                 # if we have interchunk and postchunk transfer rules files we are in advanced mode
                 self.advancedTransfer = True
@@ -1671,48 +1772,42 @@ class Main(QMainWindow):
         
         self.__convertIt = True
         
-        # TODO: allow editable rule file edit box?
-        # Make sure we have a transfer file
-        if self.ui.TransferFileEdit.text() == '':
-            self.unsetCursor()
-            return
-        
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
-                source_file = os.path.join(self.testerFolder, 'source_text.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text1.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
+                source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE1)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE1)
+                log_file = os.path.join(self.testerFolder, LOG_FILE)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
                 ruleFileRoot = self.__transferRuleFileXMLtree.getroot()
                 
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
-                source_file = os.path.join(self.testerFolder, 'target_text1.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t2x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text2.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log2.txt')
+                source_file = os.path.join(self.testerFolder, TARGET_FILE1)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE2)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE2)
+                log_file = os.path.join(self.testerFolder, LOG_FILE2)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__interChunkRuleFileXMLtree)
                 ruleFileRoot = self.__interChunkRuleFileXMLtree.getroot()
 
             else: # postchunk
-                source_file = os.path.join(self.testerFolder, 'target_text2.aper')
-                tr_file = os.path.join(self.testerFolder, 'transfer_rules.t3x')
-                tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
-                log_file = os.path.join(self.testerFolder, 'apertium_log3.txt')
+                source_file = os.path.join(self.testerFolder, TARGET_FILE2)
+                tr_file = os.path.join(self.testerFolder, RULE_FILE3)
+                tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
+                log_file = os.path.join(self.testerFolder, LOG_FILE3)
                 
                 # Copy the xml structure to a new object
                 myTree = copy.deepcopy(self.__postChunkRuleFileXMLtree)
                 ruleFileRoot = self.__postChunkRuleFileXMLtree.getroot()
 
         else:
-            source_file = os.path.join(self.testerFolder, 'source_text.aper')
-            tr_file = os.path.join(self.testerFolder, 'transfer_rules.t1x')
-            tgt_file = os.path.join(self.testerFolder, 'target_text.aper')
-            log_file = os.path.join(self.testerFolder, 'apertium_log.txt')
+            source_file = os.path.join(self.testerFolder, SOURCE_APERT)
+            tr_file = os.path.join(self.testerFolder, RULE_FILE1)
+            tgt_file = os.path.join(self.testerFolder, TARGET_FILE)
+            log_file = os.path.join(self.testerFolder, LOG_FILE)
             
             # Copy the xml structure to a new object
             myTree = copy.deepcopy(self.__transferRuleFileXMLtree)
@@ -1998,65 +2093,78 @@ def GetEntryWithSense(e, inflFeatAbbrevs):
         notDoneWithVariants = False
     return e
 
+RESTART_MODULE = 0
+ERROR_HAPPENED = 1
+NO_ERRORS = 2
+
 def MainFunction(DB, report, modify=False):
+
+    retVal = RESTART_MODULE
+    
+    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
+    while retVal == RESTART_MODULE:
         
+        retVal = RunModule(DB, report)
+        
+def RunModule(DB, report):
+            
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return
+        return ERROR_HAPPENED
 
     # Get needed configuration file properties
-    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
 
     # check for errors
-    if not (text_desired_eng and bilingFile):
-        return
+    if not (sourceText and bilingFile):
+        return ERROR_HAPPENED
     
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
-        return
+        return ERROR_HAPPENED
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return
+        return ERROR_HAPPENED
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return
+        return ERROR_HAPPENED
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return
+        return ERROR_HAPPENED
 
     # Find the desired text
     text_list = []
     foundText = False
     for interlinText in DB.ObjectsIn(ITextRepository):
-        if text_desired_eng == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
+        if sourceText == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
             foundText = True
             contents = interlinText.ContentsOA
-        text_list.append(text_desired_eng)
+        text_list.append(sourceText)
     
     if not foundText:
         # check if it's scripture text
         for section in DB.ObjectsIn(IScrSectionRepository):
-            if text_desired_eng == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
+            if sourceText == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
                 contents = section.ContentOA
                 foundText = True
                 break
             
         if not foundText:    
-            report.Error('The text named: '+text_desired_eng+' not found.')
-            return
+            report.Error('The text named: '+sourceText+' not found.')
+            return ERROR_HAPPENED
 
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -2077,8 +2185,8 @@ def MainFunction(DB, report, modify=False):
         insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
         if insertWordsList == None: 
-            return # error already reported
-        
+            return ERROR_HAPPENED # error already reported
+
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
         try:
@@ -2086,13 +2194,13 @@ def MainFunction(DB, report, modify=False):
             f_treeTranResultFile.close()
         except:
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
-            return
+            return ERROR_HAPPENED
         
         # get the list of guids from the TreeTran results file
         treeSentList = Utils.getTreeSents(treeTranResultFile, report)
         
         if treeSentList == None: 
-            return # error already reported
+            return ERROR_HAPPENED # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
@@ -2127,7 +2235,7 @@ def MainFunction(DB, report, modify=False):
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
                     report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
-                    return
+                    return ERROR_HAPPENED
                     
                 # Output any punctuation preceding the sentence.
                 prePuncTupList = myFLExSent.getSurfaceAndDataPrecedingSentPunc()
@@ -2195,23 +2303,29 @@ def MainFunction(DB, report, modify=False):
             bilingFile = os.path.join(pwd, bilingFile)
             
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, text_desired_eng, DB, configMap, report)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report)
         
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')
-            return
+            return ERROR_HAPPENED
         
         window.show()
         app.exec_()
+        
+        # If the user changed the source text combo, the restart member is set to True
+        if window.restartTester:
+            
+            return RESTART_MODULE
     else:
         report.Error('This text has no data.')
+        return ERROR_HAPPENED
+    
+    return NO_ERRORS
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()

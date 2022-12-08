@@ -245,7 +245,7 @@ class FTPanel(Panel):
                                      MessageBoxIcon.Question)
             if (result == DialogResult.No):
                 return
-
+ 
             message += " (Changes enabled)"
 
         self.reportWindow.Reporter.Info(message)
@@ -372,21 +372,26 @@ class FTMainForm (Form):
                           Shortcut.CtrlX,
                           "Clear the current report")]
 
-        HelpMenu =      [(Help.GeneralHelp,
-                            "Help",
+        HelpMenu =      [
+                         (Help.FLExTransHelp,
+                            "FLExTrans Documentation",
                             Shortcut.F1,
+                            "Help on using FLExTrans"),
+                         (Help.GeneralHelp,
+                            "FlexTools Help",
+                            None,
                             "Help on using FlexTools"),
                          (Help.ProgrammingHelp,
-                            "Programming Help",
+                            "FlexTools Programming Help",
                             None,
                             "Help on how to program a FlexTools module"),
                          (Help.APIHelp,
-                            "API Help",
+                            "FlexTools API Help",
                             None,
                             "Help on the Programming Interface"),
                          None,     # Separator
                          (Help.LaunchLCMBrowser,
-                            "Launch LCMBrowser",
+                            "Launch Fieldworks LCMBrowser",
                             None,
                             "Open the Fieldworks LCMBrowser application"),
                          None,     # Separator

@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8 - 11/7/22 - Ron Lockwood
+#   Treat a setting as a file or folder if it's anywhere in the description.
+#   Not just at the end.
+#
+#   Version 3.7 - 11/5/22 - Ron Lockwood
+#    New function writeConfigValue to write one config value change. The rest of
+#    the lines don't change.
+#
 #   Version 3.5.3 - 8/8/22 - Ron Lockwood
 #    Don't allow two equals signs in the config file.
 #
@@ -86,21 +94,70 @@ TESTBED_FILE = 'TestbedFile'
 TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
 TRANSFER_RULES_FILE = 'TransferRulesFile'
+TRANSFER_RULES_FILE2 = 'TransferRulesFile2'
+TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
-def readConfig(report):
+def openConfigFile(report, info):
+    
     try:
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
         # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
         myPath = os.path.join(os.path.dirname(CONFIG_PATH), CONFIG_FILE)
         
-        f_handle = open(myPath, encoding='utf-8')
+        return open(myPath, info, encoding='utf-8')
+    
     except:
         if report is not None:
+            
             report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
+            
         return None
 
+def writeConfigValue(report, settingName, settingValue):
+    
+    f_handle = openConfigFile(report, 'r')
+    
+    if f_handle is None:
+        return False
+
+    myLines = f_handle.readlines()
+    f_handle.close()
+    
+    f_outHandle = openConfigFile(report, 'w')
+    
+    found = False
+    
+    for line in myLines:
+
+        # If we find a match at the beg. of the line, change the setting
+        if re.match(settingName, line):
+            
+            f_outHandle.write(f'{settingName}={settingValue}\n')
+            found = True
+        else:
+            f_outHandle.write(line)
+    
+    f_outHandle.close()
+    
+    if not found:
+        
+        if report is not None:
+            
+            report.Error(f'Setting: {settingName} not found in the configuration file.')
+        
+        return False
+            
+    return True
+    
+def readConfig(report):
+    
+    f_handle = openConfigFile(report, 'r')
+    
+    if f_handle is None:
+        return 
+    
     my_map = {}
     for line in f_handle:
         
@@ -142,9 +199,9 @@ def getConfigVal(my_map, key, report, giveError=True):
                 report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
         return None
     else:
-        # If the key value ends with 'File' then change the path accordingly.
+        # If the key value has the word 'File' or 'Folder then change the path accordingly.
         # Also the key must have a value, otherwise ignore it.
-        if (re.search('File$', key) or re.search('Folder$', key)) and key in my_map and my_map[key]:
+        if (re.search('File', key) or re.search('Folder', key)) and key in my_map and my_map[key]:
             
             # if we don't have an absolute path (e.g. c:\...) we need to fix up the path. FLExTrans is shipped with relative paths to the work project subfolder ('e.g. German-Swedish')
             if not re.search(':', my_map[key]):
