@@ -70,13 +70,8 @@ class AboutInfo(RichTextBox):
         self.SelectionFont = UIGlobal.normalFont
         self.AppendText("Python version: %s\n" % sys.version.split()[0])
         self.SelectionFont = UIGlobal.normalFont
-        self.AppendText("Fieldworks version: %s\n" %
+        self.AppendText("Fieldworks version: %s\n\n" %
                             FWShortVersion)
-        
-        flextransVers = Version.number[Version.number.rfind(' ')+1:-1] 
-        self.SelectionFont = UIGlobal.normalFont
-        self.AppendText("FLExTrans version: %s\n\n" %
-                            flextransVers)
 
         self.SelectionFont = UIGlobal.normalFont
         self.AppendText("FLExTools: \thttps://github.com/cdfarrow/flextools/wiki\n")
@@ -86,8 +81,6 @@ class AboutInfo(RichTextBox):
         self.AppendText("E-mail: \tmailto:flextoolshelp")
         self.SelectionFont = UIGlobal.normalFont
         self.AppendText("@gmail.com\n")
-        self.SelectionFont = UIGlobal.normalFont
-        self.AppendText("FLExTrans: \thttps://software.sil.org/flextrans\n")
 
         # Make it all non-editable
         self.SelectAll()
@@ -109,7 +102,7 @@ class AboutInfo(RichTextBox):
 class AboutBox (Form):
     def __init__(self):
         Form.__init__(self)
-        self.ClientSize = Size(400, 300)
+        self.ClientSize = Size(400, 250)
         self.Text = "About FLExTools"
         self.FormBorderStyle  = FormBorderStyle .Fixed3D
         self.Icon = Icon(UIGlobal.ApplicationIcon)
@@ -123,12 +116,11 @@ class AboutBox (Form):
         self.Controls.Add(AboutInfo())
 
 
-HELP_PATH = os.path.join(os.path.dirname(__file__), "docs") # Moved this for FLExTrans. It was: "..\docs")
+HELP_PATH = os.path.join(os.path.dirname(__file__), "..\docs")
 
 GeneralHelpFile     = os.path.join(HELP_PATH, "FLExTools Help.pdf")
 ProgrammingHelpFile = os.path.join(HELP_PATH, "FLExTools Programming.pdf")
 APIHelpFile         = APIHelpFile
-FLExTransHelpFile   = os.path.join(os.path.dirname(__file__), "..\FLExTrans Documentation", "UserDoc.htm")
 
 
 def Help(helpfile):
@@ -147,6 +139,7 @@ def About(sender=None, event=None):
     dlg = AboutBox()
     dlg.ShowDialog()
 
+
 def GeneralHelp(sender=None, event=None):
     Help(GeneralHelpFile)
 
@@ -158,9 +151,6 @@ def APIHelp(sender=None, event=None):
 
 def LaunchLCMBrowser(sender=None, event=None):
     os.startfile(os.sep.join((FWCodeDir, "LCMBrowser.exe")))
-
-def FLExTransHelp(sender=None, event=None):
-    Help(FLExTransHelpFile)
 
 
 # ------------------------------------------------------------------

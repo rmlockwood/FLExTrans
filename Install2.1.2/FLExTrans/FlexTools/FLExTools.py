@@ -230,8 +230,8 @@ class FTPanel(Panel):
             self.reportWindow.Reporter.Error("No project selected! Use the Choose Project button in the toolbar.")
             return
 
-#         if not modifyAllowed:
-#             modifyAllowed = (Control.ModifierKeys == Keys.Shift)
+        if not modifyAllowed:
+            modifyAllowed = (Control.ModifierKeys == Keys.Shift)
 
         self.reportWindow.Clear()
 
@@ -244,7 +244,7 @@ class FTPanel(Panel):
                                      MessageBoxIcon.Question)
             if (result == DialogResult.No):
                 return
- 
+
             message += " (Changes enabled)"
 
         self.reportWindow.Reporter.Info(message)
@@ -371,26 +371,21 @@ class FTMainForm (Form):
                           Shortcut.CtrlX,
                           "Clear the current report")]
 
-        HelpMenu =      [
-                         (Help.FLExTransHelp,
-                            "FLExTrans Documentation",
+        HelpMenu =      [(Help.GeneralHelp,
+                            "Help",
                             Shortcut.F1,
-                            "Help on using FLExTrans"),
-                         (Help.GeneralHelp,
-                            "FlexTools Help",
-                            None,
                             "Help on using FlexTools"),
                          (Help.ProgrammingHelp,
-                            "FlexTools Programming Help",
+                            "Programming Help",
                             None,
                             "Help on how to program a FlexTools module"),
                          (Help.APIHelp,
-                            "FlexTools API Help",
+                            "API Help",
                             None,
                             "Help on the Programming Interface"),
                          None,     # Separator
                          (Help.LaunchLCMBrowser,
-                            "Launch Fieldworks LCMBrowser",
+                            "Launch LCMBrowser",
                             None,
                             "Open the Fieldworks LCMBrowser application"),
                          None,     # Separator

@@ -4,7 +4,7 @@
 #   Current version number for FLExTools
 #
 
-number = "2.1.2"
+number = "2.1.2 (FLExTrans 3.7)"
 
 # Minimum and maximum supported versions of Fieldworks
 # (Later versions should work if the LCM interface hasn't changed.)

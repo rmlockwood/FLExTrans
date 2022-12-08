@@ -10,6 +10,7 @@ rem Now do steps to create a zip that has FLExTools FLExTrans and SenseLinker al
 rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Collections
 rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Output
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\__icons
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\docs
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects
