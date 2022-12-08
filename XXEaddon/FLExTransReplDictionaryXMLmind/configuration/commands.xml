@@ -3,10 +3,10 @@
 
     <cfg:binding>
         <cfg:keyPressed code="F11"/>
-        <cfg:command name="setReference"/>
+        <cfg:command name="setReferenceRepl"/>
     </cfg:binding>
 
-    <cfg:command name="setReference">
+    <cfg:command name="setReferenceRepl">
         <cfg:macro trace="false">
             <cfg:sequence>
                 <cfg:choice>

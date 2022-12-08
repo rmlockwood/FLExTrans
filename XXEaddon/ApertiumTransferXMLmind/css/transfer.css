@@ -45,7 +45,7 @@ and
 append:before
 {
     content: " append to: "
-    text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+    text-field(attribute,n,background-color,def-var-background-color(),columns,16);
 }
 append
 {
@@ -112,10 +112,11 @@ case-of
 {
     display:block;
     content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  side: "  radio-buttons(attribute, side,
-	                       labels, "source lang.\A target lang.", 
-	                       values, "sl\A tl")
-     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,12);
+     "  side: "  combo-box(attribute, side, 
+                           color, #ce901b,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16);
     padding-left:.125in;
 }
 
@@ -144,13 +145,13 @@ choose
 chunk[namefrom]:before
 {
     content: " chunk - get name from variable: "
-             text-field(attribute,namefrom,background-color,def-var-background-color(),columns,12);;
+             text-field(attribute,namefrom,background-color,def-var-background-color(),columns,16);;
              ;
 }
 chunk:before
 {
     content: " chunk - name: "
-             text-field(attribute,name,background-color,def-chunk-background-color(),columns,14);;
+             text-field(attribute,name,background-color,def-chunk-background-color(),columns,16);;
 ;
 }
 chunk
@@ -167,10 +168,11 @@ clip
 {
     display:block;
     content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     " side: "  radio-buttons(attribute, side,
+     " side: "  combo-box(attribute, side, 
+                           color, #ce901b,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,8)
+     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
     padding-left:.125in;
 }
@@ -198,7 +200,7 @@ contains-substring
 def-attr:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,12);
+    " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,16);
 }
 def-attr
 {
@@ -210,7 +212,7 @@ def-attr
 def-cat:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " category: " text-field(attribute,n,background-color,def-cat-background-color(),columns,12);
+    " category: " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
 }
 def-cat
 {
@@ -222,7 +224,7 @@ def-cat
 def-list:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " list: " text-field(attribute,n,background-color,def-list-background-color(),columns,12);
+    " list: " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
 }
 def-list
 {
@@ -248,7 +250,7 @@ def-macro
 def-var:before
 {
     content: " variable: " 
-    text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+    text-field(attribute,n,background-color,def-var-background-color(),columns,16);
 }
 def-var
 {
@@ -324,7 +326,7 @@ list:before
 list
 {
     display:block;
-    content: " " text-field(attribute,n,background-color,def-list-background-color(),columns,12);
+    content: " " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
     padding-left:.125in;
 }
 
@@ -452,7 +454,7 @@ pattern-item:before
 pattern-item
 {
     display:block;
-    content: " " text-field(attribute,n,background-color,def-cat-background-color(),columns,12);
+    content: " " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
     margin-left:.4in;
 }
 
@@ -582,7 +584,7 @@ var:before
 var
 {
     display:block;
-    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,12);
+    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,16);
    padding-left:.125in;
 }
 
