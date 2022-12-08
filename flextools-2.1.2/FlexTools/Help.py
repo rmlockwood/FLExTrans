@@ -88,6 +88,10 @@ class AboutInfo(RichTextBox):
         self.AppendText("@gmail.com\n")
         self.SelectionFont = UIGlobal.normalFont
         self.AppendText("FLExTrans: \thttps://software.sil.org/flextrans\n")
+        self.SelectionFont = UIGlobal.normalFont
+        self.AppendText("\t\tmailto:flextrans.help")
+        self.SelectionFont = UIGlobal.normalFont
+        self.AppendText("@gmail.com\n")
 
         # Make it all non-editable
         self.SelectAll()
