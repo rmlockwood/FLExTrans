@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.6.4
+SET FLEXTRANS_VERSION=3.7
 SET INSTALL_FOLDER_VERSION=2.1.2
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
@@ -24,9 +24,13 @@ mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Con
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
+rem flextools files
 xcopy flextools-%INSTALL_FOLDER_VERSION%\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools 
 xcopy /s flextools-%INSTALL_FOLDER_VERSION%\FlexTools\__icons\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\__icons
+xcopy /s flextools-%INSTALL_FOLDER_VERSION%\docs\* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\docs
+rem add the FLExTrans version to the FlexTools version
+py -3 updateVersion.py %INSTALL_FOLDER_VERSION% %FLEXTRANS_VERSION%
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo PyQt5==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
