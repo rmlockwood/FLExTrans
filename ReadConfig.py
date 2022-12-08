@@ -5,9 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.8 - 11/7/22 - Ron Lockwood
-#   Treat a setting as a file or folder if it's anywhere in the description.
-#   Not just at the end.
+#   Version 3.7.1 - 11/7/22 - Ron Lockwood
+#    Treat a setting as a file or folder if it's anywhere in the description.
+#    Not just at the end.
 #
 #   Version 3.7 - 11/5/22 - Ron Lockwood
 #    New function writeConfigValue to write one config value change. The rest of

@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7 - 12/7/22 - Ron Lockwood
+#    Fixes #291. Match a stem name for an affix if the features of a stem name feature
+#    set is a subset of the features on the affix.
+#
 #   Version 3.6.12 - 10/31/22 - Ron Lockwood
 #    Fixes #302. Skip affix allomorphs of stems when processing stem names or environments.
 #
@@ -202,7 +206,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.6.12",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -257,7 +261,7 @@ def is_number(s):
     except ValueError:
         return False
 
-def haveFeatureMatch(specsA, specsB):
+def isFeatureSetASubsetofB(specsA, specsB):
     
     featAbbrListA = []
     featAbbrListB = []
@@ -265,14 +269,7 @@ def haveFeatureMatch(specsA, specsB):
     Utils.get_feat_abbr_list(specsA, featAbbrListA)
     Utils.get_feat_abbr_list(specsB, featAbbrListB)
     
-    sortedListA = sorted(featAbbrListA, key=lambda x: x[0])
-    sortedListB = sorted(featAbbrListB, key=lambda x: x[0])
-    
-    if sortedListA == sortedListB:
-        
-        return True
-    
-    return False
+    return set(featAbbrListA).issubset(set(featAbbrListB))
     
 def output_final_allomorph_info(f_handle, sense, morphCategory):
     
@@ -306,7 +303,8 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
                     
                     for featureSet in stemName[FEATURES_STR]:
                         
-                        if msa.InflFeatsOA and haveFeatureMatch(msa.InflFeatsOA.FeatureSpecsOC, featureSet.FeatureSpecsOC):
+                        # The stem name feature list just has to be a subset of feature for this current morpheme
+                        if msa.InflFeatsOA and isFeatureSetASubsetofB(featureSet.FeatureSpecsOC, msa.InflFeatsOA.FeatureSpecsOC):
                             
                             f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
                             found = True

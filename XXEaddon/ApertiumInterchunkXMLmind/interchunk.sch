@@ -8,7 +8,7 @@
             <dir value="ltr">Well-formed attributes</dir>
         </title>
         <rule context="@pos">
-            <report test="string-length(normalize-space(.)) &gt; 0 and string(number(.))='NaN'">Warning: The pos attribute is not a valid number.  It must be an integer.</report>
+            <report test="string-length(normalize-space(.)) &gt; 0 and string(number(.))='NaN'">Warning: The item (pos) attribute is not a valid number.  It must be an integer.</report>
         </rule>
         <rule context="@part">
             <report test="name(key('Attributes',.))!='def-attr' and .!='lem' and .!='leh' and .!='lemq' and .!='whole' and .!='tags' and .!='chcontent'">
@@ -21,7 +21,7 @@
             <dir value="ltr">Appropriate clip/@pos in a rule</dir>
         </title>
         <rule context="clip[ancestor::rule]">
-            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the pos attribute refers to a non-existent pattern-item in this rule.</report>
+            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the item (pos) attribute refers to a non-existent pattern-item in this rule.</report>
         </rule>
     </pattern>
     <pattern id="clipInMacro">
@@ -29,7 +29,7 @@
             <dir value="ltr">Appropriate clip/@pos in a macro.</dir>
         </title>
         <rule context="clip[ancestor::def-macro]">
-            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the pos attribute refers to a non-existent parameter.</report>
+            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the item (pos) attribute refers to a non-existent parameter.</report>
         </rule>
     </pattern>
 
@@ -38,7 +38,7 @@
             <dir value="ltr">Appropriate with-param/@pos in a rule</dir>
         </title>
         <rule context="with-param[ancestor::rule]">
-            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the pos attribute refers to a non-existent pattern-item in this rule.</report>
+            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the item (pos) attribute refers to a non-existent pattern-item in this rule.</report>
         </rule>
     </pattern>
     <pattern id="with-paramInMacro">
@@ -46,7 +46,7 @@
             <dir value="ltr">Appropriate with-param/@pos in a macro.</dir>
         </title>
         <rule context="with-param[ancestor::def-macro]">
-            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the pos attribute refers to a non-existent parameter.</report>
+            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the item (pos) attribute refers to a non-existent parameter.</report>
         </rule>
     </pattern>
     
@@ -55,7 +55,7 @@
             <dir value="ltr">Appropriate get-case-from/@pos in a rule</dir>
         </title>
         <rule context="get-case-from[ancestor::rule]">
-            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the pos attribute refers to a non-existent pattern-item in this rule.</report>
+            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the item (pos) attribute refers to a non-existent pattern-item in this rule.</report>
         </rule>
     </pattern>
     <pattern id="get-case-fromInMacro">
@@ -63,7 +63,7 @@
             <dir value="ltr">Appropriate get-case-from/@pos in a macro.</dir>
         </title>
         <rule context="get-case-from[ancestor::def-macro]">
-            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the pos attribute refers to a non-existent parameter.</report>
+            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the item (pos) attribute refers to a non-existent parameter.</report>
         </rule>
     </pattern>    
     
@@ -72,7 +72,7 @@
             <dir value="ltr">Appropriate case-of/@pos in a rule</dir>
         </title>
         <rule context="case-of[ancestor::rule]">
-            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the pos attribute refers to a non-existent pattern-item in this rule.</report>
+            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the item (pos) attribute refers to a non-existent pattern-item in this rule.</report>
         </rule>
     </pattern>
     <pattern id="case-ofInMacro">
@@ -80,7 +80,7 @@
             <dir value="ltr">Appropriate case-of/@pos in a macro.</dir>
         </title>
         <rule context="case-of[ancestor::def-macro]">
-            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the pos attribute refers to a non-existent parameter.</report>
+            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the item (pos) attribute refers to a non-existent parameter.</report>
         </rule>
     </pattern>
 
@@ -89,7 +89,7 @@
             <dir value="ltr">Appropriate b/@pos in a rule</dir>
         </title>
         <rule context="b[ancestor::rule]">
-            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the pos attribute refers to a non-existent pattern-item in this rule.</report>
+            <report test="number(@pos) &gt; count(ancestor::rule/pattern/pattern-item)">Warning: the item (pos) attribute refers to a non-existent pattern-item in this rule.</report>
         </rule>
     </pattern>
     <pattern id="bInMacro">
@@ -97,7 +97,7 @@
             <dir value="ltr">Appropriate b/@pos in a macro.</dir>
         </title>
         <rule context="b[ancestor::def-macro]">
-            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the pos attribute refers to a non-existent parameter.</report>
+            <report test="number(@pos) &gt; ancestor::def-macro/@npar">Warning: the item (pos) attribute refers to a non-existent parameter.</report>
         </rule>
     </pattern>
 </schema>

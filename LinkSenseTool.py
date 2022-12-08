@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.1 - 12/7/22 - Ron Lockwood
+#    Fixes #91. Only make painting updates when a row's checkbox is changed.
+#
 #   Version 3.7 - 11/5/22 - Ron Lockwood
 #    Fixes #252. The user can choose a different source text which triggers a restart
 #    of the module. Added logic to detect if linking or unlinking was done. If a
@@ -155,7 +158,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -430,7 +433,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 if col == 0 and ((locData.linkIt == True and not initiallyLinkedUnmodifiedSense) or (locData.linkIt == False and initiallyLinkedUnmodifiedSense)):
                     
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
-                
+                    
                 # Modified rows get a color just for the target columns
                 elif col >= 4 and col <= 6 and (locData.tgtModified == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.linkIt == False)):
                     
@@ -456,8 +459,9 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     
                     qColor = QtGui.QColor(QtCore.Qt.white)
 
-                self.dataChanged.emit(index, index)
-
+                # This causes continual repainting and high processor use, moved it to SetData()
+                #self.dataChanged.emit(index, index)
+                
                 return qColor
         
         if role == QtCore.Qt.DisplayRole:
@@ -535,6 +539,13 @@ class LinkerTable(QtCore.QAbstractTableModel):
             else:
                 self.__localData[row].linkIt = False
                 self.__localData[row].modified = True
+            
+            # Repaint columns 4-6 (target head-word, cat, gloss) when the checkbox is changed.
+            # This is mainly is needed for unlinking an existing linked sense or relinking the same
+            for myCol in range(4, 7):
+                
+                newindex = self.index(row, myCol)    
+                self.dataChanged.emit(newindex, newindex)
                 
         return True
             
