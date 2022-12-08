@@ -159,7 +159,7 @@ class ModulesList(ListBox):
         if handler:
             self.__ActivatedHandler = handler
             # Double-click and Enter will Run this module
-            self.DoubleClick += self.__ItemActivatedHandler
+            #self.DoubleClick += self.__ItemActivatedHandler
             self.KeyDown += self.__ItemActivatedHandler
 
     def __ItemActivatedHandler(self, sender, event):
