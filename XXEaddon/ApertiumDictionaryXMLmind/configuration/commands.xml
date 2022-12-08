@@ -3,7 +3,7 @@
 
     <cfg:binding>
         <cfg:keyPressed code="F11"/>
-        <cfg:command name="setReference"/>
+        <cfg:command name="setReferenceDict"/>
     </cfg:binding>
 
     <cfg:command name="setReference">
