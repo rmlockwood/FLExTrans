@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>7 November, 2022</small></center>
-      <center><small>Version: FLExTrans 3.6.3</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>9 December, 2022</small></center>
+      <center><small>Version: 3.7</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -109,6 +109,7 @@
                         that?</a></li>
                   <li><a href="#sInflVariantTgt">6.3.3&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
                   <li><a href="#sInflVariantSrc">6.3.4&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
+                  <li><a href="#sSynthesisSelfTest">6.3.5&nbsp;How do I run a Synthesis Self-Test?</a></li>
                </ul>
             </ul>
             <li><a href="#sReferenceDocs">7&nbsp;Reference documents</a></li>
@@ -220,8 +221,7 @@
                <li>From the menu select <span style="font-family:Courier New; font-weight:bold; color:#009933; ">File</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Project Management</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FieldWorks Project Properties</span></li>
                <li>Click on the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Sharing</span> tab.
                </li>
-               <li>Check the box that says <span style="text-decoration:underline; ">Share project contents with programs on this computer</span> 
-               </li>
+               <li>Check the box that says <span style="text-decoration:underline; ">Share project contents with programs on this computer</span></li>
             </ul>
          </li>
          <li>Add two custom fields to your source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. This is where link information to the target senses is kept.
@@ -2319,6 +2319,35 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the Source Text Name property in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to &#8220;Text2&#8221;.
       </p>
+      <h3 style=""><a name="sSynthesisSelfTest"></a>6.3.5&nbsp;How do I run a Synthesis Self-Test?
+      </h3>
+      <p>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical
+            sentence frames.
+         </li>
+         <li>Create a rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
+         </li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, set the main <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project to the Target Project. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this back, when you go back to working with two projects.)</span></li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings</span> module to do the following:
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Verify the Target Project is set.</li>
+               <li>Set the Transfer Rules File to <span style="font-style:italic; ">identity_rules.t1x</span>. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this when you go back to working with two projects.)</span></li>
+               <li>Choose the text you want to work on.</li>
+            </ol>
+         </li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection, use <span style="font-style:normal; font-weight:bold; ">Run All (Modify)</span> to process the text and insert the result into the Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>It will go into a text with the same name, with (Copy) appended.</li>
+               <li>Compare this output with your original text.</li>
+               <li>Any differences you see reflect what would happen if you used this in a transfer process with a different source language,
+                  and they probably need to be fixed.
+               </li>
+            </ol>
+         </li>
+         <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span>.
+         </li>
+      </ol>
       <h1 style=""><a name="sReferenceDocs"></a>7&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.

@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->22 July, 2022</date
+>7 November, 2022</date
 ><version
->FLExTrans 3.5.5</version
+>FLExTrans 3.6.3</version
 ><contents
 showLevel="4"
 ></contents
@@ -274,14 +274,48 @@ type="tFoldername"
 ><li
 >Copy the <object
 type="tFoldername"
->German-Swedish</object
+>TemplateProject</object
 > folder and Paste it where it is. You should see a new folder called <object
 type="tFoldername"
->German-Swedish - Copy</object
+>TemplateProject - Copy</object
 ></li
 ><li
->Rename this folder to the language pair you will work with.</li
+>Rename this folder to the name of language pair you will work with.</li
 ></ol
+></li
+><li
+>Enable the sharing option in each of your <object
+type="tFlexx"
+></object
+> projects. This will allow you to keep <object
+type="tFlexx"
+></object
+> projects open while running <object
+type="tFlextrans"
+></object
+>.<ul
+><li
+>From the menu select <object
+type="tMenu"
+>File</object
+> &gt; <object
+type="tMenu"
+>Project Management</object
+> &gt; <object
+type="tMenu"
+>FieldWorks Project Properties</object
+></li
+><li
+>Click on the <object
+type="tMenu"
+>Sharing</object
+> tab.</li
+><li
+>Check the box that says <object
+type="tUnderline"
+>Share project contents with programs on this computer</object
+> </li
+></ul
 ></li
 ><li
 >Add two custom fields to your source <object

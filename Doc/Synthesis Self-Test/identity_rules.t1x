@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"
+"transfer.dtd">
+<transfer
+><section-def-cats
+><def-cat
+n="c_adj"
+><cat-item
+tags="adj"
+></cat-item
+><cat-item
+tags="adj.*"
+></cat-item
+></def-cat
+><def-cat
+n="c_n"
+><cat-item
+tags="n"
+></cat-item
+><cat-item
+tags="n.*"
+></cat-item
+></def-cat
+><def-cat
+n="c_v"
+><cat-item
+tags="v"
+></cat-item
+><cat-item
+tags="v.*"
+></cat-item
+></def-cat
+><def-cat
+n="c_sample"
+><!--This tags element will match words (lexical units) that have 'samp' for the grammatical category (always the first tag) and no other tags. I.e. 'samp' alone.--><cat-item
+tags="samp"
+></cat-item
+><!--This tags element will match words (lexical units) that have 'word1.2' for the lemma and 'samp' for the grammatical category (no other tags.)--><cat-item
+lemma="word1.2"
+tags="samp"
+></cat-item
+><!--This tags element will match words that have 'samp' for the grammatical category and any number of further tags (which could be affixes, features, classes, etc.)--><!--For example the following would be matched: 'samp pst', 'samp pst inf', etc.--><cat-item
+tags="samp.*"
+></cat-item
+><!--This tags element will match words that have 'samp' for the grammatical category, 'pst' for the next tag and any number of further tags.--><cat-item
+tags="samp.pst.*"
+></cat-item
+><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in th subsequent tags. I.e. any tags before and any tags after it.--><cat-item
+tags="samp.*.pst.*"
+></cat-item
+></def-cat
+></section-def-cats
+><section-def-attrs
+><def-attr
+n="a_infl_class"
+><attr-item
+tags="AR"
+></attr-item
+><attr-item
+tags="ER"
+></attr-item
+><attr-item
+tags="IR"
+></attr-item
+></def-attr
+><def-attr
+n="a_gender_features"
+><attr-item
+tags="m"
+></attr-item
+><attr-item
+tags="f"
+></attr-item
+></def-attr
+><def-attr
+n="a_gram_cat"
+><attr-item
+c="Adjective"
+tags="adj"
+></attr-item
+><attr-item
+c="Adjective No Gender"
+tags="AdjMF"
+></attr-item
+><attr-item
+c="Adverb"
+tags="adv"
+></attr-item
+><attr-item
+c="Auxiliary verb"
+tags="aux"
+></attr-item
+><attr-item
+c="Conjunction"
+tags="conj"
+></attr-item
+><attr-item
+c="Coordinating conjuncion"
+tags="coordconj"
+></attr-item
+><attr-item
+c="Copulative verb"
+tags="cop"
+></attr-item
+><attr-item
+c="Definite article"
+tags="def_art"
+></attr-item
+><attr-item
+c="Determiner"
+tags="det"
+></attr-item
+><attr-item
+c="Existential marker"
+tags="existmrkr"
+></attr-item
+><attr-item
+c="Indefinite article"
+tags="indf"
+></attr-item
+><attr-item
+c="Noun"
+tags="n"
+></attr-item
+><attr-item
+c="Proper  Noun"
+tags="nprop"
+></attr-item
+><attr-item
+c="Preposition"
+tags="prep"
+></attr-item
+><attr-item
+c="Preposition plus Article"
+tags="prepart"
+></attr-item
+><attr-item
+c="Pronoun"
+tags="pro"
+></attr-item
+><attr-item
+c="Particle"
+tags="prt"
+></attr-item
+><attr-item
+c="Quantifier"
+tags="quant"
+></attr-item
+><attr-item
+c="Subordinating conjunction"
+tags="subordconj"
+></attr-item
+><attr-item
+c="Verb"
+tags="v"
+></attr-item
+></def-attr
+><def-attr
+n="a_num"
+><attr-item
+tags="SG"
+></attr-item
+><attr-item
+tags="PL"
+></attr-item
+></def-attr
+><def-attr
+n="a_sample"
+><!--The attribute a_sample is defined as the collection of the following tags (symbols): 'abc', 'uvw', 'xyz'. You can use this attribute to refer to any tag in this set of tags.--><attr-item
+tags="abc"
+></attr-item
+><attr-item
+tags="uvw"
+></attr-item
+><attr-item
+tags="xyz"
+></attr-item
+></def-attr
+></section-def-attrs
+><section-def-vars
+><def-var
+n="v_sample"
+></def-var
+></section-def-vars
+><section-def-lists
+><def-list
+n="l_sample"
+><list-item
+v="stuff1"
+></list-item
+><list-item
+v="stuff2"
+></list-item
+></def-list
+></section-def-lists
+><section-def-macros
+><def-macro
+n="m_sample"
+npar="1"
+><choose
+><when
+><test
+><equal
+><clip
+part="a_gram_cat"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="sg"
+></lit-tag
+></equal
+></test
+></when
+></choose
+></def-macro
+></section-def-macros
+><section-rules
+><rule
+comment="Sample logic to copy and paste"
+><pattern
+><pattern-item
+n="c_sample"
+></pattern-item
+><pattern-item
+n="c_sample"
+></pattern-item
+></pattern
+><action
+><!--If X output A, if Y output B, otherwise output C--><choose
+><when
+><test
+><!--Use the equal block to see if two things are equal--><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+></test
+><!--Whatever follows the test block will be done if the above things are equal--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+><!--If the when block above fails (the two things weren't equal), try this test below--><when
+><test
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="xyz"
+></lit-tag
+></equal
+></test
+><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr2"
+></lit-tag
+></lu
+></out
+></when
+><!--If all the when blocks above fail, do this logic below--><otherwise
+><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr3"
+></lit-tag
+></lu
+></out
+></otherwise
+></choose
+><!--If X and Y output A--><choose
+><when
+><test
+><!--Use the and block to see if two conditions are true. You can add more equal blocks if desired.--><and
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="xyz"
+></lit-tag
+></equal
+></and
+></test
+><!--Whatever follows the test block will be done if the above --><!--condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If X or Y output A--><choose
+><when
+><test
+><!--Use the or block to see if two conditions are true. You can add more equal blocks if desired.--><or
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="xyz"
+></lit-tag
+></equal
+></or
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If not X output A--><choose
+><when
+><test
+><!--Use the not block to check if two things are not equal--><not
+><equal
+><clip
+part="a_sample"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="uvw"
+></lit-tag
+></equal
+></not
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--If with other things besides equals--><choose
+><when
+><test
+><and
+><begins-with
+><!--Use begins with if you just want to match the beginning of something, like in the case, the grammatical category--><clip
+part="a_gram_cat"
+pos="1"
+side="sl"
+></clip
+><lit-tag
+v="x"
+></lit-tag
+></begins-with
+><ends-with
+><!--Use ends with if you just want to match the end of something, like in the case, the lemma. Remember all lemmas are going to end in X.X--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><lit
+v="ing1.1"
+></lit
+></ends-with
+><begins-with-list
+><!--Use begins with list if you want to match the beginning of the first thing. The text to match can be anything in the given list. The list is defined above.--><var
+n="v_sample"
+></var
+><list
+n="l_sample"
+></list
+></begins-with-list
+><ends-with-list
+><!--Use ends with list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><list
+n="l_sample"
+></list
+></ends-with-list
+><contains-substring
+><!--With contains substring you can check if the second listed string is somewhere in the first thing.--><var
+n="v_sample"
+></var
+><lit
+v="abc"
+></lit
+></contains-substring
+><in
+><!--Use in list to see if the first thing is one of the things in the given list.--><clip
+part="lem"
+pos="1"
+side="sl"
+></clip
+><list
+n="l_sample"
+></list
+></in
+></and
+></test
+><!--Whatever follows the test block will be done if the above condition is true--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><lit-tag
+v="agr1"
+></lit-tag
+></lu
+></out
+></when
+></choose
+><!--Delete an affix from a lexical unit using a let element.--><let
+><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
+part="a_sample"
+pos="1"
+side="tl"
+></clip
+><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><lit
+v=""
+></lit
+></let
+><!--Set an attribute to a certain value.--><let
+><!--First give the thing you want changed. In this case the sample attribute.--><clip
+part="a_sample"
+pos="1"
+side="tl"
+></clip
+><!--Then give the value you want to give the thing. In this case 'abc'. IMPORTANT: the value in literal tag must be one of the valid things in the set defined by a_sample.--><!--Also IMPORTANT: if one of the set of attributes defined by a_sample is not present on the word (target word in this case) Trying to change it to something will have no effect.--><lit-tag
+v="abc"
+></lit-tag
+></let
+><!--Output a whole target word--><out
+><lu
+><!--'whole' means the lemma plus all tags that are present with it.--><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+><!--The fact that we are not putting out item 2 (2nd word) essentially means we are deleting it from the output.--></lu
+></out
+><!--Output two whole target words--><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+></lu
+><!--You normally will want to output a space between lexical units.--><b
+></b
+><lu
+><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
+part="whole"
+pos="2"
+side="tl"
+></clip
+></lu
+></out
+><!--Output word 1 and an additional suffix--><out
+><lu
+><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><clip
+part="lem"
+pos="1"
+side="tl"
+></clip
+><clip
+part="a_gram_cat"
+pos="1"
+side="tl"
+></clip
+><!--We use the literal tag element to put out a tag (symbol). Here we saying the plural affix should be outputted on the word.--><lit-tag
+v="pl"
+></lit-tag
+></lu
+></out
+><!--Output a new word (ignoring the input items)--><out
+><lu
+><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><!--In place of using clip...lem we can use the literal string element to put out a lemma of our choice. This lemma should match the target FLEx project.--><lit
+v="word1.4"
+></lit
+><!--In place of clip...a_gram_cat, this should be the grammatical category that corresponds to word1.4 in the target FLEx project. Here we are saying the category is verb.--><lit-tag
+v="v"
+></lit-tag
+><!--We use the literal tag element to put out a tag (symbol). Here we saying the plural affix should be outputted on the word.--><lit-tag
+v="pl"
+></lit-tag
+></lu
+></out
+><!--Peform the steps in the macro defined above. Give zero, one or more 'with item' lines to have the macro operate on those input items. --><call-macro
+n="m_sample"
+><with-param
+pos="1"
+></with-param
+></call-macro
+><!--Change the case of the first thing (lemma) to match the case of the second thing. You could use a variable to have the lemma match the case of the variable.
+This following will capitalize the lemma. Using 'aa' will make it lowercase. 'AA' would make the lemma all uppercase.--><modify-case
+><clip
+part="lem"
+pos="1"
+side="tl"
+></clip
+><lit
+v="Aa"
+></lit
+></modify-case
+></action
+></rule
+><rule
+comment="Nouns Delete Infl Features"
+><pattern
+><pattern-item
+n="c_n"
+></pattern-item
+></pattern
+><action
+><let
+><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
+part="a_gender_features"
+pos="1"
+side="tl"
+></clip
+><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><lit
+v=""
+></lit
+></let
+><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+></lu
+></out
+></action
+></rule
+><rule
+comment="Verbs Delete Infl Class"
+><pattern
+><pattern-item
+n="c_v"
+></pattern-item
+></pattern
+><action
+><let
+><!--First give the thing you want deleted. In this case a sample suffix (any of the things defined by a_sample).--><clip
+part="a_infl_class"
+pos="1"
+side="tl"
+></clip
+><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><lit
+v=""
+></lit
+></let
+><out
+><lu
+><clip
+part="whole"
+pos="1"
+side="tl"
+></clip
+></lu
+></out
+></action
+></rule
+></section-rules
+></transfer
+>
