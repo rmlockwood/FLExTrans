@@ -130,7 +130,7 @@ npar="1"
 ><clip
 part="a_gram_cat"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="sg"
@@ -160,7 +160,7 @@ n="c_sample"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="uvw"
@@ -186,7 +186,7 @@ v="agr1"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="xyz"
@@ -229,7 +229,7 @@ v="agr3"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="uvw"
@@ -239,7 +239,7 @@ v="uvw"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="xyz"
@@ -269,7 +269,7 @@ v="agr1"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="uvw"
@@ -279,7 +279,7 @@ v="uvw"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="xyz"
@@ -309,7 +309,7 @@ v="agr1"
 ><clip
 part="a_sample"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="uvw"
@@ -339,7 +339,7 @@ v="agr1"
 ><!--Use begins with if you just want to match the beginning of something, like in the case, the grammatical category--><clip
 part="a_gram_cat"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="x"
@@ -349,7 +349,7 @@ v="x"
 ><!--Use ends with if you just want to match the end of something, like in the case, the lemma. Remember all lemmas are going to end in X.X--><clip
 part="lem"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit
 v="ing1.1"
@@ -367,7 +367,7 @@ n="l_sample"
 ><!--Use ends with list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
 part="lem"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><list
 n="l_sample"
@@ -385,7 +385,7 @@ v="abc"
 ><!--Use in list to see if the first thing is one of the things in the given list.--><clip
 part="lem"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><list
 n="l_sample"
