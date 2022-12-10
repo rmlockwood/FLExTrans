@@ -114,7 +114,7 @@
      <rect>
       <x>340</x>
       <y>410</y>
-      <width>121</width>
+      <width>115</width>
       <height>27</height>
      </rect>
     </property>
@@ -215,12 +215,15 @@
      <rect>
       <x>470</x>
       <y>414</y>
-      <width>41</width>
+      <width>32</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Zoom:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
     </property>
    </widget>
    <widget class="QLabel" name="FontNameLabel">
@@ -228,12 +231,15 @@
      <rect>
       <x>674</x>
       <y>414</y>
-      <width>110</width>
+      <width>91</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Arial</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
     </property>
    </widget>
    <widget class="QPushButton" name="FontButton">

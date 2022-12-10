@@ -139,7 +139,7 @@ from System import Guid
 from System import String
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from FTModuleClass import *                                                 
 
@@ -151,6 +151,7 @@ import FTPaths
 
 import ReadConfig
 import Utils
+import ExtractBilingualLexicon
 
 from Linker import Ui_MainWindow
 
@@ -238,6 +239,8 @@ class Link(object):
         self.linkIt = False
         self.modified = False
         self.tgtModified = False
+    def getLinkIt(self):
+        return self.linkIt
     def get_srcHPG(self):
         return self.__srcHPG
     def get_tgtHPG(self):
@@ -338,12 +341,18 @@ class LinkerCombo(QtCore.QAbstractListModel):
             
 class LinkerTable(QtCore.QAbstractTableModel):
     
-    def __init__(self, myData = [[]], headerData = [], parent = None):
+    def __init__(self, myData = [[]], headerData = [], font = None, changeCallback = None, parent = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__localData = myData
         self.__myHeaderData = headerData
         self.__selectedHPG = None
         self.__linkingChanged = False
+        self.__font = font
+        self.__callbackFunc = changeCallback
+    def getFont(self):
+        return self.__font
+    def setFont(self, myFont):
+        self.__font = myFont
     def didLinkingChange(self):
         return self.__linkingChanged
     def getInternalData(self):
@@ -391,7 +400,14 @@ class LinkerTable(QtCore.QAbstractTableModel):
 
                 self.__linkingChanged = True
                 
+                # Recalculate the senses to link 
+                self.__callbackFunc()
+                
                 return self.__selectedHPG.getHeadword()
+        
+        if role == QtCore.Qt.FontRole:
+            
+            return self.__font
         
         # Set the foreground (font) color
         if role == QtCore.Qt.ForegroundRole:
@@ -540,18 +556,22 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 self.__localData[row].linkIt = False
                 self.__localData[row].modified = True
             
-            # Repaint columns 4-6 (target head-word, cat, gloss) when the checkbox is changed.
-            # This is mainly is needed for unlinking an existing linked sense or relinking the same
-            for myCol in range(4, 7):
+            # Repaint columns 0,4-6 (link, target head-word, cat, gloss) when the checkbox is changed.
+            # Do this for all rows to display rows that are linked to the link object
+            for myCol in [0,4,5,6]:
                 
-                newindex = self.index(row, myCol)    
-                self.dataChanged.emit(newindex, newindex)
-                
+                for row in range(0,len(self.__localData)):
+                    newindex = self.index(row, myCol)    
+                    self.dataChanged.emit(newindex, newindex)
+            
+            # Recalculate the senses to link 
+            self.__callbackFunc()
+            
         return True
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap):
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
@@ -559,19 +579,24 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
-        self.__model = LinkerTable(myData, headerData)
+        myFont = self.ui.tableView.font()
+        self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
         self.__fullData = myData
         self.ui.tableView.setModel(self.__model)
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.__report = report
+        self.__configMap = configMap
         self.ret_val = 0
         self.cols = 7
         self.restartLinker = False
+        
         # load the source text list
         Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
+        self.InitRebuildBilingCheckBox()
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         
@@ -581,6 +606,10 @@ class Main(QMainWindow):
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.FontButton.clicked.connect(self.FontClicked)
+        self.ui.ZoomIncrease.clicked.connect(self.ZoomIncreaseClicked)
+        self.ui.ZoomDecrease.clicked.connect(self.ZoomDecreaseClicked)
+        self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
         self.ComboClicked()
         
         myHPG = self.__combo_model.getCurrentHPG()
@@ -594,6 +623,82 @@ class Main(QMainWindow):
                 self.__combo_model.setRTL(True)
                 break
     
+        self.calculateRemainingLinks()
+        
+    def InitRebuildBilingCheckBox(self):
+        
+        self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
+        
+        val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, report=None, giveError=False)
+        
+        if val:
+            if val == 'n':
+                
+                self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+                
+        self.rebuildBiling = self.ui.RebuildBilingCheckBox.isChecked()
+        
+    def RebuildBilingChecked(self):
+        
+        self.rebuildBiling = self.ui.RebuildBilingCheckBox.isChecked()
+        
+    def calculateRemainingLinks(self):
+        
+        count = 0
+        uniqueSrcHPGMap = {}
+        
+        for linkObj in self.__fullData:
+            
+            # Only count unique source senses
+            mySrcHPG = linkObj.get_srcHPG()
+            
+            if mySrcHPG not in uniqueSrcHPGMap:
+                
+                uniqueSrcHPGMap[mySrcHPG] = [linkObj.getLinkIt()]
+            else:
+                uniqueSrcHPGMap[mySrcHPG].append(linkObj.getLinkIt())
+                
+        for boolList in uniqueSrcHPGMap.values():
+            
+            for myBool in boolList:
+                
+                if myBool:
+                    break
+                
+            if not myBool:
+                count += 1
+                    
+        self.ui.SensesRemainingLabel.setText(str(count))
+        
+    def causeRepaint(self):
+        # crude way to cause a repaint
+        tv = self.ui.tableView
+        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
+        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
+
+    def FontClicked(self):
+        (font, ret) = QFontDialog.getFont()
+        if ret:
+            myFont = self.__model.getFont()
+            myFont.setFamily(font.family())
+            self.ui.FontNameLabel.setText(font.family())
+
+    def ZoomIncreaseClicked(self):
+        myFont = self.__model.getFont()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * 1.125
+        myFont.setPointSizeF(mySize)
+        self.__model.setFont(myFont)
+        self.causeRepaint()
+        
+    def ZoomDecreaseClicked(self):
+        myFont = self.__model.getFont()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * .889
+        myFont.setPointSizeF(mySize)
+        self.__model.setFont(myFont)
+        self.causeRepaint()
+        
     def sourceTextComboChanged(self):
         
         self.restartLinker = True
@@ -644,23 +749,39 @@ class Main(QMainWindow):
         if self.ui.searchTargetEdit.text() == SEARCH_HERE:
             
             self.ui.searchTargetEdit.setText('')
+    
+    def positionControl(self, myControl, x, y):
+        
+        myControl.setGeometry(x, y, myControl.width(), myControl.height())
         
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
         # Stretch the table view to fit
-        self.ui.tableView.setGeometry(10, 50, self.width() - 20, \
-                                      self.height() - 80 - self.ui.OKButton.height() - 25)
+        self.ui.tableView.setGeometry(10, 50, self.width() - 20, self.height() - self.ui.OKButton.height() - 85)
         
-        # Move the OK and Cancel buttons as the window gets resized.
-        x = self.width()//2 - 10 - self.ui.OKButton.width()
+        # Move the OK and Cancel buttons up and down as the window gets resized
+        x = 10
         if x < 0:
             x = 0
-        self.ui.OKButton.setGeometry(x, 50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
-                                     self.ui.OKButton.height())
-        self.ui.CancelButton.setGeometry(x + self.ui.OKButton.width() + 10,  \
-                                         50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
-                                         self.ui.OKButton.height())
+        
+        self.positionControl(self.ui.OKButton, x, self.ui.tableView.height() + 60)
+        self.positionControl(self.ui.CancelButton, x + self.ui.OKButton.width() + 10, self.ui.tableView.height() + 60)
+        
+        # Set position of other controls all the same height and 10 pixels between each other
+        startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
+        
+        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox]
+
+        for myControl in controlList:
+            
+            self.positionControl(myControl, startX, self.ui.OKButton.y())
+            startX += myControl.width() + 10
+        
+        self.positionControl(self.ui.SensesToLinkLabel, 10, self.ui.OKButton.y() + 27)
+        self.positionControl(self.ui.SensesRemainingLabel, self.ui.SensesToLinkLabel.x() + self.ui.SensesToLinkLabel.width() + 5, self.ui.OKButton.y() + 27)
+        
+        
         firstColWidth = 45
         
         # Set the column widths
@@ -676,24 +797,29 @@ class Main(QMainWindow):
         # Set the target HPG for the model  
         myHPG = self.__combo_model.getCurrentHPG()
         self.__model.setSelectedHPG(myHPG)
+        
     def OKClicked(self):
         self.ret_val = 1
         self.close()
+        
     def ShowOnlyUnlinkedClicked(self):
         if self.ui.ShowOnlyUnlinkedCheckBox.isChecked():
             self.showOnlyUnlinked = True
         else:
             self.showOnlyUnlinked = False
         self.filter()
+        
     def HideProperNounsClicked(self):
         if self.ui.HideProperNounsCheckBox.isChecked():
             self.hideProperNouns = True
         else:
             self.hideProperNouns = False
         self.filter()
+        
     def CancelClicked(self):
         self.ret_val = 0
         self.close()
+        
     def filter(self):
         
         self.__model.beginResetModel();
@@ -736,10 +862,7 @@ class Main(QMainWindow):
         self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
 
-        # crude way to cause a repaint
-        tv = self.ui.tableView
-        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
-        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
+        self.causeRepaint()
         
         self.ui.tableView.update()
         self.__model.resetInternalData()
@@ -1179,6 +1302,7 @@ def dump_vocab(myData):
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
+REBUILD_BILING = 3
 
 def MainFunction(DB, report, modify=False):
 
@@ -1186,20 +1310,37 @@ def MainFunction(DB, report, modify=False):
         report.Error('You need to run this module in "modify mode."')
         return
     
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
     retVal = RESTART_MODULE
     
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
-        retVal = RunModule(DB, report)
+        retVal = RunModule(DB, report, configMap)
         
-def RunModule(DB, report):
+    if retVal == REBUILD_BILING:
         
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return ERROR_HAPPENED
-
+        # Extract the bilingual lexicon        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap)
+        
+        # output info, warnings, errors
+        for msg in error_list:
+            
+            # msg is a pair -- string & code
+            if msg[1] == 0:
+                report.Info(msg[0])
+            elif msg[1] == 1:
+                report.Warning(msg[0])
+            else: # error=2
+                report.Error(msg[0])
+        
+        
+def RunModule(DB, report, configMap):
+        
     haveConfigError = False
     
     # Get need configuration file properties
@@ -1323,7 +1464,7 @@ def RunModule(DB, report):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap)
         
         window.show()
         app.exec_()
@@ -1338,6 +1479,11 @@ def RunModule(DB, report):
             
             TargetDB.CloseProject()
             return RESTART_MODULE
+        
+        elif window.rebuildBiling:
+            
+            TargetDB.CloseProject()
+            return REBUILD_BILING
     
     TargetDB.CloseProject()
     
