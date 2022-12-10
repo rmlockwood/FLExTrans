@@ -5,6 +5,14 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.2 - 12/10/22 - Ron Lockwood
+#    Reworked interface to put new controls and some old on the bottom. OK & Cancel stay bottom right.
+#    Fixed #308 - change font size and font family. Fixed #78 - Allow no link (called **none**) to be set.
+#    Fixed #325 - allow searching by any part of the target combo box info. - headword, POS (with parens), gloss.
+#    Fixed #185 - consistently hide linked rows, even those that aren't ticked, but have an identical srcHPG that is linked.
+#    Fixed #335 - allow rebuilding of the bilingual lexicon after the linker closes.
+#    Fixed #333 - show a status of how many senses still need to be linked.
+#
 #   Version 3.7.1 - 12/7/22 - Ron Lockwood
 #    Fixes #91. Only make painting updates when a row's checkbox is changed.
 #
@@ -159,7 +167,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
