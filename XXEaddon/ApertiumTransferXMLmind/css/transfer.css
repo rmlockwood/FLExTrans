@@ -59,8 +59,8 @@ attr-item:before
 attr-item[tags]
 {
     display:block;
-    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,10);
-    margin-left:.8in;
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,16);
+    margin-left:.2in;
 }
 
 b:before
@@ -127,9 +127,9 @@ cat-item:before
 cat-item[tags]
 {
     display:block;
-    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,10) 
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,16) 
       " lemma: " text-field(attribute,lemma,background-color,def-chunk-background-color(),columns,10);
-    margin-left:.8in;
+    margin-left:.2in;
 }
 
 choose:before
@@ -337,8 +337,8 @@ list-item:before
 list-item[v]
 {
     display:block;
-    content: " " text-field(attribute,v,background-color,def-chunk-background-color(),columns,10);
-    margin-left:.4in;
+    content: " " text-field(attribute,v,background-color,def-chunk-background-color(),columns,16);
+    margin-left:.2in;
 }
 
 lit:before
