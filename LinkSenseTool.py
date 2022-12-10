@@ -209,6 +209,9 @@ INITIAL_STATUS_LINKED = 1
 INITIAL_STATUS_EXACT_SUGGESTION = 2
 INITIAL_STATUS_FUZZY_SUGGESTION = 3
 
+NONE_HEADWORD = '**none**'
+NA_STR = 'n/a'
+
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
 class HPG(object):
@@ -591,6 +594,11 @@ class Main(QMainWindow):
         self.cols = 7
         self.restartLinker = False
         
+        # Set the combo box to the 2nd element, since the first one is **none**
+        if len(comboData) > 1:
+            
+            self.ui.targetLexCombo.setCurrentIndex(1)
+            
         # load the source text list
         Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
@@ -1100,19 +1108,26 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         
                                     # equiv now holds the url to the target, see if it is valid
                                     if equiv:
-
-                                        senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
                                         
-                                        # If no sense number, assume it is 1
-                                        if senseNum == None or not senseNum.isdigit():
-                                            senseNum = '1'
+                                        # handle sense mapped intentionally to nothing.
+                                        if equiv == NONE_HEADWORD:
+                                            
+                                            tgtHPG = HPG(Sense=None, Headword=NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+                                            
+                                        else:
                                         
-                                        # Get the guid from the url
-                                        u = equiv.index('guid')
-                                        guid = equiv[u+7:u+7+36]
-                                    
-                                        # Get sense information for the guid, this returns None if not found
-                                        tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
+                                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
+                                            
+                                            # If no sense number, assume it is 1
+                                            if senseNum == None or not senseNum.isdigit():
+                                                senseNum = '1'
+                                            
+                                            # Get the guid from the url
+                                            u = equiv.index('guid')
+                                            guid = equiv[u+7:u+7+36]
+                                        
+                                            # Get sense information for the guid, this returns None if not found
+                                            tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
                                         
                                         # Set the target part of the Link object and add it to the list
                                         myLink.set_tgtHPG(tgtHPG)
@@ -1198,8 +1213,15 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
                 
                 cnt += 1
                 
-                # Build target link from saved url path plus guid string for this target sense
-                text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
+                # Handle mapping to none
+                headWord = currLink.get_tgtHPG().getHeadword()
+                
+                if headWord == NONE_HEADWORD:
+                    
+                    text = headWord
+                else:
+                    # Build target link from saved url path plus guid string for this target sense
+                    text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
                 
                 # Set the target field
                 DB.LexiconSetFieldText(currSense, senseEquivField, text)
@@ -1464,6 +1486,11 @@ def RunModule(DB, report, configMap):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
+        
+        # Create a special HPG for mapping to none, i.e. the sense will not be mapped to anything
+        noneHPG = HPG(Sense=None, Headword=NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+        tgtLexList.insert(0, noneHPG)
+        
         window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap)
         
         window.show()
