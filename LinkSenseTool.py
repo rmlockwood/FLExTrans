@@ -203,7 +203,7 @@ MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
 # order to be outputted as a possible match. 
 FUZZ_THRESHOLD = 74
 
-SEARCH_HERE = 'Search target senses here'
+SEARCH_HERE = 'Search here'
 INITIAL_STATUS_UNLINKED = 0
 INITIAL_STATUS_LINKED = 1    
 INITIAL_STATUS_EXACT_SUGGESTION = 2
@@ -586,6 +586,7 @@ class Main(QMainWindow):
         self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
         self.__fullData = myData
         self.ui.tableView.setModel(self.__model)
+        self.__comboData = comboData
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.__report = report
@@ -618,6 +619,7 @@ class Main(QMainWindow):
         self.ui.ZoomIncrease.clicked.connect(self.ZoomIncreaseClicked)
         self.ui.ZoomDecrease.clicked.connect(self.ZoomDecreaseClicked)
         self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
+        self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
         self.ComboClicked()
         
         myHPG = self.__combo_model.getCurrentHPG()
@@ -632,7 +634,7 @@ class Main(QMainWindow):
                 break
     
         self.calculateRemainingLinks()
-        
+    
     def InitRebuildBilingCheckBox(self):
         
         self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
@@ -727,7 +729,43 @@ class Main(QMainWindow):
         
         # Close the tool and it will restart
         self.close()
+    
+    def SearchAnythingChecked(self):
         
+        if self.ui.SearchAnythingCheckBox.isChecked():
+            
+            self.__old_combo_model = self.__combo_model
+            
+        else:
+            self.__combo_model = self.__old_combo_model
+            self.ui.targetLexCombo.setModel(self.__combo_model)
+
+            # Set the combo box to the 2nd element, since the first one is **none**
+            if len(self.__comboData) > 1:
+                
+                self.ui.targetLexCombo.setCurrentIndex(1)
+
+
+    def buildSearchResults(self, searchText):
+        
+        newList = []
+        
+        if searchText:
+            
+            myREobj = re.compile(unicodedata.normalize('NFD', re.escape(searchText)))
+            
+            for hpg in self.__comboData[1:]: # skip the **none** target
+                
+                # Search for match in headword, POS including parens, or gloss
+                if myREobj.search(hpg.getHeadword()) or myREobj.search('('+hpg.getPOS()+')') or myREobj.search(hpg.getGloss()):
+                    
+                    newList.append(hpg)
+                    
+            if len(newList) > 0:
+                                    
+                self.__combo_model = LinkerCombo(newList)
+                self.ui.targetLexCombo.setModel(self.__combo_model)
+
     def findRow(self, searchText):
         
         found = False
@@ -746,10 +784,17 @@ class Main(QMainWindow):
         
     def SearchTargetChanged(self):
         
-        foundRow = self.findRow(self.ui.searchTargetEdit.text())
-        
-        if foundRow > 0:
-            self.ui.targetLexCombo.setCurrentIndex(foundRow)
+        # Do a filter based on what was typed which can match anything
+        if self.ui.SearchAnythingCheckBox.isChecked():
+            
+            self.buildSearchResults(self.ui.searchTargetEdit.text())
+            
+        else:
+            
+            foundRow = self.findRow(self.ui.searchTargetEdit.text())
+            
+            if foundRow > 0:
+                self.ui.targetLexCombo.setCurrentIndex(foundRow)
             
     def SearchTargetClicked(self):
         

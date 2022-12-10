@@ -137,7 +137,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>Type the beginning of an entry, then double-click in the Target Head Word column for the desired row to link to it.</string>
+     <string>Type the beginning of an entry or any text (if 'search all fields' is checked),\nthen double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
    <widget class="QComboBox" name="SourceTextCombo">
@@ -265,7 +265,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Rebuild Binlingual Lexicon</string>
+     <string>Rebuild Bilingual Lexicon</string>
     </property>
     <property name="checked">
      <bool>true</bool>
