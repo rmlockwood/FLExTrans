@@ -884,14 +884,28 @@ class Main(QMainWindow):
         else:
             # Create a new filtered list
             filteredData = []
+            srcHPGtoLinkItMap = {}
             
+            # Create a map of unique srcHPGs to LinkIt, we override the map if a LinkIt is true
+            # for any of the identical srcHPGs. This helps below to see if any identical srcHPGs have been linked
+            for myLink in self.__fullData:
+                
+                if myLink.get_srcHPG() not in srcHPGtoLinkItMap:
+                    
+                    srcHPGtoLinkItMap[myLink.get_srcHPG()] = myLink.getLinkIt() 
+                else:
+                    if myLink.getLinkIt():
+                        
+                        srcHPGtoLinkItMap[myLink.get_srcHPG()] = True
+                
             for myLink in self.__fullData:
                 
                 keepIt = False
                 
                 if self.showOnlyUnlinked:
                     
-                    if myLink.get_tgtHPG() is None or myLink.is_suggestion():
+                    # if none of possible identical srcHPGs has been linked, add this one
+                    if not srcHPGtoLinkItMap[myLink.get_srcHPG()]:
                         
                         keepIt = True
                 else:
