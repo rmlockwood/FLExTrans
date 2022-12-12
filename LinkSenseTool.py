@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.3 - 12/12/22 - Ron Lockwood
+#    Re-read the config file before each new launch of the linker to ensure we have
+#    the latest source text name.
+#
 #   Version 3.7.2 - 12/10/22 - Ron Lockwood
 #    Reworked interface to put new controls and some old on the bottom. OK & Cancel stay bottom right.
 #    Fixed #308 - change font size and font family. Fixed #78 - Allow no link (called **none**) to be set.
@@ -1399,16 +1403,16 @@ def MainFunction(DB, report, modify=False):
         report.Error('You need to run this module in "modify mode."')
         return
     
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
     retVal = RESTART_MODULE
     
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
+        # Read the configuration file which we assume is in the current directory.
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
+    
         retVal = RunModule(DB, report, configMap)
         
     if retVal == REBUILD_BILING:
