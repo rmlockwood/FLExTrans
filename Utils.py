@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 
+#   Version 3.7.3 - 12/12/22 - Ron Lockwood
+#    added none headword constant.
+#
 #   Version 3.7.2 - 12/1/22 - Ron Lockwood
 #    Set PATH="" in the do_make.bat file we create to prevent other make programs
 #    from being found and executed.
@@ -280,6 +283,8 @@ from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig 
 from FTPaths import CONFIG_PATH
+
+NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
 

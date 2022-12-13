@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.3 - 12/12/22 - Ron Lockwood
+#    Re-read the config file before each new launch of the linker to ensure we have
+#    the latest source text name. Also, put none-headword string in Utils.py
+#
 #   Version 3.7.2 - 12/10/22 - Ron Lockwood
 #    Reworked interface to put new controls and some old on the bottom. OK & Cancel stay bottom right.
 #    Fixed #308 - change font size and font family. Fixed #78 - Allow no link (called **none**) to be set.
@@ -167,7 +171,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -217,7 +221,6 @@ INITIAL_STATUS_LINKED = 1
 INITIAL_STATUS_EXACT_SUGGESTION = 2
 INITIAL_STATUS_FUZZY_SUGGESTION = 3
 
-NONE_HEADWORD = '**none**'
 NA_STR = 'n/a'
 
 # model the information having to do with basic sense information, namely
@@ -1177,9 +1180,9 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                     if equiv:
                                         
                                         # handle sense mapped intentionally to nothing.
-                                        if equiv == NONE_HEADWORD:
+                                        if equiv == Utils.NONE_HEADWORD:
                                             
-                                            tgtHPG = HPG(Sense=None, Headword=NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+                                            tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
                                             
                                         else:
                                         
@@ -1283,7 +1286,7 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
                 # Handle mapping to none
                 headWord = currLink.get_tgtHPG().getHeadword()
                 
-                if headWord == NONE_HEADWORD:
+                if headWord == Utils.NONE_HEADWORD:
                     
                     text = headWord
                 else:
@@ -1399,16 +1402,16 @@ def MainFunction(DB, report, modify=False):
         report.Error('You need to run this module in "modify mode."')
         return
     
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
     retVal = RESTART_MODULE
     
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
+        # Read the configuration file which we assume is in the current directory.
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
+    
         retVal = RunModule(DB, report, configMap)
         
     if retVal == REBUILD_BILING:
@@ -1555,7 +1558,7 @@ def RunModule(DB, report, configMap):
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
         
         # Create a special HPG for mapping to none, i.e. the sense will not be mapped to anything
-        noneHPG = HPG(Sense=None, Headword=NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+        noneHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
         tgtLexList.insert(0, noneHPG)
         
         window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap)

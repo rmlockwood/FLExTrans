@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7 - 12/12/22 - Ron Lockwood
+#    Skip entries that are mapped to the 'none' headword
+#
 #   Version 3.6.3 - 9/1/22 - Ron Lockwood
 #   Fixes #254. Convert * to _ in stems.
 #
@@ -214,7 +217,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.6.3",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -764,6 +767,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
                             if equiv:
                                 
+                                # handle sense mapped intentionally to nothing. Skip it.
+                                if equiv == Utils.NONE_HEADWORD:
+                                    
+                                    continue
+
                                 # Parse the link to get the guid
                                 u = equiv.index('guid')
                                 myGuid = equiv[u+7:u+7+36]
