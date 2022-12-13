@@ -59,9 +59,6 @@ tags="AR"
 ><attr-item
 tags="ER"
 ></attr-item
-><attr-item
-tags="IR"
-></attr-item
 ></def-attr
 ><def-attr
 n="a_gender_features"
