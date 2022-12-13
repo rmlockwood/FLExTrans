@@ -5,6 +5,21 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.3 - 12/12/22 - Ron Lockwood
+#    Re-read the config file before each new launch of the linker to ensure we have
+#    the latest source text name. Also, put none-headword string in Utils.py
+#
+#   Version 3.7.2 - 12/10/22 - Ron Lockwood
+#    Reworked interface to put new controls and some old on the bottom. OK & Cancel stay bottom right.
+#    Fixed #308 - change font size and font family. Fixed #78 - Allow no link (called **none**) to be set.
+#    Fixed #325 - allow searching by any part of the target combo box info. - headword, POS (with parens), gloss.
+#    Fixed #185 - consistently hide linked rows, even those that aren't ticked, but have an identical srcHPG that is linked.
+#    Fixed #335 - allow rebuilding of the bilingual lexicon after the linker closes.
+#    Fixed #333 - show a status of how many senses still need to be linked.
+#
+#   Version 3.7.1 - 12/7/22 - Ron Lockwood
+#    Fixes #91. Only make painting updates when a row's checkbox is changed.
+#
 #   Version 3.7 - 11/5/22 - Ron Lockwood
 #    Fixes #252. The user can choose a different source text which triggers a restart
 #    of the module. Added logic to detect if linking or unlinking was done. If a
@@ -136,7 +151,7 @@ from System import Guid
 from System import String
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from FTModuleClass import *                                                 
 
@@ -148,6 +163,7 @@ import FTPaths
 
 import ReadConfig
 import Utils
+import ExtractBilingualLexicon
 
 from Linker import Ui_MainWindow
 
@@ -155,7 +171,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -199,11 +215,13 @@ MIN_DIFF_GLOSS_LEN_FOR_FUZZ = 3
 # order to be outputted as a possible match. 
 FUZZ_THRESHOLD = 74
 
-SEARCH_HERE = 'Search target senses here'
+SEARCH_HERE = 'Search here'
 INITIAL_STATUS_UNLINKED = 0
 INITIAL_STATUS_LINKED = 1    
 INITIAL_STATUS_EXACT_SUGGESTION = 2
 INITIAL_STATUS_FUZZY_SUGGESTION = 3
+
+NA_STR = 'n/a'
 
 # model the information having to do with basic sense information, namely
 # headword, part of speech (POS) and gloss thus the name HPG
@@ -235,6 +253,8 @@ class Link(object):
         self.linkIt = False
         self.modified = False
         self.tgtModified = False
+    def getLinkIt(self):
+        return self.linkIt
     def get_srcHPG(self):
         return self.__srcHPG
     def get_tgtHPG(self):
@@ -335,12 +355,18 @@ class LinkerCombo(QtCore.QAbstractListModel):
             
 class LinkerTable(QtCore.QAbstractTableModel):
     
-    def __init__(self, myData = [[]], headerData = [], parent = None):
+    def __init__(self, myData = [[]], headerData = [], font = None, changeCallback = None, parent = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__localData = myData
         self.__myHeaderData = headerData
         self.__selectedHPG = None
         self.__linkingChanged = False
+        self.__font = font
+        self.__callbackFunc = changeCallback
+    def getFont(self):
+        return self.__font
+    def setFont(self, myFont):
+        self.__font = myFont
     def didLinkingChange(self):
         return self.__linkingChanged
     def getInternalData(self):
@@ -388,7 +414,14 @@ class LinkerTable(QtCore.QAbstractTableModel):
 
                 self.__linkingChanged = True
                 
+                # Recalculate the senses to link 
+                self.__callbackFunc()
+                
                 return self.__selectedHPG.getHeadword()
+        
+        if role == QtCore.Qt.FontRole:
+            
+            return self.__font
         
         # Set the foreground (font) color
         if role == QtCore.Qt.ForegroundRole:
@@ -430,7 +463,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
                 if col == 0 and ((locData.linkIt == True and not initiallyLinkedUnmodifiedSense) or (locData.linkIt == False and initiallyLinkedUnmodifiedSense)):
                     
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
-                
+                    
                 # Modified rows get a color just for the target columns
                 elif col >= 4 and col <= 6 and (locData.tgtModified == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.linkIt == False)):
                     
@@ -456,8 +489,9 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     
                     qColor = QtGui.QColor(QtCore.Qt.white)
 
-                self.dataChanged.emit(index, index)
-
+                # This causes continual repainting and high processor use, moved it to SetData()
+                #self.dataChanged.emit(index, index)
+                
                 return qColor
         
         if role == QtCore.Qt.DisplayRole:
@@ -535,12 +569,23 @@ class LinkerTable(QtCore.QAbstractTableModel):
             else:
                 self.__localData[row].linkIt = False
                 self.__localData[row].modified = True
+            
+            # Repaint columns 0,4-6 (link, target head-word, cat, gloss) when the checkbox is changed.
+            # Do this for all rows to display rows that are linked to the link object
+            for myCol in [0,4,5,6]:
                 
+                for row in range(0,len(self.__localData)):
+                    newindex = self.index(row, myCol)    
+                    self.dataChanged.emit(newindex, newindex)
+            
+            # Recalculate the senses to link 
+            self.__callbackFunc()
+            
         return True
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap):
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
@@ -548,19 +593,30 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
-        self.__model = LinkerTable(myData, headerData)
+        myFont = self.ui.tableView.font()
+        self.__model = LinkerTable(myData, headerData, myFont, self.calculateRemainingLinks)
         self.__fullData = myData
         self.ui.tableView.setModel(self.__model)
+        self.__comboData = comboData
         self.__combo_model = LinkerCombo(comboData)
         self.ui.targetLexCombo.setModel(self.__combo_model)
         self.__report = report
+        self.__configMap = configMap
         self.ret_val = 0
         self.cols = 7
         self.restartLinker = False
+        
+        # Set the combo box to the 2nd element, since the first one is **none**
+        if len(comboData) > 1:
+            
+            self.ui.targetLexCombo.setCurrentIndex(1)
+            
         # load the source text list
         Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
+        self.InitRebuildBilingCheckBox()
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         
@@ -570,6 +626,11 @@ class Main(QMainWindow):
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.FontButton.clicked.connect(self.FontClicked)
+        self.ui.ZoomIncrease.clicked.connect(self.ZoomIncreaseClicked)
+        self.ui.ZoomDecrease.clicked.connect(self.ZoomDecreaseClicked)
+        self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
+        self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
         self.ComboClicked()
         
         myHPG = self.__combo_model.getCurrentHPG()
@@ -583,6 +644,82 @@ class Main(QMainWindow):
                 self.__combo_model.setRTL(True)
                 break
     
+        self.calculateRemainingLinks()
+    
+    def InitRebuildBilingCheckBox(self):
+        
+        self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
+        
+        val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, report=None, giveError=False)
+        
+        if val:
+            if val == 'n':
+                
+                self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+                
+        self.rebuildBiling = self.ui.RebuildBilingCheckBox.isChecked()
+        
+    def RebuildBilingChecked(self):
+        
+        self.rebuildBiling = self.ui.RebuildBilingCheckBox.isChecked()
+        
+    def calculateRemainingLinks(self):
+        
+        count = 0
+        uniqueSrcHPGMap = {}
+        
+        for linkObj in self.__fullData:
+            
+            # Only count unique source senses
+            mySrcHPG = linkObj.get_srcHPG()
+            
+            if mySrcHPG not in uniqueSrcHPGMap:
+                
+                uniqueSrcHPGMap[mySrcHPG] = [linkObj.getLinkIt()]
+            else:
+                uniqueSrcHPGMap[mySrcHPG].append(linkObj.getLinkIt())
+                
+        for boolList in uniqueSrcHPGMap.values():
+            
+            for myBool in boolList:
+                
+                if myBool:
+                    break
+                
+            if not myBool:
+                count += 1
+                    
+        self.ui.SensesRemainingLabel.setText(str(count))
+        
+    def causeRepaint(self):
+        # crude way to cause a repaint
+        tv = self.ui.tableView
+        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
+        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
+
+    def FontClicked(self):
+        (font, ret) = QFontDialog.getFont()
+        if ret:
+            myFont = self.__model.getFont()
+            myFont.setFamily(font.family())
+            self.ui.FontNameLabel.setText(font.family())
+
+    def ZoomIncreaseClicked(self):
+        myFont = self.__model.getFont()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * 1.125
+        myFont.setPointSizeF(mySize)
+        self.__model.setFont(myFont)
+        self.causeRepaint()
+        
+    def ZoomDecreaseClicked(self):
+        myFont = self.__model.getFont()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * .889
+        myFont.setPointSizeF(mySize)
+        self.__model.setFont(myFont)
+        self.causeRepaint()
+        
     def sourceTextComboChanged(self):
         
         self.restartLinker = True
@@ -603,7 +740,43 @@ class Main(QMainWindow):
         
         # Close the tool and it will restart
         self.close()
+    
+    def SearchAnythingChecked(self):
         
+        if self.ui.SearchAnythingCheckBox.isChecked():
+            
+            self.__old_combo_model = self.__combo_model
+            
+        else:
+            self.__combo_model = self.__old_combo_model
+            self.ui.targetLexCombo.setModel(self.__combo_model)
+
+            # Set the combo box to the 2nd element, since the first one is **none**
+            if len(self.__comboData) > 1:
+                
+                self.ui.targetLexCombo.setCurrentIndex(1)
+
+
+    def buildSearchResults(self, searchText):
+        
+        newList = []
+        
+        if searchText:
+            
+            myREobj = re.compile(unicodedata.normalize('NFD', re.escape(searchText)))
+            
+            for hpg in self.__comboData[1:]: # skip the **none** target
+                
+                # Search for match in headword, POS including parens, or gloss
+                if myREobj.search(hpg.getHeadword()) or myREobj.search('('+hpg.getPOS()+')') or myREobj.search(hpg.getGloss()):
+                    
+                    newList.append(hpg)
+                    
+            if len(newList) > 0:
+                                    
+                self.__combo_model = LinkerCombo(newList)
+                self.ui.targetLexCombo.setModel(self.__combo_model)
+
     def findRow(self, searchText):
         
         found = False
@@ -622,10 +795,17 @@ class Main(QMainWindow):
         
     def SearchTargetChanged(self):
         
-        foundRow = self.findRow(self.ui.searchTargetEdit.text())
-        
-        if foundRow > 0:
-            self.ui.targetLexCombo.setCurrentIndex(foundRow)
+        # Do a filter based on what was typed which can match anything
+        if self.ui.SearchAnythingCheckBox.isChecked():
+            
+            self.buildSearchResults(self.ui.searchTargetEdit.text())
+            
+        else:
+            
+            foundRow = self.findRow(self.ui.searchTargetEdit.text())
+            
+            if foundRow > 0:
+                self.ui.targetLexCombo.setCurrentIndex(foundRow)
             
     def SearchTargetClicked(self):
         
@@ -633,23 +813,39 @@ class Main(QMainWindow):
         if self.ui.searchTargetEdit.text() == SEARCH_HERE:
             
             self.ui.searchTargetEdit.setText('')
+    
+    def positionControl(self, myControl, x, y):
+        
+        myControl.setGeometry(x, y, myControl.width(), myControl.height())
         
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
         # Stretch the table view to fit
-        self.ui.tableView.setGeometry(10, 50, self.width() - 20, \
-                                      self.height() - 80 - self.ui.OKButton.height() - 25)
+        self.ui.tableView.setGeometry(10, 50, self.width() - 20, self.height() - self.ui.OKButton.height() - 85)
         
-        # Move the OK and Cancel buttons as the window gets resized.
-        x = self.width()//2 - 10 - self.ui.OKButton.width()
+        # Move the OK and Cancel buttons up and down as the window gets resized
+        x = 10
         if x < 0:
             x = 0
-        self.ui.OKButton.setGeometry(x, 50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
-                                     self.ui.OKButton.height())
-        self.ui.CancelButton.setGeometry(x + self.ui.OKButton.width() + 10,  \
-                                         50 + self.ui.tableView.height() + 10, self.ui.OKButton.width(),
-                                         self.ui.OKButton.height())
+        
+        self.positionControl(self.ui.OKButton, x, self.ui.tableView.height() + 60)
+        self.positionControl(self.ui.CancelButton, x + self.ui.OKButton.width() + 10, self.ui.tableView.height() + 60)
+        
+        # Set position of other controls all the same height and 10 pixels between each other
+        startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
+        
+        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox]
+
+        for myControl in controlList:
+            
+            self.positionControl(myControl, startX, self.ui.OKButton.y())
+            startX += myControl.width() + 10
+        
+        self.positionControl(self.ui.SensesToLinkLabel, 10, self.ui.OKButton.y() + 27)
+        self.positionControl(self.ui.SensesRemainingLabel, self.ui.SensesToLinkLabel.x() + self.ui.SensesToLinkLabel.width() + 5, self.ui.OKButton.y() + 27)
+        
+        
         firstColWidth = 45
         
         # Set the column widths
@@ -665,24 +861,29 @@ class Main(QMainWindow):
         # Set the target HPG for the model  
         myHPG = self.__combo_model.getCurrentHPG()
         self.__model.setSelectedHPG(myHPG)
+        
     def OKClicked(self):
         self.ret_val = 1
         self.close()
+        
     def ShowOnlyUnlinkedClicked(self):
         if self.ui.ShowOnlyUnlinkedCheckBox.isChecked():
             self.showOnlyUnlinked = True
         else:
             self.showOnlyUnlinked = False
         self.filter()
+        
     def HideProperNounsClicked(self):
         if self.ui.HideProperNounsCheckBox.isChecked():
             self.hideProperNouns = True
         else:
             self.hideProperNouns = False
         self.filter()
+        
     def CancelClicked(self):
         self.ret_val = 0
         self.close()
+        
     def filter(self):
         
         self.__model.beginResetModel();
@@ -694,14 +895,28 @@ class Main(QMainWindow):
         else:
             # Create a new filtered list
             filteredData = []
+            srcHPGtoLinkItMap = {}
             
+            # Create a map of unique srcHPGs to LinkIt, we override the map if a LinkIt is true
+            # for any of the identical srcHPGs. This helps below to see if any identical srcHPGs have been linked
+            for myLink in self.__fullData:
+                
+                if myLink.get_srcHPG() not in srcHPGtoLinkItMap:
+                    
+                    srcHPGtoLinkItMap[myLink.get_srcHPG()] = myLink.getLinkIt() 
+                else:
+                    if myLink.getLinkIt():
+                        
+                        srcHPGtoLinkItMap[myLink.get_srcHPG()] = True
+                
             for myLink in self.__fullData:
                 
                 keepIt = False
                 
                 if self.showOnlyUnlinked:
                     
-                    if myLink.get_tgtHPG() is None or myLink.is_suggestion():
+                    # if none of possible identical srcHPGs has been linked, add this one
+                    if not srcHPGtoLinkItMap[myLink.get_srcHPG()]:
                         
                         keepIt = True
                 else:
@@ -725,10 +940,7 @@ class Main(QMainWindow):
         self.__model.endResetModel();
         self.rows = len(self.__model.getInternalData())
 
-        # crude way to cause a repaint
-        tv = self.ui.tableView
-        tv.setGeometry(tv.x()+1,tv.y()+1,tv.width(),tv.height()+1)
-        tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
+        self.causeRepaint()
         
         self.ui.tableView.update()
         self.__model.resetInternalData()
@@ -966,19 +1178,26 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         
                                     # equiv now holds the url to the target, see if it is valid
                                     if equiv:
-
-                                        senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
                                         
-                                        # If no sense number, assume it is 1
-                                        if senseNum == None or not senseNum.isdigit():
-                                            senseNum = '1'
+                                        # handle sense mapped intentionally to nothing.
+                                        if equiv == Utils.NONE_HEADWORD:
+                                            
+                                            tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+                                            
+                                        else:
                                         
-                                        # Get the guid from the url
-                                        u = equiv.index('guid')
-                                        guid = equiv[u+7:u+7+36]
-                                    
-                                        # Get sense information for the guid, this returns None if not found
-                                        tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
+                                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
+                                            
+                                            # If no sense number, assume it is 1
+                                            if senseNum == None or not senseNum.isdigit():
+                                                senseNum = '1'
+                                            
+                                            # Get the guid from the url
+                                            u = equiv.index('guid')
+                                            guid = equiv[u+7:u+7+36]
+                                        
+                                            # Get sense information for the guid, this returns None if not found
+                                            tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
                                         
                                         # Set the target part of the Link object and add it to the list
                                         myLink.set_tgtHPG(tgtHPG)
@@ -1064,8 +1283,15 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
                 
                 cnt += 1
                 
-                # Build target link from saved url path plus guid string for this target sense
-                text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
+                # Handle mapping to none
+                headWord = currLink.get_tgtHPG().getHeadword()
+                
+                if headWord == Utils.NONE_HEADWORD:
+                    
+                    text = headWord
+                else:
+                    # Build target link from saved url path plus guid string for this target sense
+                    text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
                 
                 # Set the target field
                 DB.LexiconSetFieldText(currSense, senseEquivField, text)
@@ -1168,6 +1394,7 @@ def dump_vocab(myData):
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
+REBUILD_BILING = 3
 
 def MainFunction(DB, report, modify=False):
 
@@ -1180,15 +1407,32 @@ def MainFunction(DB, report, modify=False):
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
-        retVal = RunModule(DB, report)
+        # Read the configuration file which we assume is in the current directory.
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
+    
+        retVal = RunModule(DB, report, configMap)
         
-def RunModule(DB, report):
+    if retVal == REBUILD_BILING:
         
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return ERROR_HAPPENED
-
+        # Extract the bilingual lexicon        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap)
+        
+        # output info, warnings, errors
+        for msg in error_list:
+            
+            # msg is a pair -- string & code
+            if msg[1] == 0:
+                report.Info(msg[0])
+            elif msg[1] == 1:
+                report.Warning(msg[0])
+            else: # error=2
+                report.Error(msg[0])
+        
+        
+def RunModule(DB, report, configMap):
+        
     haveConfigError = False
     
     # Get need configuration file properties
@@ -1312,7 +1556,12 @@ def RunModule(DB, report):
                         'Target Head Word', 'Target Cat.', 'Target Gloss']
         
         tgtLexList.sort(key=lambda HPG: (HPG.getHeadword().lower(), HPG.getPOS().lower(), HPG.getGloss()))
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report)
+        
+        # Create a special HPG for mapping to none, i.e. the sense will not be mapped to anything
+        noneHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+        tgtLexList.insert(0, noneHPG)
+        
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap)
         
         window.show()
         app.exec_()
@@ -1327,6 +1576,11 @@ def RunModule(DB, report):
             
             TargetDB.CloseProject()
             return RESTART_MODULE
+        
+        elif window.rebuildBiling:
+            
+            TargetDB.CloseProject()
+            return REBUILD_BILING
     
     TargetDB.CloseProject()
     

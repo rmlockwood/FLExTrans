@@ -230,6 +230,7 @@ class FTPanel(Panel):
             self.reportWindow.Reporter.Error("No project selected! Use the Choose Project button in the toolbar.")
             return
 
+# Turning this off since it seems to cause launched FLExTrans windows to not have focus
 #         if not modifyAllowed:
 #             modifyAllowed = (Control.ModifierKeys == Keys.Shift)
 

@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.7.5 - 12/7/22 - Ron Lockwood
+#    Fixes #285. Allow some settings to be missing without giving an error.
+#    The next time the settings are saved, the settings will be created. As part
+#    of this fix, created a map from config setting name to widget.
+#
 #   Version 3.7.4 - 11/14/22 - Ron Lockwood
 #    Shorter height for the window. Fixes #321
 #
@@ -95,7 +100,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.7.4",
+        FTM_Version: "3.7.5",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -117,6 +122,7 @@ WIDGET2_OBJ = 6
 LOAD_FUNC = 7
 CONFIG_NAME = 8
 WIDGET_TOOLTIP = 9
+GIVE_ERROR_IF_NOT_PRESENT = 10
 
 COMBO_BOX = "combobox"
 SIDE_BY_SIDE_COMBO_BOX = "side by side"
@@ -657,12 +663,21 @@ class Main(QMainWindow):
         self.DB = DB
         self.giveConfirmation = True
         self.changedSettingsSet = set()
+        self.nameToWidgetMap = {}
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Loop through all settings 
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            # Populate a map from config name string to widget info.
+            self.nameToWidgetMap[widgInfo[CONFIG_NAME]] = widgInfo
+            
         # Load the widgets with data        
         self.initLoad()
 
@@ -753,7 +768,9 @@ class Main(QMainWindow):
         
     def read(self, key):
         
-        return ReadConfig.getConfigVal(self.configMap, key, self.report)
+        widgeInfo = self.nameToWidgetMap[key]
+        
+        return ReadConfig.getConfigVal(self.configMap, key, self.report, giveError=widgeInfo[GIVE_ERROR_IF_NOT_PRESENT])
 
     def initLoad(self):
         
@@ -980,100 +997,103 @@ widgetList = [
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text
-    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."],\
+    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", True],\
    
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."],\
+    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", True],\
    
    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
-    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry."],\
+    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", True],\
 
    ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
-    "The name of the target FLEx project."],\
+    "The name of the target FLEx project.", True],\
 
    ["Source Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
+    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", True],\
 
    ["Target Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."],\
+    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", True],\
 
    ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."],\
+    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit.", True],\
 
    ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
-    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."],\
+    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form.", True],\
 
    ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    "Same as above. Use this property for the types that have inflection\non the second element of the complex form."],\
+    "Same as above. Use this property for the types that have inflection\non the second element of the complex form.", True],\
 
    ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
-    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."],\
+    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence.", True],\
 
    ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."],\
+    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit.", True],\
 
    ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
-    "One or more grammatical categories that can intervene in the above complex types."],\
+    "One or more grammatical categories that can intervene in the above complex types.", True],\
 
    ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
-    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."],\
+    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", True],\
 
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
-    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."],\
+    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", True],\
 
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD)."],\
+    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", True],\
+
+   ["Default to rebuiling the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
+    "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", False],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
-    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."],\
+    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", True],\
    
    ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
-    "The path and name of the file containing the transfer rules."],\
+    "The path and name of the file containing the transfer rules.", True],\
 
    ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
-    "The path and name of the file which holds\nthe extracted source text."],\
+    "The path and name of the file which holds\nthe extracted source text.", True],\
 
    ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
-    "The path and name of the file which holds the bilingual lexicon."],\
+    "The path and name of the file which holds the bilingual lexicon.", True],\
 
    ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
-    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."],\
+    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon.", True],\
 
    ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
-    "The path and name of the file which holds the text contents\nafter going through the transfer process."],\
+    "The path and name of the file which holds the text contents\nafter going through the transfer process.", True],\
 
    ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
-    "The ancillary file that hold a list of affix\nglosses from the target FLEx project."],\
+    "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", True],\
 
    ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
-    "The path and name of the file holding\nthe intermediary text in STAMP format."],\
+    "The path and name of the file holding\nthe intermediary text in STAMP format.", True],\
 
    ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
-    "The path where lexicon files and other STAMP files are created"],\
+    "The path where lexicon files and other STAMP files are created", True],\
 
    ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
-    "The path and name of the file holding\nthe intermediary synthesized file."],\
+    "The path and name of the file holding\nthe intermediary synthesized file.", True],\
 
    ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
-    "The path and name of the testbed file."],\
+    "The path and name of the testbed file.", True],\
 
    ["Testbed Results File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
-    "The path and name of the testbed results file"],\
+    "The path and name of the testbed results file", True],\
 
    ["Transfer Rules File 2 (Advanced Transfer)", "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
-    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer."],\
+    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", False],\
 
    ["Transfer Rules File 3 (Advanced Transfer)", "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
-    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer."],\
+    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer.", False],\
 
    ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
-    "The path and name of the TreeTran rules file"],\
+    "The path and name of the TreeTran rules file", False],\
 
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
-    "The path and name of the file that holds the output from TreeTran."],\
+    "The path and name of the file that holds the output from TreeTran.", False],\
 
    ["TreeTran Insert Words File", "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
-    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."]
+    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule.", False]
               ]
 
 # ----------------------------------------------------------------
