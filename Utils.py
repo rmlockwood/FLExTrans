@@ -5,7 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
-
+#
+#   Version 3.7.4 - 12/13/22 - Ron Lockwood
+#    handle file not found in the un fixproblemchars function.
+#
 #   Version 3.7.3 - 12/12/22 - Ron Lockwood
 #    added none headword constant.
 #
@@ -1781,18 +1784,23 @@ def fixProblemChars(fullDictionaryPath):
 
 def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
 
-    f = open(fullTransferResultsPath, encoding='utf-8')
-    contentsStr = f.read()
-    f.close()
+    try:
+        f = open(fullTransferResultsPath, encoding='utf-8')
+
+        contentsStr = f.read()
+        f.close()
+        
+        # Replace || with /
+        contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData)
     
-    # Replace || with /
-    contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData)
-
-    f = open(fullTransferResultsPath, 'w', encoding='utf-8')
-    f.write(contentsStr)
-    f.close()
-
-    # Save a copy of the bilingual dictionary
+        f = open(fullTransferResultsPath, 'w', encoding='utf-8')
+        f.write(contentsStr)
+        f.close()
+    
+    except:
+        pass
+    
+    # Restore original bilingual dictionary
     shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
 
     # Delete the temporary dictionary file
