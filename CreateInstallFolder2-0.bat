@@ -93,8 +93,8 @@ copy UpArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 copy DownArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools
 copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
 copy MakefileForLiveRuleTester Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester\Makefile
-copy MakefileForLiveRuleTester.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile
-copy MakefileForLiveRuleTester.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester\Makefile
+copy MakefileForLiveRuleTester.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build\LiveRuleTester\Makefile.advanced
+copy MakefileForLiveRuleTester.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build\LiveRuleTester\Makefile.advanced
 
 rem View Source-Target pieces
 copy ViewSrcTgt.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
