@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.1 - 12/13/22 - Ron Lockwood
+#    Fixes #360. Process all possible stem names, not just the first one encountered.
+#
 #   Version 3.7 - 12/7/22 - Ron Lockwood
 #    Fixes #291. Match a stem name for an affix if the features of a stem name feature
 #    set is a subset of the features on the affix.
@@ -206,7 +209,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -295,8 +298,6 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
         
         if morphCategory != STEM_TYPE: # non-stems only
 
-            found = False
-            
             for stemName in stemNameList:
                 
                 if msa.PartOfSpeechRA == stemName[CATEGORY_STR]:
@@ -307,10 +308,7 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
                         if msa.InflFeatsOA and isFeatureSetASubsetofB(featureSet.FeatureSpecsOC, msa.InflFeatsOA.FeatureSpecsOC):
                             
                             f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
-                            found = True
                             break
-                if found:
-                    break
     
         # Write out inflection class as a morpheme property if we have a stem
         else: # stems only
