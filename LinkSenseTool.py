@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.4 - 12/14/22 - Ron Lockwood
+#    Don't count proper nouns as still to link if the Hide Proper Noun checkbox is checked.
+#
 #   Version 3.7.3 - 12/12/22 - Ron Lockwood
 #    Re-read the config file before each new launch of the linker to ensure we have
 #    the latest source text name. Also, put none-headword string in Utils.py
@@ -171,7 +174,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -668,19 +671,26 @@ class Main(QMainWindow):
         count = 0
         uniqueSrcHPGMap = {}
         
+        # Build a map that just has unique senses
         for linkObj in self.__fullData:
             
-            # Only count unique source senses
             mySrcHPG = linkObj.get_srcHPG()
             
             if mySrcHPG not in uniqueSrcHPGMap:
                 
+                # For each key add a list of one or more True or False values that indicate if it's been linked
                 uniqueSrcHPGMap[mySrcHPG] = [linkObj.getLinkIt()]
             else:
                 uniqueSrcHPGMap[mySrcHPG].append(linkObj.getLinkIt())
                 
-        for boolList in uniqueSrcHPGMap.values():
+        # Now go through the unique senses and if we have no True's for a sense, increment the to link count
+        for mySrcHPG, boolList in uniqueSrcHPGMap.items():
             
+            if self.hideProperNouns:
+                    
+                if mySrcHPG.getPOS() == PROPER_NOUN_ABBREV:
+                    continue
+                        
             for myBool in boolList:
                 
                 if myBool:
@@ -944,6 +954,9 @@ class Main(QMainWindow):
         
         self.ui.tableView.update()
         self.__model.resetInternalData()
+        
+        # Recalculate links since we won't count prop nouns if the Hide prop nouns checkboxe is checked.
+        self.calculateRemainingLinks()
         
         return
     
