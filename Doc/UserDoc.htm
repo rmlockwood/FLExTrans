@@ -42,13 +42,14 @@
                <li><a href="#sRuleTester">3.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
                <ul>
                   <li><a href="#sTesterQuickGuide">3.2.1&nbsp;Quick Guide</a></li>
-                  <li><a href="#sTesterOther">3.2.2&nbsp;Other Parts of the Tool</a></li>
-                  <li><a href="#sLRTChangeSource">3.2.3&nbsp;Change Source Text</a></li>
+                  <li><a href="#sLRTChangeSource">3.2.2&nbsp;Change Source Text</a></li>
+                  <li><a href="#sHover">3.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
+                  <li><a href="#sTesterOther">3.2.4&nbsp;Other Parts of the Tool</a></li>
                </ul>
                <li><a href="#sSettings">3.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></a></li>
                <li><a href="#sViewSrcTgt">3.4&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></a></li>
                <li><a href="#sParatext">3.5&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
-               <li><a href="#sSetupGramCat">3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span></a></li>
+               <li><a href="#sSetupGramCat">3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></a></li>
             </ul>
             <li><a href="#sTransferTutorial">4&nbsp;A Tutorial on Writing Transfer Rules</a></li>
             <ul>
@@ -606,7 +607,7 @@
       </h3>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Search here</span> field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want
          to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses),
-         click on the <span style="font-style:normal; font-weight:bold; ">Search all fields</span> checkbox and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box.
+         click on the <span style="font-style:normal; font-weight:bold; ">Search all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box.
       </p>
       <h3 style=""><a name="sFilterList"></a>3.1.4&nbsp;Filtering the List
       </h3>
@@ -624,7 +625,7 @@
       </p>
       <h3 style=""><a name="sRebuildBiling"></a>3.1.7&nbsp;Rebuild the Bilingual Lexicon
       </h3>
-      <p>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <span style="font-style:normal; font-weight:bold; ">Rebuild the Bilingual Lexicon</span> checkbox is checked, this will happen automatically when you click OK. If you would like to change whether by default this
+      <p>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <span style="font-style:normal; font-weight:bold; ">Rebuild the Bilingual Lexicon</span> check box is checked, this will happen automatically when you click OK. If you would like to change whether by default this
          box is checked or unchecked when you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>, set the corresponding setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> tool.
       </p>
       <h3 style=""><a name="sSLTChangeSource"></a>3.1.8&nbsp;Change Source Text
@@ -673,7 +674,18 @@
             for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the Testbed to see if you are still getting the results you expect.
          </li>
       </ol>
-      <h3 style=""><a name="sTesterOther"></a>3.2.2&nbsp;Other Parts of the Tool
+      <h3 style=""><a name="sLRTChangeSource"></a>3.2.2&nbsp;Change Source Text
+      </h3>
+      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart.
+      </p>
+      <h3 style=""><a name="sHover"></a>3.2.3&nbsp;Hover to See Bilingual Lexicon Entry
+      </h3>
+      <p>When you are in the Select Words view in the top pane, you can hover over a word to see what the bilingual lexicon entry looks
+         like for that word. As shown in the image above when the word &#8216;liebe&#8217; was hovered over, the bilingual entry maps &#8216;lieben&#8217;
+         to &#8216;&auml;lska&#8217;. This feature can be very useful when inflection features are present on the target word. These will show in the
+         pop-up as well.
+      </p>
+      <h3 style=""><a name="sTesterOther"></a>3.2.4&nbsp;Other Parts of the Tool
       </h3>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
@@ -685,16 +697,12 @@
       <p>You can&#8217;t edit the transfer rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and even when you change the order of the rules in the tool that doesn&#8217;t change your transfer rules file. Make your changes
          in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. You can launch the editor by clicking on the <span style="font-style:normal; font-weight:bold; ">Edit Transfer Rules</span> button. To reload the transfer rules after you have changed them, click on the <span style="font-style:normal; font-weight:bold; ">Refresh Rules</span> button.
       </p>
-      <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> and <span style="font-style:normal; font-weight:bold; ">Edit Replacement File</span> buttons will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing and edting the respective files.
+      <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> and <span style="font-style:normal; font-weight:bold; ">Edit Replacement File</span> buttons will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing and editing the respective files.
       </p>
       <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed lexicon.
       </p>
       <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
          have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.
-      </p>
-      <h3 style=""><a name="sLRTChangeSource"></a>3.2.3&nbsp;Change Source Text
-      </h3>
-      <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart.
       </p>
       <h2 style=""><a name="sSettings"></a>3.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> is a tool that helps get <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> configured the way you want it. Hover over the text box or Browse button to get an explanation of the setting. For file or
@@ -757,7 +765,7 @@
       </p>
       <p>Additional options are the following:</p>
       <ul>
-         <li><span style="font-style:italic; font-weight:bold; ">Include footnotes</span> - include all the text involved with foototes
+         <li><span style="font-style:italic; font-weight:bold; ">Include footnotes</span> - include all the text involved with footnotes
          </li>
          <li><span style="font-style:italic; font-weight:bold; ">Make a new text the active text</span> - the newly created text will be configured to be the active source text in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. This means <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules will use it.
          </li>
@@ -797,7 +805,7 @@
             </tr>
          </table>
       </div>
-      <h2 style=""><a name="sSetupGramCat"></a>3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span></h2>
+      <h2 style=""><a name="sSetupGramCat"></a>3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span> is a tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer
          rule will likely need to reference the grammatical category of a word either in the source or target language. The initial
          transfer rules file that comes with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has just a few sample grammatical categories. This tool will take the categories that are in the bilingual lexicon file and

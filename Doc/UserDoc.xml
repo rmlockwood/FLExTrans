@@ -1009,7 +1009,7 @@ type="tButton"
 > field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses), click on the <object
 type="tButton"
 >Search all fields</object
-> checkbox and then type in the <object
+> check box and then type in the <object
 type="tButton"
 >Search here</object
 > box.</p
@@ -1055,7 +1055,7 @@ id="sRebuildBiling"
 >After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <object
 type="tButton"
 >Rebuild the Bilingual Lexicon</object
-> checkbox is checked, this will happen automatically when you click OK. If you would like to change whether by default this box is checked or unchecked when you start the <object
+> check box is checked, this will happen automatically when you click OK. If you would like to change whether by default this box is checked or unchecked when you start the <object
 type="tSenseLinker"
 ></object
 >, set the corresponding setting in the <object
@@ -1148,6 +1148,26 @@ type="tFlextrans"
 ></ol
 ></section3
 ><section3
+id="sLRTChangeSource"
+><secTitle
+>Change Source Text</secTitle
+><p
+>If you want to work on a different source text, click the <object
+type="tButton"
+>Source Text</object
+> drop-down box and select the desired text. At this point, the <object
+type="tLiveRuleTester"
+></object
+> will close and restart.</p
+></section3
+><section3
+id="sHover"
+><secTitle
+>Hover to See Bilingual Lexicon Entry</secTitle
+><p
+>When you are in the Select Words view in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when the word ‘liebe’ was hovered over, the bilingual entry maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.</p
+></section3
+><section3
 id="sTesterOther"
 ><secTitle
 >Other Parts of the Tool</secTitle
@@ -1199,7 +1219,7 @@ type="tButton"
 > buttons will start the <object
 type="tXMLmindXMLEditor"
 ></object
-> for viewing and edting the respective files.</p
+> for viewing and editing the respective files.</p
 ><p
 >If you change the target lexicon, click the <object
 type="tButton"
@@ -1219,19 +1239,6 @@ type="tButton"
 type="tFlextrans"
 ></object
 > will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
-></section3
-><section3
-id="sLRTChangeSource"
-><secTitle
->Change Source Text</secTitle
-><p
->If you want to work on a different source text, click the <object
-type="tButton"
->Source Text</object
-> drop-down box and select the desired text. At this point, the <object
-type="tLiveRuleTester"
-></object
-> will close and restart.</p
 ></section3
 ></section2
 ><section2
@@ -1378,7 +1385,7 @@ type="tFlexx"
 ><object
 type="tBoldItalic"
 >Include footnotes</object
-> - include all the text involved with foototes</li
+> - include all the text involved with footnotes</li
 ><li
 ><object
 type="tBoldItalic"
@@ -1468,7 +1475,7 @@ id="sSetupGramCat"
 ><secTitle
 >The <object
 type="tTool"
->Set Up Transfer Rule Grammatical Categories Tool</object
+>Set Up Transfer Rule Categories and Attributes Tool</object
 ></secTitle
 ><p
 >The <object

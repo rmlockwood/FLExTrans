@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->9 December, 2022</date
+>13 December, 2022</date
 ><version
 >3.7</version
 ><contents
@@ -933,6 +933,10 @@ src="Images/SenseLinkerCapture.png"
 ></img
 ></chart
 ></example
+><section3
+id="sColorKey"
+><secTitle
+>Color Coding Key</secTitle
 ><p
 >Here’s a key to the color coding:</p
 ><table
@@ -980,10 +984,98 @@ border="1"
 >There is a mismatch of grammatical category even though the glosses match.</td
 ></tr
 ></table
+></section3
+><section3
+id="sHowLink"
+><secTitle
+>Linking</secTitle
 ><p
->For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of All Target Senses then go to the Target Head Word column for the source sense in question and double-click there. The target sense information should appear with a green background color. You can use the search text box to find the appropriate target sense.</p
+>For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of <object
+type="tButton"
+>All Target Senses</object
+> then go to the <object
+type="tButton"
+>Target Head Word</object
+> column for the source sense in question and double-click there. The target sense information should appear with a green background color. You can use the search text box to find the appropriate target sense.</p
+></section3
+><section3
+id="sSearchList"
+><secTitle
+>Search the All Target Senses List</secTitle
 ><p
->If you only want to see the senses that need to be linked, check the box Show Only Unlinked. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box Hide Proper Nouns.</p
+>Use the <object
+type="tButton"
+>Search here</object
+> field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses), click on the <object
+type="tButton"
+>Search all fields</object
+> checkbox and then type in the <object
+type="tButton"
+>Search here</object
+> box.</p
+></section3
+><section3
+id="sFilterList"
+><secTitle
+>Filtering the List</secTitle
+><p
+>If you only want to see the senses that need to be linked, check the box <object
+type="tButton"
+>Show Only Unlinked</object
+>. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box <object
+type="tButton"
+>Hide Proper Nouns</object
+>.</p
+></section3
+><section3
+id="sSenses2Link"
+><secTitle
+>Senses to Link Number</secTitle
+><p
+>At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes, rather the number of unique senses that are remaining to link.</p
+></section3
+><section3
+id="sFontControl"
+><secTitle
+>Font Control</secTitle
+><p
+>Quickly change the font size with the plus and minus buttons next to <object
+type="tButton"
+>Zoom</object
+>. Change all aspects of the font with the <object
+type="tButton"
+>Font</object
+> button.</p
+></section3
+><section3
+id="sRebuildBiling"
+><secTitle
+>Rebuild the Bilingual Lexicon</secTitle
+><p
+>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <object
+type="tButton"
+>Rebuild the Bilingual Lexicon</object
+> checkbox is checked, this will happen automatically when you click OK. If you would like to change whether by default this box is checked or unchecked when you start the <object
+type="tSenseLinker"
+></object
+>, set the corresponding setting in the <object
+type="tSettings"
+></object
+> tool.</p
+></section3
+><section3
+id="sSLTChangeSource"
+><secTitle
+>Change Source Text</secTitle
+><p
+>If you want to work on linking senses for a different source text, click the <object
+type="tButton"
+>Source Text</object
+> drop-down box and select the desired text. At this point, the <object
+type="tSenseLinker"
+></object
+> will close and restart.</p
+></section3
 ></section2
 ><section2
 id="sRuleTester"
@@ -1068,11 +1160,6 @@ type="tButton"
 >Rebuild Bilingual Lexicon</object
 > button.</p
 ><p
->In this version of the tool, you can’t change the Source Text Name. You will have to run the <object
-type="tSettings"
-></object
->, change the SourceText Name setting and re-run the tool.</p
-><p
 >You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
 ></endnoteRef
@@ -1092,10 +1179,27 @@ type="tTool"
 >You can’t edit the transfer rules in the <object
 type="tLiveRuleTester"
 ></object
-> and even when you change the order of the rules in the tool that doesn’t change your transfer rules file. Make your changes in a separate editor. To reload the transfer rules after you have changed them, click on the <object
+> and even when you change the order of the rules in the tool that doesn’t change your transfer rules file. Make your changes in the <object
+type="tXMLmindXMLEditor"
+></object
+>. You can launch the editor by clicking on the <object
+type="tButton"
+>Edit Transfer Rules</object
+> button. To reload the transfer rules after you have changed them, click on the <object
 type="tButton"
 >Refresh Rules</object
 > button.</p
+><p
+>The <object
+type="tButton"
+>View Bilingual Lexicon</object
+> and <object
+type="tButton"
+>Edit Replacement File</object
+> buttons will start the <object
+type="tXMLmindXMLEditor"
+></object
+> for viewing and edting the respective files.</p
 ><p
 >If you change the target lexicon, click the <object
 type="tButton"
@@ -1115,6 +1219,19 @@ type="tButton"
 type="tFlextrans"
 ></object
 > will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
+></section3
+><section3
+id="sLRTChangeSource"
+><secTitle
+>Change Source Text</secTitle
+><p
+>If you want to work on a different source text, click the <object
+type="tButton"
+>Source Text</object
+> drop-down box and select the desired text. At this point, the <object
+type="tLiveRuleTester"
+></object
+> will close and restart.</p
 ></section3
 ></section2
 ><section2
