@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.6 - 12/13/22 - Ron Lockwood
+#    Handle old target file name (target_text.aper) which may be in the old Makefile
+#    in the LiveRuleTester folder. If target_text.txt is not found use the old name.
+#
 #   Version 3.7.5 - 12/1/22 - Ron Lockwood
 #    Set the internal current row in the combo box model object and force the
 #    check boxes to get recreated. Fixes #345.
@@ -286,7 +290,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.7.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1905,9 +1909,31 @@ class Main(QMainWindow):
         Utils.unfixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER), tgt_file)
 
         # Load the target text contents into the results edit box
-        tgtf = open(tgt_file, encoding='utf-8')
-        target_output = tgtf.read()
+        try:
+            tgtf = open(tgt_file, encoding='utf-8')
+            
+        except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
+            
+            tgt_file = re.sub('\.txt', '.aper', tgt_file)
+            err_msg = f'Cannot find file: {tgt_file}.'
         
+            try:
+                tgtf = open(tgt_file, encoding='utf-8')
+                
+                # Set this for use in Convert2Stamp
+                self.transferResultsPath = self.testerFolder + '\\' + os.path.basename(tgt_file)
+            
+            except FileNotFoundError:
+                self.ui.TargetTextEdit.setPlainText(err_msg)
+                self.unsetCursor()
+                return
+        except:
+            self.ui.TargetTextEdit.setPlainText(err_msg)
+            self.unsetCursor()
+            return
+            
+        target_output = tgtf.read()
+            
         # Create a <p> html element
         pElem = ET.Element('p')
 

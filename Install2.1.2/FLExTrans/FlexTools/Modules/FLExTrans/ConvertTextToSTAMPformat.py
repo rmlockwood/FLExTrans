@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7 - 12/13/22 - Ron Lockwood
+#    Bumped version number for FLExTrans 3.7
+#
 #   Version 3.6.2 - 10/19/22 - Ron Lockwood
 #    Fixes #187. Give an error when the Affix file is missing.
 #
@@ -173,7 +176,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.6.2",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 

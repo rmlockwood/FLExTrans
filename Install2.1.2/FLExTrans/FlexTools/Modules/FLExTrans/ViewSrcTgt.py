@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.7 - 12/13/22 - Ron Lockwood
+#    Bumped version number for FLExTrans 3.7
+#
 #   Version 3.6 - 9/3/22 - Ron Lockwood
 #    Bump version number.
 #
@@ -75,7 +78,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a readable source or target text file.",    
         FTM_Help   : "",

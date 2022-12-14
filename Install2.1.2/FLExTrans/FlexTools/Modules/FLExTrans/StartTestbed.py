@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.7 - 12/13/22 - Ron Lockwood
+#    Bumped version number for FLExTrans 3.7
+#
 #   Version 3.6 - 9/3/22 - Ron Lockwood
 #    Bump version number.
 #
@@ -49,7 +52,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
