@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.7 - 12/13/22 - Ron Lockwood
+#    Bumped version number for FLExTrans 3.7
+#
 #   Version 3.6 - 8/29/22 - Ron Lockwood
 #    Renamed module
 #
@@ -66,7 +69,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",

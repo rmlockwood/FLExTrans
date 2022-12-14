@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.7 - 12/13/22 - Ron Lockwood
+#    Bumped version number for FLExTrans 3.7
+#
 #   Version 3.6 - 9/3/22 - Ron Lockwood
 #    Bump version number.
 #
@@ -179,7 +182,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.6",
+        FTM_Version    : "3.7",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',

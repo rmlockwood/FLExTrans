@@ -9,11 +9,11 @@
 #    Skip entries that are mapped to the 'none' headword
 #
 #   Version 3.6.3 - 9/1/22 - Ron Lockwood
-#   Fixes #254. Convert * to _ in stems.
+#    Fixes #254. Convert * to _ in stems.
 #
 #   Version 3.6.2 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
+#    Fixes #215 Check morpheme type against guid in the object instead of
+#    the analysis writing system so we aren't dependent on an English WS.
 #
 #   Version 3.6.1 - 8/19/22 - Ron Lockwood
 #    Use new new function getXMLEntryText which should be more efficient.

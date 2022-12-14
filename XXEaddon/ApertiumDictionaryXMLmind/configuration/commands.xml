@@ -6,7 +6,7 @@
         <cfg:command name="setReferenceDict"/>
     </cfg:binding>
 
-    <cfg:command name="setReference">
+    <cfg:command name="setReferenceDict">
         <cfg:macro trace="false">
             <cfg:sequence>
                 <cfg:choice>

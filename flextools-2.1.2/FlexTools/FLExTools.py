@@ -478,7 +478,7 @@ class FTMainForm (Form):
             progressText = "[%s: %i%%]" % (msg, self.progressPercent)
         else:
             progressText = ""
-        newText = "Collection: '%s'   Project: '%s'  Source Text: '%s'   %s" %\
+        newText = "Collection: %s   Project folder: %s  Source Text: %s   %s" %\
              (self.configuration.currentCollection,
               #self.configuration.currentServer
               re.search(r'WorkProjects\\(.*)\\Config', FTPaths.CONFIG_PATH).group(1),
