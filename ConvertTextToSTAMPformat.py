@@ -643,6 +643,97 @@ def gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
                 continue
         continue
     
+def gatherComponentsNew(root, complexFormTypeMap, complex_map, comp_list):
+    
+    # Get the entry that has components
+    # TODO: Handle roots that have more than one complex entry associated with it
+    e = complex_map[root]
+    
+    # loop through all entryRefs (we'll use just the complex form one)
+    for entryRef in e.EntryRefsOS:
+        
+        if entryRef.RefType == 1: # 1=complex form, 0=variant
+            
+            for complexType in entryRef.ComplexEntryTypesRS:
+                
+                formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
+                
+                if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
+                    
+                    # See where the inflection is to go
+                    if complexFormTypeMap[formType] == 0:
+                        
+                        inflectionOnFirst = True
+                        inflectionOnLast = False
+                    else:
+                        inflectionOnFirst = False
+                        inflectionOnLast = True
+                        
+                    first_root = True
+                    enclGloss = proGloss = ''
+                    
+                    # Write out all the components
+                    for lex_index, comp_e in enumerate(entryRef.ComponentLexemesRS):
+                        
+                        # If the component is a proclitic, save the gloss string (with a space on the end)
+                        if Utils.isProclitic(comp_e):
+                            
+                            proGloss = get_gloss(comp_e)+' '
+                        
+                        # If the component is an enclitic, save it with a preceding space
+                        elif Utils.isEnclitic(comp_e):
+                            
+                            enclGloss = ' '+get_gloss(comp_e)
+                            
+                        # Otherwise we have a root
+                        else:
+                            # Get the needed data from the entry object
+                            (head_word, gram_cat_abbrev, sense_num) = get_ana_data_from_entry(comp_e)
+                            
+                            # See if this head word has components itself and call this function recursively
+                            if head_word in complex_map:
+                                
+                                gatherComponentsNew(head_word, complexFormTypeMap, complex_map, comp_list)
+                            else:
+                                # See if we are at the beginning or the end, depending on where the
+                                # inflection goes, write out all the stuff with inflection
+                                if (inflectionOnFirst and first_root) or (inflectionOnLast and lex_index==entryRef.ComponentLexemesRS.Count-1):
+                                    
+                                    # Build the an ANA Info object
+                                    currANAInfo = ANAInfo([proGloss], 
+                                                          [enclGloss], 
+                                                          gram_cat_abbrev, head_word + '.' + sense_num)
+                                        
+                                # Write out the bare bones root in the analysis part
+                                else:
+                                    # no prefixes or suffixes, give []
+                                    currANAInfo = ANAInfo([], [], gram_cat_abbrev, head_word + '.' + sense_num)
+                            
+                                comp_list.append(currANAInfo)
+                                
+                            first_root = False
+                continue
+        continue
+    
+    return inflectionOnFirst
+
+def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
+
+    for index, myAnaInfo in enumerate(componANAlist):
+        
+        first_root = True
+
+        # See if we are at the beginning or the end, depending on where the
+        # inflection goes, write out all the stuff with inflection
+        if (inflectionOnFirst and first_root) or (not inflectionOnFirst and index == len(componANAlist)-1):
+            
+            # add affixation to the ANA object
+            myAnaInfo.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
+                                        myAnaInfo.getAnalysisRootPOS(), 
+                                        myAnaInfo.getAnalysisRoot(),
+                                        textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
+        first_root = False
+        
 def write_non_complex(myAnaInfo, irrInflVarMap, fAna):
     
     root = myAnaInfo.getPreDotRoot()
@@ -757,8 +848,9 @@ class ConversionData():
         self.report = report
         self.complex_map = {}
         self.irr_infl_var_map = {}
+        self.rootComponentANAlistMap = {}
         self.complexFormTypeMap = complexFormTypeMap
-        self.complexFormTypeMap
+        #self.complexFormTypeMap
         self.lexFolder = lexFolder
         
         # If the validator cache file exists
@@ -774,12 +866,30 @@ class ConversionData():
                 
         self.readDatabaseValues()
         
+        self.convertValuesToAnas()
+        
         if doCacheing:
             
-            self.saveToCache()
+            self.saveToCacheNew()
+            
+    def convertValuesToAnas(self):
+        
+        # Loop through all our entries that have complex forms
+        for root in self.complex_map.keys():
+            
+            componentANAlist = []
+            
+            # Get the component entries as ANA Info objects
+            inflectionOnFirst = gatherComponentsNew(root, self.complexTypeMap, self.complex_map, componentANAlist)
+            
+            # Add the root and component list ANAs to the map. And also the inflection on first component flag
+            self.rootComponentANAlistMap[root] = componentANAlist, inflectionOnFirst
     
     def getData(self):
         return (self.complex_map, self.irr_infl_var_map)
+    
+    def getDataNew(self):
+        return (self.rootComponentANAlistMap, self.irr_infl_var_map)
     
     def isCacheOutOfDate(self):
         
@@ -812,6 +922,29 @@ class ConversionData():
             # Write out the feature name and the value
             f.write(featGrpName+'\n')
             f.write(abbValue+'\n')
+            
+    def saveToCacheNew(self):
+        
+        f = open(self.getCacheFilePath(), 'w', encoding='utf-8')
+        
+        # TODO: HANDLE writing all forms for each headword
+        f.write(COMPLEX_FORMS+'\n')
+        
+        for headWord, (componentANAlist, inflectionOnFirst) in self.rootComponentANAlistMap.items():
+            
+            # output head word
+            f.write(headWord+'\n')
+            
+            # write out the inflection on first component flag
+            f.write(str(inflectionOnFirst)+'\n')
+
+            # write out the # of components
+            f.write(str(len(componentANAlist))+'\n')
+            
+            for compANA in componentANAlist:
+                
+                # output the ana main line
+                self.writeEntry(f, compANA.getAnalysis()+'\n')
             
     def saveToCache(self):
         
@@ -878,6 +1011,57 @@ class ConversionData():
             
         return e
     
+    def loadFromCacheNew(self):
+        
+        f = open(self.getCacheFilePath(), encoding='utf-8')
+        
+        complex_lines = []
+        infl_lines = []
+        
+        # start with complex forms
+        doingComplexForms = True
+        
+        # Read each section of the cache file
+        for i,line in enumerate(f):
+            
+            # Skip the first line
+            if i == 0:
+                continue
+            
+            # Next read the irregular forms. Skip this line
+            if line.rstrip() == IRR_INFL_VARIANTS:
+                doingComplexForms = False
+                continue
+
+            if doingComplexForms == True:
+                complex_lines.append(line.rstrip())      
+            else: # variant forms
+                infl_lines.append(line.rstrip())
+         
+        # Process complex forms
+        i = 0
+        t = len(complex_lines)
+        while i < t:
+            
+            headWord = complex_lines[i].rstrip()
+            inflectionOnFirst = bool(complex_lines[i+1].rstrip())
+            num_components = int(complex_lines[i+2].rstrip())
+            
+            i += 3
+            componentAnaList = []
+            
+            for _ in range(0, num_components):
+                
+                newANA = ANAInfo()
+                newANA.setAnalysis(complex_lines[i].rstrip())
+                componentAnaList.append(newANA)
+                
+            self.rootComponentANAlistMap[headWord] = componentAnaList, inflectionOnFirst
+            i += 1
+        
+        f.close()
+        return True
+           
     def loadFromCache(self):
         
         f = open(self.getCacheFilePath(), encoding='utf-8')
@@ -1111,7 +1295,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # This may be slow if the data is not in the cache
     convData = ConversionData(TargetDB, report, complexFormTypeMap, doCacheing, lexFolder)
     
-    (complex_map, irr_infl_var_map) = convData.getData()
+    (rootComponANAlistMap, irr_infl_var_map, inflectionOnFirst) = convData.getDataNew()
         
     # Now we are going to re-process the ANA file breaking down each complex form
     # into separate ANA records if needed. This is needed for instance if a source word
@@ -1126,16 +1310,22 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     
     count = 0
     
+    # new cacheing idea: cache all the stuff that we end up with down below from gather_components and write_non_complex
+    # then we don't need to figure out all the components or variant forms, we have them from the cache and can simply write them out.
+    # The advantage here is that we don't have to do any FLEx DB lookups which will save time.
+    # Also, maybe we don't have to not write out the ANA file twice. Get the list of AnaInfo objects from convertIt() and then loop through the
+    # list and adjust anaInfo objects as necessary if we have complex forms or variants.
+    
     # Loop through all the ANA pieces
     for anaInfo in anaInfoList:
         
         # If an ANA root matches a complex form, rewrite the ana file with complex forms 
         # broken down into components
         root = anaInfo.getPreDotRoot()
-        if root in complex_map:
-            comp_list = []
-            gather_components(root, complexFormTypeMap, complex_map, anaInfo, comp_list)
-            write_components(comp_list, f_ana, anaInfo, irr_infl_var_map)
+        if root in rootComponANAlistMap:
+            componANAlist = rootComponANAlistMap[root]
+            processComplexForm(anaInfo, componANAlist, inflectionOnFirst)
+            write_components(componANAlist, f_ana, anaInfo, irr_infl_var_map)
             
         else: # write it out as normal
             
