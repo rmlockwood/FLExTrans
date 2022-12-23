@@ -314,14 +314,8 @@ def get_ANA_info(file_name_str):
     return infoList
 
 # Convert the output from the Apertium transfer to an ANA file
-def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
+def convertIt(pfx_name, out_name, report, sentPunct):
     error_list = []
-    
-    try:
-        f_ana = open(ana_name, 'w', encoding='utf-8')
-    except IOError:
-        error_list.append(('The file: '+ana_name+' was not found.', 2))
-        return error_list
     
     affix_map = {}
     
@@ -347,9 +341,6 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
     # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
     f_apert = open(out_name, 'r', encoding='utf-8')
     
-    # Have to start with a blank line with utf8 files
-    f_ana.write('\n')
-
     # Each line represents a paragraph
     for cnt, line in enumerate(f_apert):
         if report is not None:
@@ -392,6 +383,7 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         pre_punct = ''
         next_pre_punct = ''
         post_punct = ''
+        wordAnaInfoList = []
 
         # Loop through all word packages
         for wrd_cnt, tok in enumerate(word_toks):
@@ -409,7 +401,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                 if wordAnaInfo:
                     wordAnaInfo.setBeforePunc(pre_punct)
                     wordAnaInfo.setAfterPunc(post_punct)
-                    wordAnaInfo.write(f_ana)
+                    #wordAnaInfo.write(f_ana)
+                    wordAnaInfoList.append(wordAnaInfo)
                     
                     pre_punct = next_pre_punct
                     next_pre_punct = post_punct = ''
@@ -467,8 +460,8 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
                 if len(morphs) <2:
                             
                     error_list.append(("Lemma or grammatical category missing for target word number "+str(wrd_cnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
-                    for m in morphs:
-                        f_ana.write(m)
+                    #for m in morphs:
+                        #f_ana.write(m)
                     return error_list
                     #raise FTM_ModuleError, "Examine the target text output from apertium."
                 
@@ -496,11 +489,12 @@ def convertIt(ana_name, pfx_name, out_name, report, sentPunct):
         if wordAnaInfo:
             wordAnaInfo.setBeforePunc(pre_punct)
             wordAnaInfo.setAfterPunc(post_punct)
-            wordAnaInfo.write(f_ana)
+            wordAnaInfoList.append(wordAnaInfo)
+            #wordAnaInfo.write(f_ana)
 
-    f_ana.close()      
+    #f_ana.close()      
     
-    return error_list
+    return error_list, wordAnaInfoList
 
 # Get the gloss from the first sense
 def get_gloss(e):    
@@ -934,7 +928,7 @@ COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
 
 class ConversionData():
-    def __init__(self, error_list, configMap, report, complexFormTypeMap, doCacheing, lexFolder):
+    def __init__(self, error_list, configMap, report, complexFormTypeMap):
         
         self.error_list = error_list
         self.configMap = configMap
@@ -944,7 +938,7 @@ class ConversionData():
         self.rootComponentANAlistMap = {}
         self.rootVariantANAandFeatlistMap = {}
         self.complexFormTypeMap = complexFormTypeMap
-        self.lexFolder = lexFolder
+        self.haveError = False
 
         targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
@@ -954,8 +948,30 @@ class ConversionData():
             
         self.targetProj = targetProj
         
+        # Get lexicon files folder setting, we use this for the place to put the cache file.
+        lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
+        if not lexFolder:
+            error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+            self.haveError = True
+            return 
+                
+        self.lexFolder = lexFolder
+
+        # Check that we have a valid folder
+        if os.path.isdir(lexFolder) == False:
+            error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+            self.haveError = True
+            return error_list
+    
+        # Get cache data setting
+        cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
+        if not cacheData:
+            error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+            self.haveError = True
+            return error_list
+    
         # If the validator cache file exists
-        if doCacheing and self.cacheExists():
+        if cacheData == 'y' and self.cacheExists():
             
             # check if it's out of date
             if self.isCacheOutOfDate() == False:
@@ -983,7 +999,7 @@ class ConversionData():
         # Convert these maps to with Ana objects
         self.convertValuesToAnas()
         
-        if doCacheing:
+        if cacheData == 'y':
             
             self.saveToCacheNew()
             
@@ -1430,39 +1446,21 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         complexFormTypeMap[cmplx_type] = 1  # 1 - inflection on last root
     
     # Convert the Apertium file to an ANA file
-    err_list = convertIt(anaFileName, affixFileName, transferResultsFile, report, sentPunct)
+    err_list, anaInfoList = convertIt(affixFileName, transferResultsFile, report, sentPunct)
     
     if len(err_list) > 0:
         error_list.extend(err_list)
         return error_list
 
-    # Get lexicon files folder setting
-    lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
-    if not lexFolder:
-        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
-        return error_list
-    
-    # Check that we have a valid folder
-    if os.path.isdir(lexFolder) == False:
-        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
-        return error_list
-
-    # Get cache data setting
-    cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
-    if not cacheData:
-        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
-        return error_list
-
-    if cacheData == 'y':
-        
-        doCacheing = True
-    else:
-        doCacheing = False
-        
     # Get the complex forms and inflectional variants
     # This may be slow if the data is not in the cache
-    convData = ConversionData(error_list, configMap, report, complexFormTypeMap, doCacheing, lexFolder)
+    convData = ConversionData(error_list, configMap, report, complexFormTypeMap)
     
+    if convData.haveError:
+        
+        return error_list
+    
+    # retrieve the data that got initialized in the Conversion data class
     (rootComponANAlistMap, rootVariantANAandFeatlistMap) = convData.getDataNew()
         
     # Now we are going to re-process the ANA file breaking down each complex form
@@ -1471,7 +1469,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # be broken down into multiple ANA records
          
     # Read in the ANA file we created above storing all the ana pieces (\a + \f + \n)
-    anaInfoList = get_ANA_info(anaFileName)
+    #anaInfoList = get_ANA_info(anaFileName)
     
     f_ana = open(anaFileName, 'w', encoding='utf-8')
     f_ana.write('\n') # always need a blank line at the top
@@ -1481,7 +1479,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # new cacheing idea: cache all the stuff that we end up with down below from gather_components and write_non_complex
     # then we don't need to figure out all the components or variant forms, we have them from the cache and can simply write them out.
     # The advantage here is that we don't have to do any FLEx DB lookups which will save time.
-    # Also, maybe we don't have to not write out the ANA file twice. Get the list of AnaInfo objects from convertIt() and then loop through the
+    # Also, maybe we don't have to write out the ANA file twice. Get the list of AnaInfo objects from convertIt() and then loop through the
     # list and adjust anaInfo objects as necessary if we have complex forms or variants.
     
     # Loop through all the ANA pieces
