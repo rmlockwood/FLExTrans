@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.1 - 12/23/22 - Ron Lockwood
+#    Rewrite of the cache stuff so that if we are getting data out of the cache
+#    it has everything we need and we don't have to open the FLEx project to get
+#    stuff. Fixes #369
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -719,32 +724,44 @@ def gatherComponentsNew(root, complexFormTypeMap, complex_map, comp_list):
 
 def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
 
+    first_root = True
+    newCompANAlist = []
+
     for index, myAnaInfo in enumerate(componANAlist):
         
-        first_root = True
 
         # See if we are at the beginning or the end, depending on where the
         # inflection goes, write out all the stuff with inflection
         if (inflectionOnFirst and first_root) or (not inflectionOnFirst and index == len(componANAlist)-1):
             
-            # add affixation to the ANA object
-            myAnaInfo.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
+            # Create a new Ana info object
+            newAna = ANAInfo()
+            
+            # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
+            newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
                                         myAnaInfo.getAnalysisRootPOS(), 
                                         myAnaInfo.getAnalysisRoot(),
                                         textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
+
+            newCompANAlist.append(newAna)
+        else:
+            newCompANAlist.append(myAnaInfo)
+            
         first_root = False
         
-def write_non_complex(myAnaInfo, irrInflVarMap, fAna):
+    return newCompANAlist
+        
+def write_non_complex(myAnaInfo, rootVariantANAandFeatlistMap, fAna):
     
     root = myAnaInfo.getPreDotRoot()
     
-    if root in irrInflVarMap: 
+    if root in rootVariantANAandFeatlistMap: 
         # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
-        change_to_variant(myAnaInfo, irrInflVarMap)
+        changeToVariantNew(myAnaInfo, rootVariantANAandFeatlistMap)
                 
     myAnaInfo.write(fAna)
         
-def write_components(componentList, anaFile, theAnaInfo, myInflVarMap):
+def write_components(componentList, anaFile, theAnaInfo, rootVariantANAandFeatlistMap):
         
     for i, listAnaInfo in enumerate(componentList):
         
@@ -759,7 +776,7 @@ def write_components(componentList, anaFile, theAnaInfo, myInflVarMap):
             listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
         
         # This also converts variant forms if needed
-        write_non_complex(listAnaInfo, myInflVarMap, anaFile)    
+        write_non_complex(listAnaInfo, rootVariantANAandFeatlistMap, anaFile)    
 
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
@@ -773,6 +790,61 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             abbValue = re.sub('\.', '_', abbValue)
             feat_abbr_list.append((featGrpName, abbValue))
     return
+
+# Check if the tags (prefixes & suffixes) match the features of one of
+# the main entry's variants. If so replace the main entry headword with
+# the variant and remove the tags that matched.
+# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
+# variant type called 1Sg which has features [per: 1ST, num: SG] and the
+# Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
+# this: '< _variant_ am1 >'
+def changeToVariantNew(myAnaInfo, rootVariantANAandFeatlistMap):
+
+    oldCap = myAnaInfo.getCapitalization()
+    pfxs = myAnaInfo.getAnalysisPrefixes()
+    num_pfxs = len(pfxs)
+    sfxs = myAnaInfo.getAnalysisSuffixes()
+    tags = pfxs+sfxs
+    
+    # loop through the irr. infl. form variant list for this main entry
+    variantANAandFeatlist = rootVariantANAandFeatlistMap[myAnaInfo.getPreDotRoot()]
+    
+    for varAna, feat_abbr_list in variantANAandFeatlist: # each tuple as form (entry, feat_abbr_list)
+
+        # See if there is a variant that has inflection features that match the tags in this entry
+        variant_matches = False
+        featList = [y[1] for y in sorted(feat_abbr_list, key=lambda x: x[0])]
+        num_features = len(featList)
+        
+        # There has to be at least as many tags as features
+        if len(tags) >= num_features:
+            # Loop through slices of the tag list
+            for i in range(0,len(tags)-num_features+1):
+                # See if we match regardless of order
+                if sorted(tags[i:i+num_features]) == sorted(featList):
+                    variant_matches = True
+                    break
+            if variant_matches:
+                break
+    
+    if variant_matches:
+        
+        # Remove the matched tags
+        del pfxs[i:i+num_features]
+        beg = i-num_pfxs
+        if beg < 0:
+            beg = 0
+        end = i-num_pfxs+num_features
+        if end < 0:
+            end = 0
+        del sfxs[beg:end]
+        
+        # Reset the Ana info
+        # (We are intentionally not adding the sense number.)
+        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", varAna.getAnalysisRoot(), sfxs)
+        
+        # Change the case as necessary
+        myAnaInfo.setCapitalization(oldCap)
 
 # Check if the tags (prefixes & suffixes) match the features of one of
 # the main entry's variants. If so replace the main entry headword with
@@ -836,22 +908,51 @@ def change_to_variant(myAnaInfo, my_irr_infl_var_map):
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
+        
+def gatherVariants(varList, variantANAandFeatlist):
+    
+    for varTuple in varList: # each tuple as form (entry, feat_abbr_list)
+        
+        entry = varTuple[0]
+        feat_abbr_list = varTuple[1]
 
+        # Set the headword value and the homograph #
+        headWord = ITsString(entry.HeadWord).Text
+            
+        # If there is not a homograph # at the end, make it 1
+        headWord = Utils.add_one(headWord)
+            
+        # Create an ANA Info object with the POS being _variant_
+        # (We are intentionally not adding the sense number.)
+        # no prefixes or suffixes
+        myAnaInfo = ANAInfo()
+        myAnaInfo.setAnalysisByPart([], "_variant_", headWord, [])
+        
+        variantANAandFeatlist.append((myAnaInfo, feat_abbr_list))
+    
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
 
-
 class ConversionData():
-    def __init__(self, database, report, complexFormTypeMap, doCacheing, lexFolder):
+    def __init__(self, error_list, configMap, report, complexFormTypeMap, doCacheing, lexFolder):
         
-        self.project = database
+        self.error_list = error_list
+        self.configMap = configMap
         self.report = report
         self.complex_map = {}
         self.irr_infl_var_map = {}
         self.rootComponentANAlistMap = {}
+        self.rootVariantANAandFeatlistMap = {}
         self.complexFormTypeMap = complexFormTypeMap
-        #self.complexFormTypeMap
         self.lexFolder = lexFolder
+
+        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
+
+        if not targetProj:
+            
+            return
+            
+        self.targetProj = targetProj
         
         # If the validator cache file exists
         if doCacheing and self.cacheExists():
@@ -859,18 +960,34 @@ class ConversionData():
             # check if it's out of date
             if self.isCacheOutOfDate() == False:
                 
-                if self.loadFromCache() == False: # False == error
+                if self.loadFromCacheNew() == False: # False == error
                     pass
                 else:
                     return
                 
+        TargetDB = FLExProject()
+    
+        try:
+            TargetDB.OpenProject(targetProj, True)
+        except: #FDA_DatabaseError, e:
+            report.Error('Failed to open the target database.')
+            raise
+    
+        error_list.append(('Using: '+targetProj+' as the target database.', 0))
+    
+        self.project = TargetDB
+        
+        # Read the db and initialize the complex map and inflect variant map
         self.readDatabaseValues()
         
+        # Convert these maps to with Ana objects
         self.convertValuesToAnas()
         
         if doCacheing:
             
             self.saveToCacheNew()
+            
+        TargetDB.CloseProject()
             
     def convertValuesToAnas(self):
         
@@ -880,22 +997,40 @@ class ConversionData():
             componentANAlist = []
             
             # Get the component entries as ANA Info objects
-            inflectionOnFirst = gatherComponentsNew(root, self.complexTypeMap, self.complex_map, componentANAlist)
+            inflectionOnFirst = gatherComponentsNew(root, self.complexFormTypeMap, self.complex_map, componentANAlist)
             
             # Add the root and component list ANAs to the map. And also the inflection on first component flag
             self.rootComponentANAlistMap[root] = componentANAlist, inflectionOnFirst
+    
+        # Loop through all the variants for entries
+        for root, varList in self.irr_infl_var_map.items():
+            
+            variantANAandFeatlist = []
+            
+            gatherVariants(varList, variantANAandFeatlist)
+            
+            self.rootVariantANAandFeatlistMap[root] = variantANAandFeatlist
     
     def getData(self):
         return (self.complex_map, self.irr_infl_var_map)
     
     def getDataNew(self):
-        return (self.rootComponentANAlistMap, self.irr_infl_var_map)
+        return (self.rootComponentANAlistMap, self.rootVariantANAandFeatlistMap)
     
     def isCacheOutOfDate(self):
         
         # Build a DateTime object with the FLEx DB last modified date
-        flexDate = self.project.GetDateLastModified()
-        dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+        #flexDate = self.project.GetDateLastModified()
+        #dbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+        
+        # Get the date of target affixes file
+        tgtAffixFile = ReadConfig.getConfigVal(self.configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, self.report, giveError=False) # don't give error yet
+        
+        try:
+            affTime = os.path.getmtime(tgtAffixFile)
+        except OSError:
+            return True
+        affixFileDateTime = datetime.fromtimestamp(affTime)
         
         # Get the date of the cache file
         try:
@@ -904,7 +1039,7 @@ class ConversionData():
             mtime = 0
         cacheFileDateTime = datetime.fromtimestamp(mtime)
         
-        if dbDateTime > cacheFileDateTime: # FLEx DB is newer
+        if affixFileDateTime > cacheFileDateTime: # The affix file is newer
             return True 
         else: # cache file is newer
             return False
@@ -944,8 +1079,27 @@ class ConversionData():
             for compANA in componentANAlist:
                 
                 # output the ana main line
-                self.writeEntry(f, compANA.getAnalysis()+'\n')
+                f.write(compANA.getAnalysis().strip()+'\n')
             
+        f.write(IRR_INFL_VARIANTS+'\n')
+        
+        for headWord, variantANAandFeatlist in sorted(self.rootVariantANAandFeatlistMap.items()):
+            
+            # output head word
+            f.write(headWord+'\n')
+
+            # output the number of # of variants for this head word
+            f.write(str(len(variantANAandFeatlist))+'\n')
+                        
+            for (varAna, abbr_list) in variantANAandFeatlist:
+                
+                # output the ana main line
+                f.write(varAna.getAnalysis().strip()+'\n')
+
+                self.writeAbbrList(f, abbr_list)
+            
+        f.close()
+
     def saveToCache(self):
         
         f = open(self.getCacheFilePath(), 'w', encoding='utf-8')
@@ -1043,21 +1197,51 @@ class ConversionData():
         t = len(complex_lines)
         while i < t:
             
+            # Get the basic info.
             headWord = complex_lines[i].rstrip()
-            inflectionOnFirst = bool(complex_lines[i+1].rstrip())
+            inflectionOnFirst = complex_lines[i+1].rstrip() == 'True'
             num_components = int(complex_lines[i+2].rstrip())
             
             i += 3
             componentAnaList = []
             
+            # Get the components for the current complex form
             for _ in range(0, num_components):
                 
                 newANA = ANAInfo()
                 newANA.setAnalysis(complex_lines[i].rstrip())
                 componentAnaList.append(newANA)
                 
+                i += 1
+
             self.rootComponentANAlistMap[headWord] = componentAnaList, inflectionOnFirst
-            i += 1
+        
+        # Process irregular forms
+        i = 0
+        t = len(infl_lines)
+        
+        while i < t:
+            
+            headWord = infl_lines[i].rstrip()
+            num_variants = int(infl_lines[i+1].rstrip())
+            i += 2
+            variantANAandFeatlist = []
+            
+            for _ in range(0, num_variants):
+
+                newANA = ANAInfo()
+                newANA.setAnalysis(infl_lines[i].rstrip())
+
+                i += 1
+                abbr_list = self.getAbbrList(i, infl_lines)
+                
+                # move the i index past all the abbreviations. Length x2 since each abbr. has two lines (name, val)
+                # 1 more for the num of abbreviations at the start of the abbrev. block
+                i += len(abbr_list)*2 + 1 
+
+                variantANAandFeatlist.append((newANA, abbr_list))
+            
+            self.rootVariantANAandFeatlistMap[headWord] = variantANAandFeatlist
         
         f.close()
         return True
@@ -1135,10 +1319,12 @@ class ConversionData():
         return True
            
     def getCacheFilePath(self):
+        
         # build the path in the build dir using project name + testbed_cache.txt
-        return os.path.join(self.lexFolder, str(self.project.lp)+'_'+Utils.CONVERSION_TO_STAMP_CACHE_FILE)
+        return os.path.join(self.lexFolder, self.targetProj+'_'+Utils.CONVERSION_TO_STAMP_CACHE_FILE)
     
     def cacheExists(self):
+        
         return os.path.exists(self.getCacheFilePath())
 
     def readDatabaseValues(self):
@@ -1230,21 +1416,6 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         error_list.append(('Configuration file problem.', 2))
         return error_list
 
-    TargetDB = FLExProject()
-
-    try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
-        if not targetProj:
-            error_list.append(('Problem accessing the target project.', 2))
-            return error_list
-        TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
-        report.Error('Failed to open the target database.')
-        raise
-
-    error_list.append(('Using: '+targetProj+' as the target database.', 0))
-
     # Allow the affix and ana files to not be in the temp folder if a slash is present
     anaFileName = Utils.build_path_default_to_temp(targetANAFile)
     affixFileName = Utils.build_path_default_to_temp(affixFile)
@@ -1262,9 +1433,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     err_list = convertIt(anaFileName, affixFileName, transferResultsFile, report, sentPunct)
     
     if len(err_list) > 0:
-        TargetDB.CloseProject()
         error_list.extend(err_list)
-        TargetDB.CloseProject()
         return error_list
 
     # Get lexicon files folder setting
@@ -1282,7 +1451,6 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
         error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
-        TargetDB.CloseProject()
         return error_list
 
     if cacheData == 'y':
@@ -1293,9 +1461,9 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         
     # Get the complex forms and inflectional variants
     # This may be slow if the data is not in the cache
-    convData = ConversionData(TargetDB, report, complexFormTypeMap, doCacheing, lexFolder)
+    convData = ConversionData(error_list, configMap, report, complexFormTypeMap, doCacheing, lexFolder)
     
-    (rootComponANAlistMap, irr_infl_var_map, inflectionOnFirst) = convData.getDataNew()
+    (rootComponANAlistMap, rootVariantANAandFeatlistMap) = convData.getDataNew()
         
     # Now we are going to re-process the ANA file breaking down each complex form
     # into separate ANA records if needed. This is needed for instance if a source word
@@ -1323,22 +1491,20 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         # broken down into components
         root = anaInfo.getPreDotRoot()
         if root in rootComponANAlistMap:
-            componANAlist = rootComponANAlistMap[root]
-            processComplexForm(anaInfo, componANAlist, inflectionOnFirst)
-            write_components(componANAlist, f_ana, anaInfo, irr_infl_var_map)
+            componANAlist, inflectionOnFirst = rootComponANAlistMap[root]
+            newCompANAlist = processComplexForm(anaInfo, componANAlist, inflectionOnFirst)
+            write_components(newCompANAlist, f_ana, anaInfo, rootVariantANAandFeatlistMap)
             
         else: # write it out as normal
             
             # This also converts variant forms if needed
-            write_non_complex(anaInfo, irr_infl_var_map, f_ana)
+            write_non_complex(anaInfo, rootVariantANAandFeatlistMap, f_ana)
         
         count += 1
     
     error_list.append((str(count)+' records exported in ANA format.', 0))
     f_ana.close()
     
-    TargetDB.CloseProject()
-
     return error_list
 
 def MainFunction(DB, report, modifyAllowed):
