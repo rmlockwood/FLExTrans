@@ -6,8 +6,16 @@
 #   7/23/2014
 #
 #
-#   Version 3.7.5 - 12/24/22 - Ron Lockwood
+#   Version 3.7.7 - 12/24/22 - Ron Lockwood
 #    added GetEntryWithSense, renamed old one to GetEntryWithSensPlusFeat
+#
+#   Version 3.7.6 - 12/24/22 - Ron Lockwood
+#    Output a verse number also when getting a word by guid. Only for the first call
+#    for a sentence.
+#
+#   Version 3.7.5 - 12/19/22 - Ron Lockwood
+#    Output a verse number at the beg. of the sentence when getting surface and data
+#    tuples if a verse number is present.
 #
 #   Version 3.7.4 - 12/13/22 - Ron Lockwood
 #    handle file not found in the un fixproblemchars function.
@@ -2291,6 +2299,7 @@ class TextSentence():
         self.__report = report
         self.__wordList = []
         self.__guidMap = {}
+        self.firstGetByGuid = True
     def addWord(self, textWord):
         self.__wordList.append(textWord)
     def createGuidMap(self, insertList):
@@ -2299,10 +2308,17 @@ class TextSentence():
         for word in self.__wordList:
             self.__guidMap[word.getGuid()] = word
     def getSurfaceAndDataForGuid(self, guid):
-        return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
+        if self.firstGetByGuid:
+            self.firstGetByGuid = False
+            return self.__guidMap[guid].getSurfaceFormWithVerseNum(),  self.__guidMap[guid].outputDataStream()
+        else:
+            return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
     def getSurfaceAndDataTupleList(self, tupList):
-        for word in self.__wordList:
-            tupList.append((word.getSurfaceForm(), word.outputDataStream()))
+        for i, word in enumerate(self.__wordList):
+            if i == 0:
+                tupList.append((word.getSurfaceFormWithVerseNum(), word.outputDataStream()))
+            else:
+                tupList.append((word.getSurfaceForm(), word.outputDataStream()))
     # Write out final sentence punctuation (possibly multiple)
     def getSurfaceAndDataFinalSentPunc(self):
         tupList = []
@@ -2761,8 +2777,20 @@ class TextWord():
         return []
     def getSurfaceForm(self):
         return self.__surfaceForm
+    def getSurfaceFormWithVerseNum(self):
+        versNum = self.getVerseNum(self.__initPunc)
+        if versNum:
+            return versNum + ' ' + self.__surfaceForm
+        else:
+            return self.__surfaceForm
     def getUnknownPOS(self):
         return 'UNK'
+    def getVerseNum(self, inStr):
+        matchObj = re.search(r'\\v (\S+?) ', inStr)
+        if matchObj:
+            return matchObj.group(1)
+        else:
+            return ''
     def hasComponents(self):
         if len(self.__componentList) > 0:
             return True

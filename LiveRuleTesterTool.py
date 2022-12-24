@@ -5,8 +5,12 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.7.1 - 12/23/22 - Ron Lockwood
+#   Version 3.7.8 - 12/23/22 - Ron Lockwood
 #    Removed definition of GetEntryWithSense
+#
+#   Version 3.7.7 - 12/24/22 - Ron Lockwood
+#    Verse number support for RTL languages. Insert RTL markers before and after the
+#    sentence for the sentence list and sentence combo box.
 #
 #   Version 3.7.6 - 12/13/22 - Ron Lockwood
 #    Handle old target file name (target_text.aper) which may be in the old Makefile
@@ -293,7 +297,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.6",
+        FTM_Version    : "3.7.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -368,6 +372,10 @@ class SentenceList(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             value = self.joinTupParts(mySent, 0)
+            
+            if self.getRTL():
+                value = '\u200F' + value + '\u200F' 
+                
             self.__currentSent = mySent    
             return value
             
