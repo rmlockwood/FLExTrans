@@ -385,7 +385,7 @@ class ConversionData():
             componentANAlist = []
             
             # Get the component entries as ANA Info objects
-            inflectionOnFirst = gatherComponentsNew(root, self.complexFormTypeMap, self.complexMap, componentANAlist)
+            inflectionOnFirst = gatherComponents(root, self.complexFormTypeMap, self.complexMap, componentANAlist)
             
             # Add the root and component list ANAs to the map. And also the inflection on first component flag
             self.rootComponentANAlistMap[root] = componentANAlist, inflectionOnFirst
