@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.7 - 12/24/22 - Ron Lockwood
+#    Verse number support for RTL languages. Insert RTL markers before and after the
+#    sentence for the sentence list and sentence combo box.
+#
 #   Version 3.7.6 - 12/13/22 - Ron Lockwood
 #    Handle old target file name (target_text.aper) which may be in the old Makefile
 #    in the LiveRuleTester folder. If target_text.txt is not found use the old name.
@@ -365,6 +369,10 @@ class SentenceList(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             value = self.joinTupParts(mySent, 0)
+            
+            if self.getRTL():
+                value = '\u200F' + value + '\u200F' 
+                
             self.__currentSent = mySent    
             return value
             
