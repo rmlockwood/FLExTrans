@@ -665,7 +665,9 @@ class ConversionData():
     
 # Convert the output from the Apertium transfer to an ANA file
 def convertIt(pfxName, outName, report, sentPunct):
+
     errorList = []
+    wordAnaInfoList = []
     
     affixMap = {}
     
@@ -745,7 +747,6 @@ def convertIt(pfxName, outName, report, sentPunct):
         prePunct = ''
         nextPrePunct = ''
         postPunct = ''
-        wordAnaInfoList = []
 
         # Loop through all word packages
         for wrdCnt, tok in enumerate(wordToks):
