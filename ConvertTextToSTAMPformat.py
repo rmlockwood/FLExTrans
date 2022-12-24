@@ -8,7 +8,9 @@
 #   Version 3.7.1 - 12/23/22 - Ron Lockwood
 #    Rewrite of the cache stuff so that if we are getting data out of the cache
 #    it has everything we need and we don't have to open the FLEx project to get
-#    stuff. Fixes #369
+#    stuff. Fixes #369. Also restructuring of the code making many functions methods
+#    of the Conversion Data class. Also conversion to camel-case variables, and general
+#    code beautification.
 #
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
@@ -181,7 +183,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 
@@ -199,15 +201,19 @@ IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
     def __init__(self, pfxList=None, sfxList=None, pos=None, root=None, infxList=None):
+        
         # If root is given, initialize with all the stuff.
         if root:
             # Treat the infixes as additional prefixes.
             # (I believe we could put them either before or after the root)
             if infxList:
+                
                 newList = pfxList+infxList
             else:
                 newList = pfxList
+                
             self.setAnalysisByPart(newList, pos, root, sfxList)
+            
         self.setBeforePunc('')
         self.setAfterPunc('')
     
@@ -224,11 +230,15 @@ class ANAInfo(object):
     def getAnalysisSuffixes(self):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getPreDotRoot(self): # in other words the headword
+        
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, re.RegexFlag.A) # re.RegexFlag.A=ASCII-only match
+        
         if g:
             ret = self.removeUnderscores(g.group(1))
             return ret
+        
         return None
+    
     def getSenseNum(self):
         return re.search(r'< .+ .+\.(\d+) >',self.Analysis, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
     def getAfterPunc(self):
@@ -244,12 +254,16 @@ class ANAInfo(object):
     def setCapitalization(self, myCapitalization):
         self.Capitalization = myCapitalization
     def setAnalysis(self, myAnalysis):
+        
         self.Analysis = myAnalysis
         
         # Call setAnalysisByPart to ensure the root is converted to lowercase
         self.setAnalysisByPart(self.getAnalysisPrefixes(), self.getAnalysisRootPOS(), self.getAnalysisRoot(), self.getAnalysisSuffixes())
+        
     def setAnalysisByPart(self, prefixes, pos, root, suffixes): # prefixes and suffixes are string lists
+        
         self.Capitalization = self.calcCase(root)
+        
         # change spaces to underscores in the root:
         myRoot = self.addUnderscores(root)
         
@@ -261,28 +275,44 @@ class ANAInfo(object):
         
         # if it's an unknown word, don't change the case, otherwise we always store lower case
         if pos != 'UNK': 
+            
             myRoot = myRoot.lower()
             
         self.Analysis = ' '.join(prefixes) + ' < '+myPos+' '+myRoot+' > '+' '.join(suffixes)
+        
     def escapePunc(self, myStr):
+        
         # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
+            
             myStr =  re.sub(r'\\([^n])', r'\\\\\1', myStr)
+            
         return myStr
+    
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
         self.BeforePunc = myBeforePunc
     def write(self, fAna):
+        
         fAna.write('\\a ' + self.getAnalysis() + '\n')
+        
         if self.getBeforePunc():
+            
             fAna.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
+            
         if self.getAfterPunc():
+            
             fAna.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
+            
         if self.getCapitalization():
+            
             fAna.write('\\c ' + self.getCapitalization() + '\n')
+            
         fAna.write('\n')
+        
     def calcCase(self, word):
+        
         if word.isupper():
             return '2'
         elif word[0].isupper():
@@ -385,7 +415,7 @@ class ConversionData():
             componentANAlist = []
             
             # Get the component entries as ANA Info objects
-            inflectionOnFirst = gatherComponents(root, self.complexFormTypeMap, self.complexMap, componentANAlist)
+            inflectionOnFirst = self.gatherComponents(root, self.complexFormTypeMap, self.complexMap, componentANAlist)
             
             # Add the root and component list ANAs to the map. And also the inflection on first component flag
             self.rootComponentANAlistMap[root] = componentANAlist, inflectionOnFirst
@@ -395,10 +425,108 @@ class ConversionData():
             
             variantANAandFeatlist = []
             
-            gatherVariants(varList, variantANAandFeatlist)
+            self.gatherVariants(varList, variantANAandFeatlist)
             
             self.rootVariantANAandFeatlistMap[root] = variantANAandFeatlist
     
+    # Output the components of a complex entry
+    # Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection
+    # This is a recursive function
+    def gatherComponents(self, root, complexFormTypeMap, complexMap, compList):
+        
+        # Get the entry that has components
+        # TODO: Handle roots that have more than one complex entry associated with it
+        entry = complexMap[root]
+        
+        # loop through all entryRefs (we'll use just the complex form one)
+        for entryRef in entry.EntryRefsOS:
+            
+            if entryRef.RefType == 1: # 1=complex form, 0=variant
+                
+                for complexType in entryRef.ComplexEntryTypesRS:
+                    
+                    formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
+                    
+                    if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
+                        
+                        # See where the inflection is to go
+                        if complexFormTypeMap[formType] == 0:
+                            
+                            inflectionOnFirst = True
+                            inflectionOnLast = False
+                        else:
+                            inflectionOnFirst = False
+                            inflectionOnLast = True
+                            
+                        firstRoot = True
+                        enclGloss = proGloss = ''
+                        
+                        # Write out all the components
+                        for lexIndex, compEntry in enumerate(entryRef.ComponentLexemesRS):
+                            
+                            # If the component is a proclitic, save the gloss string (with a space on the end)
+                            if Utils.isProclitic(compEntry):
+                                
+                                proGloss = self.getGloss(compEntry)+' '
+                            
+                            # If the component is an enclitic, save it with a preceding space
+                            elif Utils.isEnclitic(compEntry):
+                                
+                                enclGloss = ' ' + self.getGloss(compEntry)
+                                
+                            # Otherwise we have a root
+                            else:
+                                # Get the needed data from the entry object
+                                (headWord, gramCatAbbrev, senseNum) = self.getAnaDataFromEntry(compEntry)
+                                
+                                # See if this head word has components itself and call this function recursively
+                                if headWord in complexMap:
+                                    
+                                    self.gatherComponents(headWord, complexFormTypeMap, complexMap, compList)
+                                else:
+                                    # See if we are at the beginning or the end, depending on where the
+                                    # inflection goes, write out all the stuff with inflection
+                                    if (inflectionOnFirst and firstRoot) or (inflectionOnLast and lexIndex==entryRef.ComponentLexemesRS.Count-1):
+                                        
+                                        # Build the an ANA Info object
+                                        currANAInfo = ANAInfo([proGloss], 
+                                                              [enclGloss], 
+                                                              gramCatAbbrev, headWord + '.' + senseNum)
+                                            
+                                    # Write out the bare bones root in the analysis part
+                                    else:
+                                        # no prefixes or suffixes, give []
+                                        currANAInfo = ANAInfo([], [], gramCatAbbrev, headWord + '.' + senseNum)
+                                
+                                    compList.append(currANAInfo)
+                                    
+                                firstRoot = False
+                    continue
+            continue
+        
+        return inflectionOnFirst
+
+    def gatherVariants(self, varList, variantANAandFeatlist):
+        
+        for varTuple in varList: # each tuple as form (entry, featAbbrList)
+            
+            entry = varTuple[0]
+            featAbbrList = varTuple[1]
+    
+            # Set the headword value and the homograph #
+            headWord = ITsString(entry.HeadWord).Text
+                
+            # If there is not a homograph # at the end, make it 1
+            headWord = Utils.add_one(headWord)
+                
+            # Create an ANA Info object with the POS being _variant_
+            # (We are intentionally not adding the sense number.)
+            # no prefixes or suffixes
+            myAnaInfo = ANAInfo()
+            myAnaInfo.setAnalysisByPart([], "_variant_", headWord, [])
+            
+            variantANAandFeatlist.append((myAnaInfo, featAbbrList))
+        
     def getAbbrList(self, indx, lines):
         
         abbrList = []
@@ -418,6 +546,58 @@ class ConversionData():
         
         return abbrList
             
+    # Get the needed data from the entry object and return as a tuple
+    # This function will handle when an entry points to a component that is a sense not a lexeme
+    def getAnaDataFromEntry(self, compEntry):
+        
+        # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned somehow from the complex form.
+        senseNum = '1'
+        
+        # The thing the component lexeme points to could be a sense rather than an entry
+        if compEntry.ClassName == 'LexSense':
+            
+            compSense = compEntry
+            
+            # Get the headword text of the owning entry
+            owningEntry = compEntry.Owner # Assumption here that this isn't a subsense
+            
+            a = ITsString(owningEntry.HeadWord).Text
+            a = Utils.add_one(a)
+            
+            posObj = compSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA
+            
+            if posObj:            
+                
+                abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
+                       
+            # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
+            senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+            
+            # No number found, so use sense 1
+            if senseNum == '':
+                
+                senseNum = '1'
+            
+        else: # entry
+            
+            compEntry = Utils.GetEntryWithSense(compEntry)
+            
+            a = ITsString(compEntry.HeadWord).Text
+            a = Utils.add_one(a)
+              
+            # Get POS
+            abbrev = 'NULL'
+            
+            if compEntry.SensesOS.Count > 0:
+                
+                posObj = compEntry.SensesOS.ToArray()[0].MorphoSyntaxAnalysisRA.PartOfSpeechRA
+                
+                if posObj:
+                                
+                    abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
+        
+        return (a, abbrev, senseNum)
+    
     def getCacheFilePath(self):
         
         # build the path in the build dir using project name + testbed_cache.txt
@@ -426,6 +606,28 @@ class ConversionData():
     def getData(self):
         
         return (self.rootComponentANAlistMap, self.rootVariantANAandFeatlistMap)
+    
+    def getFeatAbbrList(self, SpecsOC, featAbbrevList):
+        
+        for spec in SpecsOC:
+            if spec.ClassID == 53: # FsComplexValue
+                
+                self.getFeatAbbrList(spec.ValueOA.FeatureSpecsOC, featAbbrevList)
+                
+            else: # FsClosedValue - I don't think the other types are in use
+                
+                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+                abbValue = re.sub('\.', '_', abbValue)
+                featAbbrevList.append((featGrpName, abbValue))
+        return
+    
+    def getGloss(self, entry):
+            
+        # follow the chain of variants to get an entry with a sense
+        entry = Utils.GetEntryWithSense(entry)
+        
+        return ITsString(entry.SensesOS.ToArray()[0].Gloss.BestAnalysisAlternative).Text
     
     def isCacheOutOfDate(self):
         
@@ -594,7 +796,7 @@ class ConversionData():
                                         myFeatAbbrList = []
                                         
                                         # The features might be complex, make a recursive function call to find all features
-                                        getFeatAbbrList(varType.InflFeatsOA.FeatureSpecsOC, myFeatAbbrList)
+                                        self.getFeatAbbrList(varType.InflFeatsOA.FeatureSpecsOC, myFeatAbbrList)
                                         
                                         if len(myFeatAbbrList) > 0:
                                             
@@ -658,11 +860,128 @@ class ConversionData():
             f.write(featGrpName+'\n')
             f.write(abbValue+'\n')
             
-    def writeEntry(self, f, e):
-        
-        guid = e.Guid.ToString()
-        f.write(guid+'\n')
+# Check if the tags (prefixes & suffixes) match the features of one of
+# the main entry's variants. If so replace the main entry headword with
+# the variant and remove the tags that matched.
+# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
+# variant type called 1Sg which has features [per: 1ST, num: SG] and the
+# Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
+# this: '< _variant_ am1 >'
+def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap):
+
+    oldCap = myAnaInfo.getCapitalization()
+    pfxs = myAnaInfo.getAnalysisPrefixes()
+    numPfxs = len(pfxs)
+    sfxs = myAnaInfo.getAnalysisSuffixes()
+    tags = pfxs+sfxs
     
+    # loop through the irr. infl. form variant list for this main entry
+    variantANAandFeatlist = rootVariantANAandFeatlistMap[myAnaInfo.getPreDotRoot()]
+    
+    for varAna, featAbbrList in variantANAandFeatlist: # each tuple as form (entry, featAbbrList)
+
+        # See if there is a variant that has inflection features that match the tags in this entry
+        variantMatches = False
+        featList = [y[1] for y in sorted(featAbbrList, key=lambda x: x[0])]
+        numFeatures = len(featList)
+        
+        # There has to be at least as many tags as features
+        if len(tags) >= numFeatures:
+            
+            # Loop through slices of the tag list
+            for i in range(0,len(tags)-numFeatures+1):
+                
+                # See if we match regardless of order
+                if sorted(tags[i:i+numFeatures]) == sorted(featList):
+                    
+                    variantMatches = True
+                    break
+            if variantMatches:
+                break
+    
+    if variantMatches:
+        
+        # Remove the matched tags
+        del pfxs[i:i+numFeatures]
+        beg = i-numPfxs
+        
+        if beg < 0:
+            beg = 0
+            
+        end = i-numPfxs+numFeatures
+        
+        if end < 0:
+            end = 0
+            
+        del sfxs[beg:end]
+        
+        # Reset the Ana info
+        # (We are intentionally not adding the sense number.)
+        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", varAna.getAnalysisRoot(), sfxs)
+        
+        # Change the case as necessary
+        myAnaInfo.setCapitalization(oldCap)
+
+def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fAna):
+    
+    root = myAnaInfo.getPreDotRoot()
+    
+    if root in rootVariantANAandFeatlistMap: 
+        
+        # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
+        changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap)
+                
+    myAnaInfo.write(fAna)
+        
+def writeComponents(componentList, anaFile, theAnaInfo, rootVariantANAandFeatlistMap):
+        
+    for i, listAnaInfo in enumerate(componentList):
+        
+        # Give this object pre-punctuation if it's the first component
+        if i == 0:
+            
+            listAnaInfo.setBeforePunc(theAnaInfo.getBeforePunc())
+            
+            # Change the case as necessary
+            theAnaInfo.setCapitalization(theAnaInfo.calcCase(theAnaInfo.getAnalysisRoot()))
+                
+        # Give this object post-punctuation if it's the last component
+        if i == len(componentList)-1:
+            
+            listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
+        
+        # This also converts variant forms if needed
+        writeNonComplex(listAnaInfo, rootVariantANAandFeatlistMap, anaFile)    
+
+def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
+
+    firstRoot = True
+    newCompANAlist = []
+
+    for index, myAnaInfo in enumerate(componANAlist):
+        
+
+        # See if we are at the beginning or the end, depending on where the
+        # inflection goes, write out all the stuff with inflection
+        if (inflectionOnFirst and firstRoot) or (not inflectionOnFirst and index == len(componANAlist)-1):
+            
+            # Create a new Ana info object
+            newAna = ANAInfo()
+            
+            # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
+            newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
+                                        myAnaInfo.getAnalysisRootPOS(), 
+                                        myAnaInfo.getAnalysisRoot(),
+                                        textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
+
+            newCompANAlist.append(newAna)
+        else:
+            newCompANAlist.append(myAnaInfo)
+            
+        firstRoot = False
+        
+    return newCompANAlist
+        
 # Convert the output from the Apertium transfer to an ANA file
 def convertIt(pfxName, outName, report, sentPunct):
 
@@ -876,299 +1195,6 @@ def convertIt(pfxName, outName, report, sentPunct):
     return errorList, wordAnaInfoList
 
 # Get the gloss from the first sense
-def getGloss(e):
-        
-    # follow the chain of variants to get an entry with a sense
-    e = Utils.GetEntryWithSense(e)
-    return ITsString(e.SensesOS.ToArray()[0].Gloss.BestAnalysisAlternative).Text
-
-# Get the needed data from the entry object and return as a tuple
-# This function will handle when an entry points to a component that is a sense not a lexeme
-def getAnaDataFromEntry(compEntry):
-    
-    # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned somehow from the complex form.
-    senseNum = '1'
-    
-    # The thing the component lexeme points to could be a sense rather than an entry
-    if compEntry.ClassName == 'LexSense':
-        
-        compSense = compEntry
-        
-        # Get the headword text of the owning entry
-        owningEntry = compEntry.Owner # Assumption here that this isn't a subsense
-        
-        a = ITsString(owningEntry.HeadWord).Text
-        a = Utils.add_one(a)
-        
-        posObj = compSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA
-        
-        if posObj:            
-            
-            abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
-                   
-        # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-        senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
-        
-        # No number found, so use sense 1
-        if senseNum == '':
-            
-            senseNum = '1'
-        
-    else: # entry
-        
-        compEntry = Utils.GetEntryWithSense(compEntry)
-        
-        a = ITsString(compEntry.HeadWord).Text
-        a = Utils.add_one(a)
-          
-        # Get POS
-        abbrev = 'NULL'
-        
-        if compEntry.SensesOS.Count > 0:
-            
-            posObj = compEntry.SensesOS.ToArray()[0].MorphoSyntaxAnalysisRA.PartOfSpeechRA
-            
-            if posObj:
-                            
-                abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
-    
-    return (a, abbrev, senseNum)
-
-# Output the components of a complex entry
-# Assumptions: no sub-senses, clitics will be attached on the component that takes the inflection
-# This is a recursive function
-def gatherComponents(root, complexFormTypeMap, complexMap, compList):
-    
-    # Get the entry that has components
-    # TODO: Handle roots that have more than one complex entry associated with it
-    entry = complexMap[root]
-    
-    # loop through all entryRefs (we'll use just the complex form one)
-    for entryRef in entry.EntryRefsOS:
-        
-        if entryRef.RefType == 1: # 1=complex form, 0=variant
-            
-            for complexType in entryRef.ComplexEntryTypesRS:
-                
-                formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
-                
-                if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
-                    
-                    # See where the inflection is to go
-                    if complexFormTypeMap[formType] == 0:
-                        
-                        inflectionOnFirst = True
-                        inflectionOnLast = False
-                    else:
-                        inflectionOnFirst = False
-                        inflectionOnLast = True
-                        
-                    firstRoot = True
-                    enclGloss = proGloss = ''
-                    
-                    # Write out all the components
-                    for lexIndex, compEntry in enumerate(entryRef.ComponentLexemesRS):
-                        
-                        # If the component is a proclitic, save the gloss string (with a space on the end)
-                        if Utils.isProclitic(compEntry):
-                            
-                            proGloss = getGloss(compEntry)+' '
-                        
-                        # If the component is an enclitic, save it with a preceding space
-                        elif Utils.isEnclitic(compEntry):
-                            
-                            enclGloss = ' ' + getGloss(compEntry)
-                            
-                        # Otherwise we have a root
-                        else:
-                            # Get the needed data from the entry object
-                            (headWord, gramCatAbbrev, senseNum) = getAnaDataFromEntry(compEntry)
-                            
-                            # See if this head word has components itself and call this function recursively
-                            if headWord in complexMap:
-                                
-                                gatherComponents(headWord, complexFormTypeMap, complexMap, compList)
-                            else:
-                                # See if we are at the beginning or the end, depending on where the
-                                # inflection goes, write out all the stuff with inflection
-                                if (inflectionOnFirst and firstRoot) or (inflectionOnLast and lexIndex==entryRef.ComponentLexemesRS.Count-1):
-                                    
-                                    # Build the an ANA Info object
-                                    currANAInfo = ANAInfo([proGloss], 
-                                                          [enclGloss], 
-                                                          gramCatAbbrev, headWord + '.' + senseNum)
-                                        
-                                # Write out the bare bones root in the analysis part
-                                else:
-                                    # no prefixes or suffixes, give []
-                                    currANAInfo = ANAInfo([], [], gramCatAbbrev, headWord + '.' + senseNum)
-                            
-                                compList.append(currANAInfo)
-                                
-                            firstRoot = False
-                continue
-        continue
-    
-    return inflectionOnFirst
-
-def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
-
-    firstRoot = True
-    newCompANAlist = []
-
-    for index, myAnaInfo in enumerate(componANAlist):
-        
-
-        # See if we are at the beginning or the end, depending on where the
-        # inflection goes, write out all the stuff with inflection
-        if (inflectionOnFirst and firstRoot) or (not inflectionOnFirst and index == len(componANAlist)-1):
-            
-            # Create a new Ana info object
-            newAna = ANAInfo()
-            
-            # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
-            newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
-                                        myAnaInfo.getAnalysisRootPOS(), 
-                                        myAnaInfo.getAnalysisRoot(),
-                                        textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
-
-            newCompANAlist.append(newAna)
-        else:
-            newCompANAlist.append(myAnaInfo)
-            
-        firstRoot = False
-        
-    return newCompANAlist
-        
-def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fAna):
-    
-    root = myAnaInfo.getPreDotRoot()
-    
-    if root in rootVariantANAandFeatlistMap: 
-        
-        # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
-        changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap)
-                
-    myAnaInfo.write(fAna)
-        
-def writeComponents(componentList, anaFile, theAnaInfo, rootVariantANAandFeatlistMap):
-        
-    for i, listAnaInfo in enumerate(componentList):
-        
-        # Give this object pre-punctuation if it's the first component
-        if i == 0:
-            
-            listAnaInfo.setBeforePunc(theAnaInfo.getBeforePunc())
-            
-            # Change the case as necessary
-            theAnaInfo.setCapitalization(theAnaInfo.calcCase(theAnaInfo.getAnalysisRoot()))
-                
-        # Give this object post-punctuation if it's the last component
-        if i == len(componentList)-1:
-            
-            listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
-        
-        # This also converts variant forms if needed
-        writeNonComplex(listAnaInfo, rootVariantANAandFeatlistMap, anaFile)    
-
-def getFeatAbbrList(SpecsOC, featAbbrevList):
-    
-    for spec in SpecsOC:
-        if spec.ClassID == 53: # FsComplexValue
-            
-            getFeatAbbrList(spec.ValueOA.FeatureSpecsOC, featAbbrevList)
-            
-        else: # FsClosedValue - I don't think the other types are in use
-            
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-            abbValue = re.sub('\.', '_', abbValue)
-            featAbbrevList.append((featGrpName, abbValue))
-    return
-
-# Check if the tags (prefixes & suffixes) match the features of one of
-# the main entry's variants. If so replace the main entry headword with
-# the variant and remove the tags that matched.
-# E.g. if the main entry 'be1.1' has an irr. infl. form variant 'am1.1' with a 
-# variant type called 1Sg which has features [per: 1ST, num: SG] and the
-# Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
-# this: '< _variant_ am1 >'
-def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap):
-
-    oldCap = myAnaInfo.getCapitalization()
-    pfxs = myAnaInfo.getAnalysisPrefixes()
-    numPfxs = len(pfxs)
-    sfxs = myAnaInfo.getAnalysisSuffixes()
-    tags = pfxs+sfxs
-    
-    # loop through the irr. infl. form variant list for this main entry
-    variantANAandFeatlist = rootVariantANAandFeatlistMap[myAnaInfo.getPreDotRoot()]
-    
-    for varAna, featAbbrList in variantANAandFeatlist: # each tuple as form (entry, featAbbrList)
-
-        # See if there is a variant that has inflection features that match the tags in this entry
-        variantMatches = False
-        featList = [y[1] for y in sorted(featAbbrList, key=lambda x: x[0])]
-        numFeatures = len(featList)
-        
-        # There has to be at least as many tags as features
-        if len(tags) >= numFeatures:
-            
-            # Loop through slices of the tag list
-            for i in range(0,len(tags)-numFeatures+1):
-                
-                # See if we match regardless of order
-                if sorted(tags[i:i+numFeatures]) == sorted(featList):
-                    
-                    variantMatches = True
-                    break
-            if variantMatches:
-                break
-    
-    if variantMatches:
-        
-        # Remove the matched tags
-        del pfxs[i:i+numFeatures]
-        beg = i-numPfxs
-        
-        if beg < 0:
-            beg = 0
-            
-        end = i-numPfxs+numFeatures
-        
-        if end < 0:
-            end = 0
-            
-        del sfxs[beg:end]
-        
-        # Reset the Ana info
-        # (We are intentionally not adding the sense number.)
-        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", varAna.getAnalysisRoot(), sfxs)
-        
-        # Change the case as necessary
-        myAnaInfo.setCapitalization(oldCap)
-
-def gatherVariants(varList, variantANAandFeatlist):
-    
-    for varTuple in varList: # each tuple as form (entry, featAbbrList)
-        
-        entry = varTuple[0]
-        featAbbrList = varTuple[1]
-
-        # Set the headword value and the homograph #
-        headWord = ITsString(entry.HeadWord).Text
-            
-        # If there is not a homograph # at the end, make it 1
-        headWord = Utils.add_one(headWord)
-            
-        # Create an ANA Info object with the POS being _variant_
-        # (We are intentionally not adding the sense number.)
-        # no prefixes or suffixes
-        myAnaInfo = ANAInfo()
-        myAnaInfo.setAnalysisByPart([], "_variant_", headWord, [])
-        
-        variantANAandFeatlist.append((myAnaInfo, featAbbrList))
-    
 def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
     
     errorList = []
