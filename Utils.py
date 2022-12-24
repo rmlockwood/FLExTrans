@@ -6,6 +6,10 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.6 - 12/24/22 - Ron Lockwood
+#    Output a verse number also when getting a word by guid. Only for the first call
+#    for a sentence.
+#
 #   Version 3.7.5 - 12/19/22 - Ron Lockwood
 #    Output a verse number at the beg. of the sentence when getting surface and data
 #    tuples if a verse number is present.
@@ -2269,6 +2273,7 @@ class TextSentence():
         self.__report = report
         self.__wordList = []
         self.__guidMap = {}
+        self.firstGetByGuid = True
     def addWord(self, textWord):
         self.__wordList.append(textWord)
     def createGuidMap(self, insertList):
@@ -2277,7 +2282,11 @@ class TextSentence():
         for word in self.__wordList:
             self.__guidMap[word.getGuid()] = word
     def getSurfaceAndDataForGuid(self, guid):
-        return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
+        if self.firstGetByGuid:
+            self.firstGetByGuid = False
+            return self.__guidMap[guid].getSurfaceFormWithVerseNum(),  self.__guidMap[guid].outputDataStream()
+        else:
+            return self.__guidMap[guid].getSurfaceForm(), self.__guidMap[guid].outputDataStream()
     def getSurfaceAndDataTupleList(self, tupList):
         for i, word in enumerate(self.__wordList):
             if i == 0:
