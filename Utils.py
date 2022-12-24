@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.7 - 12/24/22 - Ron Lockwood
+#    added GetEntryWithSense, renamed old one to GetEntryWithSensPlusFeat
+#
 #   Version 3.7.6 - 12/24/22 - Ron Lockwood
 #    Output a verse number also when getting a word by guid. Only for the first call
 #    for a sentence.
@@ -305,7 +308,7 @@ MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
 MAKEFILE_FLEXTOOLS_VARIABLE = 'FLEXTOOLS_PATH'
 APERTIUM_ERROR_FILE = 'apertium_error.txt'
 DO_MAKE_SCRIPT_FILE = 'do_make.bat'
-CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache.txt'
+CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache2.txt'
 TESTBED_CACHE_FILE = 'testbed_cache.txt'
 STRIPPED_RULES = 'tr.t1x'
 
@@ -2114,7 +2117,30 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
 def getHeadwordStr(e):
     return ITsString(e.HeadWord).Text
     
-def GetEntryWithSense(e, inflFeatAbbrevs):
+def GetEntryWithSense(e):
+    # If the entry is a variant and it has no senses, loop through its references 
+    # until we get to an entry that has a sense
+    notDoneWithVariants = True
+    while notDoneWithVariants:
+        if e.SensesOS.Count == 0:
+            if e.EntryRefsOS:
+                foundVariant = False
+                for entryRef in e.EntryRefsOS:
+                    if entryRef.RefType == 0: # we have a variant
+                        foundVariant = True
+                        break
+                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
+                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
+                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
+                        break
+                    else: # normal variant of entry
+                        e = entryRef.ComponentLexemesRS.ToArray()[0]
+                        continue
+        notDoneWithVariants = False
+    return e
+
+def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
     # If the entry is a variant and it has no senses, loop through its references 
     # until we get to an entry that has a sense
     notDoneWithVariants = True
@@ -3081,7 +3107,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                             # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
                             # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
                             inflFeatAbbrevs = []
-                            tempEntry = GetEntryWithSense(tempEntry, inflFeatAbbrevs)
+                            tempEntry = GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
                             
                             # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far 
                             # in this case, treat it as a root

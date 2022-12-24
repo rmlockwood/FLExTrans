@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.8 - 12/23/22 - Ron Lockwood
+#    Removed definition of GetEntryWithSense
+#
 #   Version 3.7.7 - 12/24/22 - Ron Lockwood
 #    Verse number support for RTL languages. Insert RTL markers before and after the
 #    sentence for the sentence list and sentence combo box.
@@ -294,7 +297,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.7",
+        FTM_Version    : "3.7.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2094,38 +2097,6 @@ def get_position_in_component_list(e, complex_e):
             for i, my_e in enumerate(entryRef.ComponentLexemesRS):
                 if e == my_e:
                     return i
-
-def GetEntryWithSense(e, inflFeatAbbrevs):
-    # If the entry is a variant and it has no senses, loop through its references 
-    # until we get to an entry that has a sense
-    notDoneWithVariants = True
-    while notDoneWithVariants:
-        if e.SensesOS.Count == 0:
-            if e.EntryRefsOS:
-                foundVariant = False
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        foundVariant = True
-                        
-                        # Collect any inflection features that are assigned to the special
-                        # variant types called Irregularly Inflected Form
-                        for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType" and varType.InflFeatsOA:
-                                my_feat_abbr_list = []
-                                # The features might be complex, make a recursive function call to find all features
-                                get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
-                                inflFeatAbbrevs.extend(my_feat_abbr_list)
-                        break
-                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-                        break
-                    else: # normal variant of entry
-                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-                        continue
-        notDoneWithVariants = False
-    return e
 
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
