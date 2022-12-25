@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -73,12 +76,15 @@ import xml.etree.ElementTree as ET
 
 import Utils
 import ReadConfig
+import site
+site.addsitedir(r"Lib")
+from Testbed import *
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a readable source or target text file.",    
         FTM_Help   : "",
@@ -276,15 +282,15 @@ class Main(QMainWindow):
                         # First, put out the punctuation. If the punctuation is null, put
                         # out a space. Except if it's the first punctuation and it null.
                         if len(punc) > 0:
-                            Utils.output_span(list_item, Utils.PUNC_COLOR, punc, rtl_flag)
+                            output_span(list_item, PUNC_COLOR, punc, rtl_flag)
                         elif i > 0:
-                            Utils.output_span(list_item, Utils.PUNC_COLOR, ' ', rtl_flag)
+                            output_span(list_item, PUNC_COLOR, ' ', rtl_flag)
                         
                         # Now put out the chunk part
-                        Utils.process_chunk_lexical_unit(chunk, list_item, rtl_flag)
+                        process_chunk_lexical_unit(chunk, list_item, rtl_flag)
                         
                         # Put out a [ to surround the normal lex. unit
-                        Utils.output_span(list_item, Utils.CHUNK_LEMMA_COLOR, ' [', rtl_flag)
+                        output_span(list_item, CHUNK_LEMMA_COLOR, ' [', rtl_flag)
 
                     # process odd # elements -- the normal stuff (that was within the braces)
                     else:
@@ -299,31 +305,31 @@ class Main(QMainWindow):
                             # First, put out the punctuation. If the punctuation is null, put
                             # out a space. Except if it's the first punctuation and it null.
                             if len(subTokens[j]) > 0:
-                                Utils.output_span(list_item, Utils.PUNC_COLOR, subTokens[j], rtl_flag)
+                                output_span(list_item, PUNC_COLOR, subTokens[j], rtl_flag)
                             else:
                                 # we need a preceding space if we are not within brackets
                                 if re.search('^default', chunk) is None:
                                     myStr = ''
                                 else:
                                     myStr = ' '
-                                Utils.output_span(list_item, Utils.PUNC_COLOR, myStr, rtl_flag)
+                                output_span(list_item, PUNC_COLOR, myStr, rtl_flag)
                             
                             # parse the lexical unit and add the elements needed to the list item element
-                            Utils.process_lexical_unit(subTokens[j+1], list_item, rtl_flag, show_unk_symbol)
+                            process_lexical_unit(subTokens[j+1], list_item, rtl_flag, show_unk_symbol)
                             
                         # process last subtoken for the stuff inside the {}
                         if len(subTokens[-1]) > 0:
-                            Utils.output_span(list_item, Utils.PUNC_COLOR, subTokens[-1], rtl_flag)
+                            output_span(list_item, PUNC_COLOR, subTokens[-1], rtl_flag)
                         
                         # Put out a closing ] if it wasn't a default chunk
                         if re.search('^default', chunk) is None:
-                            Utils.output_span(list_item, Utils.CHUNK_LEMMA_COLOR, ']', rtl_flag)
+                            output_span(list_item, CHUNK_LEMMA_COLOR, ']', rtl_flag)
 
                 # process last token
                 tok = re.sub('\$', '', tokens[-1].rstrip())
                 if len(tok) > 0:
                     # remove the $
-                    Utils.output_span(list_item, Utils.PUNC_COLOR, tok, rtl_flag)
+                    output_span(list_item, PUNC_COLOR, tok, rtl_flag)
                            
         else: # not advanced
             # Process all lines in the input file
@@ -343,16 +349,16 @@ class Main(QMainWindow):
                     # First, put out the punctuation. If the punctuation is null, put
                     # out a space. Except if it's the first punctuation and it null.
                     if len(tokens[i]) > 0:
-                        Utils.output_span(list_item, Utils.PUNC_COLOR, tokens[i], rtl_flag)
+                        output_span(list_item, PUNC_COLOR, tokens[i], rtl_flag)
                     elif i > 0:
-                        Utils.output_span(list_item, Utils.PUNC_COLOR, ' ', rtl_flag)
+                        output_span(list_item, PUNC_COLOR, ' ', rtl_flag)
                     
                     # parse the lexical unit and add the elements needed to the list item element
-                    Utils.process_lexical_unit(tokens[i+1], list_item, rtl_flag, show_unk_symbol)
+                    process_lexical_unit(tokens[i+1], list_item, rtl_flag, show_unk_symbol)
                     
                 # process last token
                 if len(tokens[-1].rstrip()) > 0:
-                    Utils.output_span(list_item, Utils.PUNC_COLOR, tokens[-1].rstrip(), rtl_flag)
+                    output_span(list_item, PUNC_COLOR, tokens[-1].rstrip(), rtl_flag)
                 
         # Write out the html file as utf-8
         tree.write(self.html, encoding='utf-16', xml_declaration=None, default_namespace=None, method='html')

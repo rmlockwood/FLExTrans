@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -43,7 +46,7 @@
 #
 
 import ReadConfig
-import Utils
+from Testbed import *
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -52,7 +55,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
@@ -66,7 +69,7 @@ def init_new_result(DB, report):
     # should this clean up result nodes that have no data?
     
     # Create an object for the testbed file
-    testbedFileObj = Utils.FlexTransTestbedFile(None, report)
+    testbedFileObj = FlexTransTestbedFile(None, report)
     
     # We can't do anything if there is no testbed
     if testbedFileObj.exists() == False:
@@ -80,7 +83,7 @@ def init_new_result(DB, report):
     testbedXMLObj = testbedFileObj.getFLExTransTestbedXMLObject()
     
     # Create an object for the testbed results file
-    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
+    resultsFileObj = FlexTransTestbedResultsFile(report)
     
     # Initialize the testbed run
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
