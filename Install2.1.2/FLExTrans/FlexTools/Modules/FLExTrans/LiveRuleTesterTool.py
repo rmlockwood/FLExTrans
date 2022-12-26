@@ -5,6 +5,16 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.9 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
+#   Version 3.7.8 - 12/23/22 - Ron Lockwood
+#    Removed definition of GetEntryWithSense
+#
+#   Version 3.7.7 - 12/24/22 - Ron Lockwood
+#    Verse number support for RTL languages. Insert RTL markers before and after the
+#    sentence for the sentence list and sentence combo box.
+#
 #   Version 3.7.6 - 12/13/22 - Ron Lockwood
 #    Handle old target file name (target_text.aper) which may be in the old Makefile
 #    in the LiveRuleTester folder. If target_text.txt is not found use the old name.
@@ -272,6 +282,9 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
+import site
+site.addsitedir(r"Lib")
+from Testbed import *
 import Utils
 import ReadConfig
 import CatalogTargetAffixes
@@ -290,7 +303,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.6",
+        FTM_Version    : "3.7.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -365,6 +378,10 @@ class SentenceList(QtCore.QAbstractListModel):
         
         if role == QtCore.Qt.DisplayRole:
             value = self.joinTupParts(mySent, 0)
+            
+            if self.getRTL():
+                value = '\u200F' + value + '\u200F' 
+                
             self.__currentSent = mySent    
             return value
             
@@ -374,7 +391,7 @@ class SentenceList(QtCore.QAbstractListModel):
         ret = ''
         for t in tupList: 
             # don't put a space before sentence punctuation
-            if len(t) > i+1 and re.search(Utils.SENT_TAG, t[i+1]):
+            if len(t) > i+1 and re.search(SENT_TAG, t[i+1]):
                 ret += t[i]
             else:
                 ret += ' ' + t[i]
@@ -758,7 +775,7 @@ class Main(QMainWindow):
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
-        lexParser = Utils.LexicalUnitParser(lexUnitStr)
+        lexParser = LexicalUnitParser(lexUnitStr)
         
         # Check for badly formed lexical units
         if lexParser.isWellFormed() == False:
@@ -774,7 +791,7 @@ class Main(QMainWindow):
         
         # Initialize a Test XML object and fill out its data given a list of
         # lexical units and a result from the synthesis step
-        myObj = Utils.TestbedTestXMLObject(lexUnitList, origin, synthesisResult)
+        myObj = TestbedTestXMLObject(lexUnitList, origin, synthesisResult)
         
         return myObj
     
@@ -834,7 +851,7 @@ class Main(QMainWindow):
         self.unsetCursor()
 
     def ViewTestbedLogButtonClicked(self):
-        resultsFileObj = Utils.FlexTransTestbedResultsFile(self.__report)
+        resultsFileObj = FlexTransTestbedResultsFile(self.__report)
     
         # Get previous results
         resultsXMLObj = resultsFileObj.getResultsXMLObj()
@@ -865,12 +882,12 @@ class Main(QMainWindow):
         
         # Set the direction attribute
         if self.__sent_model.getRTL():
-            direction = Utils.RTL
+            direction = RTL
         else:
-            direction = Utils.LTR
+            direction = LTR
 
         try:
-            fileObj = Utils.FlexTransTestbedFile(direction, self.__report)
+            fileObj = FlexTransTestbedFile(direction, self.__report)
         except:
             QMessageBox.warning(self, 'Not Found Error', f'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml')
             return 
@@ -1272,14 +1289,14 @@ class Main(QMainWindow):
             # Save the lexical unit in the saved string
             
             # if we have <sent> remove the space currently at the end of lexicalUnits
-            if re.search(Utils.SENT_TAG, tokens[j+1]):
+            if re.search(SENT_TAG, tokens[j+1]):
                 self.__lexicalUnits = self.__lexicalUnits[:-1]
                 
             # Preserve whitespace that may be between compound elements by adding the j+2 item 
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
             
             # Turn the lexical unit into color-coded html. 
-            Utils.process_lexical_unit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+            process_lexical_unit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
         
         # Add a space at the end
         self.__lexicalUnits += ' '
@@ -1598,9 +1615,9 @@ class Main(QMainWindow):
         for source, target in srcTrgtPairsList:
             
             # Combine source and target into one paragraph html string
-            tipStr += Utils.convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
+            tipStr += convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
             tipStr += f'&nbsp;{arrowStr}&nbsp;' # right arrow
-            tipStr += Utils.convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
+            tipStr += convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
             
         return tipStr.strip()
     
@@ -1969,15 +1986,15 @@ class Main(QMainWindow):
                     # First, put out the punctuation. If the punctuation is null, put
                     # out a space. Except if it's the first punctuation and it null.
                     if len(punc) > 0:
-                        Utils.output_span(pElem, Utils.PUNC_COLOR, punc, rtl_flag)
+                        output_span(pElem, PUNC_COLOR, punc, rtl_flag)
                     elif i > 0:
-                        Utils.output_span(pElem, Utils.PUNC_COLOR, ' ', rtl_flag)
+                        output_span(pElem, PUNC_COLOR, ' ', rtl_flag)
                     
                     # Now put out the chunk part
-                    Utils.process_chunk_lexical_unit(chunk, pElem, rtl_flag)
+                    process_chunk_lexical_unit(chunk, pElem, rtl_flag)
                     
                     # Put out a [ to surround the normal lex. unit
-                    Utils.output_span(pElem, Utils.CHUNK_LEMMA_COLOR, ' [', rtl_flag)
+                    output_span(pElem, CHUNK_LEMMA_COLOR, ' [', rtl_flag)
 
                 # process odd # elements -- the normal stuff (that was within the braces)
                 else:
@@ -1992,25 +2009,25 @@ class Main(QMainWindow):
                         # First, put out the punctuation. If the punctuation is null, put
                         # out a space. Except if it's the first punctuation and it null.
                         if len(subTokens[j]) > 0:
-                            Utils.output_span(pElem, Utils.PUNC_COLOR, subTokens[j], rtl_flag)
+                            output_span(pElem, PUNC_COLOR, subTokens[j], rtl_flag)
                         else:
                             # we need a preceding space if we are not within brackets
                             if re.search('^default', chunk) is None:
                                 myStr = ''
                             else:
                                 myStr = ' '
-                            Utils.output_span(pElem, Utils.PUNC_COLOR, myStr, rtl_flag)
+                            output_span(pElem, PUNC_COLOR, myStr, rtl_flag)
                         
                         # parse the lexical unit and add the elements needed to the list item element
-                        Utils.process_lexical_unit(subTokens[j+1], pElem, rtl_flag, True)
+                        process_lexical_unit(subTokens[j+1], pElem, rtl_flag, True)
                         
                     # process last subtoken for the stuff inside the {}
                     if len(subTokens[-1]) > 0:
-                        Utils.output_span(pElem, Utils.PUNC_COLOR, subTokens[-1], rtl_flag)
+                        output_span(pElem, PUNC_COLOR, subTokens[-1], rtl_flag)
                     
                     # Put out a closing ] if it wasn't a default chunk
                     if re.search('^default', chunk) is None:
-                        Utils.output_span(pElem, Utils.CHUNK_LEMMA_COLOR, ']', rtl_flag)
+                        output_span(pElem, CHUNK_LEMMA_COLOR, ']', rtl_flag)
             
         else:
             # parse the lexical units. This will give us tokens before, between 
@@ -2022,7 +2039,7 @@ class Main(QMainWindow):
             # ignore the punctuation (spaces)
             for i in range(0,len(tokens)-1,2):
                 # Turn the lexical units into color-coded html.            
-                Utils.process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)//2]), True) # last parameter: show UNK categories
+                process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)//2]), True) # last parameter: show UNK categories
             
         # The p element now has one or more <span> children, turn them into an html string        
         htmlVal = ET.tostring(pElem, encoding='unicode')
@@ -2086,38 +2103,6 @@ def get_position_in_component_list(e, complex_e):
             for i, my_e in enumerate(entryRef.ComponentLexemesRS):
                 if e == my_e:
                     return i
-
-def GetEntryWithSense(e, inflFeatAbbrevs):
-    # If the entry is a variant and it has no senses, loop through its references 
-    # until we get to an entry that has a sense
-    notDoneWithVariants = True
-    while notDoneWithVariants:
-        if e.SensesOS.Count == 0:
-            if e.EntryRefsOS:
-                foundVariant = False
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        foundVariant = True
-                        
-                        # Collect any inflection features that are assigned to the special
-                        # variant types called Irregularly Inflected Form
-                        for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType" and varType.InflFeatsOA:
-                                my_feat_abbr_list = []
-                                # The features might be complex, make a recursive function call to find all features
-                                get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
-                                inflFeatAbbrevs.extend(my_feat_abbr_list)
-                        break
-                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-                        break
-                    else: # normal variant of entry
-                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-                        continue
-        notDoneWithVariants = False
-    return e
 
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
