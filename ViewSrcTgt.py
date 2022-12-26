@@ -5,6 +5,10 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.7.2 - 12/26/22 - Ron Lockwood
+#    Fixed support for advanced transfer that wasn't working. Target text 1 & 2
+#    couldn't be shown.
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -71,6 +75,8 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 from SrcTgtViewer import Ui_MainWindow
 import xml.etree.ElementTree as ET
 
+from FTPaths import CONFIG_PATH
+from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import Utils
 import ReadConfig
 
@@ -78,7 +84,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View a readable source or target text file.",    
         FTM_Help   : "",
@@ -107,8 +113,10 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
         
         if advanced:
-            self.tgt1 = self.tgt[:-5] + '1.aper'
-            self.tgt2 = self.tgt[:-5] + '2.aper'
+            
+            buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+            self.tgt1 = buildFolder + '\\' + TARGET_FILE1
+            self.tgt2 = buildFolder + '\\' + TARGET_FILE2
             self.tgt3 = self.tgt
             
             self.ui.TargetRadio.setEnabled(False)
@@ -116,7 +124,7 @@ class Main(QMainWindow):
             self.ui.targetRadio1.setVisible(False)
             self.ui.targetRadio2.setVisible(False)
             self.ui.targetRadio3.setVisible(False)
-            
+              
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.FontButton.clicked.connect(self.FontClicked)
         self.ui.SourceRadio.clicked.connect(self.SourceClicked)
@@ -127,16 +135,16 @@ class Main(QMainWindow):
         self.ui.RTL.clicked.connect(self.RTLClicked)
         self.ui.ZoomIncrease.clicked.connect(self.ZoomIncreaseClicked)
         self.ui.ZoomDecrease.clicked.connect(self.ZoomDecreaseClicked)
-
+  
         # default to source file for initial view
         self.viewFile = srcFile
-        
+          
         # get the default font
         font = self.ui.webView.font()
         self.font_family = str(font.family())
-        
+          
         self.ui.FontNameLabel.setText(font.family())
-        
+          
         # load the viewer()
         self.load()
         
@@ -382,12 +390,15 @@ def MainFunction(DB, report, modify=True):
     if not tgtFile:
         return
     
-    # see if we have advanced transfer going on by seeing if the .t3x file is present
+    # get the path to the 3rd transfer rule file
+    postChunkRuleFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report)
+    if not postChunkRuleFile:
+        return
+    
     advanced = False
-    postchunk_rules_file = Utils.OUTPUT_FOLDER + '\\transfer_rules.t3x'
         
-    # Check if the file exists. 
-    if os.path.isfile(postchunk_rules_file):   
+    # see if we have advanced transfer going on by seeing if the .t3x file is present
+    if os.path.isfile(postChunkRuleFile):   
         advanced = True
             
     # get temporary file name for html results
