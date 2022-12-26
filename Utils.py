@@ -874,25 +874,6 @@ def do_capitalization(wordToChange, modelWord):
             return wordToChange[0].upper()+wordToChange[1:]
     return wordToChange
 
-"""
-# OLD CODE -- TO BE DELETED        
-def get_component_count(e):
-    # loop through all entryRefs (we'll use just the complex form one)
-    for entryRef in e.EntryRefsOS:
-        if entryRef.RefType == 1: # 1=complex form, 0=variant
-            return entryRef.ComponentLexemesRS.Count
-
-# OLD CODE -- TO BE DELETED        
-def get_position_in_component_list(e, complex_e):
-    # loop through all entryRefs (we'll use just the complex form one)
-    for entryRef in complex_e.EntryRefsOS:
-        if entryRef.RefType == 1: # 1=complex form, 0=variant
-            # loop through components
-            for i, my_e in enumerate(entryRef.ComponentLexemesRS):
-                if e == my_e:
-                    return i
-"""
-
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
