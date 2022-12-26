@@ -7,7 +7,7 @@
 #
 #   Version 3.7.2 - 12/26/22 - Ron Lockwood
 #    Fixed support for advanced transfer that wasn't working. Target text 1 & 2
-#    couldn't be shown.
+#    couldn't be shown. Fixes #373.
 #
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
