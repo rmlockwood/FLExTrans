@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Added RegexFlag before re constants
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -59,7 +62,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -86,7 +89,7 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
     f.close()
     
     # Find all the chapter #s
-    synChapList = re.findall(r'\\c (\d+)', synFileContents, flags=re.DOTALL)
+    synChapList = re.findall(r'\\c (\d+)', synFileContents, flags=re.RegexFlag.DOTALL)
     
     # Check that we have chapters in the syn. file
     if len(synChapList) < 1:
@@ -110,10 +113,10 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
     f.close()
     
     # Find all the chapter #s
-    ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.DOTALL)
+    ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
     # Split the synthesis contents into chapter chunks
-    synContentsList = re.split(r'(\\c \d+)', synFileContents, flags=re.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
+    synContentsList = re.split(r'(\\c \d+)', synFileContents, flags=re.RegexFlag.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
     
     # Loop through each synthesis chapter and splice it into the paratext chapter contents
     for n in range(1, len(synContentsList), 2): # the zeroth one will be whatever is before the first \c, possibly the empty string
@@ -158,7 +161,7 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         # Escape each backslash
         wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
         
-        bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.DOTALL)
+        bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
         
         # Unescape the backslashes
         #bookContents = re.sub(r'\\\\', r'\\', bookContents)

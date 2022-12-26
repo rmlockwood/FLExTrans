@@ -5,6 +5,9 @@
 #   SIL International
 #   6/15/2018
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -43,7 +46,7 @@
 #
 
 import ReadConfig
-import Utils
+from Testbed import *
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -53,7 +56,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "End Testbed",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Conclude a testbed log result.",
         FTM_Help   : "",
@@ -86,7 +89,7 @@ def MainFunction(DB, report, modifyAllowed):
     
     # Create an object for the testbed results file and get the associated
     # XML object
-    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
+    resultsFileObj = FlexTransTestbedResultsFile(report)
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
     
     # Extract the results from the myText.syn file

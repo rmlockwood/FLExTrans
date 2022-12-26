@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.2 - 12/25/22 - Ron Lockwood
+#    Added RegexFlag before re constants
+#
 #   Version 3.7.1 - 12/13/22 - Ron Lockwood
 #    Fixes #360. Process all possible stem names, not just the first one encountered.
 #
@@ -209,7 +212,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -1024,7 +1027,7 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, re.A) # re.A=ASCII-only match
+            line = re.sub('\d+\.\d+', '', line, re.RegexFlag.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()

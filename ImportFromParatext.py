@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Added RegexFlag before re constants
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -62,7 +65,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -137,7 +140,7 @@ def do_import(DB, report, chapSelectObj):
     bookContents = f.read()
     
     # Find all the chapter #s
-    chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.DOTALL)
+    chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
     if str(chapSelectObj.fromChap) not in chapList:
         
@@ -160,7 +163,7 @@ def do_import(DB, report, chapSelectObj):
     else:
         reStr += fr'\\c {str(chapSelectObj.toChap+1)}\s'
 
-    matchObj = re.search(reStr, bookContents, flags=re.DOTALL)
+    matchObj = re.search(reStr, bookContents, flags=re.RegexFlag.DOTALL)
     
     importText = matchObj.group(1)
     
