@@ -5,6 +5,10 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.7.1 - 12/28/22 - Ron Lockwood
+#    Adds categories to the categories section from FLEx. This capability
+#    is referenced in issue #229.
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -69,7 +73,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
         FTM_Help   : "",
@@ -82,6 +86,147 @@ will be discarded. Also naming conventions will be followed like in the bilingua
 lexicon. I.e. spaces are converted to underscores, periods and slashes are removed.
 """}
 
+def processDefCat(defCatLines, srcPOSmap, tr_out_f):
+
+    ## Process the categories, adding them to the cat definitions. Don't change existing categories.
+    ## Keep the categories in alphabetical order.
+    
+    existCatMap = {}
+    existCatList = []
+    i = 0
+    
+    # Process the existing category list
+    while i < len(defCatLines):
+        
+        # here's the start of the cat definition
+        if re.search('><def-cat', defCatLines[i]):
+            
+            start = i
+            i += 1
+            
+            # capture the category name
+            matchObj = re.search('n="(.+)"', defCatLines[i])
+        
+            if not matchObj:
+                continue
+            else:
+                catName = matchObj.group(1)
+            
+            # Save the name    
+            existCatList.append(catName)
+            
+            # Loop through all remaining lines for this category
+            while True:
+                
+                i += 1
+                
+                # See if we hit the end of the def-cat
+                if re.search('></def-cat', defCatLines[i]):
+                    break
+            
+            # map the category name to all the lines that make up the definition
+            existCatMap[catName] = defCatLines[start:i+1]
+            
+        i += 1
+                
+    # For comparison, strip the c_ from the existing categories
+    strippedList = [re.sub('c_', '', tok) for tok in existCatList]
+    
+    # Use set subtraction to get all the FLEx categories that aren't in the existing category list
+    reducedFLExList = list(set(list(srcPOSmap.keys())) - set(strippedList))
+    
+    # Combine the existing list with the FLEx list so we can loop through it in alphabetical order
+    # Create a tuple list with the 2nd element identifying which list the category came from
+    combinedList = [(cat, 'existList') for cat in existCatList]
+    combinedList.extend([('c_' + cat, 'flexList') for cat in reducedFLExList])
+    
+    for cat, myType in sorted(combinedList, key=lambda k_v: (k_v[0], k_v[1])):
+        
+        if myType == 'existList':
+            
+            for catLine in existCatMap[cat]:
+            
+                tr_out_f.write(catLine)
+                
+        else: # flexList
+            
+            # write out the begin def-cat element
+            tr_out_f.write('><def-cat\n')
+            tr_out_f.write('n="' + cat + '"\n')
+            
+            # write out two tags elements, plain and with .* added.
+            tr_out_f.write('><cat-item\n')
+            tr_out_f.write('tags="' + cat[2:] + '"\n')
+            tr_out_f.write('></cat-item\n')
+            
+            tr_out_f.write('><cat-item\n')
+            tr_out_f.write('tags="' + cat[2:] + '.*"\n')
+            tr_out_f.write('></cat-item\n')
+            
+            # write out the end def-cat element
+            tr_out_f.write('></def-cat\n')
+
+    # close out the category section
+    tr_out_f.write('></section-def-cats\n')
+            
+    return len(reducedFLExList)
+
+def processDefAttr(defAttrLines, POSmap, tr_out_f):  
+      
+    count = 0
+    gramCatfound = False
+    endFound = False
+    gramCatElementMissing = False
+    savedLines = []
+    
+    for line in defAttrLines:
+        
+        if re.search('n="a_gram_cat"', line):
+            
+            gramCatfound = True
+            tr_out_f.write(line)
+            
+        if re.search('></def-attr', line) and gramCatfound:
+            
+            endFound = True
+            
+        # check for end of the attribute section
+        if re.search('></section-def-attrs', line) and not gramCatfound:
+            
+            endFound = True
+            gramCatElementMissing = True
+            tr_out_f.write('><def-attr\n')
+            tr_out_f.write('n="a_gram_cat"\n')
+        
+        if not gramCatfound and not endFound:
+            
+            tr_out_f.write(line)
+
+        if endFound:
+            
+            savedLines.append(line)
+
+    # Loop through all of the category abbreviations and names
+    for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
+        
+        tr_out_f.write('><attr-item\n')
+        tr_out_f.write('c="' + pos_name + '"\n')
+        tr_out_f.write('tags="' + pos_abbr + '"\n')
+        tr_out_f.write('></attr-item\n')
+        
+        count += 1
+
+    if gramCatElementMissing == True:
+        
+        tr_out_f.write('></def-attr\n')
+        
+    # Write out the rest of the lines after the grammatical category section
+    for line in savedLines:
+        
+        tr_out_f.write(line)
+        
+    return count
+        
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -100,28 +245,30 @@ def MainFunction(DB, report, modify=True):
     if not transfer_rules_file:
         transfer_rules_file = 'Output\\transfer_rules.t1x'
     
-    posMap = {}
+    POSmap = {}
     
     # Get all source and target categories
-    if Utils.get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+    if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+        
         TargetDB.CloseProject()
         return
 
     TargetDB.CloseProject()
     
+    srcPOSmap = {}
+    
+    # Get just source categories
+    if Utils.get_categories(DB, report, srcPOSmap, TargetDB=None, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+
+        return
+        
     # Make a backup copy of the transfer rule file
     try:
         shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
     except:
         report.Error('There was a problem finding the transfer rules file. Check your configuration.')
         return
-    
-    savedLines = []
-    defAttrFound = False
-    gramCatfound = False
-    endFound = False
-    gramCatElementMissing = False
-    
+
     tr_f = open(transfer_rules_file+'.old', encoding='utf-8')
 
     # Check to see that we have the def-attr section in the format that XXE saves files in. Otherwise give an error.
@@ -133,69 +280,61 @@ def MainFunction(DB, report, modify=True):
         tr_f.close()
         return 
     
-    tr_out_f = open(transfer_rules_file, 'w', encoding='utf-8')
+    defCatStart = defAttrStart = sectDefAttrEnd = 0
     
-    # Read and write the 1st part of the transfer rule file -- until we get to the beginning of grammatical categories.
-    # After that, skip the old grammatical category lines and then after those, save the rest of the lines to be written later.
+    # Read and save the 1st part of the transfer rule file -- until we get to the beginning of grammatical categories (initial lines).
+    # Then read the grammatical category lines (def cat lines)
+    # After that, read attribute lines, but skip the old grammatical category lines and then after those, save the rest of the lines to be written later (remain lines).
     # Or if there is no gram_cat attribute, stop writing at the end of the attribute section
     # Note: we are not using elementTree because it doesn't preserve comments
-    for line in linesList:
+    for i, line in enumerate(linesList):
         
-        if  re.search('><def-attr', line):
+        # start of categories
+        if re.search('><def-cat', line) and defCatStart == 0:
             
-            defAttrFound = True
-            
-        if re.search('n="a_gram_cat"', line) and defAttrFound:
-            
-            # write this line
-            tr_out_f.write(line)
-            gramCatfound = True
-            
-        if re.search('></def-attr', line) and gramCatfound:
-            
-            endFound = True
+            defCatStart = i
         
-        # check for end of the attribute section
-        if re.search('></section-def-attrs', line) and not gramCatfound:
+        # start of attributes
+        elif re.search('><section-def-attrs', line) and defAttrStart == 0:
             
-            endFound = True
-            gramCatElementMissing = True
-            tr_out_f.write('><def-attr\n')
-            tr_out_f.write('n="a_gram_cat"\n')
+            defAttrStart = i
             
-        if not gramCatfound and not endFound:
+        elif re.search('></section-def-attrs', line):
             
-            tr_out_f.write(line)
+            sectDefAttrEnd = i
             
-        if endFound:
-            
-            savedLines.append(line)
-            
-    count = 0
+    try:
+        initialLines = linesList[0:defCatStart]
+        defCatLines = linesList[defCatStart:defAttrStart]
+        defAttrLines = linesList[defAttrStart:sectDefAttrEnd]
+        remainLines = linesList[sectDefAttrEnd:]
+    except:
+        report.Error('The transfer rules file is malformed.')
+        return 
 
-    # Loop through all of the category abbreviations and names
-    for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
-        
-        tr_out_f.write('><attr-item\n')
-        tr_out_f.write('c="' + pos_name + '"\n')
-        tr_out_f.write('tags="' + pos_abbr + '"\n')
-        tr_out_f.write('></attr-item\n')
-        
-        count += 1
-
-    if gramCatElementMissing == True:
-        
-        tr_out_f.write('></def-attr\n')
-        
-    # Write out the rest of the lines after the grammatical category section
-    for line in savedLines:
+    tr_out_f = open(transfer_rules_file, 'w', encoding='utf-8')
+    
+    # Write the initial lines
+    for line in initialLines:
         
         tr_out_f.write(line)
+    
+    # Process categories
+    catCount = processDefCat(defCatLines, srcPOSmap, tr_out_f)
+    
+    # Process attributes
+    attrCount = processDefAttr(defAttrLines, POSmap, tr_out_f)
+    
+    # Write the remaining lines
+    for line in remainLines:
         
+        tr_out_f.write(line)
+    
     tr_out_f.close()
     
-    report.Info(str(count) + ' categories created for the a_gram_cat attribute.')
-    
+    report.Info(str(catCount) + ' categories added to the categories section.')
+    report.Info(str(attrCount) + ' categories created for the a_gram_cat attribute.')
+
 #----------------------------------------------------------------
 # define the FlexToolsModule
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

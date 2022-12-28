@@ -950,7 +950,7 @@ def split_compounds(outStr):
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
     toks = reDataStream.split(outStr)
     
-    # If there is only one token return from the split, we don't have multiple words just
+    # If there is only one token returned from the split, we don't have multiple words just
     # return the input string
     if len(toks) > 1:
         outStr = ''
@@ -1394,10 +1394,15 @@ def get_sub_inflection_classes(mySubClasses):
             
     return ic_list
 
-def get_categories(DB, TargetDB, report, posMap, numCatErrorsToShow=1, addInflectionClasses=True):
+def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True):
 
     haveError = False
-    dbList = [(DB, 'source'), (TargetDB, 'target')]
+    dbList = [(DB, 'source')]
+    
+    # Sometime the caller may just want source categories
+    if TargetDB:
+        
+        dbList.append((TargetDB, 'target'))
 
     for dbTup in dbList:
         

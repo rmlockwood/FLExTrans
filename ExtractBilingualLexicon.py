@@ -689,7 +689,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         posMap = {}
         
         # Get all source and target categories
-        if Utils.get_categories(DB, TargetDB, report, posMap) == True:
+        if Utils.get_categories(DB, report, posMap, TargetDB) == True:
             
             error_list.append(('Error retrieving categories.'), 2)
             TargetDB.CloseProject()
