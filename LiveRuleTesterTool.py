@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.10 - 12/30/22 - Ron Lockwood
+#    Fixes #212. Get View Testbed Log button working by calling a the core module code for
+#    the module after shutting down the LRT.
+#
 #   Version 3.7.9 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -291,6 +295,8 @@ import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
 import DoStampSynthesis
 import ExtractBilingualLexicon
+sys.path.append(os.getcwd()+'\\Modules\FLExTrans')
+import TestbedLogViewer
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
@@ -303,7 +309,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.9",
+        FTM_Version    : "3.7.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -475,6 +481,7 @@ class Main(QMainWindow):
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
+        self.startTestbedLogViewer = False
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -620,6 +627,7 @@ class Main(QMainWindow):
         
         # Get replacement file name.
         self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
+        
         if not self.__replFile:
             self.ret_val = False
             self.close()
@@ -630,11 +638,12 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the proj. folder
+        # Get the path to the testbed file
         testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
+        
         if not testbedPath:
-            
-            testbedPath = self.buildFolder + '\\..\\testbed.xml'
+            self.ret_val = False
+            self.close()
 
         self.__testbedPath = testbedPath
         
@@ -645,6 +654,17 @@ class Main(QMainWindow):
         # Start out with all rules checked. 
         self.checkThemAll()
         
+        # Disable the View Testbed Log button if the testbed log doesn't exist
+        testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
+        
+        if not testbedLog:
+            self.ret_val = False
+            self.close()
+            return 
+        
+        if os.path.exists(testbedLog) == False:
+            self.ui.viewTestbedLogButton.setEnabled(False)
+
         self.ret_val = True
 
     def sourceTextComboChanged(self):
@@ -851,18 +871,12 @@ class Main(QMainWindow):
         self.unsetCursor()
 
     def ViewTestbedLogButtonClicked(self):
-        resultsFileObj = FlexTransTestbedResultsFile(self.__report)
     
-        # Get previous results
-        resultsXMLObj = resultsFileObj.getResultsXMLObj()
-    
-        window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
+        self.startTestbedLogViewer = True
         
-        window.show()
-        window.myResize()
-        firstIndex = window.getModel().rootItem.children[0].index
-        window.ui.logTreeView.expand(firstIndex)
-        #exec_val = app.exec_()
+        # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
 
     def EditTestbedLogButtonClicked(self):
         
@@ -2107,16 +2121,8 @@ def get_position_in_component_list(e, complex_e):
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
+START_LOG_VIEWER = 3
 
-def MainFunction(DB, report, modify=False):
-
-    retVal = RESTART_MODULE
-    
-    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
-    while retVal == RESTART_MODULE:
-        
-        retVal = RunModule(DB, report)
-        
 def RunModule(DB, report):
             
     # Read the configuration file which we assume is in the current directory.
@@ -2327,12 +2333,30 @@ def RunModule(DB, report):
         if window.restartTester:
             
             return RESTART_MODULE
+        
+        elif window.startTestbedLogViewer:
+            
+            return START_LOG_VIEWER
     else:
         report.Error('This text has no data.')
         return ERROR_HAPPENED
     
     return NO_ERRORS
 
+def MainFunction(DB, report, modify=False):
+
+    retVal = RESTART_MODULE
+    
+    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
+    while retVal == RESTART_MODULE:
+        
+        retVal = RunModule(DB, report)
+    
+    # Start the log viewer
+    if retVal == START_LOG_VIEWER:
+        
+        TestbedLogViewer.RunTestbedLogViewer(report)
+        
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
