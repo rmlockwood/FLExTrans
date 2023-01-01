@@ -62,12 +62,18 @@
 
 import shutil
 import re
+import sys
 import xml.etree.ElementTree as ET
 from FTModuleClass import *                                          
 from SIL.LCModel import *                                            
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 import Utils
 import ReadConfig
+
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+
+from RuleCatsAndAttribs import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -86,6 +92,62 @@ will be discarded. Also naming conventions will be followed like in the bilingua
 lexicon. I.e. spaces are converted to underscores, periods and slashes are removed.
 """}
 
+class Main(QMainWindow):
+
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
+        self.ui.OKButton.clicked.connect(self.OKClicked)
+        self.ui.CancelButton.clicked.connect(self.CancelClicked)
+        self.ui.PopulateFeaturesCheckbox.clicked.connect(self.FeatBoxClicked)
+        self.ui.PopulateClassesCheckbox.clicked.connect(self.ClassBoxClicked)
+        self.ui.PopulateSlotsCheckbox.clicked.connect(self.SlotBoxClicked)
+        
+    def FeatBoxClicked(self):
+        
+            if self.ui.PopulateFeaturesCheckbox.isChecked():
+                
+                self.ui.overrideFeaturesCheckbox.setEnabled(True)
+                
+            else:
+                self.ui.overrideFeaturesCheckbox.setEnabled(False)
+                
+    def ClassBoxClicked(self):
+        
+            if self.ui.PopulateClassesCheckbox.isChecked():
+                
+                self.ui.overrideClassesCheckbox.setEnabled(True)
+                
+            else:
+                self.ui.overrideClassesCheckbox.setEnabled(False)
+                
+    def SlotBoxClicked(self):
+        
+            if self.ui.PopulateSlotsCheckbox.isChecked():
+                
+                self.ui.overrideSlotsCheckbox.setEnabled(True)
+                
+            else:
+                self.ui.overrideSlotsCheckbox.setEnabled(False)
+                
+    def CancelClicked(self):
+        self.retVal = False
+        self.close()
+        
+    def OKClicked(self):
+
+        self.doFeat = self.ui.PopulateFeaturesCheckbox.isChecked()
+        self.doClass = self.ui.PopulateClassesCheckbox.isChecked()
+        self.doSlot = self.ui.PopulateSlotsCheckbox.isChecked()
+        self.overrideFeat = self.ui.overrideFeaturesCheckbox.isChecked()
+        self.overrideClass = self.ui.overrideClassesCheckbox.isChecked()
+        self.overrideSlot = self.ui.overrideSlotsCheckbox.isChecked()
+            
 def processDefCat(defCatLines, srcPOSmap, tr_out_f):
 
     ## Process the categories, adding them to the cat definitions. Don't change existing categories.
@@ -171,7 +233,7 @@ def processDefCat(defCatLines, srcPOSmap, tr_out_f):
             
     return len(reducedFLExList)
 
-def processDefAttr(defAttrLines, POSmap, tr_out_f):  
+def processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f):  
       
     count = 0
     gramCatfound = False
@@ -207,7 +269,7 @@ def processDefAttr(defAttrLines, POSmap, tr_out_f):
             savedLines.append(line)
 
     # Loop through all of the category abbreviations and names
-    for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
+    for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(), k_v[1])):
         
         tr_out_f.write('><attr-item\n')
         tr_out_f.write('c="' + pos_name + '"\n')
@@ -231,11 +293,42 @@ def processDefAttr(defAttrLines, POSmap, tr_out_f):
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
+    masterAttribList = []
+    
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
+    # Show the window
+    app = QApplication(sys.argv)
+
+    window = Main()
+    
+    window.show()
+    
+    app.exec_()
+    
+    if window.retVal == True:
+        
+        if window.doFeat:
+            
+            getFeatures(masterAttribList, window.overrideFeat)
+
+        elif window.doClass:
+            
+            getClasses(masterAttribList, window.overrideClass)
+
+        elif window.doSlot:
+            
+            getSlots(masterAttribList, window.overrideSlot)
+
+    return 
+
+
+
+
+
     TargetDB = Utils.openTargetProject(configMap, report)
 
     # Get the path to the transfer rules file
@@ -323,7 +416,7 @@ def MainFunction(DB, report, modify=True):
     catCount = processDefCat(defCatLines, srcPOSmap, tr_out_f)
     
     # Process attributes
-    attrCount = processDefAttr(defAttrLines, POSmap, tr_out_f)
+    attrCount = processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f)
     
     # Write the remaining lines
     for line in remainLines:
