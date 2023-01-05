@@ -5,6 +5,10 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.7.2 - 1/5/23 - Ron Lockwood
+#    Fixes #229. Slots, features and classes now converted to attributes in the
+#    transfer rule file. The user can choose which one and whether to override.
+#
 #   Version 3.7.1 - 12/28/22 - Ron Lockwood
 #    Adds categories to the categories section from FLEx. This capability
 #    is referenced in issue #229.
@@ -79,18 +83,26 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : 'Set up the transfer rule file with all grammatical categories needed.' ,
+        FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
         FTM_Description: 
 """
-This module goes through both the source and target FLEx databases and extracts
+This module first goes through both the source and target FLEx databases and extracts
 the grammatical category lists. It will replace what is currently listed for the
 tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
 will be discarded. Also naming conventions will be followed like in the bilingual
 lexicon. I.e. spaces are converted to underscores, periods and slashes are removed.
+This module will also populate the categories section of the transfer rule file with
+grammatical categories from the source FLEx project. This module will also create
+attributes in the transfer rule file from FLEx inflection features, inflection classes
+and template slots. You can decide which of these are used whether existing attributes
+should be overwritten.
 """}
+
+slot2AffixListMap = {}
+GRAM_CAT = 'a_gram_cat'
 
 class Main(QMainWindow):
 
@@ -147,7 +159,9 @@ class Main(QMainWindow):
         self.overrideFeat = self.ui.overrideFeaturesCheckbox.isChecked()
         self.overrideClass = self.ui.overrideClassesCheckbox.isChecked()
         self.overrideSlot = self.ui.overrideSlotsCheckbox.isChecked()
-            
+        self.retVal = True
+        self.close()
+
 def processDefCat(defCatLines, srcPOSmap, tr_out_f):
 
     ## Process the categories, adding them to the cat definitions. Don't change existing categories.
@@ -233,152 +247,361 @@ def processDefCat(defCatLines, srcPOSmap, tr_out_f):
             
     return len(reducedFLExList)
 
-def processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f):  
-      
-    count = 0
-    gramCatfound = False
-    endFound = False
-    gramCatElementMissing = False
-    savedLines = []
+def createAttrLines(attrib, valList, thingType):
     
-    for line in defAttrLines:
-        
-        if re.search('n="a_gram_cat"', line):
-            
-            gramCatfound = True
-            tr_out_f.write(line)
-            
-        if re.search('></def-attr', line) and gramCatfound:
-            
-            endFound = True
-            
-        # check for end of the attribute section
-        if re.search('></section-def-attrs', line) and not gramCatfound:
-            
-            endFound = True
-            gramCatElementMissing = True
-            tr_out_f.write('><def-attr\n')
-            tr_out_f.write('n="a_gram_cat"\n')
-        
-        if not gramCatfound and not endFound:
-            
-            tr_out_f.write(line)
+    myAttrList = []
 
-        if endFound:
-            
-            savedLines.append(line)
+    myAttrList.append('><def-attr\n')
+    myAttrList.append(f'n="' + formatAttrib(attrib, thingType) + '"\n')
+        
+    for val in sorted(valList):
+        
+        # Convert periods to underscores
+        val = Utils.underscores(val)
+        
+        myAttrList.append('><attr-item\n')
+        myAttrList.append(f'tags="{val}"\n')
+        myAttrList.append('></attr-item\n')
+        
+    myAttrList.append('></def-attr\n')
+
+    return myAttrList
+    
+def processGramCat(POSmap, nameStr):  
+
+    linesList = []
+    
+    linesList.append('><def-attr\n')
+    linesList.append(f'n="{nameStr}"\n')
 
     # Loop through all of the category abbreviations and names
     for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(), k_v[1])):
         
-        tr_out_f.write('><attr-item\n')
-        tr_out_f.write('c="' + pos_name + '"\n')
-        tr_out_f.write('tags="' + pos_abbr + '"\n')
-        tr_out_f.write('></attr-item\n')
-        
-        count += 1
+        linesList.append('><attr-item\n')
+        linesList.append('c="' + pos_name + '"\n')
+        linesList.append('tags="' + pos_abbr + '"\n')
+        linesList.append('></attr-item\n')
 
-    if gramCatElementMissing == True:
+    linesList.append('></def-attr\n')
+    
+    return linesList
         
-        tr_out_f.write('></def-attr\n')
+def formatAttrib(attrib, thingType):
+    
+    return f'a_{attrib}_{thingType}'
+
+def processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f): 
+    
+    count = 0
+    name2LinesMap = {}
+    attrLines = []
+    
+    startLine = defAttrLines.pop(0)
+    
+    for line in defAttrLines:
         
-    # Write out the rest of the lines after the grammatical category section
-    for line in savedLines:
+        if re.search('><def-attr', line):
+            
+            attrLines = list()
+            
+        elif re.search('n=', line):
+            
+            matchObj = re.search('n="(.+)"', line)
+            
+            if matchObj:
+                
+                attrName = matchObj.group(1)
+                name2LinesMap[attrName] = attrLines
+     
+        attrLines.append(line)
         
-        tr_out_f.write(line)
+    endLine = attrLines.pop()
+    
+    # go through the master list and add needed attributes to the names2LinesMap
+    for attrib in masterAttribList.keys():
+        
+        thingType = masterAttribList[attrib][2] # third part of the tuple is the thing type, e.g. feat, class or slot
+        
+        # Skip the attribute if it already exists and we are not supposed to override it
+        if formatAttrib(attrib, thingType) in name2LinesMap and not masterAttribList[attrib][0]: # 1st part of the tuple is the override flag
+            
+            continue
+        else:
+            # produce the xml lines for the def-attr element
+            newList = createAttrLines(attrib, masterAttribList[attrib][1], thingType) # 2nd part is the list of values
+            name2LinesMap[formatAttrib(attrib, thingType)] = newList
+
+            count += 1
+                
+    # Process a_gram_cat
+    name2LinesMap[GRAM_CAT] = processGramCat(POSmap, GRAM_CAT)
+                    
+    # Write the lines to the file
+    tr_out_f.write(startLine)
+               
+    for attrib in sorted(name2LinesMap.keys(), key=lambda s: s.lower()):
+        
+        for line in name2LinesMap[attrib]:
+            
+            tr_out_f.write(line)
+
+    tr_out_f.write(endLine) 
         
     return count
+
+def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, countList, thingType):
+    
+    posFullNameStr = pos.ToString()
         
+    # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
+    countList, posFullNameStr = Utils.check_for_cat_errors(report, dbType, posFullNameStr, posFullNameStr, countList, 1, thingType) # 1 for numCatErrorsToShow
+
+    if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
+        
+        # Get a list of abbreviation and name tuples
+        AN_list = Utils.get_sub_inflection_classes(pos.InflectionClassesOC)
+        
+        classAbbrList = []
+        
+        for icAbbr, _ in AN_list: # 2nd part is name which we don't need
+            
+            classAbbrList.append(icAbbr)
+    
+        # add the pos full name to the map along with the inflection class abbreviations that go with it
+        if posFullNameStr not in masterAttribList:
+            
+            masterAttribList[posFullNameStr] = (overrideClass, classAbbrList, thingType)
+            
+        # add any new inflection class abbreviations
+        else:
+            existinglist = masterAttribList[posFullNameStr][1] # 2nd part of the tuple
+            newList = list(set(classAbbrList).union(set(existinglist)))
+            masterAttribList[posFullNameStr] = (overrideClass, newList, thingType)
+
+def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countList, thingType):
+    
+    # Only process closed features, i.e. features that don't have sub-features
+    if feat.ClassID == 50: # FsClosedFeature
+    
+        featureGroupName = ITsString(feat.Name.BestAnalysisAlternative).Text
+        
+        # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
+        countList, featureGroupName = Utils.check_for_cat_errors(report, dbType, featureGroupName, featureGroupName, countList, 1, thingType) # 1 for numCatErrorsToShow
+        
+        featList = []
+        
+        for val in feat.ValuesOC:
+            
+            featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
+            featList.append(featAbbr)
+
+        # add the feature group name to the map along with the inflection feature abbreviations that go with it
+        if featureGroupName not in masterAttribList:
+            
+            masterAttribList[featureGroupName] = (overrideFeat, featList, thingType)
+            
+        # add any new inflection feature abbreviations
+        else:
+            existinglist = masterAttribList[featureGroupName][1] # 2nd part of the tuple
+            newList = list(set(featList).union(set(existinglist)))
+            masterAttribList[featureGroupName] = (overrideFeat, newList, thingType)
+            
+def processSlots(masterAttribList, override, slot, dbType, report, countList, thingType):
+    
+    slotName = ITsString(slot.Name.BestAnalysisAlternative).Text
+    slotGuid = slot.Guid.ToString()
+    
+    # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
+    countList, slotName = Utils.check_for_cat_errors(report, dbType, slotName, slotName, countList, 1, thingType) # 1 for numCatErrorsToShow
+    
+    if slotGuid in slot2AffixListMap:
+        
+        affList = slot2AffixListMap[slotGuid]
+    else:
+        return
+    
+    # add the slot name to the map along with the affix glosses that go with it. 
+    # if the slot name already exists, we skip it
+    if slotName not in masterAttribList:
+        
+        masterAttribList[slotName] = (override, affList, thingType)
+        
+def getSlot2AffixListMap(DB):
+            
+    # Loop through all the entries
+    for entry in DB.LexiconAllEntries():
+    
+        # Check that the objects we need are valid
+        if not entry.LexemeFormOA:
+            
+            continue
+            
+        if not entry.LexemeFormOA.MorphTypeRA or not entry.LexemeFormOA.MorphTypeRA.Name:
+            
+            continue
+            
+        if entry.SensesOS.Count > 0: # Entry with senses
+            
+            # Loop through senses
+            for _, mySense in enumerate(entry.SensesOS):
+                
+                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                
+                # Process only affixes
+                if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' and gloss:
+                    
+                    for slot in mySense.MorphoSyntaxAnalysisRA.Slots: 
+                        
+                        # Build the slot name
+                        slotGuid = slot.Guid.ToString()
+                     
+                        # If the slotGuid is not in the map yet, initialize it
+                        if slotGuid not in slot2AffixListMap:
+                            
+                            slot2AffixListMap[slotGuid] = [gloss]
+                        
+                        else:   
+                            # Otherwise find the list of affixes associated with this slot and add to it.
+                            existingAffixList = slot2AffixListMap[slotGuid]
+                            
+                            # Add to the gloss list if we 
+                            if gloss not in existingAffixList:
+                                
+                                existingAffixList.append(gloss)
+    
+    return
+    
+def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thingType):        
+        
+    haveError = False
+    
+    dbList = [(DB, 'source'), (TargetDB, 'target')]
+    
+    for dbTup in dbList:
+        
+        dbObj = dbTup[0]
+        dbType = dbTup[1]
+
+        # initialize a list of error counters to 0
+        countList = [0]*len(Utils.catProbData)
+    
+        if thingType == 'class':
+            
+            listToIterate = dbObj.lp.AllPartsOfSpeech
+            
+        elif thingType == 'feature':
+        
+            listToIterate = dbObj.lp.MsFeatureSystemOA.FeaturesOC
+
+        elif thingType == 'slot':
+        
+            getSlot2AffixListMap(dbObj)
+            listToIterate = dbObj.ObjectsIn(IMoInflAffixSlotRepository)
+
+        # Go through all the closed features in the current DB
+        for thing in listToIterate:
+
+            processFunc(masterAttribList, override, thing, dbType, report, countList, thingType)
+            
+            # check for serious error
+            if countList[0] == 999:
+                
+                # Note we have the error, but keep going so that we give all errors at once
+                # reset error (warning) counter to zero
+                countList[0] = 0
+                haveError = True
+    
+    if haveError == True:
+        return True
+    else:
+        return False
+
+# Check to see that we have the def-attr section in the format that XXE saves files in. Otherwise give an error.
+def checkFormat(linesList, report):
+            
+    if '><def-attr' not in ''.join(linesList):
+        
+        report.Error('The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.')
+        return True
+    
+    return False
+    
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
-    masterAttribList = []
+    masterAttribList = {}
+    srcPOSmap = {}
+    POSmap = {}
+    defCatStart = defAttrStart = sectDefAttrEnd = 0
     
-    # Read the configuration file which we assume is in the current directory.
+    # Show the window to get the options the user wants
+    app = QApplication(sys.argv)
+    window = Main()
+    window.show()
+    app.exec_()
+    
+    # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
-    # Show the window
-    app = QApplication(sys.argv)
-
-    window = Main()
-    
-    window.show()
-    
-    app.exec_()
-    
-    if window.retVal == True:
-        
-        if window.doFeat:
-            
-            getFeatures(masterAttribList, window.overrideFeat)
-
-        elif window.doClass:
-            
-            getClasses(masterAttribList, window.overrideClass)
-
-        elif window.doSlot:
-            
-            getSlots(masterAttribList, window.overrideSlot)
-
-    return 
-
-
-
-
-
+    # Open the target database
     TargetDB = Utils.openTargetProject(configMap, report)
 
+    # Get the different kinds of attributes
+    if window.retVal == False:
+    
+        return
+        
+    if window.doFeat:
+        
+        if getThings(masterAttribList, window.overrideFeat, DB, TargetDB, report, processFeatures, 'feature') == True:
+        
+            TargetDB.CloseProject()
+            return
+
+    if window.doClass:
+        
+        if getThings(masterAttribList, window.overrideClass, DB, TargetDB, report, processClassesForPos, 'class') == True:
+            
+            TargetDB.CloseProject()
+            return
+
+    if window.doSlot:
+        
+        if getThings(masterAttribList, window.overrideSlot, DB, TargetDB, report, processSlots, 'slot') == True:
+            
+            TargetDB.CloseProject()
+            return
+
     # Get the path to the transfer rules file
-    transfer_rules_file = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+    transfer_rules_file = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=True)
 
     # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
     if not transfer_rules_file:
-        transfer_rules_file = 'Output\\transfer_rules.t1x'
-    
-    POSmap = {}
-    
-    # Get all source and target categories
-    if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
-        
         TargetDB.CloseProject()
         return
-
-    TargetDB.CloseProject()
     
-    srcPOSmap = {}
-    
-    # Get just source categories
-    if Utils.get_categories(DB, report, srcPOSmap, TargetDB=None, numCatErrorsToShow=99, addInflectionClasses=False) == True:
-
-        return
-        
     # Make a backup copy of the transfer rule file
     try:
         shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
     except:
         report.Error('There was a problem finding the transfer rules file. Check your configuration.')
+        TargetDB.CloseProject()
         return
 
-    tr_f = open(transfer_rules_file+'.old', encoding='utf-8')
-
-    # Check to see that we have the def-attr section in the format that XXE saves files in. Otherwise give an error.
+    # Read in the lines of the transfer rule file
+    tr_f = open(transfer_rules_file, encoding='utf-8')
     linesList = tr_f.readlines()
-    
-    if '><def-attr' not in ''.join(linesList):
-        
-        report.Error('The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.')
-        tr_f.close()
+    tr_f.close()
+
+    # Check for an incorrect format
+    if checkFormat(linesList, report) == True:
+        TargetDB.CloseProject()
         return 
     
-    defCatStart = defAttrStart = sectDefAttrEnd = 0
-    
-    # Read and save the 1st part of the transfer rule file -- until we get to the beginning of grammatical categories (initial lines).
-    # Then read the grammatical category lines (def cat lines)
-    # After that, read attribute lines, but skip the old grammatical category lines and then after those, save the rest of the lines to be written later (remain lines).
-    # Or if there is no gram_cat attribute, stop writing at the end of the attribute section
+    # Divide the lines of the file into chunks. Category lines, attribute lines and the rest
     # Note: we are not using elementTree because it doesn't preserve comments
     for i, line in enumerate(linesList):
         
@@ -399,12 +622,15 @@ def MainFunction(DB, report, modify=True):
     try:
         initialLines = linesList[0:defCatStart]
         defCatLines = linesList[defCatStart:defAttrStart]
-        defAttrLines = linesList[defAttrStart:sectDefAttrEnd]
-        remainLines = linesList[sectDefAttrEnd:]
+        defAttrLines = linesList[defAttrStart:sectDefAttrEnd+1]
+        remainLines = linesList[sectDefAttrEnd+1:]
+        
     except:
         report.Error('The transfer rules file is malformed.')
+        TargetDB.CloseProject()
         return 
 
+    # Open the transfer file for writing
     tr_out_f = open(transfer_rules_file, 'w', encoding='utf-8')
     
     # Write the initial lines
@@ -412,8 +638,23 @@ def MainFunction(DB, report, modify=True):
         
         tr_out_f.write(line)
     
+    # Get just source categories
+    if Utils.get_categories(DB, report, srcPOSmap, TargetDB=None, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+
+        tr_out_f.close()
+        return
+        
     # Process categories
     catCount = processDefCat(defCatLines, srcPOSmap, tr_out_f)
+    
+    # Get all source and target categories
+    if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
+        
+        TargetDB.CloseProject()
+        tr_out_f.close()
+        return
+
+    TargetDB.CloseProject()
     
     # Process attributes
     attrCount = processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f)
@@ -425,8 +666,9 @@ def MainFunction(DB, report, modify=True):
     
     tr_out_f.close()
     
+    report.Info(str(attrCount) + ' attributes added to the attributes section.')
+    report.Info(str(len(POSmap)) + ' categories created for the a_gram_cat attribute.')
     report.Info(str(catCount) + ' categories added to the categories section.')
-    report.Info(str(attrCount) + ' categories created for the a_gram_cat attribute.')
 
 #----------------------------------------------------------------
 # define the FlexToolsModule

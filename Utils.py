@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.9 - 1/5/23 - Ron Lockwood
+#    Support fixes to issue 229 by adding a parameter to check_for_cat_errors.
+#
 #   Version 3.7.8 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -1467,7 +1470,7 @@ def process_inflection_classes(posMap, pos):
             
             posMap[icAbbr] = icName
     
-def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow):
+def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow, myType='category'):
 
     haveError = False
     
@@ -1486,7 +1489,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if message == 'fatal':
                 
                 if report:
-                    report.Error(f"The abbreviation: '{posAbbrStr}' for category: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this category in the {dbType} database.")
+                    report.Error(f"The abbreviation: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
                 haveError = True
                 
                 # show all fatal errors
@@ -1501,8 +1504,8 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
                 
                 if report:
-                    report.Warning(f"The abbreviation: '{oldAbbrStr}' for category: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
-                                   f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this category in transfer rules.")
+                    report.Warning(f"The abbreviation: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
+                                   f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
             elif countList[i] == numCatErrorsToShow:

@@ -36,7 +36,7 @@
      <string/>
     </property>
     <property name="text">
-     <string>Override existing inflection feature attributes</string>
+     <string>Overwrite existing inflection feature attributes</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -100,7 +100,7 @@
      <string/>
     </property>
     <property name="text">
-     <string>Override existing inflection class attributes</string>
+     <string>Overwrite existing inflection class attributes</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -151,10 +151,10 @@
      <string/>
     </property>
     <property name="text">
-     <string>Override existing template slot attributes</string>
+     <string>Overwrite existing template slot attributes</string>
     </property>
     <property name="checked">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -167,7 +167,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Source categories and the a_gram_cat attribute are populated automatically. Existing values for these are not overridden.</string>
+     <string>Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
