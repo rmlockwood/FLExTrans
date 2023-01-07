@@ -448,7 +448,10 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
     # Give a warning for keys in the replacement file that weren't found
     for key in list(set(replMap.keys()) - set(foundKeys)):
         
-        report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
+        # Ignore the default entry that gets installed
+        if key != 'SourceWord1.1':
+        
+            report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
         
     return new_biling_section
     
