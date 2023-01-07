@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.10 - 1/7/23 - Ron Lockwood
+#    Change the way we save the last sentence # selected. Use a class variable to 
+#    keep track of it. Fixes #370.
+#
 #   Version 3.7.9 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -303,7 +307,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.9",
+        FTM_Version    : "3.7.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -364,8 +368,6 @@ class SentenceList(QtCore.QAbstractListModel):
             self.__currentSent = self.__localData[sentNum]
     def getSelectedRow(self):
         return self.__currentRow
-    def getCurrentRow(self):
-        return self.__currentSent
     def setRTL(self, val):
         self.__RTL = val
     def getRTL(self):
@@ -475,6 +477,7 @@ class Main(QMainWindow):
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
+        self.lastSentNum = 0
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -1329,6 +1332,7 @@ class Main(QMainWindow):
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
     def listSentClicked(self):
+        
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
         
@@ -1349,9 +1353,13 @@ class Main(QMainWindow):
         
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
+
+        self.lastSentNum = self.__sent_model.getSelectedRow()
         
     def resizeEvent(self, event):
+        
         QMainWindow.resizeEvent(self, event)
+        
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
             ret = self.__lexicalUnits
@@ -1403,32 +1411,29 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
-            
             # Set the combo box index to be the same as the list box
-            ind = self.ui.listSentences.currentIndex()
+            #ind = self.ui.listSentences.currentIndex()
 
             # if no selection (-1), don't set the current index
-            if ind != -1:            
-                self.__sent_model.setCurrentSent(int(ind.row()))
-                self.ui.SentCombo.setCurrentIndex(int(ind.row()))
+            if self.lastSentNum != -1:            
+                self.__sent_model.setCurrentSent(self.lastSentNum)
+                self.ui.SentCombo.setCurrentIndex(self.lastSentNum)
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
-
             
             self.ui.selectWordsHintLabel.setVisible(True)
         
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
             
             # Set the list box index to be the same as the combo box
-            myRow = self.ui.SentCombo.currentIndex()
+            #myRow = self.ui.SentCombo.currentIndex()
             
             # if no selection (-1), don't set the current index
-            if myRow != -1:
-                qIndex = self.__sent_model.createIndex(myRow, 0)
+            if self.lastSentNum != -1:
+                qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            #self.ui.listSentences.setCurrentRow(self.ui.SentCombo.currentIndex())
             self.ui.selectWordsHintLabel.setVisible(False)
             
         else: # sentences or manual
@@ -1564,6 +1569,9 @@ class Main(QMainWindow):
         for j in range(i+1,len(self.__checkBoxList)):
             
             self.__checkBoxList[j].setVisible(False)
+        
+        # Save the sentence number that was selected    
+        self.lastSentNum = self.__sent_model.getSelectedRow()
 
     def getTargetsInBilingMap(self, wrdTup):
         
@@ -1626,17 +1634,10 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
         
-        # Save the selected sentence of the active tab (for manual tab, use select words)
-        if self.ui.tabSource.currentIndex() == 1: # full sentences
-            
-            ind = self.ui.listSentences.currentIndex()   
-            selectWordsSentNum = ind.row()
-        else:
-            selectWordsSentNum = self.ui.SentCombo.currentIndex()
-        
         f = open(self.windowsSettingsFile, 'w')
         
-        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(selectWordsSentNum)}|{self.__sourceText}\n')
+        # Save current rules tab, current source tab, last sentence # selected and the last source text
+        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
         f.close()
         
     def loadTransferRules(self):
