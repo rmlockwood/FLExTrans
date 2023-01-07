@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.7.1 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -86,14 +89,14 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
  
 import Utils
 import ReadConfig
-
+from Testbed import *
 from TestbedLog import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.7.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -110,7 +113,7 @@ YELLOW_TRIANGLE = 'Yellow_triangle.png'
 MAX_RESULTS_TO_DISPLAY = 25
 
 color_re = re.compile('color:#......')
-colorNumPunc = 'color:#'+Utils.PUNC_COLOR
+colorNumPunc = 'color:#'+PUNC_COLOR
 
 class Stats():
     def __init__(self, dateTimeStart, dateTimeEnd, totalTests, numFailed, numInvalid):
@@ -123,8 +126,8 @@ class Stats():
     def getTestElapsedSeconds(self):
         try:
             # Turn the strings into datetime objects
-            startDT = datetime.strptime(self.dateTimeStart, Utils.XML_DATETIME_FORMAT)
-            endDT = datetime.strptime(self.dateTimeEnd, Utils.XML_DATETIME_FORMAT)
+            startDT = datetime.strptime(self.dateTimeStart, XML_DATETIME_FORMAT)
+            endDT = datetime.strptime(self.dateTimeEnd, XML_DATETIME_FORMAT)
         except:
             return 0
         
@@ -134,16 +137,16 @@ class Stats():
         
     def getTestResultSummary(self):
         if self.numFailed > 0:
-            myColor = Utils.NOT_FOUND_COLOR
+            myColor = NOT_FOUND_COLOR
         elif self.numInvalid > 0:
-            myColor = Utils.PUNC_COLOR
+            myColor = PUNC_COLOR
         else:
-            myColor = Utils.AFFIX_COLOR
+            myColor = AFFIX_COLOR
 
         myStr = str(self.totalTests) + ' Tests, ' + str(self.numFailed) + ' Failed, ' + str(self.numInvalid) + ' Invalid'
 
         p = ET.Element('p')
-        Utils.output_span(p, myColor, myStr, False) #rtl
+        output_span(p, myColor, myStr, False) #rtl
         return ET.tostring(p, encoding='unicode')
 
     
@@ -221,7 +224,7 @@ class TestStatsItem(BaseTreeItem):
             
             try:
                 # Reformat the time string
-                startDT = datetime.strptime(self.statsObj.dateTimeStart, Utils.XML_DATETIME_FORMAT)
+                startDT = datetime.strptime(self.statsObj.dateTimeStart, XML_DATETIME_FORMAT)
                 retStr = startDT.strftime('%d %b %Y %H:%M:%S')
             except:
                 retStr = "Date format error."
@@ -315,7 +318,7 @@ class TestResultItem(BaseTreeItem):
                 return 'n/a'
             elif self.testFailed():
                 p = ET.Element('p')
-                Utils.output_span(p, Utils.NOT_FOUND_COLOR, self.actualStr, False) #rtl
+                output_span(p, NOT_FOUND_COLOR, self.actualStr, False) #rtl
                 return ET.tostring(p, encoding='unicode')
             else:
                 retStr = '---'
@@ -652,7 +655,7 @@ def MainFunction(DB, report, modify):
     ## Load the testbed results
     
     # Create an object for the testbed results file
-    resultsFileObj = Utils.FlexTransTestbedResultsFile(report)
+    resultsFileObj = FlexTransTestbedResultsFile(report)
     
     # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()

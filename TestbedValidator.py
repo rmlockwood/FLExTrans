@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.7 - 12/25/22 - Ron Lockwood
+#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
+#
 #   Version 3.6 - 8/26/22 - Ron Lockwood
 #   Fixes #215 Check morpheme type against guid in the object instead of
 #   the analysis writing system so we aren't dependent on an English WS.
@@ -32,6 +35,7 @@ import os
 from datetime import datetime
 import Utils
 import ReadConfig
+import Testbed 
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
@@ -86,7 +90,7 @@ class TestbedValidator():
         self.__invalidReason = ''
         
         # Sentence punctuation is always valid
-        if lexUnit.getGramCat() == Utils.SENT:
+        if lexUnit.getGramCat() == Testbed.SENT:
             return valid
         
         wordSense = lexUnit.getHeadWord() + '.' + lexUnit.getSenseNum()

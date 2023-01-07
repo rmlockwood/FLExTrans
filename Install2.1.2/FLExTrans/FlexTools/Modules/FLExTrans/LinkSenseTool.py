@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.6 - 12/25/22 - Ron Lockwood
+#    Added RegexFlag before re constants
+#
+#   Version 3.7.5 - 12/24/22 - Ron Lockwood
+#    Removed defined function GetEntryWithSense which was unused.
+#
 #   Version 3.7.4 - 12/14/22 - Ron Lockwood
 #    Don't count proper nouns as still to link if the Hide Proper Noun checkbox is checked.
 #
@@ -174,7 +180,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.7.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -794,7 +800,7 @@ class Main(QMainWindow):
         # Look for a match to the beginning of a headword
         for i in range(0, self.__combo_model.rowCount(None)):
             
-            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.IGNORECASE):
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.RegexFlag.IGNORECASE):
                 found = True
                 break
         
@@ -960,29 +966,6 @@ class Main(QMainWindow):
         
         return
     
-def GetEntryWithSense(e):
-    # If the entry is a variant and it has no senses, loop through its references 
-    # until we get to an entry that has a sense
-    notDoneWithVariants = True
-    while notDoneWithVariants:
-        if e.SensesOS.Count == 0:
-            if e.EntryRefsOS:
-                foundVariant = False
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        foundVariant = True
-                        break
-                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-                        break
-                    else: # normal variant of entry
-                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-                        continue
-        notDoneWithVariants = False
-    return e
-
 def remove1dot1(lem):
     return re.sub('1\.1', '', lem)
     
@@ -1394,7 +1377,7 @@ def dump_vocab(myData):
     for link in myData:
         hpg = link.get_srcHPG()
         myHeadword = hpg.getHeadword()
-        myHeadword = re.sub('\d','',myHeadword,re.A)
+        myHeadword = re.sub('\d','',myHeadword,re.RegexFlag.A)
          
         if myHeadword not in processed and hpg.getPOS() != PROPER_NOUN_ABBREV:
     

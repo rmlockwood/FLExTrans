@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.6 - 12/25/22 - Ron Lockwood
+#    Added RegexFlag before re constants
+#
 #   Version 3.7.5 - 12/24/22 - Ron Lockwood
 #    Removed defined function GetEntryWithSense which was unused.
 #
@@ -177,7 +180,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.7.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -797,7 +800,7 @@ class Main(QMainWindow):
         # Look for a match to the beginning of a headword
         for i in range(0, self.__combo_model.rowCount(None)):
             
-            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.IGNORECASE):
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.RegexFlag.IGNORECASE):
                 found = True
                 break
         
@@ -1374,7 +1377,7 @@ def dump_vocab(myData):
     for link in myData:
         hpg = link.get_srcHPG()
         myHeadword = hpg.getHeadword()
-        myHeadword = re.sub('\d','',myHeadword,re.A)
+        myHeadword = re.sub('\d','',myHeadword,re.RegexFlag.A)
          
         if myHeadword not in processed and hpg.getPOS() != PROPER_NOUN_ABBREV:
     
