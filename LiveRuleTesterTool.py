@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.11 - 12/29/22 - Ron Lockwood
+#    Fixes #332. Don't show the Sample logic rule in the list
+#
 #   Version 3.7.10 - 12/30/22 - Ron Lockwood
 #    Fixes #212. Get View Testbed Log button working by calling a the core module code for
 #    the module after shutting down the LRT.
@@ -309,7 +312,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.10",
+        FTM_Version    : "3.7.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -326,6 +329,7 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
+SAMPLE_LOGIC = 'Sample logic'
 MAX_CHECKBOXES = 80
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
 TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
@@ -1653,6 +1657,15 @@ class Main(QMainWindow):
         f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(selectWordsSentNum)}|{self.__sourceText}\n')
         f.close()
         
+    def removeSampleLogicRule(self, rulesElement):
+        
+        for rule in rulesElement:
+            
+            if re.search(SAMPLE_LOGIC, rule.attrib['comment']):
+            
+                rulesElement.remove(rule)
+                break
+
     def loadTransferRules(self):
             
         # Verify we have a valid transfer file.
@@ -1666,9 +1679,14 @@ class Main(QMainWindow):
         self.__transferRulesElement = test_rt.find('section-rules')
         
         if self.__transferRulesElement is not None:
+            
+            # Remove the Sample logic rule if present
+            self.removeSampleLogicRule(self.__transferRulesElement)
+            
             self.__transferRuleFileXMLtree = test_tree
             self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
+            
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
             
