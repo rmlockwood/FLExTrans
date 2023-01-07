@@ -562,21 +562,6 @@ def convert_to_biling_style_entry(replStyleEntry):
                         newSide[i].append(myElem)
     return newEntry
     
-def get_feat_abbr_list(SpecsOC, feat_abbr_list):
-    
-    for spec in SpecsOC:
-        
-        if spec.ClassID == 53: # FsComplexValue
-            
-            get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
-            
-        else: # FsClosedValue - I don't think the other types are in use
-            
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-            feat_abbr_list.append((featGrpName, abbValue))
-    return
-            
 def processSpaces(headWord, DB, e, error_list):
     
     # Check for preceding or ending spaces
@@ -689,7 +674,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         posMap = {}
         
         # Get all source and target categories
-        if Utils.get_categories(DB, TargetDB, report, posMap) == True:
+        if Utils.get_categories(DB, report, posMap, TargetDB) == True:
             
             error_list.append(('Error retrieving categories.'), 2)
             TargetDB.CloseProject()
@@ -844,7 +829,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                     feat_abbr_list = []
                                                     
                                                     # The features might be complex, make a recursive function call to find all leaf features
-                                                    get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                                    Utils.get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
                                                     
                                                     # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                                     for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):

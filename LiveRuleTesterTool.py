@@ -2091,18 +2091,6 @@ class Main(QMainWindow):
         
         self.unsetCursor()
 
-def get_feat_abbr_list(SpecsOC, feat_abbr_list):
-    
-    for spec in SpecsOC:
-        if spec.ClassID == 53: # FsComplexValue
-            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
-        else: # FsClosedValue - I don't think the other types are in use
-            
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-            feat_abbr_list.append((featGrpName, abbValue))
-    return
-
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
