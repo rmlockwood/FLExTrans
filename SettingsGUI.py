@@ -1077,8 +1077,8 @@ widgetList = [
    ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
     "The path and name of the testbed file.", True],\
 
-   ["Testbed Results File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
-    "The path and name of the testbed results file", True],\
+   ["Testbed Results Log File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
+    "The path and name of the testbed results log file", True],\
 
    ["Transfer Rules File 2 (Advanced Transfer)", "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
     "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", False],\

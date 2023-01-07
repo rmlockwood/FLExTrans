@@ -29,9 +29,6 @@
       <pointsize>12</pointsize>
      </font>
     </property>
-    <property name="zoomFactor" stdset="0">
-     <double>1.000000000000000</double>
-    </property>
    </widget>
    <widget class="QPushButton" name="OKButton">
     <property name="geometry">
