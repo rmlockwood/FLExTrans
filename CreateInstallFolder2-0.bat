@@ -51,6 +51,8 @@ rem libraries
 copy readconfig.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 copy Utils.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 copy MyTableView.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy TextClasses.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy Testbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 
 rem other stuff
 copy /Y subdirs.pth Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules
