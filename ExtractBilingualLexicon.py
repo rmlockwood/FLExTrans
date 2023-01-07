@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7.2 - 1/7/23 - Ron Lockwood
+#    Fixes #214. Give a warning for replacement file entries that couldn't be
+#    found in the bilingual lexicon.
+#
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -220,7 +224,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -311,43 +315,10 @@ def get_repl_entry_key(left, newDocType):
             
     return key
 
-# Use the replacement file specified by BilingualDictReplacmentFile in the
-# configuration file to replace or add entries in or to the bilingual dictionary.    
-# Two types of entries are in the replacement file, replacement entries and append entries.
-# These are found in two different section elements. For the replacement entries, the 
-# matching lemma in the bilingual file is found and replaced. The old lemma is shown in 
-# a comment along with an info. comment that says there was a replacement made there.
-# For append entries, they are just added at the end of the section element of the bilingual
-# dictionary. For the replacement file to be valid, it has to have all the symbols defined
-# in its symbol definition section <sdefs>. This function takes all those symbol definitions
-# and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
-# indicate where the new <sdef> elements start.
-def do_replacements(configMap, report, fullPathBilingFile, replFile):
-
-    # See if we need to do replacements
-    # See if the config setting is there or if it has valid info.
-    if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-        return True
+def doWeHaveNewDocType(tmpReplFile, report, replFile):
+        
+    newDocType = True
     
-    # Save a copy of the bilingual dictionary
-    shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
-
-    # Make a temporary copy of the replacement file so we can decompose it
-    tmpReplFile = replFile+'.tmp'
-    shutil.copy2(replFile, tmpReplFile)
-
-    # Convert the replacement file to decomposed (NFD)
-    Utils.decompose(tmpReplFile)
-    
-    # Parse the replacement file as XML
-    try:
-        replEtree = ET.parse(tmpReplFile)
-    except IOError:
-        if report:
-            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
-        return True
-    
-    # Determine the Doctype
     f = open(tmpReplFile, encoding='utf-8')
     
     # Read two lines
@@ -363,7 +334,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     if len(toks) < 1:
         if report:
             report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-        return True
+        return True, newDocType
 
     if toks[1] == REPLDICTIONARY:
         
@@ -375,16 +346,16 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         
     else:
         if report:
+            
             report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-        return True
-        
-    replMap = {}
-    replRoot = replEtree.getroot()
+            
+        return True, newDocType
     
-    ## Put the replacement entries into a map
-    # Get the replacement and append entries section
-    repl_sec = replRoot.find(".//*[@id='replacement']")
-    append_sec = replRoot.find(".//*[@id='append']")
+    return False, newDocType
+        
+def createReplMap(repl_sec, newDocType):    
+    
+    replMap = {}
     
     # Loop through the entries in this section
     for entry in repl_sec:
@@ -395,27 +366,21 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         key = get_repl_entry_key(left, newDocType)
         
         replMap[key] = entry
+        
+    return replMap
           
-    # Read in the bilingual xml file
-    try:
-        bilingEtree = ET.parse(fullPathBilingFile)
-    except IOError:
-        if report:
-            report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
-        return True
-    
-    ## Add in new symbol definitions from the replacement file
-    
-    bilingRoot = bilingEtree.getroot()
-    
+def addNewSymbols(bilingRoot, replRoot):
+        
     # Get symbol definitions element (sdefs)
     bilingSdefs = bilingRoot.find('sdefs')
     replSdefs = replRoot.find('sdefs')
     
     # Create a map of all the symbol abbreviations in the bilingual dictionary
     sdfMap={}
+    
     for mySdef in bilingSdefs:
-        sdfMap[mySdef.attrib['n']]=1
+        
+        sdfMap[mySdef.attrib['n']] = 1
         
     # Add a comment before the new sdefs get added
     comment = ET.Comment('Inserted symbol definitions from replacement file')
@@ -426,25 +391,27 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         
         # if the symbol abbreviation doesn't already exist, add it
         if symbol_def.attrib['n'] not in sdfMap:
+            
             # add the sdef element from repl file to the end of the biling sdefs list
             bilingSdefs.append(symbol_def)
+
+def processReplacementEntries(biling_section, replMap, newDocType, replFile, report):
         
-    ## Find entries that match replacement entries, comment out the old and insert the new
-    
-    # Get the section element
-    biling_section = bilingRoot.find('section')
-    
     # Create a new section element to replace the old
     new_biling_section = ET.Element('section')
     new_biling_section.attrib = biling_section.attrib
     
+    foundKeys = []
+    
     # Loop through all the bilingual entries
     for entry in biling_section:
+        
         # Get the left lemma text
         left = entry.find('p/l')
         
         # If we can't find it, use the identity text <e> should either have <p><l></l><r></r></p>) or <i>
         if left == None:
+            
             left = entry.find('i')
         
         # Create string with the old contents of the entry. 
@@ -472,15 +439,28 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
             # Insert the new entry from the replacement file map
             new_biling_section.append(replEntry)
             
+            # Keep a list of the ones we found in the replacement file map so we can give warnings for replacement file keys that weren't found
+            foundKeys.append(key)
+            
         else: # copy the old entry to the new
             new_biling_section.append(entry)
     
-    ## Add the entries from the replacement file marked as 'append'
+    # Give a warning for keys in the replacement file that weren't found
+    for key in list(set(replMap.keys()) - set(foundKeys)):
+        
+        report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
+        
+    return new_biling_section
     
+def processAppendEntries(new_biling_section, replFile, replRoot, newDocType):
+        
     # Make a comment and adds it
     comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.\n')
     new_biling_section.append(comment)
     
+    # Get the append entries section
+    append_sec = replRoot.find(".//*[@id='append']")
+
     # Loop through append entries
     for entry in append_sec:
         
@@ -490,6 +470,98 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
         else:
             new_biling_section.append(entry)
         
+def insertDocType(fullPathBilingFile):
+        
+    f = open(fullPathBilingFile, "r", encoding="utf-8")
+    contents = f.readlines()
+    f.close()
+    
+    contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+    
+    f = open(fullPathBilingFile, 'w', encoding="utf-8")
+    contents = "".join(contents)
+    f.write(contents)
+    f.close()
+    
+# Use the replacement file specified by BilingualDictReplacmentFile in the
+# configuration file to replace or add entries in or to the bilingual dictionary.    
+# Two types of entries are in the replacement file, replacement entries and append entries.
+# These are found in two different section elements. For the replacement entries, the 
+# matching lemma in the bilingual file is found and replaced. The old lemma is shown in 
+# a comment along with an info. comment that says there was a replacement made there.
+# For append entries, they are just added at the end of the section element of the bilingual
+# dictionary. For the replacement file to be valid, it has to have all the symbols defined
+# in its symbol definition section <sdefs>. This function takes all those symbol definitions
+# and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
+# indicate where the new <sdef> elements start.
+def do_replacements(configMap, report, fullPathBilingFile, replFile):
+
+    # See if we need to do replacements
+    # See if the config setting is there or if it has valid info.
+    if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
+        
+        return True
+    
+    # Save a copy of the bilingual dictionary
+    shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
+
+    # Make a temporary copy of the replacement file so we can decompose it
+    tmpReplFile = replFile+'.tmp'
+    shutil.copy2(replFile, tmpReplFile)
+
+    # Convert the replacement file to decomposed (NFD)
+    Utils.decompose(tmpReplFile)
+    
+    # Parse the replacement file as XML
+    try:
+        replEtree = ET.parse(tmpReplFile)
+        
+    except IOError:
+        
+        if report:
+            
+            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
+            
+        return True
+    
+    # Determine the Doctype. The old type was dictionary the new is repldictionary
+    haveErr, newDocType = doWeHaveNewDocType(tmpReplFile, report, replFile)
+    
+    if haveErr:
+        return
+
+    # Get the replacement entries section
+    replRoot = replEtree.getroot()
+    repl_sec = replRoot.find(".//*[@id='replacement']")
+    
+    # Put the replacement entries into a map
+    replMap = createReplMap(repl_sec, newDocType)
+    
+    # Read in the bilingual xml file
+    try:
+        bilingEtree = ET.parse(fullPathBilingFile)
+        
+    except IOError:
+        
+        if report:
+            
+            report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
+            
+        return True
+    
+    # Add in new symbol definitions from the replacement file
+    bilingRoot = bilingEtree.getroot()
+    addNewSymbols(bilingRoot, replRoot)
+
+    # Get the section element
+    biling_section = bilingRoot.find('section')
+    
+    # Find entries that match replacement entries, comment out the old and insert the new
+    new_biling_section = processReplacementEntries(biling_section, replMap, newDocType, replFile, report)
+
+    # Add the entries from the replacement file marked as 'append'
+    processAppendEntries(new_biling_section, replFile, replRoot, newDocType)
+
     # Remove the old entries list and add the new
     bilingRoot.remove(biling_section)
     bilingRoot.append(new_biling_section)
@@ -500,14 +572,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
     
     # Insert the DOCTYPE as the 2nd line of the file.
-    f = open(fullPathBilingFile, "r", encoding="utf-8")
-    contents = f.readlines()
-    f.close()
-    contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-    f = open(fullPathBilingFile, 'w', encoding="utf-8")
-    contents = "".join(contents)
-    f.write(contents)
-    f.close()
+    insertDocType(fullPathBilingFile)
     
     return False
 
