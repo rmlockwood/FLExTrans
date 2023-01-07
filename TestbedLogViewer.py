@@ -5,6 +5,10 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.7.2 - 12/30/22 - Ron Lockwood
+#    Fixes #212. Get View Testbed Log button working in the LRT by restructuring the
+#    code so the core code can be called.
+#
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -96,7 +100,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -635,7 +639,7 @@ class LogViewerMain(QMainWindow):
         self.ui.logTreeView.setColumnWidth(1, myWidth*3//10-colWidthReduction) 
         self.ui.logTreeView.setColumnWidth(2, myWidth*2//10-colWidthReduction)
     
-def MainFunction(DB, report, modify):
+def RunTestbedLogViewer(report):
         
     # Read the configuration file 
     configMap = ReadConfig.readConfig(report)
@@ -672,6 +676,10 @@ def MainFunction(DB, report, modify):
         window.ui.logTreeView.expand(firstIndex)
         
     app.exec_()
+
+def MainFunction(DB, report, modify):
+    
+    RunTestbedLogViewer(report)
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

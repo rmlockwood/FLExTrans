@@ -190,7 +190,7 @@ class Ui_MainWindow(object):
         self.editTestbedButton.setGeometry(QtCore.QRect(754, 657, 161, 31))
         self.editTestbedButton.setObjectName("editTestbedButton")
         self.viewTestbedLogButton = QtWidgets.QPushButton(self.centralwidget)
-        self.viewTestbedLogButton.setEnabled(False)
+        self.viewTestbedLogButton.setEnabled(True)
         self.viewTestbedLogButton.setGeometry(QtCore.QRect(940, 657, 161, 31))
         self.viewTestbedLogButton.setObjectName("viewTestbedLogButton")
         self.TestsAddedLabel = QtWidgets.QLabel(self.centralwidget)
