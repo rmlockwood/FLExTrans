@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.7.3 - 1/8/23 - Ron Lockwood
+#    Fixed bug in last fix. Don't require advance transfer file to be there.
+#
 #   Version 3.7.2 - 12/26/22 - Ron Lockwood
 #    Fixed support for advanced transfer that wasn't working. Target text 1 & 2
 #    couldn't be shown. Fixes #373.
@@ -90,9 +93,9 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "View a readable source or target text file.",    
+        FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",
         FTM_Description: 
 """
@@ -396,15 +399,13 @@ def MainFunction(DB, report, modify=True):
     if not tgtFile:
         return
     
-    # get the path to the 3rd transfer rule file
-    postChunkRuleFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report)
-    if not postChunkRuleFile:
-        return
-    
     advanced = False
         
+    # get the path to the 3rd transfer rule file
+    postChunkRuleFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report)
+    
     # see if we have advanced transfer going on by seeing if the .t3x file is present
-    if os.path.isfile(postChunkRuleFile):   
+    if postChunkRuleFile and os.path.isfile(postChunkRuleFile):   
         advanced = True
             
     # get temporary file name for html results
