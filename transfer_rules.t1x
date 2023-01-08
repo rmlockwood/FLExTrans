@@ -45,14 +45,14 @@ tags="samp.*"
 ><!--This tags element will match words that have 'samp' for the grammatical category, 'pst' for the next tag and any number of further tags.--><cat-item
 tags="samp.pst.*"
 ></cat-item
-><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in th subsequent tags. I.e. any tags before and any tags after it.--><cat-item
+><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in the subsequent tags. I.e. any tags before and any tags after it.--><cat-item
 tags="samp.*.pst.*"
 ></cat-item
 ></def-cat
 ></section-def-cats
 ><section-def-attrs
 ><def-attr
-n="a_gender_features"
+n="a_gender_feature"
 ><attr-item
 tags="m"
 ></attr-item
