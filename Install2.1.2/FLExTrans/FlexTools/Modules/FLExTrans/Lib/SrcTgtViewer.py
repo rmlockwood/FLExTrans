@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         font.setFamily("Arial")
         font.setPointSize(12)
         self.webView.setFont(font)
-        self.webView.setProperty("zoomFactor", 1.0)
+#        self.webView.setProperty("zoomFactor", 1.0)
         self.webView.setObjectName("webView")
         self.OKButton = QtWidgets.QPushButton(self.centralwidget)
         self.OKButton.setGeometry(QtCore.QRect(790, 620, 90, 25))

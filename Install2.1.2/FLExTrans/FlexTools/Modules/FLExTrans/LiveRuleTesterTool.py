@@ -5,6 +5,17 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.12 - 1/7/23 - Ron Lockwood
+#    Change the way we save the last sentence # selected. Use a class variable to 
+#    keep track of it. Fixes #370.
+#
+#   Version 3.7.11 - 12/29/22 - Ron Lockwood
+#    Fixes #332. Don't show the Sample logic rule in the list
+#
+#   Version 3.7.10 - 12/30/22 - Ron Lockwood
+#    Fixes #212. Get View Testbed Log button working by calling a the core module code for
+#    the module after shutting down the LRT.
+#
 #   Version 3.7.9 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -291,6 +302,8 @@ import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
 import DoStampSynthesis
 import ExtractBilingualLexicon
+sys.path.append(os.getcwd()+'\\Modules\FLExTrans')
+import TestbedLogViewer
 
 from LiveRuleTester import Ui_MainWindow
 from OverWriteTestDlg import Ui_OverWriteTest
@@ -303,7 +316,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.9",
+        FTM_Version    : "3.7.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -320,6 +333,7 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
+SAMPLE_LOGIC = 'Sample logic'
 MAX_CHECKBOXES = 80
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
 TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
@@ -364,8 +378,6 @@ class SentenceList(QtCore.QAbstractListModel):
             self.__currentSent = self.__localData[sentNum]
     def getSelectedRow(self):
         return self.__currentRow
-    def getCurrentRow(self):
-        return self.__currentSent
     def setRTL(self, val):
         self.__RTL = val
     def getRTL(self):
@@ -475,6 +487,8 @@ class Main(QMainWindow):
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
+        self.lastSentNum = 0
+        self.startTestbedLogViewer = False
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -620,6 +634,7 @@ class Main(QMainWindow):
         
         # Get replacement file name.
         self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
+        
         if not self.__replFile:
             self.ret_val = False
             self.close()
@@ -630,11 +645,12 @@ class Main(QMainWindow):
         self.ui.addToTestbedButton.setEnabled(False)
         self.ui.addMultipleCheckBox.setEnabled(False)
         
-        # Get the path to the testbed file, if it's not in the config file (perhaps an older version of FLExTrans) set it to the proj. folder
+        # Get the path to the testbed file
         testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
+        
         if not testbedPath:
-            
-            testbedPath = self.buildFolder + '\\..\\testbed.xml'
+            self.ret_val = False
+            self.close()
 
         self.__testbedPath = testbedPath
         
@@ -645,6 +661,17 @@ class Main(QMainWindow):
         # Start out with all rules checked. 
         self.checkThemAll()
         
+        # Disable the View Testbed Log button if the testbed log doesn't exist
+        testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
+        
+        if not testbedLog:
+            self.ret_val = False
+            self.close()
+            return 
+        
+        if os.path.exists(testbedLog) == False:
+            self.ui.viewTestbedLogButton.setEnabled(False)
+
         self.ret_val = True
 
     def sourceTextComboChanged(self):
@@ -851,18 +878,12 @@ class Main(QMainWindow):
         self.unsetCursor()
 
     def ViewTestbedLogButtonClicked(self):
-        resultsFileObj = FlexTransTestbedResultsFile(self.__report)
     
-        # Get previous results
-        resultsXMLObj = resultsFileObj.getResultsXMLObj()
-    
-        window = TestbedLogViewer.LogViewerMain(resultsXMLObj)
+        self.startTestbedLogViewer = True
         
-        window.show()
-        window.myResize()
-        firstIndex = window.getModel().rootItem.children[0].index
-        window.ui.logTreeView.expand(firstIndex)
-        #exec_val = app.exec_()
+        # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
 
     def EditTestbedLogButtonClicked(self):
         
@@ -1329,6 +1350,7 @@ class Main(QMainWindow):
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
 
     def listSentClicked(self):
+        
         mySent = self.__sent_model.getCurrentSent()
         self.__lexicalUnits = ''
         
@@ -1349,9 +1371,13 @@ class Main(QMainWindow):
         
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
+
+        self.lastSentNum = self.__sent_model.getSelectedRow()
         
     def resizeEvent(self, event):
+        
         QMainWindow.resizeEvent(self, event)
+        
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
             ret = self.__lexicalUnits
@@ -1403,32 +1429,29 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
-            
             # Set the combo box index to be the same as the list box
-            ind = self.ui.listSentences.currentIndex()
+            #ind = self.ui.listSentences.currentIndex()
 
             # if no selection (-1), don't set the current index
-            if ind != -1:            
-                self.__sent_model.setCurrentSent(int(ind.row()))
-                self.ui.SentCombo.setCurrentIndex(int(ind.row()))
+            if self.lastSentNum != -1:            
+                self.__sent_model.setCurrentSent(self.lastSentNum)
+                self.ui.SentCombo.setCurrentIndex(self.lastSentNum)
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
-
             
             self.ui.selectWordsHintLabel.setVisible(True)
         
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
             
             # Set the list box index to be the same as the combo box
-            myRow = self.ui.SentCombo.currentIndex()
+            #myRow = self.ui.SentCombo.currentIndex()
             
             # if no selection (-1), don't set the current index
-            if myRow != -1:
-                qIndex = self.__sent_model.createIndex(myRow, 0)
+            if self.lastSentNum != -1:
+                qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            #self.ui.listSentences.setCurrentRow(self.ui.SentCombo.currentIndex())
             self.ui.selectWordsHintLabel.setVisible(False)
             
         else: # sentences or manual
@@ -1564,6 +1587,9 @@ class Main(QMainWindow):
         for j in range(i+1,len(self.__checkBoxList)):
             
             self.__checkBoxList[j].setVisible(False)
+        
+        # Save the sentence number that was selected    
+        self.lastSentNum = self.__sent_model.getSelectedRow()
 
     def getTargetsInBilingMap(self, wrdTup):
         
@@ -1626,19 +1652,21 @@ class Main(QMainWindow):
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
         
-        # Save the selected sentence of the active tab (for manual tab, use select words)
-        if self.ui.tabSource.currentIndex() == 1: # full sentences
-            
-            ind = self.ui.listSentences.currentIndex()   
-            selectWordsSentNum = ind.row()
-        else:
-            selectWordsSentNum = self.ui.SentCombo.currentIndex()
-        
         f = open(self.windowsSettingsFile, 'w')
         
-        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(selectWordsSentNum)}|{self.__sourceText}\n')
+        # Save current rules tab, current source tab, last sentence # selected and the last source text
+        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
         f.close()
         
+    def removeSampleLogicRule(self, rulesElement):
+        
+        for rule in rulesElement:
+            
+            if re.search(SAMPLE_LOGIC, rule.attrib['comment']):
+            
+                rulesElement.remove(rule)
+                break
+
     def loadTransferRules(self):
             
         # Verify we have a valid transfer file.
@@ -1652,9 +1680,14 @@ class Main(QMainWindow):
         self.__transferRulesElement = test_rt.find('section-rules')
         
         if self.__transferRulesElement is not None:
+            
+            # Remove the Sample logic rule if present
+            self.removeSampleLogicRule(self.__transferRulesElement)
+            
             self.__transferRuleFileXMLtree = test_tree
             self.__transferModel = QStandardItemModel ()
             self.displayRules(self.__transferRulesElement, self.__transferModel)
+            
             # Initialize the model for the rule list control
             self.ui.listTransferRules.setModel(self.__transferModel)
             
@@ -2077,18 +2110,6 @@ class Main(QMainWindow):
         
         self.unsetCursor()
 
-def get_feat_abbr_list(SpecsOC, feat_abbr_list):
-    
-    for spec in SpecsOC:
-        if spec.ClassID == 53: # FsComplexValue
-            myList = get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
-        else: # FsClosedValue - I don't think the other types are in use
-            
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-            feat_abbr_list.append((featGrpName, abbValue))
-    return
-
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
@@ -2107,16 +2128,8 @@ def get_position_in_component_list(e, complex_e):
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
+START_LOG_VIEWER = 3
 
-def MainFunction(DB, report, modify=False):
-
-    retVal = RESTART_MODULE
-    
-    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
-    while retVal == RESTART_MODULE:
-        
-        retVal = RunModule(DB, report)
-        
 def RunModule(DB, report):
             
     # Read the configuration file which we assume is in the current directory.
@@ -2327,12 +2340,30 @@ def RunModule(DB, report):
         if window.restartTester:
             
             return RESTART_MODULE
+        
+        elif window.startTestbedLogViewer:
+            
+            return START_LOG_VIEWER
     else:
         report.Error('This text has no data.')
         return ERROR_HAPPENED
     
     return NO_ERRORS
 
+def MainFunction(DB, report, modify=False):
+
+    retVal = RESTART_MODULE
+    
+    # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
+    while retVal == RESTART_MODULE:
+        
+        retVal = RunModule(DB, report)
+    
+    # Start the log viewer
+    if retVal == START_LOG_VIEWER:
+        
+        TestbedLogViewer.RunTestbedLogViewer(report)
+        
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
