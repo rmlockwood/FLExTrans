@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.13 - 1/9/23 - Ron Lockwood
+#    Fix to bug introduce in last version. Default last sentence # to -1 so no
+#    indexes get set initially.
+#
 #   Version 3.7.12 - 1/7/23 - Ron Lockwood
 #    Change the way we save the last sentence # selected. Use a class variable to 
 #    keep track of it. Fixes #370.
@@ -316,7 +320,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.12",
+        FTM_Version    : "3.7.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -487,7 +491,7 @@ class Main(QMainWindow):
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
-        self.lastSentNum = 0
+        self.lastSentNum = -1
         self.startTestbedLogViewer = False
         
         # Tie controls to functions
