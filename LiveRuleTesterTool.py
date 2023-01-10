@@ -2138,7 +2138,13 @@ class Main(QMainWindow):
                      
                     # process pairs of tokens (punctuation and lexical unit)
                     for j in range(0, len(subTokens)-1, 2):
-                         
+                        
+                        # Put a space between LUs inside the braces
+                        if j > 0:
+                            
+                            myStr = ' '
+                            outputLUSpan(pElem, PUNC_COLOR, myStr, RTLflag)
+                             
                         # parse the lexical unit and add the elements needed to the list item element
                         processLexicalUnit(subTokens[j+1], pElem, RTLflag, True)
                          
