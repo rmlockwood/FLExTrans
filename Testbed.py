@@ -6,7 +6,7 @@
 #   12/24/2022
 #
 #   Version 3.7.1 - 1/10/23 - Ron Lockwood
-#    Renamed some functions to be camel case.
+#    Renamed some functions to be camel case. Also added common function processAdvancedResults.
 #
 #   Version 3.7 - 12/24/22 - Ron Lockwood
 #    Initial version.
@@ -1178,6 +1178,104 @@ def processChunkLexicalUnit(lu_str, parent_element, rtl):
         
         # output the symbol
         outputLUSpan(parent_element, symbol_color, ' '+symb, rtl)
+
+# Format advanced (chunk) output with color coding.
+# This function is used in 3 places. 
+# 1) for showing transfer results in the Live Rule Tester
+# 2) for displaying lines with the View Source/Target Apertium Text Tool
+# 3) for displaying apertium log results. This one uses a stripped down version of the function.
+# we need the dummy parameter for use in the LRT processLogLines function
+def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuationPresent=False):            
+        
+        # Split off the advanced stuff that precedes the brace {
+        # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
+        # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
+        tokens = re.split('{|}', targetOutput)
+        
+        # process pairs of tokens
+        for i in range(0, len(tokens)-1): # skip the last one for now
+            
+            tok = tokens[i]
+        
+            # the even # elements are the advanced stuff
+            if i%2 == 0:
+                
+                chunk = tok
+                
+                if punctuationPresent:
+                    
+                    # remove the $ from the advanced part
+                    tok = re.sub('\$', '', tok)
+                    
+                    # split on ^ and output any punctuation
+                    [punc, chunk] = re.split('\^', tok)
+                
+                    # don't put out anything when it's a default chunk
+                    if re.search('^default', chunk):
+                        continue
+                
+                    # TODO: not sure if we have punctuation in the the live rule tester. Might not need a lot of this code
+                    # First, put out the punctuation. If the punctuation is null, put
+                    # out a space. Except if it's the first punctuation and it null.
+                    if len(punc) > 0:
+                        
+                        outputLUSpan(pElem, PUNC_COLOR, punc, RTLflag)
+                    
+                    elif i > 0:
+                        
+                        outputLUSpan(pElem, PUNC_COLOR, ' ', RTLflag)
+                        
+                # Now put out the chunk part
+                processChunkLexicalUnit(chunk, pElem, RTLflag)
+                
+                # Put out a [ to surround the normal lex. unit
+                outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ' [', RTLflag)
+
+            # process odd # elements -- the normal stuff (that was within the braces)
+            else:
+                
+                # parse the lexical units. This will give us tokens before, between 
+                # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
+                #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
+                subTokens = re.split('\^|\$', tok)
+                
+                # process pairs of tokens (punctuation and lexical unit)
+                for j in range(0, len(subTokens)-1, 2):
+                    
+                    myStr = ''
+                    
+                    if punctuationPresent:
+                        
+                        # First, put out the punctuation. If the punctuation is null, put
+                        # out a space. Except if it's the first punctuation and it null.
+                        if len(subTokens[j]) > 0:
+                            
+                            outputLUSpan(pElem, PUNC_COLOR, subTokens[j], RTLflag)
+                        else:
+                            # we need a preceding space if we are not within brackets
+                            if re.search('^default', chunk) is not None:
+                                
+                                myStr = ' '
+                    else:
+                        # Put a space between LUs inside the braces
+                        if j > 0:
+
+                            myStr = ' '
+                                    
+                    outputLUSpan(pElem, PUNC_COLOR, myStr, RTLflag)
+                    
+                    # parse the lexical unit and add the elements needed to the list item element
+                    processLexicalUnit(subTokens[j+1], pElem, RTLflag, True)
+                    
+                # process last subtoken for the stuff inside the {}
+                if len(subTokens[-1]) > 0:
+                    
+                    outputLUSpan(pElem, PUNC_COLOR, subTokens[-1], RTLflag)
+                
+                # Put out a closing ] if it wasn't a default chunk
+                if re.search('^default', chunk) is None:
+                    
+                    outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ']', RTLflag)
 
 def convertXMLEntryToColoredString(entryElement, isRtl):
     

@@ -266,85 +266,14 @@ class Main(QMainWindow):
             # Process all lines in the input file
             for line in f:
                 
+                # Normalize to composed form
                 line = unicodedata.normalize('NFC', line)
                 
                 list_item = ET.SubElement(ord_list, 'li')
                 
-                # Split off the advanced stuff that precedes the brace {
-                # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
-                # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
-                tokens = re.split('{|}', line)
+                # Call testbed.py function to format the line
+                processAdvancedResults(line, list_item, rtl_flag, dummy=True, punctuationPresent=True)
                 
-                # process pairs of tokens
-                for i in range(0,len(tokens)-1): # skip the last one for now
-                    
-                    tok = tokens[i]
-                
-                    # the even # elements are the advanced stuff
-                    if i%2 == 0:
-                        
-                        # remove the $ from the advanced part
-                        tok = re.sub('\$', '', tok)
-                        
-                        # split on ^ and output any punctuation
-                        [punc, chunk] = re.split('\^', tok)
-                        
-                        # don't put out anything when it's a default chunk
-                        if re.search('^default', chunk):
-                            continue
-                        
-                        # First, put out the punctuation. If the punctuation is null, put
-                        # out a space. Except if it's the first punctuation and it null.
-                        if len(punc) > 0:
-                            outputLUSpan(list_item, PUNC_COLOR, punc, rtl_flag)
-                        elif i > 0:
-                            outputLUSpan(list_item, PUNC_COLOR, ' ', rtl_flag)
-                        
-                        # Now put out the chunk part
-                        processChunkLexicalUnit(chunk, list_item, rtl_flag)
-                        
-                        # Put out a [ to surround the normal lex. unit
-                        outputLUSpan(list_item, CHUNK_LEMMA_COLOR, ' [', rtl_flag)
-
-                    # process odd # elements -- the normal stuff (that was within the braces)
-                    else:
-                        
-                        # parse the lexical units. This will give us tokens before, between 
-                        # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
-                        #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
-                        subTokens = re.split('\^|\$', tok)
-                        
-                        # process pairs of tokens (punctuation and lexical unit)
-                        for j in range(0,len(subTokens)-1,2):
-                            # First, put out the punctuation. If the punctuation is null, put
-                            # out a space. Except if it's the first punctuation and it null.
-                            if len(subTokens[j]) > 0:
-                                outputLUSpan(list_item, PUNC_COLOR, subTokens[j], rtl_flag)
-                            else:
-                                # we need a preceding space if we are not within brackets
-                                if re.search('^default', chunk) is None:
-                                    myStr = ''
-                                else:
-                                    myStr = ' '
-                                outputLUSpan(list_item, PUNC_COLOR, myStr, rtl_flag)
-                            
-                            # parse the lexical unit and add the elements needed to the list item element
-                            processLexicalUnit(subTokens[j+1], list_item, rtl_flag, show_unk_symbol)
-                            
-                        # process last subtoken for the stuff inside the {}
-                        if len(subTokens[-1]) > 0:
-                            outputLUSpan(list_item, PUNC_COLOR, subTokens[-1], rtl_flag)
-                        
-                        # Put out a closing ] if it wasn't a default chunk
-                        if re.search('^default', chunk) is None:
-                            outputLUSpan(list_item, CHUNK_LEMMA_COLOR, ']', rtl_flag)
-
-                # process last token
-                tok = re.sub('\$', '', tokens[-1].rstrip())
-                if len(tok) > 0:
-                    # remove the $
-                    outputLUSpan(list_item, PUNC_COLOR, tok, rtl_flag)
-                           
         else: # not advanced
             # Process all lines in the input file
             for line in f:
