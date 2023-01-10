@@ -2123,7 +2123,7 @@ class Main(QMainWindow):
                 if i%2 == 0:
                     
                     # Now put out the chunk part
-                    outputLUSpan(tok, pElem, RTLflag)
+                    processChunkLexicalUnit(tok, pElem, RTLflag)
                     
                     # Put out a [ to surround the normal lex. unit
                     outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ' [', RTLflag)
@@ -2187,7 +2187,7 @@ class Main(QMainWindow):
                         outputLUSpan(pElem, PUNC_COLOR, ' ', RTLflag)
                     
                     # Now put out the chunk part
-                    outputLUSpan(chunk, pElem, RTLflag)
+                    processChunkLexicalUnit(chunk, pElem, RTLflag)
                     
                     # Put out a [ to surround the normal lex. unit
                     outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ' [', RTLflag)
