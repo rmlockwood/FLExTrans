@@ -2078,9 +2078,9 @@ class Main(QMainWindow):
             if re.search(r'Rule \d+', line):
                 
                 # Extract the rule # and the lexical units
-                matchObj = re.search(r'(.+)(Rule \d+)( line \d+ )(.+)', line)
-                ruleStr = matchObj.group(2)
-                lexUnitsStr = matchObj.group(4).strip()
+                matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
+                ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
+                lexUnitsStr = matchObj.group(5).strip()
                 
                 # Put a delimeter between multiple lexical units
                 lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
@@ -2090,6 +2090,9 @@ class Main(QMainWindow):
                 
                 # Create a <p> html element
                 paragraphEl = ET.Element('p')
+                
+                # Start the span with 'Rule' + #
+                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sent_model.getRTL())
 
                 # process all the lexical units
                 for lexUnit in lexUnitList:
@@ -2100,9 +2103,6 @@ class Main(QMainWindow):
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
                     
-                # Prepend the rule #
-                coloredLUStr = re.sub('<p>', f'<p>{ruleStr}: ', coloredLUStr)
-            
                 # add the html for this line to the reest
                 retStr += coloredLUStr
                     
