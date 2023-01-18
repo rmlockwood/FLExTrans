@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.7 - 1/18/23 - Ron Lockwood
+#    Fixed bug where report was None in the do_replacements function and a warning was
+#    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
+#
 #   Version 3.7.6 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -180,7 +184,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.6",
+        FTM_Version    : "3.7.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1412,8 +1416,8 @@ def MainFunction(DB, report, modify=False):
         
     if retVal == REBUILD_BILING:
         
-        # Extract the bilingual lexicon        
-        error_list = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap)
+        # Extract the bilingual lexicon. Force a complete rebuild instead of using the cache.        
+        error_list = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=False)
         
         # output info, warnings, errors
         for msg in error_list:

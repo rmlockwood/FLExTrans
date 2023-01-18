@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7.3 - 1/18/23 - Ron Lockwood
+#    Fixed bug where report was None in the do_replacements function and a warning was
+#    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
+#
 #   Version 3.7.2 - 1/7/23 - Ron Lockwood
 #    Fixes #214. Give a warning for replacement file entries that couldn't be
 #    found in the bilingual lexicon.
@@ -224,7 +228,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -451,7 +455,9 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
         # Ignore the default entry that gets installed
         if key != 'SourceWord1.1':
         
-            report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
+            if report: # could be None
+            
+                report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
         
     return new_biling_section
     
