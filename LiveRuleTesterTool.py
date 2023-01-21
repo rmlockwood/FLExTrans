@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.14 - 1/10/23 - Ron Lockwood
+#    Show log file output in colored format. Also filter out unneeded information.
+#    Fixes #162 and #320. Also widened yellow log output area.
+#
+#   Version 3.7.13 - 1/9/23 - Ron Lockwood
+#    Fix to bug introduce in last version. Default last sentence # to -1 so no
+#    indexes get set initially.
+#
 #   Version 3.7.12 - 1/7/23 - Ron Lockwood
 #    Change the way we save the last sentence # selected. Use a class variable to 
 #    keep track of it. Fixes #370.
@@ -316,7 +324,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.12",
+        FTM_Version    : "3.7.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -489,7 +497,7 @@ class Main(QMainWindow):
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
-        self.lastSentNum = 0
+        self.lastSentNum = -1
         self.startTestbedLogViewer = False
         
         # Tie controls to functions
@@ -596,7 +604,7 @@ class Main(QMainWindow):
                 break
             for myWordBundle in mySent:
                 surface_form = myWordBundle[0]
-                if self.has_RTL_data(surface_form):
+                if self.hasRTLdata(surface_form):
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.__sent_model.setRTL(True)
@@ -1055,7 +1063,7 @@ class Main(QMainWindow):
     def loadTestbed(self):
         pass
     
-    def has_RTL_data(self, word1):
+    def hasRTLdata(self, word1):
         for i in range(0, len(word1)):
             if unicodedata.bidirectional(word1[i]) in ('R', 'AL'):
                 return True
@@ -1146,7 +1154,7 @@ class Main(QMainWindow):
         synthText = lf.read()
         
         # if RTL text, prepend the RTL mark
-        if self.has_RTL_data(synthText[:len(synthText)//2]): # just check the 1st half of the string.
+        if self.hasRTLdata(synthText[:len(synthText)//2]): # just check the 1st half of the string.
             synthText = '\u200F' + synthText
             
         # If we got no output, give a string to the user to indicate it.
@@ -1155,7 +1163,7 @@ class Main(QMainWindow):
             
         self.ui.SynthTextEdit.setPlainText(synthText)
         
-        if self.has_RTL_data(synthText[:len(synthText)//2]):
+        if self.hasRTLdata(synthText[:len(synthText)//2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -1307,7 +1315,7 @@ class Main(QMainWindow):
             
         # process pairs of tokens (white space and lexical unit)
         # we only care about the 2nd item in the pair, the lexical unit
-        for j in range(0,len(tokens)-1,2):
+        for j in range(0, len(tokens)-1,2):
     
             # Save the lexical unit in the saved string
             
@@ -1319,7 +1327,7 @@ class Main(QMainWindow):
             self.__lexicalUnits += '^' + tokens[j+1] + '$' + tokens[j+2]
             
             # Turn the lexical unit into color-coded html. 
-            process_lexical_unit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
+            processLexicalUnit(tokens[j+1]+' ', paragraph_element, self.__sent_model.getRTL(), True) # last parameter: show UNK categories
         
         # Add a space at the end
         self.__lexicalUnits += ' '
@@ -1423,7 +1431,7 @@ class Main(QMainWindow):
         
         self.ui.TestsAddedLabel.setText('')
         self.ui.TargetTextEdit.setPlainText('')
-        self.ui.LogEdit.setPlainText('')
+        self.ui.LogEdit.setText('')
         self.ui.SynthTextEdit.setPlainText('')
         self.ui.warningLabel.setText('')
         
@@ -1984,97 +1992,31 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
             
-        target_output = tgtf.read()
+        targetOutput = tgtf.read()
             
         # Create a <p> html element
         pElem = ET.Element('p')
 
-        rtl_flag = self.has_RTL_data(target_output[:len(target_output)//2])
+        RTLflag = self.hasRTLdata(targetOutput[:len(targetOutput)//2])
         
         # Process advanced results differently (which doesn't apply to post chunk, because we get normal data stream in that case)
         if self.advancedTransfer and self.ui.tabRules.currentIndex() != 2: # 'tab_postchunk_rules'
             
-            # Split off the advanced stuff that precedes the brace {
-            # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
-            # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
-            tokens = re.split('{|}', target_output)
-            
-            # process pairs of tokens
-            for i in range(0,len(tokens)-1): # skip the last one for now
-                
-                tok = tokens[i]
-            
-                # the even # elements are the advanced stuff
-                if i%2 == 0:
-                    
-                    # remove the $ from the advanced part
-                    tok = re.sub('\$', '', tok)
-                    
-                    # split on ^ and output any punctuation
-                    [punc, chunk] = re.split('\^', tok)
-                    
-                    # don't put out anything when it's a default chunk
-                    if re.search('^default', chunk):
-                        continue
-                    
-                    # TODO: not sure if we have punctuation in the the live rule tester. Might not need a lot of this code
-                    # First, put out the punctuation. If the punctuation is null, put
-                    # out a space. Except if it's the first punctuation and it null.
-                    if len(punc) > 0:
-                        output_span(pElem, PUNC_COLOR, punc, rtl_flag)
-                    elif i > 0:
-                        output_span(pElem, PUNC_COLOR, ' ', rtl_flag)
-                    
-                    # Now put out the chunk part
-                    process_chunk_lexical_unit(chunk, pElem, rtl_flag)
-                    
-                    # Put out a [ to surround the normal lex. unit
-                    output_span(pElem, CHUNK_LEMMA_COLOR, ' [', rtl_flag)
-
-                # process odd # elements -- the normal stuff (that was within the braces)
-                else:
-                    
-                    # parse the lexical units. This will give us tokens before, between 
-                    # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
-                    #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
-                    subTokens = re.split('\^|\$', tok)
-                    
-                    # process pairs of tokens (punctuation and lexical unit)
-                    for j in range(0,len(subTokens)-1,2):
-                        # First, put out the punctuation. If the punctuation is null, put
-                        # out a space. Except if it's the first punctuation and it null.
-                        if len(subTokens[j]) > 0:
-                            output_span(pElem, PUNC_COLOR, subTokens[j], rtl_flag)
-                        else:
-                            # we need a preceding space if we are not within brackets
-                            if re.search('^default', chunk) is None:
-                                myStr = ''
-                            else:
-                                myStr = ' '
-                            output_span(pElem, PUNC_COLOR, myStr, rtl_flag)
-                        
-                        # parse the lexical unit and add the elements needed to the list item element
-                        process_lexical_unit(subTokens[j+1], pElem, rtl_flag, True)
-                        
-                    # process last subtoken for the stuff inside the {}
-                    if len(subTokens[-1]) > 0:
-                        output_span(pElem, PUNC_COLOR, subTokens[-1], rtl_flag)
-                    
-                    # Put out a closing ] if it wasn't a default chunk
-                    if re.search('^default', chunk) is None:
-                        output_span(pElem, CHUNK_LEMMA_COLOR, ']', rtl_flag)
+            # Testbed.py function
+            processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuationPresent=True)
             
         else:
             # parse the lexical units. This will give us tokens before, between 
             # and after each lu. E.g. ^hi1.1<n>$ ^there2.3<dem><pl>$ gives
             #                         ['', 'hi1.1<n>', ' ', 'there2.3<dem><pl>', '']
-            tokens = re.split('\^|\$', target_output)
+            tokens = re.split('\^|\$', targetOutput)
             
             # process pairs of tokens (punctuation and lexical unit)
             # ignore the punctuation (spaces)
-            for i in range(0,len(tokens)-1,2):
+            for i in range(0, len(tokens)-1, 2):
+                
                 # Turn the lexical units into color-coded html.            
-                process_lexical_unit(tokens[i+1]+' ', pElem, self.has_RTL_data(target_output[:len(target_output)//2]), True) # last parameter: show UNK categories
+                processLexicalUnit(tokens[i+1]+' ', pElem, self.hasRTLdata(targetOutput[:len(targetOutput)//2]), True) # last parameter: show UNK categories
             
         # The p element now has one or more <span> children, turn them into an html string        
         htmlVal = ET.tostring(pElem, encoding='unicode')
@@ -2093,12 +2035,12 @@ class Main(QMainWindow):
         if self.advancedTransfer:
             if self.ui.tabRules.currentIndex() == 0: # 'tab_transfer_rules':
                 self.__transferHtmlResult = htmlVal
-                self.__transferLexicalUnitsResult = target_output
+                self.__transferLexicalUnitsResult = targetOutput
                 self.__tranferPrevSourceHtml = self.getActiveSrcTextEditVal()
                 self.__tranferPrevSourceLUs = self.getActiveLexicalUnits()
             elif self.ui.tabRules.currentIndex() == 1: # 'tab_interchunk_rules':
                 self.__interchunkHtmlResult = htmlVal
-                self.__interchunkLexicalUnitsResult = target_output
+                self.__interchunkLexicalUnitsResult = targetOutput
                 self.__interchunkPrevSource = self.getActiveSrcTextEditVal()
                 self.__interchunkPrevSourceLUs = self.getActiveLexicalUnits()
             else: # 'tab_postchunk_rules':
@@ -2107,10 +2049,66 @@ class Main(QMainWindow):
         
         # Load the log file
         lf = open(log_file, encoding='utf-8')
-        self.ui.LogEdit.setPlainText(lf.read())
-        lf.close()
         
+        # fix up the output of the log file to colorize it and remove unneeded stuff
+        myLines = lf.readlines()
+        newText = self.processLogLines(myLines)
+        self.ui.LogEdit.setText(newText)
+        
+        lf.close()
         self.unsetCursor()
+
+    def processLogLines(self, inputLines):
+        
+        retStr = ''
+        
+        # Process advanced (chunk) data differently. Interchunk and Postchunk phases have the chunk format
+        if self.advancedTransfer and self.ui.tabRules.currentIndex() != 0: # transfer tab
+            
+            delimeter = '} '
+            processFunc = processAdvancedResults
+        else:
+            delimeter = '> '
+            processFunc = processLexicalUnit
+
+        for line in inputLines:
+            
+            # A typical line may look like this:
+            # apertium-transfer: Rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            
+            # If we have Rule N, process it
+            if re.search(r'Rule \d+', line):
+                
+                # Extract the rule # and the lexical units
+                matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
+                ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
+                lexUnitsStr = matchObj.group(5).strip()
+                
+                # Put a delimeter between multiple lexical units
+                lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
+                
+                # Split into lexical units
+                lexUnitList = lexUnitsStr.split('\t')
+                
+                # Create a <p> html element
+                paragraphEl = ET.Element('p')
+                
+                # Start the span with 'Rule' + #
+                outputLUSpan(paragraphEl, CHUNK_GRAM_CAT_COLOR, f'{ruleStr}: ', self.__sent_model.getRTL())
+
+                # process all the lexical units
+                for lexUnit in lexUnitList:
+                    
+                    # Mark up the lexical unit with color, etc.
+                    processFunc(lexUnit, paragraphEl, self.__sent_model.getRTL(), True)
+                
+                # Convert the ET element to an html string
+                coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
+                    
+                # add the html for this line to the reest
+                retStr += coloredLUStr
+                    
+        return retStr
 
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)

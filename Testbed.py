@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.7.1 - 1/10/23 - Ron Lockwood
+#    Renamed some functions to be camel case. Also added common function processAdvancedResults.
+#
 #   Version 3.7 - 12/24/22 - Ron Lockwood
 #    Initial version.
 #
@@ -160,11 +163,11 @@ class LexicalUnit():
             lemma_parts = re.split('(\d+)', self.__headWord, re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
             
             # Output the lexeme
-            span = output_span(p, LEMMA_COLOR, lemma_parts[0], rtl)
+            span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
         
             # Output the subscript homograph # and sense # (if they exist)
             if self.__gramCat != SENT:
-                add_subscript(span, lemma_parts[1]+'.'+self.__senseNum)
+                addSubscript(span, lemma_parts[1]+'.'+self.__senseNum)
             
             # Check for RTL
             if rtl == True:
@@ -174,7 +177,7 @@ class LexicalUnit():
                 symb = self.__gramCat
             
             # output the symbol
-            output_span(p, GRAM_CAT_COLOR, ' '+symb, rtl)
+            outputLUSpan(p, GRAM_CAT_COLOR, ' '+symb, rtl)
             
             for tag in self.__otherTags:
             
@@ -186,7 +189,7 @@ class LexicalUnit():
                     symb = tag
                 
                 # output the symbol
-                output_span(p, AFFIX_COLOR, ' '+symb, rtl)
+                outputLUSpan(p, AFFIX_COLOR, ' '+symb, rtl)
             
             self.__formatedString = ET.tostring(p, encoding='unicode')
         else:
@@ -1051,7 +1054,7 @@ class FlexTransTestbedResultsFile():
         self.__testbedResultsTree.write(self.__resultsPath, encoding='utf-8', xml_declaration=True)
 
 # Create a span element and set the color and text
-def output_span(parent, color, text_str, rtl):
+def outputLUSpan(parent, color, text_str, rtl):
     
     span = ET.Element('span')
     parent.append(span)
@@ -1059,6 +1062,7 @@ def output_span(parent, color, text_str, rtl):
     
     # Check for RTL
     if rtl == True:
+        
         # prepend the RTL marker
         text_str = '\u200F'+text_str
         
@@ -1066,48 +1070,13 @@ def output_span(parent, color, text_str, rtl):
     
     return span
 
-def add_subscript(span, num):
+def addSubscript(span, num):
     
     sub = ET.Element('sub')
     sub.attrib['style'] = 'font-size:' + SUBSCRIPT_SIZE_PERCENTAGE + '%'
     span.append(sub)
     sub.text = num
         
-def process_chunk_lexical_unit(lu_str, parent_element, rtl):
-    # Split off the symbols from the lemma in the lexical unit (which is i+1)
-    symbols = re.split('<|>', lu_str)
-    symbols = [_f for _f in symbols if _f] # filter out the empty strings
-    
-    # Lemma is the first one
-    lemma = symbols.pop(0)
-    
-    # if the first symbol is UNK, use a special lemma color
-    if len(symbols) > 0 and symbols[0] == 'UNK':
-        lexeme_color = UNKNOWN_LEMMA_COLOR
-    else:
-        lexeme_color = CHUNK_LEMMA_COLOR
-    
-    # Output the lexeme
-    output_span(parent_element, lexeme_color, lemma, rtl)
-    
-    # Loop through the symbols
-    for i, symb in enumerate(symbols):
-        # Check for unknown category
-        if symb == 'UNK':
-            symbol_color = UNKNOWN_CAT_COLOR
-        elif i == 0:
-            symbol_color = CHUNK_GRAM_CAT_COLOR
-        else:
-            symbol_color = CHUNK_AFFIX_COLOR
-        
-        # Check for RTL
-        if rtl == True:
-            # prepend the RTL marker
-            symb = '\u200F' + symb
-        
-        # output the symbol
-        output_span(parent_element, symbol_color, ' '+symb, rtl)
-
 def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
 
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
@@ -1128,11 +1097,11 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
         lexeme_color = LEMMA_COLOR
     
     # Output the lexeme
-    span = output_span(parent_element, lexeme_color, lemma_parts[0], rtl)
+    span = outputLUSpan(parent_element, lexeme_color, lemma_parts[0], rtl)
     
     # Output the subscript
     if len(lemma_parts) > 1:
-        add_subscript(span, lemma_parts[1])
+        addSubscript(span, lemma_parts[1])
     
     # Loop through the symbols
     for i, symb in enumerate(symbols):
@@ -1154,10 +1123,11 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
             symb = '\u200F' + symb
         
         # output the symbol
-        output_span(parent_element, symbol_color, ' '+symb, rtl)
+        outputLUSpan(parent_element, symbol_color, ' '+symb, rtl)
 
 # Split a compound from one lexical unit containing multiple words to multiple
-def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
+def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
+    
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
     symbols = [_f for _f in symbols if _f] # filter out the empty strings
@@ -1167,6 +1137,146 @@ def process_lexical_unit(lu_str, parent_element, rtl, show_unk):
     
     colorInnerLU(lemma, symbols, parent_element, rtl, show_unk)
     
+def processChunkLexicalUnit(lu_str, parent_element, rtl):
+    
+    # Split off the symbols from the lemma in the lexical unit (which is i+1)
+    symbols = re.split('<|>', lu_str)
+    symbols = [_f for _f in symbols if _f] # filter out the empty strings
+    
+    # Lemma is the first one
+    lemma = symbols.pop(0)
+    
+    # if the first symbol is UNK, use a special lemma color
+    if len(symbols) > 0 and symbols[0] == 'UNK':
+        
+        lexeme_color = UNKNOWN_LEMMA_COLOR
+    else:
+        lexeme_color = CHUNK_LEMMA_COLOR
+    
+    # Output the lexeme
+    outputLUSpan(parent_element, lexeme_color, lemma, rtl)
+    
+    # Loop through the symbols
+    for i, symb in enumerate(symbols):
+        
+        # Check for unknown category
+        if symb == 'UNK':
+            
+            symbol_color = UNKNOWN_CAT_COLOR
+            
+        elif i == 0:
+            
+            symbol_color = CHUNK_GRAM_CAT_COLOR
+        else:
+            symbol_color = CHUNK_AFFIX_COLOR
+        
+        # Check for RTL
+        if rtl == True:
+            
+            # prepend the RTL marker
+            symb = '\u200F' + symb
+        
+        # output the symbol
+        outputLUSpan(parent_element, symbol_color, ' '+symb, rtl)
+
+# Format advanced (chunk) output with color coding.
+# This function is used in 3 places. 
+# 1) for showing transfer results in the Live Rule Tester
+# 2) for displaying lines with the View Source/Target Apertium Text Tool
+# 3) for displaying apertium log results. This one uses a stripped down version of the function.
+# we need the dummy parameter for use in the LRT processLogLines function
+def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuationPresent=False):            
+        
+        # Split off the advanced stuff that precedes the brace {
+        # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
+        # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
+        tokens = re.split('{|}', targetOutput)
+        
+        # process pairs of tokens
+        for i in range(0, len(tokens)-1): # skip the last one for now
+            
+            tok = tokens[i]
+        
+            # the even # elements are the advanced stuff
+            if i%2 == 0:
+                
+                chunk = tok
+                
+                if punctuationPresent:
+                    
+                    # remove the $ from the advanced part
+                    tok = re.sub('\$', '', tok)
+                    
+                    # split on ^ and output any punctuation
+                    [punc, chunk] = re.split('\^', tok)
+                
+                    # don't put out anything when it's a default chunk
+                    if re.search('^default', chunk):
+                        continue
+                
+                    # TODO: not sure if we have punctuation in the the live rule tester. Might not need a lot of this code
+                    # First, put out the punctuation. If the punctuation is null, put
+                    # out a space. Except if it's the first punctuation and it null.
+                    if len(punc) > 0:
+                        
+                        outputLUSpan(pElem, PUNC_COLOR, punc, RTLflag)
+                    
+                    elif i > 0:
+                        
+                        outputLUSpan(pElem, PUNC_COLOR, ' ', RTLflag)
+                        
+                # Now put out the chunk part
+                processChunkLexicalUnit(chunk, pElem, RTLflag)
+                
+                # Put out a [ to surround the normal lex. unit
+                outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ' [', RTLflag)
+
+            # process odd # elements -- the normal stuff (that was within the braces)
+            else:
+                
+                # parse the lexical units. This will give us tokens before, between 
+                # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
+                #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
+                subTokens = re.split('\^|\$', tok)
+                
+                # process pairs of tokens (punctuation and lexical unit)
+                for j in range(0, len(subTokens)-1, 2):
+                    
+                    myStr = ''
+                    
+                    if punctuationPresent:
+                        
+                        # First, put out the punctuation. If the punctuation is null, put
+                        # out a space. Except if it's the first punctuation and it null.
+                        if len(subTokens[j]) > 0:
+                            
+                            outputLUSpan(pElem, PUNC_COLOR, subTokens[j], RTLflag)
+                        else:
+                            # we need a preceding space if we are not within brackets
+                            if re.search('^default', chunk) is not None:
+                                
+                                myStr = ' '
+                    else:
+                        # Put a space between LUs inside the braces
+                        if j > 0:
+
+                            myStr = ' '
+                                    
+                    outputLUSpan(pElem, PUNC_COLOR, myStr, RTLflag)
+                    
+                    # parse the lexical unit and add the elements needed to the list item element
+                    processLexicalUnit(subTokens[j+1], pElem, RTLflag, True)
+                    
+                # process last subtoken for the stuff inside the {}
+                if len(subTokens[-1]) > 0:
+                    
+                    outputLUSpan(pElem, PUNC_COLOR, subTokens[-1], RTLflag)
+                
+                # Put out a closing ] if it wasn't a default chunk
+                if re.search('^default', chunk) is None:
+                    
+                    outputLUSpan(pElem, CHUNK_LEMMA_COLOR, ']', RTLflag)
+
 def convertXMLEntryToColoredString(entryElement, isRtl):
     
     fullLemma = Utils.getXMLEntryText(entryElement)
