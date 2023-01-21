@@ -418,6 +418,8 @@ class OverWriteDlg(QDialog):
         
         # Default to NoToAll. 
         self.retValue = QDialogButtonBox.NoToAll
+
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
         # Add the lexical unit to the label
         labelStr = str(self.ui.label.text())
