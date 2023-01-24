@@ -201,8 +201,14 @@ class Main(QMainWindow):
         
         # Hide the checkboxes
         self.ui.footnotesCheckBox.setVisible(False)
+        self.ui.crossrefsCheckBox.setVisible(False)
         self.ui.makeActiveTextCheckBox.setVisible(False)
         self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
+        
+        # Resize the main window
+        self.resize(self.width(), 148)
+        self.ui.OKButton.resize(self.ui.OKButton.height(), 110)
+        self.ui.CancelButton.clicked.resize(self.ui.CancelButton, 110)
 
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ParatextChapSelection.ui'
+# Form implementation generated from reading ui file 'ParatextChapSelectionDlg.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.0
 #
@@ -14,12 +14,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(316, 236)
+        MainWindow.resize(316, 259)
         MainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.makeActiveTextCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.makeActiveTextCheckBox.setGeometry(QtCore.QRect(100, 130, 181, 17))
+        self.makeActiveTextCheckBox.setGeometry(QtCore.QRect(100, 153, 181, 17))
         self.makeActiveTextCheckBox.setChecked(True)
         self.makeActiveTextCheckBox.setObjectName("makeActiveTextCheckBox")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
@@ -39,7 +39,7 @@ class Ui_MainWindow(object):
         self.label_3.setGeometry(QtCore.QRect(180, 70, 21, 21))
         self.label_3.setObjectName("label_3")
         self.useFullBookNameForTitleCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.useFullBookNameForTitleCheckBox.setGeometry(QtCore.QRect(100, 153, 191, 17))
+        self.useFullBookNameForTitleCheckBox.setGeometry(QtCore.QRect(100, 176, 191, 17))
         self.useFullBookNameForTitleCheckBox.setChecked(True)
         self.useFullBookNameForTitleCheckBox.setObjectName("useFullBookNameForTitleCheckBox")
         self.footnotesCheckBox = QtWidgets.QCheckBox(self.centralwidget)
@@ -60,11 +60,14 @@ class Ui_MainWindow(object):
         self.toChapterSpinBox.setMaximum(150)
         self.toChapterSpinBox.setObjectName("toChapterSpinBox")
         self.OKButton = QtWidgets.QPushButton(self.centralwidget)
-        self.OKButton.setGeometry(QtCore.QRect(70, 190, 81, 23))
+        self.OKButton.setGeometry(QtCore.QRect(70, 223, 81, 23))
         self.OKButton.setObjectName("OKButton")
         self.CancelButton = QtWidgets.QPushButton(self.centralwidget)
-        self.CancelButton.setGeometry(QtCore.QRect(160, 190, 81, 23))
+        self.CancelButton.setGeometry(QtCore.QRect(160, 223, 81, 23))
         self.CancelButton.setObjectName("CancelButton")
+        self.crossrefsCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.crossrefsCheckBox.setGeometry(QtCore.QRect(100, 130, 201, 17))
+        self.crossrefsCheckBox.setObjectName("crossrefsCheckBox")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -92,3 +95,4 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Chapter"))
         self.OKButton.setText(_translate("MainWindow", "OK"))
         self.CancelButton.setText(_translate("MainWindow", "Cancel"))
+        self.crossrefsCheckBox.setText(_translate("MainWindow", "Include cross references (\\x)"))

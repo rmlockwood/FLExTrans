@@ -212,7 +212,7 @@ will be set to the corresponding sense number, otherwise it will be blank.
 #----------------------------------------------------------------
 # Configurables:
 PROPER_NOUN_ABBREV = 'nprop'
-DUMP_VOCAB_WORDS = False
+DUMP_VOCAB_WORDS = True
 
 # The minimum length a word should have before doing a fuzzy compare
 # otherwise an exact comparision is used
@@ -1377,7 +1377,7 @@ def dump_vocab(myData):
     for link in myData:
         hpg = link.get_srcHPG()
         myHeadword = hpg.getHeadword()
-        myHeadword = re.sub('\d','',myHeadword,re.RegexFlag.A)
+        #myHeadword = re.sub('\d\.\d','',myHeadword,re.RegexFlag.A)
          
         if myHeadword not in processed and hpg.getPOS() != PROPER_NOUN_ABBREV:
     
