@@ -217,7 +217,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Include cross references (\x)</string>
+     <string>Include cross references (\x and \r)</string>
     </property>
    </widget>
   </widget>

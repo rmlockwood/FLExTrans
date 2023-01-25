@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.2 - 1/25/23 - Ron Lockwood
+#    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
+#    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
+#
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -39,6 +43,7 @@ from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs import FLExProject, AllProjectNames
+import FTPaths
 
 import ReadConfig
 import Utils
@@ -55,7 +60,6 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
-from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:
@@ -65,7 +69,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -93,7 +97,7 @@ def setSourceNameInConfigFile(report, title):
     try:
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
         # Get the parent folder of flextools.ini, i.e. Config and add FLExTools.config
-        myConfig = os.path.join(os.path.dirname(CONFIG_PATH), ReadConfig.CONFIG_FILE)
+        myConfig = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), ReadConfig.CONFIG_FILE)
         f = open(myConfig, encoding='utf-8')
         
     except:
@@ -180,7 +184,19 @@ def do_import(DB, report, chapSelectObj):
         
         importText = re.sub(r'\\f.+?\\f\*', '', importText)
     
-    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+:\d+|\\xo \d+:\d+|\\v \d+ |\\c \d+|\\\w+)', importText) # match footnotes, cros-refs,  or \v n or \c n or other sfms
+    # Remove \x & \r cross references if desired by the user
+    if chapSelectObj.includeCrossRefs == False:
+        
+        importText = re.sub(r'\\x.+?\\x\*', '', importText)
+        importText = re.sub(r'\\r.+?\\p', r'\\p', importText) # assume a \p directly follows a \r
+
+    # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
+    # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
+    # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+    # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
+
+    #                  end mrk footnt  footnt ref+dash  footnt ref   cr ref orig+dash cr ref orig  verse+dash   verse    pub verse chap    ref+dash    ref     any marker
+    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+:\d+-\d+|\\fr \d+:\d+|\\xo \d+:\d+-\d+|\\xo \d+:\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+:\d+-\d+|\d+:\d+|\\\w+)', importText) 
 
     # Create 1st paragraph object
     stTxtPara = m_stTxtParaFactory.Create()
@@ -195,7 +211,7 @@ def do_import(DB, report, chapSelectObj):
     
     for _, seg in enumerate(segs):
         
-        if re.search(newPar, seg): # or first segment if not blank
+        if seg and re.search(newPar, seg): # or first segment if not blank
         
             # Save the built up string to the Contents member
             stTxtPara.Contents = bldr.GetString()
@@ -208,10 +224,11 @@ def do_import(DB, report, chapSelectObj):
         
             bldr = TsStringUtils.MakeStrBldr()
         
-        if len(seg) == 0:
+        if seg is None or len(seg) == 0:
             continue
         
-        elif re.search(r'\\', seg):
+        # Either an sfm marker or a verse ref should get marked as Analysis WS
+        elif re.search(r'\\|\d+:\d+', seg):
             
             # add a space before the marker if we have content before it.
             if bldr.Length > 0:
@@ -255,6 +272,7 @@ def do_import(DB, report, chapSelectObj):
     if chapSelectObj.makeActive:
         
         setSourceNameInConfigFile(report, title)
+        FTPaths.CURRENT_SRC_TEXT = title
     
 class Main(QMainWindow):
 
@@ -281,7 +299,7 @@ class Main(QMainWindow):
         try:
             # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
             # Get the parent folder of flextools.ini, i.e. Config and add the settings file
-            self.settingsPath = os.path.join(os.path.dirname(CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
+            self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
             
             f = open(self.settingsPath, 'r')
             myMap = json.load(f)
@@ -291,6 +309,7 @@ class Main(QMainWindow):
             self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
             self.ui.toChapterSpinBox.setValue(myMap['toChap'])
             self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
+            self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
             self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
             self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
             f.close()
@@ -331,6 +350,7 @@ class Main(QMainWindow):
         fromChap = self.ui.fromChapterSpinBox.value()        
         toChap = self.ui.toChapterSpinBox.value()
         includeFootnotes = self.ui.footnotesCheckBox.isChecked()
+        includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
         makeActive = self.ui.makeActiveTextCheckBox.isChecked()
         useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
         
@@ -368,7 +388,7 @@ class Main(QMainWindow):
     
         bookPath = parts[0]
         
-        self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName)
+        self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
         
         # Save the settings to a file so the same settings can be shown next time
         f = open(self.settingsPath, 'w')

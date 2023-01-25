@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.7 - 1/25/23 - Ron Lockwood
+#    Added cross-references to the selection class.
+#
 #   Version 3.5 - 5/3/22 - Ron Lockwood
 #    Initial version.
 #
@@ -83,7 +86,7 @@ bookMap = {\
 
 class ChapterSelection(object):
         
-    def __init__(self, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, makeActive, useFullBookName):
+    def __init__(self, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName):
     
         self.projectAbbrev      = projectAbbrev    
         self.bookAbbrev         = bookAbbrev  
@@ -91,6 +94,7 @@ class ChapterSelection(object):
         self.fromChap           = fromChap        
         self.toChap             = toChap          
         self.includeFootnotes   = includeFootnotes
+        self.includeCrossRefs   = includeCrossRefs
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName     
         
@@ -102,6 +106,7 @@ class ChapterSelection(object):
             'fromChap'         : self.fromChap           ,\
             'toChap'           : self.toChap             ,\
             'includeFootnotes' : self.includeFootnotes   ,\
+            'includeCrossRefs' : self.includeCrossRefs   ,\
             'makeActive'       : self.makeActive         ,\
             'useFullBookName'  : self.useFullBookName     \
             }

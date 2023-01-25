@@ -5,6 +5,10 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.7.2 - 1/25/23 - Ron Lockwood
+#    Fixes #173 and #190. Shorten window and move up OK and Cancel.
+#    Also allow - Copy ... after the source text title.
+#
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -62,7 +66,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -207,8 +211,8 @@ class Main(QMainWindow):
         
         # Resize the main window
         self.resize(self.width(), 148)
-        self.ui.OKButton.resize(self.ui.OKButton.height(), 110)
-        self.ui.CancelButton.clicked.resize(self.ui.CancelButton, 110)
+        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), 110, self.ui.OKButton.width(), self.ui.OKButton.height())
+        self.ui.CancelButton.setGeometry(self.ui.CancelButton.x(), 110, self.ui.CancelButton.width(), self.ui.CancelButton.height())
 
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
@@ -291,7 +295,10 @@ class Main(QMainWindow):
 
 def parseSourceTextName(report, sourceText, infoMap): 
     
-    stdError = f'The text name "{sourceText}" is invalid it should be of the form GEN 01 or GEN 23-38'
+    # Remove the - Copy ... so that a title like Ruth 01 - Copy (2) is still allowed
+    sourceText = re.sub(r' - Copy.*', '', sourceText)
+    
+    stdError = f'The text name "{sourceText}" is invalid it should be of the form GEN 01 or Genesis 23-38'
     
     # should have two main elements, book name (which can have spaces) and chapter number
     myList = sourceText.split()
@@ -306,7 +313,7 @@ def parseSourceTextName(report, sourceText, infoMap):
         
         # Now check if this is a full book name that is in the values part of the map (e.g. 'Genesis')
         if book not in ChapterSelection.bookMap.values():
-            report.Error('The book name or abbreviation is invalid. It should match a Paratext book.')
+            report.Error(f'The book name or abbreviation {book} is invalid. It should match a Paratext book.')
             return False
         else:
             for key, val in ChapterSelection.bookMap.items():

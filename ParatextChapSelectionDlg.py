@@ -95,4 +95,4 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Chapter"))
         self.OKButton.setText(_translate("MainWindow", "OK"))
         self.CancelButton.setText(_translate("MainWindow", "Cancel"))
-        self.crossrefsCheckBox.setText(_translate("MainWindow", "Include cross references (\\x)"))
+        self.crossrefsCheckBox.setText(_translate("MainWindow", "Include cross references (\\x and \\r)"))
