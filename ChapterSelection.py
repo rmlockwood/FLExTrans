@@ -5,6 +5,10 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.7.1 - 1/30/23 - Ron Lockwood
+#    Restructured to put common init and exit code into ChapterSelection.py
+#    Store export project and import project as separate settings.
+#
 #   Version 3.7 - 1/25/23 - Ron Lockwood
 #    Added cross-references to the selection class.
 #
@@ -96,9 +100,15 @@ bookMap = {\
 
 class ChapterSelection(object):
         
-    def __init__(self, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName):
+    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName):
     
-        self.projectAbbrev      = projectAbbrev    
+        if export:
+            self.exportProjectAbbrev = projectAbbrev  
+            self.importProjectAbbrev = otherProj   
+        else:
+            self.importProjectAbbrev = projectAbbrev  
+            self.exportProjectAbbrev = otherProj   
+
         self.bookAbbrev         = bookAbbrev  
         self.bookPath           = bookPath     
         self.fromChap           = fromChap        
@@ -111,18 +121,27 @@ class ChapterSelection(object):
     def dump(self):
         
         ret = {\
-            'projectAbbrev'    : self.projectAbbrev      ,\
-            'bookAbbrev'       : self.bookAbbrev         ,\
-            'fromChap'         : self.fromChap           ,\
-            'toChap'           : self.toChap             ,\
-            'includeFootnotes' : self.includeFootnotes   ,\
-            'includeCrossRefs' : self.includeCrossRefs   ,\
-            'makeActive'       : self.makeActive         ,\
-            'useFullBookName'  : self.useFullBookName     \
+            'exportProjectAbbrev'    : self.exportProjectAbbrev,\
+            'importProjectAbbrev'    : self.importProjectAbbrev,\
+            'bookAbbrev'             : self.bookAbbrev         ,\
+            'fromChap'               : self.fromChap           ,\
+            'toChap'                 : self.toChap             ,\
+            'includeFootnotes'       : self.includeFootnotes   ,\
+            'includeCrossRefs'       : self.includeCrossRefs   ,\
+            'makeActive'             : self.makeActive         ,\
+            'useFullBookName'        : self.useFullBookName     \
             }
         return ret
 
-def InitControls(self):
+def InitControls(self, export=True):
+    
+    self.chapSel = None
+    self.retVal = False
+    
+    self.ui.OKButton.clicked.connect(self.OKClicked)
+    self.ui.CancelButton.clicked.connect(self.CancelClicked)
+
+    self.otherProj = ''
     
     # Load settings if available
     try:
@@ -133,7 +152,15 @@ def InitControls(self):
         f = open(self.settingsPath, 'r')
         myMap = json.load(f)
         
-        self.ui.ptxProjAbbrevLineEdit.setText(myMap['projectAbbrev'])
+        # Set the project edit box to either the export or import project.
+        # Save the other one as otherProj so we can write it out again to the settings file.
+        if export:
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap['exportProjectAbbrev'])
+            self.otherProj = myMap['importProjectAbbrev']
+        else:
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap['importProjectAbbrev'])
+            self.otherProj = myMap['exportProjectAbbrev']
+            
         self.ui.bookAbbrevLineEdit.setText(myMap['bookAbbrev'])
         self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
         self.ui.toChapterSpinBox.setValue(myMap['toChap'])
@@ -145,7 +172,7 @@ def InitControls(self):
     except:
         pass
 
-def doOKbuttonValidation(self):
+def doOKbuttonValidation(self, export=True):
     
     # Get values from the 'dialog' window
     projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
@@ -191,7 +218,7 @@ def doOKbuttonValidation(self):
 
     bookPath = parts[0]
     
-    self.chapSel = ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
+    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')

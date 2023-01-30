@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.3 - 1/30/23 - Ron Lockwood
+#    Restructured to put common init and exit code into ChapterSelection.py
+#    Store export project and import project as separate settings.
+#
 #   Version 3.7.2 - 1/25/23 - Ron Lockwood
 #    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
 #    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
@@ -51,9 +55,6 @@ import ChapterSelection
 import os
 import re
 import sys
-import glob
-import winreg
-import json
 from shutil import copyfile
 
 from PyQt5 import QtCore, QtGui
@@ -69,7 +70,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -95,9 +96,6 @@ class Main(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.chapSel = None
-        self.retVal = False
-        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
@@ -106,13 +104,10 @@ class Main(QMainWindow):
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
         
-        self.ui.OKButton.clicked.connect(self.OKClicked)
-        self.ui.CancelButton.clicked.connect(self.CancelClicked)
-        
         self.setWindowTitle("Import Paratext Chapters")
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
-        ChapterSelection.InitControls(self)
+        ChapterSelection.InitControls(self, export=False)
         
     def CancelClicked(self):
         self.retVal = False
@@ -142,7 +137,7 @@ class Main(QMainWindow):
             
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self)
+        ChapterSelection.doOKbuttonValidation(self, export=False)
         
 def setSourceNameInConfigFile(report, title):
         

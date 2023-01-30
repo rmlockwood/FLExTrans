@@ -6,8 +6,8 @@
 #   5/3/22
 #
 #   Version 3.7.3 - 1/30/23 - Ron Lockwood
-#    Fix to last change to include includeCrossRefs parameter when creating the ChapterSelection object.
-#     
+#    Restructured to put common init and exit code into ChapterSelection.py
+#    Store export project and import project as separate settings.
 #
 #   Version 3.7.2 - 1/25/23 - Ron Lockwood
 #    Fixes #173 and #190. Shorten window and move up OK and Cancel.
@@ -47,12 +47,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs import FLExProject, AllProjectNames
 import ReadConfig
-import os
 import re
 import sys
-import glob
-import winreg
-import json
 from shutil import copyfile
 
 from PyQt5 import QtCore, QtGui
@@ -70,7 +66,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -87,21 +83,15 @@ class Main(QMainWindow):
     def __init__(self, bookAbbrev, fromChap, toChap):
         QMainWindow.__init__(self)
 
-        self.chapSel = None
-        self.retVal = False
-        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
         
-        self.ui.OKButton.clicked.connect(self.OKClicked)
-        self.ui.CancelButton.clicked.connect(self.CancelClicked)
-
         self.setWindowTitle("Export Chapters to Paratext")
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
-        ChapterSelection.InitControls(self)
+        ChapterSelection.InitControls(self, export=True)
 
         # Set the interface according to what was passed in 
         # This overrides values set in the init controls call above.
@@ -131,7 +121,7 @@ class Main(QMainWindow):
         
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self)
+        ChapterSelection.doOKbuttonValidation(self, export=True)
 
 def parseSourceTextName(report, sourceText, infoMap): 
     
