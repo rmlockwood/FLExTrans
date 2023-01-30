@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.10 - 1/30/23 - Ron Lockwood
+#    New function to determine if a string has RTL characters.
+#
 #   Version 3.7.9 - 1/5/23 - Ron Lockwood
 #    Support fixes to issue 229 by adding a parameter to check_for_cat_errors.
 #
@@ -1572,3 +1575,13 @@ def loadSourceTextList(widget, DB, sourceText):
         if itemStr == sourceText:
             
             widget.setCurrentIndex(i)
+
+def hasRtl(text):
+    
+    for char in text:
+        
+        if unicodedata.bidirectional(char) in ('R', 'AL'):
+            
+            return True
+        
+    return False
