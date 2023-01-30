@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.3 - 1/30/23 - Ron Lockwood
+#    Restructured to put common init and exit code into ChapterSelection.py
+#    Store export project and import project as separate settings.
+#
 #   Version 3.7.2 - 1/25/23 - Ron Lockwood
 #    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
 #    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
@@ -51,9 +55,6 @@ import ChapterSelection
 import os
 import re
 import sys
-import glob
-import winreg
-import json
 from shutil import copyfile
 
 from PyQt5 import QtCore, QtGui
@@ -69,7 +70,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -90,8 +91,54 @@ replaceList = [\
                #('Name', 'find_str', 'rpl_str'),\
               ]
 
-PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
+class Main(QMainWindow):
 
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        
+        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        
+        self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
+        self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
+        
+        self.setWindowTitle("Import Paratext Chapters")
+
+        # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
+        ChapterSelection.InitControls(self, export=False)
+        
+    def CancelClicked(self):
+        self.retVal = False
+        self.close()
+        
+    def FromSpinChanged(self):
+        
+        self.fromChap = self.ui.fromChapterSpinBox.value()
+        self.toChap = self.ui.toChapterSpinBox.value()
+
+        # if from chapter is greater than the to chapter, change the to chapter to match
+        if self.fromChap > self.toChap:
+            
+            self.ui.toChapterSpinBox.setValue(self.fromChap)
+            self.toChap = self.fromChap
+            
+    def ToSpinChanged(self):
+        
+        self.fromChap = self.ui.fromChapterSpinBox.value()
+        self.toChap = self.ui.toChapterSpinBox.value()
+
+        # if to chapter is less than the from chapter, change the from chapter to match
+        if self.toChap < self.fromChap:
+            
+            self.ui.fromChapterSpinBox.setValue(self.toChap)
+            self.fromChap = self.toChap
+            
+    def OKClicked(self):
+
+        ChapterSelection.doOKbuttonValidation(self, export=False)
+        
 def setSourceNameInConfigFile(report, title):
         
     try:
@@ -274,133 +321,6 @@ def do_import(DB, report, chapSelectObj):
         setSourceNameInConfigFile(report, title)
         FTPaths.CURRENT_SRC_TEXT = title
     
-class Main(QMainWindow):
-
-    def __init__(self):
-        QMainWindow.__init__(self)
-
-        self.chapSel = None
-        self.retVal = False
-        
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
-        
-        self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
-        self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
-        
-        self.ui.OKButton.clicked.connect(self.OKClicked)
-        self.ui.CancelButton.clicked.connect(self.CancelClicked)
-        
-        self.setWindowTitle("Import Paratext Chapters")
-
-        # Load settings if available
-        try:
-            # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
-            # Get the parent folder of flextools.ini, i.e. Config and add the settings file
-            self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
-            
-            f = open(self.settingsPath, 'r')
-            myMap = json.load(f)
-            
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap['projectAbbrev'])
-            self.ui.bookAbbrevLineEdit.setText(myMap['bookAbbrev'])
-            self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
-            self.ui.toChapterSpinBox.setValue(myMap['toChap'])
-            self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
-            self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
-            self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
-            self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
-            f.close()
-        except:
-            pass
-
-    def CancelClicked(self):
-        self.retVal = False
-        self.close()
-        
-    def FromSpinChanged(self):
-        
-        self.fromChap = self.ui.fromChapterSpinBox.value()
-        self.toChap = self.ui.toChapterSpinBox.value()
-
-        # if from chapter is greater than the to chapter, change the to chapter to match
-        if self.fromChap > self.toChap:
-            
-            self.ui.toChapterSpinBox.setValue(self.fromChap)
-            self.toChap = self.fromChap
-            
-    def ToSpinChanged(self):
-        
-        self.fromChap = self.ui.fromChapterSpinBox.value()
-        self.toChap = self.ui.toChapterSpinBox.value()
-
-        # if to chapter is less than the from chapter, change the from chapter to match
-        if self.toChap < self.fromChap:
-            
-            self.ui.fromChapterSpinBox.setValue(self.toChap)
-            self.fromChap = self.toChap
-            
-    def OKClicked(self):
-
-        # Get values from the 'dialog' window
-        projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
-        bookAbbrev = self.ui.bookAbbrevLineEdit.text().upper()
-        fromChap = self.ui.fromChapterSpinBox.value()        
-        toChap = self.ui.toChapterSpinBox.value()
-        includeFootnotes = self.ui.footnotesCheckBox.isChecked()
-        includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
-        makeActive = self.ui.makeActiveTextCheckBox.isChecked()
-        useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
-        
-        ## Validate some stuff
-        
-        # Get the Paratext path from the registry
-        aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
-        aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-        aKey = winreg.OpenKey(aReg, aKey)
-        paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
-        paratextPath = paratextPathTuple[0]
-        
-        # Check if project path exists under Paratext
-        projPath = os.path.join(paratextPath, projectAbbrev)
-        if not os.path.exists(projPath):
-            
-            QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
-            return
-
-        # Check if the book is valid
-        if bookAbbrev not in ChapterSelection.bookMap:
-            
-            QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
-            return
-        
-        # Check if the book exists
-        bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-        
-        parts = glob.glob(bookPath)
-        
-        if len(parts) < 1:
-            
-            QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
-            return
-    
-        bookPath = parts[0]
-        
-        self.chapSel = ChapterSelection.ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
-        
-        # Save the settings to a file so the same settings can be shown next time
-        f = open(self.settingsPath, 'w')
-        
-        dumpMap = self.chapSel.dump()
-        json.dump(dumpMap, f)
-        
-        f.close()
-        
-        self.retVal = True
-        self.close()
-            
 def MainFunction(DB, report, modify=True):
     
     if not modify:
