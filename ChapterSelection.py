@@ -15,6 +15,16 @@
 #   from and to Paratext. 
 #
 
+import os
+import winreg
+import glob
+import json
+from PyQt5.QtWidgets import QMessageBox
+
+import FTPaths
+
+PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
+
 bookMap = {\
 'GEN':'Genesis',\
 'EXO':'Exodus',\
@@ -111,3 +121,85 @@ class ChapterSelection(object):
             'useFullBookName'  : self.useFullBookName     \
             }
         return ret
+
+def InitControls(self):
+    
+    # Load settings if available
+    try:
+        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+        # Get the parent folder of flextools.ini, i.e. Config and add the settings file
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
+        
+        f = open(self.settingsPath, 'r')
+        myMap = json.load(f)
+        
+        self.ui.ptxProjAbbrevLineEdit.setText(myMap['projectAbbrev'])
+        self.ui.bookAbbrevLineEdit.setText(myMap['bookAbbrev'])
+        self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
+        self.ui.toChapterSpinBox.setValue(myMap['toChap'])
+        self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
+        self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
+        self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
+        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
+        f.close()
+    except:
+        pass
+
+def doOKbuttonValidation(self):
+    
+    # Get values from the 'dialog' window
+    projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
+    bookAbbrev = self.ui.bookAbbrevLineEdit.text().upper()
+    fromChap = self.ui.fromChapterSpinBox.value()        
+    toChap = self.ui.toChapterSpinBox.value()
+    includeFootnotes = self.ui.footnotesCheckBox.isChecked()
+    includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
+    makeActive = self.ui.makeActiveTextCheckBox.isChecked()
+    useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
+    
+    ## Validate some stuff
+    
+    # Get the Paratext path from the registry
+    aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
+    aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+    aKey = winreg.OpenKey(aReg, aKey)
+    paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
+    paratextPath = paratextPathTuple[0]
+    
+    # Check if project path exists under Paratext
+    projPath = os.path.join(paratextPath, projectAbbrev)
+    if not os.path.exists(projPath):
+        
+        QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
+        return
+
+    # Check if the book is valid
+    if bookAbbrev not in bookMap:
+        
+        QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
+        return
+    
+    # Check if the book exists
+    bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
+    
+    parts = glob.glob(bookPath)
+    
+    if len(parts) < 1:
+        
+        QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+        return
+
+    bookPath = parts[0]
+    
+    self.chapSel = ChapterSelection(projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
+    
+    # Save the settings to a file so the same settings can be shown next time
+    f = open(self.settingsPath, 'w')
+    
+    dumpMap = self.chapSel.dump()
+    json.dump(dumpMap, f)
+    
+    f.close()
+    
+    self.retVal = True
+    self.close()
