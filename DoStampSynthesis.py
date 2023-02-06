@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.3 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#    Also fix for circumfix - needed to check for 'suffix' not SUFFIX_TYPE
+#
 #   Version 3.7.2 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -212,7 +216,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -519,7 +523,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
         morphType = Utils.morphTypeMap[morphGuidStr]
             
-        if morphType == SUFFIX_TYPE:
+        if morphType == 'suffix':
 
             gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE)
 
@@ -1027,7 +1031,7 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, re.RegexFlag.A) # re.A=ASCII-only match
+            line = re.sub('\d+\.\d+', '', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()

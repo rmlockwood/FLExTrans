@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.9 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
 #   Version 3.7.8 - 1/30/23 - Ron Lockwood
 #    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
 #    with a table containing source headword, gloss and category plus blank cells for the target
@@ -193,7 +196,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.8",
+        FTM_Version    : "3.7.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -817,7 +820,7 @@ class Main(QMainWindow):
         # Look for a match to the beginning of a headword
         for i in range(0, self.__combo_model.rowCount(None)):
             
-            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.RegexFlag.IGNORECASE):
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
                 found = True
                 break
         
@@ -1428,7 +1431,7 @@ def outputHtmlWordRow(tableObj, srcHPG):
     
     # Make a row, add it to the table and add various pieces of data for the cells
     row = ET.SubElement(tableObj, 'tr')
-    ET.SubElement(row, 'td').text = re.sub(r'\d+\.\d+', '', srcHPG.getHeadword(), re.RegexFlag.A)
+    ET.SubElement(row, 'td').text = re.sub(r'\d+\.\d+', '', srcHPG.getHeadword(), flags=re.RegexFlag.A)
     ET.SubElement(row, 'td').text = srcHPG.getGloss()
     ET.SubElement(row, 'td').text = srcHPG.getPOS()
     ET.SubElement(row, 'td').text = '' # target

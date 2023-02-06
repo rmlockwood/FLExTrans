@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7.4 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
 #   Version 3.7.3 - 1/18/23 - Ron Lockwood
 #    Fixed bug where report was None in the do_replacements function and a warning was
 #    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
@@ -228,7 +231,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -855,7 +858,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
                                     
                                     # If there is not a homograph # at the end, make it 1
-                                    if not re.search('\d$', targetHeadWord, re.RegexFlag.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
+                                    if not re.search('\d$', targetHeadWord, flags=re.RegexFlag.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                                         targetHeadWord += '1'
                                     
                                     # An empty sense number means default to sense 1
