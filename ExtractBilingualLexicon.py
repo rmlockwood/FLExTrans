@@ -237,6 +237,7 @@ REPLDICTIONARY = 'repldictionary'
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
         FTM_Version    : "3.7.5",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",

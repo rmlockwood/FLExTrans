@@ -5,6 +5,15 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.9 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
+#   Version 3.7.8 - 1/30/23 - Ron Lockwood
+#    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
+#    with a table containing source headword, gloss and category plus blank cells for the target
+#    language and a comment. Also below this info. is the sentence where the sense was found with the
+#    word marked in bold type. A new setting for ProperNoun abbrev. added.
+#
 #   Version 3.7.7 - 1/18/23 - Ron Lockwood
 #    Fixed bug where report was None in the do_replacements function and a warning was
 #    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
@@ -156,8 +165,11 @@
 #
 
 import re
+import os
 import sys
 import unicodedata
+import xml.etree.ElementTree as ET
+
 from fuzzywuzzy import fuzz
 
 from System import Guid
@@ -184,7 +196,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.7",
+        FTM_Version    : "3.7.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -215,8 +227,7 @@ will be set to the corresponding sense number, otherwise it will be blank.
                  
 #----------------------------------------------------------------
 # Configurables:
-PROPER_NOUN_ABBREV = 'nprop'
-DUMP_VOCAB_WORDS = False
+UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
 
 # The minimum length a word should have before doing a fuzzy compare
 # otherwise an exact comparision is used
@@ -309,7 +320,7 @@ class Link(object):
         if self.get_initial_status() == INITIAL_STATUS_EXACT_SUGGESTION or self.get_initial_status() == INITIAL_STATUS_FUZZY_SUGGESTION:
             return True
         return False
-    def isInitiallyUnlinkedAndTargetUnmodified(self):
+    def isInitiallyLinkedAndTargetUnmodified(self):
         return self.get_initial_status() == INITIAL_STATUS_LINKED and self.tgtModified == False
     def getDataByColumn(self, col):
         ret =''
@@ -470,7 +481,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
             if row >= 0:
                 
-                initiallyLinkedUnmodifiedSense = locData.isInitiallyUnlinkedAndTargetUnmodified()
+                initiallyLinkedUnmodifiedSense = locData.isInitiallyLinkedAndTargetUnmodified()
                 
                 # Mark in yellow the first column cells for the rows to be linked or unlinked (in the case of a previously linked row from the DB)
                 if col == 0 and ((locData.linkIt == True and not initiallyLinkedUnmodifiedSense) or (locData.linkIt == False and initiallyLinkedUnmodifiedSense)):
@@ -598,10 +609,12 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr):
+        
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
         self.hideProperNouns = False
+        self.exportUnlinked = False
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.OKButton.clicked.connect(self.OKClicked)
@@ -618,6 +631,7 @@ class Main(QMainWindow):
         self.ret_val = 0
         self.cols = 7
         self.restartLinker = False
+        self.properNounAbbr = properNounAbbr
         
         # Set the combo box to the 2nd element, since the first one is **none**
         if len(comboData) > 1:
@@ -636,6 +650,7 @@ class Main(QMainWindow):
         self.ui.targetLexCombo.currentIndexChanged.connect(self.ComboClicked)
         self.ui.ShowOnlyUnlinkedCheckBox.clicked.connect(self.ShowOnlyUnlinkedClicked)
         self.ui.HideProperNounsCheckBox.clicked.connect(self.HideProperNounsClicked)
+        self.ui.exportUnlinkedCheckBox.clicked.connect(self.exportUnlinkedClicked)
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
         self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
@@ -657,8 +672,9 @@ class Main(QMainWindow):
                 self.__combo_model.setRTL(True)
                 break
     
+        # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
-    
+        
     def InitRebuildBilingCheckBox(self):
         
         self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
@@ -698,7 +714,7 @@ class Main(QMainWindow):
             
             if self.hideProperNouns:
                     
-                if mySrcHPG.getPOS() == PROPER_NOUN_ABBREV:
+                if mySrcHPG.getPOS() == self.properNounAbbr:
                     continue
                         
             for myBool in boolList:
@@ -804,7 +820,7 @@ class Main(QMainWindow):
         # Look for a match to the beginning of a headword
         for i in range(0, self.__combo_model.rowCount(None)):
             
-            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), re.RegexFlag.IGNORECASE):
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
                 found = True
                 break
         
@@ -855,7 +871,9 @@ class Main(QMainWindow):
         # Set position of other controls all the same height and 10 pixels between each other
         startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
         
-        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox]
+        # Make a list of all the controls that need to move up or down
+        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, 
+                       self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox, self.ui.exportUnlinkedCheckBox]
 
         for myControl in controlList:
             
@@ -898,6 +916,13 @@ class Main(QMainWindow):
             self.hideProperNouns = True
         else:
             self.hideProperNouns = False
+        self.filter()
+        
+    def exportUnlinkedClicked(self):
+        if self.ui.exportUnlinkedCheckBox.isChecked():
+            self.exportUnlinked = True
+        else:
+            self.exportUnlinked = False
         self.filter()
         
     def CancelClicked(self):
@@ -946,7 +971,7 @@ class Main(QMainWindow):
                     
                     if keepIt == True:
                     
-                        if myLink.get_srcPOS() != PROPER_NOUN_ABBREV:
+                        if myLink.get_srcPOS() != self.properNounAbbr:
                             
                             keepIt = True
                         else:
@@ -1104,7 +1129,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
             matchList = save_map[gloss]
     return matchList
 
-def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText):
+def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr):
         
     save_map = {}
     processed_map = {}
@@ -1114,25 +1139,25 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
-        return False, myData
+        return False, myData, processed_map
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return False, myData
+        return False, myData, processed_map
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return False, myData
+        return False, myData, processed_map
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return False, myData
+        return False, myData, processed_map
 
     # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, sent_punct, interlinText.ContentsOA, typesList, discontigTypesList, discontigPOSList)
@@ -1157,6 +1182,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                             # If we have processed this sense already, we will just re-add it to the list
                             if mySense not in processed_map:
                                 
+                                # Lookup the morphType via hard-coded guid
                                 morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
                                 morphType = Utils.morphTypeMap[morphGuidStr]
             
@@ -1202,11 +1228,11 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                         # Set the target part of the Link object and add it to the list
                                         myLink.set_tgtHPG(tgtHPG)
                                         myData.append(myLink)
-                                        processed_map[mySense] = myLink, None
+                                        processed_map[mySense] = myLink, None, sentence
                                         
                                     else: # no link url present
                                       
-                                        if srcPOS == PROPER_NOUN_ABBREV:
+                                        if srcPOS == properNounAbbr:
                                             
                                             doFuzzyCompare = False
                                         else:
@@ -1239,16 +1265,16 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         
                                             myData.extend(matchLinkList)
                                                 
-                                            processed_map[mySense] = matchLink, matchLinkList
+                                            processed_map[mySense] = matchLink, matchLinkList, sentence
                                                 
                                         # No matches
                                         else:
                                             # add a Link object that has no target information
                                             myData.append(myLink)
-                                            processed_map[mySense] = myLink, None
+                                            processed_map[mySense] = myLink, None, sentence
                                             
                             else: # we've processed this sense before
-                                myLink, myMatchLinkList = processed_map[mySense]
+                                myLink, myMatchLinkList, _ = processed_map[mySense] # _ for sent which we don't need
                                 
                                 # if there's no associated list, just append the link object
                                 if myMatchLinkList == None:
@@ -1259,7 +1285,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                 else:
                                     myData.extend(myMatchLinkList)
     
-    return True, myData
+    return True, myData, processed_map
 
 def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
@@ -1279,7 +1305,7 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
             # and it's not an existing linked sense in the DB where the link hasn't been changed (these are 
             # marked linkIt=True, but we don't want to re-link them even though it wouldn't hurt).
             if (currLink.linkIt == True and currLink.get_tgtHPG() != None and currLink.get_tgtHPG().getHeadword() != '') and \
-               not currLink.isInitiallyUnlinkedAndTargetUnmodified():
+               not currLink.isInitiallyLinkedAndTargetUnmodified():
                 
                 cnt += 1
                 
@@ -1303,8 +1329,8 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
             
                 updated_senses[currSense] = 1
             
-            
-            elif currLink.linkIt == False and currLink.isInitiallyUnlinkedAndTargetUnmodified():
+            # Unlink this sense
+            elif currLink.linkIt == False and currLink.isInitiallyLinkedAndTargetUnmodified():
 
                 unlinkCount += 1
                 
@@ -1359,37 +1385,172 @@ def calculate_progress_stats(report, interlinText, TargetDB_tot):
 
     return ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale
 
-def dump_vocab(myData):
+def containsWord(sentHPGlist, word):
+    
+    found = False
+    
+    for sentHPG in sentHPGlist:
+        
+        if sentHPG.getSense() == word.getSense(0): # TODO: compounds with mult. senses?
+            
+            found = True
+            break
+        
+    return found
+
+def outputHtmlSentRow(tableObj, outSent, sentHPGlist, headerRow):
+    
+    fullSent = '<td>'
+    
+    for word in outSent.getWords():
+        
+        surfaceForm = word.getSurfaceForm()
+        
+        # If this is one of the key words going into the table, make it bold
+        if containsWord(sentHPGlist, word):
+            
+            surfaceForm = '<b>' + surfaceForm + '</b>'
+            
+        fullSent += word.getInitialPunc() + surfaceForm + word.getFinalPunc()
+        
+    fullSent += '</td>'
+    
+    # Make a row, add it to the table    
+    row = ET.SubElement(tableObj, 'tr')
+    
+    # Convert the full sentence html to a td element
+    sentCell = ET.fromstring(fullSent, ET.XMLParser(encoding='utf-8'))
+    
+    # Make the sentence cell span all the rest of the columns
+    sentCell.attrib['colspan'] = str(len(headerRow))
+
+    # Add the sentence cell to the row.
+    row.append(sentCell)
+    
+def outputHtmlWordRow(tableObj, srcHPG):
+    
+    # Make a row, add it to the table and add various pieces of data for the cells
+    row = ET.SubElement(tableObj, 'tr')
+    ET.SubElement(row, 'td').text = re.sub(r'\d+\.\d+', '', srcHPG.getHeadword(), flags=re.RegexFlag.A)
+    ET.SubElement(row, 'td').text = srcHPG.getGloss()
+    ET.SubElement(row, 'td').text = srcHPG.getPOS()
+    ET.SubElement(row, 'td').text = '' # target
+    ET.SubElement(row, 'td').text = '' # Comment
+
+def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
+    
+    # Make a row, add it to the table and add header cells
+    row = ET.SubElement(tableObj, 'tr')
+    ET.SubElement(row, 'th').text = srcDBname
+    ET.SubElement(row, 'th').text = 'Gloss'
+    ET.SubElement(row, 'th').text = 'Cat.'
+    ET.SubElement(row, 'th').text = tgtDBname
+    ET.SubElement(row, 'th').text = 'Comment'
+    
+    return row
+
+def getFirstOccurringSent(myHPG, processed_map):
+
+    mySense = myHPG.getSense()
+    
+    # The processed map from the process_interlinear function already has the first sentence
+    # where this sense occurred.
+    if mySense in processed_map:
+        
+        # The 3rd part of the map is the sentence that goes to this sense
+        return processed_map[mySense][2] 
+    
+    return None
+        
+def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, report, hideProperNouns, properNounAbbr):
                 
-    # dump words with no link
-    processed = {}
-    fz = open("vocab_dump.txt", encoding='utf-8')
-     
-    # read in existing data in the file
-    for i,line in enumerate(fz):
-        processed[line.strip()] = 0
-     
-    fz.close()
-     
-    fz = open("vocab_dump.txt", 'w', encoding='utf-8')
-     
-    # print out existing words in the same order they were in the file
-    for key, _ in sorted(processed.items(), key=lambda item: item[1]):
-         
-        fz.write(key+'\n')
+    doneMap = {}
+    wordSentList = []
+    cnt = 0
+                
+    # Loop through the data
+    for currLink in myData:
+        
+        # See if we have already updated this sense
+        srcHPG = currLink.get_srcHPG()
+        
+        if srcHPG not in doneMap:
+            
+            # This sense is not being linked so we'll be adding to the vocab document.
+            if not currLink.linkIt:
+                
+                # Don't process a proper noun if the user had them hidden
+                if not (hideProperNouns and srcHPG.getPOS() == properNounAbbr):
+                
+                    mySent = getFirstOccurringSent(currLink.get_srcHPG(), processed_map)
+                    
+                    if mySent == None:
+                        
+                        continue
+                    
+                    wordSentList.append((srcHPG, mySent))
+                    doneMap[srcHPG] = 1
+                    cnt += 1
+                
+    missingWordsForSentList = []
+    prevSent = None
     
-    for link in myData:
-        hpg = link.get_srcHPG()
-        myHeadword = hpg.getHeadword()
-        #myHeadword = re.sub('\d\.\d','',myHeadword,re.RegexFlag.A)
-         
-        if myHeadword not in processed and hpg.getPOS() != PROPER_NOUN_ABBREV:
+    tableObj = ET.Element("table")
     
-            if link.initial_status != INITIAL_STATUS_LINKED:
-                fz.write(myHeadword+'\n')
-                  
-            processed[myHeadword] = 1
-    fz.close()
+    # Check if we have RTL data, if so, make the table RTL
+    if Utils.hasRtl(srcHPG.getHeadword()):
+        
+        tableObj.attrib['dir'] = 'rtl'
+    
+    headerRow = addIntroHtmlStuff(tableObj, srcDBname, tgtDBname)
+    
+    # Loop through unlinked words
+    for i, (srcHPG, mySent) in enumerate(wordSentList):
+        
+        # if we are on a different sentence, put out the sentence row of the table
+        if mySent != prevSent and i != 0:
+        
+            outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
+            
+            missingWordsForSentList = []
+        
+        # Output the word row of the table
+        outputHtmlWordRow(tableObj, srcHPG) 
+        
+        # add word to sent_word_list
+        missingWordsForSentList.append(srcHPG)
+        
+        prevSent = mySent
+        
+    # Put out the last sentence row
+    outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
+
+    # Get the output folder (parent of the config path folder + output)
+    outputFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.OUTPUT_FOLDER)
+    
+    # Convert source text name to valid file name characters (by substituting _ for invalid ones)
+    htmlFileName = "".join([x if (x.isalnum() or x in "._- ") else "_" for x in sourceTextName])
+    #htmlFileName = "".join(x for x in sourceTextName if (x.isalnum() or x in "._- ") else '_')
+    
+    # Build the path with the source text name
+    htmlFileName = os.path.join(outputFolder, htmlFileName + UNLINKED_SENSE_FILENAME_PORTION)
+    
+    # Write the html file
+    etObj = ET.ElementTree(tableObj)
+    
+    try:
+        etObj.write(htmlFileName)
+        
+    except PermissionError:
+        report.Error(f"Permission error writing {htmlFileName}. Perhaps the file is in use in another program?")
+        return
+    
+    except:
+        report.Error(f"Error writing {htmlFileName}.")
+        return
+    
+    # Report how many words were dumped
+    report.Info(f"{str(cnt)} words written to the file: {os.path.basename(htmlFileName)}. You'll find it in the Output folder.")
 
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
@@ -1525,6 +1686,13 @@ def RunModule(DB, report, configMap):
 
     TargetDB_tot = TargetDB.LexiconNumberOfEntries() 
 
+    # Get the proper noun abbreviation
+    properNounAbbr = ReadConfig.getConfigVal(configMap, ReadConfig.PROPER_NOUN_CATEGORY, report)
+    
+    if properNounAbbr is None:
+        
+        properNounAbbr = ''
+    
     # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
     ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, interlinText, TargetDB_tot)
 
@@ -1534,7 +1702,7 @@ def RunModule(DB, report, configMap):
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText)
+    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr)
 
     if retVal == False:
         return ERROR_HAPPENED 
@@ -1545,10 +1713,6 @@ def RunModule(DB, report, configMap):
         report.Warning('There were no senses found for linking.')
     else:
     
-        if DUMP_VOCAB_WORDS:
-            
-            dump_vocab(myData)
-
         # Show the window
         app = QApplication(sys.argv)
         
@@ -1561,7 +1725,7 @@ def RunModule(DB, report, configMap):
         noneHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
         tgtLexList.insert(0, noneHPG)
         
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr)
         
         window.show()
         app.exec_()
@@ -1571,6 +1735,11 @@ def RunModule(DB, report, configMap):
             
             update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
+            # Dump linked senses if the user wants to
+            if window.exportUnlinked:
+                
+                dumpVocab(myData, processed_map, DB.ProjectName(), targetProj, sourceTextName, report, window.hideProperNouns, properNounAbbr)
+    
         # If the user changed the source text combo, the restart member is set to True
         if window.restartLinker:
             

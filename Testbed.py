@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.7.2 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
 #   Version 3.7.1 - 1/10/23 - Ron Lockwood
 #    Renamed some functions to be camel case. Also added common function processAdvancedResults.
 #
@@ -160,7 +163,7 @@ class LexicalUnit():
             p = ET.Element('span')
             
             # Split off the homograph_num (if present; sent punctuation won't have it)
-            lemma_parts = re.split('(\d+)', self.__headWord, re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
+            lemma_parts = re.split('(\d+)', self.__headWord, flags=re.RegexFlag.A) # last item is empty re.RegexFlag.A=ASCII-only match
             
             # Output the lexeme
             span = outputLUSpan(p, LEMMA_COLOR, lemma_parts[0], rtl)
@@ -1080,7 +1083,7 @@ def addSubscript(span, num):
 def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
 
     # Split off the homograph_num.sense_num (if present; sent punctuation won't have it)
-    lemma_parts = re.split('(\d+\.\d+)', lemma, re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
+    lemma_parts = re.split('(\d+\.\d+)', lemma, flags=re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
     
     # Check for an @
     if lemma_parts[0][0] == '@':

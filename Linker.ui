@@ -137,7 +137,8 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>Type the beginning of an entry or any text (if 'search all fields' is checked),\nthen double-click in the Target Head Word column for the desired row to link to it.</string>
+     <string>Type the beginning of an entry or any text (if 'search all fields' is checked), 
+then double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
    <widget class="QComboBox" name="SourceTextCombo">
@@ -295,6 +296,26 @@
     </property>
     <property name="text">
      <string>888</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="exportUnlinkedCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>980</x>
+      <y>410</y>
+      <width>151</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Export a list of unlinked senses to a file. If Hide Proper Nouns 
+is checked, Proper Nouns will not be exported.</string>
+    </property>
+    <property name="text">
+     <string>Export Unlinked Senses</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>
