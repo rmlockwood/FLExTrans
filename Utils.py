@@ -6,6 +6,12 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.11 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
+#   Version 3.7.10 - 1/30/23 - Ron Lockwood
+#    New function to determine if a string has RTL characters.
+#
 #   Version 3.7.9 - 1/5/23 - Ron Lockwood
 #    Support fixes to issue 229 by adding a parameter to check_for_cat_errors.
 #
@@ -330,7 +336,7 @@ BUILD_FOLDER = 'Build'
 
 # precompiled reguglar expressions
 reDataStream = re.compile('(>[^$<])')  
-reObjAddOne = re.compile('\d$', re.RegexFlag.A) # ASCII-only match
+reObjAddOne = re.compile('\d$', flags=re.RegexFlag.A) # ASCII-only match
 reTestID = re.compile('test id=".+?"')
 reSpace = re.compile(r'\s') 
 rePeriod = re.compile(r'\.') 
@@ -1572,3 +1578,13 @@ def loadSourceTextList(widget, DB, sourceText):
         if itemStr == sourceText:
             
             widget.setCurrentIndex(i)
+
+def hasRtl(text):
+    
+    for char in text:
+        
+        if unicodedata.bidirectional(char) in ('R', 'AL'):
+            
+            return True
+        
+    return False
