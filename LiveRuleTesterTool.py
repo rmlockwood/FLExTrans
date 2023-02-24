@@ -5,6 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.15 - 2/7/23 - Ron Lockwood
+#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
+#    dictionary. This allows them to be deleted by default, or they can be overridden by 
+#    replacement file entries.
+#    Handle a target word that is now empty. We now show **none** on the tooltip.
+#
 #   Version 3.7.14 - 1/10/23 - Ron Lockwood
 #    Show log file output in colored format. Also filter out unneeded information.
 #    Fixes #162 and #320. Also widened yellow log output area.
@@ -324,7 +330,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.14",
+        FTM_Version    : "3.7.15",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1653,7 +1659,14 @@ class Main(QMainWindow):
             # Combine source and target into one paragraph html string
             tipStr += convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
             tipStr += f'&nbsp;{arrowStr}&nbsp;' # right arrow
-            tipStr += convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
+
+            # If the target is mapped to nothing (which happens if the user chose **None** in the linker),
+            # set the right side of the tooltip to **None**
+            if target.text is None:
+                
+                tipStr += Utils.NONE_HEADWORD
+            else:
+                tipStr += convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
             
         return tipStr.strip()
     

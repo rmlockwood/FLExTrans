@@ -5,7 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.7.4 - 1/6/23 - Ron Lockwood
+#   Version 3.7.5 - 2/7/23 - Ron Lockwood
+#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
+#    dictionary. This allows them to be deleted by default, or they can be overridden by 
+#    replacement file entries.
+#
+#   Version 3.7.4 - 2/6/23 - Ron Lockwood
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
 #   Version 3.7.3 - 1/18/23 - Ron Lockwood
@@ -231,6 +236,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
+        FTM_Version    : "3.7.5",
         FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
@@ -830,13 +836,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                       
                             # If we have a link to a target entry, process it
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-                            if equiv:
+                            
+                            # handle a sense mapped intentionally to nothing. Skip it.
+                            if equiv == Utils.NONE_HEADWORD:
                                 
-                                # handle sense mapped intentionally to nothing. Skip it.
-                                if equiv == Utils.NONE_HEADWORD:
-                                    
-                                    continue
-
+                                # output the bilingual dictionary line with a blank target (<r>) side
+                                out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+s4b+'\n'
+                                trgtFound = True
+                            
+                                f_out.write(out_str)
+                                records_dumped_cnt += 1
+                                
+                            elif equiv:
+                                
                                 # Parse the link to get the guid
                                 u = equiv.index('guid')
                                 myGuid = equiv[u+7:u+7+36]
