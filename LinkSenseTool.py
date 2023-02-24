@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.7.10 - 2/24/23 - Ron Lockwood
+#    Make the vocab headwords lowercase (unless they're proper nouns).
+#
 #   Version 3.7.9 - 1/6/23 - Ron Lockwood
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
@@ -1427,11 +1430,20 @@ def outputHtmlSentRow(tableObj, outSent, sentHPGlist, headerRow):
     # Add the sentence cell to the row.
     row.append(sentCell)
     
-def outputHtmlWordRow(tableObj, srcHPG):
+def outputHtmlWordRow(tableObj, srcHPG, properNounAbbr):
     
     # Make a row, add it to the table and add various pieces of data for the cells
     row = ET.SubElement(tableObj, 'tr')
-    ET.SubElement(row, 'td').text = re.sub(r'\d+\.\d+', '', srcHPG.getHeadword(), flags=re.RegexFlag.A)
+    
+    # Remove the X.X from the word
+    headWord = re.sub(r'\d+\.\d+', '', srcHPG.getHeadword(), flags=re.RegexFlag.A)
+    
+    # Make it lowercase if not a proper noun
+    if srcHPG.getPOS() != properNounAbbr:
+        
+        headWord = headWord.lower()
+        
+    ET.SubElement(row, 'td').text = headWord
     ET.SubElement(row, 'td').text = srcHPG.getGloss()
     ET.SubElement(row, 'td').text = srcHPG.getPOS()
     ET.SubElement(row, 'td').text = '' # target
@@ -1515,7 +1527,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
             missingWordsForSentList = []
         
         # Output the word row of the table
-        outputHtmlWordRow(tableObj, srcHPG) 
+        outputHtmlWordRow(tableObj, srcHPG, properNounAbbr) 
         
         # add word to sent_word_list
         missingWordsForSentList.append(srcHPG)
