@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.7.16 - 2/25/23 - Ron Lockwood
+#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
+#
 #   Version 3.7.15 - 2/7/23 - Ron Lockwood
 #    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
 #    dictionary. This allows them to be deleted by default, or they can be overridden by 
@@ -330,7 +333,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.15",
+        FTM_Version    : "3.7.16",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -475,6 +478,8 @@ class Main(QMainWindow):
         self.__convertIt = True
         self.__extractIt = True
         self.__doCatalog = True
+        self.rulesChanged = True
+        self.fixBilingLex = True
         self.__bilingMap = {}
         
         self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
@@ -855,6 +860,8 @@ class Main(QMainWindow):
     def RebuildBilingLexButtonClicked(self):
         
         self.setCursor(QtCore.Qt.WaitCursor)
+        
+        self.fixBilingLex = True
         
         # Open the project fresh
         projname = self.__DB.ProjectName()
@@ -1807,8 +1814,12 @@ class Main(QMainWindow):
         return True
 
     def rulesListClicked(self, index):
+        
         self.TRIndex = index
         active_rules = 1
+        
+        self.rulesChanged = True
+        
         for i, el in enumerate(self.__rulesElement):
             ruleText = el.get('comment')
             
@@ -1903,60 +1914,67 @@ class Main(QMainWindow):
         sf.write(myStr)
         sf.close()
         
-        # Copy the xml structure to a new object
-        myRoot = myTree.getroot()
+        # Only rewrite the transfer rules file if there was a change
+        if self.rulesChanged or self.fixBilingLex:
         
-        sr_element = myRoot.find('section-rules')
-        
-        # Remove the section-rules element
-        myRoot.remove(sr_element)
-        
-        # Recreate the section-rules element
-        new_sr_element = ET.SubElement(myRoot, 'section-rules')
-        
-        rules_element = ruleFileRoot.find('section-rules')
-
-        # Loop through all the selected rules
-        for i, rule_el in enumerate(rules_element):
-        
-            # Add to the xml structure if it is a selected rule
-            if self.__ruleModel.item(i).checkState():
-                new_sr_element.append(rule_el) 
+            # Copy the xml structure to a new object
+            myRoot = myTree.getroot()
             
-        # If no rules were selected, create a dummy rule
-        if len(list(new_sr_element)) < 1:
+            sr_element = myRoot.find('section-rules')
             
-            # Create a dummy rule that does nothing
-            ruleElement = ET.SubElement(new_sr_element, 'rule')
-            patternElement = ET.SubElement(ruleElement, 'pattern')
-            patternItemElement = ET.SubElement(patternElement, 'pattern-item')
-            patternItemElement.attrib['n'] = 'c_dummy'
-            ET.SubElement(ruleElement, 'action')
+            # Remove the section-rules element
+            myRoot.remove(sr_element)
             
-            # Create a dummy category to go with the rule
-            sectionDefCatsElement = myRoot.find('section-def-cats')
-            defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
-            defCatElement.attrib['n'] = 'c_dummy'
-            catItemElement = ET.SubElement(defCatElement, 'cat-item')
-            catItemElement.attrib['tags'] = 'dummy'
-
-        # Write out the file
-        myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
-        
-        # Convert the file to be decomposed unicode
-        Utils.decompose(tr_file)
+            # Recreate the section-rules element
+            new_sr_element = ET.SubElement(myRoot, 'section-rules')
+            
+            rules_element = ruleFileRoot.find('section-rules')
+    
+            # Loop through all the selected rules
+            for i, rule_el in enumerate(rules_element):
+            
+                # Add to the xml structure if it is a selected rule
+                if self.__ruleModel.item(i).checkState():
+                    new_sr_element.append(rule_el) 
+                
+            # If no rules were selected, create a dummy rule
+            if len(list(new_sr_element)) < 1:
+                
+                # Create a dummy rule that does nothing
+                ruleElement = ET.SubElement(new_sr_element, 'rule')
+                patternElement = ET.SubElement(ruleElement, 'pattern')
+                patternItemElement = ET.SubElement(patternElement, 'pattern-item')
+                patternItemElement.attrib['n'] = 'c_dummy'
+                ET.SubElement(ruleElement, 'action')
+                
+                # Create a dummy category to go with the rule
+                sectionDefCatsElement = myRoot.find('section-def-cats')
+                defCatElement = ET.SubElement(sectionDefCatsElement, 'def-cat')
+                defCatElement.attrib['n'] = 'c_dummy'
+                catItemElement = ET.SubElement(defCatElement, 'cat-item')
+                catItemElement.attrib['tags'] = 'dummy'
+    
+            # Write out the file
+            myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
+            
+            # Convert the file to be decomposed unicode
+            Utils.decompose(tr_file)
+            
+        if self.fixBilingLex:
+                
+            # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
+            subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+            
+            # Substitute symbols with problem characters with fixed ones in the transfer file
+            Utils.subProbSymbols('.', tr_file, subPairs)
+            
+            self.fixBilingLex = False
         
         ## Display the results
         
         # Clear the results box
         self.ui.TargetTextEdit.setText('') 
 
-        # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
-        subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER))
-        
-        # Substitute symbols with problem characters with fixed ones in the transfer file
-        Utils.subProbSymbols('.', tr_file, subPairs)
-        
         # Check if attributes are well-formed. Warnings will be reported in the function
         if not self.advancedTransfer:
         
@@ -1978,8 +1996,17 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
         
-        # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
-        Utils.unfixProblemChars(os.path.join(self.testerFolder,BILING_FILE_IN_TESTER_FOLDER), tgt_file)
+        # Only rewrite the transfer rules file if there was a change
+        if self.rulesChanged:
+
+            # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
+            Utils.unfixProblemCharsRuleFile(os.path.join(tr_file))
+
+#     Don't think we need this if the biling. file gets rebuilt
+#         if self.fixBilingLex:
+#             
+#             # Restore the backup biling. file
+#             Utils.unfixProblemCharsDict(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
 
         # Load the target text contents into the results edit box
         try:
@@ -2069,6 +2096,7 @@ class Main(QMainWindow):
         self.ui.LogEdit.setText(newText)
         
         lf.close()
+        self.rulesChanged = False
         self.unsetCursor()
 
     def processLogLines(self, inputLines):

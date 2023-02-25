@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.7.12 - 2/25/23 - Ron Lockwood
+#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
+#
 #   Version 3.7.11 - 1/6/23 - Ron Lockwood
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
@@ -730,7 +733,15 @@ def fixProblemChars(fullDictionaryPath):
     
     return subPairs
 
-def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
+def unfixProblemCharsDict(fullDictionaryPath):
+
+    # Restore original bilingual dictionary
+    shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
+
+    # Delete the temporary dictionary file
+    os.remove(fullDictionaryPath+'.before_fix')
+    
+def unfixProblemCharsRuleFile(fullTransferResultsPath):
 
     try:
         f = open(fullTransferResultsPath, encoding='utf-8')
@@ -747,12 +758,6 @@ def unfixProblemChars(fullDictionaryPath, fullTransferResultsPath):
     
     except:
         pass
-    
-    # Restore original bilingual dictionary
-    shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
-
-    # Delete the temporary dictionary file
-    os.remove(fullDictionaryPath+'.before_fix')
     
 def subProbSymbols(buildFolder, ruleFile, subPairs):
 
