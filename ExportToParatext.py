@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.7.4 - 2/28/23 - Ron Lockwood
+#    Remove section marks after verses and quote markers
+#
 #   Version 3.7.3 - 1/30/23 - Ron Lockwood
 #    Restructured to put common init and exit code into ChapterSelection.py
 #    Store export project and import project as separate settings.
@@ -66,7 +69,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -272,6 +275,9 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
         
         bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
+        
+        # Remove any section marks
+        bookContents = re.sub('§', '', bookContents)
         
     # Write the ptx file
     f = open(chapSelectObj.bookPath, 'w', encoding='utf-8')

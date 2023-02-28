@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.4 - 2/28/23 - Ron Lockwood
+#    Put section marks after verses and quote markers
+#
 #   Version 3.7.3 - 1/30/23 - Ron Lockwood
 #    Restructured to put common init and exit code into ChapterSelection.py
 #    Store export project and import project as separate settings.
@@ -70,7 +73,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -253,6 +256,15 @@ def do_import(DB, report, chapSelectObj):
 
     bldr = TsStringUtils.MakeStrBldr()
 
+    # See if we have a script that has both upper and lower case. The 2nd [2] string should have vernacular data to test this
+    if len(segs) >= 2:
+        
+        if segs[2].lower() == segs[2].upper():
+            
+            upperCase = False
+        else:
+            upperCase = True
+    
     # SFMs to start a new paragraph in FLEx
     newPar = r'\\[cpsqm]'
     
@@ -280,6 +292,12 @@ def do_import(DB, report, chapSelectObj):
             # add a space before the marker if we have content before it.
             if bldr.Length > 0:
                 seg = ' ' + seg
+            
+            # add a section mark if this is a verse or a quote and this is a script that has upper case.
+            # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
+            if re.search(r'\\v|\\q', seg) and upperCase:
+                
+                seg += '§'
             
             # make this in the Analysis WS
             tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
