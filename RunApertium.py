@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.7.1 - 2/25/23 - Ron Lockwood
+#    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
+#
 #   Version 3.7 - 11/7/22 - Ron Lockwood
 #   Move strip rules function to Utils
 #
@@ -161,7 +164,8 @@ def MainFunction(DB, report, modify=True):
             pass
 
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
-    Utils.unfixProblemChars(dictionaryPath, transferResultsPath)
+    Utils.unfixProblemCharsRuleFile(transferResultsPath)
+    Utils.unfixProblemCharsDict(dictionaryPath)
 
     
 #----------------------------------------------------------------
