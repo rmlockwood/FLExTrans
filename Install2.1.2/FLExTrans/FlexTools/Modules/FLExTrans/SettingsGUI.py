@@ -3,6 +3,12 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.7.6 - 1/30/23 - Ron Lockwood
+#    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
+#    with a table containing source headword, gloss and category plus blank cells for the target
+#    language and a comment. Also below this info. is the sentence where the sense was found with the
+#    word marked in bold type. A new setting for ProperNoun abbrev. added.
+#
 #   Version 3.7.5 - 12/7/22 - Ron Lockwood
 #    Fixes #285. Allow some settings to be missing without giving an error.
 #    The next time the settings are saved, the settings will be created. As part
@@ -100,7 +106,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.7.5",
+        FTM_Version: "3.7.6",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -325,6 +331,20 @@ def loadSourceCategories(widget, wind, settingName):
             if cat in catList:
                 
                 widget.check(cat)
+
+def loadSourceCategoriesNormalListBox(widget, wind, settingName):
+
+    catList = getCategoryList(wind)
+    
+    catProperNoun = wind.read(settingName)
+    
+    for i, cat in enumerate(catList):
+
+        widget.addItem(cat)
+        
+        if catProperNoun and cat == catProperNoun:
+            
+            widget.setCurrentIndex(i)
 
 def loadCategorySubLists(widget1, widget2, wind, settingName):
 
@@ -991,12 +1011,12 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 # Give new names for the various text strings.
 # If necessary write a new load function at the top of this file.
 # Set the config key name to a value from the ReadConfig.py file.
-# If a new type of widget is needed, more work needed to add to each part of the code where the widgetList is iterated
+# If a new type of widget is needed, more work is needed to add to each part of the code where the widgetList is iterated
 
 widgetList = [
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
-    # tooltip text
+    # tooltip text                                                                                               Give an error if missing
     "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", True],\
    
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
@@ -1032,6 +1052,9 @@ widgetList = [
    ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
     "One or more grammatical categories that can intervene in the above complex types.", True],\
 
+   ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
+    "The name of the category that you use for proper nouns in your source FLEx project.", False],\
+   
    ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
     "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", True],\
 
@@ -1041,7 +1064,7 @@ widgetList = [
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
     "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", True],\
 
-   ["Default to rebuiling the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
+   ["Default to rebuidling the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
     "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", False],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
