@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.7.5 - 3/1/23 - Ron Lockwood
+#    Determine uppercase for the section mark feature by looking for the first
+#    non-blank vernacular segment.
+#
 #   Version 3.7.4 - 2/28/23 - Ron Lockwood
 #    Put section marks after verses and quote markers
 #
@@ -73,7 +77,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.7.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -256,14 +260,22 @@ def do_import(DB, report, chapSelectObj):
 
     bldr = TsStringUtils.MakeStrBldr()
 
-    # See if we have a script that has both upper and lower case. The 2nd [2] string should have vernacular data to test this
+    # See if we have a script that has both upper and lower case. 
     if len(segs) >= 2:
         
-        if segs[2].lower() == segs[2].upper():
+        # Find a non-zero segment vernacular string (an even numbered index)
+        for i in range(2, len(segs), 2):
             
-            upperCase = False
-        else:
-            upperCase = True
+            if len(segs[i]) > 0:
+            
+                # if the lower case is equal to the upper case, assume this script has no upper case
+                if segs[i].lower() == segs[i].upper():
+                    
+                    upperCase = False
+                else:
+                    upperCase = True
+                    
+                break
     
     # SFMs to start a new paragraph in FLEx
     newPar = r'\\[cpsqm]'
