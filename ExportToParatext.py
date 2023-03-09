@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.8 - 3/10/23 - Ron Lockwood
+#    Handle when the synthesis file is missing.
+#
 #   Version 3.7.4 - 2/28/23 - Ron Lockwood
 #    Remove section marks after verses and quote markers
 #
@@ -69,7 +72,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -197,7 +200,12 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         return
     
     # Read in the syn. file chapters
-    f = open(synFile, 'r', encoding='utf-8')
+    try:
+        f = open(synFile, 'r', encoding='utf-8')
+    except:
+        report.Error(f'Could not find the synthesis file. Have you run the Synthesis Module? Missing file: {synFile}.')
+        return
+        
     synFileContents = f.read()
     f.close()
     
