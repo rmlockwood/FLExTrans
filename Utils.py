@@ -300,8 +300,9 @@ from SIL.LCModel.DomainServices import SegmentServices
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig 
-from FTPaths import CONFIG_PATH
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
+
+import FTPaths
 
 NONE_HEADWORD = '**none**'
 
@@ -681,9 +682,9 @@ def run_makefile(absPathToBuildFolder, report):
     outStr += f'set {MAKEFILE_TARGET_VARIABLE}={transferResultsPath}\n' 
     
     # Get the current working directory which should be the FlexTools folder
-    cwd = os.getcwd()
+    # cwd = os.getcwd()
     
-    flexToolsPath = turnPathIntoEnvironPath(absPathToBuildFolder, cwd)
+    flexToolsPath = turnPathIntoEnvironPath(absPathToBuildFolder, FTPaths.TOOLS_DIR)
 
     # make a variable for where the apertium executable files and dlls are found
     outStr += f'set {MAKEFILE_FLEXTOOLS_VARIABLE}={flexToolsPath}\n' 
@@ -695,7 +696,7 @@ def run_makefile(absPathToBuildFolder, report):
     outStr += f'cd "{absPathToBuildFolder}"\n'
     
     #fullPathErrFile = os.path.join(absPathToBuildFolder, APERTIUM_ERROR_FILE)
-    outStr += f'"{cwd}\\make" 2>"{APERTIUM_ERROR_FILE}"\n'
+    outStr += f'"{FTPaths.MAKE_EXE}" 2>"{APERTIUM_ERROR_FILE}"\n'
     
     f.write(outStr)
     f.close()

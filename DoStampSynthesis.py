@@ -202,8 +202,9 @@ from System import String
 
 import ReadConfig
 import Utils
+import FTPaths
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs import FLExProject, AllProjectNames
@@ -1069,7 +1070,8 @@ def synthesize(configMap, anaFile, synFile, report=None):
 
     # run STAMP to synthesize the results. E.g. stamp32" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
     # this assumes stamp32.exe is in the current working directory.
-    call(['stamp32.exe', '-f', cmdFileName, '-i', anaFile, '-o', synFile])
+    
+    call([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', anaFile, '-o', synFile])
 
     error_list.append(('Fixing up the target text...', 0))
     
