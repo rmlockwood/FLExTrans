@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7.2 - 1/30/23 - Ron Lockwood
 #    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
 #    with a table containing source headword, gloss and category plus blank cells for the target
@@ -80,6 +83,11 @@ CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
 CACHE_DATA = 'CacheData'
 CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
 COMPOSED_CHARACTERS = 'UseComposedCharacters'
+HERMIT_CRAB_CONFIG_FILE = 'HermitCrabConfigFile'
+HERMIT_CRAB_PARSES_FILE = 'HermitCrabParsesFile'
+HERMIT_CRAB_MASTER_FILE = 'HermitCrabMasterFile'
+HERMIT_CRAB_SURFACE_FORMS_FILE = 'HermitCrabSurfaceFormsFile'
+HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'

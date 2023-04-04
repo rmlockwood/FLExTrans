@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7.12 - 2/25/23 - Ron Lockwood
 #    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
 #
@@ -1593,3 +1596,17 @@ def hasRtl(text):
             return True
         
     return False
+
+# Eventually make this function locale sensitive. So if we are using Turkish locale we will do the right thing.
+def capitalizeString(inStr, capitalizeCode, useCurrentLocaleRules=False):
+
+    if capitalizeCode == '2':
+
+        return inStr.upper()
+    
+    elif capitalizeCode == '1':
+
+        return inStr.capitalize()
+    
+    return inStr
+

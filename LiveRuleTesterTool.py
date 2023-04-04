@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7.16 - 2/25/23 - Ron Lockwood
 #    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
 #
@@ -318,6 +321,7 @@ import ReadConfig
 import CatalogTargetAffixes
 import ConvertTextToSTAMPformat
 import DoStampSynthesis
+import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 sys.path.append(os.getcwd()+'\\Modules\FLExTrans')
 import TestbedLogViewer
@@ -333,7 +337,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.7.16",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -357,6 +361,9 @@ TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
 ANA_FILE = 'myText.ana'
 SYNTHESIS_FILE = 'myText.txt'
 WINDOWS_SETTINGS_FILE = 'window.settings.txt'
+HC_PARSES_FILE = 'HermitCrabParses.txt'
+HC_MASTER_FILE = 'HermitCrabMaster.txt'
+HC_SURFACE_FORMS_FILE = 'HermitCrabSurfaceForms.txt'
 
 # These strings need to be identical with the Makefile in the LiveRuleTester folder
 SOURCE_APERT = 'source_text.txt'
@@ -546,7 +553,10 @@ class Main(QMainWindow):
         self.targetAnaPath = self.testerFolder + '\\' + ANA_FILE
         self.synthesisFilePath = self.testerFolder + '\\' + SYNTHESIS_FILE
         self.windowsSettingsFile = self.testerFolder + '\\' + WINDOWS_SETTINGS_FILE
-        
+        self.parsesFile = self.testerFolder + '\\' + HC_PARSES_FILE
+        self.HCmasterFile = self.testerFolder + '\\' + HC_MASTER_FILE
+        self.surfaceFormsFile = self.testerFolder + '\\' + HC_SURFACE_FORMS_FILE
+
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
         for i in range(0, MAX_CHECKBOXES):
@@ -851,7 +861,7 @@ class Main(QMainWindow):
         for triplet in error_list:
             if triplet[1] == 2: # error code
                 msg = triplet[0]
-                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', msg + '\nRun the Extract Bilingual Lexicon module separately for more details.')
+                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', f'{msg}\nRun the Extract Bilingual Lexicon module separately for more details.')
                 return False
         
         self.__report.Info('Built the bilingual lexicon, since it was missing.')
@@ -1096,6 +1106,16 @@ class Main(QMainWindow):
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
         
+        hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report)
+        HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
+
+        if not (hermitCrabSynthesisYesNo and HCconfigPath):
+
+            QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
+
+        # See if we are doing HermitCrab synthesis
+        doHermitCrabSynthesisBool = True if hermitCrabSynthesisYesNo == 'y' else False
+
         ## CATALOG
         # Catalog all the target affixes
         # We only need to do this once, until the user requests to refresh the lexicon
@@ -1111,7 +1131,7 @@ class Main(QMainWindow):
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
-                    QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
+                    QMessageBox.warning(self, 'Catalog Prefix Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
                     self.unsetCursor()
                     return
                 
@@ -1122,11 +1142,12 @@ class Main(QMainWindow):
         if self.__convertIt == True:
             
             # Convert the target text to .ana format (for STAMP)
-            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath)
+            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath, 
+                                                                   doHermitCrabSynthesisBool, self.HCmasterFile)
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
-                    QMessageBox.warning(self, 'Convert to STAMP Error', msg + '\nRun the Convert to STAMP module separately for more details.')
+                    QMessageBox.warning(self, 'Convert to STAMP Error', f'{msg}\nRun the Convert to {ConvertTextToSTAMPformat.docs[FTM_Name]} module separately for more details.')
                     self.unsetCursor()
                     return
             
@@ -1136,31 +1157,54 @@ class Main(QMainWindow):
         # if the refresh lexicon button was pressed or this is the first run, extract the target lexicon
         if self.__extractIt == True:
             
-            # Redo the catalog of prefixes in case the user changed an affix
-            error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
-            if triplet[1] == 2: # error code
-                msg = triplet[0]
-                QMessageBox.warning(self, 'Catalog Prefix Error', msg + '\nRun the Catalog Target Prefixes module separately for more details.')
-                self.unsetCursor()
-                return
-            
-            # Extract the lexicon        
-            error_list = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
+            # We have two possible extracts, one for STAMP and one for HermitCrab
+            if doHermitCrabSynthesisBool:
+
+                # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually)
+                error_list = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True)
+                for triplet in error_list:
+                    if triplet[1] == 2: # error code
+                        msg = triplet[0]
+                        QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
+                        self.unsetCursor()
+                        return
+            else:
+                # Redo the catalog of prefixes in case the user changed an affix
+                error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+                if triplet[1] == 2: # error code
+                    msg = triplet[0]
+                    QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                    self.unsetCursor()
+                    return
+                
+                # Extract the lexicon, STAMP style        
+                error_list = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
+                for triplet in error_list:
+                    if triplet[1] == 2: # error code
+                        msg = triplet[0]
+                        QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
+                        self.unsetCursor()
+                        return
+        
+        ## SYNTHESIZE
+        # We have two possible syntheses, one for STAMP and one for HermitCrab
+        if doHermitCrabSynthesisBool:
+
+            error_list = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath) 
             for triplet in error_list:
                 if triplet[1] == 2: # error code
                     msg = triplet[0]
-                    QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
+                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
                     self.unsetCursor()
                     return
-        
-        ## SYNTHESIZE
-        error_list = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath) 
-        for triplet in error_list:
-            if triplet[1] == 2: # error code
-                msg = triplet[0]
-                QMessageBox.warning(self, 'Extract Target Lexicon Error', msg + '\nRun the Extract Target Lexicon module separately for more details.')
-                self.unsetCursor()
-                return
+        else:
+            error_list = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath)
+            for triplet in error_list:
+                if triplet[1] == 2: # error code
+                    msg = triplet[0]
+                    QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
+                    self.unsetCursor()
+                    return
                     
         # Load the synthesized result into the text box
         lf = open(self.synthesisFilePath, encoding='utf-8')

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7.2 - 1/6/23 - Ron Lockwood
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
@@ -186,7 +189,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 
@@ -200,6 +203,7 @@ as being used. Actually the target database is being used.
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
+VARIANT_STR = "_variant_"
 
 # model the information contained in one record in the ANA file
 class ANAInfo(object):
@@ -219,9 +223,40 @@ class ANAInfo(object):
             
         self.setBeforePunc('')
         self.setAfterPunc('')
+        self._firstComponentForHC = True
+        self._originalLexicalUnitString = ''
     
-    def getCapitalization(self):
-        return self.Capitalization
+    def addUnderscores(self, myStr):
+        return re.sub(r' ', '_', myStr)
+    def calcCase(self, word):
+        
+        if word.isupper():
+            return '2'
+        elif word[0].isupper():
+            return '1'
+        else:
+            return ''
+
+    def capitalizeSurfaceForm(self, myStr):
+
+        if self.getCapitalization == 2:
+            return myStr.upper()
+        elif self.getCapitalization == 1:
+            return myStr.capitalize()
+        else:
+            return myStr
+
+    def escapePunc(self, myStr):
+        
+        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
+        if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
+            
+            myStr =  re.sub(r'\\([^n])', r'\\\\\1', myStr)
+            
+        return myStr
+    
+    def getAfterPunc(self):
+        return self.AfterPunc
     def getAnalysis(self):
         return self.Analysis
     def getAnalysisPrefixes(self): # returns [] if no prefix
@@ -232,6 +267,41 @@ class ANAInfo(object):
         return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
+    def getBeforePunc(self):
+        return self.BeforePunc
+    def getCapitalization(self):
+        return self.Capitalization
+    def getHCparseStr(self):
+
+        pfxs = '><'.join(self.getAnalysisPrefixes())
+        if pfxs:
+            # Turn underscores to dots
+            pfxs = re.sub('_', '.', pfxs)
+            pfxs = '<' + pfxs + '>' 
+
+        sfxs = '><'.join(self.getAnalysisSuffixes())
+        if sfxs:
+            sfxs = re.sub('_', '.', sfxs)
+            sfxs = '<' + sfxs + '>' 
+
+        # roots need to have underscores converted to spaces
+        retStr = re.sub('_', ' ', self.getAnalysisRoot()) 
+
+        pos = self.getAnalysisRootPOS()
+
+        # if we have a variant, append the 'POS' to the lemma
+        if pos == VARIANT_STR:
+
+            retStr += pos
+        
+        # add the POS
+        retStr += '<' + pos + '>'
+
+        retStr = pfxs + retStr + sfxs
+        return retStr
+
+    def getOriginalLexicalUnitString(self):
+        return '^'+self._originalLexicalUnitString+'$'
     def getPreDotRoot(self): # in other words the headword
         
         g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, flags=re.RegexFlag.A) # re.RegexFlag.A=ASCII-only match
@@ -242,14 +312,10 @@ class ANAInfo(object):
         
         return None
     
+    def getFirstCompForHCoutput(self):
+        return self._firstComponentForHC
     def getSenseNum(self):
         return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
-    def getAfterPunc(self):
-        return self.AfterPunc
-    def getBeforePunc(self):
-        return self.BeforePunc
-    def addUnderscores(self, myStr):
-        return re.sub(r' ', '_', myStr)
     def removeUnderscores(self, myStr):
         return re.sub(r'_', ' ', myStr)
     def removePeriods(self, myStr):
@@ -283,46 +349,32 @@ class ANAInfo(object):
             
         self.Analysis = ' '.join(prefixes) + ' < '+myPos+' '+myRoot+' > '+' '.join(suffixes)
         
-    def escapePunc(self, myStr):
-        
-        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
-        if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
-            
-            myStr =  re.sub(r'\\([^n])', r'\\\\\1', myStr)
-            
-        return myStr
-    
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
         self.BeforePunc = myBeforePunc
-    def write(self, fAna):
+    def setOriginalLexicalUnitString(self, LUstr):
+        self._originalLexicalUnitString = LUstr
+    def setFirstCompForHCoutput(self, sameLineBool):
+        self._firstComponentForHC = sameLineBool
+    def write(self, fOutput):
         
-        fAna.write('\\a ' + self.getAnalysis() + '\n')
+        fOutput.write('\\a ' + self.getAnalysis() + '\n')
         
         if self.getBeforePunc():
             
-            fAna.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
+            fOutput.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
             
         if self.getAfterPunc():
             
-            fAna.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
+            fOutput.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
             
         if self.getCapitalization():
             
-            fAna.write('\\c ' + self.getCapitalization() + '\n')
+            fOutput.write('\\c ' + self.getCapitalization() + '\n')
             
-        fAna.write('\n')
+        fOutput.write('\n')
         
-    def calcCase(self, word):
-        
-        if word.isupper():
-            return '2'
-        elif word[0].isupper():
-            return '1'
-        else:
-            return ''
-
 class ConversionData():
     
     def __init__(self, errorList, configMap, report, complexFormTypeMap):
@@ -526,7 +578,7 @@ class ConversionData():
             # (We are intentionally not adding the sense number.)
             # no prefixes or suffixes
             myAnaInfo = ANAInfo()
-            myAnaInfo.setAnalysisByPart([], "_variant_", headWord, [])
+            myAnaInfo.setAnalysisByPart([], VARIANT_STR, headWord, [])
             
             variantANAandFeatlist.append((myAnaInfo, featAbbrList))
         
@@ -920,12 +972,12 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap):
         
         # Reset the Ana info
         # (We are intentionally not adding the sense number.)
-        myAnaInfo.setAnalysisByPart(pfxs, "_variant_", varAna.getAnalysisRoot(), sfxs)
+        myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
 
-def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fAna):
+def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCrabSynthesis, HCparseStrMap=None):
     
     root = myAnaInfo.getPreDotRoot()
     
@@ -934,27 +986,69 @@ def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fAna):
         # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
         changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap)
                 
-    myAnaInfo.write(fAna)
+    if doHermitCrabSynthesis:
+
+        originalLexicalUnitStr = myAnaInfo.getOriginalLexicalUnitString()
+
+        # see if the orignal LU string for is already in our map
+        if originalLexicalUnitStr not in HCparseStrMap:
+
+            # Get the string that we would write to the parses file
+            HCparseStr = myAnaInfo.getHCparseStr()
+            cap = myAnaInfo.getCapitalization()
+
+            fOutput.write(originalLexicalUnitStr + ',' + HCparseStr + ';' + cap + '\n')
+
+            HCparseStrMap[originalLexicalUnitStr] = 1
+    else:
+        myAnaInfo.write(fOutput)
         
-def writeComponents(componentList, anaFile, theAnaInfo, rootVariantANAandFeatlistMap):
+def writeComponents(componentList, fOutput, theAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthesis, HCparseStrMap=None):
         
-    for i, listAnaInfo in enumerate(componentList):
-        
-        # Give this object pre-punctuation if it's the first component
-        if i == 0:
-            
-            listAnaInfo.setBeforePunc(theAnaInfo.getBeforePunc())
-            
-            # Change the case as necessary
-            theAnaInfo.setCapitalization(theAnaInfo.calcCase(theAnaInfo.getAnalysisRoot()))
+    if doHermitCrabSynthesis:
+
+        originalLexicalUnitStr = theAnaInfo.getOriginalLexicalUnitString()
+
+        # see if the orignal LU string for this complex form is already in our map
+        if originalLexicalUnitStr not in HCparseStrMap:
+
+            for i, listAnaInfo in enumerate(componentList):
                 
-        # Give this object post-punctuation if it's the last component
-        if i == len(componentList)-1:
+                # Get the string that we would write to the parses file
+                HCparseStr = listAnaInfo.getHCparseStr()
+                cap = listAnaInfo.getCapitalization()
+
+                # First component, write the original LU string and the first component
+                if i == 0:
+
+                    fOutput.write(originalLexicalUnitStr + ',' + HCparseStr + ';' + cap)
+    
+                # Write all other components
+                else:
+                    fOutput.write('|' + HCparseStr + ';' + cap)
+
+            fOutput.write('\n')
+            HCparseStrMap[originalLexicalUnitStr] = 1
+
+    else: # Standard ANA file
+
+        for i, listAnaInfo in enumerate(componentList):
             
-            listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
-        
-        # This also converts variant forms if needed
-        writeNonComplex(listAnaInfo, rootVariantANAandFeatlistMap, anaFile)    
+            # Give this object pre-punctuation if it's the first component
+            if i == 0:
+                
+                listAnaInfo.setBeforePunc(theAnaInfo.getBeforePunc())
+                
+                # Change the case as necessary
+                theAnaInfo.setCapitalization(theAnaInfo.calcCase(theAnaInfo.getAnalysisRoot()))
+                    
+            # Give this object post-punctuation if it's the last component
+            if i == len(componentList)-1:
+                
+                listAnaInfo.setAfterPunc(theAnaInfo.getAfterPunc())
+
+            # This also converts variant forms if needed
+            writeNonComplex(listAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCrabSynthesis, HCparseStrMap)    
 
 def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
 
@@ -962,7 +1056,6 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
     newCompANAlist = []
 
     for index, myAnaInfo in enumerate(componANAlist):
-        
 
         # See if we are at the beginning or the end, depending on where the
         # inflection goes, write out all the stuff with inflection
@@ -1008,7 +1101,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         
     except IOError:
         
-        errorList.append(('The file: '+outName+' was not found.', 2))
+        errorList.append(('The file: '+outName+' was not found. Did you run the Run Apertium module?', 2))
         return errorList
         
     numLines = sum(1 for line in open(outName, encoding='utf-8'))
@@ -1168,6 +1261,7 @@ def convertIt(pfxName, outName, report, sentPunct):
                 # Create an ANA Info object
                 # We have the root (morphs[0]) and the POS of the root (morphs[1])
                 wordAnaInfo = ANAInfo(prefixList, suffixList, morphs[1], morphs[0], infixList)
+                wordAnaInfo.setOriginalLexicalUnitString(tok)
             
             # some kind of punctuation with possible spaces between. E.g. .>> <<
             else:
@@ -1198,28 +1292,28 @@ def convertIt(pfxName, outName, report, sentPunct):
     return errorList, wordAnaInfoList
 
 # Get the gloss from the first sense
-def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report=None):
+def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis=False, HCmasterFile=None, report=None):
     
     errorList = []
     
     complexForms1st = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_FORMS_INFLECTION_1ST, report)
     complexForms2nd = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_FORMS_INFLECTION_2ND, report)
-    sentPunct = ReadConfig.getConfigVal(configMap, 'SentencePunctuation', report)
-    
+    sentPunct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
+
     if not (targetANAFile and affixFile and transferResultsFile and sentPunct):
         
-        errorList.append(('Configuration file problem.', 2))
+        errorList.append((f'Configuration file problem with targetANAFile or affixFile or transferResultsFile or sentPunct', 2))
         return errorList
 
     # Check the validity of the complex forms lists
     if complexForms1st and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_1ST, report):
         
-        errorList.append(('Configuration file problem.', 2))
+        errorList.append((f'Configuration file problem with: {ReadConfig.TARGET_FORMS_INFLECTION_1ST}', 2))
         return errorList
     
     if complexForms2nd and not ReadConfig.configValIsList(configMap, ReadConfig.TARGET_FORMS_INFLECTION_2ND, report):
         
-        errorList.append(('Configuration file problem.', 2))
+        errorList.append((f'Configuration file problem with: {ReadConfig.TARGET_FORMS_INFLECTION_2ND}', 2))
         return errorList
 
     # Build the complex forms map
@@ -1234,7 +1328,7 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         
         complexFormTypeMap[cmplxType] = 1  # 1 - inflection on last root
     
-    # Convert the Apertium file to an ANA file
+    # Convert the Apertium file to an ANA list
     errList, anaInfoList = convertIt(affixFile, transferResultsFile, report, sentPunct)
     
     if len(errList) > 0:
@@ -1258,11 +1352,23 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     # maps to multiple words in the target language. The multi-word ANA record needs to
     # be broken down into multiple ANA records
          
-    fAna = open(targetANAFile, 'w', encoding='utf-8')
-    fAna.write('\n') # always need a blank line at the top
+    try:         
+        # Open the output file
+        if not doHermitCrabSynthesis:
+
+            fOutput = open(targetANAFile, 'w', encoding='utf-8')
+            fOutput.write('\n') # always need a blank line at the top
+
+        else:
+            fOutput = open(HCmasterFile, 'w', encoding='utf-8')
+    except:
+
+        errorList.append(('Error writing the output file.', 2))
+        return errorList
     
     count = 0
-    
+    HCparseStrMap = {}
+
     # Loop through all the ANA pieces
     for anaInfo in anaInfoList:
         
@@ -1274,17 +1380,21 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
             
             componANAlist, inflectionOnFirst = rootComponANAlistMap[root]
             newCompANAlist = processComplexForm(anaInfo, componANAlist, inflectionOnFirst)
-            writeComponents(newCompANAlist, fAna, anaInfo, rootVariantANAandFeatlistMap)
+            writeComponents(newCompANAlist, fOutput, anaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthesis, HCparseStrMap)
             
         else: # write it out as normal
             
             # This also converts variant forms if needed
-            writeNonComplex(anaInfo, rootVariantANAandFeatlistMap, fAna)
+            writeNonComplex(anaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCrabSynthesis, HCparseStrMap)
         
         count += 1
     
-    errorList.append((str(count)+' records exported in ANA format.', 0))
-    fAna.close()
+    if not doHermitCrabSynthesis:
+        errorList.append((str(count)+' records exported in ANA format.', 0))
+    else:
+        errorList.append((str(count)+' records exported in HermitCrab format.', 0))
+
+    fOutput.close()
     
     return errorList
 
@@ -1310,8 +1420,22 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
+    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report)
 
-    errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, report)
+    doHermitCrabSynthesis = True if hermitCrabSynthesisYesNo == 'y' else False
+    HCmasterFile = None
+    
+    # Get the master file name
+    if doHermitCrabSynthesis:
+
+        HCmasterFile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_MASTER_FILE, report)
+
+        if not HCmasterFile:
+
+            errorList.append((f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.', 2))
+            return errorList
+    
+    errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
 
     # output info, warnings, errors
     for msg, code in errorList:
