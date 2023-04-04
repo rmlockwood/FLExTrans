@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.4 - 2/6/23 - Ron Lockwood
+#    Handle inflection sub-classes. List them all in the .dec file and add all sub-classes
+#    as environments for an affix when the parent class applies.
+#
+#   Version 3.7.3 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#    Also fix for circumfix - needed to check for 'suffix' not SUFFIX_TYPE
+#
 #   Version 3.7.2 - 12/25/22 - Ron Lockwood
 #    Added RegexFlag before re constants
 #
@@ -212,7 +220,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -239,6 +247,20 @@ stemNameList = []
 
 #----------------------------------------------------------------
 
+# Recursive function to save an inflection class and all sub-classes
+def saveInflClass(inflClassList, myInflClass):
+    
+    if myInflClass.Abbreviation:
+
+        inflClassStr = ITsString(myInflClass.Abbreviation.BestAnalysisAlternative).Text
+        
+        inflClassList.append(inflClassStr)
+        
+        # save subclasses
+        for subClass in myInflClass.SubclassesOC:
+            
+            saveInflClass(inflClassList, subClass)
+        
 def is_root_file_out_of_date(DB, rootFile):
     
     if DONT_CACHE == True:
@@ -356,9 +378,7 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
             # Save each inflection class 
             for inflClass in morph.InflectionClassesRC:
                 
-                inflClassStr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
-                
-                inflClassList.append(inflClassStr)
+                saveInflClass(inflClassList, inflClass)
                 
     # Save each phonological environment 
     for env in morph.PhoneEnvRC:
@@ -367,7 +387,7 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
         environList.append(envStr)
 
     masterAlloList.append((amorph, stemName, environList, inflClassList, morphCategory))
-    
+
 def output_all_allomorphs(masterAlloList, f_handle):
     
     # Loop through all the allomorphs we saved
@@ -519,7 +539,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
         morphType = Utils.morphTypeMap[morphGuidStr]
             
-        if morphType == SUFFIX_TYPE:
+        if morphType == 'suffix':
 
             gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE)
 
@@ -692,10 +712,8 @@ def output_cat_info(TargetDB, f_dec):
         # get inflection class info.
         for inflClassObj in pos.InflectionClassesOC:
             
-            if inflClassObj.Abbreviation:
-                
-                inflClassList.append(ITsString(inflClassObj.Abbreviation.BestAnalysisAlternative).Text)
-                
+            saveInflClass(inflClassList, inflClassObj)
+
     f_dec.write('\\ca _variant_\n') # for variant entries
     
     # write stem names as \mp's (morpheme properties)
@@ -1027,7 +1045,7 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, re.RegexFlag.A) # re.A=ASCII-only match
+            line = re.sub('\d+\.\d+', '', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()

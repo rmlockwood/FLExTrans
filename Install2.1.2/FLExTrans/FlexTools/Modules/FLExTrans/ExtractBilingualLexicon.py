@@ -5,6 +5,18 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7.5 - 2/7/23 - Ron Lockwood
+#    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
+#    dictionary. This allows them to be deleted by default, or they can be overridden by 
+#    replacement file entries.
+#
+#   Version 3.7.4 - 2/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
+#   Version 3.7.3 - 1/18/23 - Ron Lockwood
+#    Fixed bug where report was None in the do_replacements function and a warning was
+#    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
+#
 #   Version 3.7.2 - 1/7/23 - Ron Lockwood
 #    Fixes #214. Give a warning for replacement file entries that couldn't be
 #    found in the bilingual lexicon.
@@ -224,7 +236,8 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.7.5",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -451,7 +464,9 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
         # Ignore the default entry that gets installed
         if key != 'SourceWord1.1':
         
-            report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
+            if report: # could be None
+            
+                report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
         
     return new_biling_section
     
@@ -821,13 +836,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                       
                             # If we have a link to a target entry, process it
                             equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-                            if equiv:
+                            
+                            # handle a sense mapped intentionally to nothing. Skip it.
+                            if equiv == Utils.NONE_HEADWORD:
                                 
-                                # handle sense mapped intentionally to nothing. Skip it.
-                                if equiv == Utils.NONE_HEADWORD:
-                                    
-                                    continue
-
+                                # output the bilingual dictionary line with a blank target (<r>) side
+                                out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+s4b+'\n'
+                                trgtFound = True
+                            
+                                f_out.write(out_str)
+                                records_dumped_cnt += 1
+                                
+                            elif equiv:
+                                
                                 # Parse the link to get the guid
                                 u = equiv.index('guid')
                                 myGuid = equiv[u+7:u+7+36]
@@ -849,7 +870,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
                                     
                                     # If there is not a homograph # at the end, make it 1
-                                    if not re.search('\d$', targetHeadWord, re.RegexFlag.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
+                                    if not re.search('\d$', targetHeadWord, flags=re.RegexFlag.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
                                         targetHeadWord += '1'
                                     
                                     # An empty sense number means default to sense 1

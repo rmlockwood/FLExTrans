@@ -22,7 +22,7 @@
      <rect>
       <x>20</x>
       <y>311</y>
-      <width>777</width>
+      <width>657</width>
       <height>148</height>
      </rect>
     </property>
@@ -44,7 +44,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>771</width>
+        <width>651</width>
         <height>120</height>
        </rect>
       </property>
@@ -68,7 +68,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>771</width>
+        <width>651</width>
         <height>120</height>
        </rect>
       </property>
@@ -86,7 +86,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>771</width>
+        <width>651</width>
         <height>120</height>
        </rect>
       </property>
@@ -287,12 +287,12 @@
      <string>Source Text</string>
     </property>
    </widget>
-   <widget class="QPlainTextEdit" name="LogEdit">
+   <widget class="QTextEdit" name="LogEdit">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>680</x>
       <y>311</y>
-      <width>451</width>
+      <width>571</width>
       <height>122</height>
      </rect>
     </property>
@@ -337,7 +337,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>680</x>
       <y>291</y>
       <width>271</width>
       <height>23</height>
@@ -350,7 +350,7 @@
    <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>490</x>
       <y>275</y>
       <width>161</width>
       <height>31</height>
@@ -363,7 +363,7 @@
    <widget class="QPushButton" name="selectAllButton">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>160</x>
       <y>275</y>
       <width>101</width>
       <height>31</height>
@@ -376,7 +376,7 @@
    <widget class="QPushButton" name="upButton">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>380</x>
       <y>275</y>
       <width>41</width>
       <height>31</height>
@@ -393,7 +393,7 @@
    <widget class="QPushButton" name="downButton">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>430</x>
       <y>275</y>
       <width>41</width>
       <height>31</height>
@@ -410,7 +410,7 @@
    <widget class="QPushButton" name="unselectAllButton">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>270</x>
       <y>275</y>
       <width>101</width>
       <height>31</height>

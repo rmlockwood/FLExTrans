@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>316</width>
-    <height>236</height>
+    <height>259</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>130</y>
+      <y>153</y>
       <width>181</width>
       <height>17</height>
      </rect>
@@ -104,7 +104,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>153</y>
+      <y>176</y>
       <width>191</width>
       <height>17</height>
      </rect>
@@ -185,7 +185,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>190</y>
+      <y>223</y>
       <width>81</width>
       <height>23</height>
      </rect>
@@ -198,13 +198,26 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>190</y>
+      <y>223</y>
       <width>81</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
      <string>Cancel</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="crossrefsCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>130</y>
+      <width>201</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Include cross references (\x and \r)</string>
     </property>
    </widget>
   </widget>

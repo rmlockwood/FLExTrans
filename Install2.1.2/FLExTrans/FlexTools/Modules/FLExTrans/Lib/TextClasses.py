@@ -11,6 +11,7 @@
 #   Classes that model text objects from whole text down to word.
 
 import re
+from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 import Utils
 

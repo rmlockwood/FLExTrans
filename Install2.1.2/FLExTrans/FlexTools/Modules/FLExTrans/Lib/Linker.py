@@ -96,6 +96,10 @@ class Ui_MainWindow(object):
         self.SensesRemainingLabel = QtWidgets.QLabel(self.centralwidget)
         self.SensesRemainingLabel.setGeometry(QtCore.QRect(82, 442, 31, 20))
         self.SensesRemainingLabel.setObjectName("SensesRemainingLabel")
+        self.exportUnlinkedCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.exportUnlinkedCheckBox.setGeometry(QtCore.QRect(980, 410, 151, 27))
+        self.exportUnlinkedCheckBox.setChecked(False)
+        self.exportUnlinkedCheckBox.setObjectName("exportUnlinkedCheckBox")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1156, 21))
@@ -114,7 +118,8 @@ class Ui_MainWindow(object):
         self.ShowOnlyUnlinkedCheckBox.setText(_translate("MainWindow", "Show Only Unlinked"))
         self.label.setText(_translate("MainWindow", "All Target Senses:"))
         self.HideProperNounsCheckBox.setText(_translate("MainWindow", "Hide Proper Nouns"))
-        self.searchTargetEdit.setToolTip(_translate("MainWindow", "Type the beginning of an entry or any text (if \'Search all fields\' is checked),\nthen double-click in the Target Head Word column for the desired row to link to it."))
+        self.searchTargetEdit.setToolTip(_translate("MainWindow", "Type the beginning of an entry or any text (if \'search all fields\' is checked), \n"
+"then double-click in the Target Head Word column for the desired row to link to it."))
         self.label_4.setText(_translate("MainWindow", "Source Text:"))
         self.SearchAnythingCheckBox.setText(_translate("MainWindow", "Search all fields"))
         self.ZoomDecrease.setText(_translate("MainWindow", "–"))
@@ -125,3 +130,6 @@ class Ui_MainWindow(object):
         self.RebuildBilingCheckBox.setText(_translate("MainWindow", "Rebuild Bilingual Lexicon"))
         self.SensesToLinkLabel.setText(_translate("MainWindow", "Senses to link:"))
         self.SensesRemainingLabel.setText(_translate("MainWindow", "888"))
+        self.exportUnlinkedCheckBox.setToolTip(_translate("MainWindow", "Export a list of unlinked senses to a file. If Hide Proper Nouns \n"
+"is checked, Proper Nouns will not be exported."))
+        self.exportUnlinkedCheckBox.setText(_translate("MainWindow", "Export Unlinked Senses"))

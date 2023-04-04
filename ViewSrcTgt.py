@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.7.4 - 1/10/23 - Ron Lockwood
+#    Renamed some functions to be camel case.
+#
 #   Version 3.7.3 - 1/8/23 - Ron Lockwood
 #    Fixed bug in last fix. Don't require advance transfer file to be there.
 #
@@ -91,7 +94,7 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.7.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",
@@ -261,85 +264,14 @@ class Main(QMainWindow):
             # Process all lines in the input file
             for line in f:
                 
+                # Normalize to composed form
                 line = unicodedata.normalize('NFC', line)
                 
                 list_item = ET.SubElement(ord_list, 'li')
                 
-                # Split off the advanced stuff that precedes the brace {
-                # parsing: '--^ch_xx<ABC>{^hello1.1<excl>$ ^Ron1.1<Prop>$}$~~ ^ch_yy<Z>{^yo1.1<n>$}$++'
-                # gives: ['--^ch_xx<ABC>', '^hello1.1<excl>$ ^Ron1.1<Prop>$', '$~~ ^ch_yy<Z>', '^yo1.1<n>$', '$++']
-                tokens = re.split('{|}', line)
+                # Call testbed.py function to format the line
+                processAdvancedResults(line, list_item, rtl_flag, dummy=True, punctuationPresent=True)
                 
-                # process pairs of tokens
-                for i in range(0,len(tokens)-1): # skip the last one for now
-                    
-                    tok = tokens[i]
-                
-                    # the even # elements are the advanced stuff
-                    if i%2 == 0:
-                        
-                        # remove the $ from the advanced part
-                        tok = re.sub('\$', '', tok)
-                        
-                        # split on ^ and output any punctuation
-                        [punc, chunk] = re.split('\^', tok)
-                        
-                        # don't put out anything when it's a default chunk
-                        if re.search('^default', chunk):
-                            continue
-                        
-                        # First, put out the punctuation. If the punctuation is null, put
-                        # out a space. Except if it's the first punctuation and it null.
-                        if len(punc) > 0:
-                            output_span(list_item, PUNC_COLOR, punc, rtl_flag)
-                        elif i > 0:
-                            output_span(list_item, PUNC_COLOR, ' ', rtl_flag)
-                        
-                        # Now put out the chunk part
-                        process_chunk_lexical_unit(chunk, list_item, rtl_flag)
-                        
-                        # Put out a [ to surround the normal lex. unit
-                        output_span(list_item, CHUNK_LEMMA_COLOR, ' [', rtl_flag)
-
-                    # process odd # elements -- the normal stuff (that was within the braces)
-                    else:
-                        
-                        # parse the lexical units. This will give us tokens before, between 
-                        # and after each lu. E.g. ^hi1.1<n>$, ^there2.3<dem><pl>$ gives
-                        #                         ['', 'hi1.1<n>', ', ', 'there2.3<dem><pl>', '']
-                        subTokens = re.split('\^|\$', tok)
-                        
-                        # process pairs of tokens (punctuation and lexical unit)
-                        for j in range(0,len(subTokens)-1,2):
-                            # First, put out the punctuation. If the punctuation is null, put
-                            # out a space. Except if it's the first punctuation and it null.
-                            if len(subTokens[j]) > 0:
-                                output_span(list_item, PUNC_COLOR, subTokens[j], rtl_flag)
-                            else:
-                                # we need a preceding space if we are not within brackets
-                                if re.search('^default', chunk) is None:
-                                    myStr = ''
-                                else:
-                                    myStr = ' '
-                                output_span(list_item, PUNC_COLOR, myStr, rtl_flag)
-                            
-                            # parse the lexical unit and add the elements needed to the list item element
-                            process_lexical_unit(subTokens[j+1], list_item, rtl_flag, show_unk_symbol)
-                            
-                        # process last subtoken for the stuff inside the {}
-                        if len(subTokens[-1]) > 0:
-                            output_span(list_item, PUNC_COLOR, subTokens[-1], rtl_flag)
-                        
-                        # Put out a closing ] if it wasn't a default chunk
-                        if re.search('^default', chunk) is None:
-                            output_span(list_item, CHUNK_LEMMA_COLOR, ']', rtl_flag)
-
-                # process last token
-                tok = re.sub('\$', '', tokens[-1].rstrip())
-                if len(tok) > 0:
-                    # remove the $
-                    output_span(list_item, PUNC_COLOR, tok, rtl_flag)
-                           
         else: # not advanced
             # Process all lines in the input file
             for line in f:
@@ -358,16 +290,16 @@ class Main(QMainWindow):
                     # First, put out the punctuation. If the punctuation is null, put
                     # out a space. Except if it's the first punctuation and it null.
                     if len(tokens[i]) > 0:
-                        output_span(list_item, PUNC_COLOR, tokens[i], rtl_flag)
+                        outputLUSpan(list_item, PUNC_COLOR, tokens[i], rtl_flag)
                     elif i > 0:
-                        output_span(list_item, PUNC_COLOR, ' ', rtl_flag)
+                        outputLUSpan(list_item, PUNC_COLOR, ' ', rtl_flag)
                     
                     # parse the lexical unit and add the elements needed to the list item element
-                    process_lexical_unit(tokens[i+1], list_item, rtl_flag, show_unk_symbol)
+                    processLexicalUnit(tokens[i+1], list_item, rtl_flag, show_unk_symbol)
                     
                 # process last token
                 if len(tokens[-1].rstrip()) > 0:
-                    output_span(list_item, PUNC_COLOR, tokens[-1].rstrip(), rtl_flag)
+                    outputLUSpan(list_item, PUNC_COLOR, tokens[-1].rstrip(), rtl_flag)
                 
         # Write out the html file as utf-8
         tree.write(self.html, encoding='utf-16', xml_declaration=None, default_namespace=None, method='html')

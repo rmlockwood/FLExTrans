@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.7.2 - 1/30/23 - Ron Lockwood
+#    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
+#    with a table containing source headword, gloss and category plus blank cells for the target
+#    language and a comment. Also below this info. is the sentence where the sense was found with the
+#    word marked in bold type. A new setting for ProperNoun abbrev. added.
+#
 #   Version 3.7.1 - 11/7/22 - Ron Lockwood
 #    Treat a setting as a file or folder if it's anywhere in the description.
 #    Not just at the end.
@@ -74,6 +80,7 @@ CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
 CACHE_DATA = 'CacheData'
 CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
 COMPOSED_CHARACTERS = 'UseComposedCharacters'
+PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'

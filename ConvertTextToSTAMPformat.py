@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.7.2 - 1/6/23 - Ron Lockwood
+#    Use flags=re.RegexFlag.A, without flags it won't do what we expect
+#
 #   Version 3.7.1 - 12/23/22 - Ron Lockwood
 #    Rewrite of the cache stuff so that if we are getting data out of the cache
 #    it has everything we need and we don't have to open the FLEx project to get
@@ -183,7 +186,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.7.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 
@@ -231,7 +234,7 @@ class ANAInfo(object):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getPreDotRoot(self): # in other words the headword
         
-        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, re.RegexFlag.A) # re.RegexFlag.A=ASCII-only match
+        g = re.search(r'< .+ (.+)\.\d+ >',self.Analysis, flags=re.RegexFlag.A) # re.RegexFlag.A=ASCII-only match
         
         if g:
             ret = self.removeUnderscores(g.group(1))
@@ -240,7 +243,7 @@ class ANAInfo(object):
         return None
     
     def getSenseNum(self):
-        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+        return re.search(r'< .+ .+\.(\d+) >',self.Analysis, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
     def getAfterPunc(self):
         return self.AfterPunc
     def getBeforePunc(self):
@@ -571,7 +574,7 @@ class ConversionData():
                 abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
                        
             # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-            senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+            senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
             
             # No number found, so use sense 1
             if senseNum == '':
