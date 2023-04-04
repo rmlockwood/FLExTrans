@@ -70,7 +70,7 @@ import ReadConfig
 import os
 import re
 import unicodedata
-from FTModuleClass import *
+from flextoolslib import *
 from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------

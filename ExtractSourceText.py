@@ -164,10 +164,10 @@ import ReadConfig
 import Utils
 import copy
 
-from FTModuleClass import *
+from flextoolslib import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
-from FTModuleClass import FlexToolsModuleClass
+from flextoolslib import FlexToolsModuleClass
 from collections import defaultdict
 
 NGRAM_SIZE = 5

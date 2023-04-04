@@ -162,7 +162,7 @@ from System import String
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         

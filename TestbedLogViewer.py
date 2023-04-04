@@ -87,7 +87,7 @@ from PyQt5 import QtGui, QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  

@@ -80,8 +80,8 @@
 import os
 import sys
 
-from FTModuleClass import FlexToolsModuleClass
-from FTModuleClass import *
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 

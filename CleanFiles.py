@@ -39,7 +39,7 @@ import os
 from pathlib import Path
 import tempfile
 import re
-from FTModuleClass import *
+from flextoolslib import *
 import ReadConfig
 import Utils
 from FTPaths import CONFIG_PATH

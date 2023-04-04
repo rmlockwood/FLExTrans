@@ -95,7 +95,7 @@ from datetime import datetime
 import ReadConfig
 import Utils
 
-from FTModuleClass import *
+from flextoolslib import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 from flexlibs import FLExProject

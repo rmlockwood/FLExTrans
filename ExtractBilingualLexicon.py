@@ -211,7 +211,7 @@ from System import String
 import ReadConfig
 import Utils
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 

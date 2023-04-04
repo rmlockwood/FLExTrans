@@ -72,8 +72,8 @@ import sys
 import shutil
 import unicodedata
 
-from FTModuleClass import FlexToolsModuleClass
-from FTModuleClass import *                                                 
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *                                                 
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
@@ -85,8 +85,6 @@ from FTPaths import CONFIG_PATH
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import Utils
 import ReadConfig
-import site
-site.addsitedir(r"Lib")
 from Testbed import *
 
 #----------------------------------------------------------------

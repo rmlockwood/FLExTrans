@@ -58,8 +58,8 @@ import os
 import xml.etree.ElementTree as ET
 import tempfile
 from subprocess import call
-from FTModuleClass import FlexToolsModuleClass
-from FTModuleClass import *                                                 
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *                                                 
 
 import Utils
 import ReadConfig
