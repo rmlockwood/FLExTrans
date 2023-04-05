@@ -25,6 +25,7 @@ from System import String
 
 import ReadConfig
 import Utils
+import FTPaths
 
 from FTModuleClass import *                                                 
 from SIL.LCModel import *                                                   
@@ -115,7 +116,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     else:
         # Run the HermitCrab config generator
         try:
-            result = subprocess.run(["C:\\Program Files\\SIL\\GenerateHCConfig4FLExTrans\\GenerateHCConfigForFLExTrans.exe", fwdataPath, HCconfigPath])
+            result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, fwdataPath, HCconfigPath])
             errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
 
         except subprocess.CalledProcessError as e:
@@ -312,7 +313,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     # Call HCSynthesis to produce surface forms. 
     try:
-        result = subprocess.run(["C:\\Program Files\\SIL\\HCSynthByGloss\\HCSynthByGloss.exe", '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile], capture_output=True, check=True)
+        result = subprocess.run([FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile], capture_output=True, check=True)
     
     except subprocess.CalledProcessError as e:
 
