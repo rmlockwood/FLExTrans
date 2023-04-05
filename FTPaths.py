@@ -6,8 +6,6 @@
 
 import os
 
-# *** I suggest replacing all occurences of CONFIG_PATH with the relevant
-# paths below. ***
 CONFIG_PATH = os.path.join(os.getcwd(), "flextools.ini")
 
 WORK_DIR    = os.path.dirname(os.path.dirname(CONFIG_PATH))

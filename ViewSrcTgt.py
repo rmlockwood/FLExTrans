@@ -84,7 +84,7 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 from SrcTgtViewer import Ui_MainWindow
 import xml.etree.ElementTree as ET
 
-from FTPaths import CONFIG_PATH
+import FTPaths
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import Utils
 import ReadConfig
@@ -124,7 +124,7 @@ class Main(QMainWindow):
         
         if advanced:
             
-            buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+            buildFolder = FTPaths.BUILD_DIR
             self.tgt1 = buildFolder + '\\' + TARGET_FILE1
             self.tgt2 = buildFolder + '\\' + TARGET_FILE2
             self.tgt3 = self.tgt

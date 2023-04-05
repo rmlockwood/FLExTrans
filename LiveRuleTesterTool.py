@@ -545,7 +545,7 @@ class Main(QMainWindow):
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
-        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.BUILD_FOLDER)
+        self.buildFolder = FTPaths.BUILD_DIR
 
         self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
         self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE

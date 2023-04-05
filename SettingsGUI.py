@@ -475,7 +475,7 @@ def doFolderBrowse(wind, myWidgInfo):
 def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
-    startPath = os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH))
+    startPath = FTPaths.WORK_DIR
     widget.setText(os.path.relpath(myPath, startPath))
     widget.setToolTip(os.path.relpath(myPath, startPath))
     

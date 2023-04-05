@@ -42,7 +42,7 @@ import re
 from flextoolslib import *
 import ReadConfig
 import Utils
-from FTPaths import CONFIG_PATH
+import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -61,7 +61,7 @@ OUTPUT = "Output\\"
 def MainFunction(DB, report, modify=True):
     
     # Get parent folder of the folder flextools.ini is in and add \Build to it
-    buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+    buildFolder = FTPaths.BUILD_DIR
     buildFolder += '\\'
     
     configMap = ReadConfig.readConfig(report)
