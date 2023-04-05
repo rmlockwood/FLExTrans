@@ -434,7 +434,7 @@ class OverWriteDlg(QDialog):
         # Default to NoToAll. 
         self.retValue = QDialogButtonBox.NoToAll
 
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         # Add the lexical unit to the label
         labelStr = str(self.ui.label.text())
@@ -480,7 +480,7 @@ class Main(QMainWindow):
         self.fixBilingLex = True
         self.__bilingMap = {}
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None
@@ -508,6 +508,15 @@ class Main(QMainWindow):
         self.restartTester = False
         self.lastSentNum = -1
         self.startTestbedLogViewer = False
+
+        # Reset icon images
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.upButton.setIcon(icon)
+        
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.downButton.setIcon(icon2)
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)

@@ -436,7 +436,7 @@ class OverWriteDlg(QDialog):
         # Default to NoToAll. 
         self.retValue = QDialogButtonBox.NoToAll
 
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         # Add the lexical unit to the label
         labelStr = str(self.ui.label.text())
@@ -482,7 +482,7 @@ class Main(QMainWindow):
         self.fixBilingLex = True
         self.__bilingMap = {}
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None

@@ -178,7 +178,7 @@ class Main(QMainWindow):
         self.chapSel = None
         self.retVal = False
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)

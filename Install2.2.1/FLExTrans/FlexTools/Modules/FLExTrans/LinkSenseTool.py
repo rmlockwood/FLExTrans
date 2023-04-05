@@ -644,7 +644,7 @@ class Main(QMainWindow):
         # load the source text list
         Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.InitRebuildBilingCheckBox()
         
