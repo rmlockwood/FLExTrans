@@ -3,6 +3,7 @@ Do these things when making a new release
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
+-Edit Version.py in the FlexTools folder with the new version (this shows up in the title bar and About)
 -Run createInstallFolder2.0.bat to rebuild zip files
 -Do another commit that has the install changes
 -Finish merging all pull requests

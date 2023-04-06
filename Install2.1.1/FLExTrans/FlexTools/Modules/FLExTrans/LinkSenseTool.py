@@ -548,7 +548,7 @@ class Main(QMainWindow):
         self.ret_val = 0
         self.cols = 7
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         

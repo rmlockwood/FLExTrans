@@ -378,7 +378,7 @@ class Main(QMainWindow):
         self.__doCatalog = True
         self.__bilingMap = {}
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None

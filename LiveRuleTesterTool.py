@@ -293,7 +293,7 @@
 from System import Guid
 from System import String
 
-from FTModuleClass import *        
+from flextoolslib import *        
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from flexlibs import FLExProject
@@ -313,8 +313,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
 
-import site
-site.addsitedir(r"Lib")
+
 from Testbed import *
 import Utils
 import ReadConfig
@@ -323,7 +322,6 @@ import ConvertTextToSTAMPformat
 import DoStampSynthesis
 import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
-sys.path.append(os.getcwd()+'\\Modules\FLExTrans')
 import TestbedLogViewer
 
 from LiveRuleTester import Ui_MainWindow
@@ -443,7 +441,7 @@ class OverWriteDlg(QDialog):
         # Default to NoToAll. 
         self.retValue = QDialogButtonBox.NoToAll
 
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         # Add the lexical unit to the label
         labelStr = str(self.ui.label.text())
@@ -489,7 +487,7 @@ class Main(QMainWindow):
         self.fixBilingLex = True
         self.__bilingMap = {}
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.__ruleModel = self.__transferModel = None
         self.__interChunkModel = None
@@ -517,6 +515,15 @@ class Main(QMainWindow):
         self.restartTester = False
         self.lastSentNum = -1
         self.startTestbedLogViewer = False
+
+        # Reset icon images
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.upButton.setIcon(icon)
+        
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "DownArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.downButton.setIcon(icon2)
         
         # Tie controls to functions
         self.ui.TestButton.clicked.connect(self.TransferClicked)
@@ -545,7 +552,7 @@ class Main(QMainWindow):
         
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
-        self.buildFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.BUILD_FOLDER)
+        self.buildFolder = FTPaths.BUILD_DIR
 
         self.testerFolder = self.buildFolder + '\\' + LIVE_RULE_TESTER_FOLDER
         self.affixGlossPath = self.testerFolder + '\\' + TARGET_AFFIX_GLOSSES_FILE

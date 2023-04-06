@@ -73,8 +73,8 @@ import ReadConfig
 import os
 import re
 import unicodedata
-from FTModuleClass import *
-from FTPaths import CONFIG_PATH
+from flextoolslib import *
+import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -97,7 +97,7 @@ STRIPPED_RULES3 = 'tr.t3x'
 def MainFunction(DB, report, modify=True):
 
     # Get parent folder of the folder flextools.ini is in and add \Build to it
-    buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+    buildFolder = FTPaths.BUILD_DIR
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:

@@ -89,8 +89,8 @@
 import os
 import sys
 
-from FTModuleClass import FlexToolsModuleClass
-from FTModuleClass import *
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
@@ -478,7 +478,7 @@ def doFolderBrowse(wind, myWidgInfo):
 def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
-    startPath = os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH))
+    startPath = FTPaths.WORK_DIR
     widget.setText(os.path.relpath(myPath, startPath))
     widget.setToolTip(os.path.relpath(myPath, startPath))
     
@@ -688,7 +688,7 @@ class Main(QMainWindow):
         self.changedSettingsSet = set()
         self.nameToWidgetMap = {}
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)

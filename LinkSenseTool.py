@@ -181,7 +181,7 @@ from System import String
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
@@ -644,7 +644,7 @@ class Main(QMainWindow):
         # load the source text list
         Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.InitRebuildBilingCheckBox()
         
@@ -1538,7 +1538,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
     outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
 
     # Get the output folder (parent of the config path folder + output)
-    outputFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.OUTPUT_FOLDER)
+    outputFolder = FTPaths.OUTPUT_DIR
     
     # Convert source text name to valid file name characters (by substituting _ for invalid ones)
     htmlFileName = "".join([x if (x.isalnum() or x in "._- ") else "_" for x in sourceTextName])

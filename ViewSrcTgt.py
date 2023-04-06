@@ -75,8 +75,8 @@ import sys
 import shutil
 import unicodedata
 
-from FTModuleClass import FlexToolsModuleClass
-from FTModuleClass import *                                                 
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *                                                 
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
@@ -84,12 +84,10 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 from SrcTgtViewer import Ui_MainWindow
 import xml.etree.ElementTree as ET
 
-from FTPaths import CONFIG_PATH
+import FTPaths
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import Utils
 import ReadConfig
-import site
-site.addsitedir(r"Lib")
 from Testbed import *
 
 #----------------------------------------------------------------
@@ -119,14 +117,14 @@ class Main(QMainWindow):
         self.html = htmlFile
         self.advanced = advanced
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
         if advanced:
             
-            buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+            buildFolder = FTPaths.BUILD_DIR
             self.tgt1 = buildFolder + '\\' + TARGET_FILE1
             self.tgt2 = buildFolder + '\\' + TARGET_FILE2
             self.tgt3 = self.tgt
