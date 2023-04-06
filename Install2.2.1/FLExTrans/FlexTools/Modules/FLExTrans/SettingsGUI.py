@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7.6 - 1/30/23 - Ron Lockwood
 #    Official support for creating a vocabulary list of unlinked senses. The tool creates an html file
 #    with a table containing source headword, gloss and category plus blank cells for the target
@@ -106,7 +109,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.7.6",
+        FTM_Version: "3.8",
         FTM_ModifiesDB: False,
         FTM_Synopsis: "Change FLExTrans settings.",
         FTM_Help: "",
@@ -475,7 +478,7 @@ def doFolderBrowse(wind, myWidgInfo):
 def setPaths(widget, myPath):
     
     # start the rel path relative to the project folder which is the parent of the config folder
-    startPath = os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH))
+    startPath = FTPaths.WORK_DIR
     widget.setText(os.path.relpath(myPath, startPath))
     widget.setToolTip(os.path.relpath(myPath, startPath))
     
@@ -1067,6 +1070,9 @@ widgetList = [
    ["Default to rebuidling the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
     "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", False],\
 
+   ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
+    "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection.", False],\
+
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
     "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", True],\
    
@@ -1096,6 +1102,18 @@ widgetList = [
 
    ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
     "The path and name of the file holding\nthe intermediary synthesized file.", True],\
+
+   ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
+    "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
+
+   ["Hermit Crab Master File", "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
+    "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
+
+   ["Hermit Crab Parses File", "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
+    "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
+
+   ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
+    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
 
    ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
     "The path and name of the testbed file.", True],\

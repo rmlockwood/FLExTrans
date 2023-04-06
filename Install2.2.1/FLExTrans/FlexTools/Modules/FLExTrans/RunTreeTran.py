@@ -63,7 +63,7 @@ from flextoolslib import *
 
 import Utils
 import ReadConfig
-from FTPaths import CONFIG_PATH
+import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -182,7 +182,7 @@ def MainFunction(DB, report, modify=True):
     
     # Get parent folder of the folder flextools.ini (Config) is in. This should give us the working project folder. E.g. German-Swedish
     # Assume that the rules file is in the folder.
-    rulesFilePath = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), treeTranRules)
+    rulesFilePath = os.path.join(FTPaths.WORK_DIR, treeTranRules)
 
     # verify the filtered file exists
     if os.path.exists(rulesFilePath) == False:

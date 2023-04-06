@@ -59,7 +59,6 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
 import ChapterSelection
-from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:

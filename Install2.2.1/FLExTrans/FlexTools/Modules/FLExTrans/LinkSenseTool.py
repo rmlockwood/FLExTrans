@@ -1538,7 +1538,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
     outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
 
     # Get the output folder (parent of the config path folder + output)
-    outputFolder = os.path.join(os.path.dirname(os.path.dirname(FTPaths.CONFIG_PATH)), Utils.OUTPUT_FOLDER)
+    outputFolder = FTPaths.OUTPUT_DIR
     
     # Convert source text name to valid file name characters (by substituting _ for invalid ones)
     htmlFileName = "".join([x if (x.isalnum() or x in "._- ") else "_" for x in sourceTextName])

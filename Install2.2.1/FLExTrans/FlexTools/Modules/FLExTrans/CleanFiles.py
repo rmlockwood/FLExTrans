@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.8 - 4/4/23 - Ron Lockwood
+#    Support HermitCrab Synthesis.
+#
 #   Version 3.7 - 11/7/22 - Ron Lockwood
 #    LiveRuleTester files weren't getting deleted. Delete advanced files.
 #
@@ -42,13 +45,13 @@ import re
 from flextoolslib import *
 import ReadConfig
 import Utils
-from FTPaths import CONFIG_PATH
+import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans modules to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Remove generated files to force each FLExTrans modules to regenerate everything",
         FTM_Help  : "",  
@@ -61,7 +64,7 @@ OUTPUT = "Output\\"
 def MainFunction(DB, report, modify=True):
     
     # Get parent folder of the folder flextools.ini is in and add \Build to it
-    buildFolder = os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), Utils.BUILD_FOLDER)
+    buildFolder = FTPaths.BUILD_DIR
     buildFolder += '\\'
     
     configMap = ReadConfig.readConfig(report)
@@ -208,7 +211,32 @@ def MainFunction(DB, report, modify=True):
             p.unlink()
     except:
         pass # ignore errors
-    
+
+    # Remove HermitCrab files
+    hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report, giveError=False)
+    try:
+        os.remove(hcfile)
+    except:
+        pass # ignore errors
+
+    hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_PARSES_FILE, report, giveError=False)
+    try:
+        os.remove(hcfile)
+    except:
+        pass # ignore errors
+
+    hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_MASTER_FILE, report, giveError=False)
+    try:
+        os.remove(hcfile)
+    except:
+        pass # ignore errors
+
+    hcfile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE, report, giveError=False)
+    try:
+        os.remove(hcfile)
+    except:
+        pass # ignore errors
+
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
