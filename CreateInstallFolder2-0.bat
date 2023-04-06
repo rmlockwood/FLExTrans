@@ -7,7 +7,8 @@ rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
 rem Now do steps to create a zip that has FLExTools and FLExTrans 
-mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\HCSynthByGloss
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\Collections
@@ -121,14 +122,21 @@ rem Settings tool
 copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
 copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
+rem Other Tools
+copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+
+rem HermitCrab sythesis
+copy DoHermitCrabSynthesis.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+
 rem Apertium files
 copy Apertium4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
 
+rem HermitCrab generate and sythesize program files
+copy HermitCrabSynthesis\GenerateHCConfig4FLExTrans\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
+copy HermitCrabSynthesis\HCSynthByGloss\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\HCSynthByGloss
+
 rem Make for Windows files
 copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-
-rem Other Tools
-copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
