@@ -8,7 +8,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.8"
+!define PRODUCT_VERSION "3.8beta2"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -62,20 +62,13 @@ InitPluginsDir
   #File "Command2.sh"
   #ExecWait "bash -ExecutionPolicy Bypass -WindowStyle Hidden -File $INSTDIR\install_files\Command2.sh -FFFeatureOff"
 
-  # Install python 3.7.4
-  MessageBox MB_YESNO "Install Python 3.7.4? $\nIMPORTANT! Check the box: 'Add Python 3.7 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
-        File "python-3.7.4-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.7.4-amd64.exe"
+  # Install python 3.8.10
+  MessageBox MB_YESNO "Install Python 3.8.10? $\nIMPORTANT! Check the box: 'Add Python 3.8 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
+        File "python-3.8.10-amd64.exe"
+        ExecWait "$INSTDIR\install_files\python-3.8.10-amd64.exe"
         Goto endPythonSync
   endPythonSync:
 
-  # Install Git
-#  MessageBox MB_YESNO "Install Git for Windows? $\nUse the default settings." /SD IDYES IDNO endGitSync
-#        File "Git-2.31.1-64-bit.exe"
-#        ExecWait "$INSTDIR\install_files\Git-2.31.1-64-bit.exe"
-#        Goto endGitSync
-#  endGitSync:
-  
   Var /GLOBAL OUT_FOLDER
   # Unzip FLExTrans to the desired folder
   # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
@@ -98,10 +91,8 @@ InitPluginsDir
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
   
-  File "${GIT_FOLDER}\SetWorkingProject.py"
   File "${GIT_FOLDER}\FlexTrans.config"
   File "${GIT_FOLDER}\flextools.ini"
-  File "${GIT_FOLDER}\FlexTools.bat"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config"
   

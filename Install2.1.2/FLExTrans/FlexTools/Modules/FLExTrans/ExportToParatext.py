@@ -89,7 +89,7 @@ class Main(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.setWindowTitle("Export Chapters to Paratext")
 

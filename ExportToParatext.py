@@ -47,12 +47,14 @@
 #
 #
 
-from FTModuleClass import *                                                 
+from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs import FLExProject, AllProjectNames
 import ReadConfig
+import FTPaths
+
 import re
 import sys
 from shutil import copyfile
@@ -62,7 +64,6 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from ParatextChapSelectionDlg import Ui_MainWindow
 import ChapterSelection
-from FTPaths import CONFIG_PATH
 
 #----------------------------------------------------------------
 # Configurables:
@@ -92,7 +93,7 @@ class Main(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.setWindowTitle("Export Chapters to Paratext")
 

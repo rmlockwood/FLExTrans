@@ -102,7 +102,7 @@ class Main(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        self.setWindowIcon(QtGui.QIcon('FLExTransWindowIcon.ico'))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
