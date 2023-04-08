@@ -5,13 +5,13 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.8.1 - 4/8/23 - Ron Lockwood
+#    Handle synthesis errors in multi-word results.
+#
 #   Version 3.8 - 3/8/23 - Ron Lockwood
 #    Initial version.
 #
 #   Synthesize using Hermit Crab.
-#
-#   Version 3.8 - 4/4/23 - Ron Lockwood
-#    Support HermitCrab Synthesis.
 #
 
 import os
@@ -35,7 +35,7 @@ from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
         FTM_Help       :"",
@@ -166,18 +166,8 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
         line = line.strip()
 
-        # See if we have an error E.g. %0%^iba1.1<n><PC.1Sg>$%
-        if line[0:3] == '%0%':
-
-            # Save the error. Everthing to the right of the last %
-            # Make this a warning, code = 1
-            errorList.append((line[line.rindex('%')+1:], 1))
-
-            surfaceStrList = [line[:line.rindex('%')+1]]
-
-        else:
-            # parse multiple surface forms
-            surfaceStrList = re.split(',', line)
+        # parse multiple surface forms
+        surfaceStrList = re.split(',', line)
             
         (originalLUStr, capCodeList) = luInfoList[i]
 
@@ -185,6 +175,15 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
         # Loop through possible multiple surface forms
         for j, surfaceStr in enumerate(surfaceStrList):
+
+            # See if we have an error E.g. %0%^iba1.1<n><PC.1Sg>$%
+            if surfaceStr[0:3] == '%0%':
+
+                # Save the error. Everthing to the right of the last %
+                # Make this a warning, code = 1
+                errorList.append((surfaceStr[surfaceStr.rindex('%')+1:], 1))
+
+                surfaceStr = surfaceStr[:surfaceStr.rindex('%')+1]
 
             surfaceStr = Utils.capitalizeString(surfaceStr, capCodeList[j])
             newSurfaceList.append(surfaceStr)
@@ -286,6 +285,7 @@ def fix_up_text(synFile, cleanUpText):
 
         # Remove n.n on lemmas
         synFileContents = re.sub('\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
+        
         # Remove at signs
         synFileContents = re.sub('@', '', synFileContents)
 
