@@ -3,8 +3,11 @@
 #   FlexTools window.
 #
 
+FTName = "FLExTools"
+FTVersion = "2.2.1"
+
 Name = "FLExTrans"
 
-Version = "3.8"
+Version = "3.8 Beta 2"
 
-Title = f"{Name} {Version}"
+Title = f"{FTName} {FTVersion} ({Name} {Version})"

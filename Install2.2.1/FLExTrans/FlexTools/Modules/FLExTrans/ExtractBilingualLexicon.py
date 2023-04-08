@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8 - 4/7/23 - Ron Lockwood
+#    Don't give the full path of the replacement file in the xml comment of the bilingual lexicon file.
+#
 #   Version 3.7.5 - 2/7/23 - Ron Lockwood
 #    Fixes #390. Words that are linked to **none** now get a blank mapping in the bilingual
 #    dictionary. This allows them to be deleted by default, or they can be overridden by 
@@ -236,8 +239,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.7.5",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -437,7 +439,7 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
         if key in replMap:
             
             # Create a comment containing the old entry and a note and insert them into the entry list
-            comment1 = ET.Comment('This entry was replaced with the one below it from the file ' + replFile + '.\n')
+            comment1 = ET.Comment('This entry was replaced with the one below it from the file: ' + os.path.basename(replFile) + '.\n')
             
             comment2 = ET.Comment(oldEntryStr+'\n')
             
@@ -473,7 +475,7 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
 def processAppendEntries(new_biling_section, replFile, replRoot, newDocType):
         
     # Make a comment and adds it
-    comment = ET.Comment('Custom entries appended below from the file ' + replFile + '.\n')
+    comment = ET.Comment('Custom entries appended below from the file ' + os.path.basename(replFile) + '.\n')
     new_biling_section.append(comment)
     
     # Get the append entries section

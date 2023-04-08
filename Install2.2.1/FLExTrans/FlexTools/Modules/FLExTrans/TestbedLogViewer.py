@@ -94,6 +94,7 @@ from flextoolslib import *
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  
+import FTPaths
 import Utils
 import ReadConfig
 from Testbed import *
