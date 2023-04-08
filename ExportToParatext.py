@@ -50,6 +50,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from SIL.LCModel.Core.Text import TsStringUtils
 from flexlibs import FLExProject, AllProjectNames
 import ReadConfig
+import FTPaths
+
 import re
 import sys
 from shutil import copyfile

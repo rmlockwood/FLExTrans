@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8.1 - 4/8/23 - Ron Lockwood
+#    Use WORK_DIR in paths.
+#
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
@@ -71,7 +74,7 @@ import re
 import os
 import unicodedata
 
-from FTPaths import CONFIG_PATH
+from FTPaths import CONFIG_PATH, WORK_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
@@ -222,8 +225,9 @@ def getConfigVal(my_map, key, report, giveError=True):
             # if we don't have an absolute path (e.g. c:\...) we need to fix up the path. FLExTrans is shipped with relative paths to the work project subfolder ('e.g. German-Swedish')
             if not re.search(':', my_map[key]):
                 
-                # Return the parent folder of the Config folder + the relative file path. E.g. ...\German-Swedish\target_text.aper
-                return os.path.join(os.path.dirname(os.path.dirname(CONFIG_PATH)), my_map[key])
+                # Return the parent folder of the Config folder + the relative file path.
+                # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
+                return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
 
