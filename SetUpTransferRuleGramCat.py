@@ -98,7 +98,7 @@ lexicon. I.e. spaces are converted to underscores, periods and slashes are remov
 This module will also populate the categories section of the transfer rule file with
 grammatical categories from the source FLEx project. This module will also create
 attributes in the transfer rule file from FLEx inflection features, inflection classes
-and template slots. You can decide which of these are used whether existing attributes
+and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.
 """}
 

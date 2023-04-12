@@ -227,7 +227,7 @@ import ReadConfig
 import Utils
 
 from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
+from SIL.LCModel import ILexEntryRepository                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 DONT_CACHE = True

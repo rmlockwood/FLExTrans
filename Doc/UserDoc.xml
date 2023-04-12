@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->13 December, 2022</date
+>10 April, 2023</date
 ><version
->3.7</version
+>3.8</version
 ><contents
 showLevel="4"
 ></contents
@@ -439,7 +439,6 @@ src="Images/FLExTransModules.png"
 ></li
 ><li
 >Click on the <img
-cssSpecial="Width:5%"
 src="Images/DatabaseBut.PNG"
 ></img
 > button and choose your source database, i.e. <object
@@ -447,10 +446,12 @@ type="tFlexx"
 ></object
 > project.</li
 ><li
+><genericTarget
+id="gChangeSettings"
+></genericTarget
 >Change the settings for your new project.<ol
 ><li
 >Click on the <img
-cssSpecial="Width:5%"
 src="Images/CollectionsBut.PNG"
 ></img
 > button which will bring up a list of collections as shown in <exampleRef
@@ -471,7 +472,7 @@ src="Images/LinkerInCollections.png"
 ><li
 >Double-click on <object
 type="tCollection"
->FLExTrans Tools</object
+>Tools</object
 > in the list and you’ll see this:<example
 num="xToolsCollection"
 ><chart
@@ -484,7 +485,7 @@ src="Images/ToolsCollection.png"
 ></example
 ></li
 ><li
->Select the FLExTrans.Settings module.</li
+>Select the Settings module.</li
 ><li
 >Click the <img
 cssSpecial="Width:5%"
@@ -1347,6 +1348,13 @@ id="sParatext"
 type="tTool"
 >Paratext</object
 > Import and Export Tools</secTitle
+><section3
+id="sPtxImport"
+><secTitle
+><object
+type="tTool"
+>Paratext</object
+> Import</secTitle
 ><p
 >To import <object
 type="tTool"
@@ -1389,6 +1397,11 @@ type="tBoldItalic"
 ><li
 ><object
 type="tBoldItalic"
+>Include cross references</object
+> - include all the text involved with cross references, namely \x and \r marked text.</li
+><li
+><object
+type="tBoldItalic"
 >Make a new text the active text</object
 > - the newly created text will be configured to be the active source text in <object
 type="tFlextrans"
@@ -1412,6 +1425,14 @@ src="Images/ParatextImport.png"
 ></img
 ></chart
 ></example
+></section3
+><section3
+id="sPtxExport"
+><secTitle
+><object
+type="tTool"
+>Paratext</object
+> Export</secTitle
 ><p
 >To export chapters to <object
 type="tTool"
@@ -1469,6 +1490,7 @@ src="Images/ParatextExport.png"
 ></img
 ></chart
 ></example
+></section3
 ></section2
 ><section2
 id="sSetupGramCat"
@@ -1481,27 +1503,50 @@ type="tTool"
 >The <object
 type="tTool"
 >Set Up Transfer Rule Grammatical Categories Tool</object
-> is a tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer rule will likely need to reference the grammatical category of a word either in the source or target language. The initial transfer rules file that comes with <object
-type="tFlextrans"
-></object
-> has just a few sample grammatical categories. This tool will take the categories that are in the bilingual lexicon file and insert them as tags under the specific attribute called <object
+> will populate categories and attributes in your transfer rule file. Use this tool when you are first setting up your transfer rules. You are given a choice for populating attributes as shown in <exampleRef
+letter="xSetupCatAttrib"
+num="xSetupCatAttrib"
+></exampleRef
+>. Source categories &amp; the <object
 type="tCourier"
 >a_gram_cat</object
-> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both the source and target <object
-type="tFlexx"
-></object
-> projects.</p
+> attribute are always processed.</p
+><example
+num="xSetupCatAttrib"
+><chart
+><img
+src="images/SetupCatAttrib.png"
+></img
+></chart
+></example
+><section3
+id="sSrcCats"
+><secTitle
+>Source Categories</secTitle
 ><p
->You should only need to run this tool one time at the beginning of the <object
-type="tFlextrans"
-></object
-> project. If new grammatical categories get added to either <object
+>This tool finds all the grammatical categories in the source <object
 type="tFlexx"
 ></object
-> project, you could delete the <object
+> project and creates corresponding categories under the Categories element in the transfer rule file. Source categories will always be created with this tool, unless an existing category of the same name is found.</p
+></section3
+><section3
+id="sGramCat"
+><secTitle
+> <object
 type="tCourier"
 >a_gram_cat</object
-> attribute and run this tool again to get an updated list in your transfer rules file.</p
+> Attribute</secTitle
+><p
+>This tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer rule will likely need to reference the grammatical category of a word either in the source or target language. The initial transfer rules file that comes with <object
+type="tFlextrans"
+></object
+> has just a few sample grammatical categories. This tool will take the categories that are in the source and target <object
+type="tFlexx"
+></object
+> projects and insert them as tags under the specific attribute called <object
+type="tCourier"
+>a_gram_cat</object
+> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both projects.</p
 ><p
 ><exampleRef
 letter="xSetupGramCat"
@@ -1510,7 +1555,7 @@ num="xSetupGramCat"
 > shows what the <object
 type="tCourier"
 >a_gram_cat</object
-> attribute looks like after running this tool.</p
+> attribute might look like after running this tool.</p
 ><example
 num="xSetupGramCat"
 ><chart
@@ -1519,6 +1564,58 @@ src="Images/SetupGramCat.PNG"
 ></img
 ></chart
 ></example
+></section3
+><section3
+id="sInflectionFeatures"
+><secTitle
+>Inflection Features</secTitle
+><p
+>Click the appropriate check box as shown in <exampleRef
+letter="xSetupCatAttrib"
+num="xSetupCatAttrib"
+></exampleRef
+> to populate attributes in your transfer rules that correspond to the inflection features in both of your <object
+type="tFlexx"
+></object
+> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection features from the <object
+type="tFlexx"
+></object
+> projects.</p
+></section3
+><section3
+id="sInflectionClasses"
+><secTitle
+>Inflection Classes</secTitle
+><p
+>Click the appropriate check box as shown in <exampleRef
+letter="xSetupCatAttrib"
+num="xSetupCatAttrib"
+></exampleRef
+> to populate attributes in your transfer rules that correspond to the inflection classes in both of your <object
+type="tFlexx"
+></object
+> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection classes from the <object
+type="tFlexx"
+></object
+> projects.</p
+></section3
+><section3
+id="sTemplateSlots"
+><secTitle
+>Template Slots</secTitle
+><p
+>Click the appropriate check box as shown in <exampleRef
+letter="xSetupCatAttrib"
+num="xSetupCatAttrib"
+></exampleRef
+> to populate attributes in your transfer rules that correspond to template slots in both of your <object
+type="tFlexx"
+></object
+> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the template slots from the <object
+type="tFlexx"
+></object
+> projects.</p
+></section3
 ></section2
 ></section1
 ><section1
@@ -5109,6 +5206,226 @@ type="tFoldername"
 >.</li
 ></ol
 ></section3
+><section3
+id="sHermitCrab"
+><secTitle
+>What do I do to use my <object
+type="tTool"
+>HermitCrab</object
+> parsing model in synthesis?</secTitle
+><p
+>By default <object
+type="tFlextrans"
+></object
+> assumes you will use the <object
+type="tTool"
+>XAmple</object
+> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <object
+type="tTool"
+>HermitCrab</object
+> parsing model, you can make some changes in your <object
+type="tFlextrans"
+></object
+> setup to use <object
+type="tTool"
+>HermitCrab</object
+> for synthesis. For more details on the <object
+type="tTool"
+>HermitCrab</object
+> parser, see <citation
+ref="rBlack"
+></citation
+>.</p
+><p
+>To set up <object
+type="tFlextrans"
+></object
+> for <object
+type="tTool"
+>HermitCrab</object
+> parsing, you need to do two things:</p
+><ol
+><li
+>Turn on the setting to enable <object
+type="tTool"
+>HermitCrab</object
+> for synthesis.<ol
+><li
+>Run the Settings module. See <genericRef
+gref="gChangeSettings"
+>step 7 above</genericRef
+>.</li
+><li
+>Click <object
+type="tBold"
+>Yes</object
+> for <object
+type="tItalic"
+>Use HermitCrab synthesis</object
+> as shown in <exampleRef
+letter="xCollections"
+num="xHermitCrabYesNo"
+></exampleRef
+>.<example
+num="xHermitCrabYesNo"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/HermitCrabYesNo.png"
+></img
+></chart
+></example
+></li
+></ol
+></li
+><li
+>Replace the <object
+type="tModule"
+>Synthesize Text with STAMP</object
+> module with the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module. Here are the steps to do that:<ol
+><li
+>Click on the <img
+cssSpecial="Height:5%;"
+src="Images/CollectionsBut.PNG"
+></img
+> button which will bring up a list of collections as shown in <exampleRef
+letter="xCollections"
+num="xCollections"
+></exampleRef
+> repeated from <exampleRef
+letter="xLinkerInCollections"
+num="xLinkerInCollections"
+></exampleRef
+> above.<example
+num="xCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on <object
+type="tCollection"
+>All Steps</object
+>. </li
+><li
+>Then click on <object
+type="tModule"
+>FLExTrans.Synthesize Text with STAMP</object
+> module as shown in <exampleRef
+letter="xCollections2"
+num="xCollections2"
+></exampleRef
+>.<example
+num="xCollections2"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/AllStepsInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/RemoveButton.png"
+></img
+> button to remove the module from the <object
+type="tCollection"
+>All Steps</object
+> collection.</li
+><li
+>In the lower pane, click on the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module. As shown in <exampleRef
+letter="xCollections"
+num="xCollections3"
+></exampleRef
+>.<example
+num="xCollections3"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click the <img
+src="Images/AddModuleButton.png"
+></img
+> button and then in the upper right pane, click on the <object
+type="tModule"
+>FLExTrans.Synthesize Text with HermitCrab</object
+> module as shown in <exampleRef
+letter="xCollections"
+num="xCollections4"
+></exampleRef
+>.<example
+num="xCollections4"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinAllSteps.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/MoveUpButton.png"
+></img
+> button.</li
+><li
+>The <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module is now in the <object
+type="tCollection"
+>All Steps</object
+> collection at the right place as shown in <exampleRef
+letter="xCollections"
+num="xCollections5"
+></exampleRef
+>.<example
+num="xCollections5"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollFinal.png"
+></img
+></chart
+></example
+></li
+><li
+>Close the <object
+type="tItalic"
+>Collection Manager</object
+> window. Now you can run all the <object
+type="tCollection"
+>All Steps</object
+> modules which will include <object
+type="tTool"
+>HermitCrab</object
+> synthesis.</li
+></ol
+></li
+></ol
+></section3
 ></section2
 ></section1
 ><section1
@@ -5275,6 +5592,21 @@ id="rApertiumSite"
 ><dateAccessed
 >12/20/2021</dateAccessed
 ></webPage
+></refWork
+></refAuthor
+><refAuthor
+citename="Black,"
+name="Black, H. Andrew"
+><refWork
+id="rBlack"
+><refDate
+>2014</refDate
+><refTitle
+>A Conceptual Introduction to Morphological Parsing for Stage 1 of the Fieldworks Language Explorer</refTitle
+><ms
+><institution
+>SIL International</institution
+></ms
 ></refWork
 ></refAuthor
 ><refAuthor
@@ -5600,7 +5932,7 @@ font-weight="bold"
 id="tMenu"
 ></type
 ><type
-color="navy"
+color="#660066"
 font-family="Courier New"
 font-weight="bold"
 id="tModule"
