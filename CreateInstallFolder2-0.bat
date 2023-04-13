@@ -140,12 +140,12 @@ copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumInterchunkXMLmind
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
-"%SEVENZ_PATH%"\7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
+7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
+7z a %ADD_ON_ZIP_FILE% ApertiumInterchunkXMLmind
+7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
+7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
+7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
+7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
 
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
@@ -154,7 +154,7 @@ cd ..
 
 SET ZIP_FILE=FLExToolsWithFLExTrans%FLEXTRANS_VERSION%.zip
 cd Install%INSTALL_FOLDER_VERSION%
-"%SEVENZ_PATH%"\7z a %ZIP_FILE% FLExTrans
+7z a %ZIP_FILE% FLExTrans
 copy /Y %ZIP_FILE% ..
 copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
