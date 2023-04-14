@@ -160,5 +160,12 @@ copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 cd ..
 
+if %COMPUTERNAME% == RONS-DELL-XPS (
+  cd C:\Data\Flextrans\Installer
+  makensis -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DRESOURCE_FOLDER=. FLExTrans-installer.nsi
+  cd C:\Users\rlboo\GitHub\FLExTrans
+) else (
+  makensis -DGIT_FOLDER=. -DRESOURCE_FOLDER=. FLExTrans-installer.nsi
+)
 pause
 

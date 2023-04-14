@@ -64,7 +64,7 @@ InitPluginsDir
 
   # Install python 3.8.10
   MessageBox MB_YESNO "Install Python 3.8.10? $\nIMPORTANT! Check the box: 'Add Python 3.8 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
-        File "python-3.8.10-amd64.exe"
+        File "${RESOURCE_FOLDER}\python-3.8.10-amd64.exe"
         ExecWait "$INSTDIR\install_files\python-3.8.10-amd64.exe"
         Goto endPythonSync
   endPythonSync:
@@ -132,7 +132,7 @@ InitPluginsDir
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
   MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
-        File "xxe-perso-8_2_0-setup.exe"
+        File "${RESOURCE_FOLDER}\xxe-perso-8_2_0-setup.exe"
         ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
         Goto endXXeSync
   endXXeSync:
