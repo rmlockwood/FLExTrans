@@ -1,5 +1,7 @@
-!include StrRep.nsh
-!include ReplaceInFile.nsh
+!include "StrRep.nsh"
+!include "ReplaceInFile.nsh"
+!include "FileFunc.nsh"
+!include "LogicLib.nsh"
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "FLExTrans"
@@ -13,6 +15,7 @@
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define FLEX_TOOLS_WITH_VERSION "FLExTrans"
+!define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -53,6 +56,7 @@ InstallDir "$PROGRAMFILES\FLExTrans_Installer"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
+
 
 Section -Prerequisites
 InitPluginsDir
@@ -112,12 +116,36 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   SetOverwrite on
 
-  # Rename modules in the .ini (for old installs)
-  !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
-  !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
-  !insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
+  # Rename modules in the all the .ini files (for old installs)
+  SetOutPath ${WORKPROJECTSDIR}
+  FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
+  loop1:
+    StrCmp $1 "" done1
+    FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
+    loop2:
+      StrCmp $4 "" done2
+      ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
+        # older module names
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text with STAMP"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Synthesize Text with Affixes"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
+      ${EndIf}
+      FindNext $3 $4
+      Goto loop2
+    done2:
+      FindClose $3
+    FindNext $0 $1
+    Goto loop1
+  done1:
+    FindClose $0
+
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
 
   # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python37\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'

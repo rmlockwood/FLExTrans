@@ -5,8 +5,14 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#   Version 3.8.3 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
+#
+#   Version 3.8.2 - 4/15/23 - Ron Lockwood
+#    Fixes #391. Save/restore which transfer rules were checked. 
+#
+#   Version 3.8.1 - 4/14/23 - Ron Lockwood
+#    Save/restore which words were checked on the Select Words tab when Rebuild Bil. Lex. button is pushed.
 #
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
@@ -338,7 +344,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -513,6 +519,7 @@ class Main(QMainWindow):
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
         self.rulesCheckedList = []
+        self.wordsCheckedList = []
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
@@ -603,10 +610,14 @@ class Main(QMainWindow):
             sourceTab = int(sourceTab)
             selectWordsSentNum = int(selectWordsSentNum)
             savedSourceTextName = savedSourceTextName.strip()
-            
+
+            # Read the 2nd line which is the state of the rule checkboxes
+            checkBoxStateStr = f.readline().strip()
+            self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
+
             f.close()
         except:
-            pass
+            f.close()
         
         # Set which tab is shown        
         self.ui.tabRules.setCurrentIndex(ruleTab)
@@ -699,8 +710,14 @@ class Main(QMainWindow):
         if os.path.exists(self.__testbedPath) == False:
             self.ui.editTestbedButton.setEnabled(False)
 
-        # Start out with all rules checked. 
-        self.checkThemAll()
+        # See if we loaded any info on which rules were checked.
+        if len(self.rulesCheckedList) > 0:
+            
+            # recheck the rules that we had saved
+            self.restoreChecked()
+        else:
+            # Start out with all rules checked. 
+            self.checkThemAll()
         
         # Disable the View Testbed Log button if the testbed log doesn't exist
         testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
@@ -884,6 +901,9 @@ class Main(QMainWindow):
         
         self.fixBilingLex = True
         
+        # Save the checked words state
+        self.saveCheckedWords()
+
         # Open the project fresh
         projname = self.__DB.ProjectName()
         
@@ -916,7 +936,10 @@ class Main(QMainWindow):
         
         # Force reload of the tooltips
         self.listSentComboClicked()
-        
+
+        # Re-check the words that had been checked, if we were on Select Words view.
+        self.restoreCheckedWords()
+
         self.__ClearStuff()
         
         self.unsetCursor()
@@ -1350,6 +1373,23 @@ class Main(QMainWindow):
             else:
                 myList.append(QtCore.Qt.Unchecked)
     
+    def collectWordChecks(self, myList, checkBoxList):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, len(checkBoxList)):
+            
+            # Save the state of each check box 
+            if checkBoxList[i].checkState():
+                myList.append(QtCore.Qt.Checked)
+            else:
+                myList.append(QtCore.Qt.Unchecked)
+    
+    def saveCheckedWords(self):
+        
+        self.wordsCheckedList.clear()
+        
+        self.collectWordChecks(self.wordsCheckedList, self.__checkBoxList)
+    
     def saveChecked(self):
         
         self.rulesCheckedList.clear()
@@ -1374,6 +1414,20 @@ class Main(QMainWindow):
                 # Set the state of each check box
                 myModel.item(i).setCheckState(myList[i])
                         
+    def recheckWords(self, myList, checkBoxList):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, len(checkBoxList)):
+            
+            if i < len(myList):
+                
+                # Set the state of each check box
+                checkBoxList[i].setCheckState(myList[i])
+
+    def restoreCheckedWords(self):
+        
+        self.recheckWords(self.wordsCheckedList, self.__checkBoxList)
+        
     def restoreChecked(self):
         
         self.recheck(self.rulesCheckedList, self.__transferModel)
@@ -1749,11 +1803,16 @@ class Main(QMainWindow):
         
         rulesTab = self.ui.tabRules.currentIndex()
         sourceTab = self.ui.tabSource.currentIndex()
-        
+
+        # Save which rules were checked.
+        self.saveChecked()
+        checkedStateStr = ''.join(map(str, self.rulesCheckedList))
+
         f = open(self.windowsSettingsFile, 'w')
         
         # Save current rules tab, current source tab, last sentence # selected and the last source text
         f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
+        f.write(f'{checkedStateStr}\n')
         f.close()
         
     def removeSampleLogicRule(self, rulesElement):

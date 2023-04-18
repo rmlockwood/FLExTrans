@@ -5,8 +5,11 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#   Version 3.8.2 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
+#
+#   Version 3.8.1 - 4/7/23 - Ron Lockwood
+#    Change module name from Extract... to Build...
 #
 #   Version 3.8 - 4/7/23 - Ron Lockwood
 #    Don't give the full path of the replacement file in the xml comment of the bilingual lexicon file.
@@ -241,18 +244,18 @@ REPLDICTIONARY = 'repldictionary'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.8.1",
+docs = {FTM_Name       : "Build Bilingual Lexicon",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
+        FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
         FTM_Description:
 """
-This module will create a bilingual 
+This module will build a bilingual 
 lexicon for two projects. The
 database that FlexTools is set to is your source project. Set the Target Project
 in Settings to the name of your target project.
-This module creates the bilingual lexicon based on the links from source senses to target senses
+This module builds the bilingual lexicon based on the links from source senses to target senses
 that are in your source project. Use the Sense Linker Module to create these link.
 
 You can make custom changes to the bilingual lexicon by using a replacement file. See the help

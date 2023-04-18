@@ -5,8 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#   Version 3.8.2 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
+#
+#   Version 3.8.1 - 4/7/23 - Ron Lockwood
+#    Change module name from ...STAMP... to ...Synthesizer...
 #
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
@@ -191,15 +194,16 @@ from flexlibs import FLExProject
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.8.1",
+docs = {FTM_Name       : "Convert Text to Synthesizer Format",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
+        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
         FTM_Help  : "", 
         FTM_Description:  
 """
 The target database set in the Settings be used. This module will take the Target Transfer Results File created
-by Apertium and convert it to STAMP format. 
+by Apertium and convert it to STAMP format if HermitCrab synthesis is not set in the Settings. Otherwise the
+text will be converted to a format suitable for the HermitCrab synthesis program. 
 NOTE: messages and the task bar will show the SOURCE database
 as being used. Actually the target database is being used.
 """ }
