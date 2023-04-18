@@ -67,6 +67,7 @@
 #   both the source and target lexicons.
 #
 
+import os
 import shutil
 import re
 import sys
