@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8 - 4/8/23 - Ron Lockwood
+#    Fixed #397. Fixed crash when exporting 0 unlinked senses.
+#
 #   Version 3.7.10 - 2/24/23 - Ron Lockwood
 #    Make the vocab headwords lowercase (unless they're proper nouns).
 #
@@ -199,7 +202,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.7.9",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1535,34 +1538,39 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
         prevSent = mySent
         
     # Put out the last sentence row
-    outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
+    if prevSent:
+    
+        outputHtmlSentRow(tableObj, prevSent, missingWordsForSentList, headerRow)
 
-    # Get the output folder (parent of the config path folder + output)
-    outputFolder = FTPaths.OUTPUT_DIR
-    
-    # Convert source text name to valid file name characters (by substituting _ for invalid ones)
-    htmlFileName = "".join([x if (x.isalnum() or x in "._- ") else "_" for x in sourceTextName])
-    #htmlFileName = "".join(x for x in sourceTextName if (x.isalnum() or x in "._- ") else '_')
-    
-    # Build the path with the source text name
-    htmlFileName = os.path.join(outputFolder, htmlFileName + UNLINKED_SENSE_FILENAME_PORTION)
-    
-    # Write the html file
-    etObj = ET.ElementTree(tableObj)
-    
-    try:
-        etObj.write(htmlFileName)
+        # Get the output folder (parent of the config path folder + output)
+        outputFolder = FTPaths.OUTPUT_DIR
         
-    except PermissionError:
-        report.Error(f"Permission error writing {htmlFileName}. Perhaps the file is in use in another program?")
-        return
-    
-    except:
-        report.Error(f"Error writing {htmlFileName}.")
-        return
-    
-    # Report how many words were dumped
-    report.Info(f"{str(cnt)} words written to the file: {os.path.basename(htmlFileName)}. You'll find it in the Output folder.")
+        # Convert source text name to valid file name characters (by substituting _ for invalid ones)
+        htmlFileName = "".join([x if (x.isalnum() or x in "._- ") else "_" for x in sourceTextName])
+        #htmlFileName = "".join(x for x in sourceTextName if (x.isalnum() or x in "._- ") else '_')
+        
+        # Build the path with the source text name
+        htmlFileName = os.path.join(outputFolder, htmlFileName + UNLINKED_SENSE_FILENAME_PORTION)
+        
+        # Write the html file
+        etObj = ET.ElementTree(tableObj)
+        
+        try:
+            etObj.write(htmlFileName)
+            
+        except PermissionError:
+            report.Error(f"Permission error writing {htmlFileName}. Perhaps the file is in use in another program?")
+            return
+        
+        except:
+            report.Error(f"Error writing {htmlFileName}.")
+            return
+        
+        # Report how many words were dumped
+        report.Info(f"{str(cnt)} words written to the file: {os.path.basename(htmlFileName)}. You'll find it in the Output folder.")
+
+    else:
+        report.Info(f"No unlinked words. Nothing exported.")
 
 RESTART_MODULE = 0
 ERROR_HAPPENED = 1
