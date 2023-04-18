@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.7.4 - 2/6/23 - Ron Lockwood
 #    Handle inflection sub-classes. List them all in the .dec file and add all sub-classes
 #    as environments for an affix when the parent class applies.
@@ -221,7 +224,7 @@ from flexlibs import FLExProject, AllProjectNames
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -1128,24 +1131,9 @@ def MainFunction(DB, report, modifyAllowed):
     err_list = synthesize(configMap, anaFile, synFile, report)
     error_list.extend(err_list)
     
-    # output info, warnings, errors
-    for triplet in error_list:
-        msg = triplet[0]
-        code = triplet[1]
-        
-        # sometimes we'll have a url to output in the error/warning
-        if len(triplet) == 3:
-            url = triplet[2]
-        else:
-            url = None
-            
-        if code == 0:
-            report.Info(msg, url)
-        elif code == 1:
-            report.Warning(msg, url)
-        else: # error=2
-            report.Error(msg, url)
-    
+    # output info, warnings, errors and url links
+    Utils.processErrorList(error_list, report)
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 

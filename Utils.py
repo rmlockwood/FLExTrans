@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
@@ -1611,3 +1614,40 @@ def capitalizeString(inStr, capitalizeCode, useCurrentLocaleRules=False):
     
     return inStr
 
+def processErrorList(error_list, report):
+
+    for msg in error_list:
+        
+        # See if there is extra info to pass to the error reporter
+        if len(msg) > 2:
+            infoStr = msg[2]
+        else:
+            infoStr = ''
+
+        # msg is a pair -- string & code & optional url
+        if msg[1] == 0:
+            report.Info(msg[0], infoStr)
+        elif msg[1] == 1:
+            report.Warning(msg[0], infoStr)
+        else: # error=2
+            report.Error(msg[0], infoStr)
+
+def checkForFatalError(errorList, report):
+
+    fatal = False
+    msg = ''
+
+    for triplet in errorList:
+
+        msg = triplet[0]
+
+        if triplet[1] == 2:
+
+            fatal = True
+
+            if report == None:
+                break
+
+            report.Error(msg)
+    
+    return fatal, msg

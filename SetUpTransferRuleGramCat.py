@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.8 - 4/18/23 - Ron Lockwood
+#    Description grammatical correction.
+#
 #   Version 3.7.2 - 1/5/23 - Ron Lockwood
 #    Fixes #229. Slots, features and classes now converted to attributes in the
 #    transfer rule file. The user can choose which one and whether to override.
@@ -84,7 +87,7 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.7.2",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
@@ -98,7 +101,7 @@ lexicon. I.e. spaces are converted to underscores, periods and slashes are remov
 This module will also populate the categories section of the transfer rule file with
 grammatical categories from the source FLEx project. This module will also create
 attributes in the transfer rule file from FLEx inflection features, inflection classes
-and template slots. You can decide which of these are used whether existing attributes
+and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.
 """}
 

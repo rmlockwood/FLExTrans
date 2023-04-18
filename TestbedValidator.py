@@ -244,13 +244,13 @@ class TestbedValidator():
                                 gloss = re.sub(r'\.', '_', gloss)
                                 self.__saveAffixGloss(gloss)
                             else:
-                                continue # err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
+                                continue 
                         elif morphType not in morphNames:
                             if morphType == 'proclitic' or morphType == 'enclitic':
                                 gloss = re.sub(r'\.', '_', gloss)
                                 self.__saveAffixGloss(gloss)
                             else:
-                                continue # err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+                                continue 
 
     def __saveAffixGloss(self, gloss):
         self.mapTags[gloss] = 7 # dummy value

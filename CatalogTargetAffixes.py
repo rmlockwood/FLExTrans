@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -104,7 +107,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -286,17 +289,9 @@ def MainFunction(DB, report, modifyAllowed):
     
     error_list = catalog_affixes(DB, configMap, outFileVal, report, useCacheIfAvailable=True)
     
-    # output info, warnings, errors
-    for msg in error_list:
-        
-        # msg is a pair -- string & code
-        if msg[1] == 0:
-            report.Info(msg[0])
-        elif msg[1] == 1:
-            report.Warning(msg[0])
-        else: # error=2
-            report.Error(msg[0])
-                
+    # output info, warnings, errors and url links
+    Utils.processErrorList(error_list, report)
+                 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
