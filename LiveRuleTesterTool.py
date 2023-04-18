@@ -516,6 +516,7 @@ class Main(QMainWindow):
         self.__postchunkPrevSourceLUs = ''
         self.__prevTab = 0
         self.rulesCheckedList = []
+        self.wordsCheckedList = []
         self.interChunkRulesCheckedList = []
         self.postChunkRulesCheckedList = []
         self.restartTester = False
@@ -896,6 +897,9 @@ class Main(QMainWindow):
         
         self.fixBilingLex = True
         
+        # Save the checked words state
+        self.saveCheckedWords()
+
         # Open the project fresh
         projname = self.__DB.ProjectName()
         
@@ -928,7 +932,10 @@ class Main(QMainWindow):
         
         # Force reload of the tooltips
         self.listSentComboClicked()
-        
+
+        # Re-check the words that had been checked, if we were on Select Words view.
+        self.restoreCheckedWords()
+
         self.__ClearStuff()
         
         self.unsetCursor()
@@ -1349,6 +1356,23 @@ class Main(QMainWindow):
             else:
                 myList.append(QtCore.Qt.Unchecked)
     
+    def collectWordChecks(self, myList, checkBoxList):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, len(checkBoxList)):
+            
+            # Save the state of each check box 
+            if checkBoxList[i].checkState():
+                myList.append(QtCore.Qt.Checked)
+            else:
+                myList.append(QtCore.Qt.Unchecked)
+    
+    def saveCheckedWords(self):
+        
+        self.wordsCheckedList.clear()
+        
+        self.collectWordChecks(self.wordsCheckedList, self.__checkBoxList)
+    
     def saveChecked(self):
         
         self.rulesCheckedList.clear()
@@ -1373,6 +1397,20 @@ class Main(QMainWindow):
                 # Set the state of each check box
                 myModel.item(i).setCheckState(myList[i])
                         
+    def recheckWords(self, myList, checkBoxList):
+        
+        # Loop through all the items in the rule list model
+        for i in range(0, len(checkBoxList)):
+            
+            if i < len(myList):
+                
+                # Set the state of each check box
+                checkBoxList[i].setCheckState(myList[i])
+
+    def restoreCheckedWords(self):
+        
+        self.recheckWords(self.wordsCheckedList, self.__checkBoxList)
+        
     def restoreChecked(self):
         
         self.recheck(self.rulesCheckedList, self.__transferModel)
