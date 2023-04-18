@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.8 - 4/7/23 - Ron Lockwood
 #    Don't give the full path of the replacement file in the xml comment of the bilingual lexicon file.
 #
@@ -239,7 +242,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Bilingual Lexicon",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -656,7 +659,7 @@ def processSpaces(headWord, DB, e, error_list):
         
         # Give a warning if there were spaces, but use the stripped version
         error_list.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
-                           +ITsString(e.HeadWord).Text, DB.BuildGotoURL(e)+'. The spaces were removed, but please correct this in the lexicon', 1))
+                           + ITsString(e.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(e)))
     
     # Substitute any medial spaces with <b/> (blank space element)    
     headWord = re.sub(r' ', r'<b/>', strippedHeadword)
@@ -833,7 +836,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
                                 error_list.append(('Skipping sense because the POS is unknown: '+\
-                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                                 abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
@@ -863,7 +866,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     targetEntry = repo.GetObject(guid)
                                 except:
                                     error_list.append(('Skipping sense because the link to the target entry is invalid: '+\
-                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 2))
+                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, 2, DB.BuildGotoURL(e)))
                                     continue
                                 
                                 if targetEntry:
@@ -885,7 +888,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                         error_list.append(('Sense number: '+senseNum+\
                                                        ' is not valid for target headword: '+\
                                                        ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
                                         continue
                                     
                                     # Make sure that sense number is valid    
@@ -937,33 +940,33 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             else:
                                                 error_list.append(('Skipping sense because the target POS is undefined '+\
                                                                ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
                                         else:
                                             error_list.append(('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
                                                            ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
                                     else:
                                         if targetEntry.SensesOS == None:
                                             error_list.append(('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
                                         elif trgtSense > targetEntry.SensesOS.Count:
                                             error_list.append(('Sense number: '+str(trgtSense)+\
                                                            ' is not valid. That many senses do not exist for target headword: '+\
                                                            ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
                                 else:
                                     error_list.append(('Target entry not found. This target GUID does not exist: '+myGuid+\
-                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                             else:
                                 pass
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
                         else:
                             error_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                     else:
                         error_list.append(('Skipping sense, no analysis object'\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                     if not trgtFound:
                         # output the bilingual dictionary line -- source and target are the same
                         
@@ -989,7 +992,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             else:
                 if e.LexemeFormOA == None:
                     
-                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, DB.BuildGotoURL(e), 1))
+                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                     
                 elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
                     
@@ -999,7 +1002,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 
                 elif e.LexemeFormOA.MorphTypeRA == None:
                     
-                    error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, DB.BuildGotoURL(e), 1))
+                    error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(e)))
                 
         f_out.write('    <!-- SECTION: Punctuation -->\n')
         
@@ -1038,16 +1041,8 @@ def MainFunction(DB, report, modifyAllowed):
     # Call the main function
     error_list = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
         
-    # output info, warnings, errors
-    for msg in error_list:
-        
-        # msg is a pair -- string & code
-        if msg[1] == 0:
-            report.Info(msg[0])
-        elif msg[1] == 1:
-            report.Warning(msg[0])
-        else: # error=2
-            report.Error(msg[0])
+    # output info, warnings, errors and url links
+    Utils.processErrorList(error_list, report)
                 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

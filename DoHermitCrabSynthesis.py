@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.8.2 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.8.1 - 4/8/23 - Ron Lockwood
 #    Handle synthesis errors in multi-word results.
 #
@@ -35,7 +38,7 @@ from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
         FTM_Help       :"",
@@ -338,14 +341,8 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     errList = produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synFile)
     errorList.extend(errList)
 
-    fatal = False
-
     # check for fatal errors
-    for triplet in errorList:
-        msg = triplet[0]
-        if triplet[1] == 2:
-            fatal = True
-            report.Error(msg)
+    fatal, _ = Utils.checkForFatalError(errorList, report)
     
     if fatal:
         return errorList
@@ -382,15 +379,9 @@ def MainFunction(DB, report, modifyAllowed):
     # Extract the target lexicon
     errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
  
-    fatal = False
-
     # check for fatal errors
-    for triplet in errorList:
-        msg = triplet[0]
-        if triplet[1] == 2:
-            fatal = True
-            report.Error(msg, url)
-    
+    fatal, _ = Utils.checkForFatalError(errorList, report)
+   
     if fatal:
         return
 
@@ -410,24 +401,8 @@ def MainFunction(DB, report, modifyAllowed):
     errList = synthesizeWithHermitCrab(configMap, HCconfigPath, targetSynthesis, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report)
     errorList.extend(errList)
     
-    # output info, warnings, errors
-    for triplet in errorList:
-
-        msg = triplet[0]
-        code = triplet[1]
-        
-        # sometimes we'll have a url to output in the error/warning
-        if len(triplet) == 3:
-            url = triplet[2]
-        else:
-            url = None
-            
-        if code == 0:
-            report.Info(msg, url)
-        elif code == 1:
-            report.Warning(msg, url)
-        else: # error=2
-            report.Error(msg, url)
+    # output info, warnings, errors and url links
+    Utils.processErrorList(errorList, report)
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

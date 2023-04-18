@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
@@ -189,7 +192,7 @@ from flexlibs import FLExProject
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to STAMP Format",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in STAMP format",
         FTM_Help  : "", 
@@ -1437,20 +1440,8 @@ def MainFunction(DB, report, modifyAllowed):
     
     errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
 
-    # output info, warnings, errors
-    for msg, code in errorList:
-        
-        if code == 0:
-            
-            report.Info(msg)
-            
-        elif code == 1:
-            
-            report.Warning(msg)
-            
-        else: # error=2
-            
-            report.Error(msg)
+    # output info, warnings, errors and url links
+    Utils.processErrorList(errorList, report)
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

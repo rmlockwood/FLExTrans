@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.1 - 4/18/23 - Ron Lockwood
+#    Fixes #117. Common function to handle collected errors.
+#
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
@@ -863,15 +866,16 @@ class Main(QMainWindow):
     def ExtractBilingLex(self):
         
         # Extract the bilingual lexicon        
-        error_list = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
+        errorList = ExtractBilingualLexicon.extract_bilingual_lex(self.__DB, self.__configMap)
         
-        for triplet in error_list:
-            if triplet[1] == 2: # error code
-                msg = triplet[0]
-                QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', f'{msg}\nRun the Extract Bilingual Lexicon module separately for more details.')
-                return False
+        # check for fatal errors
+        fatal, msg = Utils.checkForFatalError(errorList, None)
+
+        if fatal:
+            QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', f'{msg}\nRun the Extract Bilingual Lexicon module separately for more details.')
+            return False
         
-        self.__report.Info('Built the bilingual lexicon, since it was missing.')
+        self.__report.Info('Built the bilingual lexicon.')
         return True
         
     def RebuildBilingLexButtonClicked(self):
@@ -1106,7 +1110,7 @@ class Main(QMainWindow):
         
     def SynthesizeButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
-        error_list = []
+        errorList = []
         
         self.setCursor(QtCore.Qt.WaitCursor)
 
@@ -1129,18 +1133,19 @@ class Main(QMainWindow):
         if self.__doCatalog:
             
             try:
-                error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+                errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
                 QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
                 self.unsetCursor()
                 return
 
-            for triplet in error_list:
-                if triplet[1] == 2: # error code
-                    msg = triplet[0]
-                    QMessageBox.warning(self, 'Catalog Prefix Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
-                    self.unsetCursor()
-                    return
+            # check for fatal errors
+            fatal, msg = Utils.checkForFatalError(errorList, None)
+
+            if fatal:
+                QMessageBox.warning(self, 'Catalog Prefix Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                self.unsetCursor()
+                return
                 
             self.__doCatalog = False
                     
@@ -1149,14 +1154,15 @@ class Main(QMainWindow):
         if self.__convertIt == True:
             
             # Convert the target text to .ana format (for STAMP)
-            error_list = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath, 
+            errorList = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath, 
                                                                    doHermitCrabSynthesisBool, self.HCmasterFile)
-            for triplet in error_list:
-                if triplet[1] == 2: # error code
-                    msg = triplet[0]
-                    QMessageBox.warning(self, 'Convert to STAMP Error', f'{msg}\nRun the Convert to {ConvertTextToSTAMPformat.docs[FTM_Name]} module separately for more details.')
-                    self.unsetCursor()
-                    return
+            # check for fatal errors
+            fatal, msg = Utils.checkForFatalError(errorList, None)
+
+            if fatal:
+                QMessageBox.warning(self, 'Convert to STAMP Error', f'{msg}\nRun the Convert to {ConvertTextToSTAMPformat.docs[FTM_Name]} module separately for more details.')
+                self.unsetCursor()
+                return
             
             self.__convertIt = False
                     
@@ -1168,27 +1174,34 @@ class Main(QMainWindow):
             if doHermitCrabSynthesisBool:
 
                 # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually)
-                error_list = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True)
-                for triplet in error_list:
-                    if triplet[1] == 2: # error code
-                        msg = triplet[0]
-                        QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
-                        self.unsetCursor()
-                        return
+                errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True)
+
+                # check for fatal errors
+                fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                if fatal:
+                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
+                    self.unsetCursor()
+                    return
             else:
                 # Redo the catalog of prefixes in case the user changed an affix
-                error_list = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
-                if triplet[1] == 2: # error code
-                    msg = triplet[0]
+                errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+
+                # check for fatal errors
+                fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                if fatal:
                     QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
                     self.unsetCursor()
                     return
                 
                 # Extract the lexicon, STAMP style        
-                error_list = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
-                for triplet in error_list:
-                    if triplet[1] == 2: # error code
-                        msg = triplet[0]
+                errorList = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
+
+                # check for fatal errors
+                fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                if fatal:
                         QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
                         self.unsetCursor()
                         return
@@ -1197,21 +1210,25 @@ class Main(QMainWindow):
         # We have two possible syntheses, one for STAMP and one for HermitCrab
         if doHermitCrabSynthesisBool:
 
-            error_list = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath) 
-            for triplet in error_list:
-                if triplet[1] == 2: # error code
-                    msg = triplet[0]
-                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
-                    self.unsetCursor()
-                    return
+            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath) 
+
+            # check for fatal errors
+            fatal, msg = Utils.checkForFatalError(errorList, None)
+
+            if fatal:
+                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
+                self.unsetCursor()
+                return
         else:
-            error_list = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath)
-            for triplet in error_list:
-                if triplet[1] == 2: # error code
-                    msg = triplet[0]
-                    QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
-                    self.unsetCursor()
-                    return
+            errorList = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath)
+
+            # check for fatal errors
+            fatal, msg = Utils.checkForFatalError(errorList, None)
+
+            if fatal:
+                QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
+                self.unsetCursor()
+                return
                     
         # Load the synthesized result into the text box
         lf = open(self.synthesisFilePath, encoding='utf-8')
@@ -2029,9 +2046,9 @@ class Main(QMainWindow):
         # Check if attributes are well-formed. Warnings will be reported in the function
         if not self.advancedTransfer:
         
-            error_list = Utils.checkRuleAttributesXML(ruleFileRoot)
+            errorList = Utils.checkRuleAttributesXML(ruleFileRoot)
     
-            for i, triplet in enumerate(error_list):
+            for i, triplet in enumerate(errorList):
                 if i == 0:
                     self.ui.warningLabel.setText(triplet[0])
                 else:
