@@ -165,7 +165,7 @@ if %COMPUTERNAME% == RONS-DELL-XPS (
   makensis -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DRESOURCE_FOLDER=. FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
 ) else (
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=. -DRESOURCE_FOLDER=. FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=. -DRESOURCE_FOLDER=Z:\FLExTrans FLExTrans-installer.nsi
 )
 pause
 
