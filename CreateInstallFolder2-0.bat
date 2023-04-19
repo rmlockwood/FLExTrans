@@ -167,5 +167,5 @@ if %COMPUTERNAME% == RONS-DELL-XPS (
 ) else (
   "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=. -DRESOURCE_FOLDER=z:\FLExTrans FLExTrans-installer.nsi
 )
-pause
+pause 
 
