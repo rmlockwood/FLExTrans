@@ -157,14 +157,14 @@ cd Install%INSTALL_FOLDER_VERSION%
 7z a %ZIP_FILE% FLExTrans
 copy /Y %ZIP_FILE% ..
 copy /Y %ZIP_FILE% ..\"previous versions"
-del %ZIP_FILE%
+rem del %ZIP_FILE%
 cd ..
 
 if %COMPUTERNAME% == RONS-DELL-XPS (
   cd C:\Data\Flextrans\Installer
   makensis -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DRESOURCE_FOLDER=c:\data FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
-  pause
 ) else (
   "C:\Program Files (x86)\NSIS\Bin\makensis" -DGIT_FOLDER=. -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
 )
+  pause
