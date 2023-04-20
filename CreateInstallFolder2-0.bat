@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.8beta2
+SET FLEXTRANS_VERSION=3.8beta3
 SET INSTALL_FOLDER_VERSION=2.2.1
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
@@ -21,6 +21,11 @@ rem special flextrans stub files for flextools
 copy FLExTrans.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 copy Version.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 copy FLExTransMenu.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
+copy FLExTransStatusbar.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
+
+rem Settings tool
+copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
+copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 
 rem flextools files
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
@@ -117,10 +122,6 @@ copy ImportFromParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\M
 copy ExportToParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 copy ParatextChapSelectionDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy ChapterSelection.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-
-rem Settings tool
-copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
-copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 
 rem Other Tools
 copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans

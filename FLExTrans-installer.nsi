@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.8beta2"
+!define PRODUCT_VERSION "3.8beta3"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -116,6 +116,9 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   SetOverwrite on
 
+  # Delete SettingGui.py form the Modules\FLExTrans folder, it now lives right under FlexTools
+  Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
+  
   # Rename modules in the all the .ini files (for old installs)
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
