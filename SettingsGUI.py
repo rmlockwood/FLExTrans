@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Settings are now launched from the menu
+#
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
@@ -89,6 +92,8 @@
 import os
 import sys
 
+from System.Windows.Forms import (MessageBox, MessageBoxButtons)
+
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 from SIL.LCModel import *
@@ -106,18 +111,14 @@ import ReadConfig
 import FTPaths
 
 # ----------------------------------------------------------------
-# Documentation that the user sees:
+# This won't be seen anymore by the user since it gets launced from the menu
 
-docs = {FTM_Name: "Settings Tool",
-        FTM_Version: "3.8",
+docs = {FTM_Name: "",
+        FTM_Version: "",
         FTM_ModifiesDB: False,
-        FTM_Synopsis: "Change FLExTrans settings.",
+        FTM_Synopsis: "",
         FTM_Help: "",
-        FTM_Description:
-            """
-Change FLExTrans settings. If you want to change the filename for one of the settings,
-type the new name in the text box.             
-            """}
+        FTM_Description:""}
 
 ### See widget list at the bottom and instructions for adding a new setting ###
 
@@ -677,10 +678,9 @@ class Ui_MainWindow(object):
 
 class Main(QMainWindow):
 
-    def __init__(self, configMap, report, targetDB, DB):
+    def __init__(self, configMap, targetDB, DB):
         QMainWindow.__init__(self)
 
-        self.report = report
         self.configMap = configMap
         self.targetDB = targetDB
         self.DB = DB
@@ -793,7 +793,7 @@ class Main(QMainWindow):
         
         widgeInfo = self.nameToWidgetMap[key]
         
-        return ReadConfig.getConfigVal(self.configMap, key, self.report, giveError=widgeInfo[GIVE_ERROR_IF_NOT_PRESENT])
+        return ReadConfig.getConfigVal(self.configMap, key, report=None, giveError=widgeInfo[GIVE_ERROR_IF_NOT_PRESENT])
 
     def initLoad(self):
         
@@ -880,9 +880,9 @@ class Main(QMainWindow):
         
     def reportChangedSettings(self):
         
-        for reportStr in list(self.changedSettingsSet):
-            
-            self.report.Info(f'"{reportStr}" setting changed.')
+        msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
+        msgStr = '\n'.join(msgList)    
+        QMessageBox.information(self, 'FLExTrans Settings', msgStr)
         
     def save(self):
 
@@ -947,7 +947,8 @@ class Main(QMainWindow):
         
         if self.giveConfirmation:
             
-            QMessageBox.information(self, 'Save Settings', 'Changes saved.')
+            pass
+            #QMessageBox.information(self, 'Save Settings', 'Changes saved.')
 
     def addCommas(self, array):
         retStr = ''
@@ -957,18 +958,30 @@ class Main(QMainWindow):
         return retStr
 
 def MainFunction(DB, report, modify=True): 
-    # Read the configuration file which we assume is in the current directory.
+    
+    # DB and report will be None
 
-    configMap = ReadConfig.readConfig(report)
+    # Read the configuration file
+    configMap = ReadConfig.readConfig(report=None)
     if not configMap:
-        report.Error('Error reading configuration file.')
+        MessageBox.Show("Error reading configuration file.", "FLExTrans", MessageBoxButtons.OK)
         return
 
+    # Open the source database
+    sourceDB = FLExProject()
+
+    try:
+        sourceDB.OpenProject(FTConfig.currentProject, False)
+    except:
+        MessageBox.Show("Failed to open the source database.", "FLExTrans", MessageBoxButtons.OK)
+        sourceDB = None
+        return
+
+    # Open the source database
     TargetDB = FLExProject()
 
     try:
-        # Open the target database
-        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report)
+        targetProj = ReadConfig.getConfigVal(configMap, 'TargetProject', report=None)
         
         if not targetProj:
             
@@ -976,14 +989,13 @@ def MainFunction(DB, report, modify=True):
         else:
             TargetDB.OpenProject(targetProj, False)
     except:
-        report.Error('Failed to open the target database.')
+        MessageBox.Show("Failed to open the target database.", "FLExTrans", MessageBoxButtons.OK)
         TargetDB = None
-        #raise
-
+    
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(configMap, report, TargetDB, DB,) #sourceDB
+    window = Main(configMap, TargetDB, sourceDB)
 
     window.show()
 
@@ -996,11 +1008,13 @@ def MainFunction(DB, report, modify=True):
 
             window.giveConfirmation = False
             window.save()
-            window.reportChangedSettings()
+            #window.reportChangedSettings()
     
     if TargetDB:
         
         TargetDB.CloseProject()
+        
+    sourceDB.CloseProject()
 
 
 # ----------------------------------------------------------------

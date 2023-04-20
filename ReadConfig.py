@@ -186,11 +186,14 @@ def readConfig(report):
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
             return
+        
         # Skip commented lines
         if line[0] == '#':
             continue
+
         # We expect lines in the form -- property=value
         if not re.search('=', line):
+
             if report is not None:
                 report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
             return
@@ -198,10 +201,12 @@ def readConfig(report):
         try:
             (prop, value) = line.split('=')
         except:
-            report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+            if report is not None:
+                report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
             return
         
         value = value.rstrip()
+        
         # if the value has commas, save it as a list
         if re.search(',', value):
             my_list = value.split(',')
