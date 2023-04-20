@@ -162,9 +162,12 @@ cd ..
 
 if %COMPUTERNAME% == RONS-DELL-XPS (
   cd C:\Data\Flextrans\Installer
-  makensis-DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DRESOURCE_FOLDER=c:\data FLExTrans-installer.nsi
+  makensis -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DRESOURCE_FOLDER=c:\data FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
 ) else (
+  echo calling makensis now ...
+  makensis
   "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
+  sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 pause
