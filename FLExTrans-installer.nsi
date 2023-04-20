@@ -116,6 +116,9 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   SetOverwrite on
 
+  # Delete SettingGui.py form the Modules\FLExTrans folder, it now lives right under FlexTools
+  Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
+  
   # Rename modules in the all the .ini files (for old installs)
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
