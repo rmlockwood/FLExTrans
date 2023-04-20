@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.8 - 4/18/23 - Ron Lockwood
+#    Allow more than 1 word between complex form components. For now allow up to 4.
+#
 #   Version 3.7 - 12/24/22 - Ron Lockwood
 #    Initial version.
 #
@@ -14,6 +17,8 @@ import re
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 import Utils
+
+MAX_SKIPPED_WORDS = 4
 
 # The whole text from FLEx
 class TextEntirety():
@@ -279,12 +284,12 @@ class TextSentence():
                     # Map from an entry's handle # to the complex entry/components tuple                        
                     cmplxFormMap[wrd.getEntryHandle()] = list(cmplxEntryTupList) # Create a new list in memory
                                             
-    def modifyList(self, i, count, complexEn):
+    def modifyList(self, myIndex, count, complexEn):
         componentList = []
         
         # Loop through the part of the word list that we will remove. Save the components in a list that we will add to the new word.
         for _ in range(0, count):
-            componentList.append(self.__wordList.pop(i)) # don't increment, the next one is in position i after the previous pop
+            componentList.append(self.__wordList.pop(myIndex)) # don't increment, the next one is in position myIndex after the previous pop
         
         # New object
         newWord = TextWord(self.__report)
@@ -294,17 +299,17 @@ class TextSentence():
         newWord.initWithComplex(complexEn, componentList)
         
         # Insert the new word into the word list
-        self.__wordList.insert(i, newWord)
+        self.__wordList.insert(myIndex, newWord)
         
         # Update the guid map
         self.__guidMap[newWord.getGuid()] = newWord
         
-    def modifyDiscontiguousList(self, i, count, complexEn):
+    def modifyDiscontiguousList(self, myIndex, skippedWordsCount, complexEn):
         componentList = []
         
-        # we assume count is 2, we want to pop the ith and the i+2th, after the first pop everything moved up so just pop i+1 the 2nd time
-        componentList.append(self.__wordList.pop(i))
-        componentList.append(self.__wordList.pop(i+1))
+        # We want to pop the ith word and the i+skippedWordsCount+1 word, after the first pop everything moved up so pop i+skippedWordsCount the 2nd time
+        componentList.append(self.__wordList.pop(myIndex))
+        componentList.append(self.__wordList.pop(myIndex+skippedWordsCount))
         
         # New object
         newWord = TextWord(self.__report)
@@ -314,7 +319,7 @@ class TextSentence():
         newWord.initWithComplex(complexEn, componentList)
         
         # Insert the new word into the word list after the skipped word
-        self.__wordList.insert(i+1, newWord)
+        self.__wordList.insert(myIndex+skippedWordsCount, newWord)
         
         # Update the guid map
         self.__guidMap[newWord.getGuid()] = newWord
@@ -335,10 +340,10 @@ class TextSentence():
         return True
 
     def substituteComplexForms(self, cmplxFormMap):
-        i = 0
+        myIndex = 0
         # Loop through the word list
-        while i < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
-            wrd = self.__wordList[i]
+        while myIndex < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
+            wrd = self.__wordList[myIndex]
 
             # Process words that have complex entries
             if wrd.getEntryHandle() in cmplxFormMap:
@@ -361,13 +366,13 @@ class TextSentence():
                         # A complex form with only one component doesn't make sense to process
                         if count > 1:
                             # Only continue if we won't go off the end of the list
-                            if i + count - 1 < len(self.__wordList):
+                            if myIndex + count - 1 < len(self.__wordList):
                                 
                                 # All components have to match
                                 for j in range(0, count):
                                     
                                     # Check if we have a match  
-                                    if self.__wordList[i+j].getFirstEntry() == componentEList[j]: # jth component in the list
+                                    if self.__wordList[myIndex+j].getFirstEntry() == componentEList[j]: # jth component in the list
                                         match = True
                                     else:
                                         match = False
@@ -377,14 +382,17 @@ class TextSentence():
                                     break
                     if match == True:
                         # pop the matching words from the list and insert the complex word
-                        self.modifyList(i, count, cmplxEn)
-            i += 1
+                        self.modifyList(myIndex, count, cmplxEn)
+            myIndex += 1
             
     def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
-        i = 0
+        myIndex = 0
+
         # Loop through the word list
-        while i < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
-            wrd = self.__wordList[i]
+        while myIndex < len(self.__wordList) - 1: # we don't have to check the last one, it can't match 2 or more things
+            
+            increment = 1
+            wrd = self.__wordList[myIndex]
 
             # Process words that have complex entries
             if wrd.getEntryHandle() in cmplxFormMap:
@@ -398,44 +406,62 @@ class TextSentence():
                     # each list item is a tuple. See below. We want the length of the component list.
                     cmplxEnList.sort(key=lambda x: len(x[1]), reverse=True)
                     
+                    match = False
+
                     # Loop through the complex entries tuples (cmplxEntry, componentEntryList)
                     for cmplxEn, componentEList in cmplxEnList:
-                        match = False
                         
                         count = len(componentEList)
 
-                        # Only process component lists with two items
+                        # Only process component lists with two items, i.e. a complex form with two components. 
+                        # Working with 3 or more components makes it too complicated to figure out where the skipped words would be.
                         if count == 2:
-                            # Only continue if we won't go off the end of the list
-                            if i + 2 < len(self.__wordList):
-                                
-                                # This word and the word + 2 has to match. Also the inbetween word has to match one of the allowed POSs.
-                                if self.__wordList[i].getFirstEntry() == componentEList[0] and \
-                                   self.__wordList[i+2].getFirstEntry() == componentEList[1] and \
-                                   self.__wordList[i+1].posMatchForMiddleItemInDiscontigousList(discontigPOSList) == True: 
 
-                                    match = True
-                                else:
-                                    match = False
-                                    
+                            # See if we match the first component
+                            if self.__wordList[myIndex].getFirstEntry() == componentEList[0]:
+
+                                # Now go hunting for the matching component as long as we don't exceed the max number of skipped words
+                                # and the skipped words have a POS that's on the skipped words POS list
+                                index = myIndex + 1
+                                skippedCount = index-myIndex
+
+                                # Loop until we hit the max or we would go off the end of the list.
+                                while skippedCount <= MAX_SKIPPED_WORDS and index + 1 < len(self.__wordList):
+
+                                    # POS not on the list
+                                    if self.__wordList[index].posMatchForMiddleItemInDiscontigousList(discontigPOSList) == False:
+                                        break
+
+                                    # See if we find the 2nd component
+                                    if self.__wordList[index+1].getFirstEntry() == componentEList[1]:
+
+                                        match = True
+                                        break
+
+                                    index += 1
+                                    skippedCount = index-myIndex
+
                                 # break out of the outer loop
                                 if match == True:
                                     break
                     if match == True:
+
                         # pop the matching words from the list and insert the complex word
-                        self.modifyDiscontiguousList(i, count, cmplxEn)
-            i += 1
+                        self.modifyDiscontiguousList(myIndex, skippedCount, cmplxEn)
+                        increment = skippedCount + 2 - 1 # 2 components, -1 because we popped off one component that didn't get replaced
+
+            myIndex += increment
             
     def warnForUnknownWords(self, unknownWordMap):
         multipleUnknownWords = False
-        for i, word in enumerate(self.__wordList):
+        for myIndex, word in enumerate(self.__wordList):
             # See if we have an uninitialized word which indicates it's unknown
             if word.isInitialized() == False:
                 # Allow some unknown "words" without warning, such as sfm markers
                 if len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0] == '\\':
                     continue
-                if i > 0:
-                    prvWrd = self.__wordList[i-1]
+                if myIndex > 0:
+                    prvWrd = self.__wordList[myIndex-1]
                     if word.getSurfaceForm().isdigit():
                         if prvWrd.getInitialPunc() == '\\':
                             if prvWrd.getSurfaceForm() == 'v' or prvWrd.getSurfaceForm() == 'c':
