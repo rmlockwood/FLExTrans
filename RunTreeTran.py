@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7 - 12/13/22 - Ron Lockwood
 #    Bumped version number for FLExTrans 3.7
 #
@@ -58,7 +61,7 @@ import os
 import xml.etree.ElementTree as ET
 import tempfile
 from subprocess import call
-from flextoolslib import FlexToolsModuleClass
+
 from flextoolslib import *                                                 
 
 import Utils
@@ -69,7 +72,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.5 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8.4 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
 #
@@ -302,14 +305,6 @@
 #   the necessary files to create the target text file.
 #
 
-from System import Guid
-from System import String
-
-from flextoolslib import *        
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs import FLExProject
-
 import os
 import re
 import sys
@@ -319,12 +314,15 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
-#import win32gui
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+from flextoolslib import *        
+from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
-
 
 from Testbed import *
 import Utils
@@ -347,7 +345,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.4",
+        FTM_Version    : "3.8.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",

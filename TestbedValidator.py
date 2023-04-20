@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -33,9 +36,10 @@ import re
 import tempfile
 import os
 from datetime import datetime
-import Utils
+
 import ReadConfig
 import Testbed 
+import Utils as MyUtils
 
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
@@ -174,7 +178,7 @@ class TestbedValidator():
            
     def getCacheFilePath(self):
         # build the path in the temp dir using project name + testbed_cache.txt
-        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+Utils.TESTBED_CACHE_FILE)
+        return os.path.join(tempfile.gettempdir(), str(self.db.lp)+'_'+MyUtils.TESTBED_CACHE_FILE)
     def cacheExists(self):
         return os.path.exists(self.getCacheFilePath())
     def readDatabaseValues(self):
@@ -201,7 +205,7 @@ class TestbedValidator():
         for i,e in enumerate(self.db.LexiconAllEntries()):
             
             morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
-            morphType = Utils.morphTypeMap[morphGuidStr]
+            morphType = MyUtils.morphTypeMap[morphGuidStr]
             
             # If no senses, skip it
             if e.SensesOS.Count == 0:
@@ -219,7 +223,7 @@ class TestbedValidator():
                     
                         # Set the headword value and the homograph #, if necessary
                         headWord = ITsString(e.HeadWord).Text
-                        headWord = Utils.add_one(headWord)
+                        headWord = MyUtils.add_one(headWord)
     
                         # Only take word senses that have a grammatical category set.
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':

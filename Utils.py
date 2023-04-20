@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.8.2 - 4/20/23 - Ron Lockwood
+#    Reworked import statements. Fixed duplicate processErrorList.
+#
 #   Version 3.8.1 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -432,18 +435,6 @@ def getListOfSymbolSubPairs(convertStr, problemDataList):
     # return a list with duplicates removed
     return masterList
     
-def processErrorList(report, error_list):    
-    # output info, warnings, errors
-    for msg in error_list:
-        
-        # msg is a pair -- string & code
-        if msg[1] == 0:
-            report.Info(msg[0])
-        elif msg[1] == 1:
-            report.Warning(msg[0])
-        else: # error=2
-            report.Error(msg[0])
-
 def isClitic(myEntry):
     
     return isProclitic(myEntry) or isEnclitic(myEntry)

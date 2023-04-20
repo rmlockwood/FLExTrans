@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.3 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8.2 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -180,22 +183,21 @@
 import re 
 import os
 from datetime import datetime
-from System import Guid
-from System import String
+
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+from flextoolslib import *                                                 
+from flexlibs import FLExProject
 
 import ReadConfig
 import Utils
-
-from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs import FLExProject
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
         FTM_Help  : "", 

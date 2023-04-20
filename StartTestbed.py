@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7.1 - 12/25/22 - Ron Lockwood
 #    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
 #
@@ -45,17 +48,18 @@
 #   source text can be fed into the normal FLExTrans process.
 #
 
-import ReadConfig
-from Testbed import *
-
-from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+from flextoolslib import *                                                 
+
+import ReadConfig
+from Testbed import *
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.7.1",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",

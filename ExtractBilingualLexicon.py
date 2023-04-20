@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8.3 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8.2 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -221,7 +224,6 @@
 
 import re
 import os
-import copy
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -229,12 +231,13 @@ from datetime import datetime
 from System import Guid
 from System import String
 
-import ReadConfig
-import Utils
+from SIL.LCModel import ILexEntryRepository                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
-from SIL.LCModel import ILexEntryRepository                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+import ReadConfig
+import Utils
 
 DONT_CACHE = True
 
@@ -245,7 +248,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",

@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.8.3 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8.2 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -23,22 +26,21 @@ import re
 import subprocess
 from datetime import datetime
 
-from System import Guid
-from System import String
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+from flextoolslib import *                                                 
+from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
 
 import ReadConfig
 import Utils
 import FTPaths
 
-from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
         FTM_Help       :"",

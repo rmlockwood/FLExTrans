@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.2 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
 #
@@ -187,14 +190,15 @@ from System import String
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from flextoolslib import *                                                 
-
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.DomainServices import SegmentServices
-from flexlibs import FLExProject, AllProjectNames
-import FTPaths
 
+from flextoolslib import *                                                 
+
+from flexlibs import FLExProject, AllProjectNames
+
+import FTPaths
 import ReadConfig
 import Utils
 import ExtractBilingualLexicon
@@ -205,7 +209,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",

@@ -4,7 +4,7 @@
 #   3/28/22
 #
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
-#    Use Status Bar callback function
+#    Use Status Bar callback function. Also don't confirm changes if no settings were changed.
 #
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
@@ -886,9 +886,11 @@ class Main(QMainWindow):
         
         refreshStatusbar()
 
-        msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
-        msgStr = '\n'.join(msgList)    
-        QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+        if len(self.changedSettingsSet) > 0:
+        
+            msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
+            msgStr = '\n'.join(msgList)    
+            QMessageBox.information(self, 'FLExTrans Settings', msgStr)
         
     def save(self):
 

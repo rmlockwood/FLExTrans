@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7.4 - 1/10/23 - Ron Lockwood
 #    Renamed some functions to be camel case.
 #
@@ -74,19 +77,16 @@ import tempfile
 import sys
 import shutil
 import unicodedata
+import xml.etree.ElementTree as ET
 
-from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *                                                 
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from SrcTgtViewer import Ui_MainWindow
-import xml.etree.ElementTree as ET
-
 import FTPaths
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
-import Utils
 import ReadConfig
 from Testbed import *
 
@@ -94,7 +94,7 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.7.4",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",
