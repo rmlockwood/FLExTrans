@@ -1,7 +1,0 @@
-configparser
-git+https://github.com/cdfarrow/cdfutils.git
-flexlibs==1.1.3
-fuzzywuzzy 
-Levenshtein 
-PyQt5==5.14 
-PyQtWebEngine==5.14 

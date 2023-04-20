@@ -1,7 +1,0 @@
-configparser
-cdfutils
-flexlibs==1.1.6
-fuzzywuzzy 
-Levenshtein 
-PyQt5==5.14 
-PyQtWebEngine==5.14 
