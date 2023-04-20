@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -204,27 +207,24 @@
 import os
 import sys
 import re 
-import tempfile
 from subprocess import call
 from datetime import datetime
 
-from System import Guid
-from System import String
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+
+from flextoolslib import *                                                 
+from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig
 import Utils
 import FTPaths
 
-from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from flexlibs import FLExProject, AllProjectNames
-
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",

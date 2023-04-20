@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7.3 - 1/10/23 - Ron Lockwood
 #    Renamed some functions to be camel case.
 #
@@ -83,17 +86,14 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from subprocess import call
 
-from System import Guid
-from System import String
-
 from PyQt5 import QtGui, QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
 
-from flextoolslib import *                                                 
 from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
  
+from flextoolslib import *                                                 
+
 import FTPaths
 import Utils
 import ReadConfig
@@ -104,7 +104,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.7.3",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 

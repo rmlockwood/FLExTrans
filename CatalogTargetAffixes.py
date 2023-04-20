@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -91,23 +94,22 @@
 #
 
 import os
-from System import Guid
-from System import String
 from datetime import datetime
+
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+
+from flextoolslib import *
+from flexlibs import FLExProject
 
 import ReadConfig
 import Utils
-
-from flextoolslib import *
-from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
-from flexlibs import FLExProject
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",

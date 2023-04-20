@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7.5 - 3/1/23 - Ron Lockwood
 #    Determine uppercase for the section mark feature by looking for the first
 #    non-blank vernacular segment.
@@ -49,24 +52,25 @@
 #
 #
 
-from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.Core.Text import TsStringUtils
-from flexlibs import FLExProject, AllProjectNames
-import FTPaths
-
-import ReadConfig
-import Utils
-import ChapterSelection
 import os
 import re
 import sys
 from shutil import copyfile
 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.Text import TsStringUtils
+
+from flextoolslib import *                                                 
+from flexlibs import FLExProject, AllProjectNames
+
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
+import FTPaths
+import ReadConfig
+import Utils
+import ChapterSelection
 from ParatextChapSelectionDlg import Ui_MainWindow
 
 #----------------------------------------------------------------
@@ -77,7 +81,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.7.5",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",

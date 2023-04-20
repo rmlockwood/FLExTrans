@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.8 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.7.1 - 2/25/23 - Ron Lockwood
 #    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
 #
@@ -71,8 +74,6 @@
 import Utils
 import ReadConfig
 import os
-import re
-import unicodedata
 from flextoolslib import *
 import FTPaths
 
@@ -82,7 +83,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.7",
+        FTM_Version    : "3.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -143,7 +144,7 @@ def MainFunction(DB, report, modify=True):
     # Check if attributes are well-formed. Warnings will be reported in the function
     error_list = Utils.checkRuleAttributes(tranferRulePath)
 
-    Utils.processErrorList(report, error_list)
+    Utils.processErrorList(error_list, report)
 
     # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
     subPairs = Utils.fixProblemChars(dictionaryPath)

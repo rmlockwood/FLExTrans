@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8 - 3/10/23 - Ron Lockwood
 #    Handle when the synthesis file is missing.
 #
@@ -48,21 +51,21 @@
 #
 
 import os
-from flextoolslib import *                                                 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.Core.Text import TsStringUtils
-from flexlibs import FLExProject, AllProjectNames
-import ReadConfig
-import FTPaths
-
 import re
 import sys
 from shutil import copyfile
 
+from SIL.LCModel import *                                                   
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.Text import TsStringUtils
+
+from flextoolslib import *                                                 
+
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
+import ReadConfig
+import FTPaths
 from ParatextChapSelectionDlg import Ui_MainWindow
 import ChapterSelection
 
@@ -74,7 +77,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",

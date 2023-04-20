@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Reworked import statements
+#
 #   Version 3.8 - 4/18/23 - Ron Lockwood
 #    Description grammatical correction.
 #
@@ -71,24 +74,25 @@ import os
 import shutil
 import re
 import sys
-import xml.etree.ElementTree as ET
-from flextoolslib import *                                          
+
 from SIL.LCModel import *                                            
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
+from SIL.LCModel.Core.KernelInterfaces import ITsString
+
+from flextoolslib import *                                          
+
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication
+
 import FTPaths
 import Utils
 import ReadConfig
-
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
-
 from RuleCatsAndAttribs import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
