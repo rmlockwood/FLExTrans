@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.8beta3
+SET FLEXTRANS_VERSION=3.8beta4
 SET INSTALL_FOLDER_VERSION=2.2.1
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
@@ -170,6 +170,6 @@ if %COMPUTERNAME% == RONS-DELL-XPS (
   dir c:\FLExTrans
   echo calling makensis now ...
   "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
-  sign FLExTrans%FLEXTRANS_VERSION%.exe
+rem  sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
 pause

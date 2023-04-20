@@ -1,1 +1,0 @@
-See the instructions in section 6.3.5 in the FLExTrans documentation. (Doc\UserDoc.htm)
