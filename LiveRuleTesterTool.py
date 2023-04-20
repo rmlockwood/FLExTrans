@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.4 - 4/20/23 - Ron Lockwood
+#    Use Status Bar callback function
+#
 #   Version 3.8.3 - 4/18/23 - Ron Lockwood
 #    Fixes #117. Common function to handle collected errors.
 #
@@ -344,7 +347,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -617,7 +620,7 @@ class Main(QMainWindow):
 
             f.close()
         except:
-            f.close()
+            pass
         
         # Set which tab is shown        
         self.ui.tabRules.setCurrentIndex(ruleTab)
@@ -742,6 +745,9 @@ class Main(QMainWindow):
         # Set the global variable
         FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
+        # Have FlexTools refresh the status bar
+        refreshStatusbar()
+
         # Close the tool and it will restart
         self.closeEvent(None)
         self.close()

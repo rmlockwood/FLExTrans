@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.1 - 4/20/23 - Ron Lockwood
+#    Use Status Bar callback function
+#
 #   Version 3.8 - 4/8/23 - Ron Lockwood
 #    Fixed #397. Fixed crash when exporting 0 unlinked senses.
 #
@@ -202,7 +205,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -780,6 +783,9 @@ class Main(QMainWindow):
         
                 self.ret_val = 1
         
+        # Have FlexTools refresh the status bar
+        refreshStatusbar()
+
         # Close the tool and it will restart
         self.close()
     
