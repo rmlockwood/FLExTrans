@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.8.3 - 4/20/23 - Ron Lockwood
+#    Corrrected typo.
+#
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function. Also don't confirm changes if no settings were changed.
 #
@@ -1089,7 +1092,7 @@ widgetList = [
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
     "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", True],\
 
-   ["Default to rebuidling the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
+   ["Default to rebuilding the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
     "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", False],\
 
    ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
