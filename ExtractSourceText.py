@@ -229,13 +229,17 @@ def MainFunction(DB, report, modifyAllowed):
     if not sourceTextName:
         return
     
+    matchingContentsObjList = []
+
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
     
     if sourceTextName not in sourceTextList:
         
         report.Error('The text named: '+sourceTextName+' not found.')
         return
+    else:
+        contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)

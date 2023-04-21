@@ -195,8 +195,7 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.DomainServices import SegmentServices
+from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
 
@@ -1149,7 +1148,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
             matchList = save_map[gloss]
     return matchList
 
-def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr):
+def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr):
         
     save_map = {}
     processed_map = {}
@@ -1180,7 +1179,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         return False, myData, processed_map
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, interlinText.ContentsOA, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
     
     # Loop through the words
     for paragraph in myText.getParagraphs():
@@ -1375,11 +1374,12 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
        
         report.Info(str(unlinkCount) + ' links removed')  
                       
-def calculate_progress_stats(report, interlinText, TargetDB_tot):
+def calculate_progress_stats(report, contents, TargetDB_tot):
             
     # count the number of "bundles" we will process for progress bar
     bundle_tot = 0
-    for par in interlinText.ContentsOA.ParagraphsOS:
+
+    for par in contents.ParagraphsOS:
         for seg in par.SegmentsOS:
             bundle_tot += seg.AnalysesRS.Count
     
@@ -1666,14 +1666,18 @@ def RunModule(DB, report, configMap):
     if haveConfigError:
         return ERROR_HAPPENED
     
+    matchingContentsObjList = []
+
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
     
     if sourceTextName not in sourceTextList:
-
+        
         report.Error('The text named: '+sourceTextName+' not found.')
         return ERROR_HAPPENED
-
+    else:
+        contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
+    
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
     senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
     
@@ -1725,7 +1729,7 @@ def RunModule(DB, report, configMap):
         properNounAbbr = ''
     
     # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, interlinText, TargetDB_tot)
+    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, contents, TargetDB_tot)
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
     if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
@@ -1733,7 +1737,7 @@ def RunModule(DB, report, configMap):
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr)
+    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr)
 
     if retVal == False:
         return ERROR_HAPPENED 

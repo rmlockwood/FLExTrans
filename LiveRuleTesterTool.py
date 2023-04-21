@@ -2345,14 +2345,18 @@ def RunModule(DB, report):
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return ERROR_HAPPENED
 
+    matchingContentsObjList = []
+
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
     
     if sourceText not in sourceTextList:
-
+        
         report.Error('The text named: '+sourceText+' not found.')
         return ERROR_HAPPENED
-
+    else:
+        contents = matchingContentsObjList[sourceTextList.index(sourceText)]
+    
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
@@ -2490,7 +2494,7 @@ def RunModule(DB, report):
             bilingFile = os.path.join(pwd, bilingFile)
             
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList)
         
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')

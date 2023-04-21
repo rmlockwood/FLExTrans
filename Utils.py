@@ -509,7 +509,7 @@ def createUniqueTitle(DB, title):
                 
                 tryName = title + ' (' + str(i) + ')'
                 
-                if title not in sourceTextList:
+                if tryName not in sourceTextList:
                     
                     title = tryName
                     done = True 
@@ -1549,12 +1549,17 @@ def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
     
     return False
 
-def getSourceTextList(DB):
+def getSourceTextList(DB, matchingContentsObjList=None):
 
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
         sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
+
+        # if the caller wants to get a list of contents objects, add to the provided list
+        if matchingContentsObjList != None:
+
+            matchingContentsObjList.append(interlinText.ContentsOA)
 
     return sourceList
 
