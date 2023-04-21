@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.3 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names.
+#
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -209,7 +213,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -622,7 +626,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList):
         
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
@@ -652,7 +656,7 @@ class Main(QMainWindow):
             self.ui.targetLexCombo.setCurrentIndex(1)
             
         # load the source text list
-        Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, sourceTextName, sourceTextList)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
@@ -1662,14 +1666,11 @@ def RunModule(DB, report, configMap):
     if haveConfigError:
         return ERROR_HAPPENED
     
-    # Find the desired text
-    foundText = False
-    for interlinText in DB.ObjectsIn(ITextRepository):
-        if sourceTextName == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
-            foundText = True
-            break;
-        
-    if not foundText:
+    # Create a list of source text names
+    sourceTextList = Utils.getSourceTextList(DB)
+    
+    if sourceTextName not in sourceTextList:
+
         report.Error('The text named: '+sourceTextName+' not found.')
         return ERROR_HAPPENED
 
@@ -1755,7 +1756,7 @@ def RunModule(DB, report, configMap):
         noneHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
         tgtLexList.insert(0, noneHPG)
         
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList)
         
         window.show()
         app.exec_()

@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.8.3 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names.
+#
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function. Also don't confirm changes if no settings were changed.
 #
@@ -183,12 +187,10 @@ def getSourceComplexTypes(wind):
             
     return sourceComplexTypes
             
-def loadSourceTextList(widget, wind, settingName):
+def loadSourceTextListForSettings(widget, wind, settingName):
     
-    sourceList = []
-    for interlinText in wind.DB.ObjectsIn(ITextRepository):
-
-        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
+    # Create a list of source text names
+    sourceList = Utils.getSourceTextList(wind.DB)
 
     sortedSourceList = sorted(sourceList, key=str.casefold)
     
@@ -1040,7 +1042,7 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 
 widgetList = [
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
-   ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextList, ReadConfig.SOURCE_TEXT_NAME,\
+   ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text                                                                                               Give an error if missing
     "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", True],\
    

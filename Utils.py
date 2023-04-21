@@ -6,6 +6,10 @@
 #   7/23/2014
 #
 #
+#   Version 3.8.3 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names.
+#
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
 #    Reworked import statements. Fixed duplicate processErrorList.
 #
@@ -308,18 +312,18 @@ import shutil
 import xml.etree.ElementTree as ET
 import subprocess
 import unicodedata
-from datetime import datetime
+
 from System import Guid
 from System import String
 
 from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+from SIL.LCModel.Core.KernelInterfaces import ITsString   
 from SIL.LCModel.DomainServices import SegmentServices
+
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig 
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
-
 import FTPaths
 
 NONE_HEADWORD = '**none**'
@@ -486,36 +490,17 @@ def getXMLEntryText(node):
 
     return nodeText
     
-# Search for a text name in the list of texts in FLEx
-def findTextName(TargetDB, myTextName, textNameList):
-    foundText = False
-    
-    if len(textNameList) == 0:
-        
-        for text in TargetDB.ObjectsIn(ITextRepository):
-            
-            tName = ITsString(text.Name.BestVernacularAnalysisAlternative).Text
-            textNameList.append(tName)
-            
-            if myTextName == tName:
-                
-                foundText = True
-    else:
-        if myTextName in textNameList:
-            
-            foundText = True
-            
-    return foundText
-
 # Create a unique text title for FLEx
 def createUniqueTitle(DB, title):
       
-    textNameList = []
+    # Create a list of source text names
+    sourceTextList = getSourceTextList(DB)
     
-    if findTextName(DB, title, textNameList):
-        
+    if title in sourceTextList:
+    
         title += ' - Copy'
-        if findTextName(DB, title, textNameList): 
+
+        if title in sourceTextList:
             
             done = False
             i = 2
@@ -524,7 +509,7 @@ def createUniqueTitle(DB, title):
                 
                 tryName = title + ' (' + str(i) + ')'
                 
-                if not findTextName(DB, tryName, textNameList): 
+                if title not in sourceTextList:
                     
                     title = tryName
                     done = True 
@@ -1564,17 +1549,19 @@ def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
     
     return False
 
-def loadSourceTextList(widget, DB, sourceText):
-    
+def getSourceTextList(DB):
+
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
         sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
 
-    sortedSourceList = sorted(sourceList, key=str.casefold)
+    return sourceList
+
+def loadSourceTextList(widget, sourceText, sourceTextList):
     
     # Add items and when we find the one that matches the config file. Set that one to be displayed.
-    for i, itemStr in enumerate(sortedSourceList):
+    for i, itemStr in enumerate(sorted(sourceTextList, key=str.casefold)):
         
         widget.addItem(itemStr)
         

@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.8.1 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names. Removed fallback to use scripture text names.
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -179,7 +183,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -221,30 +225,17 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # Find the desired text
-    text_desired_eng = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    if not text_desired_eng:
+    sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+    if not sourceTextName:
         return
     
-    foundText = False
-    for text in DB.ObjectsIn(ITextRepository):
-        if text_desired_eng == ITsString(text.Name.BestAnalysisAlternative).Text:
-            foundText = True
-            contents = text.ContentsOA
-            break;
+    # Create a list of source text names
+    sourceTextList = Utils.getSourceTextList(DB)
+    
+    if sourceTextName not in sourceTextList:
         
-    if not foundText:
-        
-        # check if it's scripture text
-        for section in DB.ObjectsIn(IScrSectionRepository):
-            if text_desired_eng == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
-                contents = section.ContentOA
-                foundText = True
-                break
-                
-        # Pattern not found
-        if not foundText:
-            report.Error('The text named: '+text_desired_eng+' not found.')
-            return
+        report.Error('The text named: '+sourceTextName+' not found.')
+        return
     
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
@@ -446,7 +437,7 @@ def MainFunction(DB, report, modifyAllowed):
         
     f_out.close()
 
-    report.Info("Export of " + text_desired_eng + " complete.")
+    report.Info("Export of " + sourceTextName + " complete.")
 
 def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
