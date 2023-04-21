@@ -22,7 +22,7 @@ def RunHelp(sender, event):
     os.startfile(HelpFile)
 
 def RunAbout(sender, event):
-    MessageBox.Show(f"{Version.Name} version {Version.Version}", "About FLExTrans",
+    MessageBox.Show(f"{Version.Name} version {Version.Version}\n\nhttps://software.sil.org/flextrans", "About FLExTrans",
                     MessageBoxButtons.OK)
           
 customMenu = ("FLExTrans",

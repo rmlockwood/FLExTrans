@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.3 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names.
+#
 #   Version 3.8.2 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -191,8 +195,7 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.DomainServices import SegmentServices
+from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
 
@@ -209,7 +212,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.8.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -622,7 +625,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
 class Main(QMainWindow):
 
-    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr):
+    def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList):
         
         QMainWindow.__init__(self)
         self.showOnlyUnlinked = False
@@ -652,7 +655,7 @@ class Main(QMainWindow):
             self.ui.targetLexCombo.setCurrentIndex(1)
             
         # load the source text list
-        Utils.loadSourceTextList(self.ui.SourceTextCombo, DB, sourceTextName)
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, sourceTextName, sourceTextList)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
@@ -1145,7 +1148,7 @@ def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
             matchList = save_map[gloss]
     return matchList
 
-def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr):
+def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr):
         
     save_map = {}
     processed_map = {}
@@ -1176,7 +1179,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         return False, myData, processed_map
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, interlinText.ContentsOA, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
     
     # Loop through the words
     for paragraph in myText.getParagraphs():
@@ -1371,11 +1374,12 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
        
         report.Info(str(unlinkCount) + ' links removed')  
                       
-def calculate_progress_stats(report, interlinText, TargetDB_tot):
+def calculate_progress_stats(report, contents, TargetDB_tot):
             
     # count the number of "bundles" we will process for progress bar
     bundle_tot = 0
-    for par in interlinText.ContentsOA.ParagraphsOS:
+
+    for par in contents.ParagraphsOS:
         for seg in par.SegmentsOS:
             bundle_tot += seg.AnalysesRS.Count
     
@@ -1662,17 +1666,18 @@ def RunModule(DB, report, configMap):
     if haveConfigError:
         return ERROR_HAPPENED
     
-    # Find the desired text
-    foundText = False
-    for interlinText in DB.ObjectsIn(ITextRepository):
-        if sourceTextName == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
-            foundText = True
-            break;
+    matchingContentsObjList = []
+
+    # Create a list of source text names
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    
+    if sourceTextName not in sourceTextList:
         
-    if not foundText:
         report.Error('The text named: '+sourceTextName+' not found.')
         return ERROR_HAPPENED
-
+    else:
+        contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
+    
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
     senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
     
@@ -1724,7 +1729,7 @@ def RunModule(DB, report, configMap):
         properNounAbbr = ''
     
     # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, interlinText, TargetDB_tot)
+    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, contents, TargetDB_tot)
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
     if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
@@ -1732,7 +1737,7 @@ def RunModule(DB, report, configMap):
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, interlinText, properNounAbbr)
+    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr)
 
     if retVal == False:
         return ERROR_HAPPENED 
@@ -1755,7 +1760,7 @@ def RunModule(DB, report, configMap):
         noneHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
         tgtLexList.insert(0, noneHPG)
         
-        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr)
+        window = Main(myData, myHeaderData, tgtLexList, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList)
         
         window.show()
         app.exec_()

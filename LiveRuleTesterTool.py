@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.6 - 4/21/23 - Ron Lockwood
+#    Fixes #417. Stripped whitespace from source text name. Consolidated code that
+#    collects all the interlinear text names. Removed fallback to use scripture text names.
+#
 #   Version 3.8.5 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -345,7 +349,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.5",
+        FTM_Version    : "3.8.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -475,7 +479,7 @@ class OverWriteDlg(QDialog):
         
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -484,7 +488,7 @@ class Main(QMainWindow):
         self.__biling_file = biling_file
         self.__sourceText = sourceText
         self.__DB = DB
-        Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__DB, self.__sourceText)
+        Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__sourceText, sourceTextList)
         self.__configMap = configMap
         self.__report = report
         self.__transfer_rules_file = None
@@ -2341,27 +2345,18 @@ def RunModule(DB, report):
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return ERROR_HAPPENED
 
-    # Find the desired text
-    text_list = []
-    foundText = False
-    for interlinText in DB.ObjectsIn(ITextRepository):
-        if sourceText == ITsString(interlinText.Name.BestAnalysisAlternative).Text:
-            foundText = True
-            contents = interlinText.ContentsOA
-        text_list.append(sourceText)
-    
-    if not foundText:
-        # check if it's scripture text
-        for section in DB.ObjectsIn(IScrSectionRepository):
-            if sourceText == ITsString(section.ContentOA.Title.BestAnalysisAlternative).Text:
-                contents = section.ContentOA
-                foundText = True
-                break
-            
-        if not foundText:    
-            report.Error('The text named: '+sourceText+' not found.')
-            return ERROR_HAPPENED
+    matchingContentsObjList = []
 
+    # Create a list of source text names
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    
+    if sourceText not in sourceTextList:
+        
+        report.Error('The text named: '+sourceText+' not found.')
+        return ERROR_HAPPENED
+    else:
+        contents = matchingContentsObjList[sourceTextList.index(sourceText)]
+    
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
@@ -2499,7 +2494,7 @@ def RunModule(DB, report):
             bilingFile = os.path.join(pwd, bilingFile)
             
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList)
         
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')
