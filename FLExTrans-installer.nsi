@@ -96,14 +96,10 @@ InitPluginsDir
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
   
   File "${GIT_FOLDER}\FlexTrans.config"
-  File "${GIT_FOLDER}\flextools.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config"
   
-  File "${GIT_FOLDER}\SetWorkingProject.py"
   File "${GIT_FOLDER}\FlexTrans.config"
-  File "${GIT_FOLDER}\flextools.ini"
-  File "${GIT_FOLDER}\FlexTools.bat"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\All Steps.ini"
