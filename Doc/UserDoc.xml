@@ -447,51 +447,19 @@ type="tFlexx"
 > project.</li
 ><li
 ><genericTarget
-id="gChangeSettings"
+id="gChangeSetings"
 ></genericTarget
 >Change the settings for your new project.<ol
 ><li
->Click on the <img
-src="Images/CollectionsBut.PNG"
-></img
-> button which will bring up a list of collections as shown in <exampleRef
-letter="xLinkerInCollections"
-num="xLinkerInCollections"
-></exampleRef
->.<example
-num="xLinkerInCollections"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
-src="Images/LinkerInCollections.png"
-></img
-></chart
-></example
-></li
+>Select <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the menu.</li
 ><li
->Double-click on <object
-type="tCollection"
->Tools</object
-> in the list and you’ll see this:<example
-num="xToolsCollection"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial="Height:60%"
-src="Images/ToolsCollection.png"
-></img
-></chart
-></example
-></li
-><li
->Select the Settings module.</li
-><li
->Click the <img
-cssSpecial="Width:5%"
-src="Images/RunBut.png"
-></img
-> button and you should see the <object
+>You should see the <object
 type="tSettings"
 ></object
 > that looks like this: <example
@@ -570,10 +538,20 @@ cssSpecial="Width:5%"
 src="Images/CollectionsBut.PNG"
 ></img
 > button which will bring up a list of collections as shown in <exampleRef
-letter="xLinkerInCollections"
-num="xLinkerInCollections"
+letter="xMyCollections"
+num="xMyCollections"
 ></exampleRef
->.</li
+>.<example
+num="xMyCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
 ><li
 >Double-click on <object
 type="tCollection"
@@ -1256,7 +1234,19 @@ type="tSettings"
 > is a tool that helps get <object
 type="tFlextrans"
 ></object
-> configured the way you want it. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
+> configured the way you want it. You launch the <object
+type="tSettings"
+></object
+> by selecting <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the <object
+type="tFlexxTools"
+></object
+> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
 type="tSettings"
 ></object
 >, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
@@ -1532,7 +1522,7 @@ type="tFlexx"
 ><section3
 id="sGramCat"
 ><secTitle
-> <object
+><object
 type="tCourier"
 >a_gram_cat</object
 > Attribute</secTitle
@@ -5157,9 +5147,9 @@ type="tRed"
 type="tFlextrans"
 ></object
 >, use the <object
-type="tModule"
->Settings</object
-> module to do the following:<ol
+type="tSettings"
+></object
+> to do the following:<ol
 ><li
 >Verify the Target Project is set.</li
 ><li
@@ -5251,10 +5241,19 @@ type="tTool"
 >HermitCrab</object
 > for synthesis.<ol
 ><li
->Run the Settings module. See <genericRef
-gref="gChangeSettings"
->step 7 above</genericRef
->.</li
+>Launch the <object
+type="tSettings"
+></object
+> by selecting <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the <object
+type="tFlexxTools"
+></object
+> menu.</li
 ><li
 >Click <object
 type="tBold"
@@ -5297,8 +5296,8 @@ letter="xCollections"
 num="xCollections"
 ></exampleRef
 > repeated from <exampleRef
-letter="xLinkerInCollections"
-num="xLinkerInCollections"
+letter="xMyCollections"
+num="xMyCollections"
 ></exampleRef
 > above.<example
 num="xCollections"
@@ -5315,7 +5314,7 @@ src="Images/LinkerInCollections.png"
 >Click on <object
 type="tCollection"
 >All Steps</object
->. </li
+>.</li
 ><li
 >Then click on <object
 type="tModule"
