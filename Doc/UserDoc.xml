@@ -525,6 +525,46 @@ type="tFlexx"
 ></li
 ></ol
 ></li
+><li
+>Setup transfer rule categories and attributes.<ol
+><li
+>Run the <object
+type="tTool"
+>Set Up Transfer Rule Categories and Attributes Tool</object
+> from the <object
+type="tCollection"
+>Tools</object
+> collection. You will see a window that looks like <exampleRef
+letter="xSetupCatAttrib0"
+num="xSetupCatAttrib0"
+></exampleRef
+>.<example
+num="xSetupCatAttrib0"
+><chart
+><img
+src="images/SetupCatAttrib.png"
+></img
+></chart
+></example
+>This tool will set up things in your transfer rule file to define your categories and attributes. Find out more about this tool in section <sectionRef
+sec="sSetupGramCat"
+></sectionRef
+>. Find more about transfer rules in section <sectionRef
+sec="sTransferTutorial"
+></sectionRef
+>.</li
+><li
+>If you have grammatical templates defined in your <object
+type="tFlexx"
+></object
+> projects, Click the check box for <object
+type="tItalic"
+>Populate template slots as attributes</object
+>.</li
+><li
+>Click OK</li
+></ol
+></li
 ></ol
 ></section2
 ><section2
