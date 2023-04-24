@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.8.1 - 4/24/23 - Ron Lockwood
+#    Constant for TreeTran.exe
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -193,7 +196,7 @@ def MainFunction(DB, report, modify=True):
         return
     
     # run TreeTran
-    call(['treetran.exe', rulesFilePath, filteredFile, treeTranResultFile])
+    call([FTPaths.TREETRAN_EXE, rulesFilePath, filteredFile, treeTranResultFile])
     
     report.Info(str(sentCount) + ' sentence(s) processed.')
     
