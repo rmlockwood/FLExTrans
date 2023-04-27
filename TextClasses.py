@@ -5,6 +5,11 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.8.1 - 4/27/23 - Ron Lockwood
+#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
+#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
+#    for the gloss map and once for the building of the linking objects.
+#
 #   Version 3.8 - 4/18/23 - Ron Lockwood
 #    Allow more than 1 word between complex form components. For now allow up to 4.
 #
@@ -53,6 +58,8 @@ class TextEntirety():
         return par.getSent(sentNum-(count-len(par.getSentences())))
     def getSentCount(self):
         return sum([x.getSentCount() for x in self.__parList])
+    def getWordCount(self):
+        return sum([x.getWordCount() for x in self.__parList])
     def getSurfaceAndDataTupleListBySent(self):
         tupBySentList = []
         for par in self.__parList:
@@ -111,6 +118,8 @@ class TextParagraph():
         return self.__sentList[sentNum]
     def getSentCount(self):
         return len(self.__sentList)
+    def getWordCount(self):
+        return sum([x.getWordCount() for x in self.__sentList])
     def getSentences(self):
         return self.__sentList
     def getSurfaceAndDataTupleListBySent(self, tupBySentList):

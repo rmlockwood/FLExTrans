@@ -6,7 +6,9 @@
 #   7/18/15
 #
 #   Version 3.8.4 - 4/27/23 - Ron Lockwood
-#    Fixes #363. Handle when bundles scale factor is 0 when computing progress.
+#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
+#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
+#    for the gloss map and once for the building of the linking objects.
 #
 #   Version 3.8.3 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
@@ -1029,12 +1031,14 @@ def fixupLemma(lem, entry, senseNum):
     # If the lemma ends with 1.1, remove it (for optics)
     return remove1dot1(lem)
 
-def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, scale_factor):
+def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
+
+    report.ProgressStart(entriesTotal)
 
     # Loop through all the target entries
-    for entry_cnt,e in enumerate(TargetDB.LexiconAllEntries()):
+    for entryIndex, e in enumerate(TargetDB.LexiconAllEntries()):
     
-        report.ProgressUpdate(int(entry_cnt/scale_factor))
+        report.ProgressUpdate(entryIndex+1)
         
         # Don't process affixes, clitics
         if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
@@ -1151,39 +1155,46 @@ def getMatchesOnGloss(gloss, glossMap, save_map, doFuzzyCompare):
             matchList = save_map[gloss]
     return matchList
 
-def processInterlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, contents, properNounAbbr):
-        
-    save_map = {}
-    processedMap = {}
-    myData = []
-
+def getInterlinearText(DB, report, configMap, contents):
+    
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
-        return False, myData, processedMap
+        return None
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return False, myData, processedMap
+        return None
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return False, myData, processedMap
+        return None
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return False, myData, processedMap
+        return None
 
     # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
     
+    return myText
+
+def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText):
+        
+    save_map = {}
+    processedMap = {}
+    myData = []
+    wordIndex = 0
+    
+    report.ProgressStart(myText.getWordCount())
+
     # Loop through the words
     for paragraph in myText.getParagraphs():
         
@@ -1191,6 +1202,8 @@ def processInterlinear(report, DB, configMap, senseEquivField, senseNumField, so
             
             for word in sentence.getWords():
                 
+                report.ProgressUpdate(wordIndex)
+
                 # Possible multiple entries if it's a compound, I think
                 for eNum, entry in enumerate(word.getEntries()):
                     
@@ -1306,8 +1319,9 @@ def processInterlinear(report, DB, configMap, senseEquivField, senseNumField, so
                                 # otherwise, we had multiple links associated with this sense, add them all to the list again
                                 else:
                                     myData.extend(myMatchLinkList)
-    
-    return True, myData, processedMap
+                wordIndex += 1
+
+    return myData, processedMap
 
 def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
@@ -1377,34 +1391,6 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
        
         report.Info(str(unlinkCount) + ' links removed')  
                       
-def calculateProgressStats(report, contents, targetDBtotal):
-            
-    # count the number of "bundles" we will process for progress bar
-    bundleTotal = 0
-
-    for par in contents.ParagraphsOS:
-        for seg in par.SegmentsOS:
-            bundleTotal += seg.AnalysesRS.Count
-    
-    # We will scale the progress indication according to the following
-    # weighting factors
-    # 385 units for an entry to process in the get_glossMap function
-    TIME_RATIO = 385
-    # 1 unit for each fuzzy compare
-    
-    report.ProgressStart(100)
-    
-    # The time to process a bundle depends on the number of glosses (roughly total entries). 
-    # This is because a fuzzy compare gets done on each target gloss for each unique bundle
-    entriesScaleFactor = float(targetDBtotal*TIME_RATIO) / float(targetDBtotal*TIME_RATIO+bundleTotal*targetDBtotal*1) * 100.0
-    
-    entriesScale = int(targetDBtotal/entriesScaleFactor)
-
-    if entriesScale == 0:
-        entriesScale = 1
-
-    return entriesScale
-
 def containsWord(sentHPGlist, word):
     
     found = False
@@ -1728,24 +1714,32 @@ def RunModule(DB, report, configMap):
         
         properNounAbbr = ''
     
-    # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    entriesScale = calculateProgressStats(report, contents, targetDBtotal)
+    # Get the interlinear text object
+    myText = getInterlinearText(DB, report, configMap, contents)
+
+    if myText == None:
+        TargetDB.CloseProject()
+        return ERROR_HAPPENED 
+
+    # Check to see if there is any data to link
+    if myText.getSentCount() == 0:
+                                        
+        report.Error('There were no senses found for linking. Please check your text and approve some words.')
+        TargetDB.CloseProject()
+        return ERROR_HAPPENED
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
-    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesScale):
+    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, targetDBtotal):
         TargetDB.CloseProject()
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData, processedMap = processInterlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, contents, properNounAbbr)
-
-    if retVal == False:
-        return ERROR_HAPPENED 
+    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText)
 
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Warning('There were no senses found for linking.')
+        report.Error('There were no senses found for linking. Please check your text and approve some words.')
     else:
     
         # Show the window
