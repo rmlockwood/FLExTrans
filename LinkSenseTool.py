@@ -1029,7 +1029,7 @@ def fixupLemma(lem, entry, senseNum):
     # If the lemma ends with 1.1, remove it (for optics)
     return remove1dot1(lem)
 
-def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
+def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, scale_factor):
 
     # Loop through all the target entries
     for entry_cnt,e in enumerate(TargetDB.LexiconAllEntries()):
@@ -1069,10 +1069,10 @@ def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, 
                     # in the combo box
                     tgtLexList.append(myHPG)
                     
-                    if gloss not in gloss_map:
-                        gloss_map[gloss] = [myHPG]
+                    if gloss not in glossMap:
+                        glossMap[gloss] = [myHPG]
                     else: # multiple senses for this gloss
-                        gloss_map[gloss].append(myHPG)
+                        glossMap[gloss].append(myHPG)
                         
     return True
 
@@ -1124,12 +1124,12 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
 
 # do check for exact match and sometimes fuzzy match to find suggested 
 # target senses to be linked to
-def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
+def getMatchesOnGloss(gloss, glossMap, save_map, doFuzzyCompare):
     matchList = []
     
     # check for exact match
-    if gloss in gloss_map:
-        matchList = gloss_map[gloss]
+    if gloss in glossMap:
+        matchList = glossMap[gloss]
     elif doFuzzyCompare:    
         # See if we've processed this gloss before
         if gloss not in save_map:
@@ -1137,49 +1137,49 @@ def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
             gloss_len = len(gloss)
             if gloss_len >= MIN_GLOSS_LEN_FOR_FUZZ:
                 # Loop through all the target glosses
-                for mgloss in list(gloss_map.keys()):
+                for mgloss in list(glossMap.keys()):
                     mgloss_len = len(mgloss)
                     # skip the fuzzy match if the target gloss is to small or there's a big difference in length
                     if mgloss_len >= MIN_GLOSS_LEN_FOR_FUZZ and \
                        abs(mgloss_len-gloss_len) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
                         # See if we have a match
                         if fuzz.QRatio(mgloss, gloss) > FUZZ_THRESHOLD:
-                            matchList.extend(gloss_map[mgloss])
+                            matchList.extend(glossMap[mgloss])
                             save_map[gloss] = matchList
         else: 
             # use saved list
             matchList = save_map[gloss]
     return matchList
 
-def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr):
+def processInterlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, contents, properNounAbbr):
         
     save_map = {}
-    processed_map = {}
+    processedMap = {}
     myData = []
 
     # Get punctuation string
     sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not sent_punct:
-        return False, myData, processed_map
+        return False, myData, processedMap
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return False, myData, processed_map
+        return False, myData, processedMap
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return False, myData, processed_map
+        return False, myData, processedMap
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return False, myData, processed_map
+        return False, myData, processedMap
 
     # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
@@ -1202,7 +1202,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                         if mySense is not None:
                             
                             # If we have processed this sense already, we will just re-add it to the list
-                            if mySense not in processed_map:
+                            if mySense not in processedMap:
                                 
                                 # Lookup the morphType via hard-coded guid
                                 morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
@@ -1250,7 +1250,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                         # Set the target part of the Link object and add it to the list
                                         myLink.set_tgtHPG(tgtHPG)
                                         myData.append(myLink)
-                                        processed_map[mySense] = myLink, None, sentence
+                                        processedMap[mySense] = myLink, None, sentence
                                         
                                     else: # no link url present
                                       
@@ -1261,7 +1261,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                             doFuzzyCompare = True
                                             
                                         # Find matches for the current gloss using fuzzy compare if needed
-                                        matchedSenseList = getMatchesOnGloss(srcGloss, gloss_map, save_map, doFuzzyCompare)
+                                        matchedSenseList = getMatchesOnGloss(srcGloss, glossMap, save_map, doFuzzyCompare)
                                         
                                         # Process all the matches
                                         if len(matchedSenseList) > 0:
@@ -1287,16 +1287,16 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
         
                                             myData.extend(matchLinkList)
                                                 
-                                            processed_map[mySense] = matchLink, matchLinkList, sentence
+                                            processedMap[mySense] = matchLink, matchLinkList, sentence
                                                 
                                         # No matches
                                         else:
                                             # add a Link object that has no target information
                                             myData.append(myLink)
-                                            processed_map[mySense] = myLink, None, sentence
+                                            processedMap[mySense] = myLink, None, sentence
                                             
                             else: # we've processed this sense before
-                                myLink, myMatchLinkList, _ = processed_map[mySense] # _ for sent which we don't need
+                                myLink, myMatchLinkList, _ = processedMap[mySense] # _ for sent which we don't need
                                 
                                 # if there's no associated list, just append the link object
                                 if myMatchLinkList == None:
@@ -1307,7 +1307,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                 else:
                                     myData.extend(myMatchLinkList)
     
-    return True, myData, processed_map
+    return True, myData, processedMap
 
 def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
@@ -1377,18 +1377,18 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
        
         report.Info(str(unlinkCount) + ' links removed')  
                       
-def calculate_progress_stats(report, contents, TargetDB_tot):
+def calculateProgressStats(report, contents, targetDBtotal):
             
     # count the number of "bundles" we will process for progress bar
-    bundle_tot = 0
+    bundleTotal = 0
 
     for par in contents.ParagraphsOS:
         for seg in par.SegmentsOS:
-            bundle_tot += seg.AnalysesRS.Count
+            bundleTotal += seg.AnalysesRS.Count
     
     # We will scale the progress indication according to the following
     # weighting factors
-    # 385 units for an entry to process in the get_gloss_map function
+    # 385 units for an entry to process in the get_glossMap function
     TIME_RATIO = 385
     # 1 unit for each fuzzy compare
     
@@ -1396,23 +1396,14 @@ def calculate_progress_stats(report, contents, TargetDB_tot):
     
     # The time to process a bundle depends on the number of glosses (roughly total entries). 
     # This is because a fuzzy compare gets done on each target gloss for each unique bundle
-    ENTRIES_SCALE_FACTOR = float(TargetDB_tot*TIME_RATIO) / float(TargetDB_tot*TIME_RATIO+bundle_tot*TargetDB_tot*1) * 100.0
-    BUNDLES_SCALE_FACTOR = 100.0 - ENTRIES_SCALE_FACTOR
+    entriesScaleFactor = float(targetDBtotal*TIME_RATIO) / float(targetDBtotal*TIME_RATIO+bundleTotal*targetDBtotal*1) * 100.0
     
-    entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
+    entriesScale = int(targetDBtotal/entriesScaleFactor)
 
-    if entries_scale == 0:
-        entries_scale = 1
+    if entriesScale == 0:
+        entriesScale = 1
 
-    if BUNDLES_SCALE_FACTOR == 0:
-        bundles_scale = 1
-    else:
-        bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
-
-        if bundles_scale == 0:
-            bundles_scale = 1
-
-    return ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale
+    return entriesScale
 
 def containsWord(sentHPGlist, word):
     
@@ -1487,20 +1478,20 @@ def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
     
     return row
 
-def getFirstOccurringSent(myHPG, processed_map):
+def getFirstOccurringSent(myHPG, processedMap):
 
     mySense = myHPG.getSense()
     
-    # The processed map from the process_interlinear function already has the first sentence
+    # The processed map from the process interlinear function already has the first sentence
     # where this sense occurred.
-    if mySense in processed_map:
+    if mySense in processedMap:
         
         # The 3rd part of the map is the sentence that goes to this sense
-        return processed_map[mySense][2] 
+        return processedMap[mySense][2] 
     
     return None
         
-def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, report, hideProperNouns, properNounAbbr):
+def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report, hideProperNouns, properNounAbbr):
                 
     doneMap = {}
     wordSentList = []
@@ -1520,7 +1511,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
                 # Don't process a proper noun if the user had them hidden
                 if not (hideProperNouns and srcHPG.getPOS() == properNounAbbr):
                 
-                    mySent = getFirstOccurringSent(currLink.get_srcHPG(), processed_map)
+                    mySent = getFirstOccurringSent(currLink.get_srcHPG(), processedMap)
                     
                     if mySent == None:
                         
@@ -1725,10 +1716,10 @@ def RunModule(DB, report, configMap):
     preGuidStr += re.sub('\s','+', targetProj)
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
      
-    gloss_map = {}
+    glossMap = {}
     tgtLexList = []
 
-    TargetDB_tot = TargetDB.LexiconNumberOfEntries() 
+    targetDBtotal = TargetDB.LexiconNumberOfEntries() 
 
     # Get the proper noun abbreviation
     properNounAbbr = ReadConfig.getConfigVal(configMap, ReadConfig.PROPER_NOUN_CATEGORY, report)
@@ -1738,15 +1729,15 @@ def RunModule(DB, report, configMap):
         properNounAbbr = ''
     
     # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, contents, TargetDB_tot)
+    entriesScale = calculateProgressStats(report, contents, targetDBtotal)
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
-    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesScale):
         TargetDB.CloseProject()
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr)
+    retVal, myData, processedMap = processInterlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, contents, properNounAbbr)
 
     if retVal == False:
         return ERROR_HAPPENED 
@@ -1782,7 +1773,7 @@ def RunModule(DB, report, configMap):
             # Dump linked senses if the user wants to
             if window.exportUnlinked:
                 
-                dumpVocab(myData, processed_map, DB.ProjectName(), targetProj, sourceTextName, report, window.hideProperNouns, properNounAbbr)
+                dumpVocab(myData, processedMap, DB.ProjectName(), targetProj, sourceTextName, report, window.hideProperNouns, properNounAbbr)
     
         # If the user changed the source text combo, the restart member is set to True
         if window.restartLinker:
