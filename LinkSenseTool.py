@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.4 - 4/27/23 - Ron Lockwood
+#    Fixes #363. Handle when bundles scale factor is 0 when computing progress.
+#
 #   Version 3.8.3 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names.
@@ -212,7 +215,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1397,11 +1400,17 @@ def calculate_progress_stats(report, contents, TargetDB_tot):
     BUNDLES_SCALE_FACTOR = 100.0 - ENTRIES_SCALE_FACTOR
     
     entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
-    bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
+
     if entries_scale == 0:
         entries_scale = 1
-    if bundles_scale == 0:
+
+    if BUNDLES_SCALE_FACTOR == 0:
         bundles_scale = 1
+    else:
+        bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
+
+        if bundles_scale == 0:
+            bundles_scale = 1
 
     return ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale
 
