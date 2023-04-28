@@ -89,7 +89,7 @@ InitPluginsDir
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
 
-  File "${GIT_FOLDER}\FlexTools.vbs"
+  #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   
@@ -123,6 +123,8 @@ InitPluginsDir
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
   loop1:
     StrCmp $1 "" done1
+    StrCmp $1 "." nextfolder
+    StrCmp $1 ".." nextfolder
     
     # Get two values from flextools.ini
     ReadIniStr $8 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject"
@@ -147,7 +149,8 @@ InitPluginsDir
       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
       
         # Delete Setting module (it's probably just in the Tools.ini but try deleting it everywhere)
-        DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "FLExTrans.Settings Tool"
+        # TURN THIS ON AGAIN WHEN FLEXTOOLS CAN HANDLE AN INI FILE WITH A ORDER NUMBER MISSING (E.g. 3 FOR SETTINGS)
+        #DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "FLExTrans.Settings Tool"
 
         # Rename modules in the all the .ini files (for old installs)
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
@@ -161,6 +164,7 @@ InitPluginsDir
       Goto loop2
     done2:
       FindClose $3
+    nextfolder:  
     FindNext $0 $1
     Goto loop1
   done1:
