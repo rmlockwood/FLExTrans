@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.4 - 4/28/23 - Ron Lockwood
+#    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
+#
 #   Version 3.8.3 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -197,7 +200,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
         FTM_Help  : "", 
@@ -1429,7 +1432,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
-    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report)
+    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=False)
 
     doHermitCrabSynthesis = True if hermitCrabSynthesisYesNo == 'y' else False
     HCmasterFile = None

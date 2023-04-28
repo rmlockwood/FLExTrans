@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.8 - 4/28/23 - Ron Lockwood
+#    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
+#
 #   Version 3.8.7 - 4/25/23 - Ron Lockwood
 #    Handle blank HermitCrab config path in settings.
 #
@@ -352,7 +355,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.7",
+        FTM_Version    : "3.8.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1151,7 +1154,7 @@ class Main(QMainWindow):
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
         
-        hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report)
+        hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report, giveError=False)
 
         # See if we are doing HermitCrab synthesis
         doHermitCrabSynthesisBool = True if hermitCrabSynthesisYesNo == 'y' else False
