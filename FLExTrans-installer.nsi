@@ -48,7 +48,7 @@ Page custom nsDialogsPage
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\FLExTransInstallIcon32.ico"
+Icon "${GIT_FOLDER}\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -72,7 +72,7 @@ InitPluginsDir
         ExecWait "$INSTDIR\install_files\python-3.8.10-amd64.exe"
         Goto endPythonSync
   endPythonSync:
-
+  
   Var /GLOBAL OUT_FOLDER
   # Unzip FLExTrans to the desired folder
   # GIT_FOLDER needs to be set to your local git FLExTrans folder in the compiler settings
@@ -83,13 +83,13 @@ InitPluginsDir
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
   SetOverwrite off
 
-  File "${GIT_FOLDER}\FlexTools.vbs"
+  #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
 
-  File "${GIT_FOLDER}\FlexTools.vbs"
+  #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   
@@ -112,18 +112,47 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   SetOverwrite on
 
-  # Delete SettingGui.py form the Modules\FLExTrans folder, it now lives right under FlexTools
+  # Delete SettingGui.py from the Modules\FLExTrans folder, it now lives right under FlexTools
   Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\Modules\FLExTrans\SettingsGUI.py"
+
+  # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
+  Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FTPaths.py"
   
-  # Rename modules in the all the .ini files (for old installs)
+  # Fix up ini files, both collection ones and flextools.ini
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
   loop1:
     StrCmp $1 "" done1
+    StrCmp $1 "." nextfolder
+    StrCmp $1 ".." nextfolder
+    
+    # Get two values from flextools.ini
+    ReadIniStr $8 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject"
+    ReadIniStr $9 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection"
+    
+    # Overwrite FlexTools.vbs
+    SetOutPath "${WORKPROJECTSDIR}\$1"
+    File "${GIT_FOLDER}\FlexTools.vbs"
+    
+    # Overwrite flextools.ini
+    SetOutPath "${WORKPROJECTSDIR}\$1\Config"
+    File "${GIT_FOLDER}\flextools.ini"
+    
+    # Replace the default currentproject and currentcollection values with what we read above
+    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
+    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "All Steps" $9
+    
+    # Find all collection ini files (e.g. tools.ini)
     FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
     loop2:
       StrCmp $4 "" done2
       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
+      
+        # Delete Setting module (it's probably just in the Tools.ini but try deleting it everywhere)
+        # TURN THIS ON AGAIN WHEN FLEXTOOLS CAN HANDLE AN INI FILE WITH A ORDER NUMBER MISSING (E.g. 3 FOR SETTINGS)
+        #DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "FLExTrans.Settings Tool"
+
+        # Rename modules in the all the .ini files (for old installs)
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
         # older module names
@@ -135,6 +164,7 @@ InitPluginsDir
       Goto loop2
     done2:
       FindClose $3
+    nextfolder:  
     FindNext $0 $1
     Goto loop1
   done1:
@@ -147,7 +177,7 @@ InitPluginsDir
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
 
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python37\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
+  !define mycmd '"$LocalAppdata\Programs\Python\Python38\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
   # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
@@ -241,6 +271,7 @@ Function nsDialogsPage
         ${NSD_CreateLabel} 0 60 100% 12u "Choose where to put FLExTrans folder."
         ${NSD_CreateText} 0 80 70% 12u "$OUT_FOLDER"
         pop $DESTTEXT
+        SendMessage $DESTTEXT ${EM_SETREADONLY} 1 0
         ${NSD_CreateBrowseButton} 320 80 20% 12u "Browse"
         pop $BROWSEDEST
 
