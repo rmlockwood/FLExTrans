@@ -63,6 +63,7 @@ copy FTPaths.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLEx
 rem other stuff
 copy /Y subdirs.pth Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules
 copy stamp64.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
+copy treetran.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
 copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 copy Makefile.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build

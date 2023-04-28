@@ -6,6 +6,9 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
 #
+#   Version 3.8.1 - 4/24/23 - Ron Lockwood
+#    Constant for TreeTran.exe
+#
 
 import os
 
@@ -24,6 +27,7 @@ HELP_DIR    = os.path.join(ROOT_DIR, "FLExTrans Documentation")
 
 MAKE_EXE    = os.path.join(TOOLS_DIR, 'make.exe')
 STAMP_EXE   = os.path.join(TOOLS_DIR, 'stamp64.exe')
+TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = os.path.join(HC_DIR, 'GenerateHCConfig4FLExTrans', 'GenerateHCConfigForFLExTrans.exe')

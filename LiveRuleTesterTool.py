@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.8.7 - 4/25/23 - Ron Lockwood
+#    Handle blank HermitCrab config path in settings.
+#
 #   Version 3.8.6 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names. Removed fallback to use scripture text names.
@@ -349,7 +352,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.6",
+        FTM_Version    : "3.8.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1149,14 +1152,18 @@ class Main(QMainWindow):
         self.ui.SynthTextEdit.setPlainText('')
         
         hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report)
-        HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
-
-        if not (hermitCrabSynthesisYesNo and HCconfigPath):
-
-            QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
 
         # See if we are doing HermitCrab synthesis
         doHermitCrabSynthesisBool = True if hermitCrabSynthesisYesNo == 'y' else False
+
+        if doHermitCrabSynthesisBool:
+
+            HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
+
+            if not HCconfigPath:
+
+                QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
+                return
 
         ## CATALOG
         # Catalog all the target affixes
