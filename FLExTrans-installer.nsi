@@ -139,10 +139,12 @@ InitPluginsDir
     File "${GIT_FOLDER}\flextools.ini"
     
     # Replace the default currentproject and currentcollection values with what we read above
+    StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "All Steps" $9
     
     # Find all collection ini files (e.g. tools.ini)
+    skip:
     FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
     loop2:
       StrCmp $4 "" done2
