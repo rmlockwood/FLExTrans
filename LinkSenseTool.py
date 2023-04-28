@@ -5,6 +5,11 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.8.4 - 4/27/23 - Ron Lockwood
+#    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
+#    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
+#    for the gloss map and once for the building of the linking objects.
+#
 #   Version 3.8.3 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names.
@@ -212,7 +217,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -287,78 +292,78 @@ class HPG(object):
 # to a target sense
 class Link(object):
     def __init__(self, srcHPG, tgtHPG=None):
-        self.set_srcHPG(srcHPG)
-        self.set_tgtHPG(tgtHPG)
-        self.initial_status = INITIAL_STATUS_UNLINKED
+        self.setSrcHPG(srcHPG)
+        self.setTgtHPG(tgtHPG)
+        self.initialStatus = INITIAL_STATUS_UNLINKED
         self.linkIt = False
         self.modified = False
         self.tgtModified = False
     def getLinkIt(self):
         return self.linkIt
-    def get_srcHPG(self):
+    def getSrcHPG(self):
         return self.__srcHPG
-    def get_tgtHPG(self):
+    def getTgtHPG(self):
         return self.__tgtHPG
-    def get_srcPOS(self):
+    def getSrcPOS(self):
         return self.__srcHPG.getPOS()
-    def get_tgtPOS(self):
+    def getTgtPOS(self):
         return self.__tgtHPG.getPOS()
-    def get_srcGloss(self):
+    def getSrcGloss(self):
         return self.__srcHPG.getGloss()
-    def get_tgtGloss(self):
+    def getTgtGloss(self):
         return self.__tgtHPG.getGloss()
-    def get_initial_status(self):
-        return self.initial_status
-    def set_initial_status(self, myStatus):
-        self.initial_status = myStatus
+    def getInitialStatus(self):
+        return self.initialStatus
+    def setInitialStatus(self, myStatus):
+        self.initialStatus = myStatus
         if myStatus == INITIAL_STATUS_LINKED:
             self.linkIt = True # this shows that this is a sense the user intends to keep linked
         else:
             self.linkIt = False
-    def set_srcHPG(self, srcHPG):
+    def setSrcHPG(self, srcHPG):
         self.__srcHPG = srcHPG
-    def set_tgtHPG_only(self, tgtHPG):
+    def setTgtHPG_only(self, tgtHPG):
         self.__tgtHPG = tgtHPG
-    def set_tgtHPG(self, tgtHPG):
+    def setTgtHPG(self, tgtHPG):
         self.__tgtHPG = tgtHPG
         if tgtHPG is not None:
-            self.set_initial_status(INITIAL_STATUS_LINKED)
+            self.setInitialStatus(INITIAL_STATUS_LINKED)
             self.linkIt = True
-    def get_srcSense(self):
+    def getSrcSense(self):
         return self.__srcHPG.getSense()
-    def get_tgtSense(self):
+    def getTgtSense(self):
         return self.__tgtHPG.getSense()
-    def get_tgtGuid(self):
+    def getTgtGuid(self):
         return self.__tgtHPG.getSense().OwningEntry.Guid.ToString()
-    def get_tgtSenseNum(self):
+    def getTgtSenseNum(self):
         return self.__tgtHPG.getSenseNum()
-    def is_suggestion(self):
-        if self.get_initial_status() == INITIAL_STATUS_EXACT_SUGGESTION or self.get_initial_status() == INITIAL_STATUS_FUZZY_SUGGESTION:
+    def isSuggestion(self):
+        if self.getInitialStatus() == INITIAL_STATUS_EXACT_SUGGESTION or self.getInitialStatus() == INITIAL_STATUS_FUZZY_SUGGESTION:
             return True
         return False
     def isInitiallyLinkedAndTargetUnmodified(self):
-        return self.get_initial_status() == INITIAL_STATUS_LINKED and self.tgtModified == False
+        return self.getInitialStatus() == INITIAL_STATUS_LINKED and self.tgtModified == False
     def getDataByColumn(self, col):
         ret =''
         if col > 0 and col < 4:
             if col == 1:
-                ret = self.get_srcHPG().getHeadword()
+                ret = self.getSrcHPG().getHeadword()
             elif col == 2:
-                ret = self.get_srcHPG().getPOS()
+                ret = self.getSrcHPG().getPOS()
             elif col == 3:
-                ret = self.get_srcHPG().getGloss()
+                ret = self.getSrcHPG().getGloss()
                 
         elif col > 3 and col < 7:
             # columns 4-6 need to be blank if there is no tgtHPG or we unchecked the linkIt box and we have a 
             # non-suggested link. This is just extra visual feedback that we will do nothing when OK is clicked.
-            if self.get_tgtHPG() == None or (self.linkIt == False and not self.is_suggestion()):
+            if self.getTgtHPG() == None or (self.linkIt == False and not self.isSuggestion()):
                 ret = ''   
             elif col == 4:
-                ret = self.get_tgtHPG().getHeadword()
+                ret = self.getTgtHPG().getHeadword()
             elif col == 5:
-                ret = self.get_tgtHPG().getPOS()
+                ret = self.getTgtHPG().getPOS()
             elif col == 6:
-                ret = self.get_tgtHPG().getGloss()
+                ret = self.getTgtHPG().getGloss()
         return ret
     
 class LinkerCombo(QtCore.QAbstractListModel):
@@ -448,7 +453,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
             elif col == 4: # target headword column
                 
-                locData.set_tgtHPG_only(self.__selectedHPG)
+                locData.setTgtHPG_only(self.__selectedHPG)
                 locData.linkIt = True
                 locData.tgtModified = True
 
@@ -481,10 +486,10 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     qColor = QtGui.QColor(QtCore.Qt.darkBlue)
                 
                 # gram. category    
-                elif (col == 2 or col == 5) and locData.is_suggestion() == True: 
+                elif (col == 2 or col == 5) and locData.isSuggestion() == True: 
                     
                     # If there is a mismatch in grammatical category color it red
-                    if locData.get_srcPOS().lower() != locData.get_tgtPOS().lower():
+                    if locData.getSrcPOS().lower() != locData.getTgtPOS().lower():
                         
                         qColor = QtGui.QColor(QtCore.Qt.red)
                         
@@ -505,22 +510,22 @@ class LinkerTable(QtCore.QAbstractTableModel):
                     qColor = QtGui.QColor(QtCore.Qt.yellow)
                     
                 # Modified rows get a color just for the target columns
-                elif col >= 4 and col <= 6 and (locData.tgtModified == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.linkIt == False)):
+                elif col >= 4 and col <= 6 and (locData.tgtModified == True or (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.linkIt == False)):
                     
                     qColor = QtGui.QColor(152, 251, 152) # pale green
                 
                 # Exact suggestion 
-                elif locData.get_initial_status() == INITIAL_STATUS_EXACT_SUGGESTION:
+                elif locData.getInitialStatus() == INITIAL_STATUS_EXACT_SUGGESTION:
                     
                     qColor = QtGui.QColor(176, 255, 255) # medium cyan
                     
                 # Fuzzy suggestion 
-                elif locData.get_initial_status() == INITIAL_STATUS_FUZZY_SUGGESTION:
+                elif locData.getInitialStatus() == INITIAL_STATUS_FUZZY_SUGGESTION:
                             
                     qColor = QtGui.QColor(224, 255, 255) # light cyan
                 
                 # No links
-                elif locData.get_initial_status() == INITIAL_STATUS_UNLINKED:
+                elif locData.getInitialStatus() == INITIAL_STATUS_UNLINKED:
                     
                     qColor = QtGui.QColor(255, 192, 203) # pink
                     
@@ -545,7 +550,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
             if col == 0:
                  
                 # If user said link it, check the box. Also if there is an existing link in the DB on 
-                if locData.linkIt == True or (locData.get_initial_status() == INITIAL_STATUS_LINKED and locData.modified == False):
+                if locData.linkIt == True or (locData.getInitialStatus() == INITIAL_STATUS_LINKED and locData.modified == False):
                      
                     val = QtCore.Qt.Checked
                 else:
@@ -579,7 +584,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         if index.column() == 0:
 
             # Don't allow the box to be checked if we have an unlinked row that hasn't had the target modified
-            if not (locData.get_initial_status() == INITIAL_STATUS_UNLINKED and locData.tgtModified == False):
+            if not (locData.getInitialStatus() == INITIAL_STATUS_UNLINKED and locData.tgtModified == False):
             
                 val =  val | QtCore.Qt.ItemIsEnabled
                 
@@ -640,11 +645,11 @@ class Main(QMainWindow):
         self.__fullData = myData
         self.ui.tableView.setModel(self.__model)
         self.__comboData = comboData
-        self.__combo_model = LinkerCombo(comboData)
-        self.ui.targetLexCombo.setModel(self.__combo_model)
+        self.__comboModel = LinkerCombo(comboData)
+        self.ui.targetLexCombo.setModel(self.__comboModel)
         self.__report = report
         self.__configMap = configMap
-        self.ret_val = 0
+        self.retVal = 0
         self.cols = 7
         self.restartLinker = False
         self.properNounAbbr = properNounAbbr
@@ -677,7 +682,7 @@ class Main(QMainWindow):
         self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
         self.ComboClicked()
         
-        myHPG = self.__combo_model.getCurrentHPG()
+        myHPG = self.__comboModel.getCurrentHPG()
         myHeadword = myHPG.getHeadword()
         
         # Check for right to left data and set the combobox direction if needed
@@ -685,7 +690,7 @@ class Main(QMainWindow):
             if unicodedata.bidirectional(myHeadword[i]) in ('R', 'AL'):
                 self.ui.targetLexCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                 #self.ui.searchTargetEdit.setAlignment(QtCore.Qt.AlignRight)
-                self.__combo_model.setRTL(True)
+                self.__comboModel.setRTL(True)
                 break
     
         # Figure out how many senses are unlinked so we can show the user
@@ -716,7 +721,7 @@ class Main(QMainWindow):
         # Build a map that just has unique senses
         for linkObj in self.__fullData:
             
-            mySrcHPG = linkObj.get_srcHPG()
+            mySrcHPG = linkObj.getSrcHPG()
             
             if mySrcHPG not in uniqueSrcHPGMap:
                 
@@ -788,7 +793,7 @@ class Main(QMainWindow):
             # Check if the user wants to save changes
             if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
         
-                self.ret_val = 1
+                self.retVal = 1
         
         # Have FlexTools refresh the status bar
         refreshStatusbar()
@@ -800,11 +805,11 @@ class Main(QMainWindow):
         
         if self.ui.SearchAnythingCheckBox.isChecked():
             
-            self.__old_combo_model = self.__combo_model
+            self.__oldComboModel = self.__comboModel
             
         else:
-            self.__combo_model = self.__old_combo_model
-            self.ui.targetLexCombo.setModel(self.__combo_model)
+            self.__comboModel = self.__oldComboModel
+            self.ui.targetLexCombo.setModel(self.__comboModel)
 
             # Set the combo box to the 2nd element, since the first one is **none**
             if len(self.__comboData) > 1:
@@ -829,17 +834,17 @@ class Main(QMainWindow):
                     
             if len(newList) > 0:
                                     
-                self.__combo_model = LinkerCombo(newList)
-                self.ui.targetLexCombo.setModel(self.__combo_model)
+                self.__comboModel = LinkerCombo(newList)
+                self.ui.targetLexCombo.setModel(self.__comboModel)
 
     def findRow(self, searchText):
         
         found = False
         
         # Look for a match to the beginning of a headword
-        for i in range(0, self.__combo_model.rowCount(None)):
+        for i in range(0, self.__comboModel.rowCount(None)):
             
-            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__combo_model.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
+            if re.match(unicodedata.normalize('NFD', re.escape(searchText)) + r'.*', self.__comboModel.getRowValue(i).getHeadword(), flags=re.RegexFlag.IGNORECASE):
                 found = True
                 break
         
@@ -916,11 +921,11 @@ class Main(QMainWindow):
             self.ui.tableView.setColumnWidth(i, colWidth)
     def ComboClicked(self):
         # Set the target HPG for the model  
-        myHPG = self.__combo_model.getCurrentHPG()
+        myHPG = self.__comboModel.getCurrentHPG()
         self.__model.setSelectedHPG(myHPG)
         
     def OKClicked(self):
-        self.ret_val = 1
+        self.retVal = 1
         self.close()
         
     def ShowOnlyUnlinkedClicked(self):
@@ -945,7 +950,7 @@ class Main(QMainWindow):
         self.filter()
         
     def CancelClicked(self):
-        self.ret_val = 0
+        self.retVal = 0
         self.close()
         
     def filter(self):
@@ -965,13 +970,13 @@ class Main(QMainWindow):
             # for any of the identical srcHPGs. This helps below to see if any identical srcHPGs have been linked
             for myLink in self.__fullData:
                 
-                if myLink.get_srcHPG() not in srcHPGtoLinkItMap:
+                if myLink.getSrcHPG() not in srcHPGtoLinkItMap:
                     
-                    srcHPGtoLinkItMap[myLink.get_srcHPG()] = myLink.getLinkIt() 
+                    srcHPGtoLinkItMap[myLink.getSrcHPG()] = myLink.getLinkIt() 
                 else:
                     if myLink.getLinkIt():
                         
-                        srcHPGtoLinkItMap[myLink.get_srcHPG()] = True
+                        srcHPGtoLinkItMap[myLink.getSrcHPG()] = True
                 
             for myLink in self.__fullData:
                 
@@ -980,7 +985,7 @@ class Main(QMainWindow):
                 if self.showOnlyUnlinked:
                     
                     # if none of possible identical srcHPGs has been linked, add this one
-                    if not srcHPGtoLinkItMap[myLink.get_srcHPG()]:
+                    if not srcHPGtoLinkItMap[myLink.getSrcHPG()]:
                         
                         keepIt = True
                 else:
@@ -990,7 +995,7 @@ class Main(QMainWindow):
                     
                     if keepIt == True:
                     
-                        if myLink.get_srcPOS() != self.properNounAbbr:
+                        if myLink.getSrcPOS() != self.properNounAbbr:
                             
                             keepIt = True
                         else:
@@ -1026,12 +1031,14 @@ def fixupLemma(lem, entry, senseNum):
     # If the lemma ends with 1.1, remove it (for optics)
     return remove1dot1(lem)
 
-def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, scale_factor):
+def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
+
+    report.ProgressStart(entriesTotal)
 
     # Loop through all the target entries
-    for entry_cnt,e in enumerate(TargetDB.LexiconAllEntries()):
+    for entryIndex, e in enumerate(TargetDB.LexiconAllEntries()):
     
-        report.ProgressUpdate(int(entry_cnt/scale_factor))
+        report.ProgressUpdate(entryIndex+1)
         
         # Don't process affixes, clitics
         if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
@@ -1066,15 +1073,15 @@ def get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, 
                     # in the combo box
                     tgtLexList.append(myHPG)
                     
-                    if gloss not in gloss_map:
-                        gloss_map[gloss] = [myHPG]
+                    if gloss not in glossMap:
+                        glossMap[gloss] = [myHPG]
                     else: # multiple senses for this gloss
-                        gloss_map[gloss].append(myHPG)
+                        glossMap[gloss].append(myHPG)
                         
     return True
 
 # Given an entry guid and a sense #, look up the the sense info. 
-def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
+def getHPGfromGuid(TargetDB, myGuid, senseNum, report):
                       
     ret = None
           
@@ -1121,66 +1128,73 @@ def get_HPG_from_guid(TargetDB, myGuid, senseNum, report):
 
 # do check for exact match and sometimes fuzzy match to find suggested 
 # target senses to be linked to
-def getMatchesOnGloss(gloss, gloss_map, save_map, doFuzzyCompare):
+def getMatchesOnGloss(gloss, glossMap, saveMap, doFuzzyCompare):
     matchList = []
     
     # check for exact match
-    if gloss in gloss_map:
-        matchList = gloss_map[gloss]
+    if gloss in glossMap:
+        matchList = glossMap[gloss]
     elif doFuzzyCompare:    
         # See if we've processed this gloss before
-        if gloss not in save_map:
+        if gloss not in saveMap:
             # See if we have a candidate for a fuzzy compare
-            gloss_len = len(gloss)
-            if gloss_len >= MIN_GLOSS_LEN_FOR_FUZZ:
+            glossLen = len(gloss)
+            if glossLen >= MIN_GLOSS_LEN_FOR_FUZZ:
                 # Loop through all the target glosses
-                for mgloss in list(gloss_map.keys()):
-                    mgloss_len = len(mgloss)
+                for mgloss in list(glossMap.keys()):
+                    mglossLen = len(mgloss)
                     # skip the fuzzy match if the target gloss is to small or there's a big difference in length
-                    if mgloss_len >= MIN_GLOSS_LEN_FOR_FUZZ and \
-                       abs(mgloss_len-gloss_len) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
+                    if mglossLen >= MIN_GLOSS_LEN_FOR_FUZZ and \
+                       abs(mglossLen-glossLen) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
                         # See if we have a match
                         if fuzz.QRatio(mgloss, gloss) > FUZZ_THRESHOLD:
-                            matchList.extend(gloss_map[mgloss])
-                            save_map[gloss] = matchList
+                            matchList.extend(glossMap[mgloss])
+                            saveMap[gloss] = matchList
         else: 
             # use saved list
-            matchList = save_map[gloss]
+            matchList = saveMap[gloss]
     return matchList
 
-def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr):
-        
-    save_map = {}
-    processed_map = {}
-    myData = []
-
-    # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
+def getInterlinearText(DB, report, configMap, contents):
     
-    if not sent_punct:
-        return False, myData, processed_map
+    # Get punctuation string
+    sentPunct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
+    
+    if not sentPunct:
+        return None
     
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
     if not typesList:
         typesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return False, myData, processed_map
+        return None
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
     if not discontigTypesList:
         discontigTypesList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return False, myData, processed_map
+        return None
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
     if not discontigPOSList:
         discontigPOSList = []
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return False, myData, processed_map
+        return None
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList)
     
+    return myText
+
+def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText):
+        
+    saveMap = {}
+    processedMap = {}
+    myData = []
+    wordIndex = 0
+    
+    report.ProgressStart(myText.getWordCount())
+
     # Loop through the words
     for paragraph in myText.getParagraphs():
         
@@ -1188,6 +1202,8 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
             
             for word in sentence.getWords():
                 
+                report.ProgressUpdate(wordIndex)
+
                 # Possible multiple entries if it's a compound, I think
                 for eNum, entry in enumerate(word.getEntries()):
                     
@@ -1199,7 +1215,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                         if mySense is not None:
                             
                             # If we have processed this sense already, we will just re-add it to the list
-                            if mySense not in processed_map:
+                            if mySense not in processedMap:
                                 
                                 # Lookup the morphType via hard-coded guid
                                 morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
@@ -1242,12 +1258,12 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                             guid = equiv[u+7:u+7+36]
                                         
                                             # Get sense information for the guid, this returns None if not found
-                                            tgtHPG = get_HPG_from_guid(TargetDB, guid, int(senseNum), report)
+                                            tgtHPG = getHPGfromGuid(TargetDB, guid, int(senseNum), report)
                                         
                                         # Set the target part of the Link object and add it to the list
-                                        myLink.set_tgtHPG(tgtHPG)
+                                        myLink.setTgtHPG(tgtHPG)
                                         myData.append(myLink)
-                                        processed_map[mySense] = myLink, None, sentence
+                                        processedMap[mySense] = myLink, None, sentence
                                         
                                     else: # no link url present
                                       
@@ -1258,7 +1274,7 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                             doFuzzyCompare = True
                                             
                                         # Find matches for the current gloss using fuzzy compare if needed
-                                        matchedSenseList = getMatchesOnGloss(srcGloss, gloss_map, save_map, doFuzzyCompare)
+                                        matchedSenseList = getMatchesOnGloss(srcGloss, glossMap, saveMap, doFuzzyCompare)
                                         
                                         # Process all the matches
                                         if len(matchedSenseList) > 0:
@@ -1268,32 +1284,32 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                             for i, matchHPG in enumerate(matchedSenseList):
                                                 
                                                 if i == 0: # use the Link object already created
-                                                    myLink.set_tgtHPG(matchHPG)
+                                                    myLink.setTgtHPG(matchHPG)
                                                     matchLink = myLink
                                                 else:
                                                     matchLink = Link(myHPG, matchHPG)
                                                 
                                                 # See if we have an exact match
-                                                if matchLink.get_srcGloss().lower() == matchLink.get_tgtGloss().lower():
+                                                if matchLink.getSrcGloss().lower() == matchLink.getTgtGloss().lower():
                                                     
-                                                    matchLink.set_initial_status(INITIAL_STATUS_EXACT_SUGGESTION)
+                                                    matchLink.setInitialStatus(INITIAL_STATUS_EXACT_SUGGESTION)
                                                 else:
-                                                    matchLink.set_initial_status(INITIAL_STATUS_FUZZY_SUGGESTION)
+                                                    matchLink.setInitialStatus(INITIAL_STATUS_FUZZY_SUGGESTION)
                                                     
                                                 matchLinkList.append(matchLink)
         
                                             myData.extend(matchLinkList)
                                                 
-                                            processed_map[mySense] = matchLink, matchLinkList, sentence
+                                            processedMap[mySense] = matchLink, matchLinkList, sentence
                                                 
                                         # No matches
                                         else:
                                             # add a Link object that has no target information
                                             myData.append(myLink)
-                                            processed_map[mySense] = myLink, None, sentence
+                                            processedMap[mySense] = myLink, None, sentence
                                             
                             else: # we've processed this sense before
-                                myLink, myMatchLinkList, _ = processed_map[mySense] # _ for sent which we don't need
+                                myLink, myMatchLinkList, _ = processedMap[mySense] # _ for sent which we don't need
                                 
                                 # if there's no associated list, just append the link object
                                 if myMatchLinkList == None:
@@ -1303,12 +1319,13 @@ def process_interlinear(report, DB, configMap, senseEquivField, senseNumField, s
                                 # otherwise, we had multiple links associated with this sense, add them all to the list again
                                 else:
                                     myData.extend(myMatchLinkList)
-    
-    return True, myData, processed_map
+                wordIndex += 1
 
-def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
+    return myData, processedMap
+
+def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
-    updated_senses = {}
+    updatedSenses = {}
     cnt = 0
     unlinkCount = 0
         
@@ -1316,37 +1333,37 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
     for currLink in myData:
         
         # See if we have already updated this sense
-        currSense = currLink.get_srcSense()
+        currSense = currLink.getSrcSense()
         
-        if currSense not in updated_senses:
+        if currSense not in updatedSenses:
             
             # Create a link if the user marked it for linking and we have a valid target
             # and it's not an existing linked sense in the DB where the link hasn't been changed (these are 
             # marked linkIt=True, but we don't want to re-link them even though it wouldn't hurt).
-            if (currLink.linkIt == True and currLink.get_tgtHPG() != None and currLink.get_tgtHPG().getHeadword() != '') and \
+            if (currLink.linkIt == True and currLink.getTgtHPG() != None and currLink.getTgtHPG().getHeadword() != '') and \
                not currLink.isInitiallyLinkedAndTargetUnmodified():
                 
                 cnt += 1
                 
                 # Handle mapping to none
-                headWord = currLink.get_tgtHPG().getHeadword()
+                headWord = currLink.getTgtHPG().getHeadword()
                 
                 if headWord == Utils.NONE_HEADWORD:
                     
                     text = headWord
                 else:
                     # Build target link from saved url path plus guid string for this target sense
-                    text = preGuidStr + currLink.get_tgtGuid() + '%26tag%3d'
+                    text = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
                 
                 # Set the target field
                 DB.LexiconSetFieldText(currSense, senseEquivField, text)
             
                 # Set the sense number if necessary
-                if currLink.get_tgtSenseNum() > 1:
-                    numStr = str(currLink.get_tgtSenseNum())
+                if currLink.getTgtSenseNum() > 1:
+                    numStr = str(currLink.getTgtSenseNum())
                     DB.LexiconSetFieldText(currSense, senseNumField, numStr)
             
-                updated_senses[currSense] = 1
+                updatedSenses[currSense] = 1
             
             # Unlink this sense
             elif currLink.linkIt == False and currLink.isInitiallyLinkedAndTargetUnmodified():
@@ -1357,7 +1374,7 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
                 DB.LexiconSetFieldText(currSense, senseEquivField, '')
                 DB.LexiconSetFieldText(currSense, senseNumField, '')
 
-                updated_senses[currSense] = 1
+                updatedSenses[currSense] = 1
 
     # Give feedback            
     if cnt == 1:
@@ -1374,37 +1391,6 @@ def update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumFi
        
         report.Info(str(unlinkCount) + ' links removed')  
                       
-def calculate_progress_stats(report, contents, TargetDB_tot):
-            
-    # count the number of "bundles" we will process for progress bar
-    bundle_tot = 0
-
-    for par in contents.ParagraphsOS:
-        for seg in par.SegmentsOS:
-            bundle_tot += seg.AnalysesRS.Count
-    
-    # We will scale the progress indication according to the following
-    # weighting factors
-    # 385 units for an entry to process in the get_gloss_map function
-    TIME_RATIO = 385
-    # 1 unit for each fuzzy compare
-    
-    report.ProgressStart(100)
-    
-    # The time to process a bundle depends on the number of glosses (roughly total entries). 
-    # This is because a fuzzy compare gets done on each target gloss for each unique bundle
-    ENTRIES_SCALE_FACTOR = float(TargetDB_tot*TIME_RATIO) / float(TargetDB_tot*TIME_RATIO+bundle_tot*TargetDB_tot*1) * 100.0
-    BUNDLES_SCALE_FACTOR = 100.0 - ENTRIES_SCALE_FACTOR
-    
-    entries_scale = int(TargetDB_tot/ENTRIES_SCALE_FACTOR)
-    bundles_scale = int(bundle_tot/BUNDLES_SCALE_FACTOR)
-    if entries_scale == 0:
-        entries_scale = 1
-    if bundles_scale == 0:
-        bundles_scale = 1
-
-    return ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale
-
 def containsWord(sentHPGlist, word):
     
     found = False
@@ -1478,20 +1464,20 @@ def addIntroHtmlStuff(tableObj, srcDBname, tgtDBname):
     
     return row
 
-def getFirstOccurringSent(myHPG, processed_map):
+def getFirstOccurringSent(myHPG, processedMap):
 
     mySense = myHPG.getSense()
     
-    # The processed map from the process_interlinear function already has the first sentence
+    # The processed map from the process interlinear function already has the first sentence
     # where this sense occurred.
-    if mySense in processed_map:
+    if mySense in processedMap:
         
         # The 3rd part of the map is the sentence that goes to this sense
-        return processed_map[mySense][2] 
+        return processedMap[mySense][2] 
     
     return None
         
-def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, report, hideProperNouns, properNounAbbr):
+def dumpVocab(myData, processedMap, srcDBname, tgtDBname, sourceTextName, report, hideProperNouns, properNounAbbr):
                 
     doneMap = {}
     wordSentList = []
@@ -1501,7 +1487,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
     for currLink in myData:
         
         # See if we have already updated this sense
-        srcHPG = currLink.get_srcHPG()
+        srcHPG = currLink.getSrcHPG()
         
         if srcHPG not in doneMap:
             
@@ -1511,7 +1497,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
                 # Don't process a proper noun if the user had them hidden
                 if not (hideProperNouns and srcHPG.getPOS() == properNounAbbr):
                 
-                    mySent = getFirstOccurringSent(currLink.get_srcHPG(), processed_map)
+                    mySent = getFirstOccurringSent(currLink.getSrcHPG(), processedMap)
                     
                     if mySent == None:
                         
@@ -1546,7 +1532,7 @@ def dumpVocab(myData, processed_map, srcDBname, tgtDBname, sourceTextName, repor
         # Output the word row of the table
         outputHtmlWordRow(tableObj, srcHPG, properNounAbbr) 
         
-        # add word to sent_word_list
+        # add word to the sentence word list
         missingWordsForSentList.append(srcHPG)
         
         prevSent = mySent
@@ -1612,10 +1598,10 @@ def MainFunction(DB, report, modify=False):
     if retVal == REBUILD_BILING:
         
         # Extract the bilingual lexicon. Force a complete rebuild instead of using the cache.        
-        error_list = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=False)
+        errorList = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=False)
         
         # output info, warnings, errors
-        for msg in error_list:
+        for msg in errorList:
             
             # msg is a pair -- string & code
             if msg[1] == 0:
@@ -1716,10 +1702,10 @@ def RunModule(DB, report, configMap):
     preGuidStr += re.sub('\s','+', targetProj)
     preGuidStr += '%26tool%3dlexiconEdit%26guid%3d'
      
-    gloss_map = {}
+    glossMap = {}
     tgtLexList = []
 
-    TargetDB_tot = TargetDB.LexiconNumberOfEntries() 
+    targetDBtotal = TargetDB.LexiconNumberOfEntries() 
 
     # Get the proper noun abbreviation
     properNounAbbr = ReadConfig.getConfigVal(configMap, ReadConfig.PROPER_NOUN_CATEGORY, report)
@@ -1728,24 +1714,32 @@ def RunModule(DB, report, configMap):
         
         properNounAbbr = ''
     
-    # TODO: rework how we do the progress indicator since we now use the Utils.getInterlinData function
-    ENTRIES_SCALE_FACTOR, bundles_scale, entries_scale = calculate_progress_stats(report, contents, TargetDB_tot)
+    # Get the interlinear text object
+    myText = getInterlinearText(DB, report, configMap, contents)
+
+    if myText == None:
+        TargetDB.CloseProject()
+        return ERROR_HAPPENED 
+
+    # Check to see if there is any data to link
+    if myText.getSentCount() == 0:
+                                        
+        report.Error('There were no senses found for linking. Please check your text and approve some words.')
+        TargetDB.CloseProject()
+        return ERROR_HAPPENED
 
     # Create a map of glosses to target senses and their number and a list of target lexical senses
-    if not get_gloss_map_and_tgtLexList(TargetDB, report, gloss_map, targetMorphNames, tgtLexList, entries_scale):
+    if not getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, targetDBtotal):
         TargetDB.CloseProject()
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    retVal, myData, processed_map = process_interlinear(report, DB, configMap, senseEquivField, senseNumField, sourceMorphNames, TargetDB, gloss_map, contents, properNounAbbr)
-
-    if retVal == False:
-        return ERROR_HAPPENED 
+    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText)
 
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Warning('There were no senses found for linking.')
+        report.Error('There were no senses found for linking. Please check your text and approve some words.')
     else:
     
         # Show the window
@@ -1766,14 +1760,14 @@ def RunModule(DB, report, configMap):
         app.exec_()
         
         # Update the source database with the correct links
-        if window.ret_val: # True = make the changes        
+        if window.retVal: # True = make the changes        
             
-            update_source_db(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
+            updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
             # Dump linked senses if the user wants to
             if window.exportUnlinked:
                 
-                dumpVocab(myData, processed_map, DB.ProjectName(), targetProj, sourceTextName, report, window.hideProperNouns, properNounAbbr)
+                dumpVocab(myData, processedMap, DB.ProjectName(), targetProj, sourceTextName, report, window.hideProperNouns, properNounAbbr)
     
         # If the user changed the source text combo, the restart member is set to True
         if window.restartLinker:
