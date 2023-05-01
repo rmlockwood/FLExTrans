@@ -5,6 +5,11 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.8.1 - 5/1/23 - Ron Lockwood
+#    Set the modified date of the internally used tr1.t1x file to be the same as
+#    the transfer_rules.t1x (or whatever the user specified) so that the transfer rules are
+#    only recompiled when the rules are out of date.
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -119,6 +124,9 @@ def MainFunction(DB, report, modify=True):
     if not tranferRulePath:
         return True
 
+    # Get the modification date of the transfer rule file.
+    statResult = os.stat(tranferRulePath)
+
     # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
     if Utils.stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
         return True
@@ -152,6 +160,10 @@ def MainFunction(DB, report, modify=True):
     # Substitute symbols with problem characters with fixed ones in the transfer file
     Utils.subProbSymbols(buildFolder, STRIPPED_RULES, subPairs)
     
+    # Set the modification date to be the same as the original rules file so that the makefile that runs the Apertium tools
+    # won't recompile the transfer_rules if they are not out of date.
+    os.utime(os.path.join(buildFolder, STRIPPED_RULES), times=None, ns=(statResult.st_atime_ns, statResult.st_mtime_ns))
+
     # Run the makefile to run Apertium tools to do the transfer component of FLExTrans. 
     ret = Utils.run_makefile(buildFolder, report)
     
