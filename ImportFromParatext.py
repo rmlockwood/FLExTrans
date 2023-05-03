@@ -314,7 +314,7 @@ def do_import(DB, report, chapSelectObj):
             
             # add a section mark if this is a verse or a quote and this is a script that has upper case.
             # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
-            if re.search(r'\\s\d*\s|\\v|\\q\d*\s', seg) and upperCase:
+            if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
                 
                 seg += '§'
             
