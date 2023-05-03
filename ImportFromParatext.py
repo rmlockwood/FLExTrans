@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.8.1 - 5/3/23 - Ron Lockwood
+#    Put the paragraph ark after section markers and quote markes that have a number (e.g. q1)
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -81,7 +84,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.8.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -311,7 +314,7 @@ def do_import(DB, report, chapSelectObj):
             
             # add a section mark if this is a verse or a quote and this is a script that has upper case.
             # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
-            if re.search(r'\\v|\\q', seg) and upperCase:
+            if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
                 
                 seg += '§'
             
