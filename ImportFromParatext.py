@@ -5,8 +5,11 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.8.2 - 5/3/23 - Ron Lockwood
+#    Refresh the status bar if they chose to use the new text as the active text.
+#
 #   Version 3.8.1 - 5/3/23 - Ron Lockwood
-#    Put the paragraph ark after section markers and quote markes that have a number (e.g. q1)
+#    Put the paragraph mark after section markers and quote markes that have a number (e.g. q1)
 #
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
@@ -84,7 +87,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -357,6 +360,9 @@ def do_import(DB, report, chapSelectObj):
         
         setSourceNameInConfigFile(report, title)
         FTPaths.CURRENT_SRC_TEXT = title
+
+        # Have FlexTools refresh the status bar
+        refreshStatusbar()
     
 def MainFunction(DB, report, modify=True):
     
