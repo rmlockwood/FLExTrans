@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.5 - 5/3/23 - Ron Lockwood
+#    Fixed bug in convert function where 'punctuation' at the end of a line wasn't carrying over
+#    to the next line to become pre-punctuation for the first word.
+#
 #   Version 3.8.4 - 4/28/23 - Ron Lockwood
 #    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
 #
@@ -200,7 +204,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.8.4",
+        FTM_Version    : "3.8.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
         FTM_Help  : "", 
@@ -1090,11 +1094,20 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
         
     return newCompANAlist
         
+def haveWordPackage(token):
+                
+    if re.search(r'\d+\.\d+<', token) or re.search(r'@', token):
+
+        return True
+    
+    return False
+
 # Convert the output from the Apertium transfer to an ANA file
 def convertIt(pfxName, outName, report, sentPunct):
 
     errorList = []
     wordAnaInfoList = []
+    nextPrePunct = ''
     
     affixMap = {}
     
@@ -1114,7 +1127,7 @@ def convertIt(pfxName, outName, report, sentPunct):
     except IOError:
         
         errorList.append(('The file: '+outName+' was not found. Did you run the Run Apertium module?', 2))
-        return errorList
+        return errorList, wordAnaInfoList
         
     numLines = sum(1 for line in open(outName, encoding='utf-8'))
     
@@ -1143,13 +1156,14 @@ def convertIt(pfxName, outName, report, sentPunct):
         # each token can contain multiple words packages, flesh these out 
         # E.g. ^xxx1.1<ez>xxx1.1<ez>$  NOT SURE IT'S VALID LIKE THIS
         wordToks = []
-        
+
         for aperTok in aperToks:
             
             # If we have at least one word-forming char, then we have a word package(s), except if we have a standard format marker that has \ + x
-            if re.search(r'\\', aperTok) == None and re.search('\w', aperTok):
+            # Also we don't want numbers that aren't in the form N.N< (right before the angle bracket). E.g. in a \r we may have 26:57-58
+            if haveWordPackage(aperTok):
                 
-                # Split on < or >. For ^rast<ez>dast<ez> we get ['^rast', '<', 'ez', '>', 'dast', '<', 'ez', '>', '']
+                # Split on < or >. For ^rast1.1<ez>1.1dast<ez> we get ['^rast1.1', '<', 'ez', '>', 'dast1.1', '<', 'ez', '>', '']
                 subToks = re.split('(<|>)', aperTok) # Note: we get the < and > in the list because we used parens
                 subToks = [tk for tk in subToks if tk] # remove empty strings (typically at the end)
             
@@ -1172,7 +1186,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         
         wordAnaInfo = None
         prePunct = ''
-        nextPrePunct = ''
+#        nextPrePunct = ''
         postPunct = ''
 
         # Loop through all word packages
@@ -1190,7 +1204,7 @@ def convertIt(pfxName, outName, report, sentPunct):
                 postPunct = tok
                 
             # word plus possible affixes (don't count sfm markers as words)
-            elif re.search(r'\\', tok) == None and re.search('\w', tok):
+            elif haveWordPackage(tok):
                 
                 # write out the last word we processed.
                 if wordAnaInfo:
@@ -1209,12 +1223,13 @@ def convertIt(pfxName, outName, report, sentPunct):
                         prePunct = postPunct
                         prePunct += nextPrePunct
                         nextPrePunct = postPunct = ''
-                        
-                    # if first word of a non-initial paragraph
-                    if cnt > 0:
+
+                    # if first word of a non-initial paragraph and we haven't already inserted a newline
+                    # in the punctuation block, add a newline.
+                    if cnt > 0 and re.search('\\n', prePunct) == None:
                         
                         prePunct = '\\n' + prePunct
-                
+
                 # Get the root, root category and any affixes
                 morphs = re.split('<|>', tok)
                 morphs = [tk for tk in morphs if tk] # remove empty strings
@@ -1268,7 +1283,7 @@ def convertIt(pfxName, outName, report, sentPunct):
                 if len(morphs) <2:
                             
                     errorList.append(("Lemma or grammatical category missing for target word number "+str(wrdCnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
-                    return errorList
+                    return errorList, wordAnaInfoList
                 
                 # Create an ANA Info object
                 # We have the root (morphs[0]) and the POS of the root (morphs[1])
@@ -1289,11 +1304,22 @@ def convertIt(pfxName, outName, report, sentPunct):
                     # and beyond as pre-punctuation for the next word.
                     if len(puncts)>1:
                         
+                        # if first word of a non-initial paragraph
+                        if wordAnaInfo == None and cnt > 0:
+    
+                            postPunct = nextPrePunct + '\\n' + puncts[0]
+                        else:
+                            postPunct = nextPrePunct + puncts[0]
+
                         nextPrePunct = tok[len(puncts[0]):] 
-                        postPunct = puncts[0]
                     else:
                         postPunct = tok
             
+                        # if first word of a non-initial paragraph
+                        if wordAnaInfo == None and cnt > 0:
+                            
+                            postPunct = '\\n' + postPunct
+
         # write out the last word 
         if wordAnaInfo:
             

@@ -6,6 +6,17 @@
 #   7/23/2014
 #
 #
+#   Version 3.8.4 - 5/3/23 - Ron Lockwood
+#    When extracting the interlinear info., instead of checking if one punctuation symbol of
+#    a cluster is in the list of sentence-ending punctuation, require all of the cluster to be
+#    in the list before we consider it a <sent> block. Otherwise consider the whole cluster to be
+#    non-sentence ending punctuation. This might create issues in places where we are looking for
+#    sentence breaks in the transfer rules. This fix was for places where a footnote ended right
+#    before a period, so we got \f*. The *. was a cluster that was being allowed to be sentence
+#    punctuation, but this caused problems elsewhere (convert to ana I think) where * wasn't recognized.
+#    Also fixed was adding saved pre punctuation when the next word is sentence punctuation. Before
+#    this fix, some punctuation was being lost.
+#
 #   Version 3.8.3 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names.
@@ -1061,7 +1072,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             textPunct = ITsString(analysisOccurance.Analysis.Form).Text
             
             # See if one or more symbols is part of the user-defined sentence punctuation. If so, save the punctuation as if it is its own word. E.g. ^.<sent>$
-            if set(list(textPunct)).intersection(set(list(sentPunct))):
+            if set(list(textPunct)).issubset(set(list(sentPunct))):
                 
                 # create a new word object
                 myWord = TextWord(report)
@@ -1071,6 +1082,11 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                 myWord.setSurfaceForm(textPunct)
                 myWord.addPlainTextAffix('sent')
                 
+                # See if we have any pre-punctuation
+                if len(savedPrePunc) > 0:
+                    myWord.addInitialPunc(savedPrePunc)
+                    savedPrePunc = ""
+
                 # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
                 newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
                 

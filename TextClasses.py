@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.8.2 - 5/3/23 - Ron Lockwood
+#    Don't substitute problem characters if it's a punctuation word.
+#
 #   Version 3.8.1 - 4/27/23 - Ron Lockwood
 #    Fixes #363. Reworked the logic to get the interlinear text information first, then if there are
 #    no senses to process, exit. Also do the progress indicator 3 times, once for getting interlinear data, once
@@ -625,7 +628,10 @@ class TextWord():
         return self.__initPunc
     def getLemma(self, i):
         if i < len(self.__lemmaList):
-            return Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
+            if not self.isSentPunctutationWord():
+                return Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
+            else:
+                return self.__lemmaList[i]
         return ''
     def getPOS(self, i):
         if self.hasSenses() and i < len(self.__senseList):
