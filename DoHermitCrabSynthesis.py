@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.8.4 - 5/3/23 - Ron Lockwood
+#    Better error handling.
+#
 #   Version 3.8.3 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -40,7 +43,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
         FTM_Help       :"",
@@ -122,7 +125,11 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
         # Run the HermitCrab config generator
         try:
             result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, fwdataPath, HCconfigPath])
-            errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
+
+            if result.returncode == 0:
+                errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
+            else:
+                errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
 
         except subprocess.CalledProcessError as e:
 
@@ -184,11 +191,19 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
             # See if we have an error E.g. %0%^iba1.1<n><PC.1Sg>$%
             if surfaceStr[0:3] == '%0%':
 
+                # Everything left of the last % is what we are saving for the surface string
+                saveStr = surfaceStr[:surfaceStr.rindex('%')+1]
+
                 # Save the error. Everthing to the right of the last %
                 # Make this a warning, code = 1
-                errorList.append((surfaceStr[surfaceStr.rindex('%')+1:], 1))
+                errStr = surfaceStr[surfaceStr.rindex('%')+1:]
 
-                surfaceStr = surfaceStr[:surfaceStr.rindex('%')+1]
+                if errStr.strip() == '':
+
+                    errStr = f'Synthesis failed. ({saveStr})'
+
+                errorList.append((errStr, 1))
+                surfaceStr = saveStr
 
             surfaceStr = Utils.capitalizeString(surfaceStr, capCodeList[j])
             newSurfaceList.append(surfaceStr)
@@ -319,7 +334,11 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     # Call HCSynthesis to produce surface forms. 
     try:
         result = subprocess.run([FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile], capture_output=True, check=True)
-    
+
+        if result.returncode != 0:
+            errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+            return errorList
+
     except subprocess.CalledProcessError as e:
 
         errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
