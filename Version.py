@@ -11,6 +11,6 @@ FTVersion = "2.2.2"
 
 Name = "FLExTrans"
 
-Version = "3.8 Beta 5"
+Version = "3.8 Beta 6"
 
 Title = f"{FTName} {FTVersion} ({Name} {Version})"
