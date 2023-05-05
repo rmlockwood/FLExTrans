@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.8.4 - 5/5/23 - Ron Lockwood
+#    Change Fatal error to Warning.
+#
 #   Version 3.8.3 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -248,7 +251,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.8.3",
+        FTM_Version    : "3.8.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -872,7 +875,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     targetEntry = repo.GetObject(guid)
                                 except:
                                     error_list.append(('Skipping sense because the link to the target entry is invalid: '+\
-                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, 2, DB.BuildGotoURL(e)))
+                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
                                     continue
                                 
                                 if targetEntry:

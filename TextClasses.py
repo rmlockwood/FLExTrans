@@ -5,6 +5,10 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.8.3 - 5/5/23 - Ron Lockwood
+#    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
+#    which encapsulates the Link class and adds the verse number attribute.
+#
 #   Version 3.8.2 - 5/3/23 - Ron Lockwood
 #    Don't substitute problem characters if it's a punctuation word.
 #
@@ -656,15 +660,15 @@ class TextWord():
     def getSurfaceForm(self):
         return self.__surfaceForm
     def getSurfaceFormWithVerseNum(self):
-        versNum = self.getVerseNum(self.__initPunc)
+        versNum = self.getVerseNum()
         if versNum:
             return versNum + ' ' + self.__surfaceForm
         else:
             return self.__surfaceForm
     def getUnknownPOS(self):
         return 'UNK'
-    def getVerseNum(self, inStr):
-        matchObj = re.search(r'\\v (\S+?) ', inStr)
+    def getVerseNum(self):
+        matchObj = re.search(r'\\v (\S+?) ', self.__initPunc)
         if matchObj:
             return matchObj.group(1)
         else:
