@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.6 - 5/9/23 - Ron Lockwood
+#    Put out the sense # for variants when doing HermitCrab synthesis.
+#
 #   Version 3.8.5 - 5/3/23 - Ron Lockwood
 #    Fixed bug in convert function where 'punctuation' at the end of a line wasn't carrying over
 #    to the next line to become pre-punctuation for the first word.
@@ -204,7 +207,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.8.5",
+        FTM_Version    : "3.8.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
         FTM_Help  : "", 
@@ -465,7 +468,7 @@ class ConversionData():
         # Read the db and initialize the complex map and inflect variant map
         self.readDatabaseValues()
         
-        # Convert these maps to with Ana objects
+        # Convert these maps to Ana objects
         self.convertValuesToAnas()
         
         if cacheData == 'y':
@@ -938,7 +941,7 @@ class ConversionData():
 # variant type called 1Sg which has features [per: 1ST, num: SG] and the
 # Ana entry is '< cop be1.1 >  1ST SG', we want a new Ana entry that looks like 
 # this: '< _variant_ am1 >'
-def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap):
+def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthesis):
 
     oldCap = myAnaInfo.getCapitalization()
     pfxs = myAnaInfo.getAnalysisPrefixes()
@@ -987,8 +990,15 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap):
         del sfxs[beg:end]
         
         # Reset the Ana info
-        # (We are intentionally not adding the sense number.)
-        myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot(), sfxs)
+        if doHermitCrabSynthesis:
+
+            # For HermitCrab we put out the sense # (TODO: we need to probably do this for STAMP as well)
+            # A variant can be a variant of an entry with multiple senses. The senses could have different categories
+            # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
+        else:
+            # (We are intentionally not adding the sense number.)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
@@ -1000,7 +1010,7 @@ def writeNonComplex(myAnaInfo, rootVariantANAandFeatlistMap, fOutput, doHermitCr
     if root in rootVariantANAandFeatlistMap: 
         
         # replace main entry with variant entry and remove appropriate tags (pfxs & sfxs)
-        changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap)
+        changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthesis)
                 
     if doHermitCrabSynthesis:
 
