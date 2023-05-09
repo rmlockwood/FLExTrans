@@ -5,6 +5,10 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.8.2 - 5/9/23 - Ron Lockwood
+#    Don't warn if a category name has a space. When writing the corresponding
+#    inflection class, convert the spaces to underscores.
+#
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -92,7 +96,7 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.8.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
@@ -297,6 +301,7 @@ def processGramCat(POSmap, nameStr):
         
 def formatAttrib(attrib, thingType):
     
+    attrib = re.sub(' ', '_', attrib)
     return f'a_{attrib}_{thingType}'
 
 def processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f): 
@@ -363,7 +368,7 @@ def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, c
     posFullNameStr = pos.ToString()
         
     # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
-    countList, posFullNameStr = Utils.check_for_cat_errors(report, dbType, posFullNameStr, posFullNameStr, countList, 1, thingType) # 1 for numCatErrorsToShow
+    #countList, posFullNameStr = Utils.check_for_cat_errors(report, dbType, posFullNameStr, posFullNameStr, countList, 1, thingType) # 1 for numCatErrorsToShow
 
     if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
         
