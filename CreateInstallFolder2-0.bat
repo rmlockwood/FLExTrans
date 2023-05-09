@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.8beta6
+SET FLEXTRANS_VERSION=3.8
 SET INSTALL_FOLDER_VERSION=2.2.1
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
@@ -7,8 +7,9 @@ rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
 rem Now do steps to create a zip that has FLExTools and FLExTrans 
-mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
-mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\HCSynthByGloss
+rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
+rem mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools\HermitCrabSynthesis\HCSynthByGloss
+mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\Collections
@@ -142,8 +143,8 @@ rem Apertium files
 copy Apertium4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
 
 rem HermitCrab generate and sythesize program files
-copy HermitCrabSynthesis\GenerateHCConfig4FLExTrans\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
-copy HermitCrabSynthesis\HCSynthByGloss\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\HCSynthByGloss
+rem copy HermitCrabSynthesis\GenerateHCConfig4FLExTrans\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\GenerateHCConfig4FLExTrans
+rem copy HermitCrabSynthesis\HCSynthByGloss\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools\HermitCrabSynthesis\HCSynthByGloss
 
 rem Make for Windows files
 copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
@@ -168,6 +169,14 @@ cd Install%INSTALL_FOLDER_VERSION%
 copy /Y %ZIP_FILE% ..
 copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
+cd ..
+
+SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
+cd HermitCrabSynthesis
+7z a %HC_ZIP_FILE% *.*
+copy /Y %HC_ZIP_FILE% ..
+copy /Y %HC_ZIP_FILE% ..\"previous versions"
+del %HC_ZIP_FILE%
 cd ..
 
 if %COMPUTERNAME% == RONS-DELL-XPS (
