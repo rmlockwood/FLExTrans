@@ -9,6 +9,9 @@
 #   Version 3.8.1 - 4/24/23 - Ron Lockwood
 #    Constant for TreeTran.exe
 #
+#   Version 3.8.2 - 5/9/23 - Ron Lockwood
+#    Changed HermitCrab constants to just the executable names
+#
 
 import os
 
@@ -30,5 +33,5 @@ STAMP_EXE   = os.path.join(TOOLS_DIR, 'stamp64.exe')
 TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
-GENERATE_HC_CONFIG = os.path.join(HC_DIR, 'GenerateHCConfig4FLExTrans', 'GenerateHCConfigForFLExTrans.exe')
-HC_SYNTHESIZE      = os.path.join(HC_DIR, 'HCSynthByGloss', 'HCSynthByGloss.exe')
+GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
+HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
