@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>9 May, 2023</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>11 May, 2023</small></center>
       <center><small>Version: 3.8</small></center>
       <hr>
       <div>
@@ -124,6 +124,7 @@
                   <li><a href="#sCondLogic">6.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)</a></li>
                   <li><a href="#sMacro">6.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
                   <li><a href="#sAgreement">6.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
+                  <li><a href="#sSampleLogic">6.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?</a></li>
                </ul>
                <li><a href="#sOther">6.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
@@ -190,7 +191,7 @@
          </li>
          <li>Link lexical senses that are in the source text to senses in the target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></li>
          <li>Write transfer rules that convert source words and phrases to target words and phrases.</li>
-         <li>Run the seven basic <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
+         <li>Run the seven core <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
          </li>
       </ol>
       <p>Let&#8217;s look at each step in more detail.</p>
@@ -271,8 +272,6 @@
                </li>
                <li>Click OK</li>
             </ol>
-         </li>
-         <li>Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source and target projects.
          </li>
          <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>. See <a href="#sStartFlextools">A.1</a> for step-by-step instructions. It should look like <a href="#xFirstStart">(2)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -376,9 +375,9 @@
                </table>
             </div>
          </li>
-         <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Tools</span> in the list and you&#8217;ll see list of Tools modules:
+         <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> in the list and you&#8217;ll see list of Tools modules:
          </li>
-         <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans.Sense Linker Tool</span> in the list.
+         <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Sense Linker Tool</span> in the list.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -551,7 +550,7 @@
       <ol style="list-style-type:decimal; ">
          <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button.
          </li>
-         <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans All Steps</span> in the list and you&#8217;ll see <a href="#xFirstStart">(2)</a>.
+         <li>Double-click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> in the list and you&#8217;ll see <a href="#xFirstStart">(2)</a>.
          </li>
          <li>Click on the <img style="Width:7%" src="Images/RunAllModifyBut.PNG"> button to run all the modules. Click OK on the message box that comes up to confirm you want to change <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> data. You&#8217;ll see the modules run and see various bits of output.
          </li>
@@ -1132,38 +1131,13 @@
       <h3 style=""><a name="sTutSetup"></a>4.2.1&nbsp;Getting Set Up
       </h3>
       <ol style="list-style-type:decimal; ">
-         <li>There are two <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects already set up that we are going to use. You will find them in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder. They are called <span style="font-style:italic; ">Croatian-FLExTrans-Sample.fwbackup</span> and <span style="font-style:italic; ">English-FLExTrans-Sample.fwbackup</span>. Double-click on them one by one to restore them into <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
+         <li>There are two <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects already set up that we are going to use. You will find them in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder. They are called <span style="font-style:italic; ">Croatian-FLExTrans-Sample ... .fwbackup</span> and <span style="font-style:italic; ">English-FLExTrans-Sample ... .fwbackup</span>. Double-click on them one by one to restore them into <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
          </li>
-         <li>Now close both <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects,
-         </li>
-         <li>Create a new folder for your language pair.
-            <ol style="list-style-type:lower-alpha; ">
-               <li>In File Explorer, go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">WorkProjects</span> subfolder of the installation folder (typically <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Documents\FLExTrans</span>).
-               </li>
-               <li>Copy the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish</span> folder and Paste it where it is. You should see a new folder called <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">German-Swedish - Copy</span></li>
-               <li>Rename this folder to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English</span>.
-               </li>
-            </ol>
-         </li>
-         <li>We will be writing new transfer rules so let&#8217;s start from scratch.
-            <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again and copy the file <span style="font-style:italic; ">transfer_rules.t1x</span> to <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English</span> folder.
-               </li>
-               <li>Open <span style="font-style:italic; ">transfer_rules.t1x</span> in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
-               </li>
-            </ol>
-         </li>
-         <li>Let's set up the configuration file.
-            <ol style="list-style-type:lower-alpha; ">
-               <li>Go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder again.
-               </li>
-               <li>Copy the file <span style="font-style:italic; ">FlexTrans.config</span> to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English\Config</span> folder.
-               </li>
-            </ol>
+         <li>In the same folder, you'll find a folder named <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Croatian-English</span>. Copy the folder and navigate to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans\WorkProjects</span> folder and Paste it there.
          </li>
          <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>. See <a href="#sStartFlextools">A.1</a> for step-by-step instructions.
          </li>
-         <li>Make sure the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FlexTrans All Steps</span> collection is active.
+         <li>Verify that the status bar shows the current collection is set to <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span>.
          </li>
       </ol>
       <h3 style=""><a name="sLexicalTransfer"></a>4.2.2&nbsp;Lexical Transfer
@@ -1173,11 +1147,11 @@
       </p>
       <p>Let&#8217;s see what our input and output looks like initially if we run the system. Our input of course, according to <a href="#xCroatEngTable">(30)</a> is: <span style="font-style:italic; ">Oti&#353;la si tiho i bez pozdrava.</span></p>
       <ol style="list-style-type:decimal; ">
-         <li>Bring up the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
+         <li>Go to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
          </li>
-         <li>Click the <span style="font-style:normal; font-weight:bold; ">Database</span> button, select <span style="font-style:italic; font-weight:bold; ">Croatian-FLExTrans-Sample</span> and type the Enter key.
+         <li>Click the <span style="font-style:normal; font-weight:bold; ">Database</span> button that currently says <span style="font-style:italic; font-weight:bold; ">German-FLExTrans-Sample</span>, select <span style="font-style:italic; font-weight:bold; ">Croatian-FLExTrans-Sample</span> and type the Enter key.
          </li>
-         <li>Click the <span style="font-style:normal; font-weight:bold; ">Run All (Modify)</span> button to run all the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules. (Click Yes when prompted to make changes.)
+         <li>Click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
          </li>
          <li>Open the <span style="font-weight:bold; ">English-FLExTrans-Sample</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
          </li>
@@ -1343,9 +1317,9 @@
          </li>
          <li>Click the <span style="font-style:normal; font-weight:bold; ">Collections</span> button.
          </li>
-         <li>Double-click on the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FlexTrans Tools</span> collection.
+         <li>Double-click on the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection.
          </li>
-         <li>Select the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">FLExTrans.Live Rule Tester Tool</span> module.
+         <li>Select the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Live Rule Tester Tool</span> module.
          </li>
          <li>Click on the <span style="font-style:normal; font-weight:bold; ">Run</span> button.
          </li>
@@ -2047,7 +2021,7 @@
                   </tr>
                </table>
             </div>
-            <p>Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and run the modules in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FlexTrans All Steps</span> to see what our English sentence looks like.
+            <p>Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and run the modules in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> to see what our English sentence looks like.
             </p>
             <p>Now we get:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2072,7 +2046,7 @@
       <p>Step 6 is left as an exercise for the reader. Change the noun rule to output an indefinite article before the noun. You can
          do this by following the instructions for adding the pronoun, see &#8220;<a href="#step4">Step 4</a>&#8221;. The string you need to output is <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">a<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">indf</span></span>.
       </p>
-      <p>You can find the solution transfer file called <span style="font-style:italic; ">solution.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder.
+      <p>You can find the solution transfer file called <span style="font-style:italic; ">solution.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans\WorkProjects</span> folder.
       </p>
       <p>You may think this was a lot of work to translate one sentence from Croatian to English, but consider the fact that now every
          Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will
@@ -2095,7 +2069,7 @@
          </li>
          <li>Now run the testbed to verify that all your previous tests still give the expected result.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Open the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection.
+               <li>Open the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection.
                </li>
                <li>Click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the modules.
                </li>
@@ -2111,7 +2085,7 @@
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has a collection of tools to help you maintain the testbed, run the testbed and see the results.
       </p>
       <h3 style=""><a name="sTestbedLogViewer"></a>5.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></h3>
-      <p>This module you will find in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
+      <p>This module you will find in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
          results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units
          of a test to see some pop-up text of which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> found the test invalid.
       </p>
@@ -2130,10 +2104,10 @@
          </table>
       </div>
       <h3 style=""><a name="sStartTestbed"></a>5.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></h3>
-      <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-style:italic; ">source_text.txt</span> file.
+      <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-style:italic; ">source_text.txt</span> file.
       </p>
       <h3 style=""><a name="sEndTestbed"></a>5.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></h3>
-      <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">FLExTrans Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.txt</span> file) and adds the tests run and whether they passed or not to the testbed log.
+      <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.txt</span> file) and adds the tests run and whether they passed or not to the testbed log.
       </p>
       <h3 style=""><a name="sTestbedLRT"></a>5.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a good place to add new tests to the testbed. See &#8220;<a href="#sRuleTester">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a>&#8221; for more details.
@@ -2255,8 +2229,7 @@
          </table>
       </div>
       <p>Of course you can output affixes or clitics as well. These would be additional <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you
-         have a valid word-sense and its corresponding grammatical category, FLExTrans will look up this word-sense in the target FLEx
-         lexicon and use it in the final synthesis process.
+         have a valid word-sense and its corresponding grammatical category, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.
       </p>
       <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(56)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
       </p>
@@ -2317,7 +2290,7 @@
          </li>
       </ol>
       <h3 style=""><a name="sCondLogic"></a>6.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
-      <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation.
+      <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation. Also see examples of conditional logic in the rule: <span style="font-weight:bold; ">Sample logic to copy and paste</span>.
       </p>
       <h3 style=""><a name="sMacro"></a>6.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this
@@ -2330,6 +2303,12 @@
       <p>To see how to do this in a sample language pair, please watch <a href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA">video 1</a> and <a href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_">video 2</a>.
       </p>
       <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
+      </p>
+      <h3 style=""><a name="sSampleLogic"></a>6.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?
+      </h3>
+      <p>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what
+         kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the
+         block (outlined in red). Now you can copy that block and put it into your own rule. 
       </p>
       <h2 style=""><a name="sOther"></a>6.3&nbsp;Other How To&#8217;s
       </h2>
@@ -2447,7 +2426,7 @@
                <li>Choose the text you want to work on.</li>
             </ol>
          </li>
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection, use <span style="font-style:normal; font-weight:bold; ">Run All (Modify)</span> to process the text and insert the result into the Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project.
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection, use <span style="font-style:normal; font-weight:bold; ">Run All</span> to process the text and insert the result into the Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project.
             <ol style="list-style-type:lower-alpha; ">
                <li>It will go into a text with the same name, with (Copy) appended.</li>
                <li>Compare this output with your original text.</li>
@@ -2508,7 +2487,7 @@
                </li>
                <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span>.
                </li>
-               <li>Then click on <span style="font-family:Courier New; font-weight:bold; color:#660066; ">FLExTrans.Synthesize Text with STAMP</span> module as shown in <a href="#xCollections2">(87)</a>.
+               <li>Then click on <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with STAMP</span> module as shown in <a href="#xCollections2">(87)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>

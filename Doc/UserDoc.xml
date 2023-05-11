@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->9 May, 2023</date
+>11 May, 2023</date
 ><version
 >3.8</version
 ><contents
@@ -181,7 +181,7 @@ type="tSenseLinker"
 ><li
 >Write transfer rules that convert source words and phrases to target words and phrases.</li
 ><li
->Run the seven basic <object
+>Run the seven core <object
 type="tFlextrans"
 ></object
 > modules.</li
@@ -411,11 +411,6 @@ type="tUnderline"
 ></ol
 ></li
 ><li
->Close the <object
-type="tFlexx"
-></object
-> source and target projects.</li
-><li
 >Start <object
 type="tFlexxTools"
 ></object
@@ -593,14 +588,14 @@ src="Images/LinkerInCollections.png"
 ></example
 ></li
 ><li
->Double-click on <object
+>Click on <object
 type="tCollection"
->FLExTrans Tools</object
+>Tools</object
 > in the list and you’ll see list of Tools modules:</li
 ><li
 >Click on <object
 type="tCollection"
->FLExTrans.Sense Linker Tool</object
+>Sense Linker Tool</object
 > in the list.<example
 num="xLinkerModule"
 ><chart
@@ -889,7 +884,7 @@ src="Images/CollectionsBut.PNG"
 ><li
 >Double-click on <object
 type="tCollection"
->FLExTrans All Steps</object
+>All Steps</object
 > in the list and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
@@ -2175,84 +2170,22 @@ type="tFoldername"
 >FLExTrans Documentation\Transfer Rules Tutorial</object
 > folder. They are called <object
 type="tFilename"
->Croatian-FLExTrans-Sample.fwbackup</object
+>Croatian-FLExTrans-Sample ... .fwbackup</object
 > and <object
 type="tFilename"
->English-FLExTrans-Sample.fwbackup</object
+>English-FLExTrans-Sample ... .fwbackup</object
 >. Double-click on them one by one to restore them into <object
 type="tFlexx"
 ></object
 >.</li
 ><li
->Now close both <object
-type="tFlexx"
-></object
-> projects,</li
-><li
->Create a new folder for your language pair.<ol
-><li
->In File Explorer, go to the <object
-type="tFoldername"
->WorkProjects</object
-> subfolder of the installation folder (typically <object
-type="tFoldername"
->Documents\FLExTrans</object
->).</li
-><li
->Copy the <object
-type="tFoldername"
->German-Swedish</object
-> folder and Paste it where it is. You should see a new folder called <object
-type="tFoldername"
->German-Swedish - Copy</object
-></li
-><li
->Rename this folder to <object
+>In the same folder, you'll find a folder named <object
 type="tFoldername"
 >Croatian-English</object
->.</li
-></ol
-></li
-><li
->We will be writing new transfer rules so let’s start from scratch.<ol
-><li
->Go to the <object
+>. Copy the folder and navigate to the <object
 type="tFoldername"
->FLExTrans Documentation\Transfer Rules Tutorial</object
-> folder again and copy the file <object
-type="tFilename"
->transfer_rules.t1x</object
-> to <object
-type="tFoldername"
->Croatian-English</object
-> folder.</li
-><li
->Open <object
-type="tFilename"
->transfer_rules.t1x</object
-> in the <object
-type="tXMLmindXMLEditor"
-></object
->.</li
-></ol
-></li
-><li
->Let's set up the configuration file.<ol
-><li
->Go to the <object
-type="tFoldername"
->FLExTrans Documentation\Transfer Rules Tutorial</object
-> folder again.</li
-><li
->Copy the file <object
-type="tFilename"
->FlexTrans.config</object
-> to the <object
-type="tFoldername"
->Croatian-English\Config</object
-> folder.</li
-></ol
-></li
+>FLExTrans\WorkProjects</object
+> folder and Paste it there.</li
 ><li
 >Start <object
 type="tFlexxTools"
@@ -2262,10 +2195,10 @@ app="sStartFlextools"
 ></appendixRef
 > for step-by-step instructions.</li
 ><li
->Make sure the <object
+>Verify that the status bar shows the current collection is set to <object
 type="tCollection"
->FlexTrans All Steps</object
-> collection is active.</li
+>All Steps</object
+>.</li
 ></ol
 ></section3
 ><section3
@@ -2285,7 +2218,7 @@ lang="hr"
 ></p
 ><ol
 ><li
->Bring up the <object
+>Go to the <object
 type="tFlexxTools"
 ></object
 > app.</li
@@ -2293,18 +2226,21 @@ type="tFlexxTools"
 >Click the <object
 type="tButton"
 >Database</object
-> button, select <object
+> button that currently says <object
+type="tBoldItalic"
+>German-FLExTrans-Sample</object
+>, select <object
 type="tBoldItalic"
 >Croatian-FLExTrans-Sample</object
 > and type the Enter key.</li
 ><li
 >Click the <object
 type="tButton"
->Run All (Modify)</object
+>Run All</object
 > button to run all the <object
 type="tFlextrans"
 ></object
-> modules. (Click Yes when prompted to make changes.)</li
+> modules.</li
 ><li
 >Open the <object
 type="tBold"
@@ -2961,12 +2897,12 @@ type="tButton"
 ><li
 >Double-click on the <object
 type="tCollection"
->FlexTrans Tools</object
+>Tools</object
 > collection.</li
 ><li
 >Select the <object
 type="tModule"
->FLExTrans.Live Rule Tester Tool</object
+>Live Rule Tester Tool</object
 > module.</li
 ><li
 >Click on the <object
@@ -4289,7 +4225,7 @@ type="tLiveRuleTester"
 ></object
 > and run the modules in the <object
 type="tCollection"
->FlexTrans All Steps</object
+>All Steps</object
 > to see what our English sentence looks like.</p
 ><p
 >Now we get:</p
@@ -4332,7 +4268,7 @@ type="tFilename"
 >solution.t1x</object
 > in the <object
 type="tFoldername"
->FLExTrans Documentation\Transfer Rules Tutorial</object
+>FLExTrans\WorkProjects</object
 > folder.</p
 ><p
 >You may think this was a lot of work to translate one sentence from Croatian to English, but consider the fact that now every Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will also be handled.</p
@@ -4385,7 +4321,7 @@ type="tButton"
 ><li
 >Open the <object
 type="tCollection"
->FLExTrans Run Testbed</object
+>Run Testbed</object
 > collection.</li
 ><li
 >Click the <object
@@ -4434,7 +4370,7 @@ type="tCollection"
 >Tools</object
 > and <object
 type="tCollection"
->FLExTrans Run Testbed</object
+>Run Testbed</object
 > collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units of a test to see some pop-up text of which <object
 type="tFlexx"
 ></object
@@ -4463,7 +4399,7 @@ type="tTool"
 ><p
 >This module you will find at the top of the <object
 type="tCollection"
->FLExTrans Run Testbed</object
+>Run Testbed</object
 > collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <object
 type="tFilename"
 >source_text.txt</object
@@ -4479,7 +4415,7 @@ type="tTool"
 ><p
 >This module you will find as the next to last module in the <object
 type="tCollection"
->FLExTrans Run Testbed</object
+>Run Testbed</object
 > collection. It takes the results of running the transfer and synthesis processes (the <object
 type="tFilename"
 >source_text.txt</object
@@ -4806,7 +4742,10 @@ src="Images/InsertWord.png"
 >Of course you can output affixes or clitics as well. These would be additional <object
 type="tRuleElemInXXE"
 >literal string</object
-> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you have a valid word-sense and its corresponding grammatical category, FLExTrans will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.</p
+> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you have a valid word-sense and its corresponding grammatical category, <object
+type="tFlextrans"
+></object
+> will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.</p
 ><p
 >If you have other lexical units that you will be outputting, remember to put a <object
 type="tRuleElemInXXE"
@@ -4894,7 +4833,10 @@ src="Images/VideoIcon.PNG"
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
 >video</link
-> for an explanation.</p
+> for an explanation. Also see examples of conditional logic in the rule: <object
+type="tBold"
+>Sample logic to copy and paste</object
+>.</p
 ></section3
 ><section3
 id="sMacro"
@@ -4937,6 +4879,13 @@ type="tFoldername"
 type="tFilename"
 >transfer_rules - solution.t1x</object
 > which shows the form of the rules shown in the video.</p
+></section3
+><section3
+id="sSampleLogic"
+><secTitle
+>How do I use the Sample logic that's in the transfer rules file?</secTitle
+><p
+>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule. </p
 ></section3
 ></section2
 ><section2
@@ -5213,7 +5162,7 @@ type="tCollection"
 >All Steps</object
 > collection, use <object
 type="tButton"
->Run All (Modify)</object
+>Run All</object
 > to process the text and insert the result into the Target <object
 type="tFlexx"
 ></object
@@ -5358,7 +5307,7 @@ type="tCollection"
 ><li
 >Then click on <object
 type="tModule"
->FLExTrans.Synthesize Text with STAMP</object
+>Synthesize Text with STAMP</object
 > module as shown in <exampleRef
 letter="xCollections2"
 num="xCollections2"
