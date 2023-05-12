@@ -11,5 +11,9 @@ from Version import Title
 from FLExTransMenu import customMenu
 
 from FLExTransStatusbar import statusbarCallback
+
+import ctypes
+ctypes.windll.shcore.SetProcessDpiAwareness(False)
+
    
 main(Title, customMenu, statusbarCallback)
