@@ -20,6 +20,16 @@
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
+VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
+VIAddVersionKey "Comments" ""
+VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
+VIAddVersionKey "LegalTrademarks" ""
+VIAddVersionKey "LegalCopyright" "© 2015-2023 SIL International"
+VIAddVersionKey "FileDescription" ""
+VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
+VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
+
+VIProductVersion 3.8.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
