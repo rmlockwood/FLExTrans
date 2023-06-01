@@ -3,16 +3,17 @@ Do these things when making a new release
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Edit Version.py in the FlexTools folder with the new version (this shows up in the title bar and About)
--Run createInstallFolder2.0.bat to rebuild zip files
+-Change Copyright date if necessary in the .nsi file. 
+-Change VIProductVersion in the .nsi file.
+-Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
 -Do another commit that has the install changes
 -Finish merging all pull requests
--Fetch changes to the local master branch (IMPORTANT so that latest install file scripts get downloaded)
--Rebuild the install executable
+-Get FLExTransX.X.exe from the software.sil.org products folder
+-Download zip files from TeamCity and put into git
 -Test the install
 -Make a new .download_info file changing the relevant data. 3 changes.
 -Make a new post on the website for announcing the new release.
--Upload the new FLExTransX.X.exe file and the .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+-Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -Create the release in Git with the new version string. 
  -Go to tags, switch to Releases
  -Click draft new release
