@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.8"
+!define PRODUCT_VERSION "3.8.1"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -29,7 +29,7 @@ VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.8.0.${BUILD_NUM}
+VIProductVersion 3.8.1.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -149,12 +149,16 @@ InitPluginsDir
     ReadIniStr $9 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection"
     
     # Overwrite FlexTools.vbs
-    SetOutPath "${WORKPROJECTSDIR}\$1"
-    File "${GIT_FOLDER}\FlexTools.vbs"
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1"
+      File "${GIT_FOLDER}\FlexTools.vbs"
+    ${EndIf}
     
     # Overwrite flextools.ini
-    SetOutPath "${WORKPROJECTSDIR}\$1\Config"
-    File "${GIT_FOLDER}\flextools.ini"
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Config"
+      File "${GIT_FOLDER}\flextools.ini"
+    ${EndIf}
     
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
