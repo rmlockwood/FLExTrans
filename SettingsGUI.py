@@ -3,6 +3,11 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.9 - 6/2/23 - Ron Lockwood
+#    Fixes #443. Reorganized settings file in to sections with titles. Synthesis
+#    test settings added. Added a parameter to hide a setting from the user. Hid some HC
+#    settings. Category pairs now correctly uses target categories for 2nd item.
+#
 #   Version 3.8.4 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names.
@@ -144,6 +149,7 @@ LOAD_FUNC = 7
 CONFIG_NAME = 8
 WIDGET_TOOLTIP = 9
 GIVE_ERROR_IF_NOT_PRESENT = 10
+HIDE_SETTING = 11
 
 COMBO_BOX = "combobox"
 SIDE_BY_SIDE_COMBO_BOX = "side by side"
@@ -153,16 +159,31 @@ TEXT_BOX = "textbox"
 FILE = "file"
 FOLDER = "folder"
 SECTION_TITLE = "section_title"
+GIVE_ERROR = True
+DONT_GIVE_ERROR = False
+DONT_HIDE = False
+HIDE_FROM_USER = True
 
 targetComplexTypes = []
 sourceComplexTypes = []
 categoryList = []
 
-def getCategoryList(wind):
+def getSourceCategoryList(wind):
     
     if len(categoryList) == 0:
         
         for pos in wind.DB.lp.AllPartsOfSpeech:
+            
+            catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            categoryList.append(catStr)
+            
+    return categoryList
+            
+def getTargetCategoryList(wind):
+    
+    if len(categoryList) == 0:
+        
+        for pos in wind.targetDB.lp.AllPartsOfSpeech:
             
             catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
             categoryList.append(catStr)
@@ -332,15 +353,31 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
 
 def loadSourceCategories(widget, wind, settingName):
 
-    catList = getCategoryList(wind)
+    catList = getSourceCategoryList(wind)
     
     widget.addItems(catList)
     
-    disComplexTypes = wind.read(settingName)
+    disCategories = wind.read(settingName)
     
-    if disComplexTypes:
+    if disCategories:
 
-        for cat in disComplexTypes:
+        for cat in disCategories:
+
+            if cat in catList:
+                
+                widget.check(cat)
+
+def loadTargetCategories(widget, wind, settingName):
+
+    catList = getTargetCategoryList(wind)
+    
+    widget.addItems(catList)
+    
+    disCategories = wind.read(settingName)
+    
+    if disCategories:
+
+        for cat in disCategories:
 
             if cat in catList:
                 
@@ -348,7 +385,7 @@ def loadSourceCategories(widget, wind, settingName):
 
 def loadSourceCategoriesNormalListBox(widget, wind, settingName):
 
-    catList = getCategoryList(wind)
+    catList = getSourceCategoryList(wind)
     
     catProperNoun = wind.read(settingName)
     
@@ -362,10 +399,13 @@ def loadSourceCategoriesNormalListBox(widget, wind, settingName):
 
 def loadCategorySubLists(widget1, widget2, wind, settingName):
 
-    catList = getCategoryList(wind)
+    catList = getSourceCategoryList(wind)
     
     widget1.addItems(catList)
-    widget2.addItems(catList)
+
+    tgtCatList = getTargetCategoryList(wind)
+
+    widget2.addItems(tgtCatList)
     
     catPair = wind.read(settingName)
     
@@ -377,6 +417,8 @@ def loadCategorySubLists(widget1, widget2, wind, settingName):
                 
                 widget1.setCurrentIndex(i+1) # ... is the first item
 
+        for i, cat in enumerate(tgtCatList):
+            
             if cat == catPair[1]: # The second one in the config file
                 
                 widget2.setCurrentIndex(i+1) # ... is the first item
@@ -555,12 +597,20 @@ class Ui_MainWindow(object):
         # addWidget(Object, row, column, row-span, column-span)
         j = 1
         for i in range(0, len(widgetList)):
-            
+
             widgInfo = widgetList[i]
+            
             newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
             self.gridLayout_2.addWidget(newObj, i+j, 0, 1, 1)
             widgInfo[LABEL_OBJ] = newObj
 
+            # Hide the widget if necessary
+            if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+
+                newObj.hide()
+                j -= 1
+
+            # Process section title
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
 
                 # Make the section header bold
@@ -584,6 +634,7 @@ class Ui_MainWindow(object):
                 newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
@@ -591,6 +642,7 @@ class Ui_MainWindow(object):
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
@@ -602,6 +654,7 @@ class Ui_MainWindow(object):
                 newObj.addItem("")
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 1)
                 widgInfo[WIDGET1_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
@@ -611,6 +664,7 @@ class Ui_MainWindow(object):
                 newObj.addItem("")
                 self.gridLayout_2.addWidget(newObj, i+j, 2, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
@@ -625,6 +679,7 @@ class Ui_MainWindow(object):
                 buttonGroup.addButton(newObj)
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 1)
                 widgInfo[WIDGET1_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
                 # No radio button - checked
                 newObj = QtWidgets.QRadioButton(self.scrollAreaWidgetContents)
@@ -634,6 +689,7 @@ class Ui_MainWindow(object):
                 buttonGroup.addButton(newObj)
                 self.gridLayout_2.addWidget(newObj, i+j, 2, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
@@ -642,6 +698,7 @@ class Ui_MainWindow(object):
                 newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
+                self.hideWidgetIfNeeded(widgInfo, newObj)
             
             elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER]:
                 
@@ -651,17 +708,26 @@ class Ui_MainWindow(object):
                 newObj.setText("")
                 self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 2)
                 widgInfo[WIDGET1_OBJ] = newObj
-                
+                self.hideWidgetIfNeeded(widgInfo, newObj)
+
                 # browse button
                 newObj = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
                 self.gridLayout_2.addWidget(newObj, i+j, 3, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
-            
+                self.hideWidgetIfNeeded(widgInfo, newObj)
+                    
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def hideWidgetIfNeeded(self, widgInfo, newObj):
+
+        # Hide the widget if necessary
+        if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+
+            newObj.hide()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -670,6 +736,11 @@ class Ui_MainWindow(object):
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
+
+            # Skip the widget if we are hiding it from the user
+            if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+                continue
+
             widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
 
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
@@ -1071,127 +1142,179 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 # If a new type of widget is needed, more work is needed to add to each part of the code where the widgetList is iterated
 
 widgetList = [
-   ["Section Title", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", True],\
+
+   ["Project Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
 
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text                                                                                               Give an error if missing
-    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", True],\
+    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", GIVE_ERROR, DONT_HIDE],\
    
+   ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+    "The name of the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", True],\
+    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
    
    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
-    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", True],\
-
-   ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
-    "The name of the target FLEx project.", True],\
-
-   ["Source Morpheme Types\nCounted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", True],\
-
-   ["Target Morpheme Types\nCounted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", True],\
-
-   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit.", True],\
-
-   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
-    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form.", True],\
-
-   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    "Same as above. Use this property for the types that have inflection\non the second element of the complex form.", True],\
-
-   ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
-    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence.", True],\
-
-   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit.", True],\
-
-   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
-    "One or more grammatical categories that can intervene in the above complex types.", True],\
+    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", GIVE_ERROR, DONT_HIDE],\
 
    ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
-    "The name of the category that you use for proper nouns in your source FLEx project.", False],\
+    "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, DONT_HIDE],\
    
-   ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
-    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", True],\
-
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
-    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", True],\
+    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", GIVE_ERROR, DONT_HIDE],\
 
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", True],\
+    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", GIVE_ERROR, DONT_HIDE],\
+
+   ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
+    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Source Morpheme Types Counted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
+    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Morpheme Types Counted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
+    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Complex Forms", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+
+   ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
+    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
+    "One or more grammatical categories that can intervene in the above complex types.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
+    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
+    "Same as above. Use this property for the types that have inflection\non the second element of the complex form.", GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
 
    ["Default to rebuilding the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
-    "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", False],\
+    "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
-    "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection.", False],\
-
-   ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
-    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", True],\
-   
    ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
-    "The path and name of the file containing the transfer rules.", True],\
-
-   ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
-    "The path and name of the file which holds\nthe extracted source text.", True],\
-
-   ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
-    "The path and name of the file which holds the bilingual lexicon.", True],\
-
-   ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
-    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon.", True],\
-
-   ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
-    "The path and name of the file which holds the text contents\nafter going through the transfer process.", True],\
-
-   ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
-    "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", True],\
-
-   ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
-    "The path and name of the file holding\nthe intermediary text in STAMP format.", True],\
-
-   ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
-    "The path where lexicon files and other STAMP files are created", True],\
-
-   ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
-    "The path and name of the file holding\nthe intermediary synthesized file.", True],\
-
-   ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
-    "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
-
-   ["Hermit Crab Master File", "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
-    "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
-
-   ["Hermit Crab Parses File", "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
-    "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
-
-   ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
-    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", False],\
-
-   ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
-    "The path and name of the testbed file.", True],\
-
-   ["Testbed Results Log File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
-    "The path and name of the testbed results log file", True],\
+    "The path and name of the file containing the transfer rules.", GIVE_ERROR, DONT_HIDE],\
 
    ["Transfer Rules File 2 (Advanced Transfer)", "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
-    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", False],\
+    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, DONT_HIDE],\
 
    ["Transfer Rules File 3 (Advanced Transfer)", "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
-    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer.", False],\
+    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
-    "The path and name of the TreeTran rules file", False],\
+   ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
+    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+   
+   ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
+    "The path and name of the file which holds\nthe extracted source text.", GIVE_ERROR, DONT_HIDE],\
 
-   ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
-    "The path and name of the file that holds the output from TreeTran.", False],\
+   ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
+    "The path and name of the file which holds the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
+    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
+    "The path and name of the file which holds the text contents\nafter going through the transfer process.", GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Synthesis Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+
+   ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
+    "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
+    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
+    "The path where lexicon files and other STAMP files are created", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
+    "The path and name of the file holding\nthe intermediary text in STAMP format.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Hermit Crab Master File", "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
+    "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
+    "The path and name of the file holding\nthe intermediary synthesized file.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
+    "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Synthesis Test Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+    
+   ["Limit to these target categories", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
+    "One or more grammatical categories. The synthesis test will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Limit to this number of stems", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
+    "The maximum number of stems to use for the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Limit to only this citation form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
+    "Use only the entry represented by this citation from for the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Synthesis test output file", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE,\
+    "The path and name of the file holding\nthe synthesis test output.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Synthesis test sigmorphon output file", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE,\
+    "The path and name of the file holding\nthe synthesis test sigmorphon output.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+
+   ["Synthesis test log file", "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_LOG_FILE,\
+    "The path and name of the file holding\nthe synthesis test log.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Testbed Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+
+   ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
+    "The path and name of the testbed file.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Testbed Results Log File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
+    "The path and name of the testbed results log file", GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["TreeTran Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
 
    ["TreeTran Insert Words File", "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
-    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule.", False]
+    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
+    "The path and name of the TreeTran rules file", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
+    "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+# Hidden settings
+   ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
+    "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+
+   ["Hermit Crab Parses File", "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
+    "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+
+   ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
+    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER]
+
               ]
 
 # ----------------------------------------------------------------
