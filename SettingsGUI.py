@@ -1261,23 +1261,23 @@ widgetList = [
    ["Synthesis Test Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
     
-   ["Limit to these target categories", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
+   ["Limit to specific POS values", "limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
     "One or more grammatical categories. The synthesis test will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Limit to this number of stems", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
-    "The maximum number of stems to use for the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
+   ["Limit number of stems", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
+    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Limit to only this citation form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
-    "Use only the entry represented by this citation from for the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
+   ["Limit to specific Citation Form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
+    "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Synthesis test output file", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE,\
-    "The path and name of the file holding\nthe synthesis test output.", DONT_GIVE_ERROR, DONT_HIDE],\
+   ["Parses Output File", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE,\
+    "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Synthesis test sigmorphon output file", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE,\
-    "The path and name of the file holding\nthe synthesis test sigmorphon output.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+   ["SIGMORPHON Output File", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE,\
+    "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
 
    ["Synthesis test log file", "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_LOG_FILE,\
-    "The path and name of the file holding\nthe synthesis test log.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file for the log output\nof the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 
