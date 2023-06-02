@@ -152,6 +152,7 @@ YES_NO = "yes no"
 TEXT_BOX = "textbox"
 FILE = "file"
 FOLDER = "folder"
+SECTION_TITLE = "section_title"
 
 targetComplexTypes = []
 sourceComplexTypes = []
@@ -552,26 +553,43 @@ class Ui_MainWindow(object):
         # They are placed in the order according to the widgetList
         # AddWidget function takes 5 parameters.
         # addWidget(Object, row, column, row-span, column-span)
+        j = 1
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
             newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-            self.gridLayout_2.addWidget(newObj, i+1, 0, 1, 1)
+            self.gridLayout_2.addWidget(newObj, i+j, 0, 1, 1)
             widgInfo[LABEL_OBJ] = newObj
 
-            if widgInfo[WIDGET_TYPE] == COMBO_BOX:
+            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+
+                # Make the section header bold
+                font = QtGui.QFont()
+                font.setBold(True)
+                newObj.setFont(font)
+
+                # Add a horizontal line
+                line = QtWidgets.QFrame(self.scrollAreaWidgetContents)
+                line.setFrameShape(QtWidgets.QFrame.HLine)
+                line.setFrameShadow(QtWidgets.QFrame.Sunken)
+                line.setObjectName("line")
+                j += 1
+                self.gridLayout_2.addWidget(line, i+j, 0, 1, 4)
+                continue
+
+            elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
                 newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
             
             elif widgInfo[WIDGET_TYPE] == TEXT_BOX:
                 
                 newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
             
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
@@ -582,7 +600,7 @@ class Ui_MainWindow(object):
                 
                 # Add a blank item
                 newObj.addItem("")
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 1)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 1)
                 widgInfo[WIDGET1_OBJ] = newObj
             
                 newObj = QtWidgets.QComboBox(self.scrollAreaWidgetContents)
@@ -591,7 +609,7 @@ class Ui_MainWindow(object):
                 
                 # Add a blank item
                 newObj.addItem("")
-                self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
+                self.gridLayout_2.addWidget(newObj, i+j, 2, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
             
             elif widgInfo[WIDGET_TYPE] == YES_NO:
@@ -605,7 +623,7 @@ class Ui_MainWindow(object):
                 
                 # Add the button to the button group
                 buttonGroup.addButton(newObj)
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 1)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 1)
                 widgInfo[WIDGET1_OBJ] = newObj
             
                 # No radio button - checked
@@ -614,7 +632,7 @@ class Ui_MainWindow(object):
 
                 # Add the button to the button group
                 buttonGroup.addButton(newObj)
-                self.gridLayout_2.addWidget(newObj, i+1, 2, 1, 1)
+                self.gridLayout_2.addWidget(newObj, i+j, 2, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
             
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
@@ -622,7 +640,7 @@ class Ui_MainWindow(object):
                 newObj = CheckableComboBox()
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
                 newObj.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 3)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 3)
                 widgInfo[WIDGET1_OBJ] = newObj
             
             elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER]:
@@ -631,13 +649,13 @@ class Ui_MainWindow(object):
                 newObj = QtWidgets.QLineEdit(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET1_OBJ_NAME])
                 newObj.setText("")
-                self.gridLayout_2.addWidget(newObj, i+1, 1, 1, 2)
+                self.gridLayout_2.addWidget(newObj, i+j, 1, 1, 2)
                 widgInfo[WIDGET1_OBJ] = newObj
                 
                 # browse button
                 newObj = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
                 newObj.setObjectName(widgInfo[WIDGET2_OBJ_NAME])
-                self.gridLayout_2.addWidget(newObj, i+1, 3, 1, 1)
+                self.gridLayout_2.addWidget(newObj, i+j, 3, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
             
         MainWindow.setCentralWidget(self.centralwidget)
@@ -653,6 +671,9 @@ class Ui_MainWindow(object):
             
             widgInfo = widgetList[i]
             widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
+
+            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+                continue
 
             if widgInfo[WIDGET_TYPE] == FILE:
                 
@@ -828,6 +849,9 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
+            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+                continue
+
             if widgInfo[WIDGET_TYPE] in [SIDE_BY_SIDE_COMBO_BOX, YES_NO]:
                 
                 # pass two widgets
@@ -905,6 +929,9 @@ class Main(QMainWindow):
         for i in range(0, len(widgetList)):
             
             widgInfo = widgetList[i]
+
+            if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
+                continue
             
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
@@ -1044,6 +1071,9 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 # If a new type of widget is needed, more work is needed to add to each part of the code where the widgetList is iterated
 
 widgetList = [
+   ["Section Title", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", True],\
+
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text                                                                                               Give an error if missing
