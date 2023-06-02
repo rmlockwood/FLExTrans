@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.9 - 6/2/23 - Ron Lockwood
+#    Support tracing of HermitCrab synthesis
+#
 #   Version 3.8.4 - 5/3/23 - Ron Lockwood
 #    Better error handling.
 #
@@ -43,7 +46,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.8.4",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
         FTM_Help       :"",
@@ -318,7 +321,7 @@ def fix_up_text(synFile, cleanUpText):
         f_s.write(synFileContents)
         f_s.close()
 
-def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None):
+def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False):
     
     errorList = []
     luInfoList = []
@@ -333,7 +336,13 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     # Call HCSynthesis to produce surface forms. 
     try:
-        result = subprocess.run([FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile], capture_output=True, check=True)
+        params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
+
+        # If we are to trace the HC synthesis, we need the -t -s parameters
+        if trace:
+            params.extend(['-t', '-s'])
+            
+        result = subprocess.run(params, capture_output=True, check=True)
 
         if result.returncode != 0:
             errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))

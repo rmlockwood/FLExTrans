@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1271, 693)
+        MainWindow.resize(1273, 703)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabRules = QtWidgets.QTabWidget(self.centralwidget)
@@ -236,6 +236,9 @@ class Ui_MainWindow(object):
         self.SourceTextCombo.setFont(font)
         self.SourceTextCombo.setMaxVisibleItems(30)
         self.SourceTextCombo.setObjectName("SourceTextCombo")
+        self.traceHermitCrabSynthesisCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.traceHermitCrabSynthesisCheckBox.setGeometry(QtCore.QRect(310, 563, 171, 30))
+        self.traceHermitCrabSynthesisCheckBox.setObjectName("traceHermitCrabSynthesisCheckBox")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -274,3 +277,4 @@ class Ui_MainWindow(object):
         self.editReplacementButton.setText(_translate("MainWindow", "Edit Replacement &File"))
         self.selectWordsHintLabel.setText(_translate("MainWindow", "Hover over a word to see its bilingual dictionary entry."))
         self.warningLabel.setText(_translate("MainWindow", "This is warning text."))
+        self.traceHermitCrabSynthesisCheckBox.setText(_translate("MainWindow", "Trace HermitCrab synthesis"))

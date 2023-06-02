@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1271</width>
-    <height>693</height>
+    <width>1273</width>
+    <height>703</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -715,6 +715,19 @@
     </property>
     <property name="maxVisibleItems">
      <number>30</number>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="traceHermitCrabSynthesisCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>563</y>
+      <width>171</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Trace HermitCrab synthesis</string>
     </property>
    </widget>
   </widget>

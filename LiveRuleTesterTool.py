@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.9 - 6/2/23 - Ron Lockwood
+#    Support tracing of HermitCrab synthesis
+#
 #   Version 3.8.8 - 4/28/23 - Ron Lockwood
 #    Don't give an error if the HermitCrab Synthesis flag (y/n) is not found in the config file.
 #
@@ -355,7 +358,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.8.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -570,7 +573,7 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
-        
+
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
         self.buildFolder = FTPaths.BUILD_DIR
@@ -740,6 +743,20 @@ class Main(QMainWindow):
         
         if os.path.exists(testbedLog) == False:
             self.ui.viewTestbedLogButton.setEnabled(False)
+
+        # See if we are doing HermitCrab synthesis
+        hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report, giveError=False)
+
+        if hermitCrabSynthesisYesNo == 'y':
+
+            self.doHermitCrabSynthesisBool = True
+
+        else:
+
+            # Set HermitCrab tracing checkbox to hidden if we are doing STAMP synthesis
+            self.ui.traceHermitCrabSynthesisCheckBox.hide()
+
+            self.doHermitCrabSynthesisBool = False
 
         self.ret_val = True
 
@@ -1154,12 +1171,7 @@ class Main(QMainWindow):
         # Make the text box blank to start out.
         self.ui.SynthTextEdit.setPlainText('')
         
-        hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, self.__report, giveError=False)
-
-        # See if we are doing HermitCrab synthesis
-        doHermitCrabSynthesisBool = True if hermitCrabSynthesisYesNo == 'y' else False
-
-        if doHermitCrabSynthesisBool:
+        if self.doHermitCrabSynthesisBool:
 
             HCconfigPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, self.__report)
 
@@ -1196,7 +1208,7 @@ class Main(QMainWindow):
             
             # Convert the target text to .ana format (for STAMP)
             errorList = ConvertTextToSTAMPformat.convert_to_STAMP(self.__DB, self.__configMap, self.targetAnaPath, self.affixGlossPath, self.transferResultsPath, 
-                                                                   doHermitCrabSynthesisBool, self.HCmasterFile)
+                                                                   self.doHermitCrabSynthesisBool, self.HCmasterFile)
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
@@ -1212,7 +1224,7 @@ class Main(QMainWindow):
         if self.__extractIt == True:
             
             # We have two possible extracts, one for STAMP and one for HermitCrab
-            if doHermitCrabSynthesisBool:
+            if self.doHermitCrabSynthesisBool:
 
                 # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually)
                 errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True)
@@ -1249,9 +1261,12 @@ class Main(QMainWindow):
         
         ## SYNTHESIZE
         # We have two possible syntheses, one for STAMP and one for HermitCrab
-        if doHermitCrabSynthesisBool:
+        if self.doHermitCrabSynthesisBool:
 
-            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath) 
+            # Check if the user wants to do a trace which will bring up a web page.
+            traceIt = self.ui.traceHermitCrabSynthesisCheckBox.isChecked()
+
+            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath, report=None, trace=traceIt) 
 
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)
