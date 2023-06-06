@@ -726,6 +726,9 @@
       <height>30</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Only the last word will be traced.</string>
+    </property>
     <property name="text">
      <string>Trace HermitCrab synthesis</string>
     </property>

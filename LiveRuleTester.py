@@ -277,4 +277,5 @@ class Ui_MainWindow(object):
         self.editReplacementButton.setText(_translate("MainWindow", "Edit Replacement &File"))
         self.selectWordsHintLabel.setText(_translate("MainWindow", "Hover over a word to see its bilingual dictionary entry."))
         self.warningLabel.setText(_translate("MainWindow", "This is warning text."))
+        self.traceHermitCrabSynthesisCheckBox.setToolTip(_translate("MainWindow", "Only the last word will be traced."))
         self.traceHermitCrabSynthesisCheckBox.setText(_translate("MainWindow", "Trace HermitCrab synthesis"))
