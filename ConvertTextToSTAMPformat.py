@@ -209,7 +209,7 @@ import Utils
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
         FTM_Version    : "3.8.6",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Syntesizer format",
+        FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
         FTM_Description:  
 """
