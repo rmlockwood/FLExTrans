@@ -1238,7 +1238,7 @@ widgetList = [
    ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
     "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Cleanup Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
+   ["Clean Up Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
     "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", GIVE_ERROR, DONT_HIDE],\
 
    ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
@@ -1270,13 +1270,13 @@ widgetList = [
    ["Limit to specific Citation Form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
     "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Parses Output File", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE,\
+   ["Parses Output File", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE,\
     "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["SIGMORPHON Output File", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE,\
+   ["SIGMORPHON Output File", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE,\
     "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
 
-   ["Synthesis test log file", "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOOKUP_LOG_FILE,\
+   ["Synthesis test log file", "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOG_FILE,\
     "The path and name of the file for the log output\nof the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 

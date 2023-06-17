@@ -73,7 +73,7 @@ from System import String
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Generate all parses from FLEx project in ANA format",
+docs = {FTM_Name       : "Generate all parses in ANA format",
         FTM_Version    : "2.0",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Reads a lexicon and templates in a FLEx project and produces an ANA format file with all possible parses.  As a side effect, also produces other files with these parses formatted one per line, one for human readbility and one for SIGMORPHON format.",
@@ -416,9 +416,9 @@ def MainFunction(DB, report, modifyAllowed):
     #    return
 
     # initialize a logfile, for debugging
-    targetLOG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOOKUP_LOG_FILE, report)
+    targetLOG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOG_FILE, report)
     if not (targetLOG):
-        report.Error('Couldnt open '+LOOKUP_LOG_FILE)
+        report.Error('Couldnt open '+LOG_FILE)
     #    return 
 
     logFile = Utils.build_path_default_to_temp(targetLOG)
@@ -681,8 +681,8 @@ def MainFunction(DB, report, modifyAllowed):
 
     ## First get the filenames from the config file
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
-    targetUF = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE, report)
-    targetSIG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE, report)
+    targetUF = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report)
+    targetSIG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report)
     if not (targetANA and targetUF and targetSIG):
         return 
     
