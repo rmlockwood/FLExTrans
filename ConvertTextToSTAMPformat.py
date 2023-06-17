@@ -213,11 +213,12 @@ docs = {FTM_Name       : "Convert Text to Synthesizer Format",
         FTM_Help  : "", 
         FTM_Description:  
 """
-The target database set in the Settings be used. This module will take the Target Transfer Results File created
-by Apertium and convert it to STAMP format if HermitCrab synthesis is not set in the Settings. Otherwise the
-text will be converted to a format suitable for the HermitCrab synthesis program. 
-NOTE: messages and the task bar will show the SOURCE database
-as being used. Actually the target database is being used.
+This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
+for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
+HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
+synthesis program. 
+NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
+is being used.
 """ }
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
