@@ -93,36 +93,6 @@ and affixes) to the Parses Output File specified in the settings.
 
 #----------------------------------------------------------------
 
-# Configurables:
-## (This is set in the config file now)
-
-# Morphnames to process
-STEM_MORPH_NAMES = ['stem','bound stem','root','bound root','phrase']
-
-
-## FIX:  Is this different from the one in LookupUtils?
-#def GetEntryWithSense(e):
-#    # If the entry is a variant and it has no senses, loop through its references 
-#    # until we get to an entry that has a sense
-#    notDoneWithVariants = True
-#    while notDoneWithVariants:
-#        if e.SensesOS.Count == 0:
-#            if e.EntryRefsOS:
-#                foundVariant = False
-#                for entryRef in e.EntryRefsOS:
-#                    if entryRef.RefType == 0: # we have a variant
-#                        foundVariant = True
-#                        break
-#                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-#                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-#                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-#                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-#                        break
-#                    else: # normal variant of entry
-#                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-#                        continue
-#        notDoneWithVariants = False
-#    return e
 
 def verifySlots(slot2AffixList, slot2IsPrefix):
     badSlots = []
