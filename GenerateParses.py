@@ -82,11 +82,12 @@ docs = {FTM_Name       : "Generate all parses in ANA format",
 u"""
 Creates an ANA file (for input to STAMP) with all the parses that can be 
 generated from a FLEx project, based on the inflectional templates.  (Doesn't 
-generate based on derivation information in the project.)  Allows limiting 
-output to a single POS or Citation Form, or to a specified number of stems 
-(unpredictable which stems will be chosen).  Also outputs in SIGMORPHON 
-format, and a human readable version of the parses (with glosses of roots 
-and affixes).
+generate based on derivation information in the project.  Doesn't yet handle
+clitics or Variants.)  
+In FLExTrans Settings, under Synthesis Test settings, it is possible to limit output to 
+a single POS or Citation Form, or to a specified number of stems (stems will be chosen 
+randomly).  Also outputs a human readable version of the parses (with glosses of roots 
+and affixes) to the Parses Output File specified in the settings.
 """ }
 
 
@@ -326,7 +327,7 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
             for slot in templ.PrefixSlotsRS:
                 # Build slot name
                 slotName = ITsString(slot.Name.BestAnalysisAlternative).Text + slot.Guid.ToString()
-                f_log.write("\n    Checking slot "+slotName+" in template "+templName)
+                #f_log.write("\n    Checking slot "+slotName+" in template "+templName)
                 
                 # For prefixes put things in reverse order. i.e. don't append from the end of the list
                 # like for suffixes, prepend to the beginning of the list
@@ -526,7 +527,7 @@ def MainFunction(DB, report, modifyAllowed):
             # The "continue" makes it skip; the "GetEntryWithSense(e) tries to find the appropriate
             # sense for this variant.  But it wasn't working right.
             if e.SensesOS.Count < 1:
-                #report.Info('  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
+                f_log.write('  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
                 continue
 #                e = GetEntryWithSense(e)
                 
@@ -565,13 +566,13 @@ def MainFunction(DB, report, modifyAllowed):
                 break
 
             # Only add words of the desired POS to the list to be inflected
-            if focusPOS != "" and pos not in focusPOS:
-                f_log.write('\nSkipping '+lex+' '+catAndGuid)
-            else:
+            if focusPOS != "" and pos in focusPOS:
                 if lex and catAndGuid:
                     stemCount+=1
                     f_log.write('\n  Adding '+lex+' to roots list')
                     standardSpellList.append((lex,catAndGuid))
+            #else:
+            #    f_log.write('\nSkipping '+lex+' '+catAndGuid)
                                                   
         else: # non-stems
                  
