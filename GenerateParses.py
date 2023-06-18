@@ -60,7 +60,7 @@ from System import String
 docs = {FTM_Name       : "Generate all parses",
         FTM_Version    : "2.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Reads a lexicon and templates in a FLEx project and produces an Apertium format file with all possible parses.  As a side effect, also produces another files with these parses formatted one per line, for human readability.",
+        FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
         FTM_Description:  
 u"""
