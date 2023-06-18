@@ -17,17 +17,7 @@
 #   Modified:       16 Jun 2023     bb    v2.0 Integrate with FLExTrans: Use FLExTrans
 #                                                           SettingsGUI.py and Utils.py.  Change name
 #                                                           to GenerateParses.py
-#   Modified:      27 Sep 2022    bb     v1.21 Use separate Lookup.config, change name
-#                                                           to Lookup-GenerateParses. Stop wrapping in {}
-#   Modified:      05 Aug 2022    bb     v1.20 Write output directly, without storing first
-#                                                                 Change to only {} on affixes, not <{}>
-#   Modified:      03 Aug 2022    bb     v1.19 Improvements
-#   Modified:      03 Aug 2022    bb     v1.18 Improve ability to selectively limit output
 #   Modified:      02 Aug 2022    bb     v1.17 Only use active templates. Read settings from config file.
-#   Modified:      16 Jul 2022      bb     v1.16 Add "if" for doing only a specified LexForm
-#   Modified:      02 Jul 2022      bb     v1.15 More error checking for FlexTools 2.1
-#   Modified:      30 Jun 2022      bb     v1.14 Handle words with no Gloss
-#   Modified:      30 Jun 2022      bb     v1.13 Fix bug with Citation Form/Morphname, add SIGMORPHON output
 #   Modified:      26 Jun 2022      bb     v1.12 Change to FLExLookup-MakeAnaFile.py.
 #                                                           Output directly to .ana format, not transferred text.
 #   Modified:      26 Jun 2022      bb     v1.11 Finish updating for FlexTools 2.1 (fix error in v1.10)
@@ -35,14 +25,8 @@
 #                                                         stems, during initial setup and debugging.
 #   Modified:      22 Jun 2022      bb     v1.10 Update for FlexTools 2.1 (new flexlibs for FW 9.1.8+)
 #
-#   Modified:      16 Jun 2022      bb     v1.8 Output an additional file with the underlying
-#                                                         forms, that can be customized for desired format
-#   Modified:       8 Jun 2022     bb      Output STAMP style underlying forms:
-#                                                         Citation Form, POS with underscores,
-#                                                         affix Glosses instead of surface forms
-#   Modified:     28 May 2022     bb      Adjust the output file name and path
 #   Modified:     28 May 2022     bb      Change filename and primary function:
-#                                                           Original generated pairs of words and didn't
+#                                                           Original was for testing writing systems and didn't
 #                                                           use any Synthesis module.                                                        
 #
 #   Original:       03 Oct 2016    
@@ -73,16 +57,16 @@ from System import String
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Generate all parses in ANA format",
-        FTM_Version    : "2.0",
+docs = {FTM_Name       : "Generate all parses",
+        FTM_Version    : "2.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Reads a lexicon and templates in a FLEx project and produces an ANA format file with all possible parses.  As a side effect, also produces other files with these parses formatted one per line, one for human readbility and one for SIGMORPHON format.",
+        FTM_Synopsis   : "Reads a lexicon and templates in a FLEx project and produces an Apertium format file with all possible parses.  As a side effect, also produces another files with these parses formatted one per line, for human readability.",
         FTM_Help       :"",
         FTM_Description:  
 u"""
-Creates an ANA file (for input to STAMP) with all the parses that can be 
-generated from a FLEx project, based on the inflectional templates.  (Doesn't 
-generate based on derivation information in the project.  Doesn't yet handle
+Creates an Apertium file (that can be converted for input to a Synthesizer process) with 
+all the parses that can be generated from a FLEx project, based on the inflectional templates.  
+(Doesn't generate based on derivation information in the project.  Doesn't yet handle
 clitics or Variants.)  
 In FLExTrans Settings, under Synthesis Test settings, it is possible to limit output to 
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen 
