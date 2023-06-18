@@ -93,6 +93,14 @@ and affixes) to the Parses Output File specified in the settings.
 
 #----------------------------------------------------------------
 
+# Configurables:
+## (Should this be set in the config file now?)
+
+# Morphnames to process
+STEM_MORPH_NAMES = ['stem','bound stem','root','bound root','phrase']
+
+
+#----------------------------------------------------------------
 
 def verifySlots(slot2AffixList, slot2IsPrefix):
     badSlots = []
@@ -207,9 +215,8 @@ def add_affixes(stemList, slotList):
         for stem in newStemList: # stem is a tuple of two stems
             # Loop through all affixes for the current slot we are adding
             (prefix, mySlot) = curSlot
-            for afx in mySlot: # afx is a tuple of two affixes
-                # This appends the surface form of the affix (ignoring allomorphs and environments)
-                # That will work for languages without a lot of morphophonemics.
+            for afx in mySlot: # afx is the Gloss of an affix, wrapped in < >
+                # Put prefixes before the stem+pos and suffixes after
                 if prefix:
                     stemList.append(afx+stem)
                 else:
@@ -334,7 +341,9 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
             
 # Add all possible inflectional affixes using all applicable templates
 def create_words_from_templates(wordPair, templList, tmpl2Slots, slot2AffixList, slot2IsPrefix):
-    wordPairList = []
+
+    # List of all the inflected forms for this stem (collect to be the return value of this function)
+    wordParadigmList = []
     
     # Loop through each template in the templList which is for one category
     for templAndGuid in templList:
@@ -364,11 +373,13 @@ def create_words_from_templates(wordPair, templList, tmpl2Slots, slot2AffixList,
                 # Add to the list of  affixes. This creates a list of lists of affixes. The outer list corresponds to each slot in the combo. I.e. a list of affixes for each slot.
                 affixList.append((slot2IsPrefix[slotAndGuid], slot2AffixList[slotAndGuid]))
             
-            # Cycle through all affixes in the slots    
+            # Cycle through all affixes in the slots, attach to the word portion of the word/cat pair that was passed in   
             comboWords = add_affixes([wordPair[0]], affixList)
-            wordPairList.extend(comboWords)
+            
+            # Add to a list that will be further formatted before printing as intermediate files for the user
+            wordParadigmList.extend(comboWords)
     
-    return wordPairList
+    return wordParadigmList
             
 def MainFunction(DB, report, modifyAllowed):
     cat2Templ = {}
@@ -462,11 +473,7 @@ def MainFunction(DB, report, modifyAllowed):
             else:
                 lex = DB.LexiconGetLexemeForm(e)
                 
-            ## This is where we would limit to a specific Citation Form, but it's not working yet.
-            #report.Info('Found '+lex)
-            ##if (lex != 'ja' && lex != 'sura' && lex != 'eedda'):
-            
-            ## I'm not sure this is doing anything
+            ## This is where we would limit to a specific Citation Form
             if focusLex != "":
                 if lex != focusLex:
                     continue
@@ -489,6 +496,7 @@ def MainFunction(DB, report, modifyAllowed):
             if lex is None or len(lex) == 0:
                 continue
             else:
+                # Format for parses output file
                 lex = '['+thisGloss+']'+lex+'1.1'
             # Reset
             thisGloss = ""
@@ -528,11 +536,12 @@ def MainFunction(DB, report, modifyAllowed):
                 ## (If none specified, call it UNK)
                 if pos is None or len(pos) == 0:
                     pos = 'UNK'
+                # Format for parses file
                 lex = lex+'<'+pos+'>'
 
                 # Just get the grammatical info. for the 1st sense and stop
-                # BB: In the future, we should have a way to iterate through all the senses,
-                # and get both the gloss and the POS from each.
+                # BB: The word may have multiple senses, but we really only
+                # care about the POS of the template we generated from.
                 break
 
             # Only add words of the desired POS to the list to be inflected
@@ -573,7 +582,7 @@ def MainFunction(DB, report, modifyAllowed):
                         else: # enclitic
                             existingCliticList.append((False, lex))
                 
-            # Get Glosses for affixes.  (just the first one for now)
+            # Get Glosses for affixes.  (just the first gloss for now)
             elif morphType in ['suffix', 'prefix']:   
                   
                 # BB: Store the Lexeme Form of this affix, just for debugging purposes
@@ -593,6 +602,7 @@ def MainFunction(DB, report, modifyAllowed):
                         # TODO: Do these scripts already check for that?
                         #lex = '{'+lex+'}'
 #                      #  report.Info("lex = "+lex)
+                        # Format for parses file
                         lex = '<'+lex+'>'
                         #f_log.write('  Gloss: '+lex)
                         # We only need to do the first sense.  When it looks for all the MSAs of this entry, it will find them for all senses.?
@@ -628,6 +638,7 @@ def MainFunction(DB, report, modifyAllowed):
                             slotFriendlyName = ITsString(slot.Name.BestAnalysisAlternative).Text
                             slotName = slotFriendlyName + slot.Guid.ToString()
                          
+                            # Add affix glosses to the map showing which affixes are in this slot
                             # If the slotname is not in the map yet, initialize it
                             if slotName not in slot2AffixList:
                                 slot2AffixList[slotName] = [lex]
@@ -651,14 +662,22 @@ def MainFunction(DB, report, modifyAllowed):
     ## Open output files, before constructing parses
 
     ## First get the filenames from the config file
+    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetUF = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report)
     targetSIG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report)
     if not (targetANA and targetUF and targetSIG):
         return 
     
-    # Open one file to write results directly in .ana format, for input to STAMP
-    ## FIX:  We're not getting "Output" into this path.
+    # Open one file to write results directly in Apertium format, to be converted into whichever format 
+    # is needed for the chosen Synthesizer module
+    aperFile = Utils.build_path_default_to_temp(transferResultsFile)
+    try:
+        f_aper = open(aperFile, 'w', encoding='utf-8')
+    except IOError as e:
+        report.Error('There was a problem creating the Apertium file: '+aperFile+'.')
+        
+    # Open another file to write results directly in .ana format, for input to STAMP
     anaFile = Utils.build_path_default_to_temp(targetANA)
     try:
         f_ana = open(anaFile, 'w', encoding='utf-8')
@@ -684,7 +703,7 @@ def MainFunction(DB, report, modifyAllowed):
 #    # We need a blank line at the beginning of the file, to match the synthesized file.
 #    f_sig.write('\n')
 
-    allWrdPairs = []
+    #allWrdPairs = []
     
     ## Clitics assigned at a higher level of the category hierarchy should get pushed down to sub-categories
     #push_clitics_down(catList, [], cat2CliticList, cat2Subcats)
@@ -702,7 +721,7 @@ def MainFunction(DB, report, modifyAllowed):
         else:
             continue
         #    If we wanted words without affixes, we would do the following as well
-        #    inflWords = [wordPair[0]] # we only need the pair of words, not the cat name and guid
+        #    inflWords = [wordPair[0]] # add this word; no need to add affixes
         
         # Temporarily, don't include clitics at all
         ## Add all clitics possible    
@@ -719,25 +738,25 @@ def MainFunction(DB, report, modifyAllowed):
     # Iterate through the list of constructed words (for this stem) and output to all files
     
         # (It's not really a pair now.  When it was in allWrdPairs, it was a pair of word + POS info.)
-        for wrdPair in inflWords:
-        #for wrdPair in allWrdPairs:
+        for inflectedWord in inflWords:
+        #for inflectedWord in allWrdPairs:
             wrdCount += 1
             # Reset the variables
             sigPfxs = ufPfxs = pfxs = sigSfxs = ufSfxs = sfxs = rootString = rootGloss = rootForm = posLabel = ''
 
-            #report.Info('Testing '+wrdPair)            
+            #report.Info('Testing '+inflectedWord)            
             
             ##  Need to pick out the prefixes, gloss, root, POS, and suffixes from the string
             # First check for prefixes
-            m = re.match('(<.+>)([^<][^<>]+<[^<>]+>.*)', wrdPair)
+            m = re.match('(<.+>)([^<][^<>]+<[^<>]+>.*)', inflectedWord)
             if m:
-                # This string has prefixes, so store them and remove from wrdPair
+                # This string has prefixes, so store them and remove from inflectedWord
                 pfxs = m.group(1)
                 rest = m.group(2)
                 #report.Info('pfxs = ['+pfxs+']  rest = ['+rest+']')
             else:
                 pfxs = ''
-                rest = wrdPair
+                rest = inflectedWord
             
             # Now check for suffixes
             m = re.match('([^<][^<>]+<[^<>]+>)(<.+>)', rest)
@@ -763,37 +782,47 @@ def MainFunction(DB, report, modifyAllowed):
                 posLabel = m.group(3)
             else:
                 report.Error('Malformed root string: '+rootString)
-
             ## (Do we need to verify that there are no <> in any Glosses??)
+                
+            # Set values for the parses output file
+            ufPfxs = pfxs
+            ufSfxs = sfxs
+                    
+            # Output to the Apertium format first
+            thisWord = '^'+rootForm+'<'+posLabel+'>'+pfxs+sfxs+'$'
+            #report.Info("thisWord is "+thisWord)
+            f_aper.write(thisWord+'\n')
+            thisWord = ''
 
-            # For the ANA file, reformat the root to be in angle brackets with the POS before it
-            rootString = '< '+posLabel+' '+rootForm+' >'
-            
-            # Reformat the affixes to not have angle brackets around them,
-            # for the ANA output, as well as others.
-
-            if pfxs:
-                # Save the prefixes for the SIGMORPHON format
-                sigPfxs = pfxs
-                # Save the prefixes for the parses (uf) format
-                ufPfxs = pfxs
-                # Format for ANA
-                pfxs = re.sub('>', ' ', pfxs)
-                pfxs = re.sub('<', '', pfxs)
-            if sfxs:
-                # Save the suffixes for the SIGMORPHON format
-                sigSfxs = sfxs
-                # Save the suffixes for the parses (uf) format
-                ufSfxs = sfxs
-                # Format for ANA
-                sfxs = re.sub('<', ' ', sfxs)
-                sfxs = re.sub('>', '', sfxs)
-
-            # Write the SF codes and the output strings
-            # The \f marker is for "following punctuation".  (or is it "preceding"?)
-            # We want each word 
-            # to be followed by a newline in the synthesized output.
-            f_ana.write('\\a '+pfxs+rootString+sfxs+'\n\\f \\n\n\n')
+## Uncomment this section if we want to write the .ana file directly, and SIGMORPHON format
+#            # For the ANA file, reformat the root to be in angle brackets with the POS before it
+#            rootString = '< '+posLabel+' '+rootForm+' >'
+#            
+#            # Reformat the affixes to not have angle brackets around them,
+#            # for the ANA output, as well as others.
+#
+#            if pfxs:
+#                # Save the prefixes for the SIGMORPHON format
+#                sigPfxs = pfxs
+#                # Save the prefixes for the parses (uf) format
+#                ufPfxs = pfxs
+#                # Format for ANA
+#                pfxs = re.sub('>', ' ', pfxs)
+#                pfxs = re.sub('<', '', pfxs)
+#            if sfxs:
+#                # Save the suffixes for the SIGMORPHON format
+#                sigSfxs = sfxs
+#                # Save the suffixes for the parses (uf) format
+#                ufSfxs = sfxs
+#                # Format for ANA
+#                sfxs = re.sub('<', ' ', sfxs)
+#                sfxs = re.sub('>', '', sfxs)
+#
+#           # Write the SF codes and the output strings
+#            # The \f marker is for "following punctuation".  (or is it "preceding"?)
+#            # We want each word 
+#            # to be followed by a newline in the synthesized output.
+#            f_ana.write('\\a '+pfxs+rootString+sfxs+'\n\\f \\n\n\n')
 
 #          # Uncomment this section if we are doing SIGMORPHON format
 #            # Format for SIG
@@ -811,23 +840,18 @@ def MainFunction(DB, report, modifyAllowed):
             # Remove the Citation Form of the root and the homograph/sense number,
             # leaving the Gloss of the root, with the affixes
             # Using the affixes with < > around them currently.
-            #glosses = re.sub(r'\][^1-9]+1\.1', ']', wrdPair)
+            #glosses = re.sub(r'\][^1-9]+1\.1', ']', inflectedWord)
             #f_out.write(glosses + '\n')
             f_out.write(ufPfxs+rootGloss+'<'+posLabel+'>'+ufSfxs+'\n')
 
 
-    ## Output final counts.  This will be at the end of the files now.
-    ## Or skip writing to the files; write to the end of the log file
-    ## Glosses file, custom formatted
-    #f_out.write(str(wrdCount)+' words generated.'+'\n')
-    ## SIGMORPHON format
-    #f_sig.write(str(wrdCount)+' words generated.'+'\n')
-    # Log file
+    ## Output final counts to the log file.
     f_log.write('\n\n'+str(wrdCount)+' words generated.'+'\n')
 
-  #  report.Info('Creation complete to the file: '+sigFile+'.')
+#    report.Info('Creation complete to the file: '+sigFile+'.')
     report.Info('Creation complete to the file: '+outFile+'.')
     report.Info(str(wrdCount)+' words generated.')
+    
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
