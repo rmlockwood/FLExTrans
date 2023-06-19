@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.1 - 6/19/23 - Ron Lockwood
+#    Fixes #439. Error check after searching for the id 'replacement' or 'append'
+#
 #   Version 3.9 - 6/19/23 - Ron Lockwood
 #    Fixes #387. If a replacement entry has a space, turn that into a </b> in the bilingual lexicon.
 #    It's expected the user will use a normal space when needed for a lemma in the replacement file.
@@ -255,7 +258,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -497,6 +500,10 @@ def processAppendEntries(new_biling_section, replFile, replRoot, newDocType):
     # Get the append entries section
     append_sec = replRoot.find(".//*[@id='append']")
 
+    if append_sec == None:
+
+        return True
+    
     # Loop through append entries
     for entry in append_sec:
         
@@ -572,7 +579,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
 
     if repl_sec == None:
 
-        report.Error(f'There is a problem reading the Replacement File: {replFile}')
+        report.Error(f'Could not find the id "replacement" in the Replacement File: {replFile}')
         return True
     
     # Put the replacement entries into a map
