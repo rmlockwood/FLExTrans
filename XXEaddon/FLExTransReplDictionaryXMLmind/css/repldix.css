@@ -117,8 +117,8 @@ sdefs
 section:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-	" Section: " text-field(attribute,id,background-color,def-rule-background-color(),columns,15)
-	" Type: " text-field(attribute,type,background-color,def-rule-background-color(),columns,15);
+	" Section: " label(attribute,id,background-color,def-rule-background-color())
+	" Type: " label(attribute,type,background-color,def-rule-background-color());
 }
 section
 {

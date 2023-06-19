@@ -569,6 +569,11 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # Get the replacement entries section
     replRoot = replEtree.getroot()
     repl_sec = replRoot.find(".//*[@id='replacement']")
+
+    if repl_sec == None:
+
+        report.Error(f'There is a problem reading the Replacement File: {replFile}')
+        return True
     
     # Put the replacement entries into a map
     replMap = createReplMap(repl_sec, newDocType)

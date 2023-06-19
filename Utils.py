@@ -1012,7 +1012,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
     
     return newSentence, newParagraph, mySent, myPar
 
-# This is a key function used by the ExtractSourceText and LiveRuleTesterTool modules
+# This is a key function used by the ExtractSourceText, LinkSenseTool and LiveRuleTesterTool modules
 # Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
 # the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
 # The FLEx text is organized into paragraphs and paragraphs are organized into segments. Segments
