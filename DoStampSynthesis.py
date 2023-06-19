@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.9 - 6/19/23 - Ron Lockwood
-#    Skip Affix Process 'allomorphs'. They are only for HermitCrab.
+#    Fixes #444. Skip Affix Process 'allomorphs'. They are only for HermitCrab.
 #
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
