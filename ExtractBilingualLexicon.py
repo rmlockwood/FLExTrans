@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9 - 6/19/23 - Ron Lockwood
+#    Fixes #387. If a replacement entry has a space, turn that into a </b> in the bilingual lexicon.
+#    It's expected the user will use a normal space when needed for a lemma in the replacement file.
+#
 #   Version 3.8.4 - 5/5/23 - Ron Lockwood
 #    Change Fatal error to Warning.
 #
@@ -251,7 +255,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.8.4",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -649,7 +653,27 @@ def convert_to_biling_style_entry(replStyleEntry):
                         
                         if firstData:
                             
-                            newSide[i].text = myElem.text
+                            # See if there's a space in the data
+                            if myElem.text and re.search(r'\s+', myElem.text):
+
+                                # Get the tokens on each side of the spaces
+                                tokens = re.split(r'\s+', myElem.text)
+
+                                # Loop through the tokens
+                                for j, token in enumerate(tokens):
+
+                                    # First token, set the l or r text attribute
+                                    if j == 0:
+                                        newSide[i].text = token
+                                    
+                                    # Subsequent tokens, create a <b> element and set its tail to the token
+                                    else:
+                                        bEl2 = ET.Element('b')
+                                        newSide[i].append(bEl2)
+                                        bEl2.tail = token
+                            else:
+                                newSide[i].text = myElem.text
+
                             firstData = False
                         else:
                             bEl.tail = myElem.text
