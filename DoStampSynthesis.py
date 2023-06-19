@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9 - 6/19/23 - Ron Lockwood
+#    Skip Affix Process 'allomorphs'. They are only for HermitCrab.
+#
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -224,7 +227,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
         FTM_Help       :"",
@@ -357,7 +360,8 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
     amorph = ITsString(morph.Form.VernacularDefaultWritingSystem).Text
     
     # If there is nothing for any WS we get ***
-    if amorph == '***' or amorph == None:
+    # Also return if we have a Affix process
+    if amorph == '***' or amorph == None or morph.ClassName == 'MoAffixProcess':
         
         return
     
