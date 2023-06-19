@@ -766,6 +766,20 @@ class TextWord():
         # Transfer end punctuation from the last component
         self.addFinalPunc(lastComponent.getFinalPunc())
         
+    def matchCaseOfEntry(self, inputHeadWord, i):
+        retStr = inputHeadWord
+        if i < len(self.__lemmaList):
+
+            if not self.isSentPunctutationWord():
+                
+                entryHeadword = Utils.getHeadwordStr(self.__eList[i])
+
+                # If the entry headword starts with lower case, and the input headword starts with upper case, make it lower case
+                if (len(entryHeadword) > 0 and entryHeadword[0].islower()) and (len(inputHeadWord) > 0 and inputHeadWord[0].isupper()):
+
+                    retStr = inputHeadWord.lower()
+        return retStr
+    
     def notCompound(self):
         if len(self.__eList) > 1:
             return False # we have a compound of 2 or more entries
