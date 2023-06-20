@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.1 - 6/20/23 - Ron Lockwood
+#    Removed LOOKUP/lookup from constants to match SettingsGUI.
+#
 #   Version 3.9 - 6/2/23 - Ron Lockwood
 #    Fixes #443. Synthesis test settings added. 
 #
@@ -107,9 +110,9 @@ REBUILD_BILING_LEX_BY_DEFAULT = 'RebuildBilingualLexiconByDefaultInSenseLinker'
 SYNTHESIS_TEST_LIMIT_POS = 'SynthesisTestLimitPOS'
 SYNTHESIS_TEST_LIMIT_STEM_COUNT = 'SynthesisTestLimitStemCount'
 SYNTHESIS_TEST_LIMIT_LEXEME = 'SynthesisTestLimitLexeme'
-SYNTHESIS_TEST_LOOKUP_PARSES_OUTPUT_FILE = 'SynthesisTestLookupParsesOutputFile'
-SYNTHESIS_TEST_LOOKUP_SIGMORPHON_OUTPUT_FILE = 'SynthesisTestLookupSigmorphonOutputFile'
-SYNTHESIS_TEST_LOOKUP_LOG_FILE = 'SynthesisTestLookupLogFile'
+SYNTHESIS_TEST_PARSES_OUTPUT_FILE = 'SynthesisTestParsesOutputFile'
+SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE = 'SynthesisTestSigmorphonOutputFile'
+SYNTHESIS_TEST_LOG_FILE = 'SynthesisTestLogFile'
 TARGET_AFFIX_GLOSS_FILE = 'TargetAffixGlossListFile'
 TARGET_ANA_FILE = 'TargetOutputANAFile'
 TARGET_FORMS_INFLECTION_1ST = 'TargetComplexFormsWithInflectionOn1stElement'
