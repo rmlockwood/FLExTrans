@@ -14,66 +14,57 @@
 #   the correct homograph/sense number on root glosses
 #
 #
-#   Modified:       16 Jun 2023     bb    v2.0 Integrate with FLExTrans: Use FLExTrans
-#                                                           SettingsGUI.py and Utils.py.  Change name
-#                                                           to GenerateParses.py
-#   Modified:      02 Aug 2022    bb     v1.17 Only use active templates. Read settings from config file.
-#   Modified:      26 Jun 2022      bb     v1.12 Change to FLExLookup-MakeAnaFile.py.
-#                                                           Output directly to .ana format, not transferred text.
-#   Modified:      26 Jun 2022      bb     v1.11 Finish updating for FlexTools 2.1 (fix error in v1.10)
-#                                                         Includes counter to allow processing a small number of
-#                                                         stems, during initial setup and debugging.
-#   Modified:      22 Jun 2022      bb     v1.10 Update for FlexTools 2.1 (new flexlibs for FW 9.1.8+)
+#   20 Jun 2023 rl v3.9   Cleaned up imports, modified description slightly, bumped version #
+#   16 Jun 2023 bb v2.0   Integrate with FLExTrans: Use FLExTrans
+#                         SettingsGUI.py and Utils.py.  Change name
+#                         to GenerateParses.py
+#   02 Aug 2022 bb v1.17  Only use active templates. Read settings from config file.
+#   26 Jun 2022 bb v1.12  Change to FLExLookup-MakeAnaFile.py.
+#                         Output directly to .ana format, not transferred text.
+#   26 Jun 2022 bb v1.11  Finish updating for FlexTools 2.1 (fix error in v1.10)
+#                         Includes counter to allow processing a small number of
+#                         stems, during initial setup and debugging.
+#   22 Jun 2022 bb v1.10  Update for FlexTools 2.1 (new flexlibs for FW 9.1.8+)
 #
-#   Modified:     28 May 2022     bb      Change filename and primary function:
-#                                                           Original was for testing writing systems and didn't
-#                                                           use any Synthesis module.                                                        
+#   28 May 2022 bb        Change filename and primary function:
+#                         Original was for testing writing systems and didn't
+#                         use any Synthesis module.                                                        
 #
 #   Original:       03 Oct 2016    
 #   Ron Lockwood
 #   SIL International
 #
 
-import os
-import sys
 import re 
 import copy
 import itertools
 
 from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.KernelInterfaces import ITsString         
 from flextoolslib import *
-from flexlibs import FLExProject, AllProjectNames
 
 import Utils
 import ReadConfig
 
 #----------------------------------------------------------------
-
-from collections import defaultdict
-from System import Guid
-from System import String
-
-#----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate all parses",
-        FTM_Version    : "2.1",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
         FTM_Description:  
 u"""
-Creates an Apertium file (that can be converted for input to a Synthesizer process) with 
+This module creates an Apertium file (that can be converted for input to a Synthesizer process) with 
 all the parses that can be generated from a FLEx project, based on the inflectional templates.  
-(Doesn't generate based on derivation information in the project.  Doesn't yet handle
-clitics or Variants.)  
-In FLExTrans Settings, under Synthesis Test settings, it is possible to limit output to 
+(It doesn't generate based on derivation information in the project and it doesn't yet handle
+clitics or variants.)  
+In FLExTrans > Settings, under Synthesis Test settings, it is possible to limit output to 
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen 
-randomly).  Also outputs a human readable version of the parses (with glosses of roots 
+randomly). This module also outputs a human readable version of the parses (with glosses of roots 
 and affixes) to the Parses Output File specified in the settings.
 """ }
-
 
 #----------------------------------------------------------------
 
