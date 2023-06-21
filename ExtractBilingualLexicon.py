@@ -5,12 +5,15 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.9.1 - 6/19/23 - Ron Lockwood
+#   Version 3.9.3 - 6/19/23 - Ron Lockwood
 #    Fixes #439. Error check after searching for the id 'replacement' or 'append'
 #
-#   Version 3.9 - 6/19/23 - Ron Lockwood
+#   Version 3.9.2 - 6/19/23 - Ron Lockwood
 #    Fixes #387. If a replacement entry has a space, turn that into a </b> in the bilingual lexicon.
 #    It's expected the user will use a normal space when needed for a lemma in the replacement file.
+#
+#   Version 3.9.1 - 6/3/23 - Ron Lockwood
+#    Fixes #441. Catch a exception when writing the bilingual lexicon with ElementTree.
 #
 #   Version 3.8.4 - 5/5/23 - Ron Lockwood
 #    Change Fatal error to Warning.
@@ -258,7 +261,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.9.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -617,7 +620,15 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     # Give whitespace indent TODO: this will only work in python 3.9+
 #    ET.indent(bilingEtree)
     
-    bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
+    try:
+        bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
+    except:
+
+        if report:
+            
+            report.Error('There is a problem writing the Bilingual Dictionary File: '+fullPathBilingFile+'.')
+            
+        return True
     
     # Insert the DOCTYPE as the 2nd line of the file.
     insertDocType(fullPathBilingFile)
