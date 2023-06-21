@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9 - 6/19/23 - Ron Lockwood
+#    Fixes #440. Don't capitalize source headwords if they aren't capitalized in the entry.
+#
 #   Version 3.8.5 - 5/5/23 - Ron Lockwood
 #    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
 #    which encapsulates the Link class and adds the verse number attribute.
@@ -221,7 +224,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.8.5",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1325,6 +1328,9 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                     # Get lemma & POS
                                     srcHeadWord = remove1dot1(word.getLemma(eNum))
                                     srcPOS = word.getPOS(eNum)
+
+                                    # Change the word to lower case if that's what the entry's headword is
+                                    srcHeadWord = word.matchCaseOfEntry(srcHeadWord, eNum)
                                     
                                     # Create a headword-POS-gloss object and initialize a Link object with this
                                     # as the source sense info.
