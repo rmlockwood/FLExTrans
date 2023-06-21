@@ -115,12 +115,14 @@ InitPluginsDir
   File "${GIT_FOLDER}\All Steps.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
   File "${GIT_FOLDER}\All Steps.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
-  SetOverwrite on
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+SetOverwrite on
   
   # Find where FLEx is installed
   ReadRegStr $0 HKLM Software\WOW6432Node\SIL\FieldWorks\9 "RootCodeDir"

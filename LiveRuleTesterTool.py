@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.9.1 - 6/3/23 - Ron Lockwood
+#    Fixes #442. Force the rules to be renumbered when restoring checked rules.
+#
 #   Version 3.9 - 6/2/23 - Ron Lockwood
 #    Support tracing of HermitCrab synthesis
 #
@@ -358,7 +361,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -733,6 +736,9 @@ class Main(QMainWindow):
             # Start out with all rules checked. 
             self.checkThemAll()
         
+        # Number the rules
+        self.rulesListClicked(self.TRIndex)
+
         # Disable the View Testbed Log button if the testbed log doesn't exist
         testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
         
