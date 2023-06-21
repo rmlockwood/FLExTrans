@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.9.1 - 6/21/23 - Ron Lockwood
+#    Added limit_pos setting to the things that get disabled when the Target DB changes.
+#
 #   Version 3.9 - 6/2/23 - Ron Lockwood
 #    Fixes #443. Reorganized settings file in to sections with titles. Synthesis
 #    test settings added. Added a parameter to hide a setting from the user. Hid some HC
@@ -882,7 +885,7 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
-            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element"]:
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element", "limit_pos"]:
                 
                 widgInfo[WIDGET1_OBJ].setEnabled(False)
                 

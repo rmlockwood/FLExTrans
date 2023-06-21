@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   21 Jun 2023 rl v3.9.1 Use the target DB instead of the source DB (passed in from FlexTools)
 #   20 Jun 2023 rl v3.9   Cleaned up imports, modified description slightly, bumped version #
 #   16 Jun 2023 bb v2.0   Integrate with FLExTrans: Use FLExTrans
 #                         SettingsGUI.py and Utils.py.  Change name
@@ -57,7 +58,7 @@ docs = {FTM_Name       : "Generate all parses",
         FTM_Description:  
 u"""
 This module creates an Apertium file (that can be converted for input to a Synthesizer process) with 
-all the parses that can be generated from a FLEx project, based on the inflectional templates.  
+all the parses that can be generated from the target FLEx project, based on its inflectional templates.  
 (It doesn't generate based on derivation information in the project and it doesn't yet handle
 clitics or variants.)  
 In FLExTrans > Settings, under Synthesis Test settings, it is possible to limit output to 
@@ -369,14 +370,15 @@ def MainFunction(DB, report, modifyAllowed):
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        report.Error('Couldnt read '+CONFIG_FILE)
-    #    return
+        return
+
+    # Open the target project
+    DB = Utils.openTargetProject(configMap, report)
 
     # initialize a logfile, for debugging
     targetLOG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOG_FILE, report)
-    if not (targetLOG):
-        report.Error('Couldnt open '+LOG_FILE)
-    #    return 
+    if not targetLOG:
+        return 
 
     logFile = Utils.build_path_default_to_temp(targetLOG)
     try:
@@ -389,6 +391,9 @@ def MainFunction(DB, report, modifyAllowed):
     if focusPOS == "":
         report.Info('  No focus POS. Applying to all POS with templates.')
     else:
+        # last POS is likely empty
+        if focusPOS[-1] == '':
+            focusPOS.pop()
         report.Info('  Only collecting templates for these POS: '+str(focusPOS))
         
     # Get maps related to templates
@@ -641,7 +646,8 @@ def MainFunction(DB, report, modifyAllowed):
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetUF = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report)
     targetSIG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report)
-    if not (targetANA and targetUF and targetSIG):
+
+    if not (targetANA and targetUF): # if targetSIG is missing, don't exit.
         return 
     
     # Open one file to write results directly in Apertium format, to be converted into whichever format 
