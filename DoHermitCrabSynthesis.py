@@ -241,7 +241,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList):
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab master file. Did you run the Convert Text to STAMP Format module and do you have the setting "Use HermitCrab Synthesis" turned on? File: {parsesFile}', 2))
+        errorList.append((f'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}', 2))
         return errorList
 
     # Open parses file
