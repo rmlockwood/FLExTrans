@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->11 May, 2023</date
+>22 June, 2023</date
 ><version
->3.8</version
+>3.9</version
 ><contents
 showLevel="4"
 ></contents
@@ -4885,7 +4885,7 @@ id="sSampleLogic"
 ><secTitle
 >How do I use the Sample logic that's in the transfer rules file?</secTitle
 ><p
->Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule. </p
+>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule.</p
 ></section3
 ></section2
 ><section2
@@ -5413,6 +5413,19 @@ type="tTool"
 ></ol
 ></li
 ></ol
+><p
+>Note: If you need to use compounds/phrases that have a space within them, do the following:</p
+><ol
+><li
+>Add a "phoneme" with a grapheme of #.</li
+><li
+>Make sure that the phonological features for this phoneme are unique.</li
+></ol
+><p
+>The <object
+type="tTool"
+>HermitCrab</object
+> synthesis tool will replace any #s with spaces.</p
 ></section3
 ></section2
 ></section1
