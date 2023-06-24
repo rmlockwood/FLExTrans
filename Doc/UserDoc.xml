@@ -1741,7 +1741,7 @@ type="tFlexx"
 ><p
 >The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.</p
 ><p
->To run this tool, change to the <object
+>To use this tool, change to the <object
 type="tCollection"
 >Synthesis Test</object
 > collection. This will bring up a subset of the standard <object
@@ -1802,7 +1802,7 @@ src="Images/ApplyAndCloseButton.PNG"
 ><li
 >The output will be in the file specified in the settings. If you have not changed the default, it will be <object
 type="tCourier"
->Output/target_text-synt.txt</object
+>Output/target_text-syn.txt</object
 >.</li
 ></ol
 ></section2
