@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->22 June, 2023</date
+>24 June, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -260,6 +260,11 @@ src="Images/AnalyzedText.PNG"
 id="sPrepSteps"
 ><secTitle
 >Preparatory Steps</secTitle
+><p
+>These steps only need to be performed once, when you are setting up your projects to be used with <object
+type="tFlextrans"
+>.</object
+></p
 ><ol
 ><li
 >Create a new folder for your language pair.<ol
@@ -521,7 +526,7 @@ type="tFlexx"
 ></ol
 ></li
 ><li
->Setup transfer rule categories and attributes.<ol
+>Set up transfer rule categories and attributes.<ol
 ><li
 >Run the <object
 type="tTool"
@@ -529,7 +534,10 @@ type="tTool"
 > from the <object
 type="tCollection"
 >Tools</object
-> collection. You will see a window that looks like <exampleRef
+> collection. (See <sectionRef
+sec="sCollections"
+></sectionRef
+> for how to change to a collection.) You will see a window that looks like <exampleRef
 letter="xSetupCatAttrib0"
 num="xSetupCatAttrib0"
 ></exampleRef
@@ -916,6 +924,114 @@ type="tFlexx"
 ></section2
 ></section1
 ><section1
+id="sInfrastructure"
+><secTitle
+><object
+type="tFlextrans"
+></object
+> UI Orientation</secTitle
+><p
+>The <object
+type="tFlextrans"
+></object
+> UI presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
+><section2
+id="sSettings"
+><secTitle
+>The <object
+type="tSettings"
+></object
+></secTitle
+><p
+>The <object
+type="tSettings"
+></object
+> is a tool that helps get <object
+type="tFlextrans"
+></object
+> configured the way you want it. You launch the <object
+type="tSettings"
+></object
+> by selecting <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the <object
+type="tFlexxTools"
+></object
+> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
+type="tSettings"
+></object
+>, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+><example
+num="xSettings"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+height="60%"
+src="Images/SettingsWindow.png"
+></img
+></chart
+></example
+></section2
+><section2
+id="sCollections"
+><secTitle
+>Using Collections</secTitle
+><p
+>Most of the tasks in <object
+type="tFlextrans"
+></object
+> are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.</p
+><p
+>To change to a different collection, click the <img
+cssSpecial="Width:5%"
+src="Images/CollectionsBut.PNG"
+></img
+> button. This will bring up the <exampleRef
+letter="xCollectionsManager"
+num="xCollectionsManager"
+></exampleRef
+></p
+><example
+num="xCollectionsManager"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+src="Images/CollectionsManager.png"
+></img
+></chart
+></example
+><p
+>In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected, the lower right pane will provide information about that module.</p
+><p
+>To change to a different collection, double click on one of the collection names in the upper left pane.</p
+><p
+>If you want to make your own collection to hold modules that you frequently run together, use the <img
+cssSpecial="Width:5%"
+src="Images/NewButton.PNG"
+></img
+> button to create a new collection. Select a module in the lower left pane and use the <img
+cssSpecial="Width:5%"
+src="Images/AddModuleButton.PNG"
+></img
+> button to add it to your collection. Use the <img
+cssSpecial="Width:5%"
+src="Images/MoveUpButton.PNG"
+></img
+> and <img
+cssSpecial="Width:5%"
+src="Images/MoveDownButton.PNG"
+></img
+> buttons to change the sequence.</p
+><p
+>When you are finished making your collection, click the x in the upper right to close the dialog.</p
+></section2
+></section1
+><section1
 id="sTools"
 ><secTitle
 ><object
@@ -1254,47 +1370,6 @@ type="tFlextrans"
 ></object
 > will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
 ></section3
-></section2
-><section2
-id="sSettings"
-><secTitle
->The <object
-type="tSettings"
-></object
-></secTitle
-><p
->The <object
-type="tSettings"
-></object
-> is a tool that helps get <object
-type="tFlextrans"
-></object
-> configured the way you want it. You launch the <object
-type="tSettings"
-></object
-> by selecting <object
-type="tMenu"
->FLExTrans</object
-> &gt; <object
-type="tMenu"
->Settings</object
-> from the <object
-type="tFlexxTools"
-></object
-> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
-type="tSettings"
-></object
->, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
-><example
-num="xSettings"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial=" height:60%"
-src="Images/SettingsWindow.png"
-></img
-></chart
-></example
 ></section2
 ><section2
 id="sViewSrcTgt"
@@ -1641,6 +1716,95 @@ type="tFlexx"
 ></object
 > projects.</p
 ></section3
+></section2
+><section2
+id="sSynthTest"
+><secTitle
+>The <object
+type="tTool"
+>Synthesis Test Tool</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Generate All Parses Tool</object
+> provides a way to test whether your Target Project is ready for the Synthesis stage of <object
+type="tFlextrans"
+></object
+>. It allows you to choose a specific inflectional template from your <object
+type="tFlexx"
+></object
+> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <object
+type="tFlexx"
+></object
+> project.</p
+><p
+>The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.</p
+><p
+>To run this tool, change to the <object
+type="tCollection"
+>Synthesis Test</object
+> collection. This will bring up a subset of the standard <object
+type="tFlextrans"
+></object
+> modules, plus the <object
+type="tTool"
+>Generate All Parses</object
+> module, as shown in <exampleRef
+letter="xSynthTestSteps"
+num="xSynthTestSteps"
+></exampleRef
+>.</p
+><example
+num="xSynthTestSteps"
+><chart
+><img
+height="60%"
+src="images/SynthTestSteps.png"
+></img
+></chart
+></example
+><p
+>To run the Synthesis Test:</p
+><ol
+><li
+>First run the <object
+type="tSettings"
+></object
+> (as described in <sectionRef
+sec="sSettings"
+></sectionRef
+>). Scroll down to the Synthesis Test section, as shown in <exampleRef
+letter="xSynthTestSettings"
+num="xSynthTestSettings"
+></exampleRef
+>.<example
+num="xSynthTestSettings"
+><chart
+><img
+height="60%"
+src="images/SynthTestSettings.png"
+></img
+></chart
+></example
+></li
+><li
+>Select the Part of Speech you want to test. Here you can also limit the number of stems to use for generation (it will choose the stems randomly), or limit it to a specific Citation Form. Click the <img
+cssSpecial="Width:5%"
+height="60%"
+src="Images/ApplyAndCloseButton.PNG"
+></img
+> button.</li
+><li
+>Double click each of the first three modules to run them.</li
+><li
+>Choose either the fourth or fifth module to run, depending on whether you are using the XAMPLE parser or the Hermit Crab parser in your Target Project.</li
+><li
+>The output will be in the file specified in the settings. If you have not changed the default, it will be <object
+type="tCourier"
+>Output/target_text-synt.txt</object
+>.</li
+></ol
 ></section2
 ></section1
 ><section1
