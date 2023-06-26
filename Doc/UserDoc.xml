@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->24 June, 2023</date
+>26 June, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -263,8 +263,8 @@ id="sPrepSteps"
 ><p
 >These steps only need to be performed once, when you are setting up your projects to be used with <object
 type="tFlextrans"
->.</object
-></p
+></object
+>.</p
 ><ol
 ><li
 >Create a new folder for your language pair.<ol
@@ -929,12 +929,12 @@ id="sInfrastructure"
 ><object
 type="tFlextrans"
 ></object
-> UI Orientation</secTitle
+> User Interface Orientation</secTitle
 ><p
 >The <object
 type="tFlextrans"
 ></object
-> UI presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
+> User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
 ><section2
 id="sSettings"
 ><secTitle
