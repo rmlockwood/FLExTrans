@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>22 June, 2023</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>24 June, 2023</small></center>
       <center><small>Version: 3.9</small></center>
       <hr>
       <div>
@@ -26,118 +26,123 @@
                <li><a href="#sWriteRules">2.4&nbsp;Write Transfer Rules</a></li>
                <li><a href="#sRunModules">2.5&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules</a></li>
             </ul>
-            <li><a href="#sTools">3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Tools</a></li>
+            <li><a href="#sInfrastructure">3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface Orientation</a></li>
             <ul>
-               <li><a href="#sLinker">3.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
+               <li><a href="#sSettings">3.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></a></li>
+               <li><a href="#sCollections">3.2&nbsp;Using Collections</a></li>
+            </ul>
+            <li><a href="#sTools">4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Tools</a></li>
+            <ul>
+               <li><a href="#sLinker">4.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></a></li>
                <ul>
-                  <li><a href="#sColorKey">3.1.1&nbsp;Color Coding Key</a></li>
-                  <li><a href="#sHowLink">3.1.2&nbsp;Linking</a></li>
-                  <li><a href="#sSearchList">3.1.3&nbsp;Search the All Target Senses List</a></li>
-                  <li><a href="#sFilterList">3.1.4&nbsp;Filtering the List</a></li>
-                  <li><a href="#sSenses2Link">3.1.5&nbsp;Senses to Link Number</a></li>
-                  <li><a href="#sFontControl">3.1.6&nbsp;Font Control</a></li>
-                  <li><a href="#sRebuildBiling">3.1.7&nbsp;Rebuild the Bilingual Lexicon</a></li>
-                  <li><a href="#sSLTChangeSource">3.1.8&nbsp;Change Source Text</a></li>
+                  <li><a href="#sColorKey">4.1.1&nbsp;Color Coding Key</a></li>
+                  <li><a href="#sHowLink">4.1.2&nbsp;Linking</a></li>
+                  <li><a href="#sSearchList">4.1.3&nbsp;Search the All Target Senses List</a></li>
+                  <li><a href="#sFilterList">4.1.4&nbsp;Filtering the List</a></li>
+                  <li><a href="#sSenses2Link">4.1.5&nbsp;Senses to Link Number</a></li>
+                  <li><a href="#sFontControl">4.1.6&nbsp;Font Control</a></li>
+                  <li><a href="#sRebuildBiling">4.1.7&nbsp;Rebuild the Bilingual Lexicon</a></li>
+                  <li><a href="#sSLTChangeSource">4.1.8&nbsp;Change Source Text</a></li>
                </ul>
-               <li><a href="#sRuleTester">3.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
+               <li><a href="#sRuleTester">4.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
                <ul>
-                  <li><a href="#sTesterQuickGuide">3.2.1&nbsp;Quick Guide</a></li>
-                  <li><a href="#sLRTChangeSource">3.2.2&nbsp;Change Source Text</a></li>
-                  <li><a href="#sHover">3.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
-                  <li><a href="#sTesterOther">3.2.4&nbsp;Other Parts of the Tool</a></li>
+                  <li><a href="#sTesterQuickGuide">4.2.1&nbsp;Quick Guide</a></li>
+                  <li><a href="#sLRTChangeSource">4.2.2&nbsp;Change Source Text</a></li>
+                  <li><a href="#sHover">4.2.3&nbsp;Hover to See Bilingual Lexicon Entry</a></li>
+                  <li><a href="#sTesterOther">4.2.4&nbsp;Other Parts of the Tool</a></li>
                </ul>
-               <li><a href="#sSettings">3.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></a></li>
-               <li><a href="#sViewSrcTgt">3.4&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></a></li>
-               <li><a href="#sParatext">3.5&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
+               <li><a href="#sViewSrcTgt">4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></a></li>
+               <li><a href="#sParatext">4.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools</a></li>
                <ul>
-                  <li><a href="#sPtxImport">3.5.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import</a></li>
-                  <li><a href="#sPtxExport">3.5.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export</a></li>
+                  <li><a href="#sPtxImport">4.4.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import</a></li>
+                  <li><a href="#sPtxExport">4.4.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export</a></li>
                </ul>
-               <li><a href="#sSetupGramCat">3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></a></li>
+               <li><a href="#sSetupGramCat">4.5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></a></li>
                <ul>
-                  <li><a href="#sSrcCats">3.6.1&nbsp;Source Categories</a></li>
-                  <li><a href="#sGramCat">3.6.2&nbsp;<span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> Attribute</a></li>
-                  <li><a href="#sInflectionFeatures">3.6.3&nbsp;Inflection Features</a></li>
-                  <li><a href="#sInflectionClasses">3.6.4&nbsp;Inflection Classes</a></li>
-                  <li><a href="#sTemplateSlots">3.6.5&nbsp;Template Slots</a></li>
+                  <li><a href="#sSrcCats">4.5.1&nbsp;Source Categories</a></li>
+                  <li><a href="#sGramCat">4.5.2&nbsp;<span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> Attribute</a></li>
+                  <li><a href="#sInflectionFeatures">4.5.3&nbsp;Inflection Features</a></li>
+                  <li><a href="#sInflectionClasses">4.5.4&nbsp;Inflection Classes</a></li>
+                  <li><a href="#sTemplateSlots">4.5.5&nbsp;Template Slots</a></li>
+               </ul>
+               <li><a href="#sSynthTest">4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></a></li>
+            </ul>
+            <li><a href="#sTransferTutorial">5&nbsp;A Tutorial on Writing Transfer Rules</a></li>
+            <ul>
+               <li><a href="#sOverview">5.1&nbsp;Overview</a></li>
+               <ul>
+                  <li><a href="#sFormalities">5.1.1&nbsp;Some Formalities</a></li>
+                  <li><a href="#sApproach">5.1.2&nbsp;Approaching the Process of Writing Transfer Rules</a></li>
+                  <li><a href="#sLexicalStruct">5.1.3&nbsp;Lexical Transfer and Structural Transfer</a></li>
+                  <ul>
+                     <li><a href="#sLexTransProc">5.1.3.1&nbsp;How Lexical Transfer is Processed</a></li>
+                  </ul>
+                  <li><a href="#sPrelim">5.1.4&nbsp;Some Preliminaries</a></li>
+                  <li><a href="#sFileOverview">5.1.5&nbsp;Overview of a Transfer File</a></li>
+                  <li><a href="#sRulesApplied">5.1.6&nbsp;How Rules are Applied</a></li>
+               </ul>
+               <li><a href="#sPracticalEx">5.2&nbsp;Practical Example</a></li>
+               <ul>
+                  <li><a href="#sTutSetup">5.2.1&nbsp;Getting Set Up</a></li>
+                  <li><a href="#sLexicalTransfer">5.2.2&nbsp;Lexical Transfer</a></li>
+                  <li><a href="#sThinking">5.2.3&nbsp;Thinking it Through</a></li>
+                  <ul>
+                     <li><a href="#sProc">5.2.3.1&nbsp;Procedures</a></li>
+                     <li><a href="#sDecl">5.2.3.2&nbsp;Declarations</a></li>
+                     <li><a href="#sWorkOrder">5.2.3.3&nbsp;Work Order</a></li>
+                     <li><a href="#sCheatsheet">5.2.3.4&nbsp;Cheat Sheet</a></li>
+                  </ul>
+                  <li><a href="#sImplementation">5.2.4&nbsp;Implementation</a></li>
+                  <ul>
+                     <li><a href="#step1">5.2.4.1&nbsp;Step 1</a></li>
+                     <li><a href="#step2">5.2.4.2&nbsp;Step 2</a></li>
+                     <li><a href="#step3">5.2.4.3&nbsp;Step 3</a></li>
+                     <li><a href="#step4">5.2.4.4&nbsp;Step 4</a></li>
+                     <li><a href="#step5">5.2.4.5&nbsp;Step 5</a></li>
+                     <li><a href="#step6">5.2.4.6&nbsp;Step 6</a></li>
+                  </ul>
                </ul>
             </ul>
-            <li><a href="#sTransferTutorial">4&nbsp;A Tutorial on Writing Transfer Rules</a></li>
+            <li><a href="#sTestbed">6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
             <ul>
-               <li><a href="#sOverview">4.1&nbsp;Overview</a></li>
+               <li><a href="#sTestbedWorkflow">6.1&nbsp;Workflow with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
+               <li><a href="#sTestbedTools">6.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools</a></li>
                <ul>
-                  <li><a href="#sFormalities">4.1.1&nbsp;Some Formalities</a></li>
-                  <li><a href="#sApproach">4.1.2&nbsp;Approaching the Process of Writing Transfer Rules</a></li>
-                  <li><a href="#sLexicalStruct">4.1.3&nbsp;Lexical Transfer and Structural Transfer</a></li>
-                  <ul>
-                     <li><a href="#sLexTransProc">4.1.3.1&nbsp;How Lexical Transfer is Processed</a></li>
-                  </ul>
-                  <li><a href="#sPrelim">4.1.4&nbsp;Some Preliminaries</a></li>
-                  <li><a href="#sFileOverview">4.1.5&nbsp;Overview of a Transfer File</a></li>
-                  <li><a href="#sRulesApplied">4.1.6&nbsp;How Rules are Applied</a></li>
-               </ul>
-               <li><a href="#sPracticalEx">4.2&nbsp;Practical Example</a></li>
-               <ul>
-                  <li><a href="#sTutSetup">4.2.1&nbsp;Getting Set Up</a></li>
-                  <li><a href="#sLexicalTransfer">4.2.2&nbsp;Lexical Transfer</a></li>
-                  <li><a href="#sThinking">4.2.3&nbsp;Thinking it Through</a></li>
-                  <ul>
-                     <li><a href="#sProc">4.2.3.1&nbsp;Procedures</a></li>
-                     <li><a href="#sDecl">4.2.3.2&nbsp;Declarations</a></li>
-                     <li><a href="#sWorkOrder">4.2.3.3&nbsp;Work Order</a></li>
-                     <li><a href="#sCheatsheet">4.2.3.4&nbsp;Cheat Sheet</a></li>
-                  </ul>
-                  <li><a href="#sImplementation">4.2.4&nbsp;Implementation</a></li>
-                  <ul>
-                     <li><a href="#step1">4.2.4.1&nbsp;Step 1</a></li>
-                     <li><a href="#step2">4.2.4.2&nbsp;Step 2</a></li>
-                     <li><a href="#step3">4.2.4.3&nbsp;Step 3</a></li>
-                     <li><a href="#step4">4.2.4.4&nbsp;Step 4</a></li>
-                     <li><a href="#step5">4.2.4.5&nbsp;Step 5</a></li>
-                     <li><a href="#step6">4.2.4.6&nbsp;Step 6</a></li>
-                  </ul>
+                  <li><a href="#sTestbedLogViewer">6.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></a></li>
+                  <li><a href="#sStartTestbed">6.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></a></li>
+                  <li><a href="#sEndTestbed">6.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></a></li>
+                  <li><a href="#sTestbedLRT">6.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
+                  <li><a href="#sTestbedEditor">6.2.5&nbsp;Testbed Editing</a></li>
                </ul>
             </ul>
-            <li><a href="#sTestbed">5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
+            <li><a href="#sHowTo">7&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s</a></li>
             <ul>
-               <li><a href="#sTestbedWorkflow">5.1&nbsp;Workflow with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
-               <li><a href="#sTestbedTools">5.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools</a></li>
+               <li><a href="#sOneVerse">7.1&nbsp;Complete Process for Translating One Verse (video)</a></li>
+               <li><a href="#sTransferRuleHowTos">7.2&nbsp;Transfer Rule How To&#8217;s</a></li>
                <ul>
-                  <li><a href="#sTestbedLogViewer">5.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></a></li>
-                  <li><a href="#sStartTestbed">5.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></a></li>
-                  <li><a href="#sEndTestbed">5.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></a></li>
-                  <li><a href="#sTestbedLRT">5.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
-                  <li><a href="#sTestbedEditor">5.2.5&nbsp;Testbed Editing</a></li>
+                  <li><a href="#sCategory">7.2.1&nbsp;How do I use the category element in the transfer rules?</a></li>
+                  <li><a href="#sAttribute">7.2.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
+                  <li><a href="#sPatternMatch">7.2.3&nbsp;How does pattern matching work?</a></li>
+                  <li><a href="#sDeleteWord">7.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
+                  <li><a href="#sInsertWord">7.2.5&nbsp;How do I insert a word into the target output?</a></li>
+                  <li><a href="#sDeleteAffix">7.2.6&nbsp;How do I delete an affix?</a></li>
+                  <li><a href="#sCondLogic">7.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)</a></li>
+                  <li><a href="#sMacro">7.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
+                  <li><a href="#sAgreement">7.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
+                  <li><a href="#sSampleLogic">7.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?</a></li>
                </ul>
-            </ul>
-            <li><a href="#sHowTo">6&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s</a></li>
-            <ul>
-               <li><a href="#sOneVerse">6.1&nbsp;Complete Process for Translating One Verse (video)</a></li>
-               <li><a href="#sTransferRuleHowTos">6.2&nbsp;Transfer Rule How To&#8217;s</a></li>
+               <li><a href="#sOther">7.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
-                  <li><a href="#sCategory">6.2.1&nbsp;How do I use the category element in the transfer rules?</a></li>
-                  <li><a href="#sAttribute">6.2.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
-                  <li><a href="#sPatternMatch">6.2.3&nbsp;How does pattern matching work?</a></li>
-                  <li><a href="#sDeleteWord">6.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
-                  <li><a href="#sInsertWord">6.2.5&nbsp;How do I insert a word into the target output?</a></li>
-                  <li><a href="#sDeleteAffix">6.2.6&nbsp;How do I delete an affix?</a></li>
-                  <li><a href="#sCondLogic">6.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)</a></li>
-                  <li><a href="#sMacro">6.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
-                  <li><a href="#sAgreement">6.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
-                  <li><a href="#sSampleLogic">6.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?</a></li>
-               </ul>
-               <li><a href="#sOther">6.3&nbsp;Other How To&#8217;s</a></li>
-               <ul>
-                  <li><a href="#sViewBiling">6.3.1&nbsp;How do I view the bilingual lexicon?</a></li>
-                  <li><a href="#sRepl">6.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+                  <li><a href="#sViewBiling">7.3.1&nbsp;How do I view the bilingual lexicon?</a></li>
+                  <li><a href="#sRepl">7.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
-                  <li><a href="#sInflVariantTgt">6.3.3&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
-                  <li><a href="#sInflVariantSrc">6.3.4&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
-                  <li><a href="#sSynthesisSelfTest">6.3.5&nbsp;How do I run a Synthesis Self-Test?</a></li>
-                  <li><a href="#sHermitCrab">6.3.6&nbsp;What do I do to use my <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in synthesis?</a></li>
+                  <li><a href="#sInflVariantTgt">7.3.3&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
+                  <li><a href="#sInflVariantSrc">7.3.4&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
+                  <li><a href="#sSynthesisSelfTest">7.3.5&nbsp;How do I run a Synthesis Self-Test?</a></li>
+                  <li><a href="#sHermitCrab">7.3.6&nbsp;What do I do to use my <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in synthesis?</a></li>
                </ul>
             </ul>
-            <li><a href="#sReferenceDocs">7&nbsp;Reference documents</a></li>
+            <li><a href="#sReferenceDocs">8&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
                   <li><a href="#sStartFlextools">A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></a></li>
                   <li><a href="#sDataStreamFormat">A.2&nbsp;Data Stream Format</a></li>
@@ -149,7 +154,7 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract0">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section<a href="#sReferenceDocs">7</a> for other documentation.
+         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section<a href="#sReferenceDocs">8</a> for other documentation.
          </p>
          <p></p>
          <p></p>
@@ -232,6 +237,8 @@
       <p></p>
       <h2 style=""><a name="sPrepSteps"></a>2.2&nbsp;Preparatory Steps
       </h2>
+      <p>These steps only need to be performed once, when you are setting up your projects to be used with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
+      </p>
       <ol style="list-style-type:decimal; ">
          <li>Create a new folder for your language pair.
             <ol style="list-style-type:lower-alpha; ">
@@ -331,9 +338,9 @@
                </li>
             </ol>
          </li>
-         <li>Setup transfer rule categories and attributes.
+         <li>Set up transfer rule categories and attributes.
             <ol style="list-style-type:lower-alpha; ">
-               <li>Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> from the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection. You will see a window that looks like <a href="#xSetupCatAttrib0">(4)</a>.
+               <li>Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span> from the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> collection. (See <a href="#sCollections">3.2</a> for how to change to a collection.) You will see a window that looks like <a href="#xSetupCatAttrib0">(4)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
@@ -348,7 +355,7 @@
                         </tr>
                      </table>
                   </div>This tool will set up things in your transfer rule file to define your categories and attributes. Find out more about this
-                  tool in section <a href="#sSetupGramCat">3.6</a>. Find more about transfer rules in section <a href="#sTransferTutorial">4</a>.
+                  tool in section <a href="#sSetupGramCat">4.5</a>. Find more about transfer rules in section <a href="#sTransferTutorial">5</a>.
                </li>
                <li>If you have grammatical templates defined in your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects, Click the check box for <span style="font-style:italic; ">Populate template slots as attributes</span>.
                </li>
@@ -409,7 +416,7 @@
                </table>
             </div>
          </li>
-         <li>Link each sense. (More details in section<a href="#sLinker">3.1</a>) 
+         <li>Link each sense. (More details in section<a href="#sLinker">4.1</a>) 
             <ol style="list-style-type:lower-alpha; ">
                <li>For blue rows that look good, simply check the check box in the <span style="font-weight:bold; ">Link It</span> column.
                </li>
@@ -559,16 +566,66 @@
       </p>
       <p></p>
       <p></p>
-      <h1 style=""><a name="sTools"></a>3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Tools
+      <h1 style=""><a name="sInfrastructure"></a>3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface Orientation
       </h1>
-      <h2 style=""><a name="sLinker"></a>3.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h2>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface presents modules that can be run to perform various operations. These are organized into Collections. There
+         is a menu that allows adjusting settings for the modules.
+      </p>
+      <h2 style=""><a name="sSettings"></a>3.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></h2>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> is a tool that helps get <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> configured the way you want it. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xSettings">(14)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/SettingsWindow.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h2 style=""><a name="sCollections"></a>3.2&nbsp;Using Collections
+      </h2>
+      <p>Most of the tasks in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide
+         a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.
+      </p>
+      <p>To change to a different collection, click the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button. This will bring up the <a href="#xCollectionsManager">(15)</a></p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xCollectionsManager">(15)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img src="Images/CollectionsManager.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are
+         in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected, the lower
+         right pane will provide information about that module.
+      </p>
+      <p>To change to a different collection, double click on one of the collection names in the upper left pane.</p>
+      <p>If you want to make your own collection to hold modules that you frequently run together, use the <img style="Width:5%" src="Images/NewButton.PNG"> button to create a new collection. Select a module in the lower left pane and use the <img style="Width:5%" src="Images/AddModuleButton.PNG"> button to add it to your collection. Use the <img style="Width:5%" src="Images/MoveUpButton.PNG"> and <img style="Width:5%" src="Images/MoveDownButton.PNG"> buttons to change the sequence.
+      </p>
+      <p>When you are finished making your collection, click the x in the upper right to close the dialog.</p>
+      <h1 style=""><a name="sTools"></a>4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Tools
+      </h1>
+      <h2 style=""><a name="sLinker"></a>4.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists
          every sense that was analyzed in that text in order. Here&#8217;s sample screen shot of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>:
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xLinkerToolShot">(14)</a></td>
+               <td valign="top"><a name="xLinkerToolShot">(16)</a></td>
                <td>
                   <table>
                      <tr>
@@ -579,7 +636,7 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sColorKey"></a>3.1.1&nbsp;Color Coding Key
+      <h3 style=""><a name="sColorKey"></a>4.1.1&nbsp;Color Coding Key
       </h3>
       <p>Here&#8217;s a key to the color coding:</p>
       <div align="left">
@@ -614,43 +671,43 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sHowLink"></a>3.1.2&nbsp;Linking
+      <h3 style=""><a name="sHowLink"></a>4.1.2&nbsp;Linking
       </h3>
       <p>For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link
          It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need
          to do two things. First, select the target sense that you want to link to in the drop down list of <span style="font-style:normal; font-weight:bold; ">All Target Senses</span> then go to the <span style="font-style:normal; font-weight:bold; ">Target Head Word</span> column for the source sense in question and double-click there. The target sense information should appear with a green background
          color. You can use the search text box to find the appropriate target sense.
       </p>
-      <h3 style=""><a name="sSearchList"></a>3.1.3&nbsp;Search the All Target Senses List
+      <h3 style=""><a name="sSearchList"></a>4.1.3&nbsp;Search the All Target Senses List
       </h3>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Search here</span> field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want
          to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses),
          click on the <span style="font-style:normal; font-weight:bold; ">Search all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box.
       </p>
-      <h3 style=""><a name="sFilterList"></a>3.1.4&nbsp;Filtering the List
+      <h3 style=""><a name="sFilterList"></a>4.1.4&nbsp;Filtering the List
       </h3>
       <p>If you only want to see the senses that need to be linked, check the box <span style="font-style:normal; font-weight:bold; ">Show Only Unlinked</span>. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both
          languages) click the box <span style="font-style:normal; font-weight:bold; ">Hide Proper Nouns</span>.
       </p>
-      <h3 style=""><a name="sSenses2Link"></a>3.1.5&nbsp;Senses to Link Number
+      <h3 style=""><a name="sSenses2Link"></a>4.1.5&nbsp;Senses to Link Number
       </h3>
       <p>At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes,
          rather the number of unique senses that are remaining to link.
       </p>
-      <h3 style=""><a name="sFontControl"></a>3.1.6&nbsp;Font Control
+      <h3 style=""><a name="sFontControl"></a>4.1.6&nbsp;Font Control
       </h3>
       <p>Quickly change the font size with the plus and minus buttons next to <span style="font-style:normal; font-weight:bold; ">Zoom</span>. Change all aspects of the font with the <span style="font-style:normal; font-weight:bold; ">Font</span> button.
       </p>
-      <h3 style=""><a name="sRebuildBiling"></a>3.1.7&nbsp;Rebuild the Bilingual Lexicon
+      <h3 style=""><a name="sRebuildBiling"></a>4.1.7&nbsp;Rebuild the Bilingual Lexicon
       </h3>
       <p>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <span style="font-style:normal; font-weight:bold; ">Rebuild the Bilingual Lexicon</span> check box is checked, this will happen automatically when you click OK. If you would like to change whether by default this
          box is checked or unchecked when you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>, set the corresponding setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> tool.
       </p>
-      <h3 style=""><a name="sSLTChangeSource"></a>3.1.8&nbsp;Change Source Text
+      <h3 style=""><a name="sSLTChangeSource"></a>4.1.8&nbsp;Change Source Text
       </h3>
       <p>If you want to work on linking senses for a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> will close and restart.
       </p>
-      <h2 style=""><a name="sRuleTester"></a>3.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h2>
+      <h2 style=""><a name="sRuleTester"></a>4.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful
          for finding out why transfer rules not are doing what you expect them to do. You can zero in on the problem by selecting just
          one source word and applying the pertinent transfer rule. In this way you don&#8217;t have to run the whole system against the whole
@@ -659,7 +716,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xTesterImage">(15)</a></td>
+               <td valign="top"><a name="xTesterImage">(17)</a></td>
                <td>
                   <table>
                      <tr>
@@ -670,7 +727,7 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sTesterQuickGuide"></a>3.2.1&nbsp;Quick Guide
+      <h3 style=""><a name="sTesterQuickGuide"></a>4.2.1&nbsp;Quick Guide
       </h3>
       <p>Here&#8217;s a quick guide on using the Live Rule Tester Tool.</p>
       <ol style="list-style-type:decimal; ">
@@ -692,18 +749,18 @@
             for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the Testbed to see if you are still getting the results you expect.
          </li>
       </ol>
-      <h3 style=""><a name="sLRTChangeSource"></a>3.2.2&nbsp;Change Source Text
+      <h3 style=""><a name="sLRTChangeSource"></a>4.2.2&nbsp;Change Source Text
       </h3>
       <p>If you want to work on a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will close and restart.
       </p>
-      <h3 style=""><a name="sHover"></a>3.2.3&nbsp;Hover to See Bilingual Lexicon Entry
+      <h3 style=""><a name="sHover"></a>4.2.3&nbsp;Hover to See Bilingual Lexicon Entry
       </h3>
       <p>When you are in the Select Words view in the top pane, you can hover over a word to see what the bilingual lexicon entry looks
          like for that word. As shown in the image above when the word &#8216;liebe&#8217; was hovered over, the bilingual entry maps &#8216;lieben&#8217;
          to &#8216;&auml;lska&#8217;. This feature can be very useful when inflection features are present on the target word. These will show in the
          pop-up as well.
       </p>
-      <h3 style=""><a name="sTesterOther"></a>3.2.4&nbsp;Other Parts of the Tool
+      <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Other Parts of the Tool
       </h3>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
@@ -722,30 +779,13 @@
       <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
          have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.
       </p>
-      <h2 style=""><a name="sSettings"></a>3.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> is a tool that helps get <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> configured the way you want it. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
+      <h2 style=""><a name="sViewSrcTgt"></a>4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h2>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.txt</span> or <span style="font-style:italic; ">target_text.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(18)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(19)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSettings">(16)</a></td>
-               <td>
-                  <table>
-                     <tr>
-                        <td><img style=" height:60%" src="Images/SettingsWindow.png"></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <h2 style=""><a name="sViewSrcTgt"></a>3.4&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.txt</span> or <span style="font-style:italic; ">target_text.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(17)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(18)</a>.
-      </p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xViewSrcTgt">(17)</a></td>
+               <td valign="top"><a name="xViewSrcTgt">(18)</a></td>
                <td>
                   <table>
                      <tr>
@@ -759,7 +799,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in; margin-top:.2in">
          <table>
             <tr>
-               <td valign="top"><a name="xDataStream">(18)</a></td>
+               <td valign="top"><a name="xDataStream">(19)</a></td>
                <td>
                   <table>
                      <tr>
@@ -773,9 +813,9 @@
       <p>You have the options of changing the font, increasing the zoom level, displaying the text right-to-left or opening a similar
          view in the default web browser. If you click on the <span style="font-weight:bold; ">Target</span> button, you will see the contents of <span style="font-style:italic; ">target_text.txt</span>.
       </p>
-      <h2 style=""><a name="sParatext"></a>3.5&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools
+      <h2 style=""><a name="sParatext"></a>4.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import and Export Tools
       </h2>
-      <h3 style=""><a name="sPtxImport"></a>3.5.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import
+      <h3 style=""><a name="sPtxImport"></a>4.4.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Import
       </h3>
       <p>To import <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> chapters into the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. Fill out the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project abbreviation in the first box. Note: this must be a project that you are at least an <span style="font-style:italic; ">Observer</span> on in <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span>. You cannot import from <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> resources. Use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book abbreviation in the second box. You can import multiple chapters.
       </p>
@@ -796,7 +836,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xParatextImport">(19)</a></td>
+               <td valign="top"><a name="xParatextImport">(20)</a></td>
                <td>
                   <table>
                      <tr>
@@ -807,7 +847,7 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sPtxExport"></a>3.5.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export
+      <h3 style=""><a name="sPtxExport"></a>4.4.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export
       </h3>
       <p>To export chapters to <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> from the active text, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Export Text From Paratext</span> module. This tool is designed to work well with a text that you have previously imported with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. In other words, the export tool expects the active source text to be in the form John 03-04 or JHN 03-04. Use the
          <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> tool if you need to change the active source text. The tool will find the book and chapters in the given <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project and replace the text that was there with the text created by <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.<span style="font-size:65%; vertical-align:super">[<a href="#nSynFile">3</a>]</span> Note: the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project must be a project that you are at least a <span style="font-style:italic; ">Translator</span> on. Also, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book must already exist.
@@ -817,7 +857,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xParatextExport">(20)</a></td>
+               <td valign="top"><a name="xParatextExport">(21)</a></td>
                <td>
                   <table>
                      <tr>
@@ -828,14 +868,14 @@
             </tr>
          </table>
       </div>
-      <h2 style=""><a name="sSetupGramCat"></a>3.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></h2>
+      <h2 style=""><a name="sSetupGramCat"></a>4.5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Categories and Attributes Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories Tool</span> will populate categories and attributes in your transfer rule file. Use this tool when you are first setting up your transfer
-         rules. You are given a choice for populating attributes as shown in <a href="#xSetupCatAttrib">(21)</a>. Source categories &amp; the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute are always processed.
+         rules. You are given a choice for populating attributes as shown in <a href="#xSetupCatAttrib">(22)</a>. Source categories &amp; the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute are always processed.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSetupCatAttrib">(21)</a></td>
+               <td valign="top"><a name="xSetupCatAttrib">(22)</a></td>
                <td>
                   <table>
                      <tr>
@@ -846,24 +886,24 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sSrcCats"></a>3.6.1&nbsp;Source Categories
+      <h3 style=""><a name="sSrcCats"></a>4.5.1&nbsp;Source Categories
       </h3>
       <p>This tool finds all the grammatical categories in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and creates corresponding categories under the Categories element in the transfer rule file. Source categories will
          always be created with this tool, unless an existing category of the same name is found.
       </p>
-      <h3 style=""><a name="sGramCat"></a>3.6.2&nbsp;<span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> Attribute
+      <h3 style=""><a name="sGramCat"></a>4.5.2&nbsp;<span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> Attribute
       </h3>
       <p>This tool that will put the necessary attribute values for grammatical categories into your transfer rules file. Every transfer
          rule will likely need to reference the grammatical category of a word either in the source or target language. The initial
          transfer rules file that comes with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has just a few sample grammatical categories. This tool will take the categories that are in the source and target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects and insert them as tags under the specific attribute called <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> in the transfer rules file. The list of grammatical categories will be a complete list of all the unique categories in both
          projects.
       </p>
-      <p><a href="#xSetupGramCat">(22)</a> shows what the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute might look like after running this tool.
+      <p><a href="#xSetupGramCat">(23)</a> shows what the <span style="font-family:Courier New; font-size:100%; ">a_gram_cat</span> attribute might look like after running this tool.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xSetupGramCat">(22)</a></td>
+               <td valign="top"><a name="xSetupGramCat">(23)</a></td>
                <td>
                   <table>
                      <tr>
@@ -874,31 +914,82 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sInflectionFeatures"></a>3.6.3&nbsp;Inflection Features
+      <h3 style=""><a name="sInflectionFeatures"></a>4.5.3&nbsp;Inflection Features
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(21)</a> to populate attributes in your transfer rules that correspond to the inflection features in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection features
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(22)</a> to populate attributes in your transfer rules that correspond to the inflection features in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection features
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
-      <h3 style=""><a name="sInflectionClasses"></a>3.6.4&nbsp;Inflection Classes
+      <h3 style=""><a name="sInflectionClasses"></a>4.5.4&nbsp;Inflection Classes
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(21)</a> to populate attributes in your transfer rules that correspond to the inflection classes in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection classes
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(22)</a> to populate attributes in your transfer rules that correspond to the inflection classes in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the inflection classes
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
-      <h3 style=""><a name="sTemplateSlots"></a>3.6.5&nbsp;Template Slots
+      <h3 style=""><a name="sTemplateSlots"></a>4.5.5&nbsp;Template Slots
       </h3>
-      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(21)</a> to populate attributes in your transfer rules that correspond to template slots in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the template slots
+      <p>Click the appropriate check box as shown in <a href="#xSetupCatAttrib">(22)</a> to populate attributes in your transfer rules that correspond to template slots in both of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. Click the overwrite check box to change existing attributes in your transfer rule file with the template slots
          from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects.
       </p>
-      <h1 style=""><a name="sTransferTutorial"></a>4&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">4</a>]</span></h1>
+      <h2 style=""><a name="sSynthTest"></a>4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></h2>
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses Tool</span> provides a way to test whether your Target Project is ready for the Synthesis stage of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. It allows you to choose a specific inflectional template from your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure
+         they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
+      </p>
+      <p>The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is
+         a good idea to limit the output when starting out, because it can easily become quite large.
+      </p>
+      <p>To use this tool, change to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Synthesis Test</span> collection. This will bring up a subset of the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules, plus the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses</span> module, as shown in <a href="#xSynthTestSteps">(24)</a>.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xSynthTestSteps">(24)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img src="images/SynthTestSteps.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <p>To run the Synthesis Test:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>First run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> (as described in <a href="#sSettings">3.1</a>). Scroll down to the Synthesis Test section, as shown in <a href="#xSynthTestSettings">(25)</a>.
+            <div style="margin-left: 0.25in; margin-right: 0.25in">
+               <table>
+                  <tr>
+                     <td valign="top"><a name="xSynthTestSettings">(25)</a></td>
+                     <td>
+                        <table>
+                           <tr>
+                              <td><img src="images/SynthTestSettings.png"></td>
+                           </tr>
+                        </table>
+                     </td>
+                  </tr>
+               </table>
+            </div>
+         </li>
+         <li>Select the Part of Speech you want to test. Here you can also limit the number of stems to use for generation (it will choose
+            the stems randomly), or limit it to a specific Citation Form. Click the <img style="Width:5%" src="Images/ApplyAndCloseButton.PNG"> button.
+         </li>
+         <li>Double click each of the first three modules to run them.</li>
+         <li>Choose either the fourth or fifth module to run, depending on whether you are using the XAMPLE parser or the Hermit Crab parser
+            in your Target Project.
+         </li>
+         <li>The output will be in the file specified in the settings. If you have not changed the default, it will be <span style="font-family:Courier New; font-size:100%; ">Output/target_text-syn.txt</span>.
+         </li>
+      </ol>
+      <h1 style=""><a name="sTransferTutorial"></a>5&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">4</a>]</span></h1>
       <p>Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes
          struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural
          statements. This tutorial should help you get used to writing transfer rules.
       </p>
       <p></p>
-      <h2 style=""><a name="sOverview"></a>4.1&nbsp;Overview
+      <h2 style=""><a name="sOverview"></a>5.1&nbsp;Overview
       </h2>
       <p>Here&#8217;s a brief overview:</p>
-      <h3 style=""><a name="sFormalities"></a>4.1.1&nbsp;Some Formalities
+      <h3 style=""><a name="sFormalities"></a>5.1.1&nbsp;Some Formalities
       </h3>
       <p>Before starting, it is important to get an idea of what we can&#8217;t do, before explaining what we can.</p>
       <ul>
@@ -914,12 +1005,12 @@
             needs to go in the bilingual dictionary.
          </li>
       </ul>
-      <h3 style=""><a name="sApproach"></a>4.1.2&nbsp;Approaching the Process of Writing Transfer Rules
+      <h3 style=""><a name="sApproach"></a>5.1.2&nbsp;Approaching the Process of Writing Transfer Rules
       </h3>
       <p>Think bottom up, not top down. Start with a question like &#8220;What is the simplest and best equivalent for dative in a language
          which does not have dative?&#8221; not &#8220;How can I change SOV order to SVO order?&#8221;
       </p>
-      <h3 style=""><a name="sLexicalStruct"></a>4.1.3&nbsp;Lexical Transfer and Structural Transfer
+      <h3 style=""><a name="sLexicalStruct"></a>5.1.3&nbsp;Lexical Transfer and Structural Transfer
       </h3>
       <p>We don&#8217;t want to confuse the roles of lexical transfer and structural transfer. There is a grey area between the two, but
          there are also big parts that don&#8217;t overlap.
@@ -946,12 +1037,12 @@
       <p>A rule-of-thumb is, if the rule applies to all words in a category, it probably wants to be treated in the structural transfer;
          if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.
       </p>
-      <p>Lexical transfer for a three word text looks like <a href="#xLexXfer">(23)</a>. In other words, the bilingual dictionary maps a source word to target word. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you don&#8217;t normally need to examine the bilingual dictionary, but conceptually it looks like this. Open the <span style="font-style:italic; ">bilingual.dix</span> in the XML Mind editor for the details.
+      <p>Lexical transfer for a three word text looks like <a href="#xLexXfer">(26)</a>. In other words, the bilingual dictionary maps a source word to target word. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you don&#8217;t normally need to examine the bilingual dictionary, but conceptually it looks like this. Open the <span style="font-style:italic; ">bilingual.dix</span> in the XML Mind editor for the details.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xLexXfer">(23)</a></td>
+               <td valign="top"><a name="xLexXfer">(26)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -962,12 +1053,12 @@
             </tr>
          </table>
       </div>
-      <p>The output of the structural transfer would look like <a href="#xStrXfer">(24)</a>.
+      <p>The output of the structural transfer would look like <a href="#xStrXfer">(27)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStrXfer">(24)</a></td>
+               <td valign="top"><a name="xStrXfer">(27)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -979,15 +1070,15 @@
          </table>
       </div>
       <p>When you are in the structural transfer stage, you have access to both the source and target sides.</p>
-      <h4 style=""><a name="sLexTransProc"></a>4.1.3.1&nbsp;How Lexical Transfer is Processed
+      <h4 style=""><a name="sLexTransProc"></a>5.1.3.1&nbsp;How Lexical Transfer is Processed
       </h4>
       <p>This isn&#8217;t critical information that you have to know, but gives insight into what&#8217;s going on. Feel free to skip this section.</p>
-      <p>Given an input lexical unit shown in <a href="#xInputLexUnit">(25)</a>:
+      <p>Given an input lexical unit shown in <a href="#xInputLexUnit">(28)</a>:
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xInputLexUnit">(25)</a></td>
+               <td valign="top"><a name="xInputLexUnit">(28)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1002,7 +1093,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBiLingEntry">(26)</a></td>
+               <td valign="top"><a name="xBiLingEntry">(29)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1017,7 +1108,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xMappingSample">(27)</a></td>
+               <td valign="top"><a name="xMappingSample">(30)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1032,7 +1123,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xLexXferResult">(28)</a></td>
+               <td valign="top"><a name="xLexXferResult">(31)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1043,17 +1134,17 @@
             </tr>
          </table>
       </div>
-      <p>Note that the target-language lexical form, as defined in the bilingual dictionary entry in <a href="#xBiLingEntry">(26)</a>, is produced by replacing two tags on the source side (i.e. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">cat1 aff2</span>) with one tag on the target side (i.e. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">cat1</span>).
+      <p>Note that the target-language lexical form, as defined in the bilingual dictionary entry in <a href="#xBiLingEntry">(29)</a>, is produced by replacing two tags on the source side (i.e. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">cat1 aff2</span>) with one tag on the target side (i.e. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">cat1</span>).
       </p>
       <p>Important: any source language tags not matched in the bilingual dictionary entry are copied into the output on the target
-         language side. In our example, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">aff3</span></span> in <a href="#xInputLexUnit">(25)</a> gets copied to the final output in <a href="#xLexXferResult">(28)</a>.
+         language side. In our example, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">aff3</span></span> in <a href="#xInputLexUnit">(28)</a> gets copied to the final output in <a href="#xLexXferResult">(31)</a>.
       </p>
-      <h3 style=""><a name="sPrelim"></a>4.1.4&nbsp;Some Preliminaries
+      <h3 style=""><a name="sPrelim"></a>5.1.4&nbsp;Some Preliminaries
       </h3>
       <p>The transfer rule file is written in an XML format and in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> it is named <span style="font-style:italic; ">transfer_rules.t1x</span><span style="font-size:65%; vertical-align:super">[<a href="#nT1X">5</a>]</span>. We could do all the editing of the transfer rules in a text editor, but by using the structured editor <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> we not only get a graphical user interface, but also verification that the rule file we are writing is valid. In fact the
          <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> and the add-ons for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> make it hard to write an invalid rule file.
       </p>
-      <h3 style=""><a name="sFileOverview"></a>4.1.5&nbsp;Overview of a Transfer File
+      <h3 style=""><a name="sFileOverview"></a>5.1.5&nbsp;Overview of a Transfer File
       </h3>
       <p>It&#8217;s hard to give a step-by-step overview of what a transfer file looks like because there is quite a lot of obligatory parts
          that need to go into even the most basic file. But, it&#8217;s important to get a general view before we go into the details. Here
@@ -1062,7 +1153,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xOverviewRuleFile">(29)</a></td>
+               <td valign="top"><a name="xOverviewRuleFile">(32)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1077,14 +1168,14 @@
       </p>
       <p>The transfer file is divided into two main parts: a declaration section and a rules section. The rules section uses information
          from the declaration section. In fact, every kind of reference you make in the rules section, you have to declare in the declaration
-         section. The rules section is clearly denoted by the element <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Rules</span>. All of the elements above <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Rules</span> are part of the declaration section. In <a href="#xOverviewRuleFile">(29)</a> a minimal amount of declarations are shown, namely the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Categories</span>, <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Attributes</span>, and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Variables</span> elements. (The elements <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Macros</span> are not shown.)
+         section. The rules section is clearly denoted by the element <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Rules</span>. All of the elements above <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Rules</span> are part of the declaration section. In <a href="#xOverviewRuleFile">(32)</a> a minimal amount of declarations are shown, namely the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Categories</span>, <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Attributes</span>, and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Variables</span> elements. (The elements <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Macros</span> are not shown.)
       </p>
       <p>Rules have two main parts: the pattern definition and the actions to be carried out.</p>
       <p>The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> element is what determines if <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> runs the rule or not. If the input word or words match the pattern, <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> will run the rule. The thing that goes in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> sub-element of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> element is a list of one or more categories (from the declaration section) you want to match.
       </p>
       <p>The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">action</span> element contains the steps you want to perform in the rule, generally ending with an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element where you output lexical units into the data stream. Note how declared attributes are used in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">action</span> element. Categories and attributes are discussed more below.
       </p>
-      <h3 style=""><a name="sRulesApplied"></a>4.1.6&nbsp;How Rules are Applied
+      <h3 style=""><a name="sRulesApplied"></a>5.1.6&nbsp;How Rules are Applied
       </h3>
       <p>Rules are applied when a pattern is matched in the source language input data stream. Which patterns are matched in which
          order goes like this: the longest patterns are attempted first and then successive shorter patterns are attempted. When there
@@ -1094,12 +1185,12 @@
       <p>Patterns do not overlap. Once a pattern is matched, the matched words are processed and not considered again for any other
          patterns. In other words, the source language words are processed sequentially in chunks. Cf. &#8220;<a href="#sPatternMatch">How does pattern matching work?</a>&#8221;.
       </p>
-      <h2 style=""><a name="sPracticalEx"></a>4.2&nbsp;Practical Example
+      <h2 style=""><a name="sPracticalEx"></a>5.2&nbsp;Practical Example
       </h2>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCroatEngTable">(30)</a></td>
+               <td valign="top"><a name="xCroatEngTable">(33)</a></td>
                <td>
                   <td style="padding-left: .25em">
                      <table style="" border="1">
@@ -1126,9 +1217,9 @@
          </table>
       </div>
       <p>Let&#8217;s do an exercise where the goal is to turn a sentence in Croatian into English. The input and desired output is shown
-         in <a href="#xCroatEngTable">(30)</a>.
+         in <a href="#xCroatEngTable">(33)</a>.
       </p>
-      <h3 style=""><a name="sTutSetup"></a>4.2.1&nbsp;Getting Set Up
+      <h3 style=""><a name="sTutSetup"></a>5.2.1&nbsp;Getting Set Up
       </h3>
       <ol style="list-style-type:decimal; ">
          <li>There are two <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects already set up that we are going to use. You will find them in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder. They are called <span style="font-style:italic; ">Croatian-FLExTrans-Sample ... .fwbackup</span> and <span style="font-style:italic; ">English-FLExTrans-Sample ... .fwbackup</span>. Double-click on them one by one to restore them into <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
@@ -1140,12 +1231,12 @@
          <li>Verify that the status bar shows the current collection is set to <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span>.
          </li>
       </ol>
-      <h3 style=""><a name="sLexicalTransfer"></a>4.2.2&nbsp;Lexical Transfer
+      <h3 style=""><a name="sLexicalTransfer"></a>5.2.2&nbsp;Lexical Transfer
       </h3>
       <p>For the purposes of this example, we are going to use some &#8220;pre-prepared&#8221; data. We have a Croatian text that is already analyzed
          and we have small Croatian and English lexicons with all of the entries and senses that we need.
       </p>
-      <p>Let&#8217;s see what our input and output looks like initially if we run the system. Our input of course, according to <a href="#xCroatEngTable">(30)</a> is: <span style="font-style:italic; ">Oti&#353;la si tiho i bez pozdrava.</span></p>
+      <p>Let&#8217;s see what our input and output looks like initially if we run the system. Our input of course, according to <a href="#xCroatEngTable">(33)</a> is: <span style="font-style:italic; ">Oti&#353;la si tiho i bez pozdrava.</span></p>
       <ol style="list-style-type:decimal; ">
          <li>Go to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
          </li>
@@ -1161,7 +1252,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xOutputInitial">(31)</a></td>
+               <td valign="top"><a name="xOutputInitial">(34)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1172,14 +1263,14 @@
             </tr>
          </table>
       </div>
-      <p>Clearly we have some work to do, but at least three words look good. <a href="#xOutputInitial">(31)</a> is what we get using straight lexical transfer. In other words, English word-senses are substituted for Croatian word-senses.
-         The sample transfer rule we are using (shown in <a href="#xOverviewRuleFile">(29)</a>) is having no influence during the transfer process.
+      <p>Clearly we have some work to do, but at least three words look good. <a href="#xOutputInitial">(34)</a> is what we get using straight lexical transfer. In other words, English word-senses are substituted for Croatian word-senses.
+         The sample transfer rule we are using (shown in <a href="#xOverviewRuleFile">(32)</a>) is having no influence during the transfer process.
       </p>
       <p>Let&#8217;s look at the input and output in data stream format.</p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCroatEngDataStreamTable">(32)</a></td>
+               <td valign="top"><a name="xCroatEngDataStreamTable">(35)</a></td>
                <td>
                   <td style="padding-left: .25em">
                      <table style="" border="1">
@@ -1207,17 +1298,17 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sThinking"></a>4.2.3&nbsp;Thinking it Through
+      <h3 style=""><a name="sThinking"></a>5.2.3&nbsp;Thinking it Through
       </h3>
-      <p>Let&#8217;s think about what changes we need to make in order to convert the output shown in <a href="#xCroatEngDataStreamTable">(32)</a> into an adequate form for target language synthesis. NB: If we want to change information, it&#8217;s a procedure; if we want to
+      <p>Let&#8217;s think about what changes we need to make in order to convert the output shown in <a href="#xCroatEngDataStreamTable">(35)</a> into an adequate form for target language synthesis. NB: If we want to change information, it&#8217;s a procedure; if we want to
          output information or not output information, it&#8217;s a declaration.
       </p>
-      <h4 style=""><a name="sProc"></a>4.2.3.1&nbsp;Procedures
+      <h4 style=""><a name="sProc"></a>5.2.3.1&nbsp;Procedures
       </h4>
       <ol style="list-style-type:decimal; ">
          <li>If the source language grammatical category tag is<span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>, change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span><span style="font-size:65%; vertical-align:super">[<a href="#nPastSuf">8</a>]</span></li>
       </ol>
-      <h4 style=""><a name="sDecl"></a>4.2.3.2&nbsp;Declarations
+      <h4 style=""><a name="sDecl"></a>5.2.3.2&nbsp;Declarations
       </h4>
       <ol style="list-style-type:decimal; ">
          <li>Output a subject pronoun which takes its person and number information from the auxiliary verb.</li>
@@ -1226,7 +1317,7 @@
          </li>
          <li>Output nouns with their grammatical category (but not number or case).</li>
       </ol>
-      <h4 style=""><a name="sWorkOrder"></a>4.2.3.3&nbsp;Work Order
+      <h4 style=""><a name="sWorkOrder"></a>5.2.3.3&nbsp;Work Order
       </h4>
       <p>So, what order do we do these in? Well it doesn&#8217;t really matter. An experienced <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> linguist would probably do it in two steps, but for pedagogical purposes, we&#8217;re going to split it up into five steps:
       </p>
@@ -1260,13 +1351,13 @@
             </ul>
          </li>
       </ul>
-      <h4 style=""><a name="sCheatsheet"></a>4.2.3.4&nbsp;Cheat Sheet
+      <h4 style=""><a name="sCheatsheet"></a>5.2.3.4&nbsp;Cheat Sheet
       </h4>
       <p>Here is what the input and output data stream of each of the above steps will look like:</p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCheatsheet">(33)</a></td>
+               <td valign="top"><a name="xCheatsheet">(36)</a></td>
                <td>
                   <td style="padding-left: .25em">
                      <table style="" border="1">
@@ -1306,9 +1397,9 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sImplementation"></a>4.2.4&nbsp;Implementation
+      <h3 style=""><a name="sImplementation"></a>5.2.4&nbsp;Implementation
       </h3>
-      <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section<a href="#sRuleTester">3.2</a>.
+      <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section<a href="#sRuleTester">4.2</a>.
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Close the <span style="font-weight:bold; ">English-FLExTrans-Sample</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
@@ -1332,7 +1423,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xTesterStep0">(34)</a></td>
+               <td valign="top"><a name="xTesterStep0">(37)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1347,7 +1438,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStep0Source">(35)</a></td>
+               <td valign="top"><a name="xStep0Source">(38)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1358,13 +1449,13 @@
             </tr>
          </table>
       </div>
-      <p>This matches what we have in the cheat sheet in <a href="#xCheatsheet">(33)</a>.
+      <p>This matches what we have in the cheat sheet in <a href="#xCheatsheet">(36)</a>.
       </p>
       <p>In the green box we have the output data stream after the sample rule is applied.</p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStep0Target">(36)</a></td>
+               <td valign="top"><a name="xStep0Target">(39)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1376,7 +1467,7 @@
          </table>
       </div>
       <p>Since we haven&#8217;t done anything, it doesn&#8217;t yet match our output goal for step one in the cheat sheet.</p>
-      <h4 style=""><a name="step1"></a>4.2.4.1&nbsp;Step 1
+      <h4 style=""><a name="step1"></a>5.2.4.1&nbsp;Step 1
       </h4>
       <ol style="list-style-type:decimal; ">
          <li>
@@ -1385,7 +1476,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xCat1">(37)</a></td>
+                     <td valign="top"><a name="xCat1">(40)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1402,11 +1493,11 @@
                <li>Click on the word &#8220;category&#8221;. The whole element becomes outlined in a red rectangle.</li>
                <li>Now either right-click and choose Insert After... or click on the <img src="Images/ButInsertAfter.PNG"> button (upper right side) or press Ctrl-J.
                </li>
-               <li>At this point a list of elements to insert shows up in the upper right pane as shown in <a href="#xInsertListCat">(38)</a>.
+               <li>At this point a list of elements to insert shows up in the upper right pane as shown in <a href="#xInsertListCat">(41)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xInsertListCat">(38)</a></td>
+                           <td valign="top"><a name="xInsertListCat">(41)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -1431,7 +1522,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xPattern1">(39)</a></td>
+                     <td valign="top"><a name="xPattern1">(42)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1442,12 +1533,12 @@
                   </tr>
                </table>
             </div>
-            <p><span style="font-style:italic; ">Trick: Click in the pink area of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> element and press <span style="font-style:normal; font-weight:bold; ">F11</span>. You will get a list of possible categories that can be used in this element. The list looks like</span> <a href="#xCatList">(40)</a>.
+            <p><span style="font-style:italic; ">Trick: Click in the pink area of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">item</span> element and press <span style="font-style:normal; font-weight:bold; ">F11</span>. You will get a list of possible categories that can be used in this element. The list looks like</span> <a href="#xCatList">(43)</a>.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xCatList">(40)</a></td>
+                     <td valign="top"><a name="xCatList">(43)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1459,12 +1550,12 @@
                </table>
             </div>
             <p>By using this pattern we will detect a participle followed by the auxiliary. Once detected, the rule will run.</p>
-            <p>Notice that the example rule as written outputs only the first among two lexical units as seen in <a href="#xOutput1">(41)</a> (&#8220;item: 1&#8221; means the first item or word). We are not outputting the 2nd word. The result is that our <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">biti<span style="font-size:65%; vertical-align:sub;">1.1</span></span> word will disappear.
+            <p>Notice that the example rule as written outputs only the first among two lexical units as seen in <a href="#xOutput1">(44)</a> (&#8220;item: 1&#8221; means the first item or word). We are not outputting the 2nd word. The result is that our <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">biti<span style="font-size:65%; vertical-align:sub;">1.1</span></span> word will disappear.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutput1">(41)</a></td>
+                     <td valign="top"><a name="xOutput1">(44)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1490,7 +1581,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep1Target">(42)</a></td>
+                     <td valign="top"><a name="xStep1Target">(45)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1504,7 +1595,7 @@
             <p>Great!</p>
          </li>
       </ol>
-      <h4 style=""><a name="step2"></a>4.2.4.2&nbsp;Step 2
+      <h4 style=""><a name="step2"></a>5.2.4.2&nbsp;Step 2
       </h4>
       <ol style="list-style-type:decimal; ">
          <li>Replace the dummy <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">attribute</span> element with an attribute that gives possible values of the tense feature. <br><br>So, now that we&#8217;ve gotten rid of the verb &#8220;be&#8221;, we want to change the tag for tense from <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span> to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>. This will involve using a procedure statement, explicitly telling the transfer what we want to change. But before that,
@@ -1512,7 +1603,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xAttrTense">(43)</a></td>
+                     <td valign="top"><a name="xAttrTense">(46)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1528,7 +1619,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLet1">(44)</a></td>
+                     <td valign="top"><a name="xLet1">(47)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1538,11 +1629,11 @@
                      </td>
                   </tr>
                </table>
-            </div><span style="font-style:italic; ">Trick: Click in the brown area of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">part</span> property and press <span style="font-style:normal; font-weight:bold; ">F11</span>. You will get a list of possible attributes that can be used in this element. The list looks like</span> <a href="#xAttrList">(45)</a>.
+            </div><span style="font-style:italic; ">Trick: Click in the brown area of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">part</span> property and press <span style="font-style:normal; font-weight:bold; ">F11</span>. You will get a list of possible attributes that can be used in this element. The list looks like</span> <a href="#xAttrList">(48)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xAttrList">(45)</a></td>
+                     <td valign="top"><a name="xAttrList">(48)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1552,12 +1643,12 @@
                      </td>
                   </tr>
                </table>
-            </div>(Note: the statement in <a href="#xLet1">(44)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section<a href="#sCondLogic">6.2.7</a>.<br><br></li>
+            </div>(Note: the statement in <a href="#xLet1">(47)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section<a href="#sCondLogic">7.2.7</a>.<br><br></li>
          <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)<br><p>The result is:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep2Target">(46)</a></td>
+                     <td valign="top"><a name="xStep2Target">(49)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1571,9 +1662,9 @@
             <p>Excellent!</p>
          </li>
       </ol>
-      <h4 style=""><a name="step3"></a>4.2.4.3&nbsp;Step 3
+      <h4 style=""><a name="step3"></a>5.2.4.3&nbsp;Step 3
       </h4>
-      <p>So far we have been outputting the whole target language lexical unit, as seen in <a href="#xLexUnitWhole">(48)</a> below.
+      <p>So far we have been outputting the whole target language lexical unit, as seen in <a href="#xLexUnitWhole">(51)</a> below.
       </p>
       <p>An important thing to know about lexical transfer is that any source language tags not matched in the bilingual dictionary
          are copied into the output on the target language side. In our case, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv pst</span></span> are the tags that get copied from source to target because, in the bilingual dictionary (<span style="font-style:italic; ">bilingual.dix</span>), <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">oti&#263;i<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span></span> maps to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">leave<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span></span>. All we need is the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> tag; we don&#8217;t need the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pfv</span></span> tag, so we need to declare that it should not be outputted.
@@ -1583,7 +1674,7 @@
             <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span></span> meaning verb. So, make a new attribute element for grammatical category.<span style="font-size:65%; vertical-align:super">[<a href="#nUseSetUpTxfrRulGramCatTool">9</a>]</span><div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xAttrGramCat">(47)</a></td>
+                     <td valign="top"><a name="xAttrGramCat">(50)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1599,7 +1690,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLexUnitWhole">(48)</a></td>
+                     <td valign="top"><a name="xLexUnitWhole">(51)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1613,7 +1704,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in; margin-top:.2in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLexUnit3Clips">(49)</a></td>
+                     <td valign="top"><a name="xLexUnit3Clips">(52)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1630,7 +1721,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep3Target">(50)</a></td>
+                     <td valign="top"><a name="xStep3Target">(53)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1650,7 +1741,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputStep3a">(51)</a></td>
+                     <td valign="top"><a name="xOutputStep3a">(54)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1666,7 +1757,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputStep3">(52)</a></td>
+                     <td valign="top"><a name="xOutputStep3">(55)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1677,19 +1768,19 @@
                   </tr>
                </table>
             </div>
-            <p>This looks a lot better than our initial results in <a href="#xOutputInitial">(31)</a>. The word <span style="font-style:italic; ">Left</span> is now there correctly. It&#8217;s beyond the scope of this exercise to explain in detail how the synthesis works in this case,
-               but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">6.3.3</a> for more details.
+            <p>This looks a lot better than our initial results in <a href="#xOutputInitial">(34)</a>. The word <span style="font-style:italic; ">Left</span> is now there correctly. It&#8217;s beyond the scope of this exercise to explain in detail how the synthesis works in this case,
+               but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">7.3.3</a> for more details.
             </p>
             <p>We&#8217;re getting there, now let&#8217;s move on to the next step.</p>
          </li>
       </ol>
-      <h4 style=""><a name="step4"></a>4.2.4.4&nbsp;Step 4
+      <h4 style=""><a name="step4"></a>5.2.4.4&nbsp;Step 4
       </h4>
       <p>To recap, the input we&#8217;ve been working with is:</p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStep4Input">(53)</a></td>
+               <td valign="top"><a name="xStep4Input">(56)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1704,7 +1795,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStep4CurrentTarget">(54)</a></td>
+               <td valign="top"><a name="xStep4CurrentTarget">(57)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1718,12 +1809,12 @@
       <p>What we now need to do is take the information from the (not outputted) verb <span style="font-style:italic; ">biti</span> &#8220;be&#8221; and use it to output a personal pronoun before the verb. Remember that when we do not output something we are not deleting
          it. It is still there in the input, we are just choosing not to put it in the output.
       </p>
-      <p>The pronoun that we want to output looks like <a href="#xStep4TargetGoal">(55)</a>. If we get it in this form, it will synthesize into the word <span style="font-style:italic; ">you</span>.
+      <p>The pronoun that we want to output looks like <a href="#xStep4TargetGoal">(58)</a>. If we get it in this form, it will synthesize into the word <span style="font-style:italic; ">you</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xStep4TargetGoal">(55)</a></td>
+               <td valign="top"><a name="xStep4TargetGoal">(58)</a></td>
                <td>
                   <table cellpadding="0pt" cellspacing="0pt">
                      <tr>
@@ -1739,12 +1830,12 @@
       <ol style="list-style-type:decimal; ">
          <li>Output a skeleton pronoun.<br><br>So, we need to take the person and number information from the verb &#8220;be&#8221;, and the rest we need to just declare to be outputted.
             Let&#8217;s start with outputting the string <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">propers<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">pro</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">nom</span></span>; we won&#8217;t worry about the <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">2 sg</span></span> tags yet.<br><br></li>
-         <li>Insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(56)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string)</span> then click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span>, do an Insert After... and choose <span style="font-style:italic; ">lit-tag(literal_tag)</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element comes after and is <span style="text-decoration:underline; ">indented at the same level</span> as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span>.
+         <li>Insert a new <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> before our current <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element and make it look like <a href="#xLexUnitPron">(59)</a>.<br><p>You can do an Insert Before... and choose <span style="font-style:italic; ">lu(lexical_unit_lit-string)</span> then click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span>, do an Insert After... and choose <span style="font-style:italic; ">lit-tag(literal_tag)</span>. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element comes after and is <span style="text-decoration:underline; ">indented at the same level</span> as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span>.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLexUnitPron">(56)</a></td>
+                     <td valign="top"><a name="xLexUnitPron">(59)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1760,7 +1851,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xAttrNumPers">(57)</a></td>
+                     <td valign="top"><a name="xAttrNumPers">(60)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1772,12 +1863,12 @@
                </table>
             </div>
          </li>
-         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(58)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_source_language)</span>. Do this twice.
+         <li>We then go back to our skeleton pronoun and add the missing features. So that it looks like <a href="#xLexUnitPronPerNum">(61)</a>.<br><p>Click on the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and Insert After... and choose <span style="font-style:italic; ">clip(clip_source_language)</span>. Do this twice.
             </p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLexUnitPronPerNum">(58)</a></td>
+                     <td valign="top"><a name="xLexUnitPronPerNum">(61)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1788,12 +1879,12 @@
                   </tr>
                </table>
             </div>Note that we are &#8220;clipping&#8221; (copying a part of a string which matches a pattern) from position 2, i.e. the verb &#8220;be&#8221;. To be
-            clearer, the first clip statement in <a href="#xLexUnitPronPerNum">(58)</a> makes a copy of the part of the lexical unit in position 2, on the source language side, which matches one of the patterns
+            clearer, the first clip statement in <a href="#xLexUnitPronPerNum">(61)</a> makes a copy of the part of the lexical unit in position 2, on the source language side, which matches one of the patterns
             defined in the attribute element &#8220;a_pers&#8221; (which can be either <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> 1</span>, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> 2</span> or <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "> 3</span>). If we look at the lexical transfer output which is internally coming from the bilingual dictionary for position 2, this
             will become clearer:<br><br><div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep4Diagram">(59)</a></td>
+                     <td valign="top"><a name="xStep4Diagram">(62)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1809,7 +1900,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep4Target">(60)</a></td>
+                     <td valign="top"><a name="xStep4Target">(63)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1826,7 +1917,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputStep4">(61)</a></td>
+                     <td valign="top"><a name="xOutputStep4">(64)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1842,11 +1933,11 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>We want to be careful, because we don&#8217;t want <span style="font-style:italic; ">you</span> capitalized in all circumstances. For example, if the Croatian past tense clause is embedded in another phrase, the first
                   word may not be capitalized. What we can do is check what the capitalization of the verb is and apply that same capitalization
-                  to the pronoun. Make your <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element look like <a href="#xGetCase1">(62)</a>:
+                  to the pronoun. Make your <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">lexical unit</span> element look like <a href="#xGetCase1">(65)</a>:
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xGetCase1">(62)</a></td>
+                           <td valign="top"><a name="xGetCase1">(65)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -1870,7 +1961,7 @@
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xGetCase2">(63)</a></td>
+                           <td valign="top"><a name="xGetCase2">(66)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -1888,7 +1979,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputStep4b">(64)</a></td>
+                     <td valign="top"><a name="xOutputStep4b">(67)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1902,7 +1993,7 @@
             <p>Looking good!</p>
          </li>
       </ol>
-      <h4 style=""><a name="step5"></a>4.2.4.5&nbsp;Step 5
+      <h4 style=""><a name="step5"></a>5.2.4.5&nbsp;Step 5
       </h4>
       <p>The last remaining thing to do is to not output the genitive or singular tags on the noun. We&#8217;re going to have to make a whole
          new rule to match nouns.
@@ -1912,7 +2003,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xCatN">(65)</a></td>
+                     <td valign="top"><a name="xCatN">(68)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1929,7 +2020,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xRuleN">(66)</a></td>
+                     <td valign="top"><a name="xRuleN">(69)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1945,7 +2036,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xAttrWithN">(67)</a></td>
+                     <td valign="top"><a name="xAttrWithN">(70)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1961,7 +2052,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLexUnitNoun">(68)</a></td>
+                     <td valign="top"><a name="xLexUnitNoun">(71)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -1979,7 +2070,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep5Source">(69)</a></td>
+                     <td valign="top"><a name="xStep5Source">(72)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -1994,7 +2085,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep5Target">(70)</a></td>
+                     <td valign="top"><a name="xStep5Target">(73)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -2010,7 +2101,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xStep5aTarget">(71)</a></td>
+                     <td valign="top"><a name="xStep5aTarget">(74)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -2027,7 +2118,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputStep5">(72)</a></td>
+                     <td valign="top"><a name="xOutputStep5">(75)</a></td>
                      <td>
                         <table cellpadding="0pt" cellspacing="0pt">
                            <tr>
@@ -2041,7 +2132,7 @@
             <p>Success!</p>
          </li>
       </ol>
-      <h4 style=""><a name="step6"></a>4.2.4.6&nbsp;Step 6
+      <h4 style=""><a name="step6"></a>5.2.4.6&nbsp;Step 6
       </h4>
       <p>Step 6 is left as an exercise for the reader. Change the noun rule to output an indefinite article before the noun. You can
          do this by following the instructions for adding the pronoun, see &#8220;<a href="#step4">Step 4</a>&#8221;. The string you need to output is <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">a<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">indf</span></span>.
@@ -2052,14 +2143,14 @@
          Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will
          also be handled.
       </p>
-      <h1 style=""><a name="sTestbed"></a>5&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></h1>
+      <h1 style=""><a name="sTestbed"></a>6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> is a system designed to help you maintain the quality of your translations. It not uncommon, as you add new transfer rules
          to the system or change the lexicons, you mess up the results you were getting before. To help prevent this, it is very helpful
          to have a database of expected results for a certain inputs. This is called a testbed. After making significant changes to
          your translation system, you can re-run the testbed to make sure you are still getting the results you expect for words or
          sentences that you earlier deemed correct.
       </p>
-      <h2 style=""><a name="sTestbedWorkflow"></a>5.1&nbsp;Workflow with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></h2>
+      <h2 style=""><a name="sTestbedWorkflow"></a>6.1&nbsp;Workflow with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></h2>
       <p>This is the way you normally work with the testbed:</p>
       <ol style="list-style-type:decimal; ">
          <li>Make a change to the system, e.g. add a new rule or other changes.</li>
@@ -2080,11 +2171,11 @@
          <li>Make any adjustments as needed. Repeat. If you need to edit the testbed, open the file <span style="font-style:italic; ">testbed.xml</span> which is in the project folder in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
          </li>
       </ol>
-      <h2 style=""><a name="sTestbedTools"></a>5.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools
+      <h2 style=""><a name="sTestbedTools"></a>6.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> Tools
       </h2>
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has a collection of tools to help you maintain the testbed, run the testbed and see the results.
       </p>
-      <h3 style=""><a name="sTestbedLogViewer"></a>5.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></h3>
+      <h3 style=""><a name="sTestbedLogViewer"></a>6.2.1&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed Log Viewer</span></h3>
       <p>This module you will find in both the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Tools</span> and <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collections. Simply run the module and you will see a log of all the times the testbed has been run with a summary of the
          results. The most recently run test opens and lets you see the details for each test. Hover over the Source Lexical Units
          of a test to see some pop-up text of which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> source text the words came from. If the rule was invalid, the pop-up text will also tell you why <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> found the test invalid.
@@ -2092,7 +2183,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xViewerImage">(73)</a></td>
+               <td valign="top"><a name="xViewerImage">(76)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2103,28 +2194,28 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sStartTestbed"></a>5.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></h3>
+      <h3 style=""><a name="sStartTestbed"></a>6.2.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Start Testbed</span></h3>
       <p>This module you will find at the top of the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <span style="font-style:italic; ">source_text.txt</span> file.
       </p>
-      <h3 style=""><a name="sEndTestbed"></a>5.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></h3>
+      <h3 style=""><a name="sEndTestbed"></a>6.2.3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">End Testbed</span></h3>
       <p>This module you will find as the next to last module in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Run Testbed</span> collection. It takes the results of running the transfer and synthesis processes (the <span style="font-style:italic; ">source_text.txt</span> file) and adds the tests run and whether they passed or not to the testbed log.
       </p>
-      <h3 style=""><a name="sTestbedLRT"></a>5.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h3>
+      <h3 style=""><a name="sTestbedLRT"></a>6.2.4&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a good place to add new tests to the testbed. See &#8220;<a href="#sRuleTester">The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a>&#8221; for more details.
       </p>
-      <h3 style=""><a name="sTestbedEditor"></a>5.2.5&nbsp;Testbed Editing
+      <h3 style=""><a name="sTestbedEditor"></a>6.2.5&nbsp;Testbed Editing
       </h3>
       <p>It&#8217;s easiest to add new tests to the testbed while in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. If you need to edit or delete a test, edit the file <span style="font-style:italic; ">testbed.xml</span> in the project folder with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
-      <h1 style=""><a name="sHowTo"></a>6&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s
+      <h1 style=""><a name="sHowTo"></a>7&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> How To&#8217;s
       </h1>
-      <h2 style=""><a name="sOneVerse"></a>6.1&nbsp;Complete Process for Translating One Verse (video)
+      <h2 style=""><a name="sOneVerse"></a>7.1&nbsp;Complete Process for Translating One Verse (video)
       </h2>
       <p><a href="https://drive.google.com/file/d/1KibhaxIHRPYM8SXiWxYcaxSgxHOlt1fv/view?usp=sharing"><img style=" height:30%" src="Images\CompleteVerseVideo.png"></a></p>
-      <h2 style=""><a name="sTransferRuleHowTos"></a>6.2&nbsp;Transfer Rule How To&#8217;s
+      <h2 style=""><a name="sTransferRuleHowTos"></a>7.2&nbsp;Transfer Rule How To&#8217;s
       </h2>
       <p></p>
-      <h3 style=""><a name="sCategory"></a>6.2.1&nbsp;How do I use the category element in the transfer rules?
+      <h3 style=""><a name="sCategory"></a>7.2.1&nbsp;How do I use the category element in the transfer rules?
       </h3>
       <p>Lexical categories are used to group words together. The grouping can be very broad such as verbs or very specific such as
          pronouns with feminine suffixes. The categories are used in the pattern matching system of transfer rules.
@@ -2132,7 +2223,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCat">(74)</a></td>
+               <td valign="top"><a name="xCat">(77)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2143,16 +2234,16 @@
             </tr>
          </table>
       </div>
-      <p><a href="#xCat">(74)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
+      <p><a href="#xCat">(77)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
          a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more
-         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(74)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes..
+         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(77)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes..
       </p>
-      <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(75)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
+      <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(78)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xCatLem">(75)</a></td>
+               <td valign="top"><a name="xCatLem">(78)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2163,15 +2254,15 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sAttribute"></a>6.2.2&nbsp;How do I use the attribute element in the transfer rules?
+      <h3 style=""><a name="sAttribute"></a>7.2.2&nbsp;How do I use the attribute element in the transfer rules?
       </h3>
       <p>Attributes are defined in the rule file in order to identify possible values for word characteristics. An example is shown
-         in <a href="#xAttrib">(76)</a>.
+         in <a href="#xAttrib">(79)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xAttrib">(76)</a></td>
+               <td valign="top"><a name="xAttrib">(79)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2182,10 +2273,10 @@
             </tr>
          </table>
       </div>
-      <p>Certain words may have affixes that indicate grammatical number. <a href="#xAttrib">(76)</a> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these
+      <p>Certain words may have affixes that indicate grammatical number. <a href="#xAttrib">(79)</a> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these
          refer to tags in the data stream. Attributes are used within rules to get or set values.
       </p>
-      <h3 style=""><a name="sPatternMatch"></a>6.2.3&nbsp;How does pattern matching work?
+      <h3 style=""><a name="sPatternMatch"></a>7.2.3&nbsp;How does pattern matching work?
       </h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you
          have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns
@@ -2204,20 +2295,20 @@
       <p>If the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default
          translation of it according to what is in the bilingual dictionary. Cf. &#8220;<a href="#sRulesApplied">How Rules are Applied</a>&#8221;.
       </p>
-      <h3 style=""><a name="sDeleteWord"></a>6.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)
+      <h3 style=""><a name="sDeleteWord"></a>7.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)
       </h3>
       <p>The short answer is don&#8217;t output it. In other words, don&#8217;t declare that it should be outputted into the target data stream.</p>
-      <p>When you match two or more words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> section of a transfer rule, you can choose to only list some of the words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section. This is exactly what we did in &#8220;<a href="#step1">Step 1</a>&#8221; of the tutorial. In <a href="#xOutput1">(41)</a> we only declared that the word in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">position</span> 1 should be outputted.
+      <p>When you match two or more words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> section of a transfer rule, you can choose to only list some of the words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section. This is exactly what we did in &#8220;<a href="#step1">Step 1</a>&#8221; of the tutorial. In <a href="#xOutput1">(44)</a> we only declared that the word in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">position</span> 1 should be outputted.
       </p>
-      <h3 style=""><a name="sInsertWord"></a>6.2.5&nbsp;How do I insert a word into the target output?
+      <h3 style=""><a name="sInsertWord"></a>7.2.5&nbsp;How do I insert a word into the target output?
       </h3>
       <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
-         use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(77)</a> shows how it might look.
+         use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(80)</a> shows how it might look.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xInsertWord">(77)</a></td>
+               <td valign="top"><a name="xInsertWord">(80)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2231,19 +2322,19 @@
       <p>Of course you can output affixes or clitics as well. These would be additional <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you
          have a valid word-sense and its corresponding grammatical category, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.
       </p>
-      <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(56)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
+      <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(59)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
       </p>
-      <h3 style=""><a name="sDeleteAffix"></a>6.2.6&nbsp;How do I delete an affix?
+      <h3 style=""><a name="sDeleteAffix"></a>7.2.6&nbsp;How do I delete an affix?
       </h3>
       <p>There are two methods for deleting an affix. You can either set the value for that affix (attribute) to blank or you can not
          declare that the affix (attribute) gets outputted.
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute&#8217;s value to blank. See <a href="#xLetBlank">(78)</a>.
+         <li>Method 1. Use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element to set an attribute&#8217;s value to blank. See <a href="#xLetBlank">(81)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xLetBlank">(78)</a></td>
+                     <td valign="top"><a name="xLetBlank">(81)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -2254,11 +2345,11 @@
                   </tr>
                </table>
             </div>Here we are overriding whatever is in the tense attribute (a_tense) with a blank string. Whenever the tense affix gets outputted,
-            it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(79)</a> the whole word is outputted with all its attributes.
+            it will be outputted as nothing. As an example, in <a href="#xOutputWhole">(82)</a> the whole word is outputted with all its attributes.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutputWhole">(79)</a></td>
+                     <td valign="top"><a name="xOutputWhole">(82)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -2275,7 +2366,7 @@
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
-                     <td valign="top"><a name="xOutMultAffixes">(80)</a></td>
+                     <td valign="top"><a name="xOutMultAffixes">(83)</a></td>
                      <td>
                         <table>
                            <tr>
@@ -2285,18 +2376,18 @@
                      </td>
                   </tr>
                </table>
-            </div>In <a href="#xOutMultAffixes">(80)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
-            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(79)</a> in Method 1, you just have to output the whole word.
+            </div>In <a href="#xOutMultAffixes">(83)</a> you can see that the lemma is outputted and then the grammatical category and then two attribute. The disadvantage of this
+            method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(82)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
-      <h3 style=""><a name="sCondLogic"></a>6.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sCondLogic"></a>7.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm">video</a> for an explanation. Also see examples of conditional logic in the rule: <span style="font-weight:bold; ">Sample logic to copy and paste</span>.
       </p>
-      <h3 style=""><a name="sMacro"></a>6.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sMacro"></a>7.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this
          <a href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt">video</a> for an explanation.
       </p>
-      <h3 style=""><a name="sAgreement"></a>6.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sAgreement"></a>7.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
          transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
       </p>
@@ -2304,23 +2395,23 @@
       </p>
       <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
       </p>
-      <h3 style=""><a name="sSampleLogic"></a>6.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?
+      <h3 style=""><a name="sSampleLogic"></a>7.2.10&nbsp;How do I use the Sample logic that's in the transfer rules file?
       </h3>
       <p>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what
          kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the
          block (outlined in red). Now you can copy that block and put it into your own rule.
       </p>
-      <h2 style=""><a name="sOther"></a>6.3&nbsp;Other How To&#8217;s
+      <h2 style=""><a name="sOther"></a>7.3&nbsp;Other How To&#8217;s
       </h2>
       <p></p>
-      <h3 style=""><a name="sViewBiling"></a>6.3.1&nbsp;How do I view the bilingual lexicon?
+      <h3 style=""><a name="sViewBiling"></a>7.3.1&nbsp;How do I view the bilingual lexicon?
       </h3>
-      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(81)</a>.
+      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(84)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries0">(81)</a></td>
+               <td valign="top"><a name="xBilingEntries0">(84)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2331,19 +2422,19 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sRepl"></a>6.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+      <h3 style=""><a name="sRepl"></a>7.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
       <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon. This file is your project folder.
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon. That's the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(82)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
+         lexicon is shown in <a href="#xBilingEntries">(85)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder. Both the <span style="font-style:italic; ">replace.dix</span> and <span style="font-style:italic; ">bilingual.dix</span> files are XML files and will load automatically in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries">(82)</a></td>
+               <td valign="top"><a name="xBilingEntries">(85)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2355,12 +2446,12 @@
          </table>
       </div>
       <p>In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file.
-         If you double-click on <span style="font-style:italic; ">replace.dix</span> in the project folder, you will see something like <a href="#xReplacement">(83)</a>.
+         If you double-click on <span style="font-style:italic; ">replace.dix</span> in the project folder, you will see something like <a href="#xReplacement">(86)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xReplacement">(83)</a></td>
+               <td valign="top"><a name="xReplacement">(86)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2375,12 +2466,12 @@
          for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can&#8217;t edit the bilingual
          dictionary file directly because it gets generated automatically by <span style="font-family:Courier New; font-weight:bold; color:navy; "> FLExTrans</span>. After <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> generates it, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> replaces and appends entries from the replacement file.
       </p>
-      <p>Let&#8217;s say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(82)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(84)</a>.
+      <p>Let&#8217;s say that we want to map the past tense of the entry for <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben</span> shown in <a href="#xBilingEntries">(85)</a> to a different Swedish word, we change the replacement file to something like <a href="#xRepChanged">(87)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xRepChanged">(84)</a></td>
+               <td valign="top"><a name="xRepChanged">(87)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2393,7 +2484,7 @@
       </div>
       <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add a new symbol definition, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span> so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
-      <h3 style=""><a name="sInflVariantTgt"></a>6.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sInflVariantTgt"></a>7.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2401,7 +2492,7 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
       </p>
-      <h3 style=""><a name="sInflVariantSrc"></a>6.3.4&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sInflVariantSrc"></a>7.3.4&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2409,7 +2500,7 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the Source Text Name property in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to &#8220;Text2&#8221;.
       </p>
-      <h3 style=""><a name="sSynthesisSelfTest"></a>6.3.5&nbsp;How do I run a Synthesis Self-Test?
+      <h3 style=""><a name="sSynthesisSelfTest"></a>7.3.5&nbsp;How do I run a Synthesis Self-Test?
       </h3>
       <p>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p>
       <ol style="list-style-type:decimal; ">
@@ -2438,7 +2529,7 @@
          <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span>.
          </li>
       </ol>
-      <h3 style=""><a name="sHermitCrab"></a>6.3.6&nbsp;What do I do to use my <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in synthesis?
+      <h3 style=""><a name="sHermitCrab"></a>7.3.6&nbsp;What do I do to use my <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in synthesis?
       </h3>
       <p>By default <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> assumes you will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model, you can make some changes in your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> setup to use <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> for synthesis. For more details on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, see <a href="#rBlack">Black, (2014)</a>.
       </p>
@@ -2449,11 +2540,11 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu.
                </li>
-               <li>Click <span style="font-weight:bold; ">Yes</span> for <span style="font-style:italic; ">Use HermitCrab synthesis</span> as shown in <a href="#xHermitCrabYesNo">(85)</a>.
+               <li>Click <span style="font-weight:bold; ">Yes</span> for <span style="font-style:italic; ">Use HermitCrab synthesis</span> as shown in <a href="#xHermitCrabYesNo">(88)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xHermitCrabYesNo">(85)</a></td>
+                           <td valign="top"><a name="xHermitCrabYesNo">(88)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2469,11 +2560,11 @@
          </li>
          <li>Replace the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with STAMP</span> module with the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with HermitCrab</span> module. Here are the steps to do that:
             <ol style="list-style-type:lower-alpha; ">
-               <li>Click on the <img style="Height:5%;" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xCollections">(86)</a> repeated from <a href="#xMyCollections">(5)</a> above.
+               <li>Click on the <img style="Height:5%;" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xCollections">(89)</a> repeated from <a href="#xMyCollections">(5)</a> above.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xCollections">(86)</a></td>
+                           <td valign="top"><a name="xCollections">(89)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2487,11 +2578,11 @@
                </li>
                <li>Click on <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span>.
                </li>
-               <li>Then click on <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with STAMP</span> module as shown in <a href="#xCollections2">(87)</a>.
+               <li>Then click on <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with STAMP</span> module as shown in <a href="#xCollections2">(90)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xCollections2">(87)</a></td>
+                           <td valign="top"><a name="xCollections2">(90)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2505,11 +2596,11 @@
                </li>
                <li>Now click the <img src="Images/RemoveButton.png"> button to remove the module from the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection.
                </li>
-               <li>In the lower pane, click on the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with HermitCrab</span> module. As shown in <a href="#xCollections3">(88)</a>.
+               <li>In the lower pane, click on the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with HermitCrab</span> module. As shown in <a href="#xCollections3">(91)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xCollections3">(88)</a></td>
+                           <td valign="top"><a name="xCollections3">(91)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2521,11 +2612,11 @@
                      </table>
                   </div>
                </li>
-               <li>Click the <img src="Images/AddModuleButton.png"> button and then in the upper right pane, click on the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">FLExTrans.Synthesize Text with HermitCrab</span> module as shown in <a href="#xCollections4">(89)</a>.
+               <li>Click the <img src="Images/AddModuleButton.png"> button and then in the upper right pane, click on the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">FLExTrans.Synthesize Text with HermitCrab</span> module as shown in <a href="#xCollections4">(92)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xCollections4">(89)</a></td>
+                           <td valign="top"><a name="xCollections4">(92)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2539,11 +2630,11 @@
                </li>
                <li>Now click the <img src="Images/MoveUpButton.png"> button.
                </li>
-               <li>The <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with HermitCrab</span> module is now in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection at the right place as shown in <a href="#xCollections5">(90)</a>.
+               <li>The <span style="font-family:Courier New; font-weight:bold; color:#660066; ">Synthesize Text with HermitCrab</span> module is now in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection at the right place as shown in <a href="#xCollections5">(93)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
-                           <td valign="top"><a name="xCollections5">(90)</a></td>
+                           <td valign="top"><a name="xCollections5">(93)</a></td>
                            <td>
                               <table>
                                  <tr>
@@ -2567,7 +2658,7 @@
       </ol>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> synthesis tool will replace any #s with spaces.
       </p>
-      <h1 style=""><a name="sReferenceDocs"></a>7&nbsp;Reference documents
+      <h1 style=""><a name="sReferenceDocs"></a>8&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
       </p>
@@ -2654,7 +2745,7 @@
             <td valign="top"><a name="nUseSetUpTxfrRulGramCatTool">[9]</a></td>
             <td>
                <p>It can be arduous to type in all the grammatical categories that you need for your transfer rules. That&#8217;s why there is the
-                  <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tool called <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories</span>. This tool will insert all possible source and target categories for the <span style="font-weight:bold; ">a_gram_cat</span> attribute. See section <a href="#sSetupGramCat">3.6</a> for more details.
+                  <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tool called <span style="font-family:Courier New; font-weight:bold; color:navy; ">Set Up Transfer Rule Grammatical Categories</span>. This tool will insert all possible source and target categories for the <span style="font-weight:bold; ">a_gram_cat</span> attribute. See section <a href="#sSetupGramCat">4.5</a> for more details.
                </p>
             </td>
          </tr>

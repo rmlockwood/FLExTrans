@@ -50,7 +50,7 @@ import ReadConfig
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Generate all parses",
+docs = {FTM_Name       : "Generate All Parses",
         FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
