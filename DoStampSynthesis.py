@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.1 - 6/26/23 - Ron Lockwood
+#    Updated module description.
+#
 #   Version 3.9 - 6/19/23 - Ron Lockwood
 #    Fixes #444. Skip Affix Process 'allomorphs'. They are only for HermitCrab.
 #
@@ -227,17 +230,20 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Extracts the target lexicon, then synthesizes the target text with STAMP.",
+        FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
         FTM_Description:  
 """
-This module creates target language lexicons files. One for
-roots, prefixes, suffixes and infixes. They are in the STAMP for synthesis. 
-This module also runs STAMP to create the
-synthesized text. NOTE: Messages and the task bar will show the SOURCE database
-as being used. Actually the target database is being used.
+This module runs STAMP to create the
+synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
+This will default to something like 'target_text-syn.txt'. 
+Before creating the synthesized text, this module extracts the target language lexicons files. One for
+roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files 
+are put into the folder designated in the Settings as Target Lexicon Files Folder. By default it is the 'Build' folder.
+NOTE: Messages will say the SOURCE database
+is being used. Actually the target database is being used.
 """ }
 
 DONT_CACHE = False
@@ -1104,6 +1110,9 @@ def synthesize(configMap, anaFile, synFile, report=None):
     # Replace underscores with spaces in the Synthesized file
     # Underscores were added for multiword entries that contained a space
     fix_up_text(synFile, cleanUpText)
+
+    # Tell the user which file was created
+    error_list.append((f'Target text: {synFile} created.', 0))
     
     return error_list
 
