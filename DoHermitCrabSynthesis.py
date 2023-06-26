@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.9.1 - 6/26/23 - Ron Lockwood
+#    Updated module description. Also output the name of the created synthesis file.
+#
 #   Version 3.9 - 6/2/23 - Ron Lockwood
 #    Support tracing of HermitCrab synthesis
 #
@@ -46,15 +49,21 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Uses target lexicon and HermitCrab rules to create a target text.",
+        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
         FTM_Description:  
 """
-This extracts the target lexicon from the target FLEx project and HermitCrab settings in the form of a HermitCrab configuration file.
-It then runs HermitCrab against a list of target parses to produce surface forms. These forms are then used to create the target text.
-NOTE: Messages and the task bar will show the SOURCE database as being used. Actually the target database is being used.
+This module runs HermitCrab to create the
+synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
+This will default to something like 'target_text-syn.txt'. 
+Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab configuration file. 
+It is named 'HermitCrab.config' and will be in the 'Build' folder. 
+NOTE: Messages will say the SOURCE database
+is being used. Actually the target database is being used.
+Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to produce surface forms ('target_words-surface.txt'). 
+These forms are then used to create the target text.
 """ }
 def configFileOutOfDate(targetDB, HCconfigPath):
 
@@ -390,6 +399,9 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     fix_up_text(synFile, cleanUpText)
 
+    # Tell the user which file was created
+    errorList.append((f'Target text: {synFile} created.', 0))
+    
     return errorList
 
 def MainFunction(DB, report, modifyAllowed):
