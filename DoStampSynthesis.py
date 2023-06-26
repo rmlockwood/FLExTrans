@@ -6,7 +6,7 @@
 #   12/5/14
 #
 #   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description.
+#    Updated module description. Also output the name of the created synthesis file.
 #
 #   Version 3.9 - 6/19/23 - Ron Lockwood
 #    Fixes #444. Skip Affix Process 'allomorphs'. They are only for HermitCrab.

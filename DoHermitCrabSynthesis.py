@@ -6,7 +6,7 @@
 #   3/8/23
 #
 #   Version 3.9.1 - 6/26/23 - Ron Lockwood
-#    Updated module description.
+#    Updated module description. Also output the name of the created synthesis file.
 #
 #   Version 3.9 - 6/2/23 - Ron Lockwood
 #    Support tracing of HermitCrab synthesis
@@ -399,6 +399,9 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     fix_up_text(synFile, cleanUpText)
 
+    # Tell the user which file was created
+    errorList.append((f'Target text: {synFile} created.', 0))
+    
     return errorList
 
 def MainFunction(DB, report, modifyAllowed):
