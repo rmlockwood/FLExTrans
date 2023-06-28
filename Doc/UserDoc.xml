@@ -205,58 +205,6 @@ type="tFlexx"
 ></object
 > projects to use as source and target projects for the following steps.)</p
 ><section2
-id="sAnalyze"
-><secTitle
->Analyze the Source Text</secTitle
-><ol
-><li
->Create a new text in <object
-type="tFlexx"
-></object
->.</li
-><li
->Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
-><li
->Analyze this text.<ol
-><li
->Divide each word into its morphemes.</li
-><li
->Accept the analysis of each word.</li
-></ol
-></li
-></ol
-><p
->Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
-letter="xAnalyzedText"
-num="xAnalyzedText"
-></exampleRef
-> below.</p
-><example
-num="xAnalyzedText"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial=" height:60%"
-src="Images/AnalyzedText.PNG"
-></img
-></chart
-></example
-><p
->Note: Word gloss and category are hidden as well as free translation.</p
-><p
-><comment
->Advanced info. for the later section:</comment
-></p
-><p
-><comment
->All affixes and clitics need to have unique glosses</comment
-></p
-><p
-><comment
->Use the parser for faster analysis.</comment
-></p
-></section2
-><section2
 id="sPrepSteps"
 ><secTitle
 >Preparatory Steps</secTitle
@@ -569,6 +517,58 @@ type="tItalic"
 ></ol
 ></li
 ></ol
+></section2
+><section2
+id="sAnalyze"
+><secTitle
+>Analyze the Source Text</secTitle
+><ol
+><li
+>Create a new text in <object
+type="tFlexx"
+></object
+>.</li
+><li
+>Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
+><li
+>Analyze this text.<ol
+><li
+>Divide each word into its morphemes.</li
+><li
+>Accept the analysis of each word.</li
+></ol
+></li
+></ol
+><p
+>Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
+letter="xAnalyzedText"
+num="xAnalyzedText"
+></exampleRef
+> below.</p
+><example
+num="xAnalyzedText"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AnalyzedText.PNG"
+></img
+></chart
+></example
+><p
+>Note: Word gloss and category are hidden as well as free translation.</p
+><p
+><comment
+>Advanced info. for the later section:</comment
+></p
+><p
+><comment
+>All affixes and clitics need to have unique glosses</comment
+></p
+><p
+><comment
+>Use the parser for faster analysis.</comment
+></p
 ></section2
 ><section2
 id="sLinkSenses"
@@ -935,6 +935,74 @@ type="tFlextrans"
 type="tFlextrans"
 ></object
 > User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
+><section2
+id="sFTUserInterface"
+><secTitle
+>FLExTrans Window</secTitle
+><p
+>The <object
+type="tFlextrans"
+></object
+> user interface is shown in <exampleRef
+letter="xFirstStart"
+num="xFTwindow"
+></exampleRef
+>. The parts of this window are described below.</p
+><example
+num="xFTwindow"
+><chart
+><img
+src="Images/FLExTransWindow.png"
+></img
+></chart
+></example
+><ol
+><li
+>The Menu bar provides a way to run various FlexTools command by choosing a menu and then selecting a command from that menu.<ol
+><li
+>The FLExTools menu provides a way to change the Source Project, change or manage collections, learn about modules, reload modules, and exit the FLExTools program.</li
+><li
+>The Run menu allows users to run a single module, or all modules in the current collection.</li
+><li
+>The Report menu includes options for copying messages to the clipboard or to clear them.</li
+><li
+>The FLExTrans menu gives access to the Settings dialog for FLExTrans, as well as the FLExTrans documentation, and information about the current version of FLExTrans.</li
+><li
+>The Help menu gives access to the FLExTools documentation, as well as some additional resources for writing modules for FLExTools, and the "About" information for FLExTools.</li
+></ol
+></li
+><li
+>The Toolbar provides icons that can be clicked to run the most common FLExTools commands.<ol
+><li
+>The Source Project icon allows you to choose from the FLEx projects that are available on your device.</li
+><li
+>The Collections button allows you to change to a different collection, as well as add, modify, or delete collections.</li
+><li
+>The Module Info button shows more details about whichever module is currently selected.</li
+><li
+>The Run button runs the currently selected module.</li
+><li
+>The Run All button runs all the modules in the current collection, in order. If one of the modules results in an error, operation will stop and the remaining modules will not be run. [Add info about "modify database"?]</li
+></ol
+></li
+><li
+>The Modules window displays all the modules that are in the current collection. Keep in mind that this is a subset of all the modules that are available in FLExTrans, and modules may exist in more than one collection.</li
+><li
+>The Messages window displays any messages, warnings, or errors that result from running modules.</li
+><li
+>The Status Bar gives details that indicate the current context for your operations:<ol
+><li
+>The current collection</li
+><li
+>The name of your project folder</li
+><li
+>The Source Text that is currently selected</li
+><li
+></li
+></ol
+></li
+></ol
+></section2
 ><section2
 id="sSettings"
 ><secTitle
