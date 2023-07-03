@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.1 - 7/3/23 - Ron Lockwood
+#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
+#
 #   Version 3.9 - 6/19/23 - Ron Lockwood
 #    Fixes #440. Don't capitalize source headwords if they aren't capitalized in the entry.
 #
@@ -224,7 +227,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -444,7 +447,9 @@ class Link(object):
     def getTgtSense(self):
         return self.__tgtHPG.getSense()
     def getTgtGuid(self):
-        return self.__tgtHPG.getSense().OwningEntry.Guid.ToString()
+        #return self.__tgtHPG.getSense().OwningEntry.Guid.ToString()
+        # Now use the sense guid
+        return self.__tgtHPG.getSense().Guid.ToString()
     def getTgtSenseNum(self):
         return self.__tgtHPG.getSenseNum()
     def isSuggestion(self):
@@ -1113,42 +1118,30 @@ class Main(QMainWindow):
         
         return
     
-def remove1dot1(lem):
-    return re.sub('1\.1', '', lem)
-    
-def fixupLemma(lem, entry, senseNum):
-    
-    lem = ITsString(entry.HeadWord).Text
-    lem = Utils.add_one(lem)
-    lem = lem + '.' + str(senseNum) # add sense number
-    
-    # If the lemma ends with 1.1, remove it (for optics)
-    return remove1dot1(lem)
-
 def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
 
     report.ProgressStart(entriesTotal)
 
     # Loop through all the target entries
-    for entryIndex, e in enumerate(TargetDB.LexiconAllEntries()):
+    for entryIndex, entryObj in enumerate(TargetDB.LexiconAllEntries()):
     
         report.ProgressUpdate(entryIndex+1)
         
         # Don't process affixes, clitics
-        if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in targetMorphNames:
+        if entryObj.LexemeFormOA and entryObj.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+           entryObj.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[entryObj.LexemeFormOA.MorphTypeRA.Guid.ToString()] in targetMorphNames:
         
             # Loop through senses
-            for senseNum, mySense in enumerate(e.SensesOS):
+            for senseNum, mySense in enumerate(entryObj.SensesOS):
                 # Skip empty MSAs
                 if mySense.MorphoSyntaxAnalysisRA == None:
                     continue
                 
                 # Get headword, POS, gloss
-                headword = ITsString(e.HeadWord).Text
+                headword = ITsString(entryObj.HeadWord).Text
                 
                 # Make the lemma in the form x.x (but remove if 1.1)
-                headword = fixupLemma(headword, e, senseNum+1)
+                headword = Utils.fixupLemma(entryObj, senseNum+1, remove1dot1Bool=True)
                 
                 if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
                     POS = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
@@ -1175,32 +1168,17 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
     return True
 
 # Given an entry guid and a sense #, look up the the sense info. 
-def getHPGfromGuid(TargetDB, myGuid, senseNum, report):
+def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseNumField, report):
                       
-    ret = None
+    retVal = None
           
-    # Look up the entry in the trgt project by guid
-    repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
-    guid = Guid(String(myGuid))
+    targetSense, lem, senseNum = Utils.getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=True)
 
-    try:
-        targetEntry = repo.GetObject(guid)
-    except:
-        report.Error(f'Invalid guid or guid not found in target database. Guid: {myGuid}. You can filter for ' +
-                       'this value in your target equivalent custom field to find the source entry with the problem.')
-        return ret
-    
-    if targetEntry:
-        
-        lem = ITsString(targetEntry.HeadWord).Text
+    if targetSense:
 
-        # Make the lemma in the form x.x (but remove it 1.1)
-        lem = fixupLemma(lem, targetEntry, senseNum)
-        
-        # Get the POS abbreviation for the target sense, assuming we have a stem
-        if senseNum <= len(targetEntry.SensesOS.ToArray()):
-            
-            targetSense = targetEntry.SensesOS.ToArray()[senseNum-1]
+        if targetSense.MorphoSyntaxAnalysisRA:
+
+            # Get the POS abbreviation for the target sense, assuming we have a stem
             if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                 
                 # verify PartOfSpeechRA is valid, if not, set the POS unknown
@@ -1210,15 +1188,14 @@ def getHPGfromGuid(TargetDB, myGuid, senseNum, report):
                     # Get target pos abbreviation and gloss
                     POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
-         
+            
                 Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
                 
                 # Create an HPG (headword-POS-gloss) object
                 myHPG = HPG(targetSense, lem, POS, Gloss, senseNum)
                 
-                ret = myHPG
-    
-    return ret
+                retVal = myHPG
+    return retVal
 
 # do check for exact match and sometimes fuzzy match to find suggested 
 # target senses to be linked to
@@ -1326,7 +1303,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                     srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text    
                             
                                     # Get lemma & POS
-                                    srcHeadWord = remove1dot1(word.getLemma(eNum))
+                                    srcHeadWord = Utils.remove1dot1(word.getLemma(eNum))
                                     srcPOS = word.getPOS(eNum)
 
                                     # Change the word to lower case if that's what the entry's headword is
@@ -1349,19 +1326,8 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                             tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
                                             
                                         else:
-                                        
-                                            senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
-                                            
-                                            # If no sense number, assume it is 1
-                                            if senseNum == None or not senseNum.isdigit():
-                                                senseNum = '1'
-                                            
-                                            # Get the guid from the url
-                                            u = equiv.index('guid')
-                                            guid = equiv[u+7:u+7+36]
-                                        
                                             # Get sense information for the guid, this returns None if not found
-                                            tgtHPG = getHPGfromGuid(TargetDB, guid, int(senseNum), report)
+                                            tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseNumField, report)
                                         
                                         # Set the target part of the Link object and add it to the list
                                         myLink.setTgtHPG(tgtHPG)
@@ -1464,18 +1430,19 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                 
                 if headWord == Utils.NONE_HEADWORD:
                     
-                    text = headWord
+                    urlString = headWord
                 else:
                     # Build target link from saved url path plus guid string for this target sense
-                    text = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
+                    urlString = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
                 
                 # Set the target field
-                DB.LexiconSetFieldText(currSense, senseEquivField, text)
+                DB.LexiconSetFieldText(currSense, senseEquivField, urlString)
             
-                # Set the sense number if necessary
-                if currLink.getTgtSenseNum() > 1:
-                    numStr = str(currLink.getTgtSenseNum())
-                    DB.LexiconSetFieldText(currSense, senseNumField, numStr)
+                # # Set the sense number if necessary
+                # if currLink.getTgtSenseNum() > 1:
+
+                #     numStr = str(currLink.getTgtSenseNum())
+                #     DB.LexiconSetFieldText(currSense, senseNumField, numStr)
             
                 updatedSenses[currSense] = 1
             
@@ -1486,7 +1453,11 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                 
                 # Clear the target field
                 DB.LexiconSetFieldText(currSense, senseEquivField, '')
-                DB.LexiconSetFieldText(currSense, senseNumField, '')
+
+                # If the sense number field is None, we aren't using it
+                if senseNumField:
+
+                    DB.LexiconSetFieldText(currSense, senseNumField, '')
 
                 updatedSenses[currSense] = 1
 
@@ -1747,10 +1718,10 @@ def RunModule(DB, report, configMap):
         report.Error('No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.')
         haveConfigError = True
     
-    if not numField:
+    # if not numField:
         
-        report.Error('No Source Custom Field for Sense Number has been set. Please go to Settings and fix this.')
-        haveConfigError = True
+    #     report.Error('No Source Custom Field for Sense Number has been set. Please go to Settings and fix this.')
+    #     haveConfigError = True
     
     # Give an error if there are no morphnames
     if not sourceMorphNames or len(sourceMorphNames) < 1:
@@ -1779,15 +1750,16 @@ def RunModule(DB, report, configMap):
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
-    senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
+
+    # If there is no Sense Number custom field, that's ok, set this to null. Now we use sense guids.
+    if not numField:
+
+        senseNumField = None
+    else:
+        senseNumField = DB.LexiconGetSenseCustomFieldNamed(numField)
     
     if not (senseEquivField):
         report.Error(linkField + " field doesn't exist. Please read the instructions.")
-
-    if not (senseNumField):
-        report.Error(numField + " field doesn't exist. Please read the instructions.")
-
-    if not (senseEquivField and senseNumField):
         return ERROR_HAPPENED
 
     TargetDB = FLExProject()
@@ -1806,7 +1778,7 @@ def RunModule(DB, report, configMap):
 
     try:
         TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
+    except: #FDA_DatabaseError, err:
         report.Error('Failed to open the target database.')
         raise
 

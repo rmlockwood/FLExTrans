@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.4 - 7/3/23 - Ron Lockwood
+#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
+#
 #   Version 3.9.3 - 6/19/23 - Ron Lockwood
 #    Fixes #439. Error check after searching for the id 'replacement' or 'append'
 #
@@ -261,7 +264,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.9.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -706,7 +709,7 @@ def convert_to_biling_style_entry(replStyleEntry):
                         newSide[i].append(myElem)
     return newEntry
     
-def processSpaces(headWord, DB, e, error_list):
+def processSpaces(headWord, DB, srcEntry, error_list):
     
     # Check for preceding or ending spaces
     strippedHeadword = headWord.strip()
@@ -715,7 +718,7 @@ def processSpaces(headWord, DB, e, error_list):
         
         # Give a warning if there were spaces, but use the stripped version
         error_list.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
-                           + ITsString(e.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(e)))
+                           + ITsString(srcEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(srcEntry)))
     
     # Substitute any medial spaces with <b/> (blank space element)    
     headWord = re.sub(r' ', r'<b/>', strippedHeadword)
@@ -758,14 +761,14 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             return error_list
 
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
-    senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
-    senseSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
+    custSenseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
+    custSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
-    if not (senseEquivField):
+    if not (custSenseEquivField):
         error_list.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
-    if not (senseSenseNumField):
+    if not (custSenseNumField):
         error_list.append((f"Custom field: {senseNumField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
@@ -803,7 +806,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     else: # build the file
         try:
             f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
-        except IOError as e:
+        except IOError as err:
             error_list.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
     
         error_list.append(("Outputing category information...", 0))
@@ -852,20 +855,20 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             report.ProgressStart(DB.LexiconNumberOfEntries())
       
         # Loop through all the entries
-        for entry_cnt,e in enumerate(DB.LexiconAllEntries()):
+        for entry_cnt,srcEntry in enumerate(DB.LexiconAllEntries()):
         
             if report:
                 report.ProgressUpdate(entry_cnt)
             
             # Don't process affixes, clitics
-            if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               e.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[e.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+            if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+               srcEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
             
                 # Get the headword string
-                headWord = ITsString(e.HeadWord).Text
+                headWord = ITsString(srcEntry.HeadWord).Text
                 
                 # Deal with spaces in the headword
-                headWord = processSpaces(headWord, DB, e, error_list)
+                headWord = processSpaces(headWord, DB, srcEntry, error_list)
                 
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
@@ -874,7 +877,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
                 
                 # Loop through senses
-                for i, mySense in enumerate(e.SensesOS):
+                for i, mySense in enumerate(srcEntry.SensesOS):
                     
                     trgtFound = False
                     abbrev = 'UNK'
@@ -892,11 +895,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
                                 error_list.append(('Skipping sense because the POS is unknown: '+\
-                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
+                                               ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                                 abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
-                            equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
+                            equiv = DB.LexiconGetFieldText(mySense.Hvo, custSenseEquivField)
                             
                             # handle a sense mapped intentionally to nothing. Skip it.
                             if equiv == Utils.NONE_HEADWORD:
@@ -910,119 +913,71 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 
                             elif equiv:
                                 
-                                # Parse the link to get the guid
-                                u = equiv.index('guid')
-                                myGuid = equiv[u+7:u+7+36]
-                                
-                                # Look up the entry in the trgt project
-                                repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
-                                guid = Guid(String(myGuid))
-        
-                                try:
-                                    targetEntry = repo.GetObject(guid)
-                                except:
-                                    error_list.append(('Skipping sense because the link to the target entry is invalid: '+\
-                                                 ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
-                                    continue
-                                
-                                if targetEntry:
+                                targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(srcEntry, DB, TargetDB, mySense, equiv, \
+                                                                    custSenseNumField, report, remove1dot1Bool=False)
+                                if targetSense:
                                     
-                                    # Set the target headword value and the homograph #
-                                    targetHeadWord = re.sub(r' ', r'<b/>',ITsString(targetEntry.HeadWord).Text)
+                                    # If there's a space, replace it with <b/>
+                                    targetLemma = re.sub(r' ', r'<b/>', targetLemma)
                                     
-                                    # If there is not a homograph # at the end, make it 1
-                                    if not re.search('\d$', targetHeadWord, flags=re.RegexFlag.A): # re.A means ASCII-only matching so that we don't match, for example, a Persian number
-                                        targetHeadWord += '1'
-                                    
-                                    # An empty sense number means default to sense 1
-                                    senseNum = DB.LexiconGetFieldText(mySense.Hvo, senseSenseNumField).strip()
-                                    if not senseNum:
-                                        trgtSense = 1
-                                    elif is_number(senseNum):
-                                        trgtSense = int(senseNum)
-                                    else:
-                                        error_list.append(('Sense number: '+senseNum+\
-                                                       ' is not valid for target headword: '+\
-                                                       ITsString(targetEntry.HeadWord).Text+\
-                                                       ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
-                                        continue
-                                    
-                                    # Make sure that sense number is valid    
-                                    if targetEntry.SensesOS and trgtSense <= targetEntry.SensesOS.Count:
-                                    
-                                        # Get the POS abbreviation for the target sense, assuming we have a stem
-                                        targetSense = targetEntry.SensesOS.ToArray()[trgtSense-1]
+                                    if targetSense.MorphoSyntaxAnalysisRA and targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                                         
-                                        if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                                        if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
                                             
-                                            if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+                                            trgtFound = True
+                                            
+                                            # Get target pos abbreviation
+                                            trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                            
+                                            # Deal with problem characters like spaces, periods, and slashes
+                                            trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
+                                            
+                                            # Get target inflection class
+                                            trgtInflCls =''
+                                            if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
                                                 
-                                                trgtFound = True
+                                                trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                                        Abbreviation.BestAnalysisAlternative).Text+s4a         
+                                            # Get target features                                                     
+                                            featStr = ''
+                                            if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
                                                 
-                                                # Get target pos abbreviation
-                                                trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                                feat_abbr_list = []
                                                 
-                                                # Deal with problem characters like spaces, periods, and slashes
-                                                trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
+                                                # The features might be complex, make a recursive function call to find all leaf features
+                                                Utils.get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
                                                 
-                                                # Get target inflection class
-                                                trgtInflCls =''
-                                                if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                                # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+                                                for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
                                                     
-                                                    trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
-                                                                          Abbreviation.BestAnalysisAlternative).Text+s4a         
-                                                
-                                                # Get target features                                                     
-                                                featStr = ''
-                                                if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                                                    
-                                                    feat_abbr_list = []
-                                                    
-                                                    # The features might be complex, make a recursive function call to find all leaf features
-                                                    Utils.get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
-                                                    
-                                                    # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                                    for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                    featStr += s2 + Utils.underscores(abb) + s4a
+                                            
+                                            # output the bilingual dictionary line (the sX is xml stuff)
+                                            out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetLemma+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
                                                         
-                                                        featStr += s2 + Utils.underscores(abb) + s4a
-                                                
-                                                # output the bilingual dictionary line (the sX is xml stuff)
-                                                out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetHeadWord+'.'+\
-                                                          str(trgtSense)+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                                          
-                                                f_out.write(out_str)
-                                                records_dumped_cnt += 1
-                                        
-                                            else:
-                                                error_list.append(('Skipping sense because the target POS is undefined '+\
-                                                               ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                               ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
+                                            f_out.write(out_str)
+                                            records_dumped_cnt += 1
+                                    
                                         else:
-                                            error_list.append(('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
-                                                           ' for target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
+                                            error_list.append(('Skipping sense because the target POS is undefined '+\
+                                                            ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
+                                                            ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
                                     else:
-                                        if targetEntry.SensesOS == None:
-                                            error_list.append(('No sense found for the target headword: '+ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
-                                        elif trgtSense > targetEntry.SensesOS.Count:
-                                            error_list.append(('Sense number: '+str(trgtSense)+\
-                                                           ' is not valid. That many senses do not exist for target headword: '+\
-                                                           ITsString(targetEntry.HeadWord).Text+\
-                                                           ' while processing source headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetEntry)))
+                                        error_list.append(('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
+                                                        ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
+                                                        ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
                                 else:
-                                    error_list.append(('Target entry not found. This target GUID does not exist: '+myGuid+\
-                                                   ' while processing headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
+                                    # Error already reported
+                                    pass
                             else:
-                                pass
                                 # Don't report this. Most of the time the equivalent field will be empty.
-                                #report.Warning('Target language equivalent field is null while processing headword: '+ITsString(e.HeadWord).Text)
+                                pass
                         else:
                             error_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
+                                           ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                     else:
                         error_list.append(('Skipping sense, no analysis object'\
-                                           ' for headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
+                                           ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                     if not trgtFound:
                         # output the bilingual dictionary line -- source and target are the same
                         
@@ -1046,19 +1001,18 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                         records_dumped_cnt += 1   
                         
             else:
-                if e.LexemeFormOA == None:
+                if srcEntry.LexemeFormOA == None:
                     
-                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, DB.BuildGotoURL(e)))
+                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                     
-                elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                elif srcEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                     
                     # We've documented that affixes are skipped. Don't report this
-                    #report.Warning('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName)
                     pass
                 
-                elif e.LexemeFormOA.MorphTypeRA == None:
+                elif srcEntry.LexemeFormOA.MorphTypeRA == None:
                     
-                    error_list.append(('No Morph Type. Skipping.'+ITsString(e.HeadWord).Text+' Best Vern: '+ITsString(e.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(e)))
+                    error_list.append(('No Morph Type. Skipping.'+ITsString(srcEntry.HeadWord).Text+' Best Vern: '+ITsString(srcEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(srcEntry)))
                 
         f_out.write('    <!-- SECTION: Punctuation -->\n')
         

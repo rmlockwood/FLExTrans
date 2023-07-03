@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.9.2 - 7/3/23 - Ron Lockwood
+#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
+#
 #   Version 3.9.1 - 6/21/23 - Ron Lockwood
 #    Added limit_pos setting to the things that get disabled when the Target DB changes.
 #
@@ -1160,8 +1163,8 @@ widgetList = [
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
    
-   ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
-    "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", GIVE_ERROR, DONT_HIDE],\
+#    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
+#     "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", GIVE_ERROR, DONT_HIDE],\
 
    ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
     "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, DONT_HIDE],\
