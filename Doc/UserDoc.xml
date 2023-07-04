@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->26 June, 2023</date
+>4 July, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -271,7 +271,7 @@ type="tUnderline"
 ></ul
 ></li
 ><li
->Add two custom fields to your source <object
+>Add a custom field to your source <object
 type="tFlexx"
 ></object
 > project. This is where link information to the target senses is kept.<ol
@@ -300,47 +300,17 @@ type="tUnderline"
 ><endnote
 id="nCustomFieldNames"
 ><p
->You may choose different names for the custom fields, but you also have to update the <object
+>You may choose a different name for the custom field, but you also have to update the <object
 type="tFlextrans"
 ></object
-> settings to match these names. The names <object
+> settings to match the name. The name <object
 type="tBold"
 >Target Equivalent</object
-> and <object
-type="tBold"
->Target Sense Number</object
-> are already set in the settings that get installed with <object
+> is already defined in the settings that get installed with <object
 type="tFlextrans"
 ></object
 >.</p
 ></endnote
-></li
-><li
->Location: <object
-type="tUnderline"
->Sense</object
-></li
-><li
->Type: <object
-type="tUnderline"
->Single-line Text</object
-></li
-><li
->Writing Systems(s): <object
-type="tUnderline"
->First Analysis Writing System</object
-></li
-></ol
-></li
-><li
->Click Add again and use the following settings for a second custom field:<ol
-><li
->Custom Field Name: <object
-type="tUnderline"
->Target Sense Number</object
-><endnoteRef
-note="nCustomFieldNames"
-></endnoteRef
 ></li
 ><li
 >Location: <object
@@ -2519,7 +2489,7 @@ id="sLexicalTransfer"
 ><secTitle
 >Lexical Transfer</secTitle
 ><p
->For the purposes of this example, we are going to use some “pre-prepared” data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
+>For the purposes of this example, we are going to use some prepared data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
 ><p
 >Let’s see what our input and output looks like initially if we run the system. Our input of course, according to <exampleRef
 letter="xCroatEngTable"
@@ -5206,6 +5176,8 @@ id="sOther"
 ><secTitle
 >Other How To’s</secTitle
 ><p
+><comment
+>Should we have a how to on how to manually create a link between senses?</comment
 ></p
 ><section3
 id="sViewBiling"
