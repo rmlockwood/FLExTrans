@@ -958,47 +958,125 @@ src="Images/FLExTransWindow.png"
 ></example
 ><ol
 ><li
->The Menu bar provides a way to run various FlexTools command by choosing a menu and then selecting a command from that menu.<ol
+>The <object
+type="tItalic"
+>Menu bar</object
+> provides a way to run various <object
+type="tFlextrans"
+></object
+> command by choosing a menu and then selecting a command from that menu.<ol
 ><li
->The FLExTools menu provides a way to change the Source Project, change or manage collections, learn about modules, reload modules, and exit the FLExTools program.</li
+>The <object
+type="tMenu"
+>FLExTools</object
+> menu provides a way to change the Source Project, change or manage collections, learn about modules, reload modules, and exit the <object
+type="tFlextrans"
+></object
+> program.</li
 ><li
->The Run menu allows users to run a single module, or all modules in the current collection.</li
+>The <object
+type="tMenu"
+>Run</object
+> menu allows users to run a single module, or all modules in the current collection.</li
 ><li
->The Report menu includes options for copying messages to the clipboard or to clear them.</li
+>The <object
+type="tMenu"
+>Report</object
+> menu includes options for copying messages to the clipboard or to clear them.</li
 ><li
->The FLExTrans menu gives access to the Settings dialog for FLExTrans, as well as the FLExTrans documentation, and information about the current version of FLExTrans.</li
+>The <object
+type="tMenu"
+>FLExTrans</object
+> menu gives access to the Settings dialog for <object
+type="tFlextrans"
+></object
+>, as well as the <object
+type="tFlextrans"
+></object
+> documentation, and information about the current version of <object
+type="tFlextrans"
+></object
+>.</li
 ><li
->The Help menu gives access to the FLExTools documentation, as well as some additional resources for writing modules for FLExTools, and the "About" information for FLExTools.</li
+>The <object
+type="tMenu"
+>Help</object
+> menu gives access to the <object
+type="tFlexxTools"
+></object
+> documentation, as well as some additional resources for writing modules for <object
+type="tFlexxTools"
+></object
+>, and the "About" information for <object
+type="tFlexxTools"
+></object
+>.</li
 ></ol
 ></li
 ><li
->The Toolbar provides icons that can be clicked to run the most common FLExTools commands.<ol
+>The <object
+type="tItalic"
+>Toolbar</object
+> provides icons that can be clicked to run the most common <object
+type="tFlexxTools"
+></object
+> commands.<ol
 ><li
->The Source Project icon allows you to choose from the FLEx projects that are available on your device.</li
+>The <object
+type="tButton"
+>Source Project</object
+> icon allows you to choose from the <object
+type="tFlexx"
+></object
+> projects that are available on your device.</li
 ><li
->The Collections button allows you to change to a different collection, as well as add, modify, or delete collections.</li
+>The <object
+type="tButton"
+>Collections</object
+> button allows you to change to a different collection, as well as add, modify, or delete collections.</li
 ><li
->The Module Info button shows more details about whichever module is currently selected.</li
+>The <object
+type="tButton"
+>Module Info</object
+> button shows more details about whichever module is currently selected.</li
 ><li
->The Run button runs the currently selected module.</li
+>The <object
+type="tButton"
+>Run</object
+> button runs the currently selected module.</li
 ><li
->The Run All button runs all the modules in the current collection, in order. If one of the modules results in an error, operation will stop and the remaining modules will not be run. [Add info about "modify database"?]</li
+>The <object
+type="tButton"
+>Run All</object
+> button runs all the modules in the current collection, in order. If one of the modules results in an error, operation will stop and the remaining modules will not be run. <comment
+>[Add info about "modify database"?]</comment
+></li
 ></ol
 ></li
 ><li
->The Modules window displays all the modules that are in the current collection. Keep in mind that this is a subset of all the modules that are available in FLExTrans, and modules may exist in more than one collection.</li
+>The <object
+type="tItalic"
+>Modules pane</object
+> displays all the modules that are in the current collection. Keep in mind that this is a subset of all the modules that are available in <object
+type="tFlextrans"
+></object
+>, and modules may exist in more than one collection.</li
 ><li
->The Messages window displays any messages, warnings, or errors that result from running modules.</li
+>The <object
+type="tItalic"
+>Messages pane</object
+> displays any messages, warnings, or errors that result from running modules.</li
 ><li
->The Status Bar gives details that indicate the current context for your operations:<ol
+>The <object
+type="tItalic"
+>Status Bar</object
+> gives details that indicate the current context for your operations:<ol
 ><li
 >The current collection</li
 ><li
 >The name of your project folder</li
 ><li
 >The Source Text that is currently selected</li
-><li
-></li
 ></ol
 ></li
 ></ol
@@ -1009,18 +1087,18 @@ id="sSettings"
 >The <object
 type="tSettings"
 ></object
-></secTitle
+> Dialog</secTitle
 ><p
->The <object
+>With the <object
 type="tSettings"
 ></object
-> is a tool that helps get <object
+> dialog you can configure <object
 type="tFlextrans"
 ></object
-> configured the way you want it. You launch the <object
+> the way you want it. You launch the <object
 type="tSettings"
 ></object
-> by selecting <object
+> dialog by selecting <object
 type="tMenu"
 >FLExTrans</object
 > &gt; <object
@@ -1029,10 +1107,13 @@ type="tMenu"
 > from the <object
 type="tFlexxTools"
 ></object
-> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
+> main menu. Hover over the text box or <object
+type="tButton"
+>Browse</object
+> button to get an explanation of the setting. For file or folder names in the <object
 type="tSettings"
 ></object
->, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+> dialog, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
 ><example
 num="xSettings"
 ><chart
