@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.5 - 7/4/23 - Ron Lockwood
+#    Don't give an error if the sense custom field link setting is not there.
+#
 #   Version 3.9.4 - 7/3/23 - Ron Lockwood
 #    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
 #
@@ -264,7 +267,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.4",
+        FTM_Version    : "3.9.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -741,13 +744,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
     linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
-    senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report)
+    senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report, giveError=False)
     sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
-    if not (linkField and senseNumField and sourceMorphNames and sentPunct):
-        error_list.append((f'A value for {ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY}  or {ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM} or \
-        {ReadConfig.SOURCE_MORPHNAMES} or {ReadConfig.SENTENCE_PUNCTUATION} not found in the configuration file.', 2))
+    if not (linkField and sourceMorphNames and sentPunct):
         return error_list
     
     # Transform the straight list of category abbreviations to a list of tuples
@@ -766,10 +767,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     
     if not (custSenseEquivField):
         error_list.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
-        return error_list
-
-    if not (custSenseNumField):
-        error_list.append((f"Custom field: {senseNumField} doesn't exist. Please read the instructions.", 2))
         return error_list
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
