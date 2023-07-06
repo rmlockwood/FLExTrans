@@ -176,7 +176,7 @@ cd ..
 
 if %COMPUTERNAME% == RONS-DELL-XPS (
   cd C:\Data\Flextrans\Installer
-  makensis -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+  makensis -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
   pause
 ) else (
