@@ -137,7 +137,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>Type the beginning of an entry or any text (if 'search all fields' is checked), 
+     <string>Type the beginning of an entry or any text (if 'Filter on all fields' is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</string>
     </property>
    </widget>
@@ -182,7 +182,7 @@ then double-click in the Target Head Word column for the desired row to link to 
      </rect>
     </property>
     <property name="text">
-     <string>Search all fields</string>
+     <string>Filter on all fields</string>
     </property>
    </widget>
    <widget class="QPushButton" name="ZoomDecrease">

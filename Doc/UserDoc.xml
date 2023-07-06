@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->26 June, 2023</date
+>6 July, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -1138,7 +1138,7 @@ type="tButton"
 >Search here</object
 > field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses), click on the <object
 type="tButton"
->Search all fields</object
+>Filter on all fields</object
 > check box and then type in the <object
 type="tButton"
 >Search here</object
