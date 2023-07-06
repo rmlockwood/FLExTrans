@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->6 July, 2023</date
+>4 July, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -205,58 +205,6 @@ type="tFlexx"
 ></object
 > projects to use as source and target projects for the following steps.)</p
 ><section2
-id="sAnalyze"
-><secTitle
->Analyze the Source Text</secTitle
-><ol
-><li
->Create a new text in <object
-type="tFlexx"
-></object
->.</li
-><li
->Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
-><li
->Analyze this text.<ol
-><li
->Divide each word into its morphemes.</li
-><li
->Accept the analysis of each word.</li
-></ol
-></li
-></ol
-><p
->Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
-letter="xAnalyzedText"
-num="xAnalyzedText"
-></exampleRef
-> below.</p
-><example
-num="xAnalyzedText"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial=" height:60%"
-src="Images/AnalyzedText.PNG"
-></img
-></chart
-></example
-><p
->Note: Word gloss and category are hidden as well as free translation.</p
-><p
-><comment
->Advanced info. for the later section:</comment
-></p
-><p
-><comment
->All affixes and clitics need to have unique glosses</comment
-></p
-><p
-><comment
->Use the parser for faster analysis.</comment
-></p
-></section2
-><section2
 id="sPrepSteps"
 ><secTitle
 >Preparatory Steps</secTitle
@@ -323,7 +271,7 @@ type="tUnderline"
 ></ul
 ></li
 ><li
->Add two custom fields to your source <object
+>Add a custom field to your source <object
 type="tFlexx"
 ></object
 > project. This is where link information to the target senses is kept.<ol
@@ -352,44 +300,17 @@ type="tUnderline"
 ><endnote
 id="nCustomFieldNames"
 ><p
->You may choose different names for the custom fields, but you also have to update the <object
+>You may choose a different name for the custom field, but you also have to update the <object
 type="tFlextrans"
 ></object
-> settings to match these names. The name <object
-type="tSettingsValue"
+> settings to match the name. The name <object
+type="tSettingsProperty"
 >Target Equivalent</object
-> is already set in the settings that get installed with <object
+> is already defined in the settings that get installed with <object
 type="tFlextrans"
 ></object
 >.</p
 ></endnote
-></li
-><li
->Location: <object
-type="tUnderline"
->Sense</object
-></li
-><li
->Type: <object
-type="tUnderline"
->Single-line Text</object
-></li
-><li
->Writing Systems(s): <object
-type="tUnderline"
->First Analysis Writing System</object
-></li
-></ol
-></li
-><li
->Click Add again and use the following settings for a second custom field:<ol
-><li
->Custom Field Name: <object
-type="tUnderline"
->Target Sense Number</object
-><endnoteRef
-note="nCustomFieldNames"
-></endnoteRef
 ></li
 ><li
 >Location: <object
@@ -482,7 +403,7 @@ border="1"
 ><tr
 ><td
 ><object
-type="tBoldArial"
+type="tSettingsProperty"
 >Source Text Name</object
 ></td
 ><td
@@ -500,7 +421,7 @@ type="tItalic"
 ><tr
 ><td
 ><object
-type="tBoldArial"
+type="tSettingsProperty"
 >Target Project</object
 ></td
 ><td
@@ -566,6 +487,58 @@ type="tItalic"
 ></ol
 ></li
 ></ol
+></section2
+><section2
+id="sAnalyze"
+><secTitle
+>Analyze the Source Text</secTitle
+><ol
+><li
+>Create a new text in <object
+type="tFlexx"
+></object
+>.</li
+><li
+>Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
+><li
+>Analyze this text.<ol
+><li
+>Divide each word into its morphemes.</li
+><li
+>Accept the analysis of each word.</li
+></ol
+></li
+></ol
+><p
+>Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
+letter="xAnalyzedText"
+num="xAnalyzedText"
+></exampleRef
+> below.</p
+><example
+num="xAnalyzedText"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AnalyzedText.PNG"
+></img
+></chart
+></example
+><p
+>Note: Word gloss and category are hidden as well as free translation.</p
+><p
+><comment
+>Advanced info. for the later section:</comment
+></p
+><p
+><comment
+>All affixes and clitics need to have unique glosses</comment
+></p
+><p
+><comment
+>Use the parser for faster analysis.</comment
+></p
 ></section2
 ><section2
 id="sLinkSenses"
@@ -933,6 +906,152 @@ type="tFlextrans"
 ></object
 > User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
 ><section2
+id="sFTUserInterface"
+><secTitle
+>FLExTrans Window</secTitle
+><p
+>The <object
+type="tFlextrans"
+></object
+> user interface is shown in <exampleRef
+letter="xFirstStart"
+num="xFTwindow"
+></exampleRef
+>. The parts of this window are described below.</p
+><example
+num="xFTwindow"
+><chart
+><img
+src="Images/FLExTransWindow.png"
+></img
+></chart
+></example
+><ol
+><li
+>The <object
+type="tItalic"
+>Menu bar</object
+> provides a way to run various <object
+type="tFlextrans"
+></object
+> command by choosing a menu and then selecting a command from that menu.<ol
+><li
+>The <object
+type="tMenu"
+>FLExTools</object
+> menu provides a way to change the Source Project, change or manage collections, learn about modules, reload modules, and exit the <object
+type="tFlextrans"
+></object
+> program.</li
+><li
+>The <object
+type="tMenu"
+>Run</object
+> menu allows users to run a single module, or all modules in the current collection.</li
+><li
+>The <object
+type="tMenu"
+>Report</object
+> menu includes options for copying messages to the clipboard or to clear them.</li
+><li
+>The <object
+type="tMenu"
+>FLExTrans</object
+> menu gives access to the settings for <object
+type="tFlextrans"
+></object
+>, as well as the <object
+type="tFlextrans"
+></object
+> documentation, and information about the current version of <object
+type="tFlextrans"
+></object
+>.</li
+><li
+>The <object
+type="tMenu"
+>Help</object
+> menu gives access to the <object
+type="tFlexxTools"
+></object
+> documentation, as well as some additional resources for writing modules for <object
+type="tFlexxTools"
+></object
+>, and the "About" information for <object
+type="tFlexxTools"
+></object
+>.</li
+></ol
+></li
+><li
+>The <object
+type="tItalic"
+>Toolbar</object
+> provides icons that can be clicked to run the most common <object
+type="tFlexxTools"
+></object
+> commands.<ol
+><li
+>The <object
+type="tButton"
+>Source Project</object
+> icon allows you to choose from the <object
+type="tFlexx"
+></object
+> projects that are available on your device.</li
+><li
+>The <object
+type="tButton"
+>Collections</object
+> button allows you to change to a different collection, as well as add, modify, or delete collections.</li
+><li
+>The <object
+type="tButton"
+>Module Info</object
+> button shows more details about whichever module is currently selected.</li
+><li
+>The <object
+type="tButton"
+>Run</object
+> button runs the currently selected module.</li
+><li
+>The <object
+type="tButton"
+>Run All</object
+> button runs all the modules in the current collection, in order. If one of the modules results in an error, operation will stop and the remaining modules will not be run. <comment
+>[Add info about "modify database"?]</comment
+></li
+></ol
+></li
+><li
+>The <object
+type="tItalic"
+>Modules pane</object
+> displays all the modules that are in the current collection. Keep in mind that this is a subset of all the modules that are available in <object
+type="tFlextrans"
+></object
+>, and modules may exist in more than one collection.</li
+><li
+>The <object
+type="tItalic"
+>Messages pane</object
+> displays any messages, warnings, or errors that result from running modules.</li
+><li
+>The <object
+type="tItalic"
+>Status Bar</object
+> gives details that indicate the current context for your operations:<ol
+><li
+>The current collection</li
+><li
+>The name of your project folder</li
+><li
+>The Source Text that is currently selected</li
+></ol
+></li
+></ol
+></section2
+><section2
 id="sSettings"
 ><secTitle
 >The <object
@@ -943,10 +1062,7 @@ type="tSettingsTool"
 >The <object
 type="tSettingsTool"
 ></object
-> is a tool that helps get <object
-type="tFlextrans"
-></object
-> configured the way you want it. You launch the <object
+> can be configured the way you want it. You launch the <object
 type="tSettingsTool"
 ></object
 > by selecting <object
@@ -958,7 +1074,7 @@ type="tMenu"
 > from the <object
 type="tFlexxTools"
 ></object
-> menu. Hover over the text box or <object
+> main menu. Hover over the text box or <object
 type="tButton"
 >Browse</object
 > button to get an explanation of the setting. For file or folder names in the <object
@@ -1556,7 +1672,7 @@ type="tFlextrans"
 id="nSynFile"
 ><p
 >The text will be taken from the <object
-type="tItalic"
+type="tSettingsProperty"
 >Target Output Synthesis File</object
 > as defined in the settings. This is the file created by the <object
 type="tTool"
@@ -1798,7 +1914,7 @@ src="Images/ApplyAndCloseButton.PNG"
 >Choose either the fourth or fifth module to run, depending on whether you are using the XAMPLE parser or the Hermit Crab parser in your Target Project.</li
 ><li
 >The output will be in the file specified in the settings. If you have not changed the default, it will be <object
-type="tCourier"
+type="tSettingsValue"
 >Output/target_text-syn.txt</object
 >.</li
 ></ol
@@ -2367,7 +2483,7 @@ id="sLexicalTransfer"
 ><secTitle
 >Lexical Transfer</secTitle
 ><p
->For the purposes of this example, we are going to use some “pre-prepared” data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
+>For the purposes of this example, we are going to use some prepared data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
 ><p
 >Let’s see what our input and output looks like initially if we run the system. Our input of course, according to <exampleRef
 letter="xCroatEngTable"
@@ -5054,6 +5170,8 @@ id="sOther"
 ><secTitle
 >Other How To’s</secTitle
 ><p
+><comment
+>Should we have a how to on how to manually create a link between senses?</comment
 ></p
 ><section3
 id="sViewBiling"
@@ -5253,10 +5371,16 @@ type="tFilename"
 > in the <object
 type="tFoldername"
 >Doc\Irregular Form</object
-> folder. Note: be sure to set the Source Text Name property in the <object
+> folder. Note: be sure to set the <object
+type="tSettingsProperty"
+>Source Text Name</object
+> property in the <object
 type="tFlextrans"
 ></object
-> settings to “Text2”.</p
+> settings to <object
+type="tSettingsValue"
+>Text2</object
+>.</p
 ></section3
 ><section3
 id="sSynthesisSelfTest"
@@ -5301,10 +5425,16 @@ type="tSettingsTool"
 ></object
 > to do the following:<ol
 ><li
->Verify the Target Project is set.</li
+>Verify the <object
+type="tSettingsProperty"
+>Target Project</object
+> is set.</li
 ><li
->Set the Transfer Rules File to <object
-type="tFilename"
+>Set the <object
+type="tSettingsProperty"
+>Transfer Rules File</object
+> to <object
+type="tSettingsValue"
 >identity_rules.t1x</object
 >. <object
 type="tRed"
@@ -5594,7 +5724,9 @@ id="sPhrasalVerbs"
 >How do I deal with phrasal verbs using <object
 type="tFlextrans"
 ></object
->?</secTitle
+>?<comment
+>Other How To questions. How to handle a phrasal verb that has one or more words between the phrasal verb components.</comment
+></secTitle
 ><p
 >A phrasal verb is a verb that consists of two or more words. Often there is a verbal component and a non-verbal component. This discussion assumes that a verbal component is present.</p
 ><p
@@ -5604,20 +5736,12 @@ type="tFlextrans"
 type="tFlextrans"
 ></object
 > translate correctly. Let's take each situation in turn.</p
-><p
-></p
-><p
-></p
-><p
-></p
-><p
-></p
 ><section4
 id="sPVSrcIsPhrasal"
 ><secTitle
->The source uses a phrasal verb, but the target uses a normal verb</secTitle
+>The source uses a phrasal verb, but the target uses a normal verb.</secTitle
 ><p
->In this case you want to link the entire source phrasal verb to the one word target. Here are the steps:</p
+>In this case you want to link the entire source phrasal verb to the one-word target verb. Here are the steps:</p
 ><ol
 ><li
 >Create the phrasal verb as its own entry in the source <object
@@ -5631,7 +5755,7 @@ type="tFlexx"
 > project create a custom category <object
 type="tGrammCat"
 >Verb Phrasal</object
->. (This is recommended, but not required.) </li
+>. (This is recommended, but not required.)</li
 ><li
 >Put the whole phrasal verb as the <object
 type="tFieldInFLEx"
@@ -5667,7 +5791,7 @@ type="tFieldInFLEx"
 > to <object
 type="tTypeInFLEx"
 >Phrasal Verb</object
-> </li
+></li
 ></ol
 ></li
 ><li
@@ -5682,8 +5806,125 @@ type="tSettingsTool"
 >Change <object
 type="tSettingsProperty"
 >Source Complex Form Types</object
-> to Phrasal Verb.</li
+> to <object
+type="tSettingsValue"
+>Phrasal Verb</object
+>.</li
+><li
+>Set the <object
+type="tSettingsProperty"
+>Source Text</object
+> to a text that contains the phrasal verb.</li
+><li
+>Run the <object
+type="tModule"
+>Sense Linker Tool</object
+> and link the phrasal verb sense to the appropriate target verb sense.</li
 ></ol
+><p
+>Now the source phrasal verb will correctly translate to the target verb.</p
+></section4
+><section4
+id="sPVTgtIsPhrasal"
+><secTitle
+>The source uses a normal verb, but the target uses a phrasal verb.</secTitle
+><p
+>In this case you want to link the one-word source verb to the entire target phrasal verb. Here are the steps:</p
+><ol
+><li
+>Create the phrasal verb as its own entry in the target <object
+type="tFlexx"
+></object
+> project.<ol
+><li
+>In the target <object
+type="tFlexx"
+></object
+> project create a custom category <object
+type="tGrammCat"
+>Verb Phrasal</object
+>. (This is recommended, but not required.)</li
+><li
+>Put the whole phrasal verb as the <object
+type="tFieldInFLEx"
+>Lexeme Form</object
+>.</li
+><li
+>Set the <object
+type="tFieldInFLEx"
+>Morph Type</object
+> to phrase</li
+><li
+>Set the <object
+type="tFieldInFLEx"
+>Grammatical Info.</object
+> to <object
+type="tGrammCat"
+>Verb Phrasal</object
+></li
+><li
+>Set <object
+type="tFieldInFLEx"
+>Components</object
+> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<endnoteRef
+note="nMoveComponent"
+></endnoteRef
+></li
+><li
+>Set the <object
+type="tFieldInFLEx"
+>Complex Form Type</object
+> to <object
+type="tTypeInFLEx"
+>Phrasal Verb</object
+></li
+></ol
+></li
+><li
+>Open the <object
+type="tFlextrans"
+></object
+> <object
+type="tSettingsTool"
+></object
+>.</li
+><li
+>Depending on whether the verb comes first or second in the two-word phrasal verb, change either <object
+type="tSettingsProperty"
+>Target Complex Form Types with Inflection on 1st Element</object
+> or <object
+type="tSettingsProperty"
+>Target Complex Form Types with Inflection on 1st Element</object
+> to <object
+type="tSettingsValue"
+>Phrasal Verb</object
+>.</li
+><li
+>Set the <object
+type="tSettingsProperty"
+>Source Text</object
+> to a text that contains the source verb.</li
+><li
+>Run the <object
+type="tModule"
+>Sense Linker Tool</object
+> and link the source verb sense to the appropriate target phrasal verb sense.</li
+></ol
+><p
+>Now the source verb will correctly translate to the target phrasal verb.</p
+></section4
+><section4
+id="sPVBothPhrasal"
+><secTitle
+>The source uses a phrasal verb and the target also uses a phrasal verb (and the components don't match).</secTitle
+><p
+>In this case you want to link the source phrasal verb to the target phrasal verb. Follow the first 3 steps in <sectionRef
+sec="sPVSrcIsPhrasal"
+></sectionRef
+> and <sectionRef
+sec="sPVTgtIsPhrasal"
+></sectionRef
+>, link the verbs and the source phrasal verb will now translate to the target phrasal verb.</p
 ></section4
 ></section3
 ></section2
