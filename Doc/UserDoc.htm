@@ -140,6 +140,10 @@
                   <li><a href="#sInflVariantSrc">7.3.4&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
                   <li><a href="#sSynthesisSelfTest">7.3.5&nbsp;How do I run a Synthesis Self-Test?</a></li>
                   <li><a href="#sHermitCrab">7.3.6&nbsp;What do I do to use my <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in synthesis?</a></li>
+                  <li><a href="#sPhrasalVerbs">7.3.7&nbsp;How do I deal with phrasal verbs using <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>?</a></li>
+                  <ul>
+                     <li><a href="#sPVSrcIsPhrasal">7.3.7.1&nbsp;The source uses a phrasal verb, but the target uses a normal verb</a></li>
+                  </ul>
                </ul>
             </ul>
             <li><a href="#sReferenceDocs">8&nbsp;Reference documents</a></li>
@@ -572,7 +576,7 @@
          is a menu that allows adjusting settings for the modules.
       </p>
       <h2 style=""><a name="sSettings"></a>3.1&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> is a tool that helps get <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> configured the way you want it. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> is a tool that helps get <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> configured the way you want it. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu. Hover over the text box or <span style="font-style:normal; font-weight:bold; ">Browse</span> button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -701,7 +705,7 @@
       <h3 style=""><a name="sRebuildBiling"></a>4.1.7&nbsp;Rebuild the Bilingual Lexicon
       </h3>
       <p>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <span style="font-style:normal; font-weight:bold; ">Rebuild the Bilingual Lexicon</span> check box is checked, this will happen automatically when you click OK. If you would like to change whether by default this
-         box is checked or unchecked when you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>, set the corresponding setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> tool.
+         box is checked or unchecked when you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>, set the corresponding setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>.
       </p>
       <h3 style=""><a name="sSLTChangeSource"></a>4.1.8&nbsp;Change Source Text
       </h3>
@@ -765,7 +769,7 @@
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
       <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses)
-         directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">13</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
+         directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">14</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Interchunk</span> and <span style="font-style:normal; font-weight:bold; ">Postchunk</span> tabs are for use in testing rules using the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
       </p>
@@ -850,7 +854,7 @@
       <h3 style=""><a name="sPtxExport"></a>4.4.2&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> Export
       </h3>
       <p>To export chapters to <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> from the active text, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Export Text From Paratext</span> module. This tool is designed to work well with a text that you have previously imported with the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Import Text From Paratext</span> module. In other words, the export tool expects the active source text to be in the form John 03-04 or JHN 03-04. Use the
-         <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> tool if you need to change the active source text. The tool will find the book and chapters in the given <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project and replace the text that was there with the text created by <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.<span style="font-size:65%; vertical-align:super">[<a href="#nSynFile">3</a>]</span> Note: the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project must be a project that you are at least a <span style="font-style:italic; ">Translator</span> on. Also, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book must already exist.
+         <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> if you need to change the active source text. The tool will find the book and chapters in the given <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project and replace the text that was there with the text created by <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.<span style="font-size:65%; vertical-align:super">[<a href="#nSynFile">3</a>]</span> Note: the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> project must be a project that you are at least a <span style="font-style:italic; ">Translator</span> on. Also, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Paratext</span> book must already exist.
       </p>
       <p>Normally this module should be run after the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Extract Target Lexicon</span> module.
       </p>
@@ -2540,7 +2544,7 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> menu.
                </li>
-               <li>Click <span style="font-weight:bold; ">Yes</span> for <span style="font-style:italic; ">Use HermitCrab synthesis</span> as shown in <a href="#xHermitCrabYesNo">(88)</a>.
+               <li>Click <span style="font-style:italic; ">Yes</span> for <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> as shown in <a href="#xHermitCrabYesNo">(88)</a>.
                   <div style="margin-left: 0.25in; margin-right: 0.25in">
                      <table>
                         <tr>
@@ -2658,6 +2662,44 @@
       </ol>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> synthesis tool will replace any #s with spaces.
       </p>
+      <h3 style=""><a name="sPhrasalVerbs"></a>7.3.7&nbsp;How do I deal with phrasal verbs using <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>?
+      </h3>
+      <p>A phrasal verb is a verb that consists of two or more words. Often there is a verbal component and a non-verbal component.
+         This discussion assumes that a verbal component is present.
+      </p>
+      <p>If the source and target language both use a phrasal verb for a verbal concept and the non-verbal component(s) and verbal
+         component individually match between the languages. You have nothing to worry about. Just link each component sense in the
+         source to appropriate target sense.
+      </p>
+      <p>If you have a situation where there isn't a match, there are steps you can take to have <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> translate correctly. Let's take each situation in turn.
+      </p>
+      <p></p>
+      <p></p>
+      <p></p>
+      <p></p>
+      <h4 style=""><a name="sPVSrcIsPhrasal"></a>7.3.7.1&nbsp;The source uses a phrasal verb, but the target uses a normal verb
+      </h4>
+      <p>In this case you want to link the entire source phrasal verb to the one word target. Here are the steps:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Create the phrasal verb as its own entry in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>In the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project create a custom category <span style="color:#0070c0; ">Verb Phrasal</span>. (This is recommended, but not required.) 
+               </li>
+               <li>Put the whole phrasal verb as the <span style="color:#cc9900; ">Lexeme Form</span>.
+               </li>
+               <li>Set the <span style="color:#cc9900; ">Morph Type</span> to phrase
+               </li>
+               <li>Set the <span style="color:#cc9900; ">Grammatical Info.</span> to <span style="color:#0070c0; ">Verb Phrasal</span></li>
+               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">12</a>]</span></li>
+               <li>Set the <span style="color:#cc9900; ">Complex Form Type</span> to <span style="color:#990099; ">Phrasal Verb</span> 
+               </li>
+            </ol>
+         </li>
+         <li>Open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>.
+         </li>
+         <li>Change <span style="font-weight:bold; color:#964B00; ">Source Complex Form Types</span> to Phrasal Verb.
+         </li>
+      </ol>
       <h1 style=""><a name="sReferenceDocs"></a>8&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
@@ -2680,8 +2722,8 @@
       </h1>
       <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
       </p>
-      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">12</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">13</a>]</span></span></p>
-      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">14</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
+      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">13</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">14</a>]</span></span></p>
+      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">15</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
          in green.
       </p>
       <hr size="3"><a name="rXLingPapEndnotes"></a><p style=""><big><big><big><b>Endnotes</b></big></big></big></p>
@@ -2703,7 +2745,7 @@
          <tr>
             <td valign="top"><a name="nSynFile">[3]</a></td>
             <td>
-               <p>The text will be taken from the <span style="font-style:italic; ">Target Output Synthesis File</span> as defined in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>. This is the file created by the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Extract Target Lexicon</span> module.
+               <p>The text will be taken from the <span style="font-style:italic; ">Target Output Synthesis File</span> as defined in the settings. This is the file created by the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Extract Target Lexicon</span> module.
                </p>
             </td>
          </tr>
@@ -2763,14 +2805,20 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nToolToView">[12]</a></td>
+            <td valign="top"><a name="nMoveComponent">[12]</a></td>
+            <td>
+               <p>You can right-click on a component word and select Move Left or Move Right.</p>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nToolToView">[13]</a></td>
             <td>
                <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.txt</span> and <span style="font-style:italic; ">target_text.txt</span>.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nRawDataStream">[13]</a></td>
+            <td valign="top"><a name="nRawDataStream">[14]</a></td>
             <td>
                <p>In the plain format the stream format can be explained as follows:</p>
                <table>
@@ -2786,7 +2834,7 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nNoOneHomograph">[14]</a></td>
+            <td valign="top"><a name="nNoOneHomograph">[15]</a></td>
             <td>
                <p>Technically <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> headword is just plain -- without any subscript.
                </p>
