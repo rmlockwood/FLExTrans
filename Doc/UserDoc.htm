@@ -140,11 +140,11 @@
                <li><a href="#sOther">7.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
                   <li><a href="#sViewBiling">7.3.1&nbsp;How do I view the bilingual lexicon?</a></li>
-                  <li><a href="#sRepl">7.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+                  <li><a href="#sSynthesisSelfTest">7.3.2&nbsp;How do I run a Synthesis Self-Test?</a></li>
+                  <li><a href="#sRepl">7.3.3&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
-                  <li><a href="#sInflVariantTgt">7.3.3&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
-                  <li><a href="#sInflVariantSrc">7.3.4&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
-                  <li><a href="#sSynthesisSelfTest">7.3.5&nbsp;How do I run a Synthesis Self-Test?</a></li>
+                  <li><a href="#sInflVariantTgt">7.3.4&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
+                  <li><a href="#sInflVariantSrc">7.3.5&nbsp;How do I handle inflectional variants in the source language? (video)</a></li>
                   <li><a href="#sPhrasalVerbs">7.3.6&nbsp;How do I deal with phrasal verbs using <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>?</a></li>
                   <ul>
                      <li><a href="#sPVSrcIsPhrasal">7.3.6.1&nbsp;The source uses a phrasal verb, but the target uses a normal verb.</a></li>
@@ -557,7 +557,7 @@
                </table>
             </div>
          </li>
-         <li>Link each sense. (More details in section<a href="#sLinker">4.1</a>) 
+         <li>Link each sense. (More details in section <a href="#sLinker">4.1</a>) 
             <ol style="list-style-type:lower-alpha; ">
                <li>For blue rows that look good, simply check the check box in the <span style="font-weight:bold; ">Link It</span> column.
                </li>
@@ -567,8 +567,8 @@
          </li>
          <li>Click OK</li>
       </ol>
-      <p>Now you have senses linked from source project to the target. You haven&#8217;t created anything in the target project yet, but
-         you have done the preparatory work.
+      <p>Now you have senses linked from the source project to the target. You haven&#8217;t created anything in the target project yet,
+         but you have done the preparatory work.
       </p>
       <p></p>
       <p></p>
@@ -1996,7 +1996,7 @@
                </table>
             </div>
             <p>This looks a lot better than our initial results in <a href="#xOutputInitial">(42)</a>. The word <span style="font-style:italic; ">Left</span> is now there correctly. It&#8217;s beyond the scope of this exercise to explain in detail how the synthesis works in this case,
-               but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">7.3.3</a> for more details.
+               but the tag <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> matches the feature <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span> on the variant form of the verb <span style="font-style:italic; ">leave</span>. See section <a href="#sInflVariantTgt">7.3.4</a> for more details.
             </p>
             <p>We&#8217;re getting there, now let&#8217;s move on to the next step.</p>
          </li>
@@ -2649,7 +2649,37 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sRepl"></a>7.3.2&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
+      <h3 style=""><a name="sSynthesisSelfTest"></a>7.3.2&nbsp;How do I run a Synthesis Self-Test?
+      </h3>
+      <p>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical
+            sentence frames.
+         </li>
+         <li>Create a rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
+         </li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, set the main <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project to the Target Project. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this back, when you go back to working with two projects.)</span></li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> to do the following:
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Verify the <span style="font-weight:bold; color:#964B00; ">Target Project</span> is set.
+               </li>
+               <li>Set the <span style="font-weight:bold; color:#964B00; ">Transfer Rules File</span> to <span style="font-style:italic; ">identity_rules.t1x</span>. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this when you go back to working with two projects.)</span></li>
+               <li>Choose the text you want to work on.</li>
+            </ol>
+         </li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection, use <span style="font-style:normal; font-weight:bold; ">Run All</span> to process the text and insert the result into the Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>It will go into a text with the same name, with (Copy) appended.</li>
+               <li>Compare this output with your original text.</li>
+               <li>Any differences you see reflect what would happen if you used this in a transfer process with a different source language,
+                  and they probably need to be fixed.
+               </li>
+            </ol>
+         </li>
+         <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span>.
+         </li>
+      </ol>
+      <h3 style=""><a name="sRepl"></a>7.3.3&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
          that?
       </h3>
       <p>You can handle this by using the <span style="font-style:italic; ">replace.dix</span> file to add additional mappings to the bilingual lexicon. This file is your project folder.
@@ -2711,7 +2741,7 @@
       </div>
       <p>Let&#8217;s look closer at the last line. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">left</span> element has <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> and the &#8220;symbol&#8221; <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">v</span> just like the bilingual file, but it also has a new symbol <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span>. This is the gloss for the past suffix in German. By adding this suffix, we are telling <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> that we are mapping the past inflection of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">lieben1.1</span> to something else. The new Swedish word is listed for the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">right</span> element. Note that we also had to add a new symbol definition, <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pst</span> so that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Symbols</span> element.
       </p>
-      <h3 style=""><a name="sInflVariantTgt"></a>7.3.3&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sInflVariantTgt"></a>7.3.4&nbsp;How do I handle inflectional variants in the target language? (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2719,7 +2749,7 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder.
       </p>
-      <h3 style=""><a name="sInflVariantSrc"></a>7.3.4&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sInflVariantSrc"></a>7.3.5&nbsp;How do I handle inflectional variants in the source language? (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>To learn how <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> can handle these kind of variants, please watch this <a href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt">video</a>.
       </p>
       <p>The key thing in the techniques explained in the videos is to get inflectional features assigned to Irregularly Inflected
@@ -2727,36 +2757,6 @@
       </p>
       <p>If you would like to try doing the same thing while watching the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Doc\Irregular Form</span> folder. Note: be sure to set the <span style="font-weight:bold; color:#964B00; ">Source Text Name</span> property in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings to <span style="font-style:italic; ">Text2</span>.
       </p>
-      <h3 style=""><a name="sSynthesisSelfTest"></a>7.3.5&nbsp;How do I run a Synthesis Self-Test?
-      </h3>
-      <p>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p>
-      <ol style="list-style-type:decimal; ">
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical
-            sentence frames.
-         </li>
-         <li>Create a rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
-         </li>
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, set the main <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project to the Target Project. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this back, when you go back to working with two projects.)</span></li>
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> to do the following:
-            <ol style="list-style-type:lower-alpha; ">
-               <li>Verify the <span style="font-weight:bold; color:#964B00; ">Target Project</span> is set.
-               </li>
-               <li>Set the <span style="font-weight:bold; color:#964B00; ">Transfer Rules File</span> to <span style="font-style:italic; ">identity_rules.t1x</span>. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this when you go back to working with two projects.)</span></li>
-               <li>Choose the text you want to work on.</li>
-            </ol>
-         </li>
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, in the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">All Steps</span> collection, use <span style="font-style:normal; font-weight:bold; ">Run All</span> to process the text and insert the result into the Target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project.
-            <ol style="list-style-type:lower-alpha; ">
-               <li>It will go into a text with the same name, with (Copy) appended.</li>
-               <li>Compare this output with your original text.</li>
-               <li>Any differences you see reflect what would happen if you used this in a transfer process with a different source language,
-                  and they probably need to be fixed.
-               </li>
-            </ol>
-         </li>
-         <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span>.
-         </li>
-      </ol>
       <h3 style=""><a name="sPhrasalVerbs"></a>7.3.6&nbsp;How do I deal with phrasal verbs using <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>?
       </h3>
       <p>A phrasal verb is a verb that consists of two or more words. Often there is a verbal component and a non-verbal component.

@@ -887,10 +887,10 @@ src="Images/SenseLinkerNoLinks.png"
 ></example
 ></li
 ><li
->Link each sense. (More details in <sectionRef
+>Link each sense. (More details in section <sectionRef
 sec="sLinker"
 showTitle="numberOnly"
-textBefore="singular"
+textBefore="none"
 ></sectionRef
 >) <ol
 ><li
@@ -909,7 +909,7 @@ type="tBold"
 >Click OK</li
 ></ol
 ><p
->Now you have senses linked from source project to the target. You haven’t created anything in the target project yet, but you have done the preparatory work.</p
+>Now you have senses linked from the source project to the target. You haven’t created anything in the target project yet, but you have done the preparatory work.</p
 ><p
 ><comment
 >Advanced info. for the later section:</comment
@@ -5508,6 +5508,100 @@ src="Images/BilingalEntries2.PNG"
 ></example
 ></section3
 ><section3
+id="sSynthesisSelfTest"
+><secTitle
+>How do I run a Synthesis Self-Test?</secTitle
+><p
+>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p
+><ol
+><li
+>In <object
+type="tFlexx"
+></object
+>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames.</li
+><li
+>Create a rules file that simply deletes features from any category that has them. The file <object
+type="tFilename"
+>identity_rules.t1x</object
+> in the <object
+type="tFoldername"
+>FLExTrans Documentation\Synthesis Self-Test</object
+> folder is an example of that, set up for the <object
+type="tBold"
+>Spanish</object
+> sample project.</li
+><li
+>In <object
+type="tFlexxTools"
+></object
+>, set the main <object
+type="tFlexx"
+></object
+> Project to the Target Project. <object
+type="tRed"
+>(Remember to change this back, when you go back to working with two projects.)</object
+></li
+><li
+>In <object
+type="tFlextrans"
+></object
+>, use the <object
+type="tSettingsTool"
+></object
+> to do the following:<ol
+><li
+>Verify the <object
+type="tSettingsProperty"
+>Target Project</object
+> is set.</li
+><li
+>Set the <object
+type="tSettingsProperty"
+>Transfer Rules File</object
+> to <object
+type="tSettingsValue"
+>identity_rules.t1x</object
+>. <object
+type="tRed"
+>(Remember to change this when you go back to working with two projects.)</object
+></li
+><li
+>Choose the text you want to work on.</li
+></ol
+></li
+><li
+>In <object
+type="tFlextrans"
+></object
+>, in the <object
+type="tCollection"
+>All Steps</object
+> collection, use <object
+type="tButton"
+>Run All</object
+> to process the text and insert the result into the Target <object
+type="tFlexx"
+></object
+> Project.<ol
+><li
+>It will go into a text with the same name, with (Copy) appended.</li
+><li
+>Compare this output with your original text.</li
+><li
+>Any differences you see reflect what would happen if you used this in a transfer process with a different source language, and they probably need to be fixed.</li
+></ol
+></li
+><li
+>You can try this method with the <object
+type="tBold"
+>Spanish</object
+> sample project in <object
+type="tFoldername"
+>FLExTrans Documentation\Synthesis Self-Test</object
+>.</li
+></ol
+></section3
+><section3
 id="sRepl"
 ><secTitle
 >I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?</secTitle
@@ -5690,100 +5784,6 @@ type="tFlextrans"
 type="tSettingsValue"
 >Text2</object
 >.</p
-></section3
-><section3
-id="sSynthesisSelfTest"
-><secTitle
->How do I run a Synthesis Self-Test?</secTitle
-><p
->To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p
-><ol
-><li
->In <object
-type="tFlexx"
-></object
->, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames.</li
-><li
->Create a rules file that simply deletes features from any category that has them. The file <object
-type="tFilename"
->identity_rules.t1x</object
-> in the <object
-type="tFoldername"
->FLExTrans Documentation\Synthesis Self-Test</object
-> folder is an example of that, set up for the <object
-type="tBold"
->Spanish</object
-> sample project.</li
-><li
->In <object
-type="tFlexxTools"
-></object
->, set the main <object
-type="tFlexx"
-></object
-> Project to the Target Project. <object
-type="tRed"
->(Remember to change this back, when you go back to working with two projects.)</object
-></li
-><li
->In <object
-type="tFlextrans"
-></object
->, use the <object
-type="tSettingsTool"
-></object
-> to do the following:<ol
-><li
->Verify the <object
-type="tSettingsProperty"
->Target Project</object
-> is set.</li
-><li
->Set the <object
-type="tSettingsProperty"
->Transfer Rules File</object
-> to <object
-type="tSettingsValue"
->identity_rules.t1x</object
->. <object
-type="tRed"
->(Remember to change this when you go back to working with two projects.)</object
-></li
-><li
->Choose the text you want to work on.</li
-></ol
-></li
-><li
->In <object
-type="tFlextrans"
-></object
->, in the <object
-type="tCollection"
->All Steps</object
-> collection, use <object
-type="tButton"
->Run All</object
-> to process the text and insert the result into the Target <object
-type="tFlexx"
-></object
-> Project.<ol
-><li
->It will go into a text with the same name, with (Copy) appended.</li
-><li
->Compare this output with your original text.</li
-><li
->Any differences you see reflect what would happen if you used this in a transfer process with a different source language, and they probably need to be fixed.</li
-></ol
-></li
-><li
->You can try this method with the <object
-type="tBold"
->Spanish</object
-> sample project in <object
-type="tFoldername"
->FLExTrans Documentation\Synthesis Self-Test</object
->.</li
-></ol
 ></section3
 ><section3
 id="sPhrasalVerbs"
