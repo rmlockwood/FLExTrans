@@ -256,12 +256,9 @@ For suggested sense pairs where
 there is a mismatch in the grammatical category, both categories are colored red. This
 is to indicate you may not want to link the two sense even though the glosses match. 
 This module requires
-two sense-level custom fields in your source project. They should be simple text fields.
-One is to link to an entry in the target project and the other is to indicate a sense
-number number in that entry. Set these in the Settings tool. 
-Created links will appear in the custom field set in your settings. If the sense number
-being linked to is not sense number one, the custom field for sense number set in your Settings
-will be set to the corresponding sense number, otherwise it will be blank.
+a sense-level custom field in your source project. It should be simple text field.
+The purpose of the custom field is to hold the link to a sense in the target project.
+Set which custom field is used for linking in the settings. 
 """ }
                  
 #----------------------------------------------------------------
