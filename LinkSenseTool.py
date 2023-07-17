@@ -207,6 +207,8 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from SIL.LCModel import *                                                   
+from SIL.LCModel.DomainServices import StringServices                                                  
+from SIL.LCModel.Core.Text import TsStringUtils
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
@@ -363,8 +365,12 @@ class LinkerRow(object):
         return self.__linkObj.getTgtPOS()
     def getSrcGloss(self):
         return self.__linkObj.getSrcGloss()
+    def getSrcHeadword(self):
+        return self.__linkObj.getSrcHeadword()
     def getTgtGloss(self):
         return self.__linkObj.getTgtGloss()
+    def getTgtHeadword(self):
+        return self.__linkObj.getTgtHeadword()
     def getInitialStatus(self):
         return self.__linkObj.getInitialStatus()
     def setInitialStatus(self, myStatus):
@@ -420,8 +426,12 @@ class Link(object):
         return self.__tgtHPG.getPOS()
     def getSrcGloss(self):
         return self.__srcHPG.getGloss()
+    def getSrcGloss(self):
+        return self.__srcHPG.getHeadword()
     def getTgtGloss(self):
         return self.__tgtHPG.getGloss()
+    def getTgtHeadword(self):
+        return self.__tgtHPG.getHeadword()
     def getInitialStatus(self):
         return self.initialStatus
     def setInitialStatus(self, myStatus):
@@ -1338,13 +1348,37 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                     myLink = Link(myHPG)
                                     myLinkerRow.setLinkObject(myLink)
                                     
-                                    equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
-        
-                                    # equiv now holds the url to the target, see if it is valid
-                                    if equiv:
+                                    #equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
+
+                                    # Get tsString with the custom field contents
+                                    tsEquiv = DB.GetCustomFieldValue(mySense.Hvo, senseEquivField)
+
+                                    if tsEquiv.Text:
+
+                                        # Initialize a builder object
+                                        bldr = TsStringUtils.MakeStrBldr()
+                                        bldr.ReplaceTsString(bldr.Length, bldr.Length, tsEquiv)
+
+                                        # Get the properties of the string at position 0
+                                        textPropObj = bldr.get_Properties(0)
+
+                                        # The embedded object property is value 6
+                                        urlStr = textPropObj.GetStrPropValue(6)
+
+                                        if urlStr:
+
+                                            # Discard the first character which is the ID
+                                            equivStr = urlStr[1:]
+                                        else:
+
+                                            # No hyperlink, use the link directly
+                                            # the Text member of the tsString holds the character string
+                                            equivStr = tsEquiv.Text
+
+                                        # equivStr now holds the url to the target, see if it is valid
                                         
                                         # handle sense mapped intentionally to nothing.
-                                        if equiv == Utils.NONE_HEADWORD:
+                                        if equivStr == Utils.NONE_HEADWORD:
                                             
                                             tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
                                             
@@ -1357,8 +1391,8 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                                 senseNum = '1'
                                             
                                             # Get the guid from the url
-                                            u = equiv.index('guid')
-                                            guid = equiv[u+7:u+7+36]
+                                            u = equivStr.index('guid')
+                                            guid = equivStr[u+7:u+7+36]
                                         
                                             # Get sense information for the guid, this returns None if not found
                                             tgtHPG = getHPGfromGuid(TargetDB, guid, int(senseNum), report)
@@ -1443,6 +1477,16 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
     cnt = 0
     unlinkCount = 0
         
+    # Find the hyperlink style
+    for Style in DB.ObjectsIn(IStStyleRepository):
+
+        if Style.Name == 'Hyperlink':
+            break
+
+    # If it wasn't found, set the style to None
+    if Style.Name != 'Hyperlink':
+        Style = None
+
     # Loop through the data
     for currLink in myData:
         
@@ -1464,18 +1508,41 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                 
                 if headWord == Utils.NONE_HEADWORD:
                     
-                    text = headWord
+                    urlStr = headWord
                 else:
                     # Build target link from saved url path plus guid string for this target sense
-                    text = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
+                    urlStr = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
                 
                 # Set the target field
-                DB.LexiconSetFieldText(currSense, senseEquivField, text)
-            
+                if Style == None: # style 'hyperlink' doesn't exist
+
+                    DB.LexiconSetFieldText(currSense, senseEquivField, urlStr)
+                else:
+
+                    # Put the string we want for the link name into a tsString
+                    linkName = f'linked to entry: {currLink.getTgtHeadword()}, sense: {currLink.getTgtGloss()}'
+
+                    # Make the string in the analysis writing system
+                    tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
+
+                    # We use a builder object to set the hyperlink, initialize it with tss
+                    bldr = TsStringUtils.MakeStrBldr()
+                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+
+                    # Set the hyperlink to cover the whole string (0-length), using the above url and 'hyperlink' style
+                    StringServices.MarkTextInBldrAsHyperlink(bldr, 0, len(linkName), urlStr, Style)
+
+                    # Extract the changed tsString
+                    tss = bldr.GetString()
+
+                    # Call the set string function directly instead of using the FlexTools function since we need the hyperlink
+                    # This is a bit riskier, because it bypasses checks, but we assume it's a text field and not a multi WS string
+                    DB.project.DomainDataByFlid.SetString(currSense.Hvo, senseEquivField, tss)
+
                 # Set the sense number if necessary
-                if currLink.getTgtSenseNum() > 1:
-                    numStr = str(currLink.getTgtSenseNum())
-                    DB.LexiconSetFieldText(currSense, senseNumField, numStr)
+                # if currLink.getTgtSenseNum() > 1:
+                #     numStr = str(currLink.getTgtSenseNum())
+                #     DB.LexiconSetFieldText(currSense, senseNumField, numStr)
             
                 updatedSenses[currSense] = 1
             
