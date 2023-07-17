@@ -151,7 +151,7 @@ type="tFlexxTools"
 > is populated with several collections of modules for common <object
 type="tFlextrans"
 ></object
-> tasks.  <comment
+> tasks. <comment
 >Maybe refer to a new section on the FLExTrans UI?</comment
 ></p
 ></section1
@@ -181,29 +181,34 @@ type="tSenseLinker"
 ><li
 >Write transfer rules that convert source words and phrases to target words and phrases.</li
 ><li
->Run the seven core <object
+>Run the core <object
 type="tFlextrans"
 ></object
 > modules.</li
 ></ol
 ><p
->Let’s look at each step in more detail.<comment
+>After an explanation of the one-time steps to get ready to use <object
+type="tFlextrans"
+></object
+>, the following is a quick walkthrough of these four steps.  Further detail about each step is available in the Tools section.</p
+><p
+><comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
 ><p
->(It is assumed that you have gone through the <link
+>(For the following steps, it is assumed that you have gone through the <link
 href="https://software.sil.org/flextrans/installation/"
 >installation</link
 > steps as given on the <object
 type="tFlextrans"
 ></object
-> website and that you have <object
+> website and that you have confirmed that <object
 type="tFlextrans"
 ></object
-> working for the sample projects. It is also assumed that you have two <object
+> works for the sample projects. It is also assumed that you have two <object
 type="tFlexx"
 ></object
-> projects to use as source and target projects for the following steps.)</p
+> projects to use as source and target projects.)</p
 ><section2
 id="sPrepSteps"
 ><secTitle
@@ -213,6 +218,12 @@ id="sPrepSteps"
 type="tFlextrans"
 ></object
 >.</p
+><section3
+id="sProjectSetup"
+><secTitle
+>Set up your projects</secTitle
+><p
+>Set up</p
 ><ol
 ><li
 >Create a new folder for your language pair.<ol
@@ -443,8 +454,285 @@ type="tFlexx"
 ></li
 ></ol
 ></li
+></ol
+></section3
+><section3
+id="sHermitCrabSetup"
+><secTitle
+>Choose your parser for synthesis, <object
+type="tTool"
+>XAmple</object
+> or <object
+type="tTool"
+>HermitCrab</object
+></secTitle
+><p
+>By default <object
+type="tFlextrans"
+></object
+> assumes you will use the <object
+type="tTool"
+>XAmple</object
+> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <object
+type="tTool"
+>HermitCrab</object
+> parsing model, you can make some changes in your <object
+type="tFlextrans"
+></object
+> setup to use <object
+type="tTool"
+>HermitCrab</object
+> for synthesis. For more details on the <object
+type="tTool"
+>HermitCrab</object
+> parser, see <citation
+ref="rBlack"
+></citation
+>.</p
+><p
+>To set up <object
+type="tFlextrans"
+></object
+> for <object
+type="tTool"
+>HermitCrab</object
+> parsing, you need to do two things:</p
+><ol
 ><li
->Set up transfer rule categories and attributes.<ol
+>Turn on the setting to enable <object
+type="tTool"
+>HermitCrab</object
+> for synthesis.<ol
+><li
+>Launch the <object
+type="tSettingsTool"
+></object
+> by selecting <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the <object
+type="tFlexxTools"
+></object
+> menu.</li
+><li
+>Click <object
+type="tSettingsValue"
+>Yes</object
+> for <object
+type="tSettingsProperty"
+>Use HermitCrab synthesis</object
+> as shown in <exampleRef
+letter="xCollections"
+num="xHermitCrabYesNo"
+></exampleRef
+>.<example
+num="xHermitCrabYesNo"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/HermitCrabYesNo.png"
+></img
+></chart
+></example
+></li
+></ol
+></li
+><li
+>Replace the <object
+type="tModule"
+>Synthesize Text with STAMP</object
+> module with the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module in any collection that contains it. Here are the steps to do that for the <object
+type="tCollection"
+>All Steps</object
+> collection. Repeat these steps for the <object
+type="tCollection"
+>Synthesis Test</object
+> collection, and any other collection that needs it.<comment
+>I am hoping that eventually we won't need this section at all.  -BB</comment
+><ol
+><li
+>Click on the <img
+cssSpecial="Height:5%;"
+src="Images/CollectionsBut.PNG"
+></img
+> button which will bring up a list of collections as shown in <exampleRef
+letter="xCollections"
+num="xCollections"
+></exampleRef
+> repeated from <exampleRef
+letter="xMyCollections"
+num="xMyCollections"
+></exampleRef
+> above.<example
+num="xCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on <object
+type="tCollection"
+>All Steps</object
+>.</li
+><li
+>Then click on <object
+type="tModule"
+>Synthesize Text with STAMP</object
+> module as shown in <exampleRef
+letter="xCollections2"
+num="xCollections2"
+></exampleRef
+>.<example
+num="xCollections2"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/AllStepsInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/RemoveButton.png"
+></img
+> button to remove the module from the <object
+type="tCollection"
+>All Steps</object
+> collection.</li
+><li
+>In the lower pane, click on the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module. As shown in <exampleRef
+letter="xCollections"
+num="xCollections3"
+></exampleRef
+>.<example
+num="xCollections3"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click the <img
+src="Images/AddModuleButton.png"
+></img
+> button and then in the upper right pane, click on the <object
+type="tModule"
+>FLExTrans.Synthesize Text with HermitCrab</object
+> module as shown in <exampleRef
+letter="xCollections"
+num="xCollections4"
+></exampleRef
+>.<example
+num="xCollections4"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinAllSteps.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/MoveUpButton.png"
+></img
+> button.</li
+><li
+>The <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module is now in the <object
+type="tCollection"
+>All Steps</object
+> collection at the right place as shown in <exampleRef
+letter="xCollections"
+num="xCollections5"
+></exampleRef
+>.<example
+num="xCollections5"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollFinal.png"
+></img
+></chart
+></example
+></li
+><li
+>Close the <object
+type="tItalic"
+>Collection Manager</object
+> window. Now you can run all the <object
+type="tCollection"
+>All Steps</object
+> modules which will include <object
+type="tTool"
+>HermitCrab</object
+> synthesis.</li
+></ol
+></li
+><li
+><p
+>Note: If you have any lexical entries that have a space in the <object
+type="tFieldInFLEx"
+>Lexeme Form</object
+>, do the following in your <object
+type="tFlexx"
+></object
+> projects:</p
+><ol
+><li
+>Add a "phoneme" with a grapheme of #.</li
+><li
+>Make sure that the phonological features for this phoneme are unique.</li
+></ol
+><p
+>The <object
+type="tTool"
+>HermitCrab</object
+> synthesis tool will replace any #s in the input with spaces in the output.</p
+></li
+></ol
+></section3
+><section3
+id="sCategorySetup"
+><secTitle
+>Pre-populate the transfer rules file with Categories and Attributes</secTitle
+><p
+>If you expect to write rules that use more than a few etof the categories, attributes, and template slots in your <object
+type="tFlexx"
+></object
+> projects, there is a module that can get those into your transfer rules file before beginning. (Find out more about this tool in section <sectionRef
+sec="sSetupGramCat"
+></sectionRef
+>. Find more about transfer rules in section <sectionRef
+sec="sTransferTutorial"
+></sectionRef
+>.)</p
+><ol
 ><li
 >Run the <object
 type="tTool"
@@ -467,26 +755,19 @@ src="images/SetupCatAttrib.png"
 ></img
 ></chart
 ></example
->This tool will set up things in your transfer rule file to define your categories and attributes. Find out more about this tool in section <sectionRef
-sec="sSetupGramCat"
-></sectionRef
->. Find more about transfer rules in section <sectionRef
-sec="sTransferTutorial"
-></sectionRef
->.</li
+></li
 ><li
 >If you have grammatical templates defined in your <object
 type="tFlexx"
 ></object
-> projects, Click the check box for <object
+> projects, click the check box for <object
 type="tItalic"
 >Populate template slots as attributes</object
 >.</li
 ><li
 >Click OK</li
 ></ol
-></li
-></ol
+></section3
 ></section2
 ><section2
 id="sAnalyze"
@@ -1913,7 +2194,7 @@ src="images/SynthTestSettings.png"
 ><li
 >Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li
 ><li
->You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.)  Click the <img
+>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.) Click the <img
 cssSpecial="Width:5%"
 height="60%"
 src="Images/ApplyAndCloseButton.PNG"
@@ -5495,254 +5776,6 @@ type="tFoldername"
 >FLExTrans Documentation\Synthesis Self-Test</object
 >.</li
 ></ol
-></section3
-><section3
-id="sHermitCrab"
-><secTitle
->What do I do to use my <object
-type="tTool"
->HermitCrab</object
-> parsing model in synthesis?</secTitle
-><p
->By default <object
-type="tFlextrans"
-></object
-> assumes you will use the <object
-type="tTool"
->XAmple</object
-> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <object
-type="tTool"
->HermitCrab</object
-> parsing model, you can make some changes in your <object
-type="tFlextrans"
-></object
-> setup to use <object
-type="tTool"
->HermitCrab</object
-> for synthesis. For more details on the <object
-type="tTool"
->HermitCrab</object
-> parser, see <citation
-ref="rBlack"
-></citation
->.</p
-><p
->To set up <object
-type="tFlextrans"
-></object
-> for <object
-type="tTool"
->HermitCrab</object
-> parsing, you need to do two things:</p
-><ol
-><li
->Turn on the setting to enable <object
-type="tTool"
->HermitCrab</object
-> for synthesis.<ol
-><li
->Launch the <object
-type="tSettingsTool"
-></object
-> by selecting <object
-type="tMenu"
->FLExTrans</object
-> &gt; <object
-type="tMenu"
->Settings</object
-> from the <object
-type="tFlexxTools"
-></object
-> menu.</li
-><li
->Click <object
-type="tSettingsValue"
->Yes</object
-> for <object
-type="tSettingsProperty"
->Use HermitCrab synthesis</object
-> as shown in <exampleRef
-letter="xCollections"
-num="xHermitCrabYesNo"
-></exampleRef
->.<example
-num="xHermitCrabYesNo"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/HermitCrabYesNo.png"
-></img
-></chart
-></example
-></li
-></ol
-></li
-><li
->Replace the <object
-type="tModule"
->Synthesize Text with STAMP</object
-> module with the <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module in any collection that contains it. Here are the steps to do that for the <object
-type="tCollection"
->All Steps</object
-> collection. Repeat these steps for the <object
-type="tCollection"
->Synthesis Test</object
-> collection, and any other collection that needs it.<ol
-><li
->Click on the <img
-cssSpecial="Height:5%;"
-src="Images/CollectionsBut.PNG"
-></img
-> button which will bring up a list of collections as shown in <exampleRef
-letter="xCollections"
-num="xCollections"
-></exampleRef
-> repeated from <exampleRef
-letter="xMyCollections"
-num="xMyCollections"
-></exampleRef
-> above.<example
-num="xCollections"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/LinkerInCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Click on <object
-type="tCollection"
->All Steps</object
->.</li
-><li
->Then click on <object
-type="tModule"
->Synthesize Text with STAMP</object
-> module as shown in <exampleRef
-letter="xCollections2"
-num="xCollections2"
-></exampleRef
->.<example
-num="xCollections2"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/AllStepsInCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Now click the <img
-src="Images/RemoveButton.png"
-></img
-> button to remove the module from the <object
-type="tCollection"
->All Steps</object
-> collection.</li
-><li
->In the lower pane, click on the <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module. As shown in <exampleRef
-letter="xCollections"
-num="xCollections3"
-></exampleRef
->.<example
-num="xCollections3"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Click the <img
-src="Images/AddModuleButton.png"
-></img
-> button and then in the upper right pane, click on the <object
-type="tModule"
->FLExTrans.Synthesize Text with HermitCrab</object
-> module as shown in <exampleRef
-letter="xCollections"
-num="xCollections4"
-></exampleRef
->.<example
-num="xCollections4"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinAllSteps.png"
-></img
-></chart
-></example
-></li
-><li
->Now click the <img
-src="Images/MoveUpButton.png"
-></img
-> button.</li
-><li
->The <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module is now in the <object
-type="tCollection"
->All Steps</object
-> collection at the right place as shown in <exampleRef
-letter="xCollections"
-num="xCollections5"
-></exampleRef
->.<example
-num="xCollections5"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinCollFinal.png"
-></img
-></chart
-></example
-></li
-><li
->Close the <object
-type="tItalic"
->Collection Manager</object
-> window. Now you can run all the <object
-type="tCollection"
->All Steps</object
-> modules which will include <object
-type="tTool"
->HermitCrab</object
-> synthesis.</li
-></ol
-></li
-></ol
-><p
->Note: If you need to use compounds/phrases that have a space within them, do the following:</p
-><ol
-><li
->Add a "phoneme" with a grapheme of #.</li
-><li
->Make sure that the phonological features for this phoneme are unique.</li
-></ol
-><p
->The <object
-type="tTool"
->HermitCrab</object
-> synthesis tool will replace any #s with spaces.</p
 ></section3
 ><section3
 id="sPhrasalVerbs"
