@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.1 - 7/3/23 - Ron Lockwood
+#    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
+#
 #   Version 3.8.4 - 5/3/23 - Ron Lockwood
 #    When extracting the interlinear info., instead of checking if one punctuation symbol of
 #    a cluster is in the list of sentence-ending punctuation, require all of the cluster to be
@@ -1650,3 +1653,83 @@ def checkForFatalError(errorList, report):
             report.Error(msg)
     
     return fatal, msg
+
+def getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=False):
+
+    retVal = (None, None, None)
+
+    senseNumStr = '1'
+
+    # If not sense num custom field, that's ok
+    if senseNumField:
+    
+        senseNumStr = DB.LexiconGetFieldText(mySense.Hvo, senseNumField)
+    
+        # If no sense number, assume it is 1
+        if senseNumStr == None or not senseNumStr.isdigit():
+            
+            senseNumStr = '1'
+    
+    senseNum = int(senseNumStr)
+
+    # Get the guid from the url
+    u = equiv.index('guid')
+    guidSubStr = equiv[u+7:u+7+36]
+
+    # Look up the entry in the trgt project by guid
+    repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+    # repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
+
+    try:
+        guid = Guid(String(guidSubStr))
+        targetObj = repo.GetObject(guid)
+    except:
+        headWord = ITsString(entry.HeadWord).Text
+        report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}, id: {guidSubStr}.',\
+                     DB.BuildGotoURL(entry))
+        return retVal
+    
+    if targetObj:
+        
+        # See if this guid was for an entry or a sense. The old method was an entry with a given sense num.
+        if targetObj.ClassName == 'LexEntry':
+
+            targetEntry = targetObj
+
+            if senseNum <= len(targetEntry.SensesOS.ToArray()):
+                
+                targetSense = targetEntry.SensesOS.ToArray()[senseNum-1]
+        else:
+            targetSense = targetObj
+            targetEntry = targetSense.OwningEntry
+
+            # Find which sense number this is
+            for i, mySense in enumerate(targetEntry.SensesOS):
+
+                if mySense == targetSense:
+                    break
+            
+            senseNum = i+1
+
+        # Make the lemma in the form x.x (but remove if 1.1)
+        lem = fixupLemma(targetEntry, senseNum, remove1dot1Bool)
+
+    return (targetSense, lem, senseNum)
+
+def remove1dot1(lem):
+
+    return re.sub('1\.1', '', lem)
+    
+def fixupLemma(entry, senseNum, remove1dot1Bool=False):
+    
+    lem = ITsString(entry.HeadWord).Text
+    lem = add_one(lem)
+    lem = lem + '.' + str(senseNum) # add sense number
+    
+    # If the lemma ends with 1.1, remove it (for optics)
+    if remove1dot1Bool:
+
+        return remove1dot1(lem)
+    else:
+        return lem
+
