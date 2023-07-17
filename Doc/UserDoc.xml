@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->26 June, 2023</date
+>4 July, 2023</date
 ><version
 >3.9</version
 ><contents
@@ -205,58 +205,6 @@ type="tFlexx"
 ></object
 > projects to use as source and target projects for the following steps.)</p
 ><section2
-id="sAnalyze"
-><secTitle
->Analyze the Source Text</secTitle
-><ol
-><li
->Create a new text in <object
-type="tFlexx"
-></object
->.</li
-><li
->Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
-><li
->Analyze this text.<ol
-><li
->Divide each word into its morphemes.</li
-><li
->Accept the analysis of each word.</li
-></ol
-></li
-></ol
-><p
->Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
-letter="xAnalyzedText"
-num="xAnalyzedText"
-></exampleRef
-> below.</p
-><example
-num="xAnalyzedText"
-><chart
-><img
-XeLaTeXSpecial="scaled='600'"
-cssSpecial=" height:60%"
-src="Images/AnalyzedText.PNG"
-></img
-></chart
-></example
-><p
->Note: Word gloss and category are hidden as well as free translation.</p
-><p
-><comment
->Advanced info. for the later section:</comment
-></p
-><p
-><comment
->All affixes and clitics need to have unique glosses</comment
-></p
-><p
-><comment
->Use the parser for faster analysis.</comment
-></p
-></section2
-><section2
 id="sPrepSteps"
 ><secTitle
 >Preparatory Steps</secTitle
@@ -323,7 +271,7 @@ type="tUnderline"
 ></ul
 ></li
 ><li
->Add two custom fields to your source <object
+>Add a custom field to your source <object
 type="tFlexx"
 ></object
 > project. This is where link information to the target senses is kept.<ol
@@ -352,47 +300,17 @@ type="tUnderline"
 ><endnote
 id="nCustomFieldNames"
 ><p
->You may choose different names for the custom fields, but you also have to update the <object
+>You may choose a different name for the custom field, but you also have to update the <object
 type="tFlextrans"
 ></object
-> settings to match these names. The names <object
+> settings to match the name. The name <object
 type="tBold"
 >Target Equivalent</object
-> and <object
-type="tBold"
->Target Sense Number</object
-> are already set in the settings that get installed with <object
+> is already defined in the settings that get installed with <object
 type="tFlextrans"
 ></object
 >.</p
 ></endnote
-></li
-><li
->Location: <object
-type="tUnderline"
->Sense</object
-></li
-><li
->Type: <object
-type="tUnderline"
->Single-line Text</object
-></li
-><li
->Writing Systems(s): <object
-type="tUnderline"
->First Analysis Writing System</object
-></li
-></ol
-></li
-><li
->Click Add again and use the following settings for a second custom field:<ol
-><li
->Custom Field Name: <object
-type="tUnderline"
->Target Sense Number</object
-><endnoteRef
-note="nCustomFieldNames"
-></endnoteRef
 ></li
 ><li
 >Location: <object
@@ -569,6 +487,58 @@ type="tItalic"
 ></ol
 ></li
 ></ol
+></section2
+><section2
+id="sAnalyze"
+><secTitle
+>Analyze the Source Text</secTitle
+><ol
+><li
+>Create a new text in <object
+type="tFlexx"
+></object
+>.</li
+><li
+>Paste in some text. (Start with a simple text; perhaps just one sentence.)</li
+><li
+>Analyze this text.<ol
+><li
+>Divide each word into its morphemes.</li
+><li
+>Accept the analysis of each word.</li
+></ol
+></li
+></ol
+><p
+>Word glosses, word categories and free translations are not necessary. A fully analyzed text will look something like <exampleRef
+letter="xAnalyzedText"
+num="xAnalyzedText"
+></exampleRef
+> below.</p
+><example
+num="xAnalyzedText"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AnalyzedText.PNG"
+></img
+></chart
+></example
+><p
+>Note: Word gloss and category are hidden as well as free translation.</p
+><p
+><comment
+>Advanced info. for the later section:</comment
+></p
+><p
+><comment
+>All affixes and clitics need to have unique glosses</comment
+></p
+><p
+><comment
+>Use the parser for faster analysis.</comment
+></p
 ></section2
 ><section2
 id="sLinkSenses"
@@ -936,23 +906,169 @@ type="tFlextrans"
 ></object
 > User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
 ><section2
+id="sFTUserInterface"
+><secTitle
+>FLExTrans Window</secTitle
+><p
+>The <object
+type="tFlextrans"
+></object
+> user interface is shown in <exampleRef
+letter="xFirstStart"
+num="xFTwindow"
+></exampleRef
+>. The parts of this window are described below.</p
+><example
+num="xFTwindow"
+><chart
+><img
+src="Images/FLExTransWindow.png"
+></img
+></chart
+></example
+><ol
+><li
+>The <object
+type="tItalic"
+>Menu bar</object
+> provides a way to run various <object
+type="tFlextrans"
+></object
+> command by choosing a menu and then selecting a command from that menu.<ol
+><li
+>The <object
+type="tMenu"
+>FLExTools</object
+> menu provides a way to change the Source Project, change or manage collections, learn about modules, reload modules, and exit the <object
+type="tFlextrans"
+></object
+> program.</li
+><li
+>The <object
+type="tMenu"
+>Run</object
+> menu allows users to run a single module, or all modules in the current collection.</li
+><li
+>The <object
+type="tMenu"
+>Report</object
+> menu includes options for copying messages to the clipboard or to clear them.</li
+><li
+>The <object
+type="tMenu"
+>FLExTrans</object
+> menu gives access to the Settings dialog for <object
+type="tFlextrans"
+></object
+>, as well as the <object
+type="tFlextrans"
+></object
+> documentation, and information about the current version of <object
+type="tFlextrans"
+></object
+>.</li
+><li
+>The <object
+type="tMenu"
+>Help</object
+> menu gives access to the <object
+type="tFlexxTools"
+></object
+> documentation, as well as some additional resources for writing modules for <object
+type="tFlexxTools"
+></object
+>, and the "About" information for <object
+type="tFlexxTools"
+></object
+>.</li
+></ol
+></li
+><li
+>The <object
+type="tItalic"
+>Toolbar</object
+> provides icons that can be clicked to run the most common <object
+type="tFlexxTools"
+></object
+> commands.<ol
+><li
+>The <object
+type="tButton"
+>Source Project</object
+> icon allows you to choose from the <object
+type="tFlexx"
+></object
+> projects that are available on your device.</li
+><li
+>The <object
+type="tButton"
+>Collections</object
+> button allows you to change to a different collection, as well as add, modify, or delete collections.</li
+><li
+>The <object
+type="tButton"
+>Module Info</object
+> button shows more details about whichever module is currently selected.</li
+><li
+>The <object
+type="tButton"
+>Run</object
+> button runs the currently selected module.</li
+><li
+>The <object
+type="tButton"
+>Run All</object
+> button runs all the modules in the current collection, in order. If one of the modules results in an error, operation will stop and the remaining modules will not be run. <comment
+>[Add info about "modify database"?]</comment
+></li
+></ol
+></li
+><li
+>The <object
+type="tItalic"
+>Modules pane</object
+> displays all the modules that are in the current collection. Keep in mind that this is a subset of all the modules that are available in <object
+type="tFlextrans"
+></object
+>, and modules may exist in more than one collection.</li
+><li
+>The <object
+type="tItalic"
+>Messages pane</object
+> displays any messages, warnings, or errors that result from running modules.</li
+><li
+>The <object
+type="tItalic"
+>Status Bar</object
+> gives details that indicate the current context for your operations:<ol
+><li
+>The current collection</li
+><li
+>The name of your project folder</li
+><li
+>The Source Text that is currently selected</li
+></ol
+></li
+></ol
+></section2
+><section2
 id="sSettings"
 ><secTitle
 >The <object
 type="tSettings"
 ></object
-></secTitle
+> Dialog</secTitle
 ><p
->The <object
+>With the <object
 type="tSettings"
 ></object
-> is a tool that helps get <object
+> dialog you can configure <object
 type="tFlextrans"
 ></object
-> configured the way you want it. You launch the <object
+> the way you want it. You launch the <object
 type="tSettings"
 ></object
-> by selecting <object
+> dialog by selecting <object
 type="tMenu"
 >FLExTrans</object
 > &gt; <object
@@ -961,10 +1077,13 @@ type="tMenu"
 > from the <object
 type="tFlexxTools"
 ></object
-> menu. Hover over the text box or Browse button to get an explanation of the setting. For file or folder names in the <object
+> main menu. Hover over the text box or <object
+type="tButton"
+>Browse</object
+> button to get an explanation of the setting. For file or folder names in the <object
 type="tSettings"
 ></object
->, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+> dialog, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
 ><example
 num="xSettings"
 ><chart
@@ -2370,7 +2489,7 @@ id="sLexicalTransfer"
 ><secTitle
 >Lexical Transfer</secTitle
 ><p
->For the purposes of this example, we are going to use some “pre-prepared” data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
+>For the purposes of this example, we are going to use some prepared data. We have a Croatian text that is already analyzed and we have small Croatian and English lexicons with all of the entries and senses that we need.</p
 ><p
 >Let’s see what our input and output looks like initially if we run the system. Our input of course, according to <exampleRef
 letter="xCroatEngTable"
@@ -5057,6 +5176,8 @@ id="sOther"
 ><secTitle
 >Other How To’s</secTitle
 ><p
+><comment
+>Should we have a how to on how to manually create a link between senses?</comment
 ></p
 ><section3
 id="sViewBiling"
