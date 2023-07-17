@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.6 - 7/17/23 - Ron Lockwood
+#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
+#
 #   Version 3.9.5 - 7/4/23 - Ron Lockwood
 #    Don't give an error if the sense custom field link setting is not there.
 #
@@ -267,7 +270,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.5",
+        FTM_Version    : "3.9.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -896,10 +899,12 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
-                            equiv = DB.LexiconGetFieldText(mySense.Hvo, custSenseEquivField)
+#                            equiv = DB.LexiconGetFieldText(mySense.Hvo, custSenseEquivField)
+
+                            equivStr = Utils.getTargetEquivalentUrl(DB, mySense, custSenseEquivField)
                             
                             # handle a sense mapped intentionally to nothing. Skip it.
-                            if equiv == Utils.NONE_HEADWORD:
+                            if equivStr == Utils.NONE_HEADWORD:
                                 
                                 # output the bilingual dictionary line with a blank target (<r>) side
                                 out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+s4b+'\n'
@@ -908,9 +913,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 f_out.write(out_str)
                                 records_dumped_cnt += 1
                                 
-                            elif equiv:
+                            elif equivStr:
                                 
-                                targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(srcEntry, DB, TargetDB, mySense, equiv, \
+                                targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(srcEntry, DB, TargetDB, mySense, equivStr, \
                                                                     custSenseNumField, report, remove1dot1Bool=False)
                                 if targetSense:
                                     

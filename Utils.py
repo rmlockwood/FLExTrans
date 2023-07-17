@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.2 - 7/17/23 - Ron Lockwood
+#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
+#
 #   Version 3.9.1 - 7/3/23 - Ron Lockwood
 #    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
 #
@@ -331,7 +334,8 @@ from System import Guid
 from System import String
 
 from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString   
+from SIL.LCModel.Core.KernelInterfaces import ITsString  
+from SIL.LCModel.Core.Text import TsStringUtils
 from SIL.LCModel.DomainServices import SegmentServices
 
 from flexlibs import FLExProject, AllProjectNames
@@ -1733,3 +1737,40 @@ def fixupLemma(entry, senseNum, remove1dot1Bool=False):
     else:
         return lem
 
+def removeLemmaOnePointSomething(lemmaStr):
+
+    # Remove everything following the dot and optionally the 1 if it's there
+    # So 2.1 or 2.2 would turn into 2, 3.1 -> 3
+    # Basically we want to show the non-1 homograph numbers
+    return re.sub(r'1*\..+', '', lemmaStr)
+
+def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
+    
+    equivStr = None
+
+    # Get tsString with the custom field contents
+    tsEquiv = DB.GetCustomFieldValue(senseObj.Hvo, senseEquivField)
+
+    if tsEquiv.Text:
+
+        # Initialize a builder object
+        bldr = TsStringUtils.MakeStrBldr()
+        bldr.ReplaceTsString(bldr.Length, bldr.Length, tsEquiv)
+
+        # Get the properties of the string at position 0
+        textPropObj = bldr.get_Properties(0)
+
+        # The embedded object property is value 6
+        urlStr = textPropObj.GetStrPropValue(6)
+
+        if urlStr:
+
+            # Discard the first character which is the ID
+            equivStr = urlStr[1:]
+        else:
+
+            # No hyperlink, use the link directly
+            # the Text member of the tsString holds the character string
+            equivStr = tsEquiv.Text
+
+    return equivStr

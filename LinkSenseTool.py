@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.3 - 7/17/23 - Ron Lockwood
+#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
+#
 #   Version 3.9.2 - 7/4/23 - Ron Lockwood
 #    Don't give an error if the sense custom field link setting is not there.
 #
@@ -232,7 +235,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.2",
+        FTM_Version    : "3.9.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help   : "",
@@ -1330,33 +1333,11 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                     
                                     #equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
 
-                                    # Get tsString with the custom field contents
-                                    tsEquiv = DB.GetCustomFieldValue(mySense.Hvo, senseEquivField)
+                                    # Get the url to the target sense (if present)
+                                    equivStr = Utils.getTargetEquivalentUrl(DB, mySense, senseEquivField)
 
-                                    if tsEquiv.Text:
+                                    if equivStr:
 
-                                        # Initialize a builder object
-                                        bldr = TsStringUtils.MakeStrBldr()
-                                        bldr.ReplaceTsString(bldr.Length, bldr.Length, tsEquiv)
-
-                                        # Get the properties of the string at position 0
-                                        textPropObj = bldr.get_Properties(0)
-
-                                        # The embedded object property is value 6
-                                        urlStr = textPropObj.GetStrPropValue(6)
-
-                                        if urlStr:
-
-                                            # Discard the first character which is the ID
-                                            equivStr = urlStr[1:]
-                                        else:
-
-                                            # No hyperlink, use the link directly
-                                            # the Text member of the tsString holds the character string
-                                            equivStr = tsEquiv.Text
-
-                                        # equivStr now holds the url to the target, see if it is valid
-                                        
                                         # handle sense mapped intentionally to nothing.
                                         if equivStr == Utils.NONE_HEADWORD:
                                             
@@ -1487,9 +1468,11 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
 
                     DB.LexiconSetFieldText(currSense, senseEquivField, urlStr)
                 else:
+                    # Remove sense # and homograph #s that are 1
+                    headWordStr = Utils.removeLemmaOnePointSomething(currLink.getTgtHeadword())
 
                     # Put the string we want for the link name into a tsString
-                    linkName = f'linked to entry: {currLink.getTgtHeadword()}, sense: {currLink.getTgtGloss()}'
+                    linkName = f'linked to entry: {headWordStr}, sense: {currLink.getTgtGloss()}'
 
                     # Make the string in the analysis writing system
                     tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
