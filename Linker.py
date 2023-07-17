@@ -118,10 +118,10 @@ class Ui_MainWindow(object):
         self.ShowOnlyUnlinkedCheckBox.setText(_translate("MainWindow", "Show Only Unlinked"))
         self.label.setText(_translate("MainWindow", "All Target Senses:"))
         self.HideProperNounsCheckBox.setText(_translate("MainWindow", "Hide Proper Nouns"))
-        self.searchTargetEdit.setToolTip(_translate("MainWindow", "Type the beginning of an entry or any text (if \'search all fields\' is checked), \n"
+        self.searchTargetEdit.setToolTip(_translate("MainWindow", "Type the beginning of an entry or any text (if \'Filter on all fields\' is checked), \n"
 "then double-click in the Target Head Word column for the desired row to link to it."))
         self.label_4.setText(_translate("MainWindow", "Source Text:"))
-        self.SearchAnythingCheckBox.setText(_translate("MainWindow", "Search all fields"))
+        self.SearchAnythingCheckBox.setText(_translate("MainWindow", "Filter on all fields"))
         self.ZoomDecrease.setText(_translate("MainWindow", "–"))
         self.ZoomIncrease.setText(_translate("MainWindow", "+"))
         self.ZoomLabel.setText(_translate("MainWindow", "Zoom:"))
