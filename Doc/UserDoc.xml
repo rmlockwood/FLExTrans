@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->4 July, 2023</date
+>17 July 2023</date
 ><version
 >3.9</version
 ><contents
@@ -131,7 +131,7 @@ type="tFlexx"
 ><object
 type="tFlextrans"
 ></object
->, as a program, consists of several different modules that are run within the <object
+>, as a program, consists of many different modules that are run within the <object
 type="tFlexxTools"
 ></object
 ><endnote
@@ -148,11 +148,11 @@ type="tFlexx"
 > program. Upon installation, <object
 type="tFlexxTools"
 ></object
-> is populated with three collections of modules for common <object
+> is populated with several collections of modules for common <object
 type="tFlextrans"
 ></object
-> tasks. <comment
->Maybe refer to a new section on how FlexTools and collections work. Should this mention deleting lock files?</comment
+> tasks.  <comment
+>Maybe refer to a new section on the FLExTrans UI?</comment
 ></p
 ></section1
 ><section1
@@ -904,7 +904,7 @@ type="tFlextrans"
 >The <object
 type="tFlextrans"
 ></object
-> User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
+> User Interface presents modules that can be run to perform various operations. These are organized into collections. There is a menu that allows adjusting settings for the modules.</p
 ><section2
 id="sFTUserInterface"
 ><secTitle
@@ -1850,9 +1850,14 @@ type="tFlexx"
 > project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <object
 type="tFlexx"
 ></object
-> project.</p
+> project. It does not attempt to generate for any category without a template, and it does not attempt to generate with derivational affixes.</p
 ><p
 >The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.</p
+><p
+>Note that for this test, any active template must have at least one affix in each of its slots. If you have any slots with no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in the description of the template in Category Edit in <object
+type="tFlexx"
+></object
+>.)</p
 ><p
 >To use this tool, change to the <object
 type="tCollection"
@@ -1887,7 +1892,11 @@ type="tSettingsTool"
 > (as described in <sectionRef
 sec="sSettings"
 ></sectionRef
->). Scroll down to the Synthesis Test section, as shown in <exampleRef
+>).</li
+><li
+>In the top section, set the Target Project to the project you want to use for the synthesis test.</li
+><li
+>Scroll down to the Synthesis Test section, as shown in <exampleRef
 letter="xSynthTestSettings"
 num="xSynthTestSettings"
 ></exampleRef
@@ -1902,16 +1911,27 @@ src="images/SynthTestSettings.png"
 ></example
 ></li
 ><li
->Select the Part of Speech you want to test. Here you can also limit the number of stems to use for generation (it will choose the stems randomly), or limit it to a specific Citation Form. Click the <img
+>Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li
+><li
+>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.)  Click the <img
 cssSpecial="Width:5%"
 height="60%"
 src="Images/ApplyAndCloseButton.PNG"
 ></img
 > button.</li
 ><li
->Double click each of the first three modules to run them.</li
+>Back in the FLExTrans window, double click each of the first three modules to run them (or click the Run button for each).</li
 ><li
->Choose either the fourth or fifth module to run, depending on whether you are using the XAMPLE parser or the Hermit Crab parser in your Target Project.</li
+>Choose either the fourth or fifth module to run, depending on whether you are using the <object
+type="tTool"
+>XAmple</object
+> parser or the <object
+type="tTool"
+>HermitCrab</object
+> parser in your Target Project. (You can also customize this collection so that only one of these modules appears. Then you could use the <object
+type="tButton"
+>Run All</object
+> button.)</li
 ><li
 >The output will be in the file specified in the settings. If you have not changed the default, it will be <object
 type="tSettingsValue"
@@ -5565,7 +5585,13 @@ type="tModule"
 > module with the <object
 type="tModule"
 >Synthesize Text with HermitCrab</object
-> module. Here are the steps to do that:<ol
+> module in any collection that contains it. Here are the steps to do that for the <object
+type="tCollection"
+>All Steps</object
+> collection. Repeat these steps for the <object
+type="tCollection"
+>Synthesis Test</object
+> collection, and any other collection that needs it.<ol
 ><li
 >Click on the <img
 cssSpecial="Height:5%;"
