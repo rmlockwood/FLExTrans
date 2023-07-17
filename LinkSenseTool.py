@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.4 - 7/17/23 - Ron Lockwood
+#    Fixes #470. Re-write entry urls as sense urls when loading the sense linker. 
+#    Also clear the sense num field for such entries.
+#
 #   Version 3.9.3 - 7/17/23 - Ron Lockwood
 #    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
 #
@@ -235,10 +239,10 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.9.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
-        FTM_Help   : "",
+        FTM_Help       : "",
         FTM_Description:  
 """
 This module will create links 
@@ -1180,13 +1184,13 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                         
     return True
 
-# Given an entry guid and a sense #, look up the the sense info. 
-def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseNumField, report):
+# Given an entry guid and a sense #, look up the the sense info. Also convert an entry guid to a sense guid and re-write it.
+def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNumField, report, preGuidStr):
                       
     retVal = None
           
-    targetSense, lem, senseNum = Utils.getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=True)
-
+    targetSense, lem, senseNum = Utils.getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=True, \
+                                                          rewriteEntryLinkAsSense=True, preGuidStr=preGuidStr, senseEquivField=senseEquivField)
     if targetSense:
 
         if targetSense.MorphoSyntaxAnalysisRA:
@@ -1270,7 +1274,7 @@ def getInterlinearText(DB, report, configMap, contents):
     
     return myText
 
-def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText):
+def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr):
         
     saveMap = {}
     processedMap = {}
@@ -1342,7 +1346,8 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                             
                                         else:
                                             # Get sense information for the guid, this returns None if not found
-                                            tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseNumField, report)
+                                            # This will also convert an entry guid to a sense guid and re-write it.
+                                            tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseEquivField, senseNumField, report, preGuidStr)
                                         
                                         # Set the target part of the Link object and add it to the list
                                         myLink.setTgtHPG(tgtHPG)
@@ -1424,16 +1429,6 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
     cnt = 0
     unlinkCount = 0
         
-    # Find the hyperlink style
-    for Style in DB.ObjectsIn(IStStyleRepository):
-
-        if Style.Name == 'Hyperlink':
-            break
-
-    # If it wasn't found, set the style to None
-    if Style.Name != 'Hyperlink':
-        Style = None
-
     # Loop through the data
     for currLink in myData:
         
@@ -1460,33 +1455,20 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                     # Build target link from saved url path plus guid string for this target sense
                     urlStr = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
                 
+                myStyle = Utils.getHyperLinkStyle(DB)
+
                 # Set the target field
-                if Style == None: # style 'hyperlink' doesn't exist
+                if myStyle == None: # style 'hyperlink' doesn't exist
 
                     DB.LexiconSetFieldText(currSense, senseEquivField, urlStr)
                 else:
-                    # Remove sense # and homograph #s that are 1
-                    headWordStr = Utils.removeLemmaOnePointSomething(currLink.getTgtHeadword())
+                    
+                    Utils.writeSenseHyperLink(DB, currSense, currLink.getTgtSense().OwningEntry, currLink.getTgtSense(), senseEquivField, urlStr, myStyle)
 
-                    # Put the string we want for the link name into a tsString
-                    linkName = f'linked to entry: {headWordStr}, sense: {currLink.getTgtGloss()}'
+                    # If the sense number field is None, we aren't using it
+                    if senseNumField:
 
-                    # Make the string in the analysis writing system
-                    tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
-
-                    # We use a builder object to set the hyperlink, initialize it with tss
-                    bldr = TsStringUtils.MakeStrBldr()
-                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-
-                    # Set the hyperlink to cover the whole string (0-length), using the above url and 'hyperlink' style
-                    StringServices.MarkTextInBldrAsHyperlink(bldr, 0, len(linkName), urlStr, Style)
-
-                    # Extract the changed tsString
-                    tss = bldr.GetString()
-
-                    # Call the set string function directly instead of using the FlexTools function since we need the hyperlink
-                    # This is a bit riskier, because it bypasses checks, but we assume it's a text field and not a multi WS string
-                    DB.project.DomainDataByFlid.SetString(currSense.Hvo, senseEquivField, tss)
+                        DB.LexiconSetFieldText(currSense, senseNumField, '')
 
                 # Set the sense number if necessary
                 # if currLink.getTgtSenseNum() > 1:
@@ -1869,7 +1851,7 @@ def RunModule(DB, report, configMap):
         return ERROR_HAPPENED
 
     # Go through the interlinear words
-    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText)
+    myData, processedMap = processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNames, TargetDB, glossMap, properNounAbbr, myText, preGuidStr)
 
     # Check to see if there is any data to link
     if len(myData) == 0:
