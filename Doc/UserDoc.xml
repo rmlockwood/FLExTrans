@@ -722,7 +722,7 @@ id="sCategorySetup"
 ><secTitle
 >Pre-populate the transfer rules file with Categories and Attributes</secTitle
 ><p
->If you expect to write rules that use more than a few etof the categories, attributes, and template slots in your <object
+>If you expect to write rules that use more than a few of the categories, attributes, and template slots in your <object
 type="tFlexx"
 ></object
 > projects, there is a module that can get those into your transfer rules file before beginning. (Find out more about this tool in section <sectionRef
@@ -1215,7 +1215,7 @@ type="tItalic"
 > provides a way to run various <object
 type="tFlextrans"
 ></object
-> command by choosing a menu and then selecting a command from that menu.<ol
+> commands by choosing a menu and then selecting a command from that menu.<ol
 ><li
 >The <object
 type="tMenu"
@@ -1446,7 +1446,7 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s a sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -1539,7 +1539,15 @@ type="tButton"
 > check box and then type in the <object
 type="tButton"
 >Search here</object
-> box.</p
+> box. </p
+><example
+num="xLinkerNoLinks-Filter"
+><chart
+><img
+src="Images/SenseLinkerNoLinks-Filter.png"
+></img
+></chart
+></example
 ></section3
 ><section3
 id="sFilterList"
