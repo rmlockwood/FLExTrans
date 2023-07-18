@@ -6,6 +6,13 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.3 - 7/17/23 - Ron Lockwood
+#    Fixes #470. Re-write entry urls as sense urls when loading the sense linker.
+#    Also clear the sense num field for such entries.
+#
+#   Version 3.9.2 - 7/17/23 - Ron Lockwood
+#    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
+#
 #   Version 3.9.1 - 7/3/23 - Ron Lockwood
 #    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
 #
@@ -331,7 +338,9 @@ from System import Guid
 from System import String
 
 from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString   
+from SIL.LCModel.Core.KernelInterfaces import ITsString  
+from SIL.LCModel.Core.Text import TsStringUtils
+from SIL.LCModel.DomainServices import StringServices                                                  
 from SIL.LCModel.DomainServices import SegmentServices
 
 from flexlibs import FLExProject, AllProjectNames
@@ -364,6 +373,9 @@ ID = 'id'
 # File and folder names
 OUTPUT_FOLDER = 'Output'
 BUILD_FOLDER = 'Build'
+
+# Style used for hyperlink style
+globalStyle = 'NotSet'
 
 # precompiled reguglar expressions
 reDataStream = re.compile('(>[^$<])')  
@@ -1654,7 +1666,7 @@ def checkForFatalError(errorList, report):
     
     return fatal, msg
 
-def getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, report, remove1dot1Bool=False):
+def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
 
     retVal = (None, None, None)
 
@@ -1673,8 +1685,8 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, repor
     senseNum = int(senseNumStr)
 
     # Get the guid from the url
-    u = equiv.index('guid')
-    guidSubStr = equiv[u+7:u+7+36]
+    u = tgtEquivUrl.index('guid')
+    guidSubStr = tgtEquivUrl[u+7:u+7+36]
 
     # Look up the entry in the trgt project by guid
     repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
@@ -1699,6 +1711,24 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, equiv, senseNumField, repor
             if senseNum <= len(targetEntry.SensesOS.ToArray()):
                 
                 targetSense = targetEntry.SensesOS.ToArray()[senseNum-1]
+
+                # If requested, rewrite entry link as sense link
+                if rewriteEntryLinkAsSense:
+
+                    myStyle = getHyperLinkStyle(DB)
+
+                    if myStyle != None: # style 'hyperlink' doesn't exist
+
+                        urlStr = preGuidStr + targetSense.Guid.ToString() + '%26tag%3d'
+
+                        writeSenseHyperLink(DB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
+
+                        # If the sense number field is None, we aren't using it
+                        if senseNumField:
+
+                            DB.LexiconSetFieldText(mySense, senseNumField, '')
+            else:
+                targetSense = None
         else:
             targetSense = targetObj
             targetEntry = targetSense.OwningEntry
@@ -1733,3 +1763,87 @@ def fixupLemma(entry, senseNum, remove1dot1Bool=False):
     else:
         return lem
 
+def removeLemmaOnePointSomething(lemmaStr):
+
+    # Remove everything following the dot and optionally the 1 if it's there
+    # So 2.1 or 2.2 would turn into 2, 3.1 -> 3
+    # Basically we want to show the non-1 homograph numbers
+    return re.sub(r'1*\..+', '', lemmaStr)
+
+def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
+    
+    equivStr = None
+
+    # Get tsString with the custom field contents
+    tsEquiv = DB.GetCustomFieldValue(senseObj.Hvo, senseEquivField)
+
+    if tsEquiv.Text:
+
+        # Initialize a builder object
+        bldr = TsStringUtils.MakeStrBldr()
+        bldr.ReplaceTsString(bldr.Length, bldr.Length, tsEquiv)
+
+        # Get the properties of the string at position 0
+        textPropObj = bldr.get_Properties(0)
+
+        # The embedded object property is value 6
+        urlStr = textPropObj.GetStrPropValue(6)
+
+        if urlStr:
+
+            # Discard the first character which is the ID
+            equivStr = urlStr[1:]
+        else:
+
+            # No hyperlink, use the link directly
+            # the Text member of the tsString holds the character string
+            equivStr = tsEquiv.Text
+
+    return equivStr
+
+def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
+
+    # This headword should have a number if there is more than one of them
+    headWordStr = ITsString(targetEntry.HeadWord).Text
+
+    # Add a fake .1 so we can remove any 1.Xs
+    headWordStr = removeLemmaOnePointSomething(headWordStr + '.1')
+    glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
+
+    # Put the string we want for the link name into a tsString
+    linkName = f'linked to entry: {headWordStr}, sense: {glossStr}'
+
+    # Make the string in the analysis writing system
+    tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
+
+    # We use a builder object to set the hyperlink, initialize it with tss
+    bldr = TsStringUtils.MakeStrBldr()
+    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+
+    # Set the hyperlink to cover the whole string (0-length), using the above url and 'hyperlink' style
+    StringServices.MarkTextInBldrAsHyperlink(bldr, 0, len(linkName), urlStr, myStyle)
+
+    # Extract the changed tsString
+    tss = bldr.GetString()
+
+    # Call the set string function directly instead of using the FlexTools function since we need the hyperlink
+    # This is a bit riskier, because it bypasses checks, but we assume it's a text field and not a multi WS string
+    DB.project.DomainDataByFlid.SetString(sourceSense.Hvo, senseEquivField, tss)
+
+def getHyperLinkStyle(DB):
+
+    if globalStyle == 'NotSet':
+
+        # Find the hyperlink style
+        for Style in DB.ObjectsIn(IStStyleRepository):
+
+            if Style.Name == 'Hyperlink':
+                break
+
+        # If it wasn't found, set the style to None
+        if Style.Name != 'Hyperlink':
+            Style = None
+    else:
+        Style = globalStyle
+    
+    return Style
