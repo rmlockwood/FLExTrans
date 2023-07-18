@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.8.2 - 17 Jul 2023 - Beth Bryson
+#    Use GUIDs for morphType, to allow non-English analysis writing systems
+#
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -217,7 +220,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         # Make sure we have a valid MorphType object
         if e.LexemeFormOA.MorphTypeRA:
           
-            morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
+            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = Utils.morphTypeMap[morphGuidStr]
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
@@ -233,7 +237,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphType = ITsString(allomorph.MorphTypeRA.Name.BestAnalysisAlternative).Text
+                    morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                    morphType = Utils.morphTypeMap[morphGuidStr]
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
                        (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
             

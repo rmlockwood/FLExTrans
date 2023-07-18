@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>17 July 2023</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>18 July 2023</small></center>
       <center><small>Version: 3.9</small></center>
       <hr>
       <div>
@@ -23,8 +23,9 @@
                <li><a href="#sPrepSteps">2.1&nbsp;Preparatory Steps</a></li>
                <ul>
                   <li><a href="#sProjectSetup">2.1.1&nbsp;Set up your projects</a></li>
-                  <li><a href="#sHermitCrabSetup">2.1.2&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></a></li>
-                  <li><a href="#sCategorySetup">2.1.3&nbsp;Pre-populate the transfer rules file with Categories and Attributes</a></li>
+                  <li><a href="#sDataPrep">2.1.2&nbsp;Prepare your data</a></li>
+                  <li><a href="#sHermitCrabSetup">2.1.3&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></a></li>
+                  <li><a href="#sCategorySetup">2.1.4&nbsp;Pre-populate the transfer rules file with Categories and Attributes</a></li>
                </ul>
                <li><a href="#sAnalyze">2.2&nbsp;Analyze the Source Text</a></li>
                <li><a href="#sLinkSenses">2.3&nbsp;Link Senses</a></li>
@@ -210,7 +211,7 @@
          <li>Run the core <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
          </li>
       </ol>
-      <p>After an explanation of the one-time steps to get ready to use <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, the following is a quick walkthrough of these four steps.  Further detail about each step is available in the Tools section.
+      <p>After an explanation of the one-time steps to get ready to use <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, the following is a quick walkthrough of these four steps. Further detail about each step is available in the Tools section.
       </p>
       <p></p>
       <p>(For the following steps, it is assumed that you have gone through the <a href="https://software.sil.org/flextrans/installation/">installation</a> steps as given on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> website and that you have confirmed that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> works for the sample projects. It is also assumed that you have two <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects to use as source and target projects.)
@@ -314,7 +315,27 @@
             </ol>
          </li>
       </ol>
-      <h3 style=""><a name="sHermitCrabSetup"></a>2.1.2&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></h3>
+      <h3 style=""><a name="sDataPrep"></a>2.1.2&nbsp;Prepare your data
+      </h3>
+      <p>There are certain steps that are not strictly necessary for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, but they are needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.  In your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects:
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Ensure that glosses are unique, within each morpheme type. That is, all suffixes have unique glosses, all roots have unique
+            glosses, etc.
+         </li>
+         <li>Ensure that glosses of affixes don't have spaces in them.  Use period or underscore instead.</li>
+         <li>If any <span style="color:#cc9900; ">Lexeme Forms</span> have a space in them and you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <a href="#sHermitCrabSetup">2.1.3</a> for more details.
+         </li>
+         <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
+         <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
+            least one affix in them.  If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
+            box in the description of the template.
+         </li>
+         <li>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system.
+             If you encounter an area that only works with English as the analysis writing system, please report it to the developers.
+         </li>
+      </ol>
+      <h3 style=""><a name="sHermitCrabSetup"></a>2.1.3&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></h3>
       <p>By default <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> assumes you will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model, you can make some changes in your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> setup to use <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> for synthesis. For more details on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, see <a href="#rBlack">Black, (2014)</a>.
       </p>
       <p>To set up <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> for <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing, you need to do two things:
@@ -445,7 +466,7 @@
             </p>
          </li>
       </ol>
-      <h3 style=""><a name="sCategorySetup"></a>2.1.3&nbsp;Pre-populate the transfer rules file with Categories and Attributes
+      <h3 style=""><a name="sCategorySetup"></a>2.1.4&nbsp;Pre-populate the transfer rules file with Categories and Attributes
       </h3>
       <p>If you expect to write rules that use more than a few of the categories, attributes, and template slots in your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects, there is a module that can get those into your transfer rules file before beginning. (Find out more about this
          tool in section <a href="#sSetupGramCat">4.5</a>. Find more about transfer rules in section <a href="#sTransferTutorial">5</a>.)
@@ -885,7 +906,7 @@
       </h3>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Search here</span> field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want
          to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses),
-         click on the <span style="font-style:normal; font-weight:bold; ">Filter on all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box. 
+         click on the <span style="font-style:normal; font-weight:bold; ">Filter on all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>

@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   17 Jul 2023 bb v3.9.2 Test morphType by GUID, not by name in Primary Ana WS
 #   21 Jun 2023 rl v3.9.1 Use the target DB instead of the source DB (passed in from FlexTools)
 #   20 Jun 2023 rl v3.9   Cleaned up imports, modified description slightly, bumped version #
 #   16 Jun 2023 bb v2.0   Integrate with FLExTrans: Use FLExTrans
@@ -435,9 +436,10 @@ def MainFunction(DB, report, modifyAllowed):
     for entryCount,e in enumerate(DB.LexiconAllEntries()):
     
         report.ProgressUpdate(entryCount)
-        
-        morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
-        
+              
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+
         # Stem-types (not affixes, clitics)
         if e.LexemeFormOA and \
            e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \

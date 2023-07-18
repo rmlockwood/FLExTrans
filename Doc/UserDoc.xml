@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->17 July 2023</date
+>18 July 2023</date
 ><version
 >3.9</version
 ><contents
@@ -190,7 +190,7 @@ type="tFlextrans"
 >After an explanation of the one-time steps to get ready to use <object
 type="tFlextrans"
 ></object
->, the following is a quick walkthrough of these four steps.  Further detail about each step is available in the Tools section.</p
+>, the following is a quick walkthrough of these four steps. Further detail about each step is available in the Tools section.</p
 ><p
 ><comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
@@ -457,6 +457,47 @@ type="tFlexx"
 ></ol
 ></section3
 ><section3
+id="sDataPrep"
+><secTitle
+>Prepare your data</secTitle
+><p
+>There are certain steps that are not strictly necessary for <object
+type="tFlexx"
+></object
+>, but they are needed for <object
+type="tFlextrans"
+></object
+>.  In your <object
+type="tFlexx"
+></object
+> projects:</p
+><ol
+><li
+>Ensure that glosses are unique, within each morpheme type. That is, all suffixes have unique glosses, all roots have unique glosses, etc.</li
+><li
+>Ensure that glosses of affixes don't have spaces in them.  Use period or underscore instead.</li
+><li
+>If any <object
+type="tFieldInFLEx"
+>Lexeme Forms</object
+> have a space in them and you are using the <object
+type="tTool"
+>HermitCrab</object
+> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <sectionRef
+sec="sHermitCrabSetup"
+></sectionRef
+> for more details.</li
+><li
+>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
+><li
+>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them.  If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
+>Does this requirement only apply for the "Generate Parses" module?  If so, we can remove it here.</comment
+></li
+><li
+>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system.  If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
+></ol
+></section3
+><section3
 id="sHermitCrabSetup"
 ><secTitle
 >Choose your parser for synthesis, <object
@@ -554,9 +595,7 @@ type="tCollection"
 > collection. Repeat these steps for the <object
 type="tCollection"
 >Synthesis Test</object
-> collection, and any other collection that needs it.<comment
->I am hoping that eventually we won't need this section at all.  -BB</comment
-><ol
+> collection, and any other collection that needs it.<ol
 ><li
 >Click on the <img
 cssSpecial="Height:5%;"
@@ -1539,7 +1578,7 @@ type="tButton"
 > check box and then type in the <object
 type="tButton"
 >Search here</object
-> box. </p
+> box.</p
 ><example
 num="xLinkerNoLinks-Filter"
 ><chart
