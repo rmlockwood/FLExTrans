@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->4 July, 2023</date
+>18 July 2023</date
 ><version
 >3.9</version
 ><contents
@@ -131,7 +131,7 @@ type="tFlexx"
 ><object
 type="tFlextrans"
 ></object
->, as a program, consists of several different modules that are run within the <object
+>, as a program, consists of many different modules that are run within the <object
 type="tFlexxTools"
 ></object
 ><endnote
@@ -148,11 +148,11 @@ type="tFlexx"
 > program. Upon installation, <object
 type="tFlexxTools"
 ></object
-> is populated with three collections of modules for common <object
+> is populated with several collections of modules for common <object
 type="tFlextrans"
 ></object
 > tasks. <comment
->Maybe refer to a new section on how FlexTools and collections work. Should this mention deleting lock files?</comment
+>Maybe refer to a new section on the FLExTrans UI?</comment
 ></p
 ></section1
 ><section1
@@ -181,29 +181,34 @@ type="tSenseLinker"
 ><li
 >Write transfer rules that convert source words and phrases to target words and phrases.</li
 ><li
->Run the seven core <object
+>Run the core <object
 type="tFlextrans"
 ></object
 > modules.</li
 ></ol
 ><p
->Let’s look at each step in more detail.<comment
+>After an explanation of the one-time steps to get ready to use <object
+type="tFlextrans"
+></object
+>, the following is a quick walkthrough of these four steps. Further detail about each step is available in the Tools section.</p
+><p
+><comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
 ><p
->(It is assumed that you have gone through the <link
+>(For the following steps, it is assumed that you have gone through the <link
 href="https://software.sil.org/flextrans/installation/"
 >installation</link
 > steps as given on the <object
 type="tFlextrans"
 ></object
-> website and that you have <object
+> website and that you have confirmed that <object
 type="tFlextrans"
 ></object
-> working for the sample projects. It is also assumed that you have two <object
+> works for the sample projects. It is also assumed that you have two <object
 type="tFlexx"
 ></object
-> projects to use as source and target projects for the following steps.)</p
+> projects to use as source and target projects.)</p
 ><section2
 id="sPrepSteps"
 ><secTitle
@@ -213,6 +218,12 @@ id="sPrepSteps"
 type="tFlextrans"
 ></object
 >.</p
+><section3
+id="sProjectSetup"
+><secTitle
+>Set up your projects</secTitle
+><p
+>Set up</p
 ><ol
 ><li
 >Create a new folder for your language pair.<ol
@@ -443,8 +454,324 @@ type="tFlexx"
 ></li
 ></ol
 ></li
+></ol
+></section3
+><section3
+id="sDataPrep"
+><secTitle
+>Prepare your data</secTitle
+><p
+>There are certain steps that are not strictly necessary for <object
+type="tFlexx"
+></object
+>, but they are needed for <object
+type="tFlextrans"
+></object
+>. In your <object
+type="tFlexx"
+></object
+> projects:</p
+><ol
 ><li
->Set up transfer rule categories and attributes.<ol
+>Ensure that glosses are unique, within each non-root morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc.</li
+><li
+>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
+><li
+>If any <object
+type="tFieldInFLEx"
+>Lexeme Forms</object
+> have a space in them and you are using the <object
+type="tTool"
+>HermitCrab</object
+> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <sectionRef
+sec="sHermitCrabSetup"
+></sectionRef
+> for more details.</li
+><li
+>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
+><li
+>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
+>Does this requirement only apply for the "Generate Parses" module? If so, we can remove it here.</comment
+></li
+><li
+>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system. If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
+></ol
+></section3
+><section3
+id="sHermitCrabSetup"
+><secTitle
+>Choose your parser for synthesis, <object
+type="tTool"
+>XAmple</object
+> or <object
+type="tTool"
+>HermitCrab</object
+></secTitle
+><p
+>By default <object
+type="tFlextrans"
+></object
+> assumes you will use the <object
+type="tTool"
+>XAmple</object
+> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <object
+type="tTool"
+>HermitCrab</object
+> parsing model, you can make some changes in your <object
+type="tFlextrans"
+></object
+> setup to use <object
+type="tTool"
+>HermitCrab</object
+> for synthesis. For more details on the <object
+type="tTool"
+>HermitCrab</object
+> parser, see <citation
+ref="rBlack"
+></citation
+>.</p
+><p
+>To set up <object
+type="tFlextrans"
+></object
+> for <object
+type="tTool"
+>HermitCrab</object
+> parsing, you need to do two things:</p
+><ol
+><li
+>Turn on the setting to enable <object
+type="tTool"
+>HermitCrab</object
+> for synthesis.<ol
+><li
+>Launch the <object
+type="tSettingsTool"
+></object
+> by selecting <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the <object
+type="tFlexxTools"
+></object
+> menu.</li
+><li
+>Click <object
+type="tSettingsValue"
+>Yes</object
+> for <object
+type="tSettingsProperty"
+>Use HermitCrab synthesis</object
+> as shown in <exampleRef
+letter="xCollections"
+num="xHermitCrabYesNo"
+></exampleRef
+>.<example
+num="xHermitCrabYesNo"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/HermitCrabYesNo.png"
+></img
+></chart
+></example
+></li
+></ol
+></li
+><li
+>Replace the <object
+type="tModule"
+>Synthesize Text with STAMP</object
+> module with the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module in any collection that contains it. Here are the steps to do that for the <object
+type="tCollection"
+>All Steps</object
+> collection. Repeat these steps for the <object
+type="tCollection"
+>Synthesis Test</object
+> collection, and any other collection that needs it.<ol
+><li
+>Click on the <img
+cssSpecial="Height:5%;"
+src="Images/CollectionsBut.PNG"
+></img
+> button which will bring up a list of collections as shown in <exampleRef
+letter="xCollections"
+num="xCollections"
+></exampleRef
+> repeated from <exampleRef
+letter="xMyCollections"
+num="xMyCollections"
+></exampleRef
+> above.<example
+num="xCollections"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/LinkerInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click on <object
+type="tCollection"
+>All Steps</object
+>.</li
+><li
+>Then click on <object
+type="tModule"
+>Synthesize Text with STAMP</object
+> module as shown in <exampleRef
+letter="xCollections2"
+num="xCollections2"
+></exampleRef
+>.<example
+num="xCollections2"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/AllStepsInCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/RemoveButton.png"
+></img
+> button to remove the module from the <object
+type="tCollection"
+>All Steps</object
+> collection.</li
+><li
+>In the lower pane, click on the <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module. As shown in <exampleRef
+letter="xCollections"
+num="xCollections3"
+></exampleRef
+>.<example
+num="xCollections3"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollections.png"
+></img
+></chart
+></example
+></li
+><li
+>Click the <img
+src="Images/AddModuleButton.png"
+></img
+> button and then in the upper right pane, click on the <object
+type="tModule"
+>FLExTrans.Synthesize Text with HermitCrab</object
+> module as shown in <exampleRef
+letter="xCollections"
+num="xCollections4"
+></exampleRef
+>.<example
+num="xCollections4"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinAllSteps.png"
+></img
+></chart
+></example
+></li
+><li
+>Now click the <img
+src="Images/MoveUpButton.png"
+></img
+> button.</li
+><li
+>The <object
+type="tModule"
+>Synthesize Text with HermitCrab</object
+> module is now in the <object
+type="tCollection"
+>All Steps</object
+> collection at the right place as shown in <exampleRef
+letter="xCollections"
+num="xCollections5"
+></exampleRef
+>.<example
+num="xCollections5"
+><chart
+><img
+XeLaTeXSpecial="scaled='600';"
+cssSpecial="Height:60%;"
+src="Images/SynthHCinCollFinal.png"
+></img
+></chart
+></example
+></li
+><li
+>Close the <object
+type="tItalic"
+>Collection Manager</object
+> window. Now you can run all the <object
+type="tCollection"
+>All Steps</object
+> modules which will include <object
+type="tTool"
+>HermitCrab</object
+> synthesis.</li
+></ol
+></li
+><li
+><p
+>Note: If you have any lexical entries that have a space in the <object
+type="tFieldInFLEx"
+>Lexeme Form</object
+>, do the following in your <object
+type="tFlexx"
+></object
+> projects:</p
+><ol
+><li
+>Add a "phoneme" with a grapheme of #.</li
+><li
+>Make sure that the phonological features for this phoneme are unique.</li
+></ol
+><p
+>The <object
+type="tTool"
+>HermitCrab</object
+> synthesis tool will replace any #s in the input with spaces in the output.</p
+></li
+></ol
+></section3
+><section3
+id="sCategorySetup"
+><secTitle
+>Pre-populate the transfer rules file with Categories and Attributes</secTitle
+><p
+>If you expect to write rules that use more than a few of the categories, attributes, and template slots in your <object
+type="tFlexx"
+></object
+> projects, there is a module that can get those into your transfer rules file before beginning. (Find out more about this tool in section <sectionRef
+sec="sSetupGramCat"
+></sectionRef
+>. Find more about transfer rules in section <sectionRef
+sec="sTransferTutorial"
+></sectionRef
+>.)</p
+><ol
 ><li
 >Run the <object
 type="tTool"
@@ -467,26 +794,19 @@ src="images/SetupCatAttrib.png"
 ></img
 ></chart
 ></example
->This tool will set up things in your transfer rule file to define your categories and attributes. Find out more about this tool in section <sectionRef
-sec="sSetupGramCat"
-></sectionRef
->. Find more about transfer rules in section <sectionRef
-sec="sTransferTutorial"
-></sectionRef
->.</li
+></li
 ><li
 >If you have grammatical templates defined in your <object
 type="tFlexx"
 ></object
-> projects, Click the check box for <object
+> projects, click the check box for <object
 type="tItalic"
 >Populate template slots as attributes</object
 >.</li
 ><li
 >Click OK</li
 ></ol
-></li
-></ol
+></section3
 ></section2
 ><section2
 id="sAnalyze"
@@ -606,10 +926,10 @@ src="Images/SenseLinkerNoLinks.png"
 ></example
 ></li
 ><li
->Link each sense. (More details in <sectionRef
+>Link each sense. (More details in section <sectionRef
 sec="sLinker"
 showTitle="numberOnly"
-textBefore="singular"
+textBefore="none"
 ></sectionRef
 >) <ol
 ><li
@@ -628,7 +948,7 @@ type="tBold"
 >Click OK</li
 ></ol
 ><p
->Now you have senses linked from source project to the target. You haven’t created anything in the target project yet, but you have done the preparatory work.</p
+>Now you have senses linked from the source project to the target. You haven’t created anything in the target project yet, but you have done the preparatory work.</p
 ><p
 ><comment
 >Advanced info. for the later section:</comment
@@ -904,7 +1224,7 @@ type="tFlextrans"
 >The <object
 type="tFlextrans"
 ></object
-> User Interface presents modules that can be run to perform various operations. These are organized into Collections. There is a menu that allows adjusting settings for the modules.</p
+> User Interface presents modules that can be run to perform various operations. These are organized into collections. There is a menu that allows adjusting settings for the modules.</p
 ><section2
 id="sFTUserInterface"
 ><secTitle
@@ -934,7 +1254,7 @@ type="tItalic"
 > provides a way to run various <object
 type="tFlextrans"
 ></object
-> command by choosing a menu and then selecting a command from that menu.<ol
+> commands by choosing a menu and then selecting a command from that menu.<ol
 ><li
 >The <object
 type="tMenu"
@@ -1165,7 +1485,7 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s a sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -1259,6 +1579,14 @@ type="tButton"
 type="tButton"
 >Search here</object
 > box.</p
+><example
+num="xLinkerNoLinks-Filter"
+><chart
+><img
+src="Images/SenseLinkerNoLinks-Filter.png"
+></img
+></chart
+></example
 ></section3
 ><section3
 id="sFilterList"
@@ -1850,17 +2178,26 @@ type="tFlexx"
 > project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <object
 type="tFlexx"
 ></object
-> project.</p
+> project. It does not attempt to generate for any category without a template, and it does not attempt to generate with derivational affixes.</p
 ><p
 >The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.</p
+><p
+>Note that for this test, any active template must have at least one affix in each of its slots. If you have any slots with no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in the description of the template in Category Edit in <object
+type="tFlexx"
+></object
+>.)</p
+><section3
+id="sRunSynthTest"
+><secTitle
+>Running the Test</secTitle
 ><p
 >To use this tool, change to the <object
 type="tCollection"
 >Synthesis Test</object
-> collection. This will bring up a subset of the standard <object
+> collection. This will bring up the standard <object
 type="tFlextrans"
 ></object
-> modules, plus the <object
+> modules that are needed for synthesis, plus the <object
 type="tTool"
 >Generate All Parses</object
 > module, as shown in <exampleRef
@@ -1887,7 +2224,11 @@ type="tSettingsTool"
 > (as described in <sectionRef
 sec="sSettings"
 ></sectionRef
->). Scroll down to the Synthesis Test section, as shown in <exampleRef
+>).</li
+><li
+>In the top section, set the Target Project to the project you want to use for the synthesis test.</li
+><li
+>Scroll down to the Synthesis Test section, as shown in <exampleRef
 letter="xSynthTestSettings"
 num="xSynthTestSettings"
 ></exampleRef
@@ -1902,22 +2243,66 @@ src="images/SynthTestSettings.png"
 ></example
 ></li
 ><li
->Select the Part of Speech you want to test. Here you can also limit the number of stems to use for generation (it will choose the stems randomly), or limit it to a specific Citation Form. Click the <img
+>Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li
+><li
+>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.) Click the <img
 cssSpecial="Width:5%"
 height="60%"
 src="Images/ApplyAndCloseButton.PNG"
 ></img
 > button.</li
 ><li
->Double click each of the first three modules to run them.</li
+>Back in the FLExTrans window, double click each of the first three modules to run them (or click the Run button for each).</li
 ><li
->Choose either the fourth or fifth module to run, depending on whether you are using the XAMPLE parser or the Hermit Crab parser in your Target Project.</li
+>Choose either the fourth or fifth module to run, depending on whether you are using the <object
+type="tTool"
+>XAmple</object
+> parser or the <object
+type="tTool"
+>HermitCrab</object
+> parser in your Target Project. (You can also customize this collection so that only one of these modules appears. Then you could use the <object
+type="tButton"
+>Run All</object
+> button.)</li
 ><li
 >The output will be in the file specified in the settings. If you have not changed the default, it will be <object
 type="tSettingsValue"
 >Output/target_text-syn.txt</object
 >.</li
 ></ol
+></section3
+><section3
+id="sDebugSynth"
+><secTitle
+>Debugging Synthesis</secTitle
+><p
+>There are various reasons synthesis may fail or may generate incorrect parses. Below are a few debugging steps, but there are many more possible causes.</p
+><ol
+><li
+>Make sure glosses of affixes are unique.</li
+><li
+>Make sure allomorphs have appropriate environments and are ordered from most specific to least specific (if you have allomorphs).<ol
+><li
+>The <object
+type="tTool"
+>XAmple</object
+> synthesis module tests allomorphs in the order they are listed, testing the <object
+type="tFieldInFLEx"
+>Lexeme Form</object
+> last, as the "elsewhere allomorph". If an allomorph with an overly generous environment occurs before one that describes a subset of that environment, it will block application of the later allomorph.</li
+><li
+>If any allomorph has no environment, then once the synthesis module reaches it, that one will be accepted, and no further allomorphs will be tested. It becomes the de facto elsewhere allomorph, and blocks any later ones.</li
+></ol
+></li
+><li
+>Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination will be disallowed. These may come out as %0%word% in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.</li
+></ol
+><p
+>Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working provides a really good start for synthesis. See <citation
+ref="rBlack"
+></citation
+> for more details about setting up parsing effectively.</p
+></section3
 ></section2
 ></section1
 ><section1
@@ -5199,6 +5584,100 @@ src="Images/BilingalEntries2.PNG"
 ></example
 ></section3
 ><section3
+id="sSynthesisSelfTest"
+><secTitle
+>How do I run a synthesis self-test on a text in my Target Project?</secTitle
+><p
+>To test whether a Target Project is set up so the words in a specific text will synthesize correctly (without worrying about the source project or transfer rules), do the following:</p
+><ol
+><li
+>In <object
+type="tFlexx"
+></object
+>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames, or a particular text fragment. Analyze these words and approve all the analyses.</li
+><li
+>Create or edit a Transfer Rules file that simply deletes features from any category that has them. The file <object
+type="tFilename"
+>identity_rules.t1x</object
+> in the <object
+type="tFoldername"
+>FLExTrans Documentation\Synthesis Self-Test</object
+> folder is an example of that, set up for the <object
+type="tBold"
+>Spanish</object
+> sample project.</li
+><li
+>In <object
+type="tFlexxTools"
+></object
+>, set the Source <object
+type="tFlexx"
+></object
+> Project to the Target Project. <object
+type="tRed"
+>(Remember to change this back, when you go back to working with two projects.)</object
+></li
+><li
+>In <object
+type="tFlextrans"
+></object
+>, use the <object
+type="tSettingsTool"
+></object
+> to do the following:<ol
+><li
+>Verify the <object
+type="tSettingsProperty"
+>Target Project</object
+> is set to your Target Project.</li
+><li
+>Set the <object
+type="tSettingsProperty"
+>Transfer Rules File</object
+> to <object
+type="tSettingsValue"
+>identity_rules.t1x</object
+>. <object
+type="tRed"
+>(Remember to change this when you go back to working with two projects.)</object
+></li
+><li
+>Choose the text you want to work on.</li
+></ol
+></li
+><li
+>In <object
+type="tFlextrans"
+></object
+>, in the <object
+type="tCollection"
+>All Steps</object
+> collection, use <object
+type="tButton"
+>Run All</object
+> to process the text and insert the result into the Target <object
+type="tFlexx"
+></object
+> Project.<ol
+><li
+>It will go into a text with the same name, with (Copy) appended.</li
+><li
+>Compare this output with your original text.</li
+><li
+>Any differences between them reflect what would happen if you used this text in a transfer process with a different source language, and they probably need to be fixed.</li
+></ol
+></li
+><li
+>You can try this method with the <object
+type="tBold"
+>Spanish</object
+> sample project in <object
+type="tFoldername"
+>FLExTrans Documentation\Synthesis Self-Test</object
+> to get an idea of how it works.</li
+></ol
+></section3
+><section3
 id="sRepl"
 ><secTitle
 >I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?</secTitle
@@ -5381,342 +5860,6 @@ type="tFlextrans"
 type="tSettingsValue"
 >Text2</object
 >.</p
-></section3
-><section3
-id="sSynthesisSelfTest"
-><secTitle
->How do I run a Synthesis Self-Test?</secTitle
-><p
->To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p
-><ol
-><li
->In <object
-type="tFlexx"
-></object
->, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames.</li
-><li
->Create a rules file that simply deletes features from any category that has them. The file <object
-type="tFilename"
->identity_rules.t1x</object
-> in the <object
-type="tFoldername"
->FLExTrans Documentation\Synthesis Self-Test</object
-> folder is an example of that, set up for the <object
-type="tBold"
->Spanish</object
-> sample project.</li
-><li
->In <object
-type="tFlexxTools"
-></object
->, set the main <object
-type="tFlexx"
-></object
-> Project to the Target Project. <object
-type="tRed"
->(Remember to change this back, when you go back to working with two projects.)</object
-></li
-><li
->In <object
-type="tFlextrans"
-></object
->, use the <object
-type="tSettingsTool"
-></object
-> to do the following:<ol
-><li
->Verify the <object
-type="tSettingsProperty"
->Target Project</object
-> is set.</li
-><li
->Set the <object
-type="tSettingsProperty"
->Transfer Rules File</object
-> to <object
-type="tSettingsValue"
->identity_rules.t1x</object
->. <object
-type="tRed"
->(Remember to change this when you go back to working with two projects.)</object
-></li
-><li
->Choose the text you want to work on.</li
-></ol
-></li
-><li
->In <object
-type="tFlextrans"
-></object
->, in the <object
-type="tCollection"
->All Steps</object
-> collection, use <object
-type="tButton"
->Run All</object
-> to process the text and insert the result into the Target <object
-type="tFlexx"
-></object
-> Project.<ol
-><li
->It will go into a text with the same name, with (Copy) appended.</li
-><li
->Compare this output with your original text.</li
-><li
->Any differences you see reflect what would happen if you used this in a transfer process with a different source language, and they probably need to be fixed.</li
-></ol
-></li
-><li
->You can try this method with the <object
-type="tBold"
->Spanish</object
-> sample project in <object
-type="tFoldername"
->FLExTrans Documentation\Synthesis Self-Test</object
->.</li
-></ol
-></section3
-><section3
-id="sHermitCrab"
-><secTitle
->What do I do to use my <object
-type="tTool"
->HermitCrab</object
-> parsing model in synthesis?</secTitle
-><p
->By default <object
-type="tFlextrans"
-></object
-> assumes you will use the <object
-type="tTool"
->XAmple</object
-> parsing model for synthesizing target morphemes into surface forms. If your target project uses the <object
-type="tTool"
->HermitCrab</object
-> parsing model, you can make some changes in your <object
-type="tFlextrans"
-></object
-> setup to use <object
-type="tTool"
->HermitCrab</object
-> for synthesis. For more details on the <object
-type="tTool"
->HermitCrab</object
-> parser, see <citation
-ref="rBlack"
-></citation
->.</p
-><p
->To set up <object
-type="tFlextrans"
-></object
-> for <object
-type="tTool"
->HermitCrab</object
-> parsing, you need to do two things:</p
-><ol
-><li
->Turn on the setting to enable <object
-type="tTool"
->HermitCrab</object
-> for synthesis.<ol
-><li
->Launch the <object
-type="tSettingsTool"
-></object
-> by selecting <object
-type="tMenu"
->FLExTrans</object
-> &gt; <object
-type="tMenu"
->Settings</object
-> from the <object
-type="tFlexxTools"
-></object
-> menu.</li
-><li
->Click <object
-type="tSettingsValue"
->Yes</object
-> for <object
-type="tSettingsProperty"
->Use HermitCrab synthesis</object
-> as shown in <exampleRef
-letter="xCollections"
-num="xHermitCrabYesNo"
-></exampleRef
->.<example
-num="xHermitCrabYesNo"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/HermitCrabYesNo.png"
-></img
-></chart
-></example
-></li
-></ol
-></li
-><li
->Replace the <object
-type="tModule"
->Synthesize Text with STAMP</object
-> module with the <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module. Here are the steps to do that:<ol
-><li
->Click on the <img
-cssSpecial="Height:5%;"
-src="Images/CollectionsBut.PNG"
-></img
-> button which will bring up a list of collections as shown in <exampleRef
-letter="xCollections"
-num="xCollections"
-></exampleRef
-> repeated from <exampleRef
-letter="xMyCollections"
-num="xMyCollections"
-></exampleRef
-> above.<example
-num="xCollections"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/LinkerInCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Click on <object
-type="tCollection"
->All Steps</object
->.</li
-><li
->Then click on <object
-type="tModule"
->Synthesize Text with STAMP</object
-> module as shown in <exampleRef
-letter="xCollections2"
-num="xCollections2"
-></exampleRef
->.<example
-num="xCollections2"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/AllStepsInCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Now click the <img
-src="Images/RemoveButton.png"
-></img
-> button to remove the module from the <object
-type="tCollection"
->All Steps</object
-> collection.</li
-><li
->In the lower pane, click on the <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module. As shown in <exampleRef
-letter="xCollections"
-num="xCollections3"
-></exampleRef
->.<example
-num="xCollections3"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinCollections.png"
-></img
-></chart
-></example
-></li
-><li
->Click the <img
-src="Images/AddModuleButton.png"
-></img
-> button and then in the upper right pane, click on the <object
-type="tModule"
->FLExTrans.Synthesize Text with HermitCrab</object
-> module as shown in <exampleRef
-letter="xCollections"
-num="xCollections4"
-></exampleRef
->.<example
-num="xCollections4"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinAllSteps.png"
-></img
-></chart
-></example
-></li
-><li
->Now click the <img
-src="Images/MoveUpButton.png"
-></img
-> button.</li
-><li
->The <object
-type="tModule"
->Synthesize Text with HermitCrab</object
-> module is now in the <object
-type="tCollection"
->All Steps</object
-> collection at the right place as shown in <exampleRef
-letter="xCollections"
-num="xCollections5"
-></exampleRef
->.<example
-num="xCollections5"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/SynthHCinCollFinal.png"
-></img
-></chart
-></example
-></li
-><li
->Close the <object
-type="tItalic"
->Collection Manager</object
-> window. Now you can run all the <object
-type="tCollection"
->All Steps</object
-> modules which will include <object
-type="tTool"
->HermitCrab</object
-> synthesis.</li
-></ol
-></li
-></ol
-><p
->Note: If you need to use compounds/phrases that have a space within them, do the following:</p
-><ol
-><li
->Add a "phoneme" with a grapheme of #.</li
-><li
->Make sure that the phonological features for this phoneme are unique.</li
-></ol
-><p
->The <object
-type="tTool"
->HermitCrab</object
-> synthesis tool will replace any #s with spaces.</p
 ></section3
 ><section3
 id="sPhrasalVerbs"

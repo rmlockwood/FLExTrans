@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   17 Jul 2023 bb v3.9.2 Test morphType by GUID, not by name in Primary Ana WS
 #   21 Jun 2023 rl v3.9.1 Use the target DB instead of the source DB (passed in from FlexTools)
 #   20 Jun 2023 rl v3.9   Cleaned up imports, modified description slightly, bumped version #
 #   16 Jun 2023 bb v2.0   Integrate with FLExTrans: Use FLExTrans
@@ -237,6 +238,8 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
     
         # I could screen for POS right here. I could choose to only add
         # templates to the templList if they match the designated POS.
+        # But I need to not circumvent the part that pushes templates down to
+        # child categories, if the focus POS inherits its templates from a parent.
         
         # Build the category name
         catAbbrev = ITsString(gcat.Abbreviation.BestAnalysisAlternative).Text
@@ -247,13 +250,13 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
         
         catAndGuid=catAbbrev + gcat.Guid.ToString()
 
-        # I'm not sure it matters right here.
+        # I don't think this is doing anything right here.
         if focusPOS != "":
             if catAbbrev not in focusPOS:
                 continue
         
         # Add to the list of categories
-        # This is used in the Main function to push templates down.  What else?
+        # This list is used in the Main function to push templates down.  What else?
         catList.append(catAndGuid)
         
         templList = []
@@ -271,7 +274,7 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
                 continue
             else:
                 #report.Info("Adding template "+templName+' for Category '+catAbbrev)
-                f_log.write("\n  Adding Active template "+templName+' for Category '+catAbbrev)
+                f_log.write("\n  Adding template "+templName+' for Category '+catAbbrev)
                 templList.append(templAndGuid)
             
             slotList = []
@@ -279,12 +282,12 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
             # Get the prefix slots for this template
             for slot in templ.PrefixSlotsRS:
                 # Build slot name
-                slotName = ITsString(slot.Name.BestAnalysisAlternative).Text + slot.Guid.ToString()
-                #f_log.write("\n    Checking slot "+slotName+" in template "+templName)
+                slotName = catAbbrev + ":" + ITsString(slot.Name.BestAnalysisAlternative).Text  + ":" + slot.Guid.ToString()
                 
                 # For prefixes put things in reverse order. i.e. don't append from the end of the list
                 # like for suffixes, prepend to the beginning of the list
                 slotList.insert(0,slotName) 
+                f_log.write("\n      Adding prefix slot "+slotName+" to template "+templName)
                 
                 slot2IsPrefix[slotName] = True # prefix=True
                 
@@ -295,9 +298,11 @@ def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPO
             # Get the suffix slots for this template
             for slot in templ.SuffixSlotsRS:
                 # Build slot name
-                slotName = ITsString(slot.Name.BestAnalysisAlternative).Text + slot.Guid.ToString()
+                slotName = catAbbrev + ":" + ITsString(slot.Name.BestAnalysisAlternative).Text  + ":" + slot.Guid.ToString()
+                #f_log.write("\n      Checking slot "+slotName+" in template "+templName)
                 
                 slotList.append(slotName)
+                f_log.write("\n      Adding suffix slot "+slotName+" to template "+templName)
                 
                 slot2IsPrefix[slotName] = False # prefix=True
 
@@ -396,6 +401,9 @@ def MainFunction(DB, report, modifyAllowed):
             focusPOS.pop()
         report.Info('  Only collecting templates for these POS: '+str(focusPOS))
         
+    report.Info("Collecting templates from FLEx project...")
+    report.ProgressStart(DB.LexiconNumberOfEntries())
+    
     # Get maps related to templates
     # cat2Templ will come back with a list of the Active templates that were added
     # It will only add Templates for focusPOS, if set
@@ -408,9 +416,6 @@ def MainFunction(DB, report, modifyAllowed):
     push_templates_down(catList, [], cat2Templ, cat2Subcats)
     
     
-    report.Info("Collecting templates from FLEx project...")
-    report.ProgressStart(DB.LexiconNumberOfEntries())
-    
     ## To make it easier to check the output when starting up, only take a specified number of stem entries
     maxStems = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, report)
     if maxStems == "":
@@ -419,7 +424,7 @@ def MainFunction(DB, report, modifyAllowed):
         report.Info('  Not limiting number of stems')
     else:
         maxStems = int(maxStems)
-        report.Info('  Only generating on the first = '+str(maxStems)+' stems')
+        report.Info('  Only generating on the first '+str(maxStems)+' stems')
     stemCount = 0
     
     ## Generate for only a specified Lexeme Form  (This needs work)
@@ -431,9 +436,10 @@ def MainFunction(DB, report, modifyAllowed):
     for entryCount,e in enumerate(DB.LexiconAllEntries()):
     
         report.ProgressUpdate(entryCount)
-        
-        morphType = ITsString(e.LexemeFormOA.MorphTypeRA.Name.BestAnalysisAlternative).Text
-        
+              
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        morphType = Utils.morphTypeMap[morphGuidStr]
+
         # Stem-types (not affixes, clitics)
         if e.LexemeFormOA and \
            e.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
@@ -442,7 +448,8 @@ def MainFunction(DB, report, modifyAllowed):
             # This number can be adjusted in the config file, if you want to stop after a greater number of stems
             ## (There could be better logic here!!  Maybe a while loop would be better.)
             if stemCount >= maxStems:
-                # After the first n stems, don't process stem type entries, but continue the loop, looking for more entries
+                # After the first n stems (of the focus POS type), don't process stem type entries, 
+                # but continue the loop, looking for more entries
                 # (We want to traverse all the affixes.)
                continue
             
@@ -458,17 +465,16 @@ def MainFunction(DB, report, modifyAllowed):
                 if lex != focusLex:
                     continue
                 else:
-                    report.Info('  Only generating on focusLex stem ['+lex+']\n')
+                    report.Info('  Only generating on stem ['+lex+']\n')
 
             # Also store the Gloss of the root (first sense only, so far)
-            ## (At some point we may indeed want "all possible senses"
-            ## of the roots/stems.)
             for mySense in e.SensesOS:
                 thisGloss = DB.LexiconGetSenseGloss(mySense)
                 break
             if thisGloss == '':
                 thisGloss = 'NoGloss'
-                report.Info('  Using '+thisGloss+' for '+lex+'\n')
+                ## Don't need to report this for every word this applies to; only the ones we're using, later
+                #report.Info('  Using '+thisGloss+' for '+lex+'\n')
                 
             # Add Homograph.SenseNum to use it as an underlying form for STAMP
             ## (Really need to get the actual HM and SN from FLEx, and use all of them.)
@@ -485,7 +491,7 @@ def MainFunction(DB, report, modifyAllowed):
             # The "continue" makes it skip; the "GetEntryWithSense(e) tries to find the appropriate
             # sense for this variant.  But it wasn't working right.
             if e.SensesOS.Count < 1:
-                f_log.write('  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
+                f_log.write('\n  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
                 continue
 #                e = GetEntryWithSense(e)
                 
@@ -530,6 +536,15 @@ def MainFunction(DB, report, modifyAllowed):
                     stemCount+=1
                     f_log.write('\n  Adding '+lex+' to roots list')
                     standardSpellList.append((lex,catAndGuid))
+                    # If one of these words is missing a gloss, report it to the Messages window
+                    m = re.match( '^\[(NoGloss)\](.+)1.1', lex)
+                    if m:
+                        temp_gloss = m.group(1)
+                        temp_citform = m.group(2)
+                        report.Info('  Using ' + temp_gloss + ' as the gloss for ' + temp_citform +'\n')
+                        temp_gloss = temp_citform = ''
+                        
+                 
             #else:
             #    f_log.write('\nSkipping '+lex+' '+catAndGuid)
                                                   
@@ -585,7 +600,7 @@ def MainFunction(DB, report, modifyAllowed):
                         # Format for parses file
                         lex = '<'+lex+'>'
                         #f_log.write('  Gloss: '+lex)
-                        # We only need to do the first sense.  When it looks for all the MSAs of this entry, it will find them for all senses.?
+                        # We only need to do the first sense.  When it looks for all the MSAs of this entry, it will find them for all senses.
                         break
 
                 if e.MorphoSyntaxAnalysesOC:
@@ -600,7 +615,7 @@ def MainFunction(DB, report, modifyAllowed):
                         
                         if str(type(msa)) == "<class 'SIL.LCModel.DomainImpl.MoDerivAffMsa'>":
                             #report.Info("Skipping deriv MSA "+str(type(msa)))
-                            report.Info("Skipping deriv MSA for "+lexForm+'  '+lex)
+                            f_log.write("Skipping deriv MSA for "+lexForm+'  '+lex)
                             continue
                         #else:
                             #report.Info("Processing infl MSA "+str(type(msa)))
@@ -616,7 +631,7 @@ def MainFunction(DB, report, modifyAllowed):
                         for slot in msa.Slots: 
                             # Build the slot name
                             slotFriendlyName = ITsString(slot.Name.BestAnalysisAlternative).Text
-                            slotName = slotFriendlyName + slot.Guid.ToString()
+                            slotName = msaPOS + ":" + slotFriendlyName + ":" + slot.Guid.ToString()
                          
                             # Add affix glosses to the map showing which affixes are in this slot
                             # If the slotname is not in the map yet, initialize it
@@ -629,11 +644,16 @@ def MainFunction(DB, report, modifyAllowed):
                                 # Otherwise find the list of affixes associated with this slot and add to it.
                                 existingAffixList = slot2AffixList[slotName]
                                 existingAffixList.append(lex)
+
+            # Report if it's a morph type we don't handle
+            else:
+                f_log.write('\nMorph type ' + morphType + ' ignored')
             
     # Verify that we have affixes in each slot. If not give an error
     badSlots = verifySlots(slot2AffixList, slot2IsPrefix)
     for bSlot in badSlots:
         report.Error('Found slot with no affixes: ' + bSlot)
+        f_log.write('\nFound slot with no affixes: ' + bSlot)
     
     if len(badSlots) > 0:
         return    
