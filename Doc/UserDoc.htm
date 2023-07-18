@@ -321,22 +321,22 @@
       </ol>
       <h3 style=""><a name="sDataPrep"></a>2.1.2&nbsp;Prepare your data
       </h3>
-      <p>There are certain steps that are not strictly necessary for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, but they are needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.  In your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects:
+      <p>There are certain steps that are not strictly necessary for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, but they are needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. In your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects:
       </p>
       <ol style="list-style-type:decimal; ">
-         <li>Ensure that glosses are unique, within each morpheme type. That is, all suffixes have unique glosses, all roots have unique
-            glosses, etc.
+         <li>Ensure that glosses are unique, within each non-root morpheme type. That is, all suffixes have unique glosses, all prefixes
+            have unique glosses, etc.
          </li>
-         <li>Ensure that glosses of affixes don't have spaces in them.  Use period or underscore instead.</li>
+         <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li>
          <li>If any <span style="color:#cc9900; ">Lexeme Forms</span> have a space in them and you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <a href="#sHermitCrabSetup">2.1.3</a> for more details.
          </li>
          <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
          <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
-            least one affix in them.  If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
+            least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
             box in the description of the template.
          </li>
          <li>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system.
-             If you encounter an area that only works with English as the analysis writing system, please report it to the developers.
+            If you encounter an area that only works with English as the analysis writing system, please report it to the developers.
          </li>
       </ol>
       <h3 style=""><a name="sHermitCrabSetup"></a>2.1.3&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></h3>
@@ -1236,28 +1236,28 @@
       </ol>
       <h3 style=""><a name="sDebugSynth"></a>4.6.2&nbsp;Debugging Synthesis
       </h3>
-      <p>There are various reasons synthesis may fail or may generate incorrect parses.  Below are a few debugging steps, but there
+      <p>There are various reasons synthesis may fail or may generate incorrect parses. Below are a few debugging steps, but there
          are many more possible causes.
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Make sure glosses of affixes are unique.</li>
          <li>Make sure allomorphs have appropriate environments and are ordered from most specific to least specific (if you have allomorphs).
             <ol style="list-style-type:lower-alpha; ">
-               <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> synthesis module tests allomorphs in the order they are listed, testing the <span style="color:#cc9900; ">Lexeme Form</span> last, as the "elsewhere allomorph".  If an allomorph with an overly generous environment occurs before one that describes
+               <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> synthesis module tests allomorphs in the order they are listed, testing the <span style="color:#cc9900; ">Lexeme Form</span> last, as the "elsewhere allomorph". If an allomorph with an overly generous environment occurs before one that describes
                   a subset of that environment, it will block application of the later allomorph.
                </li>
                <li>If any allomorph has no environment, then once the synthesis module reaches it, that one will be accepted, and no further
-                  allomorphs will be tested.  It becomes the de facto elsewhere allomorph, and blocks any later ones.
+                  allomorphs will be tested. It becomes the de facto elsewhere allomorph, and blocks any later ones.
                </li>
             </ol>
          </li>
          <li>Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination
-            will be disallowed.  These may come out as %0%word% in the output, indicating that a sequence was created based on the templates,
-            but it was disallowed based on other constraints.  It is not necessarily a problem if you see some of these lines in the output.
+            will be disallowed. These may come out as %0%word% in the output, indicating that a sequence was created based on the templates,
+            but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.
          </li>
       </ol>
       <p>Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working
-         provides a really good start for synthesis.  See <a href="#rBlack">Black, (2014)</a> for more details about setting up parsing effectively.
+         provides a really good start for synthesis. See <a href="#rBlack">Black, (2014)</a> for more details about setting up parsing effectively.
       </p>
       <h1 style=""><a name="sTransferTutorial"></a>5&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">4</a>]</span></h1>
       <p>Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes
@@ -2708,7 +2708,7 @@
       </p>
       <ol style="list-style-type:decimal; ">
          <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical
-            sentence frames, or a particular text fragment.  Analyze these words and approve all the analyses.
+            sentence frames, or a particular text fragment. Analyze these words and approve all the analyses.
          </li>
          <li>Create or edit a Transfer Rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
          </li>

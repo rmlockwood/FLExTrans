@@ -467,15 +467,15 @@ type="tFlexx"
 >, but they are needed for <object
 type="tFlextrans"
 ></object
->.  In your <object
+>. In your <object
 type="tFlexx"
 ></object
 > projects:</p
 ><ol
 ><li
->Ensure that glosses are unique, within each morpheme type. That is, all suffixes have unique glosses, all roots have unique glosses, etc.</li
+>Ensure that glosses are unique, within each non-root morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc.</li
 ><li
->Ensure that glosses of affixes don't have spaces in them.  Use period or underscore instead.</li
+>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
 ><li
 >If any <object
 type="tFieldInFLEx"
@@ -490,11 +490,11 @@ sec="sHermitCrabSetup"
 ><li
 >Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
 ><li
->Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them.  If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
->Does this requirement only apply for the "Generate Parses" module?  If so, we can remove it here.</comment
+>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
+>Does this requirement only apply for the "Generate Parses" module? If so, we can remove it here.</comment
 ></li
 ><li
->FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system.  If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
+>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system. If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
 ></ol
 ></section3
 ><section3
@@ -2276,7 +2276,7 @@ id="sDebugSynth"
 ><secTitle
 >Debugging Synthesis</secTitle
 ><p
->There are various reasons synthesis may fail or may generate incorrect parses.  Below are a few debugging steps, but there are many more possible causes.</p
+>There are various reasons synthesis may fail or may generate incorrect parses. Below are a few debugging steps, but there are many more possible causes.</p
 ><ol
 ><li
 >Make sure glosses of affixes are unique.</li
@@ -2289,16 +2289,16 @@ type="tTool"
 > synthesis module tests allomorphs in the order they are listed, testing the <object
 type="tFieldInFLEx"
 >Lexeme Form</object
-> last, as the "elsewhere allomorph".  If an allomorph with an overly generous environment occurs before one that describes a subset of that environment, it will block application of the later allomorph.</li
+> last, as the "elsewhere allomorph". If an allomorph with an overly generous environment occurs before one that describes a subset of that environment, it will block application of the later allomorph.</li
 ><li
->If any allomorph has no environment, then once the synthesis module reaches it, that one will be accepted, and no further allomorphs will be tested.  It becomes the de facto elsewhere allomorph, and blocks any later ones.</li
+>If any allomorph has no environment, then once the synthesis module reaches it, that one will be accepted, and no further allomorphs will be tested. It becomes the de facto elsewhere allomorph, and blocks any later ones.</li
 ></ol
 ></li
 ><li
->Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination will be disallowed.  These may come out as %0%word% in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints.  It is not necessarily a problem if you see some of these lines in the output.</li
+>Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination will be disallowed. These may come out as %0%word% in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.</li
 ></ol
 ><p
->Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working provides a really good start for synthesis.  See <citation
+>Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working provides a really good start for synthesis. See <citation
 ref="rBlack"
 ></citation
 > for more details about setting up parsing effectively.</p
@@ -5594,7 +5594,7 @@ id="sSynthesisSelfTest"
 >In <object
 type="tFlexx"
 ></object
->, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames, or a particular text fragment.  Analyze these words and approve all the analyses.</li
+>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical sentence frames, or a particular text fragment. Analyze these words and approve all the analyses.</li
 ><li
 >Create or edit a Transfer Rules file that simply deletes features from any category that has them. The file <object
 type="tFilename"
