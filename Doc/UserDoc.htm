@@ -73,6 +73,10 @@
                   <li><a href="#sTemplateSlots">4.5.5&nbsp;Template Slots</a></li>
                </ul>
                <li><a href="#sSynthTest">4.6&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Synthesis Test Tool</span></a></li>
+               <ul>
+                  <li><a href="#sRunSynthTest">4.6.1&nbsp;Running the Test</a></li>
+                  <li><a href="#sDebugSynth">4.6.2&nbsp;Debugging Synthesis</a></li>
+               </ul>
             </ul>
             <li><a href="#sTransferTutorial">5&nbsp;A Tutorial on Writing Transfer Rules</a></li>
             <ul>
@@ -141,7 +145,7 @@
                <li><a href="#sOther">7.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
                   <li><a href="#sViewBiling">7.3.1&nbsp;How do I view the bilingual lexicon?</a></li>
-                  <li><a href="#sSynthesisSelfTest">7.3.2&nbsp;How do I run a Synthesis Self-Test?</a></li>
+                  <li><a href="#sSynthesisSelfTest">7.3.2&nbsp;How do I run a synthesis self-test on a text in my Target Project?</a></li>
                   <li><a href="#sRepl">7.3.3&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
                         that?</a></li>
                   <li><a href="#sInflVariantTgt">7.3.4&nbsp;How do I handle inflectional variants in the target language? (video)</a></li>
@@ -1179,7 +1183,9 @@
          no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in
          the description of the template in Category Edit in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.)
       </p>
-      <p>To use this tool, change to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Synthesis Test</span> collection. This will bring up a subset of the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules, plus the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses</span> module, as shown in <a href="#xSynthTestSteps">(32)</a>.
+      <h3 style=""><a name="sRunSynthTest"></a>4.6.1&nbsp;Running the Test
+      </h3>
+      <p>To use this tool, change to the <span style="font-family:Arial; font-size:80%; font-style:normal; font-weight:bold; color:#660066; ">Synthesis Test</span> collection. This will bring up the standard <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules that are needed for synthesis, plus the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Generate All Parses</span> module, as shown in <a href="#xSynthTestSteps">(32)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1228,6 +1234,31 @@
          <li>The output will be in the file specified in the settings. If you have not changed the default, it will be <span style="font-style:italic; ">Output/target_text-syn.txt</span>.
          </li>
       </ol>
+      <h3 style=""><a name="sDebugSynth"></a>4.6.2&nbsp;Debugging Synthesis
+      </h3>
+      <p>There are various reasons synthesis may fail or may generate incorrect parses.  Below are a few debugging steps, but there
+         are many more possible causes.
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Make sure glosses of affixes are unique.</li>
+         <li>Make sure allomorphs have appropriate environments and are ordered from most specific to least specific (if you have allomorphs).
+            <ol style="list-style-type:lower-alpha; ">
+               <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> synthesis module tests allomorphs in the order they are listed, testing the <span style="color:#cc9900; ">Lexeme Form</span> last, as the "elsewhere allomorph".  If an allomorph with an overly generous environment occurs before one that describes
+                  a subset of that environment, it will block application of the later allomorph.
+               </li>
+               <li>If any allomorph has no environment, then once the synthesis module reaches it, that one will be accepted, and no further
+                  allomorphs will be tested.  It becomes the de facto elsewhere allomorph, and blocks any later ones.
+               </li>
+            </ol>
+         </li>
+         <li>Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination
+            will be disallowed.  These may come out as %0%word% in the output, indicating that a sequence was created based on the templates,
+            but it was disallowed based on other constraints.  It is not necessarily a problem if you see some of these lines in the output.
+         </li>
+      </ol>
+      <p>Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working
+         provides a really good start for synthesis.  See <a href="#rBlack">Black, (2014)</a> for more details about setting up parsing effectively.
+      </p>
       <h1 style=""><a name="sTransferTutorial"></a>5&nbsp;A Tutorial on Writing Transfer Rules<span style="font-size:65%; vertical-align:super">[<a href="#nReproducing">4</a>]</span></h1>
       <p>Writing transfer rules is not as tricky as it might seem. People generally understand the basic concepts, but they sometimes
          struggle with the formalism. Maybe one of the reasons people struggle is that the formalism mixes declarative and procedural
@@ -2670,19 +2701,21 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sSynthesisSelfTest"></a>7.3.2&nbsp;How do I run a Synthesis Self-Test?
+      <h3 style=""><a name="sSynthesisSelfTest"></a>7.3.2&nbsp;How do I run a synthesis self-test on a text in my Target Project?
       </h3>
-      <p>To test whether a Target project is ready for Synthesis (without interacting with a source project), do the following:</p>
+      <p>To test whether a Target Project is set up so the words in a specific text will synthesize correctly (without worrying about
+         the source project or transfer rules), do the following:
+      </p>
       <ol style="list-style-type:decimal; ">
          <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, in your Target Project, create a text with the words you want to test for synthesis. For example, a paradigm, or some canonical
-            sentence frames.
+            sentence frames, or a particular text fragment.  Analyze these words and approve all the analyses.
          </li>
-         <li>Create a rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
+         <li>Create or edit a Transfer Rules file that simply deletes features from any category that has them. The file <span style="font-style:italic; ">identity_rules.t1x</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> folder is an example of that, set up for the <span style="font-weight:bold; ">Spanish</span> sample project.
          </li>
-         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, set the main <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project to the Target Project. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this back, when you go back to working with two projects.)</span></li>
+         <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, set the Source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Project to the Target Project. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this back, when you go back to working with two projects.)</span></li>
          <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> to do the following:
             <ol style="list-style-type:lower-alpha; ">
-               <li>Verify the <span style="font-weight:bold; color:#964B00; ">Target Project</span> is set.
+               <li>Verify the <span style="font-weight:bold; color:#964B00; ">Target Project</span> is set to your Target Project.
                </li>
                <li>Set the <span style="font-weight:bold; color:#964B00; ">Transfer Rules File</span> to <span style="font-style:italic; ">identity_rules.t1x</span>. <span style="font-style:normal; font-variant:normal; font-weight:normal; color:#ff0000; ">(Remember to change this when you go back to working with two projects.)</span></li>
                <li>Choose the text you want to work on.</li>
@@ -2692,12 +2725,12 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>It will go into a text with the same name, with (Copy) appended.</li>
                <li>Compare this output with your original text.</li>
-               <li>Any differences you see reflect what would happen if you used this in a transfer process with a different source language,
-                  and they probably need to be fixed.
+               <li>Any differences between them reflect what would happen if you used this text in a transfer process with a different source
+                  language, and they probably need to be fixed.
                </li>
             </ol>
          </li>
-         <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span>.
+         <li>You can try this method with the <span style="font-weight:bold; ">Spanish</span> sample project in <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Synthesis Self-Test</span> to get an idea of how it works.
          </li>
       </ol>
       <h3 style=""><a name="sRepl"></a>7.3.3&nbsp;I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle
