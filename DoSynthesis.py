@@ -11,7 +11,7 @@
 #   Synthesize using either Hermit Crab or STAMP depending on the setting.
 #   This is just a shell to call the respective modules to do the work.
 #   The advantage of having this module in a collection, is that the user can
-#   switch synthesizing methods quickly.
+#   switch synthesizing methods quickly. 
 #
 
 import os

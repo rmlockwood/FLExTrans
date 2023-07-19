@@ -7,7 +7,7 @@
 #
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module.
+#    the appropriate module. 
 #
 #   Version 3.9.1 - 6/26/23 - Ron Lockwood
 #    Updated module description. Also output the name of the created synthesis file.
