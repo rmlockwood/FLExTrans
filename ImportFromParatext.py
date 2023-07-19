@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.2 - 5/3/23 - Ron Lockwood
 #    Refresh the status bar if they chose to use the new text as the active text.
 #
@@ -87,7 +90,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -77,7 +80,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",

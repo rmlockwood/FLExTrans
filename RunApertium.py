@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.1 - 5/1/23 - Ron Lockwood
 #    Set the modified date of the internally used tr1.t1x file to be the same as
 #    the transfer_rules.t1x (or whatever the user specified) so that the transfer rules are
@@ -88,7 +91,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  

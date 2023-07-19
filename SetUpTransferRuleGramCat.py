@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.2 - 5/9/23 - Ron Lockwood
 #    Don't warn if a category name has a space. When writing the corresponding
 #    inflection class, convert the spaces to underscores.
@@ -96,7 +99,7 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.8.2",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
