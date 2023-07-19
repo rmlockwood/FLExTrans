@@ -5,10 +5,6 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.9.2 - 7/19/23 - Ron Lockwood
-#    Fixes #464. Support a new module that does either kind of synthesis by calling 
-#    the appropriate module.
-#
 #   Version 3.9.1 - 6/26/23 - Ron Lockwood
 #    Updated module description. Also output the name of the created synthesis file.
 #
@@ -232,7 +228,14 @@ import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-description = """
+
+docs = {FTM_Name       : "Synthesize Text with STAMP",
+        FTM_Version    : "3.9.1",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
+        FTM_Help       :"",
+        FTM_Description:  
+"""
 This module runs STAMP to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
@@ -241,13 +244,7 @@ roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesi
 are put into the folder designated in the Settings as Target Lexicon Files Folder. By default it is the 'Build' folder.
 NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
-"""
-docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.9.2",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
-        FTM_Help       :"",
-        FTM_Description: description}
+""" }
 
 DONT_CACHE = False
 CATEGORY_STR = 'category'
@@ -1119,7 +1116,7 @@ def synthesize(configMap, anaFile, synFile, report=None):
     
     return error_list
 
-def doStamp(DB, report, configMap=None):
+def MainFunction(DB, report, modifyAllowed):
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -1150,15 +1147,18 @@ def doStamp(DB, report, configMap=None):
     # output info, warnings, errors and url links
     Utils.processErrorList(error_list, report)
 
-def MainFunction(DB, report, modifyAllowed):
-
-    doStamp(DB, report)
-
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
+            
+# If your data doesn't match your system encoding (in the console) then
+# redirect the output to a file: this will make it utf-8.
+## BUT This doesn't work in IronPython!!
+import codecs
+if sys.stdout.encoding == None:
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
