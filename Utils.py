@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.4 - 7/19/23 - Ron Lockwood
+#    Fixes #469. Don't show guid to the user on errors.
+#
 #   Version 3.9.3 - 7/17/23 - Ron Lockwood
 #    Fixes #470. Re-write entry urls as sense urls when loading the sense linker.
 #    Also clear the sense num field for such entries.
@@ -1697,7 +1700,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         targetObj = repo.GetObject(guid)
     except:
         headWord = ITsString(entry.HeadWord).Text
-        report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}, id: {guidSubStr}.',\
+        report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
                      DB.BuildGotoURL(entry))
         return retVal
     
