@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.9.3 - 7/19/23 - Ron Lockwood
+#    Fixes #465. Strip whitespace characters when saving text, file or folder strings
+#
 #   Version 3.9.2 - 7/3/23 - Ron Lockwood
 #    Fixes #326. Use sense guids in links while maintaining backward compatibility with entry guids.
 #
@@ -1036,7 +1039,7 @@ class Main(QMainWindow):
                 
             elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER, TEXT_BOX]:
                 
-                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text()
+                outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text().strip()
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 

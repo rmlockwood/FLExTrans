@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.2 - 7/19/23 - Ron Lockwood
+#    Fixes #465. Ignore blank lines. Also, just warn and continue if no = or multiple =s.
+#
 #   Version 3.9.1 - 6/20/23 - Ron Lockwood
 #    Removed LOOKUP/lookup from constants to match SettingsGUI.
 #
@@ -194,11 +197,11 @@ def readConfig(report):
         
         # decompose any composed characters. FLEx stores strings this way.
         line = unicodedata.normalize('NFD', line)
-        if len(line) < 2:
-            if report is not None:
-                report.Error('Error reading the file: "' + CONFIG_FILE + '". No blank lines allowed.')
-            return
-        
+
+        # Skip malformed or blank lines
+        if len(line) < 4:
+            continue
+
         # Skip commented lines
         if line[0] == '#':
             continue
@@ -207,15 +210,15 @@ def readConfig(report):
         if not re.search('=', line):
 
             if report is not None:
-                report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
-            return
+                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
+            continue
         
         try:
             (prop, value) = line.split('=')
         except:
             if report is not None:
-                report.Error('Error reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
-            return
+                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+            continue
         
         value = value.rstrip()
         
