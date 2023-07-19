@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.1 - 4/24/23 - Ron Lockwood
 #    Constant for TreeTran.exe
 #
@@ -75,7 +78,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the TreeTran Tool.",    
         FTM_Help   : "",

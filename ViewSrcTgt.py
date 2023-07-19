@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -94,7 +97,7 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",

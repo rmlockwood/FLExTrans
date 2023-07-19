@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.1 - 4/21/23 - Ron Lockwood
 #    Fixes #417. Stripped whitespace from source text name. Consolidated code that
 #    collects all the interlinear text names. Removed fallback to use scripture text names.
@@ -183,7 +186,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',

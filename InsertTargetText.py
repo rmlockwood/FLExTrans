@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -78,7 +81,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",

@@ -5,7 +5,7 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
-#   Version 3.8.2 - 17 Jul 2023 - Beth Bryson
+#   Version 3.9 - 17 Jul 2023 - Beth Bryson
 #    Use GUIDs for morphType, to allow non-English analysis writing systems
 #
 #   Version 3.8.1 - 4/20/23 - Ron Lockwood
@@ -112,7 +112,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.8.1",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",

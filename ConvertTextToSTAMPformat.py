@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8.6 - 5/9/23 - Ron Lockwood
 #    Put out the sense # for variants when doing HermitCrab synthesis.
 #
@@ -207,7 +210,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.8.6",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 

@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Bumped version to 3.9
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -59,7 +62,7 @@ from Testbed import *
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Start Testbed",
-        FTM_Version    : "3.8",
+        FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Initialize the testbed log and create source text from the testbed.",
         FTM_Help   : "",
