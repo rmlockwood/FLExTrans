@@ -53,7 +53,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.9.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -408,12 +408,15 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     
     return errorList
 
-def MainFunction(DB, report, modifyAllowed):
+def doHermitCrab(DB, report, configMap=None):
 
     # Read the configuration file.
-    configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return
+
+        # Read the configuration file.
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
 
     # Get config settings we need.
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
@@ -450,19 +453,15 @@ def MainFunction(DB, report, modifyAllowed):
     # output info, warnings, errors and url links
     Utils.processErrorList(errorList, report)
     
+def MainFunction(DB, report, modifyAllowed):
+
+    doHermitCrab(DB, report)
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
-# If your data doesn't match your system encoding (in the console) then
-# redirect the output to a file: this will make it utf-8.
-## BUT This doesn't work in IronPython!!
-import codecs
-if sys.stdout.encoding == None:
-    sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
