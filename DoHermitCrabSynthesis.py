@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.9.2 - 7/19/23 - Ron Lockwood
+#    Fixes #464. Support a new module that does either kind of synthesis by calling 
+#    the appropriate module.
+#
 #   Version 3.9.1 - 6/26/23 - Ron Lockwood
 #    Updated module description. Also output the name of the created synthesis file.
 #
@@ -47,14 +51,7 @@ import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9.1",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
-        FTM_Help       :"",
-        FTM_Description:  
-"""
+description = """
 This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
@@ -64,7 +61,15 @@ NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.
-""" }
+"""
+
+docs = {FTM_Name       : "Synthesize Text with HermitCrab",
+        FTM_Version    : "3.9.2",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
+        FTM_Help       :"",
+        FTM_Description: description}
+
 def configFileOutOfDate(targetDB, HCconfigPath):
 
     # Build a DateTime object with the FLEx DB last modified date
@@ -404,12 +409,14 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     
     return errorList
 
-def MainFunction(DB, report, modifyAllowed):
+def doHermitCrab(DB, report, configMap=None):
 
     # Read the configuration file.
-    configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return
+
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
 
     # Get config settings we need.
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
@@ -445,20 +452,17 @@ def MainFunction(DB, report, modifyAllowed):
     
     # output info, warnings, errors and url links
     Utils.processErrorList(errorList, report)
-    
+
+def MainFunction(DB, report, modifyAllowed):
+
+    doHermitCrab(DB, report)
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             
-# If your data doesn't match your system encoding (in the console) then
-# redirect the output to a file: this will make it utf-8.
-## BUT This doesn't work in IronPython!!
-import codecs
-if sys.stdout.encoding == None:
-    sys.stdout = codecs.getwriter("utf-8")(sys.stdout)
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
