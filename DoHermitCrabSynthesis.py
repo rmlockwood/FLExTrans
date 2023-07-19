@@ -51,14 +51,7 @@ import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9.2",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
-        FTM_Help       :"",
-        FTM_Description:  
-"""
+description = """
 This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
@@ -68,7 +61,15 @@ NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.
-""" }
+"""
+
+docs = {FTM_Name       : "Synthesize Text with HermitCrab",
+        FTM_Version    : "3.9.2",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
+        FTM_Help       :"",
+        FTM_Description: description}
+
 def configFileOutOfDate(targetDB, HCconfigPath):
 
     # Build a DateTime object with the FLEx DB last modified date

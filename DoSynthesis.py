@@ -40,10 +40,10 @@ docs = {FTM_Name       : "Synthesize Text",
         FTM_Help       :"",
         FTM_Description:  
 f"""
-This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab Synthesis?',
+This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
 then the following information from the {DoHermitCrabSynthesis.docs[FTM_Name]} module applies:
 """ + DoHermitCrabSynthesis.description + f"""
-If in the settings you select 'No' for 'Use HermitCrab Synthesis?',
+If in the settings you select 'No' for 'Use HermitCrab synthesis?',
 then the following information from the {DoStampSynthesis.docs[FTM_Name]} module applies:
 """ + DoStampSynthesis.description + """
 """ }
