@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.9 - 7/19/23 - Ron Lockwood
+#    Fixes #476. Remove the EOL stuff we get from HermitCrab.
+#
 #   Version 3.7.2 - 1/6/23 - Ron Lockwood
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
@@ -601,12 +604,20 @@ class TestbedTestXMLObject():
         except:
             raise ValueError('No more lines to read in the synthesis file.')
         
-        # Remove the dummy EOL lexical unit at the end.
+        # Remove the dummy EOL lexical unit at the end. STAMP results.
         line = re.sub(r' @*EOL', '', line)
+        
+        # Remove the dummy EOL lexical unit at the end. HermitCrab results.
+        line = re.sub(' %0%\^@EOL<EOL>\$%', '', line)
         
         # Remove multiple spaces
         line = re.sub('\s{2,}', ' ', line)
         line = line.rstrip()
+
+        # Convert to decomposed unicode for comparison. When we read in the file testbed
+        # We did the same. For some reason this wasn't needed for STAMP output, but seems to be needed for HermitCrab
+        line = unicodedata.normalize('NFD', line)
+
         self.setActualResult(line)
         return 1
     
