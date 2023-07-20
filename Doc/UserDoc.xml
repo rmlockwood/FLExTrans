@@ -2127,10 +2127,7 @@ id="sDebugSynth"
 ><li
 >Make sure glosses of affixes are unique.</li
 ><li
->If you are using the <object
-type="tTool"
->XAmple</object
-> parser, make sure allomorphs have appropriate environments and are ordered from most specific to least specific.<ol
+>If you have allomorphs, make sure they have appropriate environments and are ordered from most specific to least specific.<ol
 ><li
 >The <object
 type="tTool"
@@ -2152,7 +2149,7 @@ type="tCourier"
 >If you are using the <object
 type="tTool"
 >HermitCrab</object
-> parser, a trace file called <object
+> parser, there is a way to produce a trace file called <object
 type="tFilename"
 >HCSynthTrace.htm</object
 > is generated when you run the synthesis module. Find your Temp directory (usually <object

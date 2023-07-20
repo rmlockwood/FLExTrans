@@ -1154,7 +1154,7 @@
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Make sure glosses of affixes are unique.</li>
-         <li>If you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> parser, make sure allomorphs have appropriate environments and are ordered from most specific to least specific.
+         <li>If you have allomorphs, make sure they have appropriate environments and are ordered from most specific to least specific.
             <ol style="list-style-type:lower-alpha; ">
                <li>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> synthesis module tests allomorphs in the order they are listed, testing the <span style="color:#cc9900; ">Lexeme Form</span> last, as the "elsewhere allomorph". If an allomorph with an overly generous environment occurs before one that describes
                   a subset of that environment, it will block application of the later allomorph.
@@ -1168,7 +1168,7 @@
             will be disallowed. These may come out as <span style="font-family:Courier New; font-size:100%; ">%0%word%</span> in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints.
             It is not necessarily a problem if you see some of these lines in the output.
          </li>
-         <li>If you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, a trace file called <span style="font-style:italic; ">HCSynthTrace.htm</span> is generated when you run the synthesis module. Find your Temp directory (usually <span style="font-style:italic; ">C:/Users/&lt;YourName&gt;/AppData/Temp</span>) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes
+         <li>If you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, there is a way to produce a trace file called <span style="font-style:italic; ">HCSynthTrace.htm</span> is generated when you run the synthesis module. Find your Temp directory (usually <span style="font-style:italic; ">C:/Users/&lt;YourName&gt;/AppData/Temp</span>) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes
             with plus and minus symbols you can click to follow various paths through the attempted parses.
          </li>
       </ol>
