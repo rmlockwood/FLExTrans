@@ -394,7 +394,7 @@ def MainFunction(DB, report, modifyAllowed):
     ## Generate for only a specified POS  (This needs work)
     focusPOS = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_POS, report)
     if focusPOS == "":
-        report.Info('  No focus POS. Applying to all POS with templates.')
+        report.Error('  No focus POS. Please select at least one POS with a template.')
     else:
         # last POS is likely empty
         if focusPOS[-1] == '':

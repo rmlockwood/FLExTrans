@@ -236,7 +236,7 @@ description = """
 This module runs STAMP to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
-Before creating the synthesized text, this module extracts the target language lexicons files. One for
+Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files 
 are put into the folder designated in the Settings as Target Lexicon Files Folder. By default it is the 'Build' folder.
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.

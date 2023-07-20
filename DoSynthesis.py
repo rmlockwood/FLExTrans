@@ -36,7 +36,7 @@ import DoStampSynthesis
 docs = {FTM_Name       : "Synthesize Text",
         FTM_Version    : "3.9",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the either STAMP or HermitCrab.",
+        FTM_Synopsis   : "Synthesizes the target text with either STAMP or HermitCrab.",
         FTM_Help       :"",
         FTM_Description:  
 f"""
