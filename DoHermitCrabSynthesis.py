@@ -352,6 +352,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     try:
         params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
 
+        # We could add a Settings option to allow tracing
         # If we are to trace the HC synthesis, we need the -t -s parameters
         if trace:
             params.extend(['-t', '-s'])
