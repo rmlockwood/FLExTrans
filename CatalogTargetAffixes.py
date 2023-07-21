@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.1 - 7/21/23 - Ron Lockwood
+#    Fixes #482. Affix allomorphs were skipped when the main form was a stem
+#    because new guid lookup of morphname was using the entry object instead of the allomorph object.
+#
 #   Version 3.9 - 17 Jul 2023 - Beth Bryson
 #    Use GUIDs for morphType, to allow non-English analysis writing systems
 #
@@ -112,7 +116,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -237,7 +241,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             if processIt == False:
                 for allomorph in e.AlternateFormsOS:
                     
-                    morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+                    morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
                     morphType = Utils.morphTypeMap[morphGuidStr]
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
                        (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
