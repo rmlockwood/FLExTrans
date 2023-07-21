@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.5 - 7/21/23 - Ron Lockwood
+#    Fixed error message when target project fails to open.
+#
 #   Version 3.9.4 - 7/19/23 - Ron Lockwood
 #    Fixes #469. Don't show guid to the user on errors.
 #
@@ -1398,7 +1401,7 @@ def openTargetProject(configMap, report):
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error('There was an error opening target database: '+targetProj+'. Perhaps the dabase is open.')
+            report.Error('There was an error opening target database: '+targetProj+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
         raise
     
     if report:
