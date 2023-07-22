@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.5 - 7/22/23 - Ron Lockwood
+#    Writing **None** wasn't being handled.
+#
 #   Version 3.9.4 - 7/17/23 - Ron Lockwood
 #    Fixes #470. Re-write entry urls as sense urls when loading the sense linker. 
 #    Also clear the sense num field for such entries.
@@ -239,7 +242,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.4",
+        FTM_Version    : "3.9.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1445,27 +1448,32 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                 
                 cnt += 1
                 
-                # Handle mapping to none
-                headWord = currLink.getTgtHPG().getHeadword()
-                
-                if headWord == Utils.NONE_HEADWORD:
-                    
-                    urlStr = headWord
-                else:
-                    # Build target link from saved url path plus guid string for this target sense
-                    urlStr = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
-                
+                ## Set the target field
+
+                # Get the FLEx style that is for hyperlinks (named hyperlink)
                 myStyle = Utils.getHyperLinkStyle(DB)
 
-                # Set the target field
-                if myStyle == None: # style 'hyperlink' doesn't exist
+                # Get the headword string
+                headWord = currLink.getTgtHPG().getHeadword()
+                
+                # If the hyperlink style doesn't exist or we are doing a 'None' link, write a non-hyperlink value to the custom field
+                if myStyle == None or headWord == Utils.NONE_HEADWORD: 
 
-                    DB.LexiconSetFieldText(currSense, senseEquivField, urlStr)
+                    DB.LexiconSetFieldText(currSense, senseEquivField, Utils.NONE_HEADWORD)
+
+                # Write a hyperlink to the custom field
                 else:
                     
-                    Utils.writeSenseHyperLink(DB, currSense, currLink.getTgtSense().OwningEntry, currLink.getTgtSense(), senseEquivField, urlStr, myStyle)
+                    # Build target link from saved url path plus guid string for this target sense
+                    urlStr = preGuidStr + currLink.getTgtGuid() + '%26tag%3d'
+                    
+                    tgtSense = currLink.getTgtSense()
 
-                    # If the sense number field is None, we aren't using it
+                    tgtEntry = currLink.getTgtSense().OwningEntry
+
+                    Utils.writeSenseHyperLink(DB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
+
+                    # If the sense number field exists, set it to an empty string
                     if senseNumField:
 
                         DB.LexiconSetFieldText(currSense, senseNumField, '')
