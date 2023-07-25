@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.2 - 7/24/23 - Ron Lockwood
+#    Allow glosses to be identical (no warning) when they are two different senses in the same 
+#    entry and have the same morph type.
+#
 #   Version 3.9.1 - 7/21/23 - Ron Lockwood
 #    Fixes #482. Affix allomorphs were skipped when the main form was a stem
 #    because new guid lookup of morphname was using the entry object instead of the allomorph object.
@@ -101,6 +105,7 @@
 #
 
 import os
+import re
 from datetime import datetime
 
 from SIL.LCModel import *
@@ -116,7 +121,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.9.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -252,6 +257,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
             # Process affixes or clitics (stems that aren't in the morphNames list)
             if processIt:
             
+                myGlossAndTypes = []
+
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
                     
@@ -260,8 +267,12 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
                     
-                    # Save the gloss and morph type
-                    glossAndTypeList.append((morphType, myGloss))
+                    # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
+                    if (morphType, myGloss) not in myGlossAndTypes:
+
+                        myGlossAndTypes.append((morphType, myGloss))
+
+                glossAndTypeList.extend(myGlossAndTypes)
                     
     seen = set()
     
@@ -273,9 +284,10 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         
         # Check for duplicates and give a warning.
         if tupGloss not in seen:
+
             seen.add(tupGloss)
         else:
-            error_list.append((f'Found duplicate affix/clitic with gloss: {tupGloss}. Use of this affix/clitic could produce unexpected results.', 1))
+            error_list.append((f'Found duplicate affix/clitic with gloss: {re.sub("_", ".", tupGloss)}. Use of this affix/clitic could produce unexpected results.', 1))
 
     error_list.append((str(count)+' affixes/clitics exported to the catalog.', 0))
     return error_list
