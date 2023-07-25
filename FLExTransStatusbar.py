@@ -1,6 +1,9 @@
 #
 #   Custom status bar callback for FLExTrans
 #
+#   Version 3.9 - 7/25/23 - Ron Lockwood
+#    Bumped to 3.9
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
 #
