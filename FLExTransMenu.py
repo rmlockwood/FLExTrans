@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.9 - 7/25/23 - Ron Lockwood
+#    no https in the address for RunAbout
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
 
@@ -22,7 +25,7 @@ def RunHelp(sender, event):
     os.startfile(HelpFile)
 
 def RunAbout(sender, event):
-    MessageBox.Show(f"{Version.Name} version {Version.Version}\n\nhttps://software.sil.org/flextrans", "About FLExTrans",
+    MessageBox.Show(f"{Version.Name} version {Version.Version}\n\nsoftware.sil.org/flextrans", "About FLExTrans",
                     MessageBoxButtons.OK)
           
 customMenu = ("FLExTrans",

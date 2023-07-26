@@ -1,6 +1,9 @@
 #
 #   A shell module to launch FlexTools
 #
+#   Version 3.9 - 7/25/23 - Ron Lockwood
+#    Bumped to 3.9
+#
 #   Version 3.8.1 - 5/12/23 - Ron Lockwood
 #    Turn off dpi awareness.
 #
