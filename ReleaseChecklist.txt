@@ -6,7 +6,7 @@ x-Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product v
 x-Change Copyright date if necessary in the .nsi file. 
 x-Change VIProductVersion in the .nsi file.
 x-Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
--Build and test the install locally
+x-Build and test the install locally
 -Do another commit that has the install changes
 -Finish merging all pull requests
 -Get FLExTransX.X.exe from the software.sil.org products folder
