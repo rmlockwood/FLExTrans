@@ -18,19 +18,22 @@
          <ul>
             <li><a href="#rXLingPapAbstract0">Abstract</a></li>
             <li><a href="#sIntro">1&nbsp;Introduction</a></li>
-            <li><a href="#sGettingStarted">2&nbsp;Getting Started</a></li>
+            <li><a href="#sGettingStarted">2&nbsp;Overview and Getting Started</a></li>
             <ul>
                <li><a href="#sPrepSteps">2.1&nbsp;Preparatory Steps</a></li>
                <ul>
                   <li><a href="#sProjectSetup">2.1.1&nbsp;Set up your projects</a></li>
-                  <li><a href="#sDataPrep">2.1.2&nbsp;Prepare your data</a></li>
-                  <li><a href="#sHermitCrabSetup">2.1.3&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></a></li>
+                  <li><a href="#sHermitCrabSetup">2.1.2&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></a></li>
+                  <li><a href="#sDataPrep">2.1.3&nbsp;Prepare your data</a></li>
                   <li><a href="#sCategorySetup">2.1.4&nbsp;Pre-populate the transfer rules file with Categories and Attributes</a></li>
                </ul>
-               <li><a href="#sAnalyze">2.2&nbsp;Analyze the Source Text</a></li>
-               <li><a href="#sLinkSenses">2.3&nbsp;Link Senses</a></li>
-               <li><a href="#sWriteRules">2.4&nbsp;Write Transfer Rules</a></li>
-               <li><a href="#sRunModules">2.5&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules</a></li>
+               <li><a href="#sWalkthrough">2.2&nbsp;Walkthrough of Basic Machine Translation Steps</a></li>
+               <ul>
+                  <li><a href="#sAnalyze">2.2.1&nbsp;Analyze the Source Text</a></li>
+                  <li><a href="#sLinkSenses">2.2.2&nbsp;Link Senses</a></li>
+                  <li><a href="#sWriteRules">2.2.3&nbsp;Write Transfer Rules</a></li>
+                  <li><a href="#sRunModules">2.2.4&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules</a></li>
+               </ul>
             </ul>
             <li><a href="#sInfrastructure">3&nbsp;<span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface Orientation</a></li>
             <ul>
@@ -203,9 +206,10 @@
       </p>
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, as a program, consists of many different modules that are run within the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span><span style="font-size:65%; vertical-align:super">[<a href="#nFlexTools">1</a>]</span> program. Upon installation, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> is populated with several collections of modules for common <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> tasks. 
       </p>
-      <h1 style=""><a name="sGettingStarted"></a>2&nbsp;Getting Started
+      <h1 style=""><a name="sGettingStarted"></a>2&nbsp;Overview and Getting Started
       </h1>
-      <p>The basic steps for machine translation with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> are as follows:
+      <p>After you have installed FLExTrans and performed some one-time preparatory steps on your source and target FLEx projects,
+         the basic steps for machine translation with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> are as follows:
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Analyze the text you want to translate in the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
@@ -215,27 +219,18 @@
          <li>Run the core <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
          </li>
       </ol>
-      <p>After an explanation of the one-time steps to get ready to use <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, the following is a quick walkthrough of these four steps. Further detail about each step is available in the Tools section.
-      </p>
       <p></p>
-      <p>(For the following steps, it is assumed that you have gone through the <a href="https://software.sil.org/flextrans/installation/">installation</a> steps as given on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> website and that you have confirmed that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> works for the sample projects. It is also assumed that you have two <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects to use as source and target projects.)
-      </p>
       <h2 style=""><a name="sPrepSteps"></a>2.1&nbsp;Preparatory Steps
       </h2>
       <p>These steps only need to be performed once, when you are setting up your projects to be used with <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
       </p>
+      <p>For the following steps, it is assumed that you have gone through the <a href="https://software.sil.org/flextrans/installation/">installation</a> steps as given on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> website and that you have confirmed that <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> works for the sample projects. Be sure that the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects for your source and target languages are on your machine and can be opened by <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
+      </p>
       <h3 style=""><a name="sProjectSetup"></a>2.1.1&nbsp;Set up your projects
       </h3>
-      <p>Set up</p>
+      <p>The following steps will prepare your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects, as well as the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> setup for your specific pair of languages.
+      </p>
       <ol style="list-style-type:decimal; ">
-         <li>Create a new folder for your language pair.
-            <ol style="list-style-type:lower-alpha; ">
-               <li>In File Explorer, go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">WorkProjects</span> subfolder of the installation folder (typically <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Documents\FLExTrans</span>).
-               </li>
-               <li>Copy the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">TemplateProject</span> folder and Paste it where it is. You should see a new folder called <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">TemplateProject - Copy</span></li>
-               <li>Rename this folder to the name of language pair you will work with.</li>
-            </ol>
-         </li>
          <li>Enable the sharing option in each of your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects. This will allow you to keep <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects open while running <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
             <ul>
                <li>From the menu select <span style="font-family:Courier New; font-weight:bold; color:#009933; ">File</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Project Management</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FieldWorks Project Properties</span></li>
@@ -260,23 +255,41 @@
                <li>Click OK</li>
             </ol>
          </li>
-         <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>. See <a href="#sStartFlextools">A.1</a> for step-by-step instructions. It should look like <a href="#xFirstStart">(1)</a>.
-            <div style="margin-left: 0.25in; margin-right: 0.25in">
-               <table>
-                  <tr>
-                     <td valign="top"><a name="xFirstStart">(1)</a></td>
-                     <td>
-                        <table>
-                           <tr>
-                              <td><img style=" height:60%" src="Images/FLExTransModules.png"></td>
-                           </tr>
-                        </table>
-                     </td>
-                  </tr>
-               </table>
-            </div>
+         <li>Create a new folder for your language pair.
+            <ol style="list-style-type:lower-alpha; ">
+               <li>In File Explorer, go to the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">WorkProjects</span> subfolder of the installation folder (typically <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Documents\FLExTrans</span>).
+               </li>
+               <li>Copy the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">TemplateProject</span> folder and Paste it where it is. You should see a new folder called <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">TemplateProject - Copy</span></li>
+               <li>Rename this folder to the name of language pair you will work with, for example, <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">French-Spanish</span>.
+               </li>
+            </ol>
          </li>
-         <li>Click on the <img src="Images/DatabaseBut.PNG"> button and choose your source database, i.e. <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
+         <li>Start <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>. 
+            <ol style="list-style-type:lower-alpha; ">
+               <li>Navigate to the folder for your project (typically <span style="font-style:italic; ">Documents\FLExTrans\WorkProjects\[YourProject]</span>).
+               </li>
+               <li>Double-click on the file <span style="font-weight:bold; ">FlexTools.vbs</span> (a Visual Basic script file).
+               </li>
+               <li>It should look like <a href="#xFirstStart">(1)</a>.
+                  <div style="margin-left: 0.25in; margin-right: 0.25in">
+                     <table>
+                        <tr>
+                           <td valign="top"><a name="xFirstStart">(1)</a></td>
+                           <td>
+                              <table>
+                                 <tr>
+                                    <td><img style=" height:60%" src="Images/FLExTransModules.png"></td>
+                                 </tr>
+                              </table>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </li>
+            </ol>
+         </li>
+         <li>Click on the <img src="Images/DatabaseBut.PNG"> button and choose your source database, i.e. <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. If you did the installation test, instead of "Choose Project", it will show the most recently used source project
+            <img src="Images/ChooseProject-German.PNG"> before you click on it. 
          </li>
          <li><a name="gChangeSetings"></a>Change the settings for your new project.
             <ol style="list-style-type:lower-alpha; ">
@@ -316,30 +329,12 @@
                      </table>
                   </div>
                </li>
+               <li>Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.PNG"> button.
+               </li>
             </ol>
          </li>
       </ol>
-      <h3 style=""><a name="sDataPrep"></a>2.1.2&nbsp;Prepare your data
-      </h3>
-      <p>There are certain steps that are not strictly necessary for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, but they are needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. In your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects:
-      </p>
-      <ol style="list-style-type:decimal; ">
-         <li>Ensure that glosses are unique, within each non-root morpheme type. That is, all suffixes have unique glosses, all prefixes
-            have unique glosses, etc.
-         </li>
-         <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li>
-         <li>If any <span style="color:#cc9900; ">Lexeme Forms</span> have a space in them and you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <a href="#sHermitCrabSetup">2.1.3</a> for more details.
-         </li>
-         <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
-         <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
-            least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
-            box in the description of the template.
-         </li>
-         <li>FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system.
-            If you encounter an area that only works with English as the analysis writing system, please report it to the developers.
-         </li>
-      </ol>
-      <h3 style=""><a name="sHermitCrabSetup"></a>2.1.3&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></h3>
+      <h3 style=""><a name="sHermitCrabSetup"></a>2.1.2&nbsp;Choose your parser for synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> or <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span></h3>
       <p>The modules related to synthesis (writing out lexicon files, preparing the text, running synthesis) need to know if you are
          using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XAmple</span> parsing model or the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parsing model in your Target Project for synthesizing target morphemes into surface forms. For more details on the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, see <a href="#rBlack">Black, (2014)</a>.
       </p>
@@ -379,6 +374,27 @@
             </p>
          </li>
       </ol>
+      <h3 style=""><a name="sDataPrep"></a>2.1.3&nbsp;Prepare your data
+      </h3>
+      <p>There are certain steps that are not strictly necessary for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, but they are needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. In your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects:
+      </p>
+      <ol style="list-style-type:decimal; ">
+         <li>Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes
+            have unique glosses, etc.  The glosses of different senses within an entry can be the same, but across separate entries they
+            should be different.
+         </li>
+         <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li>
+         <li>If any <span style="color:#cc9900; ">Lexeme Forms</span> have a space in them and you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <a href="#sHermitCrabSetup">2.1.2</a> for more details.
+         </li>
+         <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
+         <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
+            least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
+            box in the description of the template.
+         </li>
+         <li>FLExTrans is intended to work with the primary analysis writing system set to any writing system. If you encounter an area
+            that only works with English as the analysis writing system, please report it to the developers.
+         </li>
+      </ol>
       <h3 style=""><a name="sCategorySetup"></a>2.1.4&nbsp;Pre-populate the transfer rules file with Categories and Attributes
       </h3>
       <p>If you expect to write rules that use more than a few of the categories, attributes, and template slots in your <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects, there is a module that can get those into your transfer rules file before beginning. (Find out more about this
@@ -405,8 +421,11 @@
          </li>
          <li>Click OK</li>
       </ol>
-      <h2 style=""><a name="sAnalyze"></a>2.2&nbsp;Analyze the Source Text
+      <h2 style=""><a name="sWalkthrough"></a>2.2&nbsp;Walkthrough of Basic Machine Translation Steps
       </h2>
+      <p></p>
+      <h3 style=""><a name="sAnalyze"></a>2.2.1&nbsp;Analyze the Source Text
+      </h3>
       <ol style="list-style-type:decimal; ">
          <li>Create a new text in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
          </li>
@@ -438,8 +457,8 @@
       <p></p>
       <p></p>
       <p></p>
-      <h2 style=""><a name="sLinkSenses"></a>2.3&nbsp;Link Senses
-      </h2>
+      <h3 style=""><a name="sLinkSenses"></a>2.2.2&nbsp;Link Senses
+      </h3>
       <ol style="list-style-type:decimal; ">
          <li>Click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button which will bring up a list of collections as shown in <a href="#xMyCollections">(6)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -506,8 +525,8 @@
       </p>
       <p></p>
       <p></p>
-      <h2 style=""><a name="sWriteRules"></a>2.4&nbsp;Write Transfer Rules
-      </h2>
+      <h3 style=""><a name="sWriteRules"></a>2.2.3&nbsp;Write Transfer Rules
+      </h3>
       <p>In this section, as an exercise, we are going to write a simple rule that removes affixes from words of a certain category.
          We&#8217;ll modify an existing rule to do this.
       </p>
@@ -566,7 +585,7 @@
                </table>
             </div>
          </li>
-         <li>Expand the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Categories</span> element and the second <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">category</span> element and it should look like <a href="#xRulesSampleCatsBefore">(12)</a>.
+         <li>Expand the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Categories</span> element (the first item in <a href="#xInitialSampleRules">(9)</a>) and the second <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">category</span> element and it should look like <a href="#xRulesSampleCatsBefore">(12)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -627,8 +646,8 @@
       </p>
       <p></p>
       <p></p>
-      <h2 style=""><a name="sRunModules"></a>2.5&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules
-      </h2>
+      <h3 style=""><a name="sRunModules"></a>2.2.4&nbsp;Run <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> Modules
+      </h3>
       <ol style="list-style-type:decimal; ">
          <li>In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span>, click on the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button.
          </li>
@@ -637,7 +656,7 @@
          <li>Click on the <img style="Width:7%" src="Images/RunAllModifyBut.PNG"> button to run all the modules. Click OK on the message box that comes up to confirm you want to change <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> data. You&#8217;ll see the modules run and see various bits of output.
          </li>
       </ol>
-      <p>You can see the results by opening the target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. (You may have to do a &#8220;refresh&#8221; to see the new text.)
+      <p>You can see the results by opening the target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project. Go to the <span style="color:#cc9900; ">Texts &amp; Words</span> area and verify that a new text has been inserted. (Sometimes it takes a moment before it appears.)
       </p>
       <p></p>
       <p></p>
@@ -709,7 +728,7 @@
          </li>
       </ol>
       <h2 style=""><a name="sSettings"></a>3.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span></h2>
-      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> can be configured the way you want it. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> main menu. Hover over the text box or <span style="font-style:normal; font-weight:bold; ">Browse</span> button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
+      <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> provides a way to configure various details needed for <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. You launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> by selecting <span style="font-family:Courier New; font-weight:bold; color:#009933; ">FLExTrans</span> &gt; <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Settings</span> from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> main menu. Hover over a text box or <span style="font-style:normal; font-weight:bold; ">Browse</span> button to get an explanation of the setting. For file or folder names in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>, you can rename the file to be used by simply typing the changes in the pertinent text box.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -730,7 +749,7 @@
       <p>Most of the tasks in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide
          a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.
       </p>
-      <p>To change to a different collection, click the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button. This will bring up the <a href="#xCollectionsManager">(17)</a></p>
+      <p>To change to a different collection, click the <img style="Width:5%" src="Images/CollectionsBut.PNG"> button. This will bring up the Collections Manager, as shown in <a href="#xCollectionsManager">(17)</a></p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
@@ -746,8 +765,8 @@
          </table>
       </div>
       <p>In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are
-         in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected, the lower
-         right pane will provide information about that module.
+         in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected in this pane,
+         the lower right pane will provide information about that module.
       </p>
       <p>To change to a different collection, double click on one of the collection names in the upper left pane.</p>
       <p>If you want to make your own collection to hold modules that you frequently run together, use the <img style="Width:5%" src="Images/NewButton.PNG"> button to create a new collection. Select a module in the lower left pane and use the <img style="Width:5%" src="Images/AddModuleButton.PNG"> button to add it to your collection. Use the <img style="Width:5%" src="Images/MoveUpButton.PNG"> and <img style="Width:5%" src="Images/MoveDownButton.PNG"> buttons to change the sequence.
@@ -1114,7 +1133,8 @@
       <ol style="list-style-type:decimal; ">
          <li>First run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> (as described in <a href="#sSettings">3.2</a>).
          </li>
-         <li>In the top section, set the Target Project to the project you want to use for the synthesis test.</li>
+         <li>In the top section, set the Target Project to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project you want to use for the synthesis test.  Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.PNG"> button to register the change.  Then reopen the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span> to update the setting values that apply to the Target Project.  (The Source Project has no effect for the Synthesis Test.)
+         </li>
          <li>Scroll down to the Synthesis Test section, as shown in <a href="#xSynthTestSettings">(28)</a>.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -1136,9 +1156,10 @@
             it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and
             it uses the same criteria each time.) Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.PNG"> button.
          </li>
-         <li>Back in the FLExTrans window, click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the modules. It will choose which synthesis module to use based on the setting <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> (see section <a href="#sHermitCrabSetup">2.1.3</a>).
+         <li>Back in the FLExTrans window, click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the modules. It will choose which synthesis module to use based on the value for the <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> setting (see section <a href="#sHermitCrabSetup">2.1.2</a>).
          </li>
-         <li>The output will be in the file specified in the settings. If you have not changed the default, it will be <span style="font-style:italic; ">Output/target_text-syn.txt</span>.
+         <li>Output will go to two files, as specified in the settings. If you have not changed the defaults, the underlying parses will
+            go to <span style="font-style:italic; ">Output\words-uf.txt</span> and the list of surface words will go to <span style="font-style:italic; ">Output\target_text-syn.txt</span>.
          </li>
       </ol>
       <p>If you wish to try this module out on the Swedish sample project, use the settings to limit the POS to Noun (n), since that
@@ -1167,9 +1188,6 @@
          <li>Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination
             will be disallowed. These may come out as <span style="font-family:Courier New; font-size:100%; ">%0%word%</span> in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints.
             It is not necessarily a problem if you see some of these lines in the output.
-         </li>
-         <li>If you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, there is a way to produce a trace file called <span style="font-style:italic; ">HCSynthTrace.htm</span> is generated when you run the synthesis module. Find your Temp directory (usually <span style="font-style:italic; ">C:/Users/&lt;YourName&gt;/AppData/Temp</span>) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes
-            with plus and minus symbols you can click to follow various paths through the attempted parses.
          </li>
       </ol>
       <p>Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working

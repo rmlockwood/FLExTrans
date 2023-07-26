@@ -158,9 +158,9 @@ type="tFlextrans"
 ><section1
 id="sGettingStarted"
 ><secTitle
->Getting Started</secTitle
+>Overview and Getting Started</secTitle
 ><p
->The basic steps for machine translation with <object
+>After you have installed FLExTrans and performed some one-time preparatory steps on your source and target FLEx projects, the basic steps for machine translation with <object
 type="tFlextrans"
 ></object
 > are as follows:</p
@@ -187,28 +187,9 @@ type="tFlextrans"
 > modules.</li
 ></ol
 ><p
->After an explanation of the one-time steps to get ready to use <object
-type="tFlextrans"
-></object
->, the following is a quick walkthrough of these four steps. Further detail about each step is available in the Tools section.</p
-><p
 ><comment
 > For a more thorough treatment of each step see FLExTrans Steps in More Detail.</comment
 ></p
-><p
->(For the following steps, it is assumed that you have gone through the <link
-href="https://software.sil.org/flextrans/installation/"
->installation</link
-> steps as given on the <object
-type="tFlextrans"
-></object
-> website and that you have confirmed that <object
-type="tFlextrans"
-></object
-> works for the sample projects. It is also assumed that you have two <object
-type="tFlexx"
-></object
-> projects to use as source and target projects.)</p
 ><section2
 id="sPrepSteps"
 ><secTitle
@@ -218,35 +199,36 @@ id="sPrepSteps"
 type="tFlextrans"
 ></object
 >.</p
+><p
+>For the following steps, it is assumed that you have gone through the <link
+href="https://software.sil.org/flextrans/installation/"
+>installation</link
+> steps as given on the <object
+type="tFlextrans"
+></object
+> website and that you have confirmed that <object
+type="tFlextrans"
+></object
+> works for the sample projects. Be sure that the <object
+type="tFlexx"
+></object
+> projects for your source and target languages are on your machine and can be opened by <object
+type="tFlexx"
+></object
+>.</p
 ><section3
 id="sProjectSetup"
 ><secTitle
 >Set up your projects</secTitle
 ><p
->Set up</p
+>The following steps will prepare your <object
+type="tFlexx"
+></object
+> projects, as well as the <object
+type="tFlextrans"
+></object
+> setup for your specific pair of languages.</p
 ><ol
-><li
->Create a new folder for your language pair.<ol
-><li
->In File Explorer, go to the <object
-type="tFoldername"
->WorkProjects</object
-> subfolder of the installation folder (typically <object
-type="tFoldername"
->Documents\FLExTrans</object
->).</li
-><li
->Copy the <object
-type="tFoldername"
->TemplateProject</object
-> folder and Paste it where it is. You should see a new folder called <object
-type="tFoldername"
->TemplateProject - Copy</object
-></li
-><li
->Rename this folder to the name of language pair you will work with.</li
-></ol
-></li
 ><li
 >Enable the sharing option in each of your <object
 type="tFlexx"
@@ -345,13 +327,47 @@ type="tUnderline"
 ></ol
 ></li
 ><li
+>Create a new folder for your language pair.<ol
+><li
+>In File Explorer, go to the <object
+type="tFoldername"
+>WorkProjects</object
+> subfolder of the installation folder (typically <object
+type="tFoldername"
+>Documents\FLExTrans</object
+>).</li
+><li
+>Copy the <object
+type="tFoldername"
+>TemplateProject</object
+> folder and Paste it where it is. You should see a new folder called <object
+type="tFoldername"
+>TemplateProject - Copy</object
+></li
+><li
+>Rename this folder to the name of language pair you will work with, for example, <object
+type="tFoldername"
+>French-Spanish</object
+>.</li
+></ol
+></li
+><li
 >Start <object
 type="tFlexxTools"
 ></object
->. See <appendixRef
-app="sStartFlextools"
-></appendixRef
-> for step-by-step instructions. It should look like <exampleRef
+>. <ol
+><li
+>Navigate to the folder for your project (typically <object
+type="tFilename"
+>Documents\FLExTrans\WorkProjects\[YourProject]</object
+>).</li
+><li
+>Double-click on the file <object
+type="tBold"
+>FlexTools.vbs</object
+> (a Visual Basic script file).</li
+><li
+>It should look like <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
@@ -366,6 +382,8 @@ src="Images/FLExTransModules.png"
 ></chart
 ></example
 ></li
+></ol
+></li
 ><li
 >Click on the <img
 src="Images/DatabaseBut.PNG"
@@ -373,7 +391,10 @@ src="Images/DatabaseBut.PNG"
 > button and choose your source database, i.e. <object
 type="tFlexx"
 ></object
-> project.</li
+> project. If you did the installation test, instead of "Choose Project", it will show the most recently used source project <img
+src="Images/ChooseProject-German.PNG"
+></img
+> before you click on it. </li
 ><li
 ><genericTarget
 id="gChangeSetings"
@@ -452,49 +473,15 @@ type="tFlexx"
 ></tr
 ></table
 ></li
+><li
+>Click the <img
+cssSpecial="Width:10%"
+height="60%"
+src="Images/ApplyAndCloseButton.PNG"
+></img
+> button.</li
 ></ol
 ></li
-></ol
-></section3
-><section3
-id="sDataPrep"
-><secTitle
->Prepare your data</secTitle
-><p
->There are certain steps that are not strictly necessary for <object
-type="tFlexx"
-></object
->, but they are needed for <object
-type="tFlextrans"
-></object
->. In your <object
-type="tFlexx"
-></object
-> projects:</p
-><ol
-><li
->Ensure that glosses are unique, within each non-root morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc.</li
-><li
->Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
-><li
->If any <object
-type="tFieldInFLEx"
->Lexeme Forms</object
-> have a space in them and you are using the <object
-type="tTool"
->HermitCrab</object
-> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <sectionRef
-sec="sHermitCrabSetup"
-></sectionRef
-> for more details.</li
-><li
->Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
-><li
->Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
->Does this requirement only apply for the "Generate Parses" module? If so, we can remove it here.</comment
-></li
-><li
->FLExTrans is intended to work with the primary analysis writing system set to either English or a non-English writing system. If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
 ></ol
 ></section3
 ><section3
@@ -603,6 +590,47 @@ type="tTool"
 ></ol
 ></section3
 ><section3
+id="sDataPrep"
+><secTitle
+>Prepare your data</secTitle
+><p
+>There are certain steps that are not strictly necessary for <object
+type="tFlexx"
+></object
+>, but they are needed for <object
+type="tFlextrans"
+></object
+>. In your <object
+type="tFlexx"
+></object
+> projects:</p
+><ol
+><li
+>Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc.  The glosses of different senses within an entry can be the same, but across separate entries they should be different.</li
+><li
+>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
+><li
+>If any <object
+type="tFieldInFLEx"
+>Lexeme Forms</object
+> have a space in them and you are using the <object
+type="tTool"
+>HermitCrab</object
+> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <sectionRef
+sec="sHermitCrabSetup"
+></sectionRef
+> for more details.</li
+><li
+>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
+><li
+>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active" box in the description of the template.<comment
+>Does this requirement only apply for the "Generate Parses" module? If so, we can remove it here.</comment
+></li
+><li
+>FLExTrans is intended to work with the primary analysis writing system set to any writing system. If you encounter an area that only works with English as the analysis writing system, please report it to the developers.</li
+></ol
+></section3
+><section3
 id="sCategorySetup"
 ><secTitle
 >Pre-populate the transfer rules file with Categories and Attributes</secTitle
@@ -655,6 +683,12 @@ type="tItalic"
 ></section3
 ></section2
 ><section2
+id="sWalkthrough"
+><secTitle
+>Walkthrough of Basic Machine Translation Steps</secTitle
+><p
+></p
+><section3
 id="sAnalyze"
 ><secTitle
 >Analyze the Source Text</secTitle
@@ -705,8 +739,8 @@ src="Images/AnalyzedText.PNG"
 ><comment
 >Use the parser for faster analysis.</comment
 ></p
-></section2
-><section2
+></section3
+><section3
 id="sLinkSenses"
 ><secTitle
 >Link Senses</secTitle
@@ -803,8 +837,8 @@ type="tBold"
 ><comment
 >Explain why senses are linked. Bilingual dictionary, etc.</comment
 ></p
-></section2
-><section2
+></section3
+><section3
 id="sWriteRules"
 ><secTitle
 >Write Transfer Rules</secTitle
@@ -895,7 +929,11 @@ src="Images/RulesSampleNounRule.PNG"
 >Expand the <object
 type="tRuleElemInXXE"
 >Categories</object
-> element and the second <object
+> element (the first item in <exampleRef
+letter="xInitialSampleRules"
+num="xInitialSampleRules"
+></exampleRef
+>) and the second <object
 type="tRuleElemInXXE"
 >category</object
 > element and it should look like <exampleRef
@@ -1007,8 +1045,8 @@ ref="rApertium"
 ><comment
 >Run Set up Gramm Categories Tool at some early stage</comment
 ></p
-></section2
-><section2
+></section3
+><section3
 id="sRunModules"
 ><secTitle
 >Run <object
@@ -1048,7 +1086,10 @@ type="tFlexx"
 >You can see the results by opening the target <object
 type="tFlexx"
 ></object
-> project. (You may have to do a “refresh” to see the new text.)</p
+> project. Go to the <object
+type="tFieldInFLEx"
+>Texts &amp; Words</object
+> area and verify that a new text has been inserted. (Sometimes it takes a moment before it appears.)</p
 ><p
 ><comment
 >Advanced info.: </comment
@@ -1057,6 +1098,7 @@ type="tFlexx"
 ><comment
 >Results can also be seen in the Output folder.</comment
 ></p
+></section3
 ></section2
 ></section1
 ><section1
@@ -1228,7 +1270,10 @@ type="tSettingsTool"
 >The <object
 type="tSettingsTool"
 ></object
-> can be configured the way you want it. You launch the <object
+> provides a way to configure various details needed for <object
+type="tFlextrans"
+></object
+>. You launch the <object
 type="tSettingsTool"
 ></object
 > by selecting <object
@@ -1240,7 +1285,7 @@ type="tMenu"
 > from the <object
 type="tFlexxTools"
 ></object
-> main menu. Hover over the text box or <object
+> main menu. Hover over a text box or <object
 type="tButton"
 >Browse</object
 > button to get an explanation of the setting. For file or folder names in the <object
@@ -1256,6 +1301,8 @@ cssSpecial=" height:60%"
 height="60%"
 src="Images/SettingsWindow.png"
 ></img
+><comment
+>For further detail about each setting, see [a section that hasn't been written yet].</comment
 ></chart
 ></example
 ></section2
@@ -1273,8 +1320,9 @@ type="tFlextrans"
 cssSpecial="Width:5%"
 src="Images/CollectionsBut.PNG"
 ></img
-> button. This will bring up the <exampleRef
+> button. This will bring up the Collections Manager, as shown in <exampleRef
 letter="xCollectionsManager"
+letterOnly="no"
 num="xCollectionsManager"
 ></exampleRef
 ></p
@@ -1288,7 +1336,7 @@ src="Images/CollectionsManager.png"
 ></chart
 ></example
 ><p
->In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected, the lower right pane will provide information about that module.</p
+>In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected in this pane, the lower right pane will provide information about that module.</p
 ><p
 >To change to a different collection, double click on one of the collection names in the upper left pane.</p
 ><p
@@ -2072,7 +2120,18 @@ sec="sSettings"
 ></sectionRef
 >).</li
 ><li
->In the top section, set the Target Project to the project you want to use for the synthesis test.</li
+>In the top section, set the Target Project to the <object
+type="tFlexx"
+></object
+> project you want to use for the synthesis test.  Click the <img
+cssSpecial="Width:10%"
+height="60%"
+src="Images/ApplyAndCloseButton.PNG"
+></img
+> button to register the change.  Then reopen the <object
+type="tSettingsTool"
+></object
+> to update the setting values that apply to the Target Project.  (The Source Project has no effect for the Synthesis Test.)</li
 ><li
 >Scroll down to the Synthesis Test section, as shown in <exampleRef
 letter="xSynthTestSettings"
@@ -2101,17 +2160,20 @@ src="Images/ApplyAndCloseButton.PNG"
 >Back in the FLExTrans window, click the <object
 type="tButton"
 >Run All</object
-> button to run all the modules. It will choose which synthesis module to use based on the setting <object
+> button to run all the modules. It will choose which synthesis module to use based on the value for the <object
 type="tSettingsProperty"
 >Use HermitCrab synthesis</object
-> (see section <sectionRef
+> setting (see section <sectionRef
 sec="sHermitCrabSetup"
 ></sectionRef
 >).</li
 ><li
->The output will be in the file specified in the settings. If you have not changed the default, it will be <object
+>Output will go to two files, as specified in the settings. If you have not changed the defaults, the underlying parses will go to <object
 type="tSettingsValue"
->Output/target_text-syn.txt</object
+>Output\words-uf.txt</object
+> and the list of surface words will go to <object
+type="tSettingsValue"
+>Output\target_text-syn.txt</object
 >.</li
 ></ol
 ><p
@@ -2144,18 +2206,12 @@ type="tFieldInFLEx"
 >Even if two morphemes are allowed by the templates to co-occur, if they have conflicting inflection features, that combination will be disallowed. These may come out as <object
 type="tCourier"
 >%0%word%</object
-> in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.</li
-><li
->If you are using the <object
-type="tTool"
->HermitCrab</object
-> parser, there is a way to produce a trace file called <object
-type="tFilename"
->HCSynthTrace.htm</object
-> is generated when you run the synthesis module. Find your Temp directory (usually <object
+> in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.<comment
+>  4. If you are using the HermitCrab parser, there is a way [more detail needed] to produce a trace file called HCSynthTrace.htm that can be generated when you run the synthesis module.  5. Find your Temp directory (usually <object
 type="tFilename"
 >C:/Users/&lt;YourName&gt;/AppData/Temp</object
->) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes with plus and minus symbols you can click to follow various paths through the attempted parses.</li
+>) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes with plus and minus symbols you can click to follow various paths through the attempted parses.</comment
+></li
 ></ol
 ><p
 >Although having a thorough parser setup is not necessary to use a project for synthesis, having at least some of it working provides a really good start for synthesis. See <citation
