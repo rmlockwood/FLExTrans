@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.9.3 - 7/26/23 - Ron Lockwood
+#    Give warnings from GenerateHCConfig. 
+#
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #464. Support a new module that does either kind of synthesis by calling 
 #    the appropriate module. 
@@ -64,7 +67,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9.2",
+        FTM_Version    : "3.9.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -141,12 +144,15 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     else:
         # Run the HermitCrab config generator
         try:
-            result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, fwdataPath, HCconfigPath])
+            result = subprocess.run([FTPaths.GENERATE_HC_CONFIG, fwdataPath, HCconfigPath], capture_output=True)
 
             if result.returncode == 0:
+
+                gatherWarnings(result, errorList)
                 errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
             else:
                 errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+                errorList.append((result.stderr.decode(), 2))
 
         except subprocess.CalledProcessError as e:
 
@@ -154,6 +160,18 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             errorList.append((e.stderr.decode(), 2))
 
     return errorList
+
+def gatherWarnings(result, errorList):
+
+    # Convert the byte stdout to a list of output lines. We expect Carriage return & Line feeds
+    outputLines = re.split(r'\r*\n', result.stdout.decode())
+
+    for outputLine in outputLines:
+
+        # if an output line isn't about loading or writing, show it to the user as a warning (1)
+        if outputLine and not re.search('Loading|Writing', outputLine):
+
+            errorList.append((outputLine.strip(), 1))
 
 def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synFile):
     
@@ -361,6 +379,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
         if result.returncode != 0:
             errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+            errorList.append((result.stderr.decode(), 2))
             return errorList
 
     except subprocess.CalledProcessError as e:
