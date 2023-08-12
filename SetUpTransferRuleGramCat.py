@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.9.1 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -82,7 +85,12 @@ import shutil
 import re
 import sys
 
-from SIL.LCModel import *                                            
+from SIL.LCModel import (
+    IFsClosedFeature,
+    FsClosedFeatureTags,
+    IMoInflAffixSlotRepository,
+    IMoInflAffMsa,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 
 from flextoolslib import *                                          
@@ -99,7 +107,7 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
@@ -398,8 +406,10 @@ def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, c
 def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countList, thingType):
     
     # Only process closed features, i.e. features that don't have sub-features
-    if feat.ClassID == 50: # FsClosedFeature
     
+    if feat.ClassID == FsClosedFeatureTags.kClassId:
+    
+        feat = IFsClosedFeature(feat)
         featureGroupName = ITsString(feat.Name.BestAnalysisAlternative).Text
         
         # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
@@ -467,7 +477,9 @@ def getSlot2AffixListMap(DB):
                 # Process only affixes
                 if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' and gloss:
                     
-                    for slot in mySense.MorphoSyntaxAnalysisRA.Slots: 
+                    senseMsa = IMoInflAffMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                    for slot in senseMsa.Slots: 
                         
                         # Build the slot name
                         slotGuid = slot.Guid.ToString()

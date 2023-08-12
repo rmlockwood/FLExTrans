@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.9.1 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.8.3 - 5/5/23 - Ron Lockwood
 #    Add a column to the table to show the verse number if it precedes a word. To do this a new class was added
 #    which encapsulates the Link class and adds the verse number attribute.
@@ -26,7 +29,10 @@
 #   Classes that model text objects from whole text down to word.
 
 import re
-from SIL.LCModel import *                                                   
+from SIL.LCModel import (
+    IMoStemMsa,
+    IWfiMorphBundleRepository,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 import Utils
 
@@ -619,9 +625,10 @@ class TextWord():
         return None
     def getInflClass(self, i):
         if self.hasSenses() and i < len(self.__senseList):
-            mySense = self.__senseList[i]
-            if mySense and mySense.MorphoSyntaxAnalysisRA.InflectionClassRA:
-                return [ITsString(mySense.MorphoSyntaxAnalysisRA.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
+            if mySense := self.__senseList[i]:
+                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                if msa.InflectionClassRA:
+                    return [ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
         return []
     def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
@@ -639,9 +646,10 @@ class TextWord():
         return ''
     def getPOS(self, i):
         if self.hasSenses() and i < len(self.__senseList):
-            mySense = self.__senseList[i]
-            if mySense and mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                return Utils.convertProblemChars(ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text, Utils.catProbData)
+            if mySense := self.__senseList[i]:
+                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                if msa.PartOfSpeechRA:
+                    return Utils.convertProblemChars(ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text, Utils.catProbData)
         return self.getUnknownPOS()
     def getSense(self, i):
         if self.hasSenses() and i < len(self.__senseList):
@@ -649,13 +657,14 @@ class TextWord():
         return None
     def getStemFeatures(self, i):
         if self.hasSenses() and i < len(self.__senseList):
-            mySense = self.__senseList[i]
-            if mySense and mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
-                # if we already have a populated list, we don't need to do it again.
-                if len(self.__stemFeatAbbrList) == 0:
-                    # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
-                    Utils.get_feat_abbr_list(mySense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
-                return self.getFeatures(self.__stemFeatAbbrList)
+            if mySense := self.__senseList[i]:
+                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                if msa.MsFeaturesOA:
+                    # if we already have a populated list, we don't need to do it again.
+                    if len(self.__stemFeatAbbrList) == 0:
+                        # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                        Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                    return self.getFeatures(self.__stemFeatAbbrList)
         return []
     def getSurfaceForm(self):
         return self.__surfaceForm

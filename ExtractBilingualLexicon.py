@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.7 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.6 - 7/17/23 - Ron Lockwood
 #    Fixes #66. Use human-readable hyperlinks in the target equivalent custom field.
 #
@@ -253,7 +256,11 @@ from datetime import datetime
 from System import Guid
 from System import String
 
-from SIL.LCModel import ILexEntryRepository                                                   
+from SIL.LCModel import (
+    IMoStemMsa,
+    IFsClosedFeature,
+    FsClosedFeatureTags,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
@@ -270,7 +277,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.6",
+        FTM_Version    : "3.9.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -829,8 +836,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
         # save target features so they can go in the symbol definition section
         for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
-            if feat.ClassID == 50: # FsClosedFeature
-                for val in feat.ValuesOC:
+            if feat.ClassID == FsClosedFeatureTags.kClassId: # FsClosedFeature
+                for val in IFsClosedFeature(feat).ValuesOC:
                     featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
                     featName = ITsString(val.Name.BestAnalysisAlternative).Text
                     posMap[Utils.underscores(featAbbr)] = featName
@@ -887,9 +894,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                            
-                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
-                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                            msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                            if msa.PartOfSpeechRA:            
+                                abbrev = ITsString(msa.PartOfSpeechRA.\
                                                       Abbreviation.BestAnalysisAlternative).Text
                                                       
                                 abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
@@ -924,30 +931,31 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     
                                     if targetSense.MorphoSyntaxAnalysisRA and targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                                         
-                                        if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
+                                        targetMsa = IMoStemMsa(targetSense.MorphoSyntaxAnalysisRA)
+                                        if targetMsa.PartOfSpeechRA:
                                             
                                             trgtFound = True
                                             
                                             # Get target pos abbreviation
-                                            trgtAbbrev = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                            trgtAbbrev = ITsString(targetMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                             
                                             # Deal with problem characters like spaces, periods, and slashes
                                             trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
                                             
                                             # Get target inflection class
                                             trgtInflCls =''
-                                            if targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA:
+                                            if targetMsa.InflectionClassRA:
                                                 
-                                                trgtInflCls = s2+ITsString(targetSense.MorphoSyntaxAnalysisRA.InflectionClassRA.\
+                                                trgtInflCls = s2+ITsString(targetMsa.InflectionClassRA.\
                                                                         Abbreviation.BestAnalysisAlternative).Text+s4a         
                                             # Get target features                                                     
                                             featStr = ''
-                                            if targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA:
+                                            if targetMsa.MsFeaturesOA:
                                                 
                                                 feat_abbr_list = []
                                                 
                                                 # The features might be complex, make a recursive function call to find all leaf features
-                                                Utils.get_feat_abbr_list(targetSense.MorphoSyntaxAnalysisRA.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                                Utils.get_feat_abbr_list(targetMsa.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
                                                 
                                                 # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
                                                 for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
@@ -965,7 +973,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                             ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
                                                             ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
                                     else:
-                                        error_list.append(('Skipping sense because it is of this class: '+targetSense.MorphoSyntaxAnalysisRA.ClassName+\
+                                        error_list.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
                                                         ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
                                                         ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
                                 else:
