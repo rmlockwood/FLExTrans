@@ -3,8 +3,8 @@ Do these things when making a new release
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set the version # at the top.
 -Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Change Copyright date if necessary in the .nsi file. 
 -Change VIProductVersion in the .nsi file.
+-Change Copyright date if necessary in the .nsi file. 
 -Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
 -Build and test the install locally
 -Do another commit that has the install changes
