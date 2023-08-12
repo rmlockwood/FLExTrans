@@ -7,21 +7,20 @@ x-Change Copyright date if necessary in the .nsi file.
 x-Change VIProductVersion in the .nsi file.
 x-Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
 x-Build and test the install locally
--Do another commit that has the install changes
--Finish merging all pull requests
--Get FLExTransX.X.exe from the software.sil.org products folder
--Download zip files from TeamCity and put into git
--Test the install
--Make a new .download_info file changing the relevant data. 3 changes.
--Make a new post on the website for announcing the new release.
--Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+x-Do another commit that has the install changes
+x-Finish merging all pull requests
+x-Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
+x-Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
+x-Test the install
+x-Make a new .download_info file changing the relevant data. 3 changes.
+x-Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -Create the release in Git with the new version string. 
- -Go to tags, switch to Releases
- -Click draft new release
- -Choose tags and give new vx.x.x and click Create new tag xxx on publish
- -Fill out Title (e.g. 3.5 - xyz)
- -Auto-generate release notes.
- -Publish
- -Edit release notes.
+x -Go to tags, switch to Releases
+x -Click draft new release
+x -Choose tags and give new vx.x.x and click Create new tag xxx on publish
+x -Fill out Title (e.g. 3.5 - xyz)
+x -Auto-generate release notes.
+x -Publish
+x -Edit release notes.
 -Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
 -announce the new release on the FLEx list
