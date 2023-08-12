@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.6 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.5 - 7/21/23 - Ron Lockwood
 #    Fixed error message when target project fails to open.
 #
@@ -343,7 +346,21 @@ import unicodedata
 from System import Guid
 from System import String
 
-from SIL.LCModel import *
+from SIL.LCModel import (
+    ICmObjectRepository,
+    ILexEntry,
+    ILexSense,
+    ITextRepository,
+    IPunctuationForm,
+    IMoStemMsa,
+    IFsFeatStruc,
+    IFsComplexValue,
+    IFsClosedValue,
+    IStStyleRepository,
+    IWfiAnalysis,
+    ILexEntryInflType,
+    IWfiWordform,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString  
 from SIL.LCModel.Core.Text import TsStringUtils
 from SIL.LCModel.DomainServices import StringServices                                                  
@@ -480,14 +497,18 @@ def isProclitic(entry):
     ret_val = False
     
     # What might be passed in for a component could be a sense which isn't a clitic
-    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+    if entry.ClassName == 'LexEntry':
+    
+        entry = ILexEntry(entry)
+
+        if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
         
-        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
-        morphType = morphTypeMap[morphGuidStr]
-        
-        if morphType  == 'proclitic':
-        
-            ret_val = True
+            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = morphTypeMap[morphGuidStr]
+            
+            if morphType  == 'proclitic':
+            
+                ret_val = True
             
     return ret_val
     
@@ -496,15 +517,19 @@ def isEnclitic(entry):
     ret_val = False
     
     # What might be passed in for a component could be a sense which isn't a clitic
-    if entry.ClassName == 'LexEntry' and entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
+    if entry.ClassName == 'LexEntry':
+    
+        entry = ILexEntry(entry)
+
+        if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
         
-        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
-        morphType = morphTypeMap[morphGuidStr]
-        
-        if morphType  == 'enclitic':
-        
-            ret_val = True
+            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+            morphType = morphTypeMap[morphGuidStr]
             
+            if morphType  == 'enclitic':
+            
+                ret_val = True
+                
     return ret_val
 
 def getXMLEntryText(node):
@@ -907,9 +932,11 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
         if spec.ClassID == 53: # FsComplexValue
-            get_feat_abbr_list(spec.ValueOA.FeatureSpecsOC, feat_abbr_list)
+            spec = IFsComplexValue(spec)
+            value = IFsFeatStruc(spec.ValueOA)
+            get_feat_abbr_list(value.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
-            
+            spec = IFsClosedValue(spec)
             featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
             abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
             feat_abbr_list.append((featGrpName, abbValue))
@@ -923,21 +950,23 @@ def GetEntryWithSense(e):
     # until we get to an entry that has a sense
     notDoneWithVariants = True
     while notDoneWithVariants:
-        if e.SensesOS.Count == 0:
-            if e.EntryRefsOS:
-                foundVariant = False
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        foundVariant = True
-                        break
-                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-                        break
-                    else: # normal variant of entry
-                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-                        continue
+        if e.ClassName == 'LexEntry':
+            e = ILexEntry(e)
+            if e.SensesOS.Count == 0:
+                if e.EntryRefsOS:
+                    foundVariant = False
+                    for entryRef in e.EntryRefsOS:
+                        if entryRef.RefType == 0: # we have a variant
+                            foundVariant = True
+                            break
+                    if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
+                        # if the variant we found is a variant of sense, we are done. Use the owning entry.
+                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                            e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
+                            break
+                        else: # normal variant of entry
+                            e = entryRef.ComponentLexemesRS.ToArray()[0]
+                            continue
         notDoneWithVariants = False
     return e
 
@@ -946,30 +975,34 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
     # until we get to an entry that has a sense
     notDoneWithVariants = True
     while notDoneWithVariants:
-        if e.SensesOS.Count == 0:
-            if e.EntryRefsOS:
-                foundVariant = False
-                for entryRef in e.EntryRefsOS:
-                    if entryRef.RefType == 0: # we have a variant
-                        foundVariant = True
-                        
-                        # Collect any inflection features that are assigned to the special
-                        # variant types called Irregularly Inflected Form
-                        for varType in entryRef.VariantEntryTypesRS:
-                            if varType.ClassName == "LexEntryInflType" and varType.InflFeatsOA:
-                                my_feat_abbr_list = []
-                                # The features might be complex, make a recursive function call to find all features
-                                get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
-                                inflFeatAbbrevs.extend(my_feat_abbr_list)
-                        break
-                if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
-                    # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                    if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                        e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
-                        break
-                    else: # normal variant of entry
-                        e = entryRef.ComponentLexemesRS.ToArray()[0]
-                        continue
+        if e.ClassName == 'LexEntry':
+            e = ILexEntry(e)
+            if e.SensesOS.Count == 0:
+                if e.EntryRefsOS:
+                    foundVariant = False
+                    for entryRef in e.EntryRefsOS:
+                        if entryRef.RefType == 0: # we have a variant
+                            foundVariant = True
+                            
+                            # Collect any inflection features that are assigned to the special
+                            # variant types called Irregularly Inflected Form
+                            for varType in entryRef.VariantEntryTypesRS:
+                                if varType.ClassName == "LexEntryInflType":
+                                    varType = ILexEntryInflType(varType)
+                                    if  varType.InflFeatsOA:
+                                        my_feat_abbr_list = []
+                                        # The features might be complex, make a recursive function call to find all features
+                                        get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, my_feat_abbr_list)
+                                        inflFeatAbbrevs.extend(my_feat_abbr_list)
+                            break
+                    if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
+                        # if the variant we found is a variant of sense, we are done. Use the owning entry.
+                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry)
+                            break
+                        else: # normal variant of entry
+                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0])
+                            continue
         notDoneWithVariants = False
     return e
 
@@ -1090,7 +1123,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         # Deal with punctuation first
         if analysisOccurance.Analysis.ClassName == "PunctuationForm":
             
-            textPunct = ITsString(analysisOccurance.Analysis.Form).Text
+            puncForm = IPunctuationForm(analysisOccurance.Analysis)
+            textPunct = ITsString(puncForm.Form).Text
             
             # See if one or more symbols is part of the user-defined sentence punctuation. If so, save the punctuation as if it is its own word. E.g. ^.<sent>$
             if set(list(textPunct)).issubset(set(list(sentPunct))):
@@ -1145,16 +1179,16 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         myWord.setSurfaceForm(surfaceForm)
 
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
-            wfiAnalysis = analysisOccurance.Analysis.Analysis   # Same as Owner
+            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
             
         elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
-            wfiAnalysis = analysisOccurance.Analysis
+            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
             
         # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted. 
         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
             
             # Lemma will be the same as the surface form, I think
-            myWord.addLemmaFromObj(analysisOccurance.Analysis)
+            myWord.addLemmaFromObj(IWfiWordform(analysisOccurance.Analysis))
             continue
         
         # Don't know when we ever would get here
@@ -1167,17 +1201,20 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             if bundle.SenseRA:
                 if bundle.MsaRA and bundle.MorphRA:
                         
-                    tempEntry = bundle.MorphRA.Owner
+                    tempEntry = ILexEntry(bundle.MorphRA.Owner)
                     
                     # We have a stem. We just want the headword and it's POS
                     if bundle.MsaRA.ClassName == 'MoStemMsa':
                         
+                        msa = IMoStemMsa(bundle.MsaRA)
+                        
                         # Just save the the bundle guid for the first root in the bundle
-                        if myWord.getGuid() == None:
+                        tempGuid = myWord.getGuid()
+                        if  len(str(tempGuid)):
                             myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
             
                         # If we have an invalid POS, give a warning
-                        if not bundle.MsaRA.PartOfSpeechRA:
+                        if not msa.PartOfSpeechRA:
                             
                             myWord.addLemmaFromObj(wfiAnalysis.Owner)
                             report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
@@ -1696,7 +1733,6 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
     # Look up the entry in the trgt project by guid
     repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
-    # repo = TargetDB.project.ServiceLocator.GetInstance(ILexEntryRepository)
 
     try:
         guid = Guid(String(guidSubStr))
@@ -1712,7 +1748,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         # See if this guid was for an entry or a sense. The old method was an entry with a given sense num.
         if targetObj.ClassName == 'LexEntry':
 
-            targetEntry = targetObj
+            targetEntry = ILexEntry(targetObj)
 
             if senseNum <= len(targetEntry.SensesOS.ToArray()):
                 
@@ -1736,8 +1772,8 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
             else:
                 targetSense = None
         else:
-            targetSense = targetObj
-            targetEntry = targetSense.OwningEntry
+            targetSense = ILexSense(targetObj)
+            targetEntry = targetSense.Entry
 
             # Find which sense number this is
             for i, mySense in enumerate(targetEntry.SensesOS):

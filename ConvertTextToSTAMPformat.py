@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.1 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -197,7 +200,15 @@ import re
 import os
 from datetime import datetime
 
-from SIL.LCModel import *                                                   
+from SIL.LCModel import (
+    ILexSense,
+    ILexEntryInflType,
+    IFsClosedValue,
+    IFsFeatStruc,
+    IFsComplexValue,
+    ILexEntry,
+    IMoStemMsa,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 from flextoolslib import *                                                 
@@ -210,7 +221,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -628,37 +639,47 @@ class ConversionData():
     # This function will handle when an entry points to a component that is a sense not a lexeme
     def getAnaDataFromEntry(self, compEntry):
         
-        # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned somehow from the complex form.
+        # default to 1st sense. At the moment this isn't a big deal because we aren't doing anything with target senses. But eventually this needs to be gleaned 
+        # somehow from the complex form.
         senseNum = '1'
         
         # The thing the component lexeme points to could be a sense rather than an entry
         if compEntry.ClassName == 'LexSense':
             
-            compSense = compEntry
+            compSense = ILexSense(compEntry)
             
             # Get the headword text of the owning entry
-            owningEntry = compEntry.Owner # Assumption here that this isn't a subsense
+            owningEntry = ILexEntry(compSense.Entry) # Assumption here that this isn't a subsense
             
             a = ITsString(owningEntry.HeadWord).Text
             a = Utils.add_one(a)
             
-            posObj = compSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA
+            moAnalysis = IMoStemMsa(compSense.MorphoSyntaxAnalysisRA)
+            posObj = moAnalysis.PartOfSpeechRA
             
             if posObj:            
                 
                 abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
-                       
-            # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
-            senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
+
+            # Find which sense number this is
+            for i, mySense in enumerate(owningEntry.SensesOS):
+
+                if mySense == compSense:
+                    break
+
+            senseNum = str(i+1)
+
+            # # Get the sense # from the sense Headword E.g. xxx 2 (keep.pst) or xxx (foot)
+            # senseNum = re.search(r'(\d*) \(',ITsString(compSense.HeadWord).Text, flags=re.RegexFlag.A).group(1) # re.RegexFlag.A=ASCII-only match
             
-            # No number found, so use sense 1
-            if senseNum == '':
+            # # No number found, so use sense 1
+            # if senseNum == '':
                 
-                senseNum = '1'
+            #     senseNum = '1'
             
         else: # entry
             
-            compEntry = Utils.GetEntryWithSense(compEntry)
+            compEntry = ILexEntry(Utils.GetEntryWithSense(compEntry))
             
             a = ITsString(compEntry.HeadWord).Text
             a = Utils.add_one(a)
@@ -668,7 +689,9 @@ class ConversionData():
             
             if compEntry.SensesOS.Count > 0:
                 
-                posObj = compEntry.SensesOS.ToArray()[0].MorphoSyntaxAnalysisRA.PartOfSpeechRA
+                mySense = compEntry.SensesOS.ToArray()[0]
+                moAnalysis = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                posObj = moAnalysis.PartOfSpeechRA
                 
                 if posObj:
                                 
@@ -690,10 +713,13 @@ class ConversionData():
         for spec in SpecsOC:
             if spec.ClassID == 53: # FsComplexValue
                 
-                self.getFeatAbbrList(spec.ValueOA.FeatureSpecsOC, featAbbrevList)
+                spec = IFsComplexValue(spec)
+                featStruc = IFsFeatStruc(spec.ValueOA)
+                self.getFeatAbbrList(featStruc.FeatureSpecsOC, featAbbrevList)
                 
             else: # FsClosedValue - I don't think the other types are in use
                 
+                spec = IFsClosedValue(spec)
                 featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
                 abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
                 abbValue = re.sub('\.', '_', abbValue)
@@ -855,7 +881,11 @@ class ConversionData():
                             break # if we found a complex form, there won't be any more
             
             # Store all the entries that have inflectional variants with features assigned
-            if e.VariantFormEntries.Count > 0:
+
+            # CDF: e.VariantFormEntries is an Enumerator, which doesn't support Count 
+            # (This generatates a SystemError);
+            # but looping is fine if the Count is zero, so best to just go straight to the loop.
+            if True: # e.VariantFormEntries.Count > 0:
                 
                 for variantForm in e.VariantFormEntries:
                     
@@ -869,6 +899,8 @@ class ConversionData():
                                 
                                 if varType.ClassName == "LexEntryInflType":
                                     
+                                    varType = ILexEntryInflType(varType)
+
                                     if varType.InflFeatsOA:
                                         
                                         myFeatAbbrList = []

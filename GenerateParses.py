@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   12 Aug 2023 rl v3.9.3 Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #   17 Jul 2023 bb v3.9.2 Test morphType by GUID, not by name in Primary Ana WS
 #   21 Jun 2023 rl v3.9.1 Use the target DB instead of the source DB (passed in from FlexTools)
 #   20 Jun 2023 rl v3.9   Cleaned up imports, modified description slightly, bumped version #
@@ -41,7 +42,10 @@ import re
 import copy
 import itertools
 
-from SIL.LCModel import *                                                   
+from SIL.LCModel import (
+    IMoStemMsa, 
+    IMoInflAffMsa,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
 from flextoolslib import *
 
@@ -52,7 +56,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate All Parses",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
@@ -508,14 +512,14 @@ def MainFunction(DB, report, modifyAllowed):
                 
                     # Get the POS abbreviation for the current sense, assuming we have a stem
                     if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                        
-                        if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA: 
+                        msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                        if msa.PartOfSpeechRA: 
                             # get grammatical category ID           
-                            catAndGuid = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                            catAndGuid = ITsString(msa.PartOfSpeechRA.\
                                                   Abbreviation.BestAnalysisAlternative).Text + \
-                                                  mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Guid.ToString()
+                                                  msa.PartOfSpeechRA.Guid.ToString()
                             # get grammatical category for underlying form
-                            pos = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                            pos = ITsString(msa.PartOfSpeechRA.\
                                                   Abbreviation.BestAnalysisAlternative).Text
                             
                 # Add Category to Lexeme Form, to use it as an underlying form for STAMP
@@ -613,12 +617,12 @@ def MainFunction(DB, report, modifyAllowed):
                         # Which kind of MSA is this?
                         #report.Info(str(type(msa)))
                         
-                        if str(type(msa)) == "<class 'SIL.LCModel.DomainImpl.MoDerivAffMsa'>":
-                            #report.Info("Skipping deriv MSA "+str(type(msa)))
+                        if msa.ClassName == 'MoInflAffMsa':
+
+                            msa = IMoInflAffMsa(msa)
+                        else:
                             f_log.write("Skipping deriv MSA for "+lexForm+'  '+lex)
                             continue
-                        #else:
-                            #report.Info("Processing infl MSA "+str(type(msa)))
 
                         # First get the POS for this MSA, just for debug output
                         if msa.PartOfSpeechRA == None:

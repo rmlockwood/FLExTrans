@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.6 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.5 - 7/22/23 - Ron Lockwood
 #    Writing **None** wasn't being handled.
 #
@@ -222,7 +225,7 @@ from System import String
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from SIL.LCModel import *                                                   
+from SIL.LCModel import IMoStemMsa
 from SIL.LCModel.DomainServices import StringServices                                                  
 from SIL.LCModel.Core.Text import TsStringUtils
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
@@ -242,7 +245,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.5",
+        FTM_Version    : "3.9.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1153,8 +1156,9 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
         
             # Loop through senses
             for senseNum, mySense in enumerate(entryObj.SensesOS):
+                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
                 # Skip empty MSAs
-                if mySense.MorphoSyntaxAnalysisRA == None:
+                if msa == None:
                     continue
                 
                 # Get headword, POS, gloss
@@ -1163,8 +1167,8 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 # Make the lemma in the form x.x (but remove if 1.1)
                 headword = Utils.fixupLemma(entryObj, senseNum+1, remove1dot1Bool=True)
                 
-                if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:
-                    POS = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                if msa.PartOfSpeechRA:
+                    POS = ITsString(msa.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
                 else:
                     POS = 'UNK'
@@ -1200,13 +1204,14 @@ def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNu
 
             # Get the POS abbreviation for the target sense, assuming we have a stem
             if targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                targetMsa = IMoStemMsa(targetSense.MorphoSyntaxAnalysisRA)
                 
                 # verify PartOfSpeechRA is valid, if not, set the POS unknown
-                if targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA == None:
+                if targetMsa.PartOfSpeechRA == None:
                     POS = 'UNK'
                 else:
                     # Get target pos abbreviation and gloss
-                    POS = ITsString(targetSense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.\
+                    POS = ITsString(targetMsa.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
             
                 Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text

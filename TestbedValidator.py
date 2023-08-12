@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.9.1 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
@@ -41,7 +44,11 @@ import ReadConfig
 import Testbed 
 import Utils as MyUtils
 
-from SIL.LCModel import *
+from SIL.LCModel import (
+    IMoStemMsa,
+    IMoInflClassRepository,
+    IFsClosedFeatureRepository,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
 
 GRAM_CATS = 'Grammatical Categories:'
@@ -227,8 +234,8 @@ class TestbedValidator():
     
                         # Only take word senses that have a grammatical category set.
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                            
-                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:            
+                            msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                            if msa.PartOfSpeechRA:            
                                                       
                                 # build the word sense and add it to the map
                                 wordSense = headWord+'.'+str(i+1)

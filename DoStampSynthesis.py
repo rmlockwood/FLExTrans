@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.3 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #464. Support a new module that does either kind of synthesis by calling 
 #    the appropriate module. 
@@ -220,7 +223,14 @@ import re
 from subprocess import call
 from datetime import datetime
 
-from SIL.LCModel import *                                                   
+from SIL.LCModel import (
+    IMoStemMsa,
+    IMoInflAffMsa,
+    IMoStemAllomorph,
+    IMoAffixAllomorph,
+    IMoAffixProcess,
+    IPhNCSegments,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 
 from flextoolslib import *                                                 
@@ -242,7 +252,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.9.2",
+        FTM_Version    : "3.9.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -319,10 +329,12 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
     ## Now put out the one-time stuff for the entry
 
     # We will only process inflectional affixes and stems (i.e. not derrivational affixes, etc.)
-    if sense is not None and (sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' or \
-                              sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa'):
-          
-        msa = sense.MorphoSyntaxAnalysisRA
+    if sense is None:
+        return
+    if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+        msa = IMoInflAffMsa(sense.MorphoSyntaxAnalysisRA)
+    elif sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+        msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
     else:
         return
         
@@ -381,26 +393,38 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
             
             return
 
-        elif morph.StemNameRA and morph.StemNameRA.Abbreviation:
+        morph = IMoStemAllomorph(morph)
+        if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
             stemName = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
             
     else: # non-stems only
         
-        # clitics, event though we treat them as affixes, have FLEx type MoStemAllomorph
+        # clitics, even though we treat them as affixes, have FLEx type MoStemAllomorph
         # and won't have inflection classes so don't try to process them
-        if morph.ClassName != 'MoStemAllomorph' and morph.InflectionClassesRC:
+        if morph.ClassName != 'MoStemAllomorph':
             
-            # Save each inflection class 
-            for inflClass in morph.InflectionClassesRC:
+            if morph.ClassName == 'MoAffixAllomorph':
+                morph = IMoAffixAllomorph(morph)    
+            elif morph.ClassName == 'MoAffixProcess':
+                morph = IMoAffixProcess(morph)
+            
+            if morph.InflectionClassesRC:
                 
-                saveInflClass(inflClassList, inflClass)
-                
+                # Save each inflection class 
+                for inflClass in morph.InflectionClassesRC:
+                    
+                    saveInflClass(inflClassList, inflClass)
+        else:
+            morph = IMoStemAllomorph(morph)
+
     # Save each phonological environment 
-    for env in morph.PhoneEnvRC:
-        
-        envStr = ITsString(env.StringRepresentation).Text
-        environList.append(envStr)
+    if morph.ClassName == 'MoAffixAllomorph' or morph.ClassName == 'MoStemAllomorph':
+
+        for env in morph.PhoneEnvRC:
+            
+            envStr = ITsString(env.StringRepresentation).Text
+            environList.append(envStr)
 
     masterAlloList.append((amorph, stemName, environList, inflClassList, morphCategory))
 
@@ -590,7 +614,9 @@ def process_allomorphs(e, f_handle, myGloss, myType, sense):
         morphTypesStr = 'prefix suffix root ' 
         f_handle.write('\\l ' + morphTypesStr)
         
-        for position in e.LexemeFormOA.PositionRS:
+        allom = IMoAffixAllomorph(e.LexemeFormOA)
+        
+        for position in allom.PositionRS:
             
             positionStr = ITsString(position.StringRepresentation).Text
             f_handle.write(positionStr+' ')
@@ -760,6 +786,8 @@ def output_nat_class_info(TargetDB, f_dec):
         if natClassName and natClass.ClassName != 'PhNCFeatures':
             f_dec.write('\\scl '+natClassName+'\n')
         
+            natClass = IPhNCSegments(natClass)
+            
             # Loop through all the segments in the class
             for seg in natClass.SegmentsRC:
     
@@ -873,15 +901,15 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                            
-                            if mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA:  
+                            msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                            if msa.PartOfSpeechRA:  
                                           
-                                abbrev = ITsString(mySense.MorphoSyntaxAnalysisRA.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
                                 err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                                 continue
                         else:
-                            err_list.append((f'Skipping sense that is of class: {mySense.MorphoSyntaxAnalysisRA.ClassName} for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append((f'Skipping sense that is of class: {msa.ClassName} for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
                             continue
                     else:
                         err_list.append(('Skipping sense that has no Morpho-syntax analysis. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))

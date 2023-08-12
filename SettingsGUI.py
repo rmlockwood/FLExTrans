@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.9.4 - 8/12/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.3 - 7/19/23 - Ron Lockwood
 #    Fixes #465. Strip whitespace characters when saving text, file or folder strings
 #
@@ -121,7 +124,7 @@ from System.Windows.Forms import (MessageBox, MessageBoxButtons)
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 
-from SIL.LCModel import *
+from SIL.LCModel import IMoMorphType
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
 from PyQt5.QtCore import Qt
@@ -309,7 +312,9 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
     typesList = []
     
     for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-
+        
+        item = IMoMorphType(item)
+        
         # Only load things that can be stems
         if item.IsStemType == True:
             
@@ -338,7 +343,9 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
     if wind.targetDB:
         
         for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
-    
+
+            item = IMoMorphType(item)
+
             # Only load things that can be stems
             if item.IsStemType == True:
                 
