@@ -18,7 +18,7 @@ Do these things when making a new release
  -Go to tags, switch to Releases
  -Click draft new release
  -Choose tags and give new vx.x.x and click Create new tag xxx on publish
- -Fill out Title (e.g. 3.5 - xyz)
+ -Fill out Title (e.g. 3.7 - Sense Linker and Live Rule Tester Improvements)
  -Auto-generate release notes.
  -Publish
  -Edit release notes.
