@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   17 Aug 2023 rl v3.9.4 More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #   12 Aug 2023 rl v3.9.3 Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #   17 Jul 2023 bb v3.9.2 Test morphType by GUID, not by name in Primary Ana WS
 #   21 Jun 2023 rl v3.9.1 Use the target DB instead of the source DB (passed in from FlexTools)
@@ -56,7 +57,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate All Parses",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.9.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
@@ -565,8 +566,18 @@ def MainFunction(DB, report, modifyAllowed):
                   
                 if e.MorphoSyntaxAnalysesOC: 
                     
+                    msa = e.MorphoSyntaxAnalysesOC.ToArray()[0]
+
+                    if msa.ClassName == 'MoStemMsa':
+
+                            msa = IMoStemMsa(msa)
+                    else:
+                        f_log.write("Skipping deriv MSA for "+lex)
+                        continue
+
                     # Get categories that this clitic can attach to
-                    for gcat in e.MorphoSyntaxAnalysesOC.ToArray()[0].FromPartsOfSpeechRC:
+                    for gcat in msa.FromPartsOfSpeechRC:
+
                         # Build the cat name
                         catAndGuid = ITsString(gcat.Abbreviation.BestAnalysisAlternative).Text + gcat.Guid.ToString()
                         

@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.7 - 8/17/23 - Ron Lockwood
+#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.6 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -1261,8 +1264,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                         else:
                             report.Warning("Sense object for affix is null.")
                 else:
-                    if myWord.getLemma(0) == '':
-                        myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                    if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+                        myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
                     else:
                         # Give a clue that a part is missing by adding a bogus affix
                         myWord.addPlainTextAffix('PartMissing')
@@ -1271,8 +1274,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                     break # go on to the next word    
             else:
                 # Part of the word has not been tied to a lexical entry-sense
-                if myWord.getLemma(0) == '':
-                    myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+                    myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
                 else:
                     # Give a clue that a part is missing by adding a bogus affix
                     myWord.addPlainTextAffix('PART_MISSING')
@@ -1286,7 +1289,11 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
             
             # need a root
-            myWord.addLemmaFromObj(wfiAnalysis.Owner)
+            if wfiAnalysis.Owner.ClassName == 'WfiWordform':
+                myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
+            else:
+                myWord.addPlainTextAffix('ROOT_MISSING')
+
             report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
         
     # Don't warn for sfm markers, but warn once for others        

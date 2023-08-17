@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.9.1 - 8/17/23 - Ron Lockwood
+#    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -186,7 +189,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -357,7 +360,7 @@ def MainFunction(DB, report, modifyAllowed):
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
-                    if myGuid == None:
+                    if len(str(myGuid)) == 0:
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
@@ -481,12 +484,13 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
                         
                         myID = wordObjList[k].getID()
                         
-                        if myID != None:
+                        # see if the guid is not '' (can't check for None anymore)
+                        if len(str(myID)) > 0:
                             keyList.append(myID)
                         else:
                             break
                         
-                if len(keyList) > 1 and myID != None:
+                if len(keyList) > 1 and len(str(myID)) > 0:
                     # we can't use a list as the map value, a tuple works, why not make a hash of it
                     wrdGramMap[hash(tuple(keyList))] = 1
                     
