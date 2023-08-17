@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.9.2 - 8/17/23 - Ron Lockwood
+#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.1 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -32,6 +35,7 @@ import re
 from SIL.LCModel import (
     IMoStemMsa,
     IWfiMorphBundleRepository,
+    ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 import Utils
@@ -708,7 +712,7 @@ class TextWord():
             return 
         
         # get the entry object and add it
-        myEntry = bundleObject.MorphRA.Owner
+        myEntry = ILexEntry(bundleObject.MorphRA.Owner)
         self.addEntry(myEntry)
         
         # set the guid for this word
