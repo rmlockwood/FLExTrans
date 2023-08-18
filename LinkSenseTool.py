@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.7 - 8/18/23 - Ron Lockwood
+#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.6 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -225,9 +228,10 @@ from System import String
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from SIL.LCModel import IMoStemMsa
-from SIL.LCModel.DomainServices import StringServices                                                  
-from SIL.LCModel.Core.Text import TsStringUtils
+from SIL.LCModel import (
+    IMoStemMsa,
+    ILexEntry,
+    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
 from flextoolslib import *                                                 
@@ -245,7 +249,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.6",
+        FTM_Version    : "3.9.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -470,8 +474,6 @@ class Link(object):
     def getTgtSense(self):
         return self.__tgtHPG.getSense()
     def getTgtGuid(self):
-        #return self.__tgtHPG.getSense().OwningEntry.Guid.ToString()
-        # Now use the sense guid
         return self.__tgtHPG.getSense().Guid.ToString()
     def getTgtSenseNum(self):
         return self.__tgtHPG.getSenseNum()
@@ -1474,7 +1476,7 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
                     
                     tgtSense = currLink.getTgtSense()
 
-                    tgtEntry = currLink.getTgtSense().OwningEntry
+                    tgtEntry = ILexEntry(currLink.getTgtSense().Entry)
 
                     Utils.writeSenseHyperLink(DB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
 

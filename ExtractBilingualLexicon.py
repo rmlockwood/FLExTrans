@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.8 - 8/18/23 - Ron Lockwood
+#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.7 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -260,6 +263,7 @@ from SIL.LCModel import (
     IMoStemMsa,
     IFsClosedFeature,
     FsClosedFeatureTags,
+    ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString         
 
@@ -277,7 +281,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.9.7",
+        FTM_Version    : "3.9.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -970,12 +974,12 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                     
                                         else:
                                             error_list.append(('Skipping sense because the target POS is undefined '+\
-                                                            ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
-                                                            ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
+                                                            ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
+                                                            ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                     else:
                                         error_list.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
-                                                        ' for target headword: '+ITsString(targetSense.OwningEntry.HeadWord).Text+\
-                                                        ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(targetSense.OwningEntry)))
+                                                        ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
+                                                        ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                 else:
                                     # Error already reported
                                     pass
