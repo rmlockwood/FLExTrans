@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.8 - 8/18/23 - Ron Lockwood
+#    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
+#
 #   Version 3.9.7 - 8/17/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -965,7 +968,7 @@ def GetEntryWithSense(e):
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
                         if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                            e = entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry
+                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].Entry)
                             break
                         else: # normal variant of entry
                             e = entryRef.ComponentLexemesRS.ToArray()[0]
@@ -1001,7 +1004,7 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
                         if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].OwningEntry)
+                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].Entry)
                             break
                         else: # normal variant of entry
                             e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0])
