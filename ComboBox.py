@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.9.1 - 9/4/23 - Ron Lockwood
+#    Fixes #466. Disable wheel scrolling.
+#
 #   Version 3.6 - 10/21/22 - Ron Lockwood
 #   Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
 #
@@ -15,8 +18,8 @@
 #   The code is found on: https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 #   with some modifications made by Lærke.
 
-from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate, QApplication
-from PyQt5.QtGui import QPalette, QStandardItem, QFontMetrics
+from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate
+from PyQt5.QtGui import QStandardItem, QFontMetrics
 from PyQt5.QtCore import QEvent, Qt
 
 class CheckableComboBox(QComboBox):
@@ -31,6 +34,9 @@ class CheckableComboBox(QComboBox):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Needed to use wheelEvent method below to disable wheel scrolling
+        self.setFocusPolicy(Qt.StrongFocus)
 
         self.modified = False
 
@@ -144,3 +150,10 @@ class CheckableComboBox(QComboBox):
             if self.model().item(i).checkState() == Qt.Checked:
                 res.append(self.model().item(i).text())
         return res
+    
+    def wheelEvent(self, *args, **kwargs):
+        # Disable wheel scrolling. This prevents inadvertent changes.
+        if self.hasFocus():
+            return QComboBox.wheelEvent(self, *args, **kwargs)
+        else:
+            return    
