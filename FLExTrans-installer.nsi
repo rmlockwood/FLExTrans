@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.9.1"
+!define PRODUCT_VERSION "3.9.2"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -29,7 +29,7 @@ VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.9.1.${BUILD_NUM}
+VIProductVersion 3.9.2.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
