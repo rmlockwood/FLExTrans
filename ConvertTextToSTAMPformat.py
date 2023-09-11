@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.2 - 9/1/23 - Ron Lockwood
+#    Fixes #492. Gracefully fail when HC master file setting is blank.
+#
 #   Version 3.9.1 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -1516,8 +1519,8 @@ def MainFunction(DB, report, modifyAllowed):
 
         if not HCmasterFile:
 
-            errorList.append((f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.', 2))
-            return errorList
+            report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
+            return 
     
     errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
 
