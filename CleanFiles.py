@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.9.1 - 9/4/23 - Ron Lockwood
+#    Fixes #487. Clean up synthesis test/generate files.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -57,7 +60,7 @@ import FTPaths
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.9.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
         FTM_Help  : "",  
@@ -242,6 +245,27 @@ def MainFunction(DB, report, modify=True):
         os.remove(hcfile)
     except:
         pass # ignore errors
+
+    # Remove Generate files
+    genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LOG_FILE, report, giveError=False)
+    try:
+        os.remove(genFile)
+    except:
+        pass # ignore errors
+
+    genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report, giveError=False)
+    try:
+        os.remove(genFile)
+    except:
+        pass # ignore errors
+
+    genFile = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report, giveError=False)
+    try:
+        os.remove(genFile)
+    except:
+        pass # ignore errors
+
+
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
