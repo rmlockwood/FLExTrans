@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.9 - 9/11/23 - Ron Lockwood
+#    Two functions added to support creating apertium rules.
+#
 #   Version 3.9.8 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -1899,3 +1902,16 @@ def getHyperLinkStyle(DB):
         Style = globalStyle
     
     return Style
+
+def getLemmasForFeature(DB, report, gramCategory, featureAbbrev):
+
+    myList = [('el1.1','m'),('la1.1','f')]
+
+    return myList
+
+def getAffixGlossesForFeature(DB, report, gramCategory, featureAbbrev):
+
+    myList = [('MASC_a','m'),('FEM_a','f')]
+
+    return myList
+
