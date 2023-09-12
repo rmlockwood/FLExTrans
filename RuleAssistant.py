@@ -47,7 +47,9 @@ def MainFunction(DB, report, modify=True):
     if not tranferRulePath:
         return True
 
-    CreateApertiumRules.CreateRules(DB, report, ruleAssistantFile, tranferRulePath)
+    TargetDB = Utils.openTargetProject(configMap, report)
+
+    CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
 
     
 #----------------------------------------------------------------

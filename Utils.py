@@ -369,6 +369,7 @@ from SIL.LCModel import (
     IWfiAnalysis,
     ILexEntryInflType,
     IWfiWordform,
+    IMoInflAffMsa,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString  
 from SIL.LCModel.Core.Text import TsStringUtils
@@ -1903,15 +1904,103 @@ def getHyperLinkStyle(DB):
     
     return Style
 
-def getLemmasForFeature(DB, report, gramCategory, featureAbbrev):
+def getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev):
 
-    myList = [('el1.1','m'),('la1.1','f')]
+    myList = [] # [('el1.1','m'),('la1.1','f')]
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
 
+    # Loop through all entries/senses and collect lemmas that match get given grammatical category and feature
+    for entry_cnt, srcEntry in enumerate(DB.LexiconAllEntries()):
+    
+        # Don't process affixes, clitics
+        if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+            srcEntry.LexemeFormOA.MorphTypeRA and morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+        
+            # Loop through senses
+            for i, mySense in enumerate(srcEntry.SensesOS):
+                
+                # Make sure we have a valid analysis object
+                if mySense.MorphoSyntaxAnalysisRA:
+                
+                    # Get the POS abbreviation for the current sense, assuming we have a stem
+                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+
+                        msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                        if msa.PartOfSpeechRA:            
+
+                            abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+
+                            if abbrev != gramCategory:
+                                break
+                            else:
+                                # Check for a match on the feature
+                                if msa.MsFeaturesOA:
+                                    
+                                    feat_abbr_list = []
+                                    
+                                    # The features might be complex, make a recursive function call to find all leaf features
+                                    get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                    
+                                    # loop through feature groups and abbreviations
+                                    for grpName, abb in feat_abbr_list:
+                                        
+                                        if featureAbbrev == grpName:
+
+                                            # Get the headword string
+                                            headWord = ITsString(srcEntry.HeadWord).Text
+                                            
+                                            # If there is not a homograph # at the end, make it 1
+                                            headWord = add_one(headWord)
+                                            
+                                            # Convert problem chars in the headWord
+                                            headWord = convertProblemChars(headWord, lemmaProbData)
+
+                                            headWord += '.'+str(i+1)
+                                            
+                                            myList.append((headWord, abb))
+                                            break
     return myList
 
-def getAffixGlossesForFeature(DB, report, gramCategory, featureAbbrev):
+def getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev):
 
-    myList = [('MASC_a','m'),('FEM_a','f')]
+    myList = [] #[('MASC_a','m'),('FEM_a','f')]
 
+    # Loop through all the entries
+    for entry in DB.LexiconAllEntries():
+    
+        # Check that the objects we need are valid
+        if not entry.LexemeFormOA:
+            continue
+            
+        if not entry.LexemeFormOA.MorphTypeRA or not entry.LexemeFormOA.MorphTypeRA.Name:
+            continue
+            
+        if entry.SensesOS.Count > 0: # Entry with senses
+            
+            # Loop through senses
+            for _, mySense in enumerate(entry.SensesOS):
+                
+                # Process only affixes
+                if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+                    
+                    senseMsa = IMoInflAffMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                    # Check for a match on the feature
+                    if senseMsa.InflFeatsOA:
+                        
+                        feat_abbr_list = []
+                        
+                        # The features might be complex, make a recursive function call to find all leaf features
+                        get_feat_abbr_list(senseMsa.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
+                        
+                        # loop through feature groups and abbreviations
+                        for grpName, abb in feat_abbr_list:
+                            
+                            if featureAbbrev == grpName:
+
+                                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                                myList.append((gloss, abb))
+                                break
     return myList
 

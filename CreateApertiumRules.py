@@ -16,18 +16,20 @@ import re
 import os
 import unicodedata
 
-def CreateRules(DB, report, ruleAssistantFile, tranferRulePath):
+def CreateRules(DB, report, configMap, ruleAssistantFile, tranferRulePath):
 
-    gramCategory= 'n'
+    gramCategory= 'def'
     featureAbbrev = 'gender'
     
     # Use this function to get a list of tuples (lemma, featureValue) for this category that have this feature assigned. 
     # An empty list is returned if there are errors.
-    lemmaList = Utils.getLemmasForFeature(DB, report, gramCategory, featureAbbrev)
+    lemmaList = Utils.getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev)
+
+    gramCategory= 'adj'
 
     # Use this function to get a list of tuples (gloss, featureValue) for this category that have this feature assigned. 
     # An empty list is returned if there are errors.
-    glossList = Utils.getAffixGlossesForFeature(DB, report, gramCategory, featureAbbrev)
+    glossList = Utils.getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev)
 
     report.Info(f'lemma list: {", ".join(lemmaList[0])} ; {", ".join(lemmaList[1])}')
 
