@@ -179,9 +179,9 @@ copy /Y %HC_ZIP_FILE% ..\"previous versions"
 del %HC_ZIP_FILE%
 cd ..
 
-if %COMPUTERNAME% == RONS-DELL-XPS (
+if %COMPUTERNAME% == RONS-XPS (
   cd C:\Data\Flextrans\Installer
-  makensis -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
   pause
 ) else (
