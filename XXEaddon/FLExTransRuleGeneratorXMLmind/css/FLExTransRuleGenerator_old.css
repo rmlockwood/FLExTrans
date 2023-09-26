@@ -1,0 +1,186 @@
+/* CSS for formating FLExTransRuleGenerator in XXE */ 
+
+@property-value def-expected-background-color() #F5DEB3; /* wheat */
+@property-value def-cat-background-color() #FFB6C1; /* lightpink */
+@property-value def-sense-num-background-color() #F09FF0; /* violet */
+@property-value def-head-word-background-color() #BFD0FF; /* paleblue */
+@property-value def-pos-background-color() #AFEEEE; /* paleturquoise */
+@property-value def-tag-background-color() #98FB98; /* pale green */
+@property-value def-origin-background-color() #AEC6CF; /* pastel blue */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+FLExTransRule
+{
+    display:block;
+}
+
+source
+{
+    display:block;
+}
+
+phrase
+{
+    display:block;
+}
+
+word
+{
+    display:block;
+}
+
+target
+{
+    display:block;
+}
+
+features
+{
+    display:block;
+}
+
+feature
+{
+    display:block;
+}
+
+affixes
+{
+    display:block;
+}
+
+affix
+{
+    display:block;
+}
+
+tests:before
+{
+   content: " Tests: ";
+}
+tests
+{
+    display:block;
+}
+
+test:before
+{
+    content: " Test: ";
+}
+test
+{
+    display:block;
+    margin-left:.2in;
+}
+
+sourceInput:before
+{
+    content: " Source: " text-field(attribute,origin,background-color,def-origin-background-color(),columns,30);
+}
+sourceInput
+{
+    display:inline;
+    margin-left:.1in;
+}
+
+lexicalUnits:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+	" Lexical Units: ";
+}
+lexicalUnits
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+    margin-left:.1in;
+}
+
+lexicalUnit:before
+{
+    content: " Lex Unit: ";
+    color:Black;
+}
+lexicalUnit
+{
+    display:block;
+    margin-left:.1in;
+}
+headWord:before
+{
+    content: " Headword: ";
+    color:Black;
+}
+headWord
+{
+    display:inline;
+    margin-left:.1in;
+    background-color:def-head-word-background-color()
+}
+senseNum:before
+{
+    content: " Sense #: ";
+    color:Black;
+}
+senseNum 
+{
+    display:inline;
+    margin-left:.1in;
+    background-color:def-sense-num-background-color()
+}
+grammaticalCategoryTag:before 
+{
+    content: " POS: ";
+    color:Black;
+}
+grammaticalCategoryTag
+{
+    display:inline;
+    margin-left:.1in;
+    background-color:def-pos-background-color()
+}
+otherTags:before
+{
+    content: " Tags: ";
+    color:Black;
+}
+otherTags 
+{
+    display:inline;
+    margin-left:.1in;
+}
+tag:before
+{
+    content: " tag: ";
+    color:Black;
+}
+tag
+{
+    display:inline;
+    margin-left:.1in;
+    background-color:def-tag-background-color()
+}
+
+expectedResult:before
+{
+    content: " Expected Result: ";
+    color:Black;
+}
+expectedResult
+{
+    display:inline;
+    margin-left:.1in;
+    background-color:def-expected-background-color()
+}
+
+/* Need this just to get expectedResult to be indented */ 
+targetOutput
+{
+    display:block;
+    margin-left:.05in;
+}

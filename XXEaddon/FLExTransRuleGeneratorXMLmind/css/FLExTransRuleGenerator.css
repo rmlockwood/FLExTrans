@@ -1,0 +1,145 @@
+/* CSS for formating FLExTransRuleGenerator in XXE */ 
+
+@property-value def-cat-background-color() #F5DEB3; /* wheat */
+@property-value def-feature-background-color() #F09FF0; /* violet */
+@property-value def-id-background-color() #BFD0FF; /* paleblue */
+@property-value def-tag-background-color() #98FB98; /* pale green */
+@property-value def-name-background-color() #AEC6CF; /* pastel blue */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+FLExTransRules:before
+{
+    content: " FLExTransRules: ";
+    color:Black;
+}
+FLExTransRules
+{
+    display:block;
+    margin-left:.1in;
+}
+
+FLExTransRule:before
+{
+    content: " FLExTransRule: "text-field(attribute,name,background-color,def-name-background-color(),columns,30);
+    color:Black;
+}
+FLExTransRule
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Source:before
+{
+    content: " Source: ";
+    color:Black;
+}
+Source
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Phrase:before
+{
+    content: " Phrase: ";
+    color:Black;
+}
+Phrase
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Words:before
+{
+    content: " Words: ";
+    color:Black;
+}
+Words
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Word:before
+{
+    content: " Word: "
+    " id: " text-field(attribute,id,background-color,def-id-background-color(),columns,1)
+    " category: " text-field(attribute,category,background-color,def-cat-background-color(),columns,6)
+    " head? " combo-box(attribute, head, 
+                           color, #ce901b,
+                           labels, "yes\A no", 
+                           values, "yes\A no");
+    color:Black;
+}
+Word
+{
+    display:block;
+    padding-left:.1in;
+}
+
+Target:before
+{
+    content: " Target: ";
+    color:Black;
+}
+Target
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Features:before
+{
+    content: " Features: ";
+    color:Black;
+}
+Features
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Feature:before
+{
+    content: " Feature: ";
+    color:Black;
+}
+Feature
+{
+    display:block;
+    content: " match: " text-field(attribute,match,background-color,def-feature-background-color(),columns,1)
+    " label: " text-field(attribute,label,background-color,def-feature-background-color(),columns,6);
+    margin-left:.1in;
+}
+
+Affixes:before
+{
+    content: " Affixes: ";
+    color:Black;
+}
+Affixes
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Affix:before
+{
+    content: " Affix: "
+    " type: " text-field(attribute, type,background-color,def-tag-background-color(),columns,4);
+    color:Black;
+}
+Affix
+{
+    display:block;
+    margin-left:.1in;
+}
+
