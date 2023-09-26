@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC "-//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator
+><FLExTransRule
+name="Definite - Noun"
+><source
+><phrase
+><word
+category="def"
+id="1"
+></word
+><word
+category="n"
+id="2"
+></word
+></phrase
+></source
+><target
+><phrase
+><word
+head="no"
+id="1"
+><features
+><feature
+label="gender"
+match="α"
+></feature
+></features
+></word
+><word
+head="yes"
+id="2"
+><features
+><feature
+label="gender"
+match="α"
+></feature
+></features
+></word
+></phrase
+></target
+></FLExTransRule
+></FLExTransRuleGenerator
+>

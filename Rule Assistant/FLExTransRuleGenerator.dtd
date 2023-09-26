@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT FLExTransRuleGenerator (FLExTransRule)+ >
+
+<!ELEMENT FLExTransRule (source, target)>
+<!ATTLIST FLExTransRule
+  name CDATA #REQUIRED
+>
+
+<!ELEMENT source (phrase) >
+
+<!ELEMENT target (phrase) >
+ 
+<!ELEMENT phrase (word)+ >
+
+<!ELEMENT word (affixes*, features*) >
+<!ATTLIST word
+  id CDATA #REQUIRED
+  category CDATA #IMPLIED
+  head (yes | no) "no"
+>
+
+<!ELEMENT features (feature)+ >
+
+<!ELEMENT feature EMPTY >
+<!ATTLIST feature
+  match CDATA #REQUIRED
+  label CDATA #REQUIRED
+>
+
+<!ELEMENT affixes (affix)+ >
+
+<!ELEMENT affix (features*) >
+<!ATTLIST affix
+  type (prefix | suffix) "suffix"
+>
