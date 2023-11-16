@@ -1344,15 +1344,12 @@ src="Images/CollectionsManager.png"
 src="Images/NewButton.png"
 ></img
 > button to create a new collection. Select a module in the lower left pane and use the <img
-cssSpecial="Width:5%"
 src="Images/AddModuleButton.png"
 ></img
 > button to add it to your collection. Use the <img
-cssSpecial="Width:5%"
 src="Images/MoveUpButton.png"
 ></img
 > and <img
-cssSpecial="Width:5%"
 src="Images/MoveDownButton.png"
 ></img
 > buttons to change the sequence.</p
