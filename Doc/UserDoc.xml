@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->18 July 2023</date
+>16 November 2023</date
 ><version
->3.9</version
+>3.9.1</version
 ><contents
 showLevel="4"
 ></contents
@@ -392,9 +392,9 @@ src="Images/DatabaseBut.PNG"
 type="tFlexx"
 ></object
 > project. If you did the installation test, instead of "Choose Project", it will show the most recently used source project <img
-src="Images/ChooseProject-German.PNG"
+src="Images/ChooseProject-German.png"
 ></img
-> before you click on it. </li
+> before you click on it.</li
 ><li
 ><genericTarget
 id="gChangeSetings"
@@ -477,7 +477,7 @@ type="tFlexx"
 >Click the <img
 cssSpecial="Width:10%"
 height="60%"
-src="Images/ApplyAndCloseButton.PNG"
+src="Images/ApplyAndCloseButton.png"
 ></img
 > button.</li
 ></ol
@@ -606,7 +606,7 @@ type="tFlexx"
 > projects:</p
 ><ol
 ><li
->Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc.  The glosses of different senses within an entry can be the same, but across separate entries they should be different.</li
+>Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc. The glosses of different senses within an entry can be the same, but across separate entries they should be different.</li
 ><li
 >Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
 ><li
@@ -664,7 +664,7 @@ num="xSetupCatAttrib0"
 num="xSetupCatAttrib0"
 ><chart
 ><img
-src="images/SetupCatAttrib.png"
+src="Images/SetupCatAttrib.png"
 ></img
 ></chart
 ></example
@@ -1342,19 +1342,19 @@ src="Images/CollectionsManager.png"
 ><p
 >If you want to make your own collection to hold modules that you frequently run together, use the <img
 cssSpecial="Width:5%"
-src="Images/NewButton.PNG"
+src="Images/NewButton.png"
 ></img
 > button to create a new collection. Select a module in the lower left pane and use the <img
 cssSpecial="Width:5%"
-src="Images/AddModuleButton.PNG"
+src="Images/AddModuleButton.png"
 ></img
 > button to add it to your collection. Use the <img
 cssSpecial="Width:5%"
-src="Images/MoveUpButton.PNG"
+src="Images/MoveUpButton.png"
 ></img
 > and <img
 cssSpecial="Width:5%"
-src="Images/MoveDownButton.PNG"
+src="Images/MoveDownButton.png"
 ></img
 > buttons to change the sequence.</p
 ><p
@@ -1950,7 +1950,7 @@ type="tCourier"
 num="xSetupCatAttrib"
 ><chart
 ><img
-src="images/SetupCatAttrib.png"
+src="Images/SetupCatAttrib.png"
 ></img
 ></chart
 ></example
@@ -2104,7 +2104,7 @@ num="xSynthTestSteps"
 ><chart
 ><img
 height="60%"
-src="images/SynthTestSteps.png"
+src="Images/SynthTestSteps.png"
 ></img
 ></chart
 ></example
@@ -2123,15 +2123,15 @@ sec="sSettings"
 >In the top section, set the Target Project to the <object
 type="tFlexx"
 ></object
-> project you want to use for the synthesis test.  Click the <img
+> project you want to use for the synthesis test. Click the <img
 cssSpecial="Width:10%"
 height="60%"
-src="Images/ApplyAndCloseButton.PNG"
+src="Images/ApplyAndCloseButton.png"
 ></img
-> button to register the change.  Then reopen the <object
+> button to register the change. Then reopen the <object
 type="tSettingsTool"
 ></object
-> to update the setting values that apply to the Target Project.  (The Source Project has no effect for the Synthesis Test.)</li
+> to update the setting values that apply to the Target Project. (The Source Project has no effect for the Synthesis Test.)</li
 ><li
 >Scroll down to the Synthesis Test section, as shown in <exampleRef
 letter="xSynthTestSettings"
@@ -2142,7 +2142,7 @@ num="xSynthTestSettings"
 ><chart
 ><img
 height="60%"
-src="images/SynthTestSettings.png"
+src="Images/SynthTestSettings.png"
 ></img
 ></chart
 ></example
@@ -2207,7 +2207,7 @@ type="tFieldInFLEx"
 type="tCourier"
 >%0%word%</object
 > in the output, indicating that a sequence was created based on the templates, but it was disallowed based on other constraints. It is not necessarily a problem if you see some of these lines in the output.<comment
->  4. If you are using the HermitCrab parser, there is a way [more detail needed] to produce a trace file called HCSynthTrace.htm that can be generated when you run the synthesis module.  5. Find your Temp directory (usually <object
+> 4. If you are using the HermitCrab parser, there is a way [more detail needed] to produce a trace file called HCSynthTrace.htm that can be generated when you run the synthesis module. 5. Find your Temp directory (usually <object
 type="tFilename"
 >C:/Users/&lt;YourName&gt;/AppData/Temp</object
 >) and look for this file. Open it in a browser. There will be information that may help you with debugging, including boxes with plus and minus symbols you can click to follow various paths through the attempted parses.</comment
