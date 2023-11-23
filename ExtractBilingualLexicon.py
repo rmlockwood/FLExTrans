@@ -910,8 +910,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = 'UNK'
                                                       
                             # If we have a link to a target entry, process it
-#                            equiv = DB.LexiconGetFieldText(mySense.Hvo, custSenseEquivField)
-
                             equivStr = Utils.getTargetEquivalentUrl(DB, mySense, custSenseEquivField)
                             
                             # handle a sense mapped intentionally to nothing. Skip it.
