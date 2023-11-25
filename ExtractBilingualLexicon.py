@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.9.9 - 11/24/23 - Ron Lockwood
+#    Add a new check when building the lexicon to see if there are headwords that only differ
+#    in case and have the same part of speech. In such cases give a warning and skip the sense.
+#
 #   Version 3.9.8 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -742,6 +746,20 @@ def processSpaces(headWord, DB, srcEntry, error_list):
     
     return headWord
 
+# Convert the headword to lower case, tag on the POS and see if that already is in the map
+def checkForDuplicateHeadword(headWord, abbrev, hvo, duplicateHeadwordPOSmap):
+
+    lowerCaseStr = headWord.lower() + abbrev
+
+    # if we already have the headword with this pos in the list and it's not part of the same entry (the hvo number is the same) we have a duplicate entry
+    if lowerCaseStr in duplicateHeadwordPOSmap and duplicateHeadwordPOSmap[lowerCaseStr] != hvo:
+
+        return True
+    
+    duplicateHeadwordPOSmap[lowerCaseStr] = hvo
+
+    return False
+
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     error_list = []
@@ -865,6 +883,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         if report:
             report.ProgressStart(DB.LexiconNumberOfEntries())
       
+        duplicateHeadwordPOSmap = {}
+
         # Loop through all the entries
         for entry_cnt,srcEntry in enumerate(DB.LexiconAllEntries()):
         
@@ -898,17 +918,25 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+
                             msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                            if msa.PartOfSpeechRA:            
-                                abbrev = ITsString(msa.PartOfSpeechRA.\
-                                                      Abbreviation.BestAnalysisAlternative).Text
-                                                      
+
+                            if msa.PartOfSpeechRA:   
+
+                                abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                 abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
-                                error_list.append(('Skipping sense because the POS is unknown: '+\
+                                error_list.append(('Encountered a sense that has unknown POS'+\
                                                ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                                 abbrev = 'UNK'
-                                                      
+
+                            # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
+                            if checkForDuplicateHeadword(headWord, abbrev, srcEntry.Hvo, duplicateHeadwordPOSmap):
+
+                                error_list.append((f'Encountered a headword that only differs in case from another headword with the same POS ({abbrev}). Skipping this sense.'+\
+                                               ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))  
+                                continue            
+
                             # If we have a link to a target entry, process it
                             equivStr = Utils.getTargetEquivalentUrl(DB, mySense, custSenseEquivField)
                             

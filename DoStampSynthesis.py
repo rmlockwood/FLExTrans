@@ -12,7 +12,7 @@
 #    that matches a required features set, label with a morpheme property. Lastly,
 #    affix allomoprhs that have the required features get environments with the morpheme property.
 #    this change also required saving all affixes to a list for later processing after the rest of
-#    the entries. 
+#    the entries. Fixes #507 and #516.
 #
 #   Version 3.9.3 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
