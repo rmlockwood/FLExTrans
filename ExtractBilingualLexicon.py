@@ -934,7 +934,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             if checkForDuplicateHeadword(headWord, abbrev, srcEntry.Hvo, duplicateHeadwordPOSmap):
 
                                 error_list.append((f'Encountered a headword that only differs in case from another headword with the same POS ({abbrev}). Skipping this sense.'+\
-                                               ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))  
+                                               'Source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))  
                                 continue            
 
                             # If we have a link to a target entry, process it
