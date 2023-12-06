@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.9.1 - 12/6/23 - Ron Lockwood
+#    Build an XML file with category and feature data for source and target databases
+#    which will be used by the rule assistant GUI.
+#
 #   Version 3.9 - 9/11/23 - Ron Lockwood
 #    Initial version
 #
@@ -36,8 +40,9 @@ docs = {FTM_Name       : "Rule Assistant",
         FTM_Help  : "",  
         FTM_Description:    descr}     
 
-RA_GUI_INPUT = 'ruleAssistantGUIinput.xml'
+RA_GUI_INPUT_FILE = 'ruleAssistantGUIinput.xml'
 
+# Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData" 
 SOURCEDATA        = "SourceData"
 TARGETDATA        = "TargetData"
@@ -47,6 +52,141 @@ FEATURES          = "Features"
 FLEXFEATURE       = "FLExFeature"
 VALUES            = "Values"
 FLEXFEATUREVALUE  = "FLExFeatureValue"
+
+# Attribute names in the rule assistant gui input file
+NAME   = 'name'
+ABBREV = 'abbr'
+
+# Trying to get something like this:
+#
+# <?xml version="1.0" encoding="UTF-8"?>
+# <FLExData>
+#  <SourceData name="Spanish-FLExTrans-Exp4">
+#   <Categories>
+#    <FLExCategory abbr="adj"/>
+#    <FLExCategory abbr="adv"/>
+#    ...
+#   </Categories>
+#   <Features>
+#    <FLExFeature name="number">
+#     <Values>
+#      <FLExFeatureValue abbr="pl"/>
+#      <FLExFeatureValue abbr="sg"/>
+#     </Values>
+#    </FLExFeature>
+#    <FLExFeature name="person">
+#     <Values>
+#      <FLExFeatureValue abbr="1"/>
+#      <FLExFeatureValue abbr="2"/>
+#      <FLExFeatureValue abbr="3"/>
+#     </Values>
+#    </FLExFeature>
+#    ...
+#   </Features>
+#  </SourceData>
+#  <TargetData name="French-FLExTrans-Exp4">
+#   similar to above ...
+#  </TargetData>
+# </FLExData>
+def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList):
+
+    # Create a full path to the Rule Assistant GUI input file.
+    ruleAssistGUIinputXMLfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT_FILE)
+
+    # Start an XML object with root FLExData
+    rootNode = ET.Element(FLEXDATA)
+
+    # Add all the sub-element data to the root element
+    createElements(srcDB, rootNode, SOURCEDATA, srcCatList, srcFeatureList)
+    createElements(tgtDB, rootNode, TARGETDATA, tgtCatList, tgtFeatureList)
+
+    # Create an Element Tree object and write the xml file.
+    tree = ET.ElementTree(rootNode)
+    tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
+
+def getFeatureData(DB, myFeatureList):
+
+    # Loop through all closed features in the database. Closed features are ones that don't embed other feature structures
+    for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
+
+        # Get the feature name in the best analysis language (typically English)
+        featName = ITsString(feature.Name.BestAnalysisAlternative).Text
+        featValueList = []
+
+        # Loop through possible feature values and save the abbreviation
+        for value in feature.ValuesOC:
+
+            abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
+            abbr = re.sub(r'\.', '_', abbr) # change underscores to periods
+            featValueList.append(abbr)
+
+        # Sort the values
+        featValueList.sort()
+
+        # Add the name and the value list as a tuple to main list
+        myFeatureList.append((featName, featValueList))
+
+    # Sort the main list. By default sort uses the first tuple element for sorting.    
+    myFeatureList.sort()
+
+def GetRuleAssistantStartData(report, DB, TargetDB):
+
+    posMap = {}
+    srcFeatureList = []
+    tgtFeatureList = []
+
+    # Get categories. They end up in the posMap which is a dict. 
+    Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
+
+    # Turn them into a sorted list.
+    srcCatList = sorted(posMap.keys())
+
+    # Same for the target database
+    Utils.get_categories(TargetDB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
+    tgtCatList = sorted(posMap.keys())
+
+    # Get features. They come back sorted.
+    getFeatureData(DB, srcFeatureList)
+    getFeatureData(TargetDB, tgtFeatureList)
+
+    return srcCatList, srcFeatureList, tgtCatList, tgtFeatureList
+
+def createElements(myDB, rootNode, dataElemStr, catList, featureList):
+
+    # Create the Source/TargetData element and set the name to the FLEx project name
+    dataElement = ET.SubElement(rootNode, dataElemStr)
+    dataElement.attrib[NAME] = myDB.ProjectName()
+
+    # Create the Categories element
+    myCats = ET.SubElement(dataElement, CATEGORIES)
+
+    # Add all the FLExCategory elements 
+    for catStr in catList:
+
+        myCat = ET.SubElement(myCats, FLEXCATEGORY)
+        myCat.attrib[ABBREV] = catStr
+
+    # Proceed if we have at least one feature
+    if len(featureList) > 0:
+
+        # Create the Features element
+        myFeats = ET.SubElement(dataElement, FEATURES)
+
+        # Loop through features
+        for featName, valueList in featureList:
+
+            # Create the FLExFeature element
+            myFeat = ET.SubElement(myFeats, FLEXFEATURE)
+            myFeat.attrib[NAME] = featName
+
+            # Create the Values element
+            myValues = ET.SubElement(myFeat, VALUES)
+
+            # Add all the FLExFeatureValue sub-elements
+            for valueStr in valueList:
+
+                myValue = ET.SubElement(myValues, FLEXFEATUREVALUE)
+                myValue.attrib[ABBREV] = valueStr
 
 #----------------------------------------------------------------
 # The main processing function
@@ -81,89 +221,12 @@ def MainFunction(DB, report, modify=True):
 
     CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
 
-def GetRuleAssistantStartData(report, DB, TargetDB):
-
-    posMap = {}
-    srcFeatureList = []
-    tgtFeatureList = []
-
-    # Get categories
-    Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
-    srcCatList = sorted(posMap.keys())
-
-    Utils.get_categories(TargetDB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
-    tgtCatList = sorted(posMap.keys())
-
-    # Get features
-    getFeatureData(DB, srcFeatureList)
-    getFeatureData(TargetDB, tgtFeatureList)
-
-    return srcCatList, srcFeatureList, tgtCatList, tgtFeatureList
-
-def getFeatureData(DB, myFeatureList):
-
-    for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
-
-        featName = ITsString(feature.Name.BestAnalysisAlternative).Text
-        featValueList = []
-
-        for value in feature.ValuesOC:
-            abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
-            abbr = re.sub(r'\.', '_', abbr)
-            featValueList.append(abbr)
-
-        featValueList.sort()
-        myFeatureList.append((featName, featValueList))
-        
-    myFeatureList.sort()
-
-def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList):
-
-    ruleAssistGUIinputXMLfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT)
-    rootNode = ET.Element(FLEXDATA)
-
-    # Add all the sub-element data to the root element
-    createElements(srcDB, rootNode, SOURCEDATA, srcCatList, srcFeatureList)
-    createElements(tgtDB, rootNode, TARGETDATA, tgtCatList, tgtFeatureList)
-
-    tree = ET.ElementTree(rootNode)
-
-    tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
-
-def createElements(myDB, rootNode, dataElemStr, catList, featureList):
-
-    dataElement = ET.SubElement(rootNode, dataElemStr)
-    dataElement.attrib['name'] = myDB.ProjectName()
-    myCats = ET.SubElement(dataElement, CATEGORIES)
-
-    for catStr in catList:
-
-        myCat = ET.SubElement(myCats, FLEXCATEGORY)
-        myCat.attrib['abbr'] = catStr
-
-    if len(featureList) > 0:
-
-        myFeats = ET.SubElement(dataElement, FEATURES)
-
-    for featName, valueList in featureList:
-
-        myFeat = ET.SubElement(myFeats, FLEXFEATURE)
-        myFeat.attrib['name'] = featName
-
-        myValues = ET.SubElement(myFeat, VALUES)
-
-        for valueStr in valueList:
-
-            myValue = ET.SubElement(myValues, FLEXFEATUREVALUE)
-            myValue.attrib['abbr'] = valueStr
-
 #----------------------------------------------------------------
 # define the FlexToolsModule
 
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
             
-
 #----------------------------------------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
