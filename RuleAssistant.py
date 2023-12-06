@@ -112,7 +112,10 @@ def getFeatureData(DB, myFeatureList):
             abbr = re.sub(r'\.', '_', abbr)
             featValueList.append(abbr)
 
-    myFeatureList.append(featName, featValueList)
+        featValueList.sort()
+        myFeatureList.append((featName, featValueList))
+        
+    myFeatureList.sort()
 
 def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList):
 
@@ -123,12 +126,14 @@ def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatur
     createElements(srcDB, rootNode, SOURCEDATA, srcCatList, srcFeatureList)
     createElements(tgtDB, rootNode, TARGETDATA, tgtCatList, tgtFeatureList)
 
-    rootNode.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
+    tree = ET.ElementTree(rootNode)
+
+    tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
 
 def createElements(myDB, rootNode, dataElemStr, catList, featureList):
 
     dataElement = ET.SubElement(rootNode, dataElemStr)
-    dataElement.attrib['name'] = myDB.name
+    dataElement.attrib['name'] = myDB.ProjectName()
     myCats = ET.SubElement(dataElement, CATEGORIES)
 
     for catStr in catList:
@@ -145,7 +150,7 @@ def createElements(myDB, rootNode, dataElemStr, catList, featureList):
         myFeat = ET.SubElement(myFeats, FLEXFEATURE)
         myFeat.attrib['name'] = featName
 
-        myValues = ET.SubElement(myValues, VALUES)
+        myValues = ET.SubElement(myFeat, VALUES)
 
         for valueStr in valueList:
 
