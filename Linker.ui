@@ -65,7 +65,7 @@
    <widget class="QComboBox" name="targetLexCombo">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>530</x>
       <y>10</y>
       <width>271</width>
       <height>29</height>
@@ -99,7 +99,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>440</x>
       <y>16</y>
       <width>151</width>
       <height>20</height>
@@ -125,7 +125,7 @@
    <widget class="QLineEdit" name="searchTargetEdit">
     <property name="geometry">
      <rect>
-      <x>384</x>
+      <x>814</x>
       <y>10</y>
       <width>191</width>
       <height>29</height>
@@ -144,7 +144,7 @@ then double-click in the Target Head Word column for the desired row to link to 
    <widget class="QComboBox" name="SourceTextCombo">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>80</x>
       <y>10</y>
       <width>341</width>
       <height>29</height>
@@ -162,7 +162,7 @@ then double-click in the Target Head Word column for the desired row to link to 
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>730</x>
+      <x>10</x>
       <y>16</y>
       <width>65</width>
       <height>23</height>
@@ -175,7 +175,7 @@ then double-click in the Target Head Word column for the desired row to link to 
    <widget class="QCheckBox" name="SearchAnythingCheckBox">
     <property name="geometry">
      <rect>
-      <x>600</x>
+      <x>1030</x>
       <y>13</y>
       <width>121</width>
       <height>27</height>
