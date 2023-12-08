@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.3 - 12/6/23 - Ron Lockwood
+#    Fixes #517. Transfer \\nd and similar instead of interpreting as a newline.
+#
 #   Version 3.9.2 - 9/1/23 - Ron Lockwood
 #    Fixes #492. Gracefully fail when HC master file setting is blank.
 #
@@ -288,8 +291,8 @@ class ANAInfo(object):
         # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
             
-            myStr =  re.sub(r'\\([^n])', r'\\\\\1', myStr)
-            
+            myStr =  re.sub(r'\\([^n]|n\w)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx
+
         return myStr
     
     def getAfterPunc(self):
