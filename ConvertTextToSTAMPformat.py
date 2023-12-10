@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.9.4 - 12/9/23 - Ron Lockwood
+#    Use Utils version of get_feat_abbr_list. Re-indent some code.
+#
 #   Version 3.9.3 - 12/6/23 - Ron Lockwood
 #    Fixes #517. Transfer \\nd and similar instead of interpreting as a newline.
 #
@@ -887,42 +890,36 @@ class ConversionData():
                             break # if we found a complex form, there won't be any more
             
             # Store all the entries that have inflectional variants with features assigned
-
-            # CDF: e.VariantFormEntries is an Enumerator, which doesn't support Count 
-            # (This generatates a SystemError);
-            # but looping is fine if the Count is zero, so best to just go straight to the loop.
-            if True: # e.VariantFormEntries.Count > 0:
+            for variantForm in e.VariantFormEntries:
                 
-                for variantForm in e.VariantFormEntries:
+                for entryRef in variantForm.EntryRefsOS:
                     
-                    for entryRef in variantForm.EntryRefsOS:
+                    if entryRef.RefType == 0: # we have a variant
                         
-                        if entryRef.RefType == 0: # we have a variant
+                        # Collect any inflection features that are assigned to the special
+                        # variant types called Irregularly Inflected Form
+                        for varType in entryRef.VariantEntryTypesRS:
                             
-                            # Collect any inflection features that are assigned to the special
-                            # variant types called Irregularly Inflected Form
-                            for varType in entryRef.VariantEntryTypesRS:
+                            if varType.ClassName == "LexEntryInflType":
                                 
-                                if varType.ClassName == "LexEntryInflType":
-                                    
-                                    varType = ILexEntryInflType(varType)
+                                varType = ILexEntryInflType(varType)
 
-                                    if varType.InflFeatsOA:
+                                if varType.InflFeatsOA:
+                                    
+                                    myFeatAbbrList = []
+                                    
+                                    # The features might be complex, make a recursive function call to find all features
+                                    Utils.get_feat_abbr_list(varType.InflFeatsOA.FeatureSpecsOC, myFeatAbbrList)
+                                    
+                                    if len(myFeatAbbrList) > 0:
                                         
-                                        myFeatAbbrList = []
+                                        myTuple = (variantForm, myFeatAbbrList)
                                         
-                                        # The features might be complex, make a recursive function call to find all features
-                                        self.getFeatAbbrList(varType.InflFeatsOA.FeatureSpecsOC, myFeatAbbrList)
-                                        
-                                        if len(myFeatAbbrList) > 0:
+                                        if headWord not in self.irrInflVarMap:
                                             
-                                            myTuple = (variantForm, myFeatAbbrList)
-                                            
-                                            if headWord not in self.irrInflVarMap:
-                                                
-                                                self.irrInflVarMap[headWord] = [myTuple]
-                                            else:
-                                                self.irrInflVarMap[headWord].append(myTuple)
+                                            self.irrInflVarMap[headWord] = [myTuple]
+                                        else:
+                                            self.irrInflVarMap[headWord].append(myTuple)
 
     def saveToCache(self):
         
