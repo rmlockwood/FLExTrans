@@ -41,7 +41,7 @@
     </append>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="new">
+  <cfg:elementTemplate name="tags">
     <attr-item tags="aaa"/>
   </cfg:elementTemplate>
 
@@ -53,14 +53,14 @@
   <cfg:elementTemplate name="attribute_2">
     <def-attr n="a_">
       <attr-item tags="aaa"/>
-      <attr-item tags="aaa"/>
+      <attr-item tags="bbb"/>
     </def-attr>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="attribute_3">
     <def-attr n="a_">
       <attr-item tags="aaa"/>
-      <attr-item tags="aaa"/>
-      <attr-item tags="aaa"/>
+      <attr-item tags="bbb"/>
+      <attr-item tags="ccc"/>
     </def-attr>
   </cfg:elementTemplate>
 
@@ -95,33 +95,21 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="case-of_source_lang">
-    <case-of pos="1" side="tl" part="lem"/>
+    <case-of pos="1" side="sl" part="lem"/>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="case-of_target_lang">
     <case-of pos="1" side="tl" part="lem"/>
   </cfg:elementTemplate>
   
-  <cfg:elementTemplate name="category">
-    <def-cat n="c_">
-      <cat-item tags="???"/>
-    </def-cat>
-  </cfg:elementTemplate>
   <cfg:elementTemplate name="category_2">
     <def-cat n="c_">
-      <cat-item tags="???"/>
-      <cat-item tags="???"/>
-    </def-cat>
-  </cfg:elementTemplate>
-  <cfg:elementTemplate name="category_3">
-    <def-cat n="c_">
-      <cat-item tags="???"/>
-      <cat-item tags="???"/>
-      <cat-item tags="???"/>
+      <cat-item tags="n"/>
+      <cat-item tags="n.*"/>
     </def-cat>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="clip_source_lang">
-    <clip pos="1" side="tl" part="a_"/>
+    <clip pos="1" side="sl" part="a_"/>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="clip_target_lang">
     <clip pos="1" side="tl" part="a_"/>
@@ -401,22 +389,11 @@
     </lu>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="list">
-    <def-list n="l_">
-      <list-item v="???"/>
-    </def-list>
-  </cfg:elementTemplate>
-  <cfg:elementTemplate name="list_2">
-    <def-list n="l_">
-      <list-item v="???"/>
-      <list-item v="???"/>
-    </def-list>
-  </cfg:elementTemplate>
   <cfg:elementTemplate name="list_3">
     <def-list n="l_">
-      <list-item v="???"/>
-      <list-item v="???"/>
-      <list-item v="???"/>
+      <list-item v="x1.1"/>
+      <list-item v="y1.1"/>
+      <list-item v="z1.1"/>
     </def-list>
   </cfg:elementTemplate>
 
@@ -525,6 +502,10 @@
     </tag>
   </cfg:elementTemplate>
 
+  <cfg:elementTemplate name="tags">
+    <cat-item tags="n.*"/>
+  </cfg:elementTemplate>
+
   <cfg:elementTemplate name="output_lexical_unit">
     <out>
       <lu>
@@ -550,6 +531,10 @@
 
   <cfg:elementTemplate name="variable">
     <def-var n="v_"/>
+  </cfg:elementTemplate>
+
+  <cfg:elementTemplate name="variable">
+    <var n="v_"/>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="when_and">
