@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.9.2 - 12/19/23 - Ron Lockwood
+#    Add a function to start the Rule Assistant program.
+#
 #   Version 3.9.1 - 12/6/23 - Ron Lockwood
 #    Build an XML file with category and feature data for source and target databases
 #    which will be used by the rule assistant GUI.
@@ -19,6 +22,7 @@ import Utils
 import ReadConfig
 import CreateApertiumRules
 import os
+import subprocess
 import re
 from flextoolslib import *
 import FTPaths
@@ -104,6 +108,8 @@ def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatur
     tree = ET.ElementTree(rootNode)
     tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
 
+    return ruleAssistGUIinputXMLfile
+
 def getFeatureData(DB, myFeatureList):
 
     # Loop through all closed features in the database. Closed features are ones that don't embed other feature structures
@@ -188,6 +194,28 @@ def createElements(myDB, rootNode, dataElemStr, catList, featureList):
                 myValue = ET.SubElement(myValues, FLEXFEATUREVALUE)
                 myValue.attrib[ABBREV] = valueStr
 
+def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
+
+    # Call the rule assistant gui program 
+    try:
+        fullRApath = os.path.join(os.environ['PROGRAMFILES'], FTPaths.RULE_ASSISTANT_DIR, FTPaths.RULE_ASSISTANT)
+        
+        params = [fullRApath, ruleAssistantFile, ruleAssistGUIinputfile]
+
+        result = subprocess.run(params, capture_output=True, check=True)
+
+        if result.returncode != 0:
+
+            report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+            return True
+
+    except subprocess.CalledProcessError as e:
+
+        report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+        return True
+    
+    return False
+
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -195,16 +223,16 @@ def MainFunction(DB, report, modify=True):
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = FTPaths.BUILD_DIR
 
-    ruleAssistantFile = os.path.join(buildFolder, 'ruleAssistantRules.xml')
+    ruleAssistantFile = os.path.join(buildFolder, 'RuleAssistantRules.xml')
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
-        return True
+        return
 
     # Get the path to the transfer rules file
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
     if not tranferRulePath:
-        return True
+        return
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
@@ -212,12 +240,11 @@ def MainFunction(DB, report, modify=True):
     srcCatList, srcFeatureList, tgtCatList, tgtFeatureList = GetRuleAssistantStartData(report, DB, TargetDB)
 
     # Write the data to an XML file
-    writeXMLData(DB, TargetDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList)
+    ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList)
     
-
-
-
     # Start the Rule Assistant GUI
+    if StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile) == True:
+        return
 
     CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
 

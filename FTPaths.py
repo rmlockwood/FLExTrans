@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place.
 #
+#   Version 3.9 - 12/19/23 - Ron Lockwood
+#    Addded constants for the Rule Assistant program.
+#
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
 #
@@ -35,3 +38,5 @@ TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
 HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
+RULE_ASSISTANT_DIR = 'FLExTrans Rule Generator'
+RULE_ASSISTANT     = 'FLExTrans Rule Generator.exe'
