@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.9.3 - 12/20/23 - Ron Lockwood
+#    Use data classes to pass around category and feature lists.
+#
 #   Version 3.9.2 - 12/19/23 - Ron Lockwood
 #    Add a function to start the Rule Assistant program.
 #
@@ -27,6 +30,7 @@ import re
 from flextoolslib import *
 import FTPaths
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 
 from SIL.LCModel import (
     IFsClosedFeatureRepository,
@@ -61,6 +65,18 @@ FLEXFEATUREVALUE  = "FLExFeatureValue"
 NAME   = 'name'
 ABBREV = 'abbr'
 
+@dataclass
+class DBStartData:
+ 
+    categoryList: list
+    featureList: list
+ 
+@dataclass
+class StartData:
+ 
+    src: DBStartData
+    tgt: DBStartData
+
 # Trying to get something like this:
 #
 # <?xml version="1.0" encoding="UTF-8"?>
@@ -92,7 +108,7 @@ ABBREV = 'abbr'
 #   similar to above ...
 #  </TargetData>
 # </FLExData>
-def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList):
+def writeXMLData(srcDB, tgtDB, startData):
 
     # Create a full path to the Rule Assistant GUI input file.
     ruleAssistGUIinputXMLfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT_FILE)
@@ -101,8 +117,8 @@ def writeXMLData(srcDB, tgtDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatur
     rootNode = ET.Element(FLEXDATA)
 
     # Add all the sub-element data to the root element
-    createElements(srcDB, rootNode, SOURCEDATA, srcCatList, srcFeatureList)
-    createElements(tgtDB, rootNode, TARGETDATA, tgtCatList, tgtFeatureList)
+    createElements(srcDB, rootNode, SOURCEDATA, startData.src)
+    createElements(tgtDB, rootNode, TARGETDATA, startData.tgt)
 
     # Create an Element Tree object and write the xml file.
     tree = ET.ElementTree(rootNode)
@@ -155,9 +171,11 @@ def GetRuleAssistantStartData(report, DB, TargetDB):
     getFeatureData(DB, srcFeatureList)
     getFeatureData(TargetDB, tgtFeatureList)
 
-    return srcCatList, srcFeatureList, tgtCatList, tgtFeatureList
+    myStartData = StartData(DBStartData(srcCatList, srcFeatureList), DBStartData(tgtCatList, tgtFeatureList))
 
-def createElements(myDB, rootNode, dataElemStr, catList, featureList):
+    return myStartData
+
+def createElements(myDB, rootNode, dataElemStr, dbStartData):
 
     # Create the Source/TargetData element and set the name to the FLEx project name
     dataElement = ET.SubElement(rootNode, dataElemStr)
@@ -167,19 +185,19 @@ def createElements(myDB, rootNode, dataElemStr, catList, featureList):
     myCats = ET.SubElement(dataElement, CATEGORIES)
 
     # Add all the FLExCategory elements 
-    for catStr in catList:
+    for catStr in dbStartData.categoryList:
 
         myCat = ET.SubElement(myCats, FLEXCATEGORY)
         myCat.attrib[ABBREV] = catStr
 
     # Proceed if we have at least one feature
-    if len(featureList) > 0:
+    if len(dbStartData.featureList) > 0:
 
         # Create the Features element
         myFeats = ET.SubElement(dataElement, FEATURES)
 
         # Loop through features
-        for featName, valueList in featureList:
+        for featName, valueList in dbStartData.featureList:
 
             # Create the FLExFeature element
             myFeat = ET.SubElement(myFeats, FLEXFEATURE)
@@ -237,10 +255,10 @@ def MainFunction(DB, report, modify=True):
     TargetDB = Utils.openTargetProject(configMap, report)
 
     # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
-    srcCatList, srcFeatureList, tgtCatList, tgtFeatureList = GetRuleAssistantStartData(report, DB, TargetDB)
+    startData = GetRuleAssistantStartData(report, DB, TargetDB)
 
     # Write the data to an XML file
-    ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, srcCatList, srcFeatureList, tgtCatList, tgtFeatureList)
+    ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, startData)
     
     # Start the Rule Assistant GUI
     if StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile) == True:
