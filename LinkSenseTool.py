@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.9.8 - 12/26/23 - Ron Lockwood
+#    Fixes #501. Fixed typo that returned source headword instead of source gloss.
+#
 #   Version 3.9.7 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -249,7 +252,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.7",
+        FTM_Version    : "3.9.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -446,7 +449,7 @@ class Link(object):
         return self.__tgtHPG.getPOS()
     def getSrcGloss(self):
         return self.__srcHPG.getGloss()
-    def getSrcGloss(self):
+    def getSrcHeadword(self):
         return self.__srcHPG.getHeadword()
     def getTgtGloss(self):
         return self.__tgtHPG.getGloss()
