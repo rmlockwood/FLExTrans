@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.9.9 - 12/9/23 - Ron Lockwood
+#    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
+#
 #   Version 3.9.8 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -943,8 +946,16 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             get_feat_abbr_list(value.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
             spec = IFsClosedValue(spec)
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+
+            if spec.FeatureRA:
+                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+            else:
+                featGrpName = "ERR"
+            if spec.ValueRA:
+                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+                abbValue = re.sub('\.', '_', abbValue) # convert dots to underscore
+            else:
+                abbValue = "ERR"
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
