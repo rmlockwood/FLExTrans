@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.9.1 - 12/21/23 - Ron Lockwood
+#    Added apocryphal/deuterocanonical and extra books into the list.
+#
 #   Version 3.7.1 - 1/30/23 - Ron Lockwood
 #    Restructured to put common init and exit code into ChapterSelection.py
 #    Store export project and import project as separate settings.
@@ -96,6 +99,47 @@ bookMap = {\
 '3JN':'3 John',\
 'JUD':'Jude',\
 'REV':'Revelation',\
+'TOB':'Tobit',\
+'JDT':'Judith',\
+'ESG':'Esther Greek',\
+'WIS':'Wisdom of Solomon',\
+'SIR':'Sirach',\
+'BAR':'Baruch',\
+'LJE':'Letter of Jeremiah',\
+'S3Y':'Song of the 3 Young Men',\
+'SUS':'Susanna',\
+'BEL':'Bel and the Dragon',\
+'1MA':'1 Maccabees',\
+'2MA':'2 Maccabees',\
+'3MA':'3 Maccabees',\
+'4MA':'4 Maccabees',\
+'1ES':'1 Esdras (Greek)',\
+'2ES':'2 Esdras (Latin)',\
+'MAN':'Prayer of Manasseh',\
+'PS2':'Psalm 151',\
+'ODA':'Odae/Odes',\
+'PSS':'Psalms of Solomon',\
+'EZA':'Ezra Apocalypse',\
+'5EZ':'5 Ezra',\
+'6EZ':'6 Ezra',\
+'DAG':'Daniel Greek',\
+'PS3':'Psalms 152-155',\
+'2BA':'2 Baruch (Apocalypse)',\
+'LBA':'Letter of Baruch',\
+'JUB':'Jubilees',\
+'ENO':'Enoch',\
+'1MQ':'1 Meqabyan/Mekabis',\
+'REP':'Reproof',\
+'4BA':'4 Baruch',\
+'LAO':'Letter to the Laodiceans',\
+'XXA':'Extra A',\
+'XXB':'Extra B',\
+'XXC':'Extra C',\
+'XXD':'Extra D',\
+'XXE':'Extra E',\
+'XXF':'Extra F',\
+'XXG':'Extra G',\
+'INT':'Introduction',\
 }
 
 class ChapterSelection(object):
