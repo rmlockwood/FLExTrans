@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.9.2
+SET FLEXTRANS_VERSION=3.10
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
@@ -40,8 +40,8 @@ rem flextools files
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQt5==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQtWebEngine==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo PyQtWebEngine==5.15.6 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 
 rem core models
 copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
@@ -179,9 +179,9 @@ copy /Y %HC_ZIP_FILE% ..\"previous versions"
 del %HC_ZIP_FILE%
 cd ..
 
-if %COMPUTERNAME% == RONS-DELL-XPS (
+if %COMPUTERNAME% == RONS-XPS (
   cd C:\Data\Flextrans\Installer
-  makensis -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
   pause
 ) else (
