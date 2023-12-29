@@ -41,7 +41,6 @@ xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Inst
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQtWebEngine==5.15.6 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 
 rem core models
 copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
