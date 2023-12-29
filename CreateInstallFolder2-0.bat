@@ -68,8 +68,8 @@ copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swed
 copy Makefile.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
 copy Makefile.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
-copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
-copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
+rem copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+rem copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
 rem Documentation
 mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
