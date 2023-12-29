@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10 - 12/28/23 - Ron Lockwood
+#    Fixes #518. Show the data stream for the checked boxes after rebuilding the 
+#    bilingual lexicon.
+#
 #   Version 3.9.1 - 6/3/23 - Ron Lockwood
 #    Fixes #442. Force the rules to be renumbered when restoring checked rules.
 #
@@ -361,7 +365,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1466,6 +1470,7 @@ class Main(QMainWindow):
     def restoreCheckedWords(self):
         
         self.recheckWords(self.wordsCheckedList, self.__checkBoxList)
+        self.SourceCheckBoxClicked()
         
     def restoreChecked(self):
         
