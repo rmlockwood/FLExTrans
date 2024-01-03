@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10 - 1/2/24 - Ron Lockwood
+#    Fix problem where the 1st component ANA object wasn't getting its capitalization code
+#    carried over to the final component ANA list.
+#
 #   Version 3.9.4 - 12/9/23 - Ron Lockwood
 #    Use Utils version of get_feat_abbr_list. Re-indent some code.
 #
@@ -230,7 +234,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -280,11 +284,11 @@ class ANAInfo(object):
         else:
             return ''
 
-    def capitalizeSurfaceForm(self, myStr):
+    def capitalizeString(self, myStr):
 
-        if self.getCapitalization == 2:
+        if self.getCapitalization() == '2':
             return myStr.upper()
-        elif self.getCapitalization == 1:
+        elif self.getCapitalization() == '1':
             return myStr.capitalize()
         else:
             return myStr
@@ -295,7 +299,6 @@ class ANAInfo(object):
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
             
             myStr =  re.sub(r'\\([^n]|n\w)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx
-
         return myStr
     
     def getAfterPunc(self):
@@ -306,6 +309,9 @@ class ANAInfo(object):
         return re.search(r'(.*)\s*<',self.Analysis).group(1).split()
     def getAnalysisRoot(self):
         return re.search(r'< .+ (.+) >',self.Analysis).group(1)
+    # Apply the capitalization code algoritm to possibly capitalize the root string.
+    def getCapitalizedAnalysisRoot(self):
+        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1))
     def getAnalysisRootPOS(self):
         return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
@@ -1034,10 +1040,10 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
             # For HermitCrab we put out the sense # (TODO: we need to probably do this for STAMP as well)
             # A variant can be a variant of an entry with multiple senses. The senses could have different categories
             # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
             # (We are intentionally not adding the sense number.)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot(), sfxs)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
@@ -1132,7 +1138,7 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
             # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
             newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
                                         myAnaInfo.getAnalysisRootPOS(), 
-                                        myAnaInfo.getAnalysisRoot(),
+                                        myAnaInfo.getCapitalizedAnalysisRoot(),
                                         textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
 
             newCompANAlist.append(newAna)
