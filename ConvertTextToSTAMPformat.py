@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.1 - 1/3/24 - Ron Lockwood
+#    Fixes #534. Give a better error message when the morphs for a lexical unit are less than 2.
+#    Give the user the previous two and following two words for context.
+#
 #   Version 3.10 - 1/2/24 - Ron Lockwood
 #    Fix problem where the 1st component ANA object wasn't getting its capitalization code
 #    carried over to the final component ANA list.
@@ -234,7 +238,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -1336,8 +1340,27 @@ def convertIt(pfxName, outName, report, sentPunct):
                 wordAnaInfo = None
 
                 if len(morphs) <2:
-                            
-                    errorList.append(("Lemma or grammatical category missing for target word number "+str(wrdCnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
+                    
+                    # Determine the context words around the problem word
+                    if wrdCnt-2 >= 0:
+                        prev2words = wordToks[wrdCnt-2] + ' ' + wordToks[wrdCnt-1]
+                    else:
+                        if wrdCnt-1 >= 0:
+                            prev2words = wordToks[wrdCnt-1]
+                        else:
+                            prev2words = ''
+
+                    if wrdCnt+2 < len(wordToks):
+                        foll2words = wordToks[wrdCnt+1] + ' ' + wordToks[wrdCnt+2]
+                    else:
+                        if wrdCnt+1 < len(wordToks):
+                            foll2words = wordToks[wrdCnt+1]
+                        else:
+                            foll2words = ''
+
+                    
+                    errorList.append(("Lemma or grammatical category missing for a target word near sentence "+str(cnt+1)+". Found only: "+",".join(morphs)+\
+                                      f". The preceding two words were: {prev2words}. The following two words were: {foll2words}. Processing stopped.",2))
                     return errorList, wordAnaInfoList
                 
                 # Create an ANA Info object
