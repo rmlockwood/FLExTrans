@@ -1189,8 +1189,10 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            # Look for a non-whitespace & non-digit followed by an X.X. This will keep references in the form of chap.verse from being deleted. Eg. \fr 11.4
-            line = re.sub(r'([^\d\s])\d+\.\d+', r'\1', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+            # Look for a non-whitespace & non-digit & non-dash (of various kinds) followed by an X.X. 
+            # This will keep references in the form of chap.verse from being deleted. Eg. \fr 11.4
+            # Note keep the - at the start of the set of chars since otherwise it means a range of characters
+            line = re.sub(r'([^-\d\s@*–—−_])\d+\.\d+', r'\1', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()
