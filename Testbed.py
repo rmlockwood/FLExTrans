@@ -5,9 +5,6 @@
 #   SIL International
 #   12/24/2022
 #
-#   Version 3.10 - 1/4/23 - Ron Lockwood
-#    Fixes a crash related to #530. If a lemma got truncated to 1.1 there's no non-numeric part to retrieve.
-#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Fixes #476. Remove the EOL stuff we get from HermitCrab.
 #
@@ -1100,7 +1097,7 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
     lemma_parts = re.split('(\d+\.\d+)', lemma, flags=re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
     
     # Check for an @
-    if len(lemma_parts[0]) > 0 and lemma_parts[0][0] == '@':
+    if lemma_parts[0][0] == '@':
         # color it red for not found
         lexeme_color = NOT_FOUND_COLOR
         
