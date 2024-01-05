@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10 - 1/4/23 - Ron Lockwood
+#    Fixes #530. Only remove N.N that is attached to a word in the fixup function.
+#    This allows verse references like \fr 11.4 to not be touched.
+#
 #   Version 3.9.4 - 11/22/23 - Ron Lockwood
 #    Ignore allomorphs marked as abstract. Also big changes to support required
 #    features which are treated kind of like stem names. Look through all affixes to
@@ -261,7 +265,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -1185,7 +1189,8 @@ def fix_up_text(synFile, cleanUpText):
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+            # Look for a non-whitespace & non-digit followed by an X.X. This will keep references in the form of chap.verse from being deleted. Eg. \fr 11.4
+            line = re.sub(r'([^\d\s])\d+\.\d+', r'\1', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
             line = re.sub('@', '', line)
         f_s.write(line)
     f_s.close()
