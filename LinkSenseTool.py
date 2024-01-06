@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
+#
 #   Version 3.9.8 - 12/26/23 - Ron Lockwood
 #    Fixes #501. Fixed typo that returned source headword instead of source gloss.
 #
@@ -252,7 +255,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.8",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1436,7 +1439,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
 
     return myData, processedMap
 
-def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
+def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
     updatedSenses = {}
     cnt = 0
@@ -1481,7 +1484,7 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
 
                     tgtEntry = ILexEntry(currLink.getTgtSense().Entry)
 
-                    Utils.writeSenseHyperLink(DB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
+                    Utils.writeSenseHyperLink(DB, TargetDB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
 
                     # If the sense number field exists, set it to an empty string
                     if senseNumField:
@@ -1896,7 +1899,7 @@ def RunModule(DB, report, configMap):
         # Update the source database with the correct links
         if window.retVal: # True = make the changes        
             
-            updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
+            updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
             # Dump linked senses if the user wants to
             if window.exportUnlinked:

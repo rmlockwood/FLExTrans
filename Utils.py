@@ -6,6 +6,9 @@
 #   7/23/2014
 #
 #
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
+#
 #   Version 3.9.9 - 12/9/23 - Ron Lockwood
 #    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
 #
@@ -1784,7 +1787,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
                         urlStr = preGuidStr + targetSense.Guid.ToString() + '%26tag%3d'
 
-                        writeSenseHyperLink(DB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
+                        writeSenseHyperLink(DB, TargetDB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
 
                         # If the sense number field is None, we aren't using it
                         if senseNumField:
@@ -1864,7 +1867,7 @@ def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
 
     return equivStr
 
-def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
+def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
 
     # This headword should have a number if there is more than one of them
     headWordStr = ITsString(targetEntry.HeadWord).Text
@@ -1874,7 +1877,7 @@ def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivFie
     glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
 
     # Put the string we want for the link name into a tsString
-    linkName = f'linked to entry: {headWordStr}, sense: {glossStr}'
+    linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
 
     # Make the string in the analysis writing system
     tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
