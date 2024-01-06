@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.1 - 1/6/2024 - Ron Lockwood
+#    Fixes #533. Recheck the words that were checked on closing the tester.
+#
 #   Version 3.10 - 12/28/23 - Ron Lockwood
 #    Fixes #518. Show the data stream for the checked boxes after rebuilding the 
 #    bilingual lexicon.
@@ -365,7 +368,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -636,6 +639,10 @@ class Main(QMainWindow):
             checkBoxStateStr = f.readline().strip()
             self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
 
+            # Read the 3rd line which is the state of the word checkboxes
+            checkBoxStateWordsStr = f.readline().strip()
+            self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+
             f.close()
         except:
             pass
@@ -689,12 +696,17 @@ class Main(QMainWindow):
         if savedSourceTextName != sourceText:
 
             selectWordsSentNum = 0
-            
+
         # Set the index of the combo box and sentence list to what was saved before
         self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
         qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
         self.ui.listSentences.setCurrentIndex(qIndex)
         self.listSentClicked()
+
+        if savedSourceTextName == sourceText:
+
+            # Check the saved words
+            self.restoreCheckedWords()
         
         # Copy bilingual file to the tester folder
         try:
@@ -1421,6 +1433,10 @@ class Main(QMainWindow):
         # Loop through all the items in the rule list model
         for i in range(0, len(checkBoxList)):
             
+            # We only need to check the first x that are visible to the user.
+            if checkBoxList[i].isVisible() == False:
+                break
+
             # Save the state of each check box 
             if checkBoxList[i].checkState():
                 myList.append(QtCore.Qt.Checked)
@@ -1852,11 +1868,16 @@ class Main(QMainWindow):
         self.saveChecked()
         checkedStateStr = ''.join(map(str, self.rulesCheckedList))
 
+        # Save which words were checked.
+        self.saveCheckedWords()
+        checkedWordsState = ''.join(map(str, self.wordsCheckedList))
+
         f = open(self.windowsSettingsFile, 'w')
         
         # Save current rules tab, current source tab, last sentence # selected and the last source text
         f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
         f.write(f'{checkedStateStr}\n')
+        f.write(f'{checkedWordsState}\n')
         f.close()
         
     def removeSampleLogicRule(self, rulesElement):
