@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.3 - 1/8/24 - Ron Lockwood
+#    Fixes #537. Don't do gloss matching for a gloss that comes back from FLEx as ***.
+#
 #   Version 3.9.8 - 12/26/23 - Ron Lockwood
 #    Fixes #501. Fixed typo that returned source headword instead of source gloss.
 #
@@ -252,7 +255,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.8",
+        FTM_Version    : "3.10.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1181,7 +1184,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # If we have a valid gloss, add it to the map
-                if gloss and len(gloss) > 0:
+                if gloss and len(gloss) > 0 and gloss != '***':
                     # Create an HPG object
                     myHPG = HPG(mySense, headword, POS, gloss, senseNum+1)
                     
