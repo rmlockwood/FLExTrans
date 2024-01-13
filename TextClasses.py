@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10.2 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
 #   Version 3.9.2 - 8/17/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -537,11 +540,11 @@ class TextWord():
         self.__affixLists.append([]) # create an empty list
         self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
-        self.__finalPunc += myStr
+        self.__finalPunc += self.escapeReservedApertChars(myStr)
     def addInflFeatures(self, inflFeatAbbrevs):
         self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
     def addInitialPunc(self, myStr):
-        self.__initPunc += myStr
+        self.__initPunc += self.escapeReservedApertChars(myStr)
     def addLemma(self, lemma):
         self.__lemmaList.append(lemma)
     def addLemmaFromObj(self, myObj):
@@ -566,6 +569,9 @@ class TextWord():
                                 
         lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
+    def escapeReservedApertChars(self, inStr):
+        retStr = re.sub(r'([\[\]])', r'\\\1', inStr)
+        return retStr
     def getAffixSymbols(self):
         # assume no compound roots for this word
         return self.__affixLists[0]
