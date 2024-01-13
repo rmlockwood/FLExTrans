@@ -570,7 +570,7 @@ class TextWord():
         lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
     def escapeReservedApertChars(self, inStr):
-        retStr = re.sub(r'([\[\]])', r'\\\1', inStr)
+        retStr = re.sub(r'([\[\]@/\\^$><])', r'\\\1', inStr)
         return retStr
     def getAffixSymbols(self):
         # assume no compound roots for this word
