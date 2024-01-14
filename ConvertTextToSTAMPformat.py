@@ -5,6 +5,14 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.2 - 1/3/24 - Ron Lockwood
+#    Fixes #534. Give a better error message when the morphs for a lexical unit are less than 2.
+#    Give the user the previous two and following two words for context.
+#
+#   Version 3.10.1 - 1/2/24 - Ron Lockwood
+#    Fix problem where the 1st component ANA object wasn't getting its capitalization code
+#    carried over to the final component ANA list.
+#
 #   Version 3.10 - 1/1/24 - Ron Lockwood
 #    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
 #
@@ -233,7 +241,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -283,11 +291,11 @@ class ANAInfo(object):
         else:
             return ''
 
-    def capitalizeSurfaceForm(self, myStr):
+    def capitalizeString(self, myStr):
 
-        if self.getCapitalization == 2:
+        if self.getCapitalization() == '2':
             return myStr.upper()
-        elif self.getCapitalization == 1:
+        elif self.getCapitalization() == '1':
             return myStr.capitalize()
         else:
             return myStr
@@ -309,6 +317,9 @@ class ANAInfo(object):
         return re.search(r'(.*)\s*<',self.Analysis).group(1).split()
     def getAnalysisRoot(self):
         return re.search(r'< .+ (.+) >',self.Analysis).group(1)
+    # Apply the capitalization code algoritm to possibly capitalize the root string.
+    def getCapitalizedAnalysisRoot(self):
+        return self.capitalizeString(re.search(r'< .+ (.+) >',self.Analysis).group(1))
     def getAnalysisRootPOS(self):
         return re.search(r'< (.+) .+ >',self.Analysis).group(1)
     def getAnalysisSuffixes(self):
@@ -1037,10 +1048,10 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
             # For HermitCrab we put out the sense # (TODO: we need to probably do this for STAMP as well)
             # A variant can be a variant of an entry with multiple senses. The senses could have different categories
             # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
             # (We are intentionally not adding the sense number.)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getAnalysisRoot(), sfxs)
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)
@@ -1135,7 +1146,7 @@ def processComplexForm(textAnaInfo, componANAlist, inflectionOnFirst):
             # add affixation to the ANA object. Affixes on the myAnaInfo are proclitics and enclitics if they exist. Put text prefixes after proclitics and suffixes before enclitics.
             newAna.setAnalysisByPart(myAnaInfo.getAnalysisPrefixes()+textAnaInfo.getAnalysisPrefixes(),
                                         myAnaInfo.getAnalysisRootPOS(), 
-                                        myAnaInfo.getAnalysisRoot(),
+                                        myAnaInfo.getCapitalizedAnalysisRoot(),
                                         textAnaInfo.getAnalysisSuffixes()+myAnaInfo.getAnalysisSuffixes())
 
             newCompANAlist.append(newAna)
@@ -1351,8 +1362,27 @@ def convertIt(pfxName, outName, report, sentPunct):
                 wordAnaInfo = None
 
                 if len(morphs) <2:
-                            
-                    errorList.append(("Lemma or grammatical category missing for target word number "+str(wrdCnt//2+1)+", in line "+str(cnt+1)+". Found only: "+",".join(morphs)+". Processing stopped.",2))
+                    
+                    # Determine the context words around the problem word
+                    if wrdCnt-2 >= 0:
+                        prev2words = wordToks[wrdCnt-2] + ' ' + wordToks[wrdCnt-1]
+                    else:
+                        if wrdCnt-1 >= 0:
+                            prev2words = wordToks[wrdCnt-1]
+                        else:
+                            prev2words = ''
+
+                    if wrdCnt+2 < len(wordToks):
+                        foll2words = wordToks[wrdCnt+1] + ' ' + wordToks[wrdCnt+2]
+                    else:
+                        if wrdCnt+1 < len(wordToks):
+                            foll2words = wordToks[wrdCnt+1]
+                        else:
+                            foll2words = ''
+
+                    
+                    errorList.append(("Lemma or grammatical category missing for a target word near sentence "+str(cnt+1)+". Found only: "+",".join(morphs)+\
+                                      f". The preceding two words were: {prev2words}. The following two words were: {foll2words}. Processing stopped.",2))
                     return errorList, wordAnaInfoList
                 
                 # Create an ANA Info object
