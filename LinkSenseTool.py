@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.1 - 1/6/24 - Ron Lockwood
+#    Fixes #499. Only rebuild the bilingual lexicon when OK is clicked.
+#    Fixes #500. Sleep for 3 seconds before rebuilding the bilingual lexicon to let FLEx write data.
+#
 #   Version 3.10 - 1/6/24 - Ron Lockwood
 #    Output the target DB name in the sense link text.
 #
@@ -225,6 +229,7 @@ import os
 import sys
 import unicodedata
 import xml.etree.ElementTree as ET
+import time
 
 from fuzzywuzzy import fuzz
 
@@ -1914,8 +1919,14 @@ def RunModule(DB, report, configMap):
         
         elif window.rebuildBiling:
             
-            TargetDB.CloseProject()
-            return REBUILD_BILING
+            # Only rebuild the bilingual lexicon if the user clicked OK
+            if window.retVal:
+
+                TargetDB.CloseProject()
+
+                # Pause for 3 seconds to perhaps let FLEx write out the links
+                time.sleep(3)
+                return REBUILD_BILING
     
     TargetDB.CloseProject()
     
