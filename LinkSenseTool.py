@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.2 - 1/8/24 - Ron Lockwood
+#    Fixes #537. Don't do gloss matching for a gloss that comes back from FLEx as ***.
+#
 #   Version 3.10.1 - 1/6/24 - Ron Lockwood
 #    Fixes #499. Only rebuild the bilingual lexicon when OK is clicked.
 #    Fixes #500. Sleep for 3 seconds before rebuilding the bilingual lexicon to let FLEx write data.
@@ -260,7 +263,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1189,7 +1192,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # If we have a valid gloss, add it to the map
-                if gloss and len(gloss) > 0:
+                if gloss and len(gloss) > 0 and gloss != '***':
                     # Create an HPG object
                     myHPG = HPG(mySense, headword, POS, gloss, senseNum+1)
                     
