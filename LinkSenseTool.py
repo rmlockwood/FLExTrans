@@ -5,6 +5,16 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.2 - 1/8/24 - Ron Lockwood
+#    Fixes #537. Don't do gloss matching for a gloss that comes back from FLEx as ***.
+#
+#   Version 3.10.1 - 1/6/24 - Ron Lockwood
+#    Fixes #499. Only rebuild the bilingual lexicon when OK is clicked.
+#    Fixes #500. Sleep for 3 seconds before rebuilding the bilingual lexicon to let FLEx write data.
+#
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
+#
 #   Version 3.9.8 - 12/26/23 - Ron Lockwood
 #    Fixes #501. Fixed typo that returned source headword instead of source gloss.
 #
@@ -222,6 +232,7 @@ import os
 import sys
 import unicodedata
 import xml.etree.ElementTree as ET
+import time
 
 from fuzzywuzzy import fuzz
 
@@ -252,7 +263,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.8",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1181,7 +1192,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # If we have a valid gloss, add it to the map
-                if gloss and len(gloss) > 0:
+                if gloss and len(gloss) > 0 and gloss != '***':
                     # Create an HPG object
                     myHPG = HPG(mySense, headword, POS, gloss, senseNum+1)
                     
@@ -1436,7 +1447,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
 
     return myData, processedMap
 
-def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
+def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
     updatedSenses = {}
     cnt = 0
@@ -1481,7 +1492,7 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
 
                     tgtEntry = ILexEntry(currLink.getTgtSense().Entry)
 
-                    Utils.writeSenseHyperLink(DB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
+                    Utils.writeSenseHyperLink(DB, TargetDB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
 
                     # If the sense number field exists, set it to an empty string
                     if senseNumField:
@@ -1896,7 +1907,7 @@ def RunModule(DB, report, configMap):
         # Update the source database with the correct links
         if window.retVal: # True = make the changes        
             
-            updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
+            updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
             # Dump linked senses if the user wants to
             if window.exportUnlinked:
@@ -1911,8 +1922,14 @@ def RunModule(DB, report, configMap):
         
         elif window.rebuildBiling:
             
-            TargetDB.CloseProject()
-            return REBUILD_BILING
+            # Only rebuild the bilingual lexicon if the user clicked OK
+            if window.retVal:
+
+                TargetDB.CloseProject()
+
+                # Pause for 3 seconds to perhaps let FLEx write out the links
+                time.sleep(3)
+                return REBUILD_BILING
     
     TargetDB.CloseProject()
     

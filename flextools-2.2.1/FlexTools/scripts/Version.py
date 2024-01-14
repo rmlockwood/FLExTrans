@@ -5,6 +5,7 @@
 #
 
 Name = "FLExTools"
-Version = "2.2.1"
+
+Version = "2.3.0"
 
 Title = f"{Name} {Version}"
