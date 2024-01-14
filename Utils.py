@@ -11,6 +11,9 @@
 #   Version 3.10 - 1/6/24 - Ron Lockwood
 #    Output the target DB name in the sense link text.
 #
+#   Version 3.10.2 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
 #   Version 3.9.9 - 12/9/23 - Ron Lockwood
 #    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
 #
@@ -386,6 +389,7 @@ import ReadConfig as MyReadConfig
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
 import FTPaths
 
+APERT_RESERVED = r'([\[\]@/\\^$><])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -1935,3 +1939,7 @@ def getHyperLinkStyle(DB):
         Style = globalStyle
     
     return Style
+
+def unescapeReservedApertChars(inStr):
+    
+    return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)

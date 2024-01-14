@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.3 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
 #   Version 3.10.2 - 1/3/24 - Ron Lockwood
 #    Fixes #534. Give a better error message when the morphs for a lexical unit are less than 2.
 #    Give the user the previous two and following two words for context.
@@ -420,11 +423,11 @@ class ANAInfo(object):
         
         if self.getBeforePunc():
             
-            fOutput.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
+            fOutput.write('\\f ' + self.escapePunc(Utils.unescapeReservedApertChars(self.getBeforePunc())) + '\n')
             
         if self.getAfterPunc():
             
-            fOutput.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
+            fOutput.write('\\n ' + self.escapePunc(Utils.unescapeReservedApertChars(self.getAfterPunc())) + '\n')
             
         if self.getCapitalization():
             

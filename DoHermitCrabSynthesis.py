@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.10.1 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
 #   Version 3.10 - 1/2/24 - Ron Lockwood
 #    Fixes #531. When replacing sentence punctuation lexical units with only the punctuation,
 #    account for the fact that failed synthesis words will also have ^ in the string. Fixed the regex.
@@ -337,15 +340,15 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList):
 # Also symbols and ^%0%...%$
 def fix_up_text(synFile, cleanUpText):
     
+    # Read the contents
+    f_s = open(synFile, encoding="utf-8")
+    synFileContents = f_s.read()
+    f_s.close()
+
+    # Make replacements
+    f_s = open(synFile, 'w', encoding="utf-8")
+
     if cleanUpText:
-
-        # Read the contents
-        f_s = open(synFile, encoding="utf-8")
-        synFileContents = f_s.read()
-        f_s.close()
-
-        # Make replacements
-        f_s = open(synFile, 'w', encoding="utf-8")
 
         # Remove n.n on lemmas
         synFileContents = re.sub('\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
@@ -359,8 +362,11 @@ def fix_up_text(synFile, cleanUpText):
         # Remove the ^%0%...%$ (^ and $ are optional which is the case for unknown punctuation)
         synFileContents = re.sub(r'%0%\^{0,1}(.*?)\${0,1}%', r'\1', synFileContents)
 
-        f_s.write(synFileContents)
-        f_s.close()
+    # Un-escape punctuation text that was escaped before running apertium tools. E.g. convert \] to ]
+    synFileContents = Utils.unescapeReservedApertChars(synFileContents)
+
+    f_s.write(synFileContents)
+    f_s.close()
 
 def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False):
     
