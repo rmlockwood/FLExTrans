@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10 - 1/1/24 - Ron Lockwood
+#    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
+#
 #   Version 3.9.2 - 8/17/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -57,6 +60,8 @@ class TextEntirety():
     def createGuidMaps(self):
         for par in self.__parList:
             par.createGuidMaps(self.__insertedWordsList)
+    def getParagraphCount(self):
+        return len(self.__parList)
     def getParagraphs(self):
         return self.__parList
     def getParAndSentIndex(self, sentNum):

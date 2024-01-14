@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10 - 1/1/24 - Ron Lockwood
+#    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
+#
 #   Version 3.9.4 - 12/9/23 - Ron Lockwood
 #    Use Utils version of get_feat_abbr_list. Re-indent some code.
 #
@@ -294,7 +297,7 @@ class ANAInfo(object):
         # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
             
-            myStr =  re.sub(r'\\([^n]|n\w)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx
+            myStr =  re.sub(r'\\([^n]|nd|no|nb)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx \nb
 
         return myStr
     
@@ -1187,6 +1190,9 @@ def convertIt(pfxName, outName, report, sentPunct):
     # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
     fApert = open(outName, 'r', encoding='utf-8')
     
+    puncParagraph = ''
+    initialParagraph = True
+
     # Each line represents a paragraph
     for cnt, line in enumerate(fApert):
         
@@ -1194,6 +1200,12 @@ def convertIt(pfxName, outName, report, sentPunct):
             
             report.ProgressUpdate(cnt)
             
+        # See if the line is only 'punctuation' (i.e. no ^...$ bundles) This is likely another writing system
+        if not re.search(r'\^', line):
+
+            puncParagraph += re.sub(r'\n', r'\\n', line)
+            continue
+
         # convert <sent> (sentence punctuation) to simply the punctuation without the tag or ^$
         reStr = '\^([' + sentPunct + ']+)<sent>\$'
         line = re.sub(reStr,r'\1',line)
@@ -1258,10 +1270,11 @@ def convertIt(pfxName, outName, report, sentPunct):
                 # write out the last word we processed.
                 if wordAnaInfo:
                     
-                    wordAnaInfo.setBeforePunc(prePunct)
+                    wordAnaInfo.setBeforePunc(puncParagraph + prePunct)
                     wordAnaInfo.setAfterPunc(postPunct)
                     wordAnaInfoList.append(wordAnaInfo)
                     
+                    puncParagraph = ''
                     prePunct = nextPrePunct
                     nextPrePunct = postPunct = ''
                     
@@ -1275,9 +1288,17 @@ def convertIt(pfxName, outName, report, sentPunct):
 
                     # if first word of a non-initial paragraph and we haven't already inserted a newline
                     # in the punctuation block, add a newline.
-                    if cnt > 0 and re.search('\\n', prePunct) == None:
+                    if not initialParagraph:
                         
-                        prePunct = '\\n' + prePunct
+                        if puncParagraph == '':
+
+                            if re.search(r'\\n', prePunct) == None:
+                        
+                                prePunct = r'\n' + prePunct
+                        else:
+                            puncParagraph = '\\' + 'n' + puncParagraph
+
+                    initialParagraph = False
 
                 # Get the root, root category and any affixes
                 morphs = re.split('<|>', tok)
@@ -1372,10 +1393,18 @@ def convertIt(pfxName, outName, report, sentPunct):
         # write out the last word 
         if wordAnaInfo:
             
-            wordAnaInfo.setBeforePunc(prePunct)
+            wordAnaInfo.setBeforePunc(puncParagraph + prePunct)
             wordAnaInfo.setAfterPunc(postPunct)
+
             wordAnaInfoList.append(wordAnaInfo)
     
+    # Include last punctuation paragraphs
+    if len(puncParagraph) > 0:
+
+        # Remove the final \\n
+        puncParagraph = re.sub(r'\\n', '', puncParagraph)
+        wordAnaInfo.setAfterPunc(postPunct+r'\n'+puncParagraph)
+
     return errorList, wordAnaInfoList
 
 # Get the gloss from the first sense
