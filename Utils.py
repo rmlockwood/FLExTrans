@@ -5,6 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10 - 1/1/24 - Ron Lockwood
+#    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
+#
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
 #
 #   Version 3.9.9 - 12/9/23 - Ron Lockwood
 #    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
@@ -1170,7 +1175,12 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                     myWord.addFinalPunc(spacesStr + textPunct) 
                 else:
                     # Save this punctuation for initial punctuation on the next word
-                    savedPrePunc += spacesStr + textPunct
+
+                    # Add a newline character if we just went to a new paragraph which is shown by the numSpaces being negative
+                    if numSpaces < 0 and len(savedPrePunc) > 0:
+                        savedPrePunc += spacesStr + '\n' + textPunct
+                    else:
+                        savedPrePunc += spacesStr + textPunct
         
             continue
         
@@ -1181,9 +1191,19 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         
         # See if we have any pre-punctuation
         if len(savedPrePunc) > 0:
+
+            # See if we have a new paragraph (which is shown by the numSpaces being negative) which means a paragraph of only punctuation.
+            # If so, add a newline to the punctuation
+            if numSpaces < 0:
+                savedPrePunc += '\n'
+
+                # prevent a empty 1st paragrah
+                if myText.getParagraphCount() == 1 and myText.getSentCount() == 0:
+                    newParagraph = False 
+
             myWord.addInitialPunc(savedPrePunc)
             savedPrePunc = ""
-            
+
         # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
         newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
         
@@ -1310,6 +1330,11 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
 
             report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
         
+    # Handle any final punctuation text at the end of the text in its own paragraph
+    if len(savedPrePunc) > 0:
+
+        myWord.addFinalPunc('\n'+savedPrePunc)
+
     # Don't warn for sfm markers, but warn once for others        
     if myText.warnForUnknownWords() == True:
         report.Warning('One or more unknown words occurred multiple times.')
@@ -1784,7 +1809,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
                         urlStr = preGuidStr + targetSense.Guid.ToString() + '%26tag%3d'
 
-                        writeSenseHyperLink(DB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
+                        writeSenseHyperLink(DB, TargetDB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
 
                         # If the sense number field is None, we aren't using it
                         if senseNumField:
@@ -1864,7 +1889,7 @@ def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
 
     return equivStr
 
-def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
+def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
 
     # This headword should have a number if there is more than one of them
     headWordStr = ITsString(targetEntry.HeadWord).Text
@@ -1874,7 +1899,7 @@ def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivFie
     glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
 
     # Put the string we want for the link name into a tsString
-    linkName = f'linked to entry: {headWordStr}, sense: {glossStr}'
+    linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
 
     # Make the string in the analysis writing system
     tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)

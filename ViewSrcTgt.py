@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.10 - 12/28/23 - Ron Lockwood
+#    Fixes #513. Use text edit control instead of web view to prevent crashing.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -78,13 +81,12 @@ import os
 import re
 import tempfile
 import sys
-import shutil
 import unicodedata
 import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                                 
 
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 from SrcTgtViewer import Ui_MainWindow
@@ -153,10 +155,10 @@ class Main(QMainWindow):
         self.viewFile = srcFile
           
         # get the default font
-        font = self.ui.webView.font()
+        font = self.ui.largeTextEdit.font()
         self.font_family = str(font.family())
           
-        self.ui.FontNameLabel.setText(font.family())
+        #self.ui.FontNameLabel.setText(font.family())
           
         # load the viewer()
         self.load()
@@ -168,11 +170,11 @@ class Main(QMainWindow):
         buttonWidth = self.ui.OKButton.width()
         
         # Stretch the view to fit
-        self.ui.webView.setGeometry(10, 10, self.width() - 20, \
+        self.ui.largeTextEdit.setGeometry(10, 10, self.width() - 20, \
                                     self.height() - 90)
         
         # Change the y value of widgets depending on the window size
-        y = self.ui.webView.height() + 35
+        y = self.ui.largeTextEdit.height() + 35
         
         self.ui.OKButton.setGeometry(self.ui.OKButton.x(), y, buttonWidth, buttonHeight)
         self.ui.FontButton.setGeometry(self.ui.FontButton.x(), y, buttonWidth, buttonHeight)
@@ -187,22 +189,31 @@ class Main(QMainWindow):
         self.ui.targetRadio3.setGeometry(self.ui.targetRadio3.x(), y+2+20, self.ui.targetRadio3.width(), self.ui.targetRadio3.height())
         self.ui.RTL.setGeometry(self.ui.RTL.x(), y+2, self.ui.RTL.width(), self.ui.RTL.height())
         self.ui.linkLabel.setGeometry(self.ui.linkLabel.x(), y+2, self.ui.linkLabel.width(), self.ui.linkLabel.height())
+
     def ZoomIncreaseClicked(self):
-        factor = self.ui.webView.zoomFactor()
-        factor = factor * 1.25
-        self.ui.webView.setZoomFactor(factor)
+        myFont = self.ui.largeTextEdit.font()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * 1.25
+        myFont.setPointSizeF(mySize)
+        self.ui.largeTextEdit.setFont(myFont)
+
     def ZoomDecreaseClicked(self):
-        factor = self.ui.webView.zoomFactor()
-        factor = factor * .8
-        self.ui.webView.setZoomFactor(factor)
+        myFont = self.ui.largeTextEdit.font()
+        mySize = myFont.pointSizeF()
+        mySize = mySize * .889
+        myFont.setPointSizeF(mySize)
+        self.ui.largeTextEdit.setFont(myFont)
+
     def OKClicked(self):
         self.close()
+
     def FontClicked(self):
-        (font, ret) = QFontDialog.getFont()
+        (font, ret) = QFontDialog.getFont(self.ui.largeTextEdit.font())
         if ret:
             self.font_family = str(font.family())
             self.ui.FontNameLabel.setText(font.family())
-            #self.ui.webView.setFont(font)
+            self.ui.largeTextEdit.setFont(font)
+
         self.load()
     def SourceClicked(self):
         self.viewFile = self.src
@@ -221,6 +232,7 @@ class Main(QMainWindow):
         self.load()
     def RTLClicked(self):
         self.load()
+
     def load(self):
         # Open the input file
         try:
@@ -307,9 +319,15 @@ class Main(QMainWindow):
         # Write out the html file as utf-8
         tree.write(self.html, encoding='utf-16', xml_declaration=None, default_namespace=None, method='html')
         
-        # Give the html file location to the web viewer widget
-        self.ui.webView.setUrl(QtCore.QUrl("file:///"+re.sub(r'\\','/',self.html)))
-        
+        # Get the html as a string
+        myStr = ET.tostring(root, encoding='utf-8', method='html')
+
+        # Turn in back to unicode from bytes
+        myStr = myStr.decode('utf-8')
+
+        # Set the text box
+        self.ui.largeTextEdit.setText(myStr)
+
         # Set the link label address
         rich_str = '<a href="file:///'+self.html+'">Open in Browser</a>'
 
