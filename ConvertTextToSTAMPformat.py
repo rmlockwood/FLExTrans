@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
 #   Version 3.9.4 - 12/9/23 - Ron Lockwood
 #    Use Utils version of get_feat_abbr_list. Re-indent some code.
 #
@@ -406,11 +409,11 @@ class ANAInfo(object):
         
         if self.getBeforePunc():
             
-            fOutput.write('\\f ' + self.escapePunc(self.getBeforePunc()) + '\n')
+            fOutput.write('\\f ' + self.escapePunc(Utils.unescapeReservedApertChars(self.getBeforePunc())) + '\n')
             
         if self.getAfterPunc():
             
-            fOutput.write('\\n ' + self.escapePunc(self.getAfterPunc()) + '\n')
+            fOutput.write('\\n ' + self.escapePunc(Utils.unescapeReservedApertChars(self.getAfterPunc())) + '\n')
             
         if self.getCapitalization():
             
