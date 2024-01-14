@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10 - 1/4/24 - Ron Lockwood
+#    Fixes #536. support . for chapter verse separator. Make all between \xt and \x* the analysis WS.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -90,7 +93,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -262,8 +265,8 @@ def do_import(DB, report, chapSelectObj):
     # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
     # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
 
-    #                  end mrk footnt  footnt ref+dash  footnt ref   cr ref orig+dash cr ref orig  verse+dash   verse    pub verse chap    ref+dash    ref     any marker
-    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+:\d+-\d+|\\fr \d+:\d+|\\xo \d+:\d+-\d+|\\xo \d+:\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+:\d+-\d+|\d+:\d+|\\\w+)', importText) 
+    #                  end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref     any marker
+    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\w+)', importText) 
 
     # Create 1st paragraph object
     stTxtPara = m_stTxtParaFactory.Create()
