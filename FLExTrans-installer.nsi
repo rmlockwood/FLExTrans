@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.9.2"
+!define PRODUCT_VERSION "3.10"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -24,12 +24,12 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "© 2015-2023 SIL International"
+VIAddVersionKey "LegalCopyright" "© 2015-2024 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.9.2.${BUILD_NUM}
+VIProductVersion 3.10.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -76,10 +76,10 @@ InitPluginsDir
   #File "Command2.sh"
   #ExecWait "bash -ExecutionPolicy Bypass -WindowStyle Hidden -File $INSTDIR\install_files\Command2.sh -FFFeatureOff"
 
-  # Install python 3.8.10
-  MessageBox MB_YESNO "Install Python 3.8.10? $\nIMPORTANT! Check the box: 'Add Python 3.8 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
-        File "${RESOURCE_FOLDER}\python-3.8.10-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.8.10-amd64.exe"
+  # Install python 3.11.7
+  MessageBox MB_YESNO "Install Python 3.11.7? $\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
+        File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
+        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe"
         Goto endPythonSync
   endPythonSync:
   
@@ -204,7 +204,7 @@ SetOverwrite on
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
 
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python38\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
+  !define mycmd '"$LocalAppdata\Programs\Python\Python311\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
   # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
