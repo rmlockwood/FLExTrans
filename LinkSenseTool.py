@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.3 - 1/18/24 - Ron Lockwood
+#    Fixes #550. Handle a target word that doesn't have a category yet assigned.
+#
 #   Version 3.10.2 - 1/8/24 - Ron Lockwood
 #    Fixes #537. Don't do gloss matching for a gloss that comes back from FLEx as ***.
 #
@@ -263,7 +266,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10.2",
+        FTM_Version    : "3.10.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1172,7 +1175,13 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
         
             # Loop through senses
             for senseNum, mySense in enumerate(entryObj.SensesOS):
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                try:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                except:
+                    # Skip an MSA that could not be casted.
+                    continue
+
                 # Skip empty MSAs
                 if msa == None:
                     continue
