@@ -14,6 +14,7 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   18 Jan 2023 rl v3.10  Bumped to 3.10
 #   17 Aug 2023 rl v3.9.4 More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #   12 Aug 2023 rl v3.9.3 Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #   17 Jul 2023 bb v3.9.2 Test morphType by GUID, not by name in Primary Ana WS
@@ -57,7 +58,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate All Parses",
-        FTM_Version    : "3.9.4",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",

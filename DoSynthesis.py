@@ -5,6 +5,9 @@
 #   SIL International
 #   7/19/23
 #
+#   Version 3.10 - 1/18/24 - Ron Lockwood
+#    Bumped to 3.10.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Initial version.
 #
@@ -34,7 +37,7 @@ import DoStampSynthesis
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with either STAMP or HermitCrab.",
         FTM_Help       :"",

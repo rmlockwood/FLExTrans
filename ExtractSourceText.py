@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.10 - 1/18/24 - Ron Lockwood
+#    Bumped to 3.10.
+#
 #   Version 3.9.1 - 8/17/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -189,7 +192,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',

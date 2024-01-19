@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10 - 1/18/24 - Ron Lockwood
+#    Bumped to 3.10.
+#
 #   Version 3.9.2 - 7/24/23 - Ron Lockwood
 #    Allow glosses to be identical (no warning) when they are two different senses in the same 
 #    entry and have the same morph type.
@@ -121,7 +124,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.9.2",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
