@@ -99,7 +99,7 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",

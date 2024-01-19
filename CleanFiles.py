@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.10 - 1/18/24 - Ron Lockwood
+#    Bumped to 3.10.
+#
 #   Version 3.9.1 - 9/4/23 - Ron Lockwood
 #    Fixes #487. Clean up synthesis test/generate files.
 #
@@ -60,7 +63,7 @@ import FTPaths
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
         FTM_Help  : "",  
