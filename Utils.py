@@ -5,7 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.10 - 1/1/24 - Ron Lockwood
+#   Version 3.10.2 - 1/1/24 - Ron Lockwood
+#    Fixes #503. Fix error message to mention abbrev. or name.
+#
+#   Version 3.10.1 - 1/1/24 - Ron Lockwood
 #    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
 #
 #   Version 3.10 - 1/6/24 - Ron Lockwood
@@ -1607,7 +1610,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if message == 'fatal':
                 
                 if report:
-                    report.Error(f"The abbreviation: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
+                    report.Error(f"The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
                 haveError = True
                 
                 # show all fatal errors
@@ -1622,7 +1625,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
                 
                 if report:
-                    report.Warning(f"The abbreviation: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
+                    report.Warning(f"The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
                                    f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
