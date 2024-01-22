@@ -733,6 +733,90 @@
      <string>Trace HermitCrab synthesis</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="ZoomIncreaseTarget">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>659</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ZoomLabel">
+    <property name="geometry">
+     <rect>
+      <x>1160</x>
+      <y>661</y>
+      <width>32</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Zoom:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ZoomDecreaseTarget">
+    <property name="geometry">
+     <rect>
+      <x>1230</x>
+      <y>659</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>–</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ZoomIncreaseSource">
+    <property name="geometry">
+     <rect>
+      <x>1200</x>
+      <y>244</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ZoomLabel_2">
+    <property name="geometry">
+     <rect>
+      <x>1160</x>
+      <y>246</y>
+      <width>32</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Zoom:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ZoomDecreaseSource">
+    <property name="geometry">
+     <rect>
+      <x>1230</x>
+      <y>244</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>–</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

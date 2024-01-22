@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.2 - 1/21/2024 - Ron Lockwood
+#    Fixes #549. Resize fonts in text boxes via zoom +/-. And save this info.
+#
 #   Version 3.10.1 - 1/6/2024 - Ron Lockwood
 #    Fixes #533. Recheck the words that were checked on closing the tester.
 #
@@ -583,6 +586,10 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.ZoomIncreaseSource.clicked.connect(self.ZoomIncreaseSourceClicked)
+        self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
+        self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
+        self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -600,7 +607,9 @@ class Main(QMainWindow):
 
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
+
         for i in range(0, MAX_CHECKBOXES):
+
             myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
@@ -617,6 +626,8 @@ class Main(QMainWindow):
         sourceTab = 0
         selectWordsSentNum = 0
         savedSourceTextName = ''
+        sourceFontSizeStr = ''
+        targetFontSizeStr = ''
         
         # Clear text boxes and labels
         self.__ClearStuff()
@@ -642,6 +653,10 @@ class Main(QMainWindow):
             # Read the 3rd line which is the state of the word checkboxes
             checkBoxStateWordsStr = f.readline().strip()
             self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+
+            # Read the 4th line which is the source and target font size
+            fontSizesStr = f.readline().strip()
+            sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
 
             f.close()
         except:
@@ -689,6 +704,15 @@ class Main(QMainWindow):
         if self.ReadBilingualLexicon() == False:
             return
         
+        # Set the source and target widget font sizes
+        if targetFontSizeStr and sourceFontSizeStr:
+
+            try:
+                self.setSourceWidgetsFont(float(sourceFontSizeStr))
+                self.setTargetWidgetsFont(float(targetFontSizeStr))
+            except:
+                pass
+
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
 
@@ -1482,6 +1506,8 @@ class Main(QMainWindow):
                 
                 # Set the state of each check box
                 checkBoxList[i].setCheckState(myList[i])
+            else:
+                break
 
     def restoreCheckedWords(self):
         
@@ -1872,12 +1898,19 @@ class Main(QMainWindow):
         self.saveCheckedWords()
         checkedWordsState = ''.join(map(str, self.wordsCheckedList))
 
+        # Get the font sizes of source and target widgets
+        myFont = self.ui.SelectedSentencesEdit.font()
+        sourceFontSizeStr = str(myFont.pointSizeF())
+        myFont = self.ui.SynthTextEdit.font()
+        targetFontSizeStr = str(myFont.pointSizeF())
+
         f = open(self.windowsSettingsFile, 'w')
         
         # Save current rules tab, current source tab, last sentence # selected and the last source text
         f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
         f.write(f'{checkedStateStr}\n')
         f.write(f'{checkedWordsState}\n')
+        f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
         f.close()
         
     def removeSampleLogicRule(self, rulesElement):
@@ -2342,6 +2375,44 @@ class Main(QMainWindow):
                 retStr += coloredLUStr
                     
         return retStr
+
+    def ZoomIncreaseTargetClicked(self):
+        myFont = self.ui.SynthTextEdit.font()
+        self.setTargetWidgetsFont(myFont.pointSizeF() * 1.25)
+
+    def ZoomDecreaseTargetClicked(self):
+        myFont = self.ui.SynthTextEdit.font()
+        self.setTargetWidgetsFont(myFont.pointSizeF() * .8)
+
+    def ZoomIncreaseSourceClicked(self):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        self.setSourceWidgetsFont(myFont.pointSizeF() * 1.25)
+
+    def ZoomDecreaseSourceClicked(self):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        self.setSourceWidgetsFont(myFont.pointSizeF() * .8)
+
+    def setTargetWidgetsFont(self, fontSize):
+        myFont = self.ui.SynthTextEdit.font()
+        myFont.setPointSizeF(fontSize)
+
+        self.ui.SynthTextEdit.setFont(myFont)
+        self.ui.TargetTextEdit.setFont(myFont)
+
+    def setSourceWidgetsFont(self, fontSize):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        myFont.setPointSizeF(fontSize)
+
+        self.ui.SelectedSentencesEdit.setFont(myFont)
+        self.ui.SelectedWordsEdit.setFont(myFont)
+        self.ui.listSentences.setFont(myFont)
+        self.ui.SentCombo.setFont(myFont)
+
+        # Set the font size of all the check boxes.
+        # This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
+        for check in self.__checkBoxList:
+
+            check.setFont(myFont)
 
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
