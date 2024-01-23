@@ -840,7 +840,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as err:
             error_list.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
-    
+            return error_list
+        
         error_list.append(("Outputing category information...", 0))
         
         f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
