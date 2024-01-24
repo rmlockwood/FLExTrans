@@ -391,6 +391,7 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
+ZOOM_INCREASE_FACTOR = 1.15
 SAMPLE_LOGIC = 'Sample logic'
 MAX_CHECKBOXES = 80
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
@@ -2381,19 +2382,19 @@ class Main(QMainWindow):
 
     def ZoomIncreaseTargetClicked(self):
         myFont = self.ui.SynthTextEdit.font()
-        self.setTargetWidgetsFont(myFont.pointSizeF() * 1.25)
+        self.setTargetWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseTargetClicked(self):
         myFont = self.ui.SynthTextEdit.font()
-        self.setTargetWidgetsFont(myFont.pointSizeF() * .8)
+        self.setTargetWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def ZoomIncreaseSourceClicked(self):
         myFont = self.ui.SelectedSentencesEdit.font()
-        self.setSourceWidgetsFont(myFont.pointSizeF() * 1.25)
+        self.setSourceWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
 
     def ZoomDecreaseSourceClicked(self):
         myFont = self.ui.SelectedSentencesEdit.font()
-        self.setSourceWidgetsFont(myFont.pointSizeF() * .8)
+        self.setSourceWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
 
     def setTargetWidgetsFont(self, fontSize):
         myFont = self.ui.SynthTextEdit.font()

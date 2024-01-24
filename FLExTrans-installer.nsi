@@ -89,8 +89,13 @@ InitPluginsDir
   File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
+  # Create empty Output folders
+  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
+  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
+  
   # Copy files users may change only if they don't already exist
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  
   SetOverwrite off
 
   #File "${GIT_FOLDER}\FlexTools.vbs"
