@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.3 - 1/24/24 - Ron Lockwood
+#    Fixes #510. Catch an error where the string 'guid' is not present in the link field.
+#
 #   Version 3.10.2 - 1/1/24 - Ron Lockwood
 #    Fixes #503. Fix error message to mention abbrev. or name.
 #
@@ -1780,14 +1783,14 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     
     senseNum = int(senseNumStr)
 
-    # Get the guid from the url
-    u = tgtEquivUrl.index('guid')
-    guidSubStr = tgtEquivUrl[u+7:u+7+36]
-
-    # Look up the entry in the trgt project by guid
-    repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
-
     try:
+        # Get the guid from the url
+        u = tgtEquivUrl.index('guid')
+        guidSubStr = tgtEquivUrl[u+7:u+7+36]
+
+        # Look up the entry in the trgt project by guid
+        repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+
         guid = Guid(String(guidSubStr))
         targetObj = repo.GetObject(guid)
     except:
