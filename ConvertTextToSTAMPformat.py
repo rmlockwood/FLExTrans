@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.4 - 1/25/24 - Ron Lockwood
+#    Better handling of punctuation.
+#
 #   Version 3.10.3 - 1/12/24 - Ron Lockwood
 #    Fixes #538. Escape brackets in the pre or post punctuation.
 #
@@ -305,10 +308,10 @@ class ANAInfo(object):
 
     def escapePunc(self, myStr):
         
-        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
+        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n, but double \nd \no \nb
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
             
-            myStr =  re.sub(r'\\([^n]|nd|no|nb)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx \nb
+            myStr =  re.sub(r'\\([^n]|nd|no|nb)', r'\\\\\1', myStr) 
 
         return myStr
     
@@ -412,7 +415,8 @@ class ANAInfo(object):
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
-        self.BeforePunc = myBeforePunc
+        # Remove one space from before punctuation since each word will have a space in between.
+        self.BeforePunc = re.sub(r'^ ', '', myBeforePunc)
     def setOriginalLexicalUnitString(self, LUstr):
         self._originalLexicalUnitString = LUstr
     def setFirstCompForHCoutput(self, sameLineBool):
@@ -1407,12 +1411,14 @@ def convertIt(pfxName, outName, report, sentPunct):
                     # and beyond as pre-punctuation for the next word.
                     if len(puncts)>1:
                         
-                        # if first word of a non-initial paragraph
-                        if wordAnaInfo == None and cnt > 0:
+                        # if first word of a non-initial paragraph where we have next pre-punctuation
+                        if wordAnaInfo == None and cnt > 0 and nextPrePunct:
     
                             postPunct = nextPrePunct + '\\n' + puncts[0]
                         else:
                             postPunct = nextPrePunct + puncts[0]
+
+                        #postPunct = nextPrePunct + puncts[0]
 
                         nextPrePunct = tok[len(puncts[0]):] 
                     else:
@@ -1423,20 +1429,24 @@ def convertIt(pfxName, outName, report, sentPunct):
                             
                             postPunct = '\\n' + postPunct
 
+                        # If there is next pre-punctuation still around, add it before this post-punctuation
+                        postPunct = nextPrePunct + postPunct
+                        nextPrePunct = ''
+
         # write out the last word 
         if wordAnaInfo:
             
             wordAnaInfo.setBeforePunc(puncParagraph + prePunct)
             wordAnaInfo.setAfterPunc(postPunct)
-
             wordAnaInfoList.append(wordAnaInfo)
+            puncParagraph = ''
     
     # Include last punctuation paragraphs
     if len(puncParagraph) > 0:
 
         # Remove the final \\n
-        puncParagraph = re.sub(r'\\n', '', puncParagraph)
-        wordAnaInfo.setAfterPunc(postPunct+r'\n'+puncParagraph)
+        #puncParagraph = re.sub(r'\\n', '', puncParagraph)
+        wordAnaInfo.setAfterPunc(postPunct+r'\n'+puncParagraph.rstrip())
 
     return errorList, wordAnaInfoList
 

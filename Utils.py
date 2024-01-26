@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.4 - 1/25/24 - Ron Lockwood
+#    Prevent initial new line.
+#
 #   Version 3.10.3 - 1/24/24 - Ron Lockwood
 #    Fixes #510. Catch an error where the string 'guid' is not present in the link field.
 #
@@ -1140,8 +1143,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
         spacesStr = ' '*numSpaces
 
-        # See if we are on a new paragraph (numSpaces is negative)
-        if numSpaces < 0:
+        # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
+        if numSpaces < 0 and myPar.getSentCount() > 0:
             newParagraph = True
             
         # If we are on a different segment, it's a new sentence.
