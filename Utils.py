@@ -5,8 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.10.4 - 1/25/24 - Ron Lockwood
+#   Version 3.10.5 - 1/25/24 - Ron Lockwood
 #    Prevent initial new line.
+#
+#   Version 3.10.4 - 1/25/24 - Ron Lockwood
+#    Fixes #558. Don't add lemma when POS is missing, just give warning.
 #
 #   Version 3.10.3 - 1/24/24 - Ron Lockwood
 #    Fixes #510. Catch an error where the string 'guid' is not present in the link field.
@@ -1266,7 +1269,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                         # If we have an invalid POS, give a warning
                         if not msa.PartOfSpeechRA:
                             
-                            myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                            #myWord.addLemmaFromObj(wfiAnalysis.Owner)
                             report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
                         
