@@ -415,8 +415,7 @@ class ANAInfo(object):
     def setAfterPunc(self, myAfterPunc):
         self.AfterPunc = myAfterPunc
     def setBeforePunc(self, myBeforePunc):
-        # Remove one space from before punctuation since each word will have a space in between.
-        self.BeforePunc = re.sub(r'^ ', '', myBeforePunc)
+        self.BeforePunc = myBeforePunc
     def setOriginalLexicalUnitString(self, LUstr):
         self._originalLexicalUnitString = LUstr
     def setFirstCompForHCoutput(self, sameLineBool):
@@ -1425,12 +1424,17 @@ def convertIt(pfxName, outName, report, sentPunct):
                         postPunct = tok
             
                         # if first word of a non-initial paragraph
-                        if wordAnaInfo == None and cnt > 0:
+                        #if wordAnaInfo == None and cnt > 0:
                             
-                            postPunct = '\\n' + postPunct
+                            #pass #postPunct = '\\n' + postPunct
 
                         # If there is next pre-punctuation still around, add it before this post-punctuation
-                        postPunct = nextPrePunct + postPunct
+                        if wordAnaInfo == None and cnt > 0 and nextPrePunct:
+
+                            postPunct = nextPrePunct + '\\n' + postPunct
+                        else:    
+                            postPunct = nextPrePunct + postPunct
+
                         nextPrePunct = ''
 
         # write out the last word 
