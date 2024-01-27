@@ -5,6 +5,11 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.4 - 1/26/24 - Ron Lockwood
+#    Total rewrite of Conversion function. Instead of reading a line at a time of the transfer
+#    results file, read it all at once, split it on lexical units and deal with the entire
+#    punctuation between lexical units at one time. Parsing of the lexical units didn't change.
+#
 #   Version 3.10.3 - 1/12/24 - Ron Lockwood
 #    Fixes #538. Escape brackets in the pre or post punctuation.
 #
@@ -305,10 +310,13 @@ class ANAInfo(object):
 
     def escapePunc(self, myStr):
         
-        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n
+        # if we have an sfm marker and the slash is not yet doubled, double it. Synthesize removes backslashes otherwise. And skip \n, but double \nd \no \nb
         if re.search(r'\\', myStr) and re.search(r'\\\\', myStr) == None:
             
-            myStr =  re.sub(r'\\([^n]|nd|no|nb)', r'\\\\\1', myStr) # the n\w is to match \nX e.g. \nd \no \ndx \nb
+            myStr =  re.sub(r'\\([^n]|nd|no|nb)', r'\\\\\1', myStr) 
+
+        # Now convert newlines to slash n which STAMP will interpret as a newline
+        myStr = re.sub('\n', r'\\n', myStr)
 
         return myStr
     
@@ -1168,12 +1176,32 @@ def haveWordPackage(token):
     
     return False
 
+def getContextWords(wrdCnt, wordToks):
+
+    # Determine the context words around the problem word
+    if wrdCnt-2 >= 0:
+        prev2words = wordToks[wrdCnt-2] + ' ' + wordToks[wrdCnt-1]
+    else:
+        if wrdCnt-1 >= 0:
+            prev2words = wordToks[wrdCnt-1]
+        else:
+            prev2words = ''
+
+    if wrdCnt+2 < len(wordToks):
+        foll2words = wordToks[wrdCnt+1] + ' ' + wordToks[wrdCnt+2]
+    else:
+        if wrdCnt+1 < len(wordToks):
+            foll2words = wordToks[wrdCnt+1]
+        else:
+            foll2words = ''
+
+    return prev2words, foll2words
+
 # Convert the output from the Apertium transfer to an ANA file
 def convertIt(pfxName, outName, report, sentPunct):
 
     errorList = []
     wordAnaInfoList = []
-    nextPrePunct = ''
     
     affixMap = {}
     
@@ -1187,260 +1215,162 @@ def convertIt(pfxName, outName, report, sentPunct):
         
     fAfx.close()
 
+   # Open the transfer results file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>
     try:
-        open(outName, 'r', encoding='utf-8')
-        
-    except IOError:
-        
-        errorList.append(('The file: '+outName+' was not found. Did you run the Run Apertium module?', 2))
+        fResults = open(outName, encoding='utf-8')
+
+    except:
+        errorList.append((f'The file: {outName} was not found. Did you run the Run Apertium module?', 2))
         return errorList, wordAnaInfoList
-        
-    numLines = sum(1 for line in open(outName, encoding='utf-8'))
     
+    resultsFileStr = fResults.read()
+    fResults.close()
+
+    # Handle the sentence punctuation. Replace ^x<sent>$ with just the lemma x
+    resultsFileStr = re.sub(r'\^([^^]+?)<sent>\$', r'\1', resultsFileStr) # use [^^] (meaning not caret because otherwise using . might match a ^)
+
+    # Split the string into lexical units and 'punctuation' (non-lexical units)
+    tokens = re.split(r'\^(.+?)\$', resultsFileStr)
+
+    # Pair up the tokens. The first is the punctuation, the second is the LU
+    tokenPairs = list(zip(tokens[::2], tokens[1::2]))
+
+    # Initialize the progress counter
     if report is not None:
         
-        report.ProgressStart(numLines)
+        report.ProgressStart(len(tokenPairs))
     
-    # Read the output file. Sample text: ^xxx1.1<perspro><acc/dat>$ ^xx1.1<vpst><pfv><3sg_pst>$: ^xxx1.1<perspro>$
-    fApert = open(outName, 'r', encoding='utf-8')
-    
-    puncParagraph = ''
-    initialParagraph = True
+    # Loop through pairs of tokens. 
+    for cnt, (punc, lu) in enumerate(tokenPairs):
 
-    # Each line represents a paragraph
-    for cnt, line in enumerate(fApert):
-        
+        # Update the progress counter
         if report is not None:
             
             report.ProgressUpdate(cnt)
             
-        # See if the line is only 'punctuation' (i.e. no ^...$ bundles) This is likely another writing system
-        if not re.search(r'\^', line):
+        # Special handling of first word (no post punctuation gets added)
+        if cnt == 0:    
+            # Process the lexical unit string and get an ANA object back
+            anaObj, morphs = processLU(lu, affixMap)
 
-            puncParagraph += re.sub(r'\n', r'\\n', line)
-            continue
+            if anaObj == None:
 
-        # convert <sent> (sentence punctuation) to simply the punctuation without the tag or ^$
-        reStr = '\^([' + sentPunct + ']+)<sent>\$'
-        line = re.sub(reStr,r'\1',line)
+                return processLUparseError(cnt, tokens[1::2], morphs), wordAnaInfoList
         
-        # split on ^ or $ to get the 'word packages' (word + POS + affixes) E.g. ^xx1.1<vpst><pfv><3sg_pst>$ (assumption that no feature tags come out of the transfer process)
-        aperToks = re.split('\^|\$', line) 
-        aperToks = [tk for tk in aperToks if tk] # remove empty strings (typically at the beginning and end)
+            anaObj.setBeforePunc(punc)
+
+        else:
+            # Determine what part of the punctuation goes at the end of the last word 
+            # and which goes to the beginning of the current word.
+            pre, post = calculatePrePostPunctuation(punc)
+            anaObj.setAfterPunc(post)
+
+            # Process the lexical unit string and get an ANA object back
+            anaObj, morphs = processLU(lu, affixMap)
+
+            if anaObj == None:
+
+                return processLUparseError(cnt, tokens[1::2], morphs), wordAnaInfoList
         
-        # each token can contain multiple words packages, flesh these out 
-        # E.g. ^xxx1.1<ez>xxx1.1<ez>$  NOT SURE IT'S VALID LIKE THIS
-        wordToks = []
+            anaObj.setBeforePunc(pre)
 
-        for aperTok in aperToks:
-            
-            # If we have at least one word-forming char, then we have a word package(s), except if we have a standard format marker that has \ + x
-            # Also we don't want numbers that aren't in the form N.N< (right before the angle bracket). E.g. in a \r we may have 26:57-58
-            if haveWordPackage(aperTok):
-                
-                # Split on < or >. For ^rast1.1<ez>1.1dast<ez> we get ['^rast1.1', '<', 'ez', '>', 'dast1.1', '<', 'ez', '>', '']
-                subToks = re.split('(<|>)', aperTok) # Note: we get the < and > in the list because we used parens
-                subToks = [tk for tk in subToks if tk] # remove empty strings (typically at the end)
-            
-                # loop through all the sub tokens which may have multiple words
-                myList = []
-                
-                for i, t in enumerate(subToks):
-                    
-                    myList.append(t)
-                    
-                    # if we are at the end of the 'word package' or end of the string build the word string
-                    # we check for the end by not seeing a < after a >, >< means we are still on an affix/POS or being at the end
-                    if (t == '>' and (i+1 >= len(subToks) or subToks[i+1][0] != '<')):
-                        
-                        j = "".join(myList)
-                        wordToks.append(j) # add the word package to the list
-                        myList = []
-            else:
-                wordToks.append(aperTok)
-        
-        wordAnaInfo = None
-        prePunct = ''
-#        nextPrePunct = ''
-        postPunct = ''
+        wordAnaInfoList.append(anaObj)
 
-        # Loop through all word packages
-        for wrdCnt, tok in enumerate(wordToks):
-            
-            # If the token is one whitespace, ignore it. By default no \n line in the 
-            # ANA file will produce a space after the word.
-            if re.match('\s$', tok): # match starts at beg. of string
-                
-                continue
-            
-            # If there is more than one whitespace, save it as post punctuation.
-            elif re.match('\s*$', tok): # match starts at beg. of string
-                
-                postPunct = tok
-                
-            # word plus possible affixes (don't count sfm markers as words)
-            elif haveWordPackage(tok):
-                
-                # write out the last word we processed.
-                if wordAnaInfo:
-                    
-                    wordAnaInfo.setBeforePunc(puncParagraph + prePunct)
-                    wordAnaInfo.setAfterPunc(postPunct)
-                    wordAnaInfoList.append(wordAnaInfo)
-                    
-                    puncParagraph = ''
-                    prePunct = nextPrePunct
-                    nextPrePunct = postPunct = ''
-                    
-                else:
-                    # handle punctuation at the beginning of the paragraph (before the word)
-                    if postPunct:
-                        
-                        prePunct = postPunct
-                        prePunct += nextPrePunct
-                        nextPrePunct = postPunct = ''
+    # Process a possible last punctuation string
+    if len(tokens) > 0 and tokens[-1] != '':
 
-                    # if first word of a non-initial paragraph and we haven't already inserted a newline
-                    # in the punctuation block, add a newline.
-                    if not initialParagraph:
-                        
-                        if puncParagraph == '':
-
-                            if re.search(r'\\n', prePunct) == None:
-                        
-                                prePunct = r'\n' + prePunct
-                        else:
-                            puncParagraph = '\\' + 'n' + puncParagraph
-
-                    initialParagraph = False
-
-                # Get the root, root category and any affixes
-                morphs = re.split('<|>', tok)
-                morphs = [tk for tk in morphs if tk] # remove empty strings
-                
-                prefixList = []
-                suffixList = []
-                infixList = []
-                circumfixList = []
-                
-                # start at position 2 since this is where the affixes start
-                for i in range(2,len(morphs)):
-                    
-                    # If we don't have the item in the affix map, then it must be a feature.
-                    # Treat it like a suffix, because change_to_variant will use the feature(s) to find a variant
-                    if morphs[i] not in affixMap:
-                        
-                        suffixList.append(morphs[i])
-                        
-                    # prefix
-                    elif affixMap[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
-                        
-                        prefixList.append(morphs[i])
-                        
-                    # infix
-                    elif affixMap[morphs[i]] in ['infix', 'infixing interfix']:
-                        
-                        infixList.append(morphs[i])
-                        
-                    # circumfix
-                    elif affixMap[morphs[i]] == 'circumfix':
-                        
-                        # Circumfixes are made of two parts, a prefix part and a suffix part
-                        # when we encounter a new circumfix, give it a unique new gloss and
-                        # add it to the prefix list. When we see one that we've seen before,
-                        # it must be the suffix part. Give it a unique new gloss and add it to
-                        # the suffix list.
-                        if morphs[i] not in circumfixList:
-                            
-                            prefixList.append(morphs[i]+'_cfx_part_a')
-                            circumfixList.append(morphs[i])
-                        else:
-                            suffixList.append(morphs[i]+'_cfx_part_b')
-                            
-                    # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix).
-                    # The other types are not supported, but will end up here.
-                    else:
-                        suffixList.append(morphs[i])
-                
-                wordAnaInfo = None
-
-                if len(morphs) <2:
-                    
-                    # Determine the context words around the problem word
-                    if wrdCnt-2 >= 0:
-                        prev2words = wordToks[wrdCnt-2] + ' ' + wordToks[wrdCnt-1]
-                    else:
-                        if wrdCnt-1 >= 0:
-                            prev2words = wordToks[wrdCnt-1]
-                        else:
-                            prev2words = ''
-
-                    if wrdCnt+2 < len(wordToks):
-                        foll2words = wordToks[wrdCnt+1] + ' ' + wordToks[wrdCnt+2]
-                    else:
-                        if wrdCnt+1 < len(wordToks):
-                            foll2words = wordToks[wrdCnt+1]
-                        else:
-                            foll2words = ''
-
-                    
-                    errorList.append(("Lemma or grammatical category missing for a target word near sentence "+str(cnt+1)+". Found only: "+",".join(morphs)+\
-                                      f". The preceding two words were: {prev2words}. The following two words were: {foll2words}. Processing stopped.",2))
-                    return errorList, wordAnaInfoList
-                
-                # Create an ANA Info object
-                # We have the root (morphs[0]) and the POS of the root (morphs[1])
-                wordAnaInfo = ANAInfo(prefixList, suffixList, morphs[1], morphs[0], infixList)
-                wordAnaInfo.setOriginalLexicalUnitString(tok)
-            
-            # some kind of punctuation with possible spaces between. E.g. .>> <<
-            else:
-                tok = re.sub(r'\n', ' ', tok)
-                
-                if tok[0] == ' ': # we have pre-punctuation that goes with the next word
-                    
-                    nextPrePunct = tok
-                else:
-                    puncts = tok.split()
-                    
-                    # if there is more than one punctuation cluster, save the 2nd
-                    # and beyond as pre-punctuation for the next word.
-                    if len(puncts)>1:
-                        
-                        # if first word of a non-initial paragraph
-                        if wordAnaInfo == None and cnt > 0:
-    
-                            postPunct = nextPrePunct + '\\n' + puncts[0]
-                        else:
-                            postPunct = nextPrePunct + puncts[0]
-
-                        nextPrePunct = tok[len(puncts[0]):] 
-                    else:
-                        postPunct = tok
-            
-                        # if first word of a non-initial paragraph
-                        if wordAnaInfo == None and cnt > 0:
-                            
-                            postPunct = '\\n' + postPunct
-
-        # write out the last word 
-        if wordAnaInfo:
-            
-            wordAnaInfo.setBeforePunc(puncParagraph + prePunct)
-            wordAnaInfo.setAfterPunc(postPunct)
-
-            wordAnaInfoList.append(wordAnaInfo)
-    
-    # Include last punctuation paragraphs
-    if len(puncParagraph) > 0:
-
-        # Remove the final \\n
-        puncParagraph = re.sub(r'\\n', '', puncParagraph)
-        wordAnaInfo.setAfterPunc(postPunct+r'\n'+puncParagraph)
+        anaObj.setAfterPunc(re.sub(r'^ ', '', tokens[-1])) # remove preceding space
 
     return errorList, wordAnaInfoList
 
-# Get the gloss from the first sense
+def calculatePrePostPunctuation(puncStr):
+
+    pre = post = ''
+
+    if puncStr:
+
+        puncList = re.split(' ', puncStr)
+        post = puncList[0]
+        pre = " ".join(puncList[1:])
+
+        # If post punctuation is non-empty add a trailing space. Otherwise we will get two words jammed together by STAMP
+        # It doesn't put a space between words when \n is used.
+        # We also don't want the space when there was a newline at the beg. we want it to butt against the word.
+        # Also we don't want a space after a newline, that would indent the next line by a space
+        if post and post[0] != '\n' and post[-1] != '\n':
+            post += ' '
+    
+    return pre, post
+
+def processLUparseError(cnt, tokList, morphs):
+
+    prev2words, foll2words = getContextWords(cnt, tokList) # just pass the lexical units
+    errorList = [("Lemma or grammatical category missing for a target word near word "+str(cnt+1)+". Found only: "+",".join(morphs)+\
+                        f". The preceding two words were: {prev2words}. The following two words were: {foll2words}. Processing stopped.",2)]
+    return errorList
+
+def processLU(lexUnitStr, affixMap):
+
+    prefixList = []
+    suffixList = []
+    infixList = []
+    circumfixList = []
+    wordAnaInfo = None
+
+    # Get the root, root category and any affixes
+    morphs = re.split('<|>', lexUnitStr)
+    morphs = [tk for tk in morphs if tk] # remove empty strings
+
+    # start at position 2 since this is where the affixes start
+    for i in range(2,len(morphs)):
+        
+        # If we don't have the item in the affix map, then it must be a feature.
+        # Treat it like a suffix, because change_to_variant will use the feature(s) to find a variant
+        if morphs[i] not in affixMap:
+            
+            suffixList.append(morphs[i])
+            
+        # prefix
+        elif affixMap[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
+            
+            prefixList.append(morphs[i])
+            
+        # infix
+        elif affixMap[morphs[i]] in ['infix', 'infixing interfix']:
+            
+            infixList.append(morphs[i])
+            
+        # circumfix
+        elif affixMap[morphs[i]] == 'circumfix':
+            
+            # Circumfixes are made of two parts, a prefix part and a suffix part
+            # when we encounter a new circumfix, give it a unique new gloss and
+            # add it to the prefix list. When we see one that we've seen before,
+            # it must be the suffix part. Give it a unique new gloss and add it to
+            # the suffix list.
+            if morphs[i] not in circumfixList:
+                
+                prefixList.append(morphs[i]+'_cfx_part_a')
+                circumfixList.append(morphs[i])
+            else:
+                suffixList.append(morphs[i]+'_cfx_part_b')
+                
+        # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix).
+        # The other types are not supported, but will end up here.
+        else:
+            suffixList.append(morphs[i])
+
+    if len(morphs) <2:
+        
+        return wordAnaInfo, morphs
+
+    # Create an ANA Info object
+    # We have the root (morphs[0]) and the POS of the root (morphs[1])
+    wordAnaInfo = ANAInfo(prefixList, suffixList, morphs[1], morphs[0], infixList)
+    wordAnaInfo.setOriginalLexicalUnitString(lexUnitStr)
+
+    return wordAnaInfo, morphs
+
 def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis=False, HCmasterFile=None, report=None):
     
     errorList = []
