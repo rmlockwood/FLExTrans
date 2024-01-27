@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.4 - 1/27/2024 - Ron Lockwood
+#    Include the LogInfo window in font increase/decrease.
+#
 #   Version 3.10.3 - 1/24/2024 - Ron Lockwood
 #    Fixes #509. Catch all exceptions when reading the biling. lexion which now catches XML parse errors.
 #
@@ -374,7 +377,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.3",
+        FTM_Version    : "3.10.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2411,6 +2414,7 @@ class Main(QMainWindow):
         self.ui.SelectedWordsEdit.setFont(myFont)
         self.ui.listSentences.setFont(myFont)
         self.ui.SentCombo.setFont(myFont)
+        self.ui.LogEdit.setFont(myFont)
 
         # Set the font size of all the check boxes.
         # This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
