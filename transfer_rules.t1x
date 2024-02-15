@@ -3,7 +3,7 @@
 "transfer.dtd">
 <transfer
 ><section-def-cats
-><def-cat
+><!--   If you would like additional categories based on your FLEx project, run the FLExTrans module: Set Up Transfer Rule Categories and Attributes--><def-cat
 n="c_adj"
 ><cat-item
 tags="adj"
@@ -51,7 +51,7 @@ tags="samp.*.pst.*"
 ></def-cat
 ></section-def-cats
 ><section-def-attrs
-><def-attr
+><!--   If you would like additional attributes based on your FLEx project, run the FLExTrans module: Set Up Transfer Rule Categories and Attributes--><def-attr
 n="a_gender_feature"
 ><attr-item
 tags="m"
@@ -65,7 +65,7 @@ tags="neut"
 ></def-attr
 ><def-attr
 n="a_gram_cat"
-><!--If you would like this list to be automatically populated (one time), run the FLExTrans module: Set Up Transfer Rule Grammatical Categories--><attr-item
+><!--If you would like this list to be automatically populated, run the FLExTrans module: Set Up Transfer Rule Categories and Attributes--><attr-item
 tags="adj"
 ></attr-item
 ><attr-item
