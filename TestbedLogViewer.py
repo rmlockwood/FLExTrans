@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.10.1 - 2/15/24 - Ron Lockwood
+#    Fixes #563. Give a path to the check mark and other icons so they can be found in the Tools folder.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -110,7 +113,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -413,9 +416,9 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
 
         self.__view = None
         self.rtl = resultsXMLObj.isRTL()
-        self.greenCheck = QtGui.QPixmap(GREEN_CHECK) 
-        self.redX = QtGui.QPixmap(RED_X)
-        self.yellowTriangle = QtGui.QPixmap(YELLOW_TRIANGLE)
+        self.greenCheck = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, GREEN_CHECK)) 
+        self.redX = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, RED_X))
+        self.yellowTriangle = QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, YELLOW_TRIANGLE))
         self.__cache = {}
         
         # initialize base class
