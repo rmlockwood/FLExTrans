@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.10
+SET FLEXTRANS_VERSION=3.10.1
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
