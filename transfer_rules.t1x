@@ -82,7 +82,7 @@ tags="v"
 ></attr-item
 ></def-attr
 ><def-attr
-n="a_num"
+n="a_num_slot"
 ><attr-item
 tags="SG"
 ></attr-item
@@ -504,7 +504,7 @@ v="Aa"
 ></action
 ></rule
 ><rule
-comment="Verbs"
+comment="Verbs - Swedish"
 ><pattern
 ><pattern-item
 n="c_v"
