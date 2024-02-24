@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.10.1 - 2/24/24 - Ron Lockwood
+#    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
+#    To do this, make the building of the element string for features and classes a separate function.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -306,6 +310,15 @@ document for more details.
 """ }
 
 #----------------------------------------------------------------
+
+# Constants for building the output lines in the dictionary file.
+ENTRY_PAIR_LEFT_BEG =           '    <e><p><l>'
+ENTRY_IDENTITY_BEG =            '    <e><i>'
+SYMBOL_BEG =                    '<s n="'
+ENTRY_PAIR_LEFT_END_RIGHT_BEG = '</l><r>'
+SYMBOL_END =                    '"/>'
+ENTRY_PAIR_RIGHT_END=           '</r></p></e>'
+ENTRY_IDENTITY_END =            '</i></e>'
 
 def bilingFileOutOfDate(sourceDB, targetDB, bilingFile):
     
@@ -763,19 +776,31 @@ def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap)
 
     return False
 
+def getInflectionInfoAsSymbolElementStrings(MSAobject):
+
+    myInflStr = ''
+    if MSAobject.InflectionClassRA:
+        
+        abb = ITsString(MSAobject.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
+        myInflStr = SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END  
+
+    if MSAobject.MsFeaturesOA:
+        
+        featureAbbrList = []
+        
+        # The features might be complex, make a recursive function call to find all leaf features
+        Utils.get_feat_abbr_list(MSAobject.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
+        
+        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
+        for grpName, abb in sorted(featureAbbrList, key=lambda x: x[0]):
+            
+            myInflStr += SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
+
+    return myInflStr
+
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     errorList = []
-    
-    # Constants for building the output lines in the dictionary file.
-    ENTRY_PAIR_LEFT_BEG = '    <e><p><l>'
-    ENTRY_IDENTITY_BEG ='    <e><i>'
-    SYMBOL_BEG = '<s n="'
-    ENTRY_PAIR_LEFT_END_RIGHT_BEG = '"/></l><r>'
-    SYMBOL_END ='"/>'
-    ENTRY_PAIR_RIGHT_END='</r></p></e>'
-    ENTRY_IDENTITY_END ='</i></e>'
-
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
     linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
     senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report, giveError=False)
@@ -835,6 +860,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         pass
         
     else: # build the file
+
+        posMap = {}
+        
         try:
             fOut = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as err:
@@ -849,8 +877,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         fOut.write('  <alphabet/>\n')
         fOut.write('  <sdefs>\n')
         fOut.write('    <sdef n="sent" c="Sentence marker"/>\n')
-        
-        posMap = {}
         
         # Get all source and target categories
         if Utils.get_categories(DB, report, posMap, TargetDB) == True:
@@ -877,7 +903,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         # write symbol for UNK
         categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
         fOut.write(categoryStr)
-        
         fOut.write('  </sdefs>\n\n')
         fOut.write('  <section id="main" type="standard">\n')
         
@@ -922,15 +947,18 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if sourceSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
 
-                            srcMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
+                            sourceMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
+                            if sourceMsa.PartOfSpeechRA:   
 
-                            if srcMsa.PartOfSpeechRA:   
-
-                                sourcePOSabbrev = ITsString(srcMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                sourcePOSabbrev = ITsString(sourceMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                 sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
+
+                                # Get source inflection strings (containing class and feature abbreviations)
+                                sourceInflStrings = getInflectionInfoAsSymbolElementStrings(sourceMsa)
+
                             else:
                                 errorList.append(('Encountered a sense that has unknown POS'+\
-                                               ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                                  ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
                                 sourcePOSabbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
@@ -947,7 +975,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             if equivStr == Utils.NONE_HEADWORD:
                                 
                                 # output the bilingual dictionary line with a blank target (<r>) side
-                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
+                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
                                 targetFound = True
                             
                                 fOut.write(outputStr)
@@ -975,29 +1003,12 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             # Deal with problem characters like spaces, periods, and slashes
                                             targetAbbrev = Utils.convertProblemChars(targetAbbrev, Utils.catProbData)
                                             
-                                            # Get target inflection class
-                                            targetInflClsStr =''
-                                            if targetMsa.InflectionClassRA:
-                                                
-                                                targetInflClsStr = SYMBOL_BEG+ITsString(targetMsa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text+SYMBOL_END  
-                                                       
-                                            # Get target features                                                     
-                                            targetFeatStr = ''
-                                            if targetMsa.MsFeaturesOA:
-                                                
-                                                featureAbbrList = []
-                                                
-                                                # The features might be complex, make a recursive function call to find all leaf features
-                                                Utils.get_feat_abbr_list(targetMsa.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
-                                                
-                                                # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                                for grpName, abb in sorted(featureAbbrList, key=lambda x: x[0]):
-                                                    
-                                                    targetFeatStr += SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
-                                            
+                                            # Get target inflection strings (containing class and feature abbreviations)
+                                            targetInflStrings = getInflectionInfoAsSymbolElementStrings(targetMsa)
+
                                             # output the bilingual dictionary line 
-                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+targetLemma+\
-                                                        SYMBOL_BEG+targetAbbrev+SYMBOL_END+targetInflClsStr+targetFeatStr+ENTRY_PAIR_RIGHT_END+'\n'
+                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+\
+                                                        targetLemma+SYMBOL_BEG+targetAbbrev+SYMBOL_END+targetInflStrings+ENTRY_PAIR_RIGHT_END+'\n'
                                             
                                             fOut.write(outputStr)
                                             recordsDumpedCount += 1
@@ -1033,12 +1044,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             if tup[0] == sourcePOSabbrev:
                                 
                                 tempStr = headWord + '.'+str(i+1)
-                                outputStr = ENTRY_PAIR_LEFT_BEG+tempStr+SYMBOL_BEG+tup[0]+ENTRY_PAIR_LEFT_END_RIGHT_BEG+tempStr+SYMBOL_BEG+tup[1]+SYMBOL_END+ENTRY_PAIR_RIGHT_END+'\n'
+                                outputStr = ENTRY_PAIR_LEFT_BEG+tempStr+SYMBOL_BEG+tup[0]+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+\
+                                            tempStr+SYMBOL_BEG+tup[1]+SYMBOL_END+ENTRY_PAIR_RIGHT_END+'\n'
                                 break
                             
                         if outputStr == '':
                             
-                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END        
+                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings        
                             outputStr = ENTRY_IDENTITY_BEG+outputStr+ENTRY_IDENTITY_END+'\n'
                             
                         fOut.write(outputStr) 
