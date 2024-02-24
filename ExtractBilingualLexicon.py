@@ -113,7 +113,7 @@
 #    correctly.
 #
 #   Version 3.4.1 - 3/4/22 - Ron Lockwood
-#    Set abbrev variable in the main loop to prevent crash shown in issue #79.
+#    Set sourcePOSabbrev variable in the main loop to prevent crash shown in issue #79.
 #    Also put out UNK as a symbol in the symbol definitions for the
 #    bilingual.dix file. Simplified building the sdef string.
 #
@@ -311,11 +311,11 @@ def bilingFileOutOfDate(sourceDB, targetDB, bilingFile):
     
     # Build a DateTime object with the FLEx DB last modified date
     flexDate = sourceDB.GetDateLastModified()
-    srcDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    sourceDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
     
     # Build a DateTime object with the FLEx DB last modified date
     flexDate = targetDB.GetDateLastModified()
-    tgtDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
+    targetDbDateTime = datetime(flexDate.get_Year(),flexDate.get_Month(),flexDate.get_Day(),flexDate.get_Hour(),flexDate.get_Minute(),flexDate.get_Second())
     
     # Get the date of the cache file
     try:
@@ -324,7 +324,7 @@ def bilingFileOutOfDate(sourceDB, targetDB, bilingFile):
         mtime = 0
     bilingFileDateTime = datetime.fromtimestamp(mtime)
     
-    if srcDbDateTime > bilingFileDateTime or tgtDbDateTime > bilingFileDateTime: # FLEx DB is newer
+    if sourceDbDateTime > bilingFileDateTime or targetDbDateTime > bilingFileDateTime: # FLEx DB is newer
         return True 
     else: # affix file is newer
         return False
@@ -733,7 +733,7 @@ def convertToBilingStyleEntry(replStyleEntry):
                         newSide[i].append(myElem)
     return newEntry
     
-def processSpaces(headWord, DB, srcEntry, errorList):
+def processSpaces(headWord, DB, sourceEntry, errorList):
     
     # Check for preceding or ending spaces
     strippedHeadword = headWord.strip()
@@ -742,7 +742,7 @@ def processSpaces(headWord, DB, srcEntry, errorList):
         
         # Give a warning if there were spaces, but use the stripped version
         errorList.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
-                           + ITsString(srcEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(srcEntry)))
+                           + ITsString(sourceEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(sourceEntry)))
     
     # Substitute any medial spaces with <b/> (blank space element)    
     headWord = re.sub(r' ', r'<b/>', strippedHeadword)
@@ -750,9 +750,9 @@ def processSpaces(headWord, DB, srcEntry, errorList):
     return headWord
 
 # Convert the headword to lower case, tag on the POS and see if that already is in the map
-def checkForDuplicateHeadword(headWord, abbrev, hvo, duplicateHeadwordPOSmap):
+def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap):
 
-    lowerCaseStr = headWord.lower() + abbrev
+    lowerCaseStr = headWord.lower() + POSabbrev
 
     # if we already have the headword with this pos in the list and it's not part of the same entry (the hvo number is the same) we have a duplicate entry
     if lowerCaseStr in duplicateHeadwordPOSmap and duplicateHeadwordPOSmap[lowerCaseStr] != hvo:
@@ -774,7 +774,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     ENTRY_PAIR_LEFT_END_RIGHT_BEG = '"/></l><r>'
     SYMBOL_END ='"/>'
     ENTRY_PAIR_RIGHT_END='</r></p></e>'
-    ENTRY_IDENTITY_END ='"/></i></e>'
+    ENTRY_IDENTITY_END ='</i></e>'
 
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
     linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
@@ -889,20 +889,20 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         duplicateHeadwordPOSmap = {}
 
         # Loop through all the entries
-        for entryCount,srcEntry in enumerate(DB.LexiconAllEntries()):
+        for entryCount, sourceEntry in enumerate(DB.LexiconAllEntries()):
         
             if report:
                 report.ProgressUpdate(entryCount)
             
             # Don't process affixes, clitics
-            if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               srcEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+            if sourceEntry.LexemeFormOA and sourceEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+               sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
             
                 # Get the headword string
-                headWord = ITsString(srcEntry.HeadWord).Text
+                headWord = ITsString(sourceEntry.HeadWord).Text
                 
                 # Deal with spaces in the headword
-                headWord = processSpaces(headWord, DB, srcEntry, errorList)
+                headWord = processSpaces(headWord, DB, sourceEntry, errorList)
                 
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
@@ -911,43 +911,43 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
                 
                 # Loop through senses
-                for i, mySense in enumerate(srcEntry.SensesOS):
+                for i, sourceSense in enumerate(sourceEntry.SensesOS):
                     
                     targetFound = False
-                    abbrev = 'UNK'
+                    sourcePOSabbrev = 'UNK'
                     
                     # Make sure we have a valid analysis object
-                    if mySense.MorphoSyntaxAnalysisRA:
+                    if sourceSense.MorphoSyntaxAnalysisRA:
                     
                         # Get the POS abbreviation for the current sense, assuming we have a stem
-                        if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                        if sourceSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
 
-                            msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                            srcMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
 
-                            if msa.PartOfSpeechRA:   
+                            if srcMsa.PartOfSpeechRA:   
 
-                                abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-                                abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
+                                sourcePOSabbrev = ITsString(srcMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
                             else:
                                 errorList.append(('Encountered a sense that has unknown POS'+\
-                                               ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
-                                abbrev = 'UNK'
+                                               ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                sourcePOSabbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
-                            if checkForDuplicateHeadword(headWord, abbrev, srcEntry.Hvo, duplicateHeadwordPOSmap):
+                            if checkForDuplicateHeadword(headWord, sourcePOSabbrev, sourceEntry.Hvo, duplicateHeadwordPOSmap):
 
-                                errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({abbrev}). Skipping this sense.'+\
-                                               'Source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))  
+                                errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense.'+\
+                                               'Source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))  
                                 continue            
 
                             # If we have a link to a target entry, process it
-                            equivStr = Utils.getTargetEquivalentUrl(DB, mySense, custSenseEquivField)
+                            equivStr = Utils.getTargetEquivalentUrl(DB, sourceSense, custSenseEquivField)
                             
                             # handle a sense mapped intentionally to nothing. Skip it.
                             if equivStr == Utils.NONE_HEADWORD:
                                 
                                 # output the bilingual dictionary line with a blank target (<r>) side
-                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
+                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
                                 targetFound = True
                             
                                 fOut.write(outputStr)
@@ -955,7 +955,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 
                             elif equivStr:
                                 
-                                targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(srcEntry, DB, TargetDB, mySense, equivStr, \
+                                targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(sourceEntry, DB, TargetDB, sourceSense, equivStr, \
                                                                     custSenseNumField, report, remove1dot1Bool=False)
                                 if targetSense:
                                     
@@ -979,8 +979,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             targetInflClsStr =''
                                             if targetMsa.InflectionClassRA:
                                                 
-                                                targetInflClsStr = SYMBOL_BEG+ITsString(targetMsa.InflectionClassRA.\
-                                                                        Abbreviation.BestAnalysisAlternative).Text+SYMBOL_END         
+                                                targetInflClsStr = SYMBOL_BEG+ITsString(targetMsa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text+SYMBOL_END  
+                                                       
                                             # Get target features                                                     
                                             targetFeatStr = ''
                                             if targetMsa.MsFeaturesOA:
@@ -996,7 +996,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                     targetFeatStr += SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
                                             
                                             # output the bilingual dictionary line 
-                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+targetLemma+\
+                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+targetLemma+\
                                                         SYMBOL_BEG+targetAbbrev+SYMBOL_END+targetInflClsStr+targetFeatStr+ENTRY_PAIR_RIGHT_END+'\n'
                                             
                                             fOut.write(outputStr)
@@ -1005,11 +1005,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                         else:
                                             errorList.append(('Skipping sense because the target POS is undefined '+\
                                                             ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                            ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                                            ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                     else:
                                         errorList.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
                                                         ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                        ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                                        ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                 else:
                                     # Error already reported
                                     pass
@@ -1017,11 +1017,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 pass
                         else:
-                            errorList.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
+                            errorList.append(('Skipping sense that is of class: '+sourceSense.MorphoSyntaxAnalysisRA.ClassName+\
+                                           ' for headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
                     else:
                         errorList.append(('Skipping sense, no analysis object'\
-                                           ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
+                                           ' for headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
                     if not targetFound:
                         # output the bilingual dictionary line -- source and target are the same
                         
@@ -1030,7 +1030,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                         outputStr = ''
                         for tup in catSubList:
                             
-                            if tup[0] == abbrev:
+                            if tup[0] == sourcePOSabbrev:
                                 
                                 tempStr = headWord + '.'+str(i+1)
                                 outputStr = ENTRY_PAIR_LEFT_BEG+tempStr+SYMBOL_BEG+tup[0]+ENTRY_PAIR_LEFT_END_RIGHT_BEG+tempStr+SYMBOL_BEG+tup[1]+SYMBOL_END+ENTRY_PAIR_RIGHT_END+'\n'
@@ -1038,25 +1038,25 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             
                         if outputStr == '':
                             
-                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev        
+                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END        
                             outputStr = ENTRY_IDENTITY_BEG+outputStr+ENTRY_IDENTITY_END+'\n'
                             
                         fOut.write(outputStr) 
                         recordsDumpedCount += 1   
                         
             else:
-                if srcEntry.LexemeFormOA == None:
+                if sourceEntry.LexemeFormOA == None:
                     
-                    errorList.append(('No lexeme form. Skipping. Headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
+                    errorList.append(('No lexeme form. Skipping. Headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
                     
-                elif srcEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                elif sourceEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                     
                     # We've documented that affixes are skipped. Don't report this
                     pass
                 
-                elif srcEntry.LexemeFormOA.MorphTypeRA == None:
+                elif sourceEntry.LexemeFormOA.MorphTypeRA == None:
                     
-                    errorList.append(('No Morph Type. Skipping.'+ITsString(srcEntry.HeadWord).Text+' Best Vern: '+ITsString(srcEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(srcEntry)))
+                    errorList.append(('No Morph Type. Skipping.'+ITsString(sourceEntry.HeadWord).Text+' Best Vern: '+ITsString(sourceEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(sourceEntry)))
                 
         fOut.write('    <!-- SECTION: Punctuation -->\n')
         
