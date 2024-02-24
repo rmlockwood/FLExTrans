@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.5 - 2/23/2024 - Ron Lockwood
+#    Fixes #567 Fixes crash in Catalog Target Affixes when a lexeme form is null.
+#
 #   Version 3.10.4 - 1/27/2024 - Ron Lockwood
 #    Include the LogInfo window in font increase/decrease.
 #
@@ -377,7 +380,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.4",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1241,7 +1244,8 @@ class Main(QMainWindow):
             try:
                 errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
-                QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                QMessageBox.warning(self, 'Locked DB?', 'The database could be locked. Check if sharing is checked for the target project. \
+                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.')
                 self.unsetCursor()
                 return
 
