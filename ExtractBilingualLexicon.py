@@ -61,7 +61,7 @@
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #
 #   Version 3.7.3 - 1/18/23 - Ron Lockwood
-#    Fixed bug where report was None in the do_replacements function and a warning was
+#    Fixed bug where report was None in the doReplacements function and a warning was
 #    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
 #
 #   Version 3.7.2 - 1/7/23 - Ron Lockwood
@@ -307,7 +307,7 @@ document for more details.
 
 #----------------------------------------------------------------
 
-def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
+def bilingFileOutOfDate(sourceDB, targetDB, bilingFile):
     
     # Build a DateTime object with the FLEx DB last modified date
     flexDate = sourceDB.GetDateLastModified()
@@ -329,7 +329,7 @@ def biling_file_out_of_date(sourceDB, targetDB, bilingFile):
     else: # affix file is newer
         return False
 
-def repl_file_out_of_date(bilingFile, replFile):
+def replFileOutOfDate(bilingFile, replFile):
     
     # Get the date of the files
     try:
@@ -349,14 +349,14 @@ def repl_file_out_of_date(bilingFile, replFile):
     else: 
         return False
 
-def is_number(s):
+def isNumber(s):
     try:
         float(s)
         return True
     except ValueError:
         return False
 
-def get_repl_entry_key(left, newDocType):
+def getReplEntryKey(left, newDocType):
     
     if newDocType == True:
         
@@ -417,17 +417,17 @@ def doWeHaveNewDocType(tmpReplFile, report, replFile):
     
     return False, newDocType
         
-def createReplMap(repl_sec, newDocType):    
+def createReplMap(replSec, newDocType):    
     
     replMap = {}
     
     # Loop through the entries in this section
-    for entry in repl_sec:
+    for entry in replSec:
         
         # Get the <l> text which is under the <p> which is under the <e>
         left = entry.find('p/l')
         
-        key = get_repl_entry_key(left, newDocType)
+        key = getReplEntryKey(left, newDocType)
         
         replMap[key] = entry
         
@@ -451,24 +451,24 @@ def addNewSymbols(bilingRoot, replRoot):
     bilingSdefs.append(comment)
     
     # Loop through the replacement sdefs
-    for symbol_def in replSdefs:
+    for symbolDef in replSdefs:
         
         # if the symbol abbreviation doesn't already exist, add it
-        if symbol_def.attrib['n'] not in sdfMap:
+        if symbolDef.attrib['n'] not in sdfMap:
             
             # add the sdef element from repl file to the end of the biling sdefs list
-            bilingSdefs.append(symbol_def)
+            bilingSdefs.append(symbolDef)
 
-def processReplacementEntries(biling_section, replMap, newDocType, replFile, report):
+def processReplacementEntries(bilingSection, replMap, newDocType, replFile, report):
         
     # Create a new section element to replace the old
-    new_biling_section = ET.Element('section')
-    new_biling_section.attrib = biling_section.attrib
+    newBilingSection = ET.Element('section')
+    newBilingSection.attrib = bilingSection.attrib
     
     foundKeys = []
     
     # Loop through all the bilingual entries
-    for entry in biling_section:
+    for entry in bilingSection:
         
         # Get the left lemma text
         left = entry.find('p/l')
@@ -492,22 +492,22 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
             
             comment2 = ET.Comment(oldEntryStr+'\n')
             
-            new_biling_section.append(comment1)
-            new_biling_section.append(comment2)
+            newBilingSection.append(comment1)
+            newBilingSection.append(comment2)
             
             if newDocType:
-                replEntry = convert_to_biling_style_entry(replMap[key])
+                replEntry = convertToBilingStyleEntry(replMap[key])
             else:
                 replEntry = replMap[key]
                 
             # Insert the new entry from the replacement file map
-            new_biling_section.append(replEntry)
+            newBilingSection.append(replEntry)
             
             # Keep a list of the ones we found in the replacement file map so we can give warnings for replacement file keys that weren't found
             foundKeys.append(key)
             
         else: # copy the old entry to the new
-            new_biling_section.append(entry)
+            newBilingSection.append(entry)
     
     # Give a warning for keys in the replacement file that weren't found
     for key in list(set(replMap.keys()) - set(foundKeys)):
@@ -519,29 +519,29 @@ def processReplacementEntries(biling_section, replMap, newDocType, replFile, rep
             
                 report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
         
-    return new_biling_section
+    return newBilingSection
     
-def processAppendEntries(new_biling_section, replFile, replRoot, newDocType):
+def processAppendEntries(newBilingSection, replFile, replRoot, newDocType):
         
     # Make a comment and adds it
     comment = ET.Comment('Custom entries appended below from the file ' + os.path.basename(replFile) + '.\n')
-    new_biling_section.append(comment)
+    newBilingSection.append(comment)
     
     # Get the append entries section
-    append_sec = replRoot.find(".//*[@id='append']")
+    appendSec = replRoot.find(".//*[@id='append']")
 
-    if append_sec == None:
+    if appendSec == None:
 
         return True
     
     # Loop through append entries
-    for entry in append_sec:
+    for entry in appendSec:
         
         # add them to the list of bilingual entries
         if newDocType:
-            new_biling_section.append(convert_to_biling_style_entry(entry))
+            newBilingSection.append(convertToBilingStyleEntry(entry))
         else:
-            new_biling_section.append(entry)
+            newBilingSection.append(entry)
         
 def insertDocType(fullPathBilingFile):
         
@@ -567,7 +567,7 @@ def insertDocType(fullPathBilingFile):
 # in its symbol definition section <sdefs>. This function takes all those symbol definitions
 # and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to 
 # indicate where the new <sdef> elements start.
-def do_replacements(configMap, report, fullPathBilingFile, replFile):
+def doReplacements(configMap, report, fullPathBilingFile, replFile):
 
     # See if we need to do replacements
     # See if the config setting is there or if it has valid info.
@@ -605,15 +605,15 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
 
     # Get the replacement entries section
     replRoot = replEtree.getroot()
-    repl_sec = replRoot.find(".//*[@id='replacement']")
+    replacementSection = replRoot.find(".//*[@id='replacement']")
 
-    if repl_sec == None:
+    if replacementSection == None:
 
         report.Error(f'Could not find the id "replacement" in the Replacement File: {replFile}')
         return True
     
     # Put the replacement entries into a map
-    replMap = createReplMap(repl_sec, newDocType)
+    replMap = createReplMap(replacementSection, newDocType)
     
     # Read in the bilingual xml file
     try:
@@ -632,17 +632,17 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
     addNewSymbols(bilingRoot, replRoot)
 
     # Get the section element
-    biling_section = bilingRoot.find('section')
+    bilingSection = bilingRoot.find('section')
     
     # Find entries that match replacement entries, comment out the old and insert the new
-    new_biling_section = processReplacementEntries(biling_section, replMap, newDocType, replFile, report)
+    newBilingSection = processReplacementEntries(bilingSection, replMap, newDocType, replFile, report)
 
     # Add the entries from the replacement file marked as 'append'
-    processAppendEntries(new_biling_section, replFile, replRoot, newDocType)
+    processAppendEntries(newBilingSection, replFile, replRoot, newDocType)
 
     # Remove the old entries list and add the new
-    bilingRoot.remove(biling_section)
-    bilingRoot.append(new_biling_section)
+    bilingRoot.remove(bilingSection)
+    bilingRoot.append(newBilingSection)
     
     # Give whitespace indent TODO: this will only work in python 3.9+
 #    ET.indent(bilingEtree)
@@ -665,7 +665,7 @@ def do_replacements(configMap, report, fullPathBilingFile, replFile):
 # convert from a <e> element that has <leftdata> and <rightdata> under <l> and <r> to one that doesn't have these
 # <b /> elements could be between multiple <leftdata> or <rightdata> elements and should come out something like
 # <l>source<b />word1.1<s n="v"></s></l> same kind of thing for <r>
-def convert_to_biling_style_entry(replStyleEntry):
+def convertToBilingStyleEntry(replStyleEntry):
     
     newEntry = ET.Element('e')
     pEl = ET.Element('p')
@@ -733,7 +733,7 @@ def convert_to_biling_style_entry(replStyleEntry):
                         newSide[i].append(myElem)
     return newEntry
     
-def processSpaces(headWord, DB, srcEntry, error_list):
+def processSpaces(headWord, DB, srcEntry, errorList):
     
     # Check for preceding or ending spaces
     strippedHeadword = headWord.strip()
@@ -741,7 +741,7 @@ def processSpaces(headWord, DB, srcEntry, error_list):
     if strippedHeadword != headWord.strip():
         
         # Give a warning if there were spaces, but use the stripped version
-        error_list.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
+        errorList.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
                            + ITsString(srcEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(srcEntry)))
     
     # Substitute any medial spaces with <b/> (blank space element)    
@@ -765,17 +765,16 @@ def checkForDuplicateHeadword(headWord, abbrev, hvo, duplicateHeadwordPOSmap):
 
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
-    error_list = []
+    errorList = []
     
     # Constants for building the output lines in the dictionary file.
-    s1 = '    <e><p><l>'
-    s1i ='    <e><i>'
-    s2 = '<s n="'
-    s3 = '"/></l><r>'
-    s4 = '"/></r></p></e>'
-    s4a ='"/>'
-    s4b='</r></p></e>'
-    s4i ='"/></i></e>'
+    ENTRY_PAIR_LEFT_BEG = '    <e><p><l>'
+    ENTRY_IDENTITY_BEG ='    <e><i>'
+    SYMBOL_BEG = '<s n="'
+    ENTRY_PAIR_LEFT_END_RIGHT_BEG = '"/></l><r>'
+    SYMBOL_END ='"/>'
+    ENTRY_PAIR_RIGHT_END='</r></p></e>'
+    ENTRY_IDENTITY_END ='"/></i></e>'
 
     catSub           = ReadConfig.getConfigVal(configMap, ReadConfig.CATEGORY_ABBREV_SUB_LIST, report)
     linkField        = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY, report)
@@ -784,7 +783,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
     if not (linkField and sourceMorphNames and sentPunct):
-        return error_list
+        return errorList
     
     # Transform the straight list of category abbreviations to a list of tuples
     catSubList = []
@@ -793,35 +792,35 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             for i in range(0,len(catSub),2):
                 catSubList.append((catSub[i],catSub[i+1]))
         except:
-            error_list.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
-            return error_list
+            errorList.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
+            return errorList
 
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
     custSenseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
     custSenseNumField = DB.LexiconGetSenseCustomFieldNamed(senseNumField)
     
     if not (custSenseEquivField):
-        error_list.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
-        return error_list
+        errorList.append((f"Custom field: {linkField} doesn't exist. Please read the instructions.", 2))
+        return errorList
 
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not bilingFile:
-        error_list.append((f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.', 2))
-        return error_list
+        errorList.append((f'A value for {ReadConfig.BILINGUAL_DICTIONARY_FILE} not found in the configuration file.', 2))
+        return errorList
     
     fullPathBilingFile = bilingFile
     
     replFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replFile:
-        error_list.append((f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.', 2))
-        return error_list
+        errorList.append((f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.', 2))
+        return errorList
     
     TargetDB = Utils.openTargetProject(configMap, report)
 
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
-        error_list.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
-        return error_list
+        errorList.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
+        return errorList
     
     if cacheData == 'y':
         
@@ -830,35 +829,35 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         DONT_CACHE = True
     
     # If the target database hasn't changed since we created the affix file, don't do anything.
-    if not DONT_CACHE and useCacheIfAvailable and biling_file_out_of_date(DB, TargetDB, bilingFile) == False and repl_file_out_of_date(bilingFile, replFile) == False:
+    if not DONT_CACHE and useCacheIfAvailable and bilingFileOutOfDate(DB, TargetDB, bilingFile) == False and replFileOutOfDate(bilingFile, replFile) == False:
         
-        error_list.append(("The bilingual dictionary is up to date.", 0))
+        errorList.append(("The bilingual dictionary is up to date.", 0))
         pass
         
     else: # build the file
         try:
-            f_out = open(fullPathBilingFile, 'w', encoding="utf-8")
+            fOut = open(fullPathBilingFile, 'w', encoding="utf-8")
         except IOError as err:
-            error_list.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
-            return error_list
+            errorList.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
+            return errorList
         
-        error_list.append(("Outputing category information...", 0))
+        errorList.append(("Outputing category information...", 0))
         
-        f_out.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        f_out.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-        f_out.write('<dictionary>\n')
-        f_out.write('  <alphabet/>\n')
-        f_out.write('  <sdefs>\n')
-        f_out.write('    <sdef n="sent" c="Sentence marker"/>\n')
+        fOut.write('<?xml version="1.0" encoding="utf-8"?>\n')
+        fOut.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+        fOut.write('<dictionary>\n')
+        fOut.write('  <alphabet/>\n')
+        fOut.write('  <sdefs>\n')
+        fOut.write('    <sdef n="sent" c="Sentence marker"/>\n')
         
         posMap = {}
         
         # Get all source and target categories
         if Utils.get_categories(DB, report, posMap, TargetDB) == True:
             
-            error_list.append(('Error retrieving categories.'), 2)
+            errorList.append(('Error retrieving categories.'), 2)
             TargetDB.CloseProject()
-            return error_list
+            return errorList
 
         # save target features so they can go in the symbol definition section
         for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
@@ -869,31 +868,31 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                     posMap[Utils.underscores(featAbbr)] = featName
                 
         # build string for the xml pos section
-        for pos_abbr, pos_name in sorted(list(posMap.items()), key=lambda k_v: (k_v[0].lower(),k_v[1])):
+        for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):
             
             # output abbreviation and full category name
-            cat_str = f'    <sdef n="{pos_abbr}" c="{pos_name}"/>\n'
-            f_out.write(cat_str)
+            categoryStr = f'    <sdef n="{POSabbr}" c="{POSname}"/>\n'
+            fOut.write(categoryStr)
         
         # write symbol for UNK
-        cat_str = '    <sdef n="UNK" c="Unknown"/>\n'
-        f_out.write(cat_str)
+        categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
+        fOut.write(categoryStr)
         
-        f_out.write('  </sdefs>\n\n')
-        f_out.write('  <section id="main" type="standard">\n')
+        fOut.write('  </sdefs>\n\n')
+        fOut.write('  <section id="main" type="standard">\n')
         
-        error_list.append(("Building the bilingual dictionary...", 0))
-        records_dumped_cnt = 0
+        errorList.append(("Building the bilingual dictionary...", 0))
+        recordsDumpedCount = 0
         if report:
             report.ProgressStart(DB.LexiconNumberOfEntries())
       
         duplicateHeadwordPOSmap = {}
 
         # Loop through all the entries
-        for entry_cnt,srcEntry in enumerate(DB.LexiconAllEntries()):
+        for entryCount,srcEntry in enumerate(DB.LexiconAllEntries()):
         
             if report:
-                report.ProgressUpdate(entry_cnt)
+                report.ProgressUpdate(entryCount)
             
             # Don't process affixes, clitics
             if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
@@ -903,7 +902,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = ITsString(srcEntry.HeadWord).Text
                 
                 # Deal with spaces in the headword
-                headWord = processSpaces(headWord, DB, srcEntry, error_list)
+                headWord = processSpaces(headWord, DB, srcEntry, errorList)
                 
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
@@ -914,7 +913,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 # Loop through senses
                 for i, mySense in enumerate(srcEntry.SensesOS):
                     
-                    trgtFound = False
+                    targetFound = False
                     abbrev = 'UNK'
                     
                     # Make sure we have a valid analysis object
@@ -930,14 +929,14 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                 abbrev = Utils.convertProblemChars(abbrev, Utils.catProbData)
                             else:
-                                error_list.append(('Encountered a sense that has unknown POS'+\
+                                errorList.append(('Encountered a sense that has unknown POS'+\
                                                ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                                 abbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
                             if checkForDuplicateHeadword(headWord, abbrev, srcEntry.Hvo, duplicateHeadwordPOSmap):
 
-                                error_list.append((f'Encountered a headword that only differs in case from another headword with the same POS ({abbrev}). Skipping this sense.'+\
+                                errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({abbrev}). Skipping this sense.'+\
                                                'Source headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))  
                                 continue            
 
@@ -948,11 +947,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             if equivStr == Utils.NONE_HEADWORD:
                                 
                                 # output the bilingual dictionary line with a blank target (<r>) side
-                                out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+s4b+'\n'
-                                trgtFound = True
+                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
+                                targetFound = True
                             
-                                f_out.write(out_str)
-                                records_dumped_cnt += 1
+                                fOut.write(outputStr)
+                                recordsDumpedCount += 1
                                 
                             elif equivStr:
                                 
@@ -968,46 +967,47 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                         targetMsa = IMoStemMsa(targetSense.MorphoSyntaxAnalysisRA)
                                         if targetMsa.PartOfSpeechRA:
                                             
-                                            trgtFound = True
+                                            targetFound = True
                                             
                                             # Get target pos abbreviation
-                                            trgtAbbrev = ITsString(targetMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                            targetAbbrev = ITsString(targetMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                             
                                             # Deal with problem characters like spaces, periods, and slashes
-                                            trgtAbbrev = Utils.convertProblemChars(trgtAbbrev, Utils.catProbData)
+                                            targetAbbrev = Utils.convertProblemChars(targetAbbrev, Utils.catProbData)
                                             
                                             # Get target inflection class
-                                            trgtInflCls =''
+                                            targetInflClsStr =''
                                             if targetMsa.InflectionClassRA:
                                                 
-                                                trgtInflCls = s2+ITsString(targetMsa.InflectionClassRA.\
-                                                                        Abbreviation.BestAnalysisAlternative).Text+s4a         
+                                                targetInflClsStr = SYMBOL_BEG+ITsString(targetMsa.InflectionClassRA.\
+                                                                        Abbreviation.BestAnalysisAlternative).Text+SYMBOL_END         
                                             # Get target features                                                     
-                                            featStr = ''
+                                            targetFeatStr = ''
                                             if targetMsa.MsFeaturesOA:
                                                 
-                                                feat_abbr_list = []
+                                                featureAbbrList = []
                                                 
                                                 # The features might be complex, make a recursive function call to find all leaf features
-                                                Utils.get_feat_abbr_list(targetMsa.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                                Utils.get_feat_abbr_list(targetMsa.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
                                                 
                                                 # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features 
-                                                for grpName, abb in sorted(feat_abbr_list, key=lambda x: x[0]):
+                                                for grpName, abb in sorted(featureAbbrList, key=lambda x: x[0]):
                                                     
-                                                    featStr += s2 + Utils.underscores(abb) + s4a
+                                                    targetFeatStr += SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
                                             
-                                            # output the bilingual dictionary line (the sX is xml stuff)
-                                            out_str = s1+headWord+'.'+str(i+1)+s2+abbrev+s3+targetLemma+s2+trgtAbbrev+s4a+trgtInflCls+featStr+s4b+'\n'
-                                                        
-                                            f_out.write(out_str)
-                                            records_dumped_cnt += 1
+                                            # output the bilingual dictionary line 
+                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev+ENTRY_PAIR_LEFT_END_RIGHT_BEG+targetLemma+\
+                                                        SYMBOL_BEG+targetAbbrev+SYMBOL_END+targetInflClsStr+targetFeatStr+ENTRY_PAIR_RIGHT_END+'\n'
+                                            
+                                            fOut.write(outputStr)
+                                            recordsDumpedCount += 1
                                     
                                         else:
-                                            error_list.append(('Skipping sense because the target POS is undefined '+\
+                                            errorList.append(('Skipping sense because the target POS is undefined '+\
                                                             ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
                                                             ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                     else:
-                                        error_list.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
+                                        errorList.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
                                                         ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
                                                         ' while processing source headword: '+ITsString(srcEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                 else:
@@ -1017,37 +1017,37 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 # Don't report this. Most of the time the equivalent field will be empty.
                                 pass
                         else:
-                            error_list.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
+                            errorList.append(('Skipping sense that is of class: '+mySense.MorphoSyntaxAnalysisRA.ClassName+\
                                            ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                     else:
-                        error_list.append(('Skipping sense, no analysis object'\
+                        errorList.append(('Skipping sense, no analysis object'\
                                            ' for headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
-                    if not trgtFound:
+                    if not targetFound:
                         # output the bilingual dictionary line -- source and target are the same
                         
                         # do substitutions of categories. This is for standard substitutions where 
                         # the target category name is different even though essentially the categories are equivalent.
-                        out_str = ''
+                        outputStr = ''
                         for tup in catSubList:
                             
                             if tup[0] == abbrev:
                                 
-                                temp_str = headWord + '.'+str(i+1)
-                                out_str = s1+temp_str+s2+tup[0]+s3+temp_str+s2+tup[1]+s4+'\n'
+                                tempStr = headWord + '.'+str(i+1)
+                                outputStr = ENTRY_PAIR_LEFT_BEG+tempStr+SYMBOL_BEG+tup[0]+ENTRY_PAIR_LEFT_END_RIGHT_BEG+tempStr+SYMBOL_BEG+tup[1]+SYMBOL_END+ENTRY_PAIR_RIGHT_END+'\n'
                                 break
                             
-                        if out_str == '':
+                        if outputStr == '':
                             
-                            out_str = headWord+'.'+str(i+1)+s2+abbrev        
-                            out_str = s1i+out_str+s4i+'\n'
+                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+abbrev        
+                            outputStr = ENTRY_IDENTITY_BEG+outputStr+ENTRY_IDENTITY_END+'\n'
                             
-                        f_out.write(out_str) 
-                        records_dumped_cnt += 1   
+                        fOut.write(outputStr) 
+                        recordsDumpedCount += 1   
                         
             else:
                 if srcEntry.LexemeFormOA == None:
                     
-                    error_list.append(('No lexeme form. Skipping. Headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
+                    errorList.append(('No lexeme form. Skipping. Headword: '+ITsString(srcEntry.HeadWord).Text, 1, DB.BuildGotoURL(srcEntry)))
                     
                 elif srcEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                     
@@ -1056,9 +1056,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 
                 elif srcEntry.LexemeFormOA.MorphTypeRA == None:
                     
-                    error_list.append(('No Morph Type. Skipping.'+ITsString(srcEntry.HeadWord).Text+' Best Vern: '+ITsString(srcEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(srcEntry)))
+                    errorList.append(('No Morph Type. Skipping.'+ITsString(srcEntry.HeadWord).Text+' Best Vern: '+ITsString(srcEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(srcEntry)))
                 
-        f_out.write('    <!-- SECTION: Punctuation -->\n')
+        fOut.write('    <!-- SECTION: Punctuation -->\n')
         
         # Create a regular expression string for the punctuation characters
         # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
@@ -1067,23 +1067,23 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         
         # This notation in Apertium basically means that any combination of the given punctuation characters
         # with the tag <sent> will be substituted with the same thing plus the <sent> tag.
-        f_out.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
-        f_out.write('  </section>\n')
-        f_out.write('</dictionary>\n')
-        f_out.close()
+        fOut.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
+        fOut.write('  </section>\n')
+        fOut.write('</dictionary>\n')
+        fOut.close()
     
-        error_list.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
-        error_list.append((str(records_dumped_cnt)+' records created in the bilingual dictionary.', 0))
+        errorList.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
+        errorList.append((str(recordsDumpedCount)+' records created in the bilingual dictionary.', 0))
 
         # As a last step, replace certain parts of the bilingual dictionary
-        if do_replacements(configMap, report, fullPathBilingFile, replFile) == True:
+        if doReplacements(configMap, report, fullPathBilingFile, replFile) == True:
             
-            error_list.append(('Error processing the replacement file.', 2))
+            errorList.append(('Error processing the replacement file.', 2))
             TargetDB.CloseProject()
-            return error_list
+            return errorList
     
     TargetDB.CloseProject()
-    return error_list
+    return errorList
 
 def MainFunction(DB, report, modifyAllowed):
 
@@ -1093,10 +1093,10 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Call the main function
-    error_list = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
+    errorList = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
         
     # output info, warnings, errors and url links
-    Utils.processErrorList(error_list, report)
+    Utils.processErrorList(errorList, report)
                 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
