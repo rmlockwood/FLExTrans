@@ -5,9 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
-#   Version 3.10.1 - 2/24/24 - Ron Lockwood
+#   Version 3.10.1 - 2/26/24 - Ron Lockwood
 #    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
 #    To do this, make the building of the element string for features and classes a separate function.
+#    Also, add source features and classes to the symbol definition header part of the bilingual lexicon.
 #
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
@@ -798,6 +799,18 @@ def getInflectionInfoAsSymbolElementStrings(MSAobject):
 
     return myInflStr
 
+def addFeatureStringsToMap(myDB, myMap):
+        
+    for feat in myDB.lp.MsFeatureSystemOA.FeaturesOC:
+
+        if feat.ClassID == FsClosedFeatureTags.kClassId: # FsClosedFeature
+
+            for val in IFsClosedFeature(feat).ValuesOC:
+
+                featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
+                featName = ITsString(val.Name.BestAnalysisAlternative).Text
+                myMap[Utils.underscores(featAbbr)] = featName
+
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     errorList = []
@@ -878,20 +891,16 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         fOut.write('  <sdefs>\n')
         fOut.write('    <sdef n="sent" c="Sentence marker"/>\n')
         
-        # Get all source and target categories
-        if Utils.get_categories(DB, report, posMap, TargetDB) == True:
+        # Get all source and target categories along with inflection classes
+        if Utils.get_categories(DB, report, posMap, TargetDB, numCatErrorsToShow=1, addInflectionClasses=True) == True:
             
             errorList.append(('Error retrieving categories.'), 2)
             TargetDB.CloseProject()
             return errorList
 
-        # save target features so they can go in the symbol definition section
-        for feat in TargetDB.lp.MsFeatureSystemOA.FeaturesOC:
-            if feat.ClassID == FsClosedFeatureTags.kClassId: # FsClosedFeature
-                for val in IFsClosedFeature(feat).ValuesOC:
-                    featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
-                    featName = ITsString(val.Name.BestAnalysisAlternative).Text
-                    posMap[Utils.underscores(featAbbr)] = featName
+        # save features so they can go in the symbol definition section. Source and Target DBs.
+        addFeatureStringsToMap(DB, posMap)
+        addFeatureStringsToMap(TargetDB, posMap)
                 
         # build string for the xml pos section
         for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):

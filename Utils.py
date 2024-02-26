@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.6 - 2/26/24 - Ron Lockwood
+#    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
+#    Default to collecting inflection classes for both source and target DBs.
+#
 #   Version 3.10.5 - 1/25/24 - Ron Lockwood
 #    Prevent initial new line.
 #
@@ -1558,8 +1562,8 @@ def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addI
             # add a (possibly changed abbreviation string) to the map
             add_to_cat_map(posMap, posFullNameStr, posAbbrStr)
             
-            # add inflection classes to the map if there are any if we are working on the target database
-            if addInflectionClasses and dbType == dbList[1][1]: #target
+            # add inflection classes to the map if there are any.
+            if addInflectionClasses:
                 
                 process_inflection_classes(posMap, pos)
             
