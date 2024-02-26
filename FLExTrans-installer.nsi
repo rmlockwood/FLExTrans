@@ -108,14 +108,6 @@ InitPluginsDir
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
   
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
-  
-  File "${GIT_FOLDER}\FlexTrans.config"
-
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config"
-  
-  File "${GIT_FOLDER}\FlexTrans.config"
-
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\All Steps.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
