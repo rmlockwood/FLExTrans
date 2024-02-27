@@ -1,20 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE repldictionary PUBLIC "-//XMLmind//DTD repldictionary//EN"
 "repldix.dtd">
-<repldictionary>
-	<alphabet></alphabet>
-	<sdefs>
-		<!-- Add category definitions here -->
-  	<sdef n="v" c="Verb"/>
-  	<sdef n="pfv" c="Perfective"/>
-  	<sdef n="ptcp" c="Participle"/>
-	</sdefs>
-	<section id="replacement" type="standard">
-		<!-- Add replacement entries here -->
-    <e><p><l><leftdata>SourceWord1.1</leftdata><s n="v"/><s n="pfv"/></l><r><rightdata>TargetWord1.1</rightdata><s n="v"/><s n="ptcp"/></r></p></e>
-	</section>
-	<section id="append" type="standard">
-		<!-- Add new entries to be appended here -->
-    <e><p><l><leftdata>SourceWord2.1</leftdata><s n="v"/><s n="pfv"/></l><r><rightdata>TargetWord2.1</rightdata><s n="v"/><s n="ptcp"/></r></p></e>
-	</section>
-</repldictionary>
+<repldictionary
+><alphabet
+></alphabet
+><sdefs
+><!-- Add category definitions here --><sdef
+c="Verb"
+n="v"
+></sdef
+><sdef
+c="Perfective"
+n="pfv"
+></sdef
+><sdef
+c="Participle"
+n="ptcp"
+></sdef
+></sdefs
+><section
+id="replacement"
+type="standard"
+><!-- Add replacement entries here. See the help documentation topic:--><!--"I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?"--><e
+><p
+><l
+><leftdata
+>SourceWord1.1</leftdata
+><s
+n="v"
+></s
+><s
+n="pfv"
+></s
+></l
+><r
+><rightdata
+>TargetWord1.1</rightdata
+><s
+n="v"
+></s
+><s
+n="ptcp"
+></s
+></r
+></p
+></e
+></section
+><section
+id="append"
+type="standard"
+><!-- Add new entries here. See the help documentation topic:--><!--"I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?"--><e
+><p
+><l
+><leftdata
+>SourceWord2.1</leftdata
+><s
+n="v"
+></s
+><s
+n="pfv"
+></s
+></l
+><r
+><rightdata
+>TargetWord2.1</rightdata
+><s
+n="v"
+></s
+><s
+n="ptcp"
+></s
+></r
+></p
+></e
+></section
+></repldictionary
+>
