@@ -18,13 +18,10 @@ mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Bui
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
-rem NOT ANYMORE!
-rem copy the flextools.ini file and force it to be overwritten. 
-rem previously we only did this in the install script and replaced them if they didn't exit
-rem but now we need to get the new settings forced. This means they will have to manually change their
-rem Flex project selection
-rem copy flextools.ini Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
-rem copy flextools.ini Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
+rem copy the FlexTrans.config file and force it to be overwritten. 
+
+copy FlexTrans-Swedish.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\FlexTrans.config
+copy FlexTrans.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\FlexTrans.config
 
 rem special flextrans stub files for flextools
 copy FLExTrans.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
