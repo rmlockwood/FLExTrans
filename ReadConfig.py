@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.10 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #465. Ignore blank lines. Also, just warn and continue if no = or multiple =s.
 #
@@ -100,6 +103,7 @@ HERMIT_CRAB_PARSES_FILE = 'HermitCrabParsesFile'
 HERMIT_CRAB_MASTER_FILE = 'HermitCrabMasterFile'
 HERMIT_CRAB_SURFACE_FORMS_FILE = 'HermitCrabSurfaceFormsFile'
 HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
+LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
