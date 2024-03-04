@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.6 - 3/2/2024 - Ron Lockwood
+#    Fixes #562 Fixes bug that says 'nothing selected' even though a sentence is selected.
+#
 #   Version 3.10.5 - 2/23/2024 - Ron Lockwood
 #    Fixes #567 Fixes crash in Catalog Target Affixes when a lexeme form is null.
 #
@@ -380,7 +383,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.10.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -422,6 +425,8 @@ TARGET_FILE = 'target_text.txt'
 LOG_FILE3 = 'apertium_log3.txt'
 BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
 
+SENT_TAG = '<sent>'
+
 def firstLower(myStr):
     
     if myStr:
@@ -435,17 +440,11 @@ class SentenceList(QtCore.QAbstractListModel):
     def __init__(self, myData = [], parent = None):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.__localData = myData
-        self.__currentSent = myData[0] # start out on the first one
-        self.__currentRow = 0
         self.__RTL = False
-    def getCurrentSent(self):
-        return self.__currentSent
-    def setCurrentSent(self, sentNum):
-        if sentNum < len(self.__localData):
-            self.__currentRow = sentNum
-            self.__currentSent = self.__localData[sentNum]
-    def getSelectedRow(self):
-        return self.__currentRow
+    def getSent(self, sentNum):
+        if sentNum not in range(0, len(self.__localData)):
+            sentNum = 0
+        return self.__localData[sentNum]
     def setRTL(self, val):
         self.__RTL = val
     def getRTL(self):
@@ -453,8 +452,7 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        self.__currentRow = index.row()
-        mySent = self.__localData[self.getSelectedRow()]
+        mySent = self.__localData[index.row()]
         
         if role == QtCore.Qt.DisplayRole:
             value = self.joinTupParts(mySent, 0)
@@ -462,13 +460,13 @@ class SentenceList(QtCore.QAbstractListModel):
             if self.getRTL():
                 value = '\u200F' + value + '\u200F' 
                 
-            self.__currentSent = mySent    
             return value
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
     def joinTupParts(self, tupList, i):
         ret = ''
+
         for t in tupList: 
             # don't put a space before sentence punctuation
             if len(t) > i+1 and re.search(SENT_TAG, t[i+1]):
@@ -737,7 +735,7 @@ class Main(QMainWindow):
         self.ui.listSentences.setCurrentIndex(qIndex)
         self.listSentClicked()
 
-        if savedSourceTextName == sourceText:
+        if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
 
             # Check the saved words
             self.restoreCheckedWords()
@@ -1566,7 +1564,8 @@ class Main(QMainWindow):
         
     def SourceCheckBoxClicked(self):
         self.ui.TestsAddedLabel.setText('')
-        mySent = self.__sent_model.getCurrentSent()
+        
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
         
         # Create a <p> html element
@@ -1593,7 +1592,8 @@ class Main(QMainWindow):
 
     def listSentClicked(self):
         
-        mySent = self.__sent_model.getCurrentSent()
+        self.lastSentNum = self.ui.listSentences.currentIndex().row()
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
         
         # Create a <p> html element
@@ -1613,8 +1613,6 @@ class Main(QMainWindow):
         
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-
-        self.lastSentNum = self.__sent_model.getSelectedRow()
         
     def resizeEvent(self, event):
         
@@ -1671,12 +1669,9 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
-            # Set the combo box index to be the same as the list box
-            #ind = self.ui.listSentences.currentIndex()
-
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:            
-                self.__sent_model.setCurrentSent(self.lastSentNum)
+
                 self.ui.SentCombo.setCurrentIndex(self.lastSentNum)
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
@@ -1685,18 +1680,16 @@ class Main(QMainWindow):
         
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
             
-            # Set the list box index to be the same as the combo box
-            #myRow = self.ui.SentCombo.currentIndex()
-            
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:
+
                 qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
             self.ui.selectWordsHintLabel.setVisible(False)
             
-        else: # sentences or manual
+        else: # manual entry
             
             self.ui.selectWordsHintLabel.setVisible(False)
             
@@ -1765,16 +1758,19 @@ class Main(QMainWindow):
 
     def listSentComboClicked(self):
         
-        mySent = self.__sent_model.getCurrentSent()
+        self.lastSentNum = self.ui.SentCombo.currentIndex()
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         space_val = 10
         y_spacing = 30
         x_margin = 2
         x = x_margin
         y = 2
 
-        # Clear the source text area
+        # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
         self.__ClearAllChecks()
+        self.__lexicalUnits = ''
+        self.ui.ManualEdit.setPlainText('')
         
         i=0
         # Position a check box for each "word" in the sentence
@@ -1830,9 +1826,6 @@ class Main(QMainWindow):
             
             self.__checkBoxList[j].setVisible(False)
         
-        # Save the sentence number that was selected    
-        self.lastSentNum = self.__sent_model.getSelectedRow()
-
     def getTargetsInBilingMap(self, wrdTup):
         
         dataStreamStr = wrdTup[1].strip() # of the form (\\v 1) ^word1.2<v><3sg>$
