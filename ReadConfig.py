@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.10.1 - 3/2/24 - Ron Lockwood
+#    Fixes #561. Handle commas in settings values that aren't lists. Do this by having a 
+#    list of properties that must take a list.
+#
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #465. Ignore blank lines. Also, just warn and continue if no = or multiple =s.
 #
@@ -133,6 +137,18 @@ TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
+##### IMPORTANT #####
+# If you are adding a new property that will have multiple values, add it to this list variable
+PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
+                             TARGET_MORPHNAMES,
+                             SOURCE_COMPLEX_TYPES,
+                             SOURCE_DISCONTIG_TYPES,
+                             SOURCE_DISCONTIG_SKIPPED,
+                             TARGET_FORMS_INFLECTION_1ST,
+                             TARGET_FORMS_INFLECTION_2ND,
+                             SYNTHESIS_TEST_LIMIT_POS,
+                             CATEGORY_ABBREV_SUB_LIST]
+
 def openConfigFile(report, info):
     
     try:
@@ -222,8 +238,8 @@ def readConfig(report):
         
         value = value.rstrip()
         
-        # if the value has commas, save it as a list
-        if re.search(',', value):
+        # if the value has commas and it is in the set of properties that can have multiple values, save it as a list
+        if re.search(',', value) and prop in PROPERTIES_THAT_ARE_LISTS:
             my_list = value.split(',')
             my_map[prop] = my_list
         else:
