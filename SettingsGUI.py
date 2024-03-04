@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.10 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
 #   Version 3.9.4 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -1216,11 +1219,19 @@ widgetList = [
 
 
 
-   ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   ["Linker Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
-
+    
    ["Default to rebuilding the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
     "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Default to filtering on all fields?", "filter_all_yes", "filter_all_yno", YES_NO, object, object, object, loadYesNo, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, \
+    "In the Sense Linker tool by default check the checkbox for filtering on all fields.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
 
    ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
     "The path and name of the file containing the transfer rules.", GIVE_ERROR, DONT_HIDE],\

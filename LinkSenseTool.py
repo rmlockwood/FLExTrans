@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.4 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
 #   Version 3.10.3 - 1/18/24 - Ron Lockwood
 #    Fixes #550. Handle a target word that doesn't have a category yet assigned.
 #
@@ -266,7 +269,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10.3",
+        FTM_Version    : "3.10.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -801,6 +804,7 @@ class Main(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.InitRebuildBilingCheckBox()
+        self.InitSearchAllCheckBox()
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         
@@ -832,6 +836,17 @@ class Main(QMainWindow):
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def InitSearchAllCheckBox(self):
+        
+        self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        
+        val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, report=None, giveError=False)
+        
+        if val:
+            if val == 'y':
+                
+                self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Checked)
+                
     def InitRebuildBilingCheckBox(self):
         
         self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)

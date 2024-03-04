@@ -100,7 +100,7 @@ InitPluginsDir
 
   #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
-  File "${GIT_FOLDER}\transfer_rules.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
 
