@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.5 - 3/5/24 - Ron Lockwood
+#    Fixes #580. Correctly form the circumfix affix for HermitCrab.
+#
 #   Version 3.10.4 - 1/26/24 - Ron Lockwood
 #    Total rewrite of Conversion function. Instead of reading a line at a time of the transfer
 #    results file, read it all at once, split it on lexical units and deal with the entire
@@ -249,7 +252,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.10.4",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -343,14 +346,33 @@ class ANAInfo(object):
 
         pfxs = '><'.join(self.getAnalysisPrefixes())
         if pfxs:
+            # Remove circumfix extra stuff.
+            pfxs = re.sub(Utils.CIRCUMFIX_TAG_A, '', pfxs)
+
             # Turn underscores to dots
             pfxs = re.sub('_', '.', pfxs)
             pfxs = '<' + pfxs + '>' 
 
         sfxs = '><'.join(self.getAnalysisSuffixes())
         if sfxs:
-            sfxs = re.sub('_', '.', sfxs)
             sfxs = '<' + sfxs + '>' 
+
+            ## Remove the circumfix suffix entirely
+            if re.search(Utils.CIRCUMFIX_TAG_B, sfxs):
+
+                # find the end of the gloss
+                endGloss = sfxs.index(Utils.CIRCUMFIX_TAG_B)
+                
+                # find the beg of the gloss
+                begGloss = sfxs.rfind('<', 0, endGloss)+1
+                
+                # pull out the gloss string
+                gloss = sfxs[begGloss:endGloss]
+
+                # replace gloss string plus the tag (in angle-brackets) with nothing
+                sfxs = re.sub('<'+gloss+Utils.CIRCUMFIX_TAG_B+'>', '', sfxs)
+
+            sfxs = re.sub('_', '.', sfxs)
 
         # roots need to have underscores converted to spaces
         retStr = re.sub('_', ' ', self.getAnalysisRoot()) 
@@ -1350,10 +1372,10 @@ def processLU(lexUnitStr, affixMap):
             # the suffix list.
             if morphs[i] not in circumfixList:
                 
-                prefixList.append(morphs[i]+'_cfx_part_a')
+                prefixList.append(morphs[i]+Utils.CIRCUMFIX_TAG_A)
                 circumfixList.append(morphs[i])
             else:
-                suffixList.append(morphs[i]+'_cfx_part_b')
+                suffixList.append(morphs[i]+Utils.CIRCUMFIX_TAG_B)
                 
         # suffix. Treat everything else as a suffix (suffix, enclitic, suffixing interfix).
         # The other types are not supported, but will end up here.

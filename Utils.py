@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.7 - 3/5/24 - Ron Lockwood
+#    Fixes #580. Correctly form the circumfix affix for HermitCrab.
+#
 #   Version 3.10.6 - 2/26/24 - Ron Lockwood
 #    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
 #    Default to collecting inflection classes for both source and target DBs.
@@ -405,6 +408,8 @@ import ReadConfig as MyReadConfig
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
 import FTPaths
 
+CIRCUMFIX_TAG_A = '_cfx_part_a'
+CIRCUMFIX_TAG_B = '_cfx_part_b'
 APERT_RESERVED = r'([\[\]@/\\^$><])'
 NONE_HEADWORD = '**none**'
 

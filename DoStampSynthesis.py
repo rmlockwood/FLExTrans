@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.1 - 3/5/24 - Ron Lockwood
+#    Fixes #580. Correctly form the circumfix affix for HermitCrab.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -264,7 +267,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -584,7 +587,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     # Output gloss
     if myGloss:
         
-        f_pf.write('\\g ' + myGloss+'_cfx_part_a' + '\n')
+        f_pf.write('\\g ' + myGloss+Utils.CIRCUMFIX_TAG_A + '\n')
     else:
         f_pf.write('\\g \n')
     
@@ -609,7 +612,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     # Output gloss
     if myGloss:
-        f_sf.write('\\g ' + myGloss+'_cfx_part_b' + '\n')
+        f_sf.write('\\g ' + myGloss+Utils.CIRCUMFIX_TAG_B + '\n')
     else:
         f_sf.write('\\g \n')
     
