@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.8 - 3/6/24 - Ron Lockwood
+#    Fixes #581. Skip reporting a bad url link if the report object is None.
+#
 #   Version 3.10.6 - 2/26/24 - Ron Lockwood
 #    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
 #    Default to collecting inflection classes for both source and target DBs.
@@ -1805,8 +1808,9 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         targetObj = repo.GetObject(guid)
     except:
         headWord = ITsString(entry.HeadWord).Text
-        report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
-                     DB.BuildGotoURL(entry))
+        if report:
+            report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
+                        DB.BuildGotoURL(entry))
         return retVal
     
     if targetObj:
