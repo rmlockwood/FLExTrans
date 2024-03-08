@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.5 - 3/8/24 - Ron Lockwood
+#    Fixes #578. If a change was made in the linking and the user clicks cancel or the 
+#    red X, prompt them to see if they want to save the changes.
+#
 #   Version 3.10.4 - 2/29/24 - Ron Lockwood
 #    Fixes #571. Setting to determine if filter by all fields is checked.
 #
@@ -269,7 +273,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10.4",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1107,6 +1111,15 @@ class Main(QMainWindow):
         
     def CancelClicked(self):
         self.retVal = 0
+
+        # Check if the user did some linking or unlinking
+        if self.__model.didLinkingChange():
+            
+            # Check if the user wants to save changes
+            if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        
+                self.retVal = 1
+        
         self.close()
         
     def filter(self):
