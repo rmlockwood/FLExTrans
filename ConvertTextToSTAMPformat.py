@@ -1227,6 +1227,7 @@ def convertIt(pfxName, outName, report, sentPunct):
 
     errorList = []
     wordAnaInfoList = []
+    anaObj = None
     
     affixMap = {}
     
@@ -1302,7 +1303,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         wordAnaInfoList.append(anaObj)
 
     # Process a possible last punctuation string
-    if len(tokens) > 0 and tokens[-1] != '':
+    if anaObj and len(tokens) > 0 and tokens[-1] != '':
 
         anaObj.setAfterPunc(re.sub(r'^ ', '', tokens[-1])) # remove preceding space
 
