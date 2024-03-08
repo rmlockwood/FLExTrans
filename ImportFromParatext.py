@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10.1 - 3/8/24 - Ron Lockwood
+#    Don't add space before a marker.
+#
 #   Version 3.10 - 1/4/24 - Ron Lockwood
 #    Fixes #536. support . for chapter verse separator. Make all between \xt and \x* the analysis WS.
 #
@@ -93,7 +96,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -315,11 +318,11 @@ def do_import(DB, report, chapSelectObj):
             continue
         
         # Either an sfm marker or a verse ref should get marked as Analysis WS
-        elif re.search(r'\\|\d+:\d+', seg):
+        elif re.search(r'\\|\d+[.:]\d+', seg):
             
             # add a space before the marker if we have content before it.
-            if bldr.Length > 0:
-                seg = ' ' + seg
+            # if bldr.Length > 0:
+            #     seg = ' ' + seg
             
             # add a section mark if this is a verse or a quote and this is a script that has upper case.
             # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
