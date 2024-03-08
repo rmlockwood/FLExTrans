@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.2 - 3/7/24 - Ron Lockwood
+#    Fixes #582. (correct #?) References were mistakenly getting deleted. Like \x 23.5.
+#    Only remove N.N for clean up step when it follows a lemma.
+#
 #   Version 3.10.1 - 3/5/24 - Ron Lockwood
 #    Fixes #580. Correctly form the circumfix affix for HermitCrab.
 #
@@ -267,7 +271,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10.1",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -1178,21 +1182,32 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     return error_list
 
+# Remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
 def fix_up_text(synFile, cleanUpText):
-    # Also remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
+
     f_s = open(synFile, encoding="utf-8")
     line_list = []
+
     for line in f_s:
         line_list.append(line)
 
     f_s.close()
     f_s = open(synFile, 'w', encoding="utf-8")
+
     for line in line_list:
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+
+            # Remove N.N that is attached to a word (looking for non-whitespace before the N). 
+            # N.N by itself can cause problems because some references use dot between chapter and verse. Assume a space before these references.
+            # [^\s\d] means neither a space nor a number, i.e. a letter or symbol. () to capture the letter
+            # then look for one or more numbers the dot then one or more numbers
+            line = re.sub(r'([^\s\d])\d+\.\d+', r'\1', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+
+            # Remove at signs. Those indicate a words that weren't found.
             line = re.sub('@', '', line)
+
         f_s.write(line)
     f_s.close()
 
