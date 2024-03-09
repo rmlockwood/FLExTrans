@@ -687,23 +687,12 @@ class Main(QMainWindow):
             self.close()
             return 
         
-        def filterSents(listElement):
-
-            for surface, luString in listElement:
-
-                if re.search(r'<.+?>', luString) and not re.search(r'<sent>', luString):
-                    return True
-            return False
-
-        # Filter the sent list down to ones that not puctuation only
-        filtered_list = list(filter(filterSents, sentence_list))
-
         # Set the models
-        self.__sent_model = SentenceList(filtered_list)
+        self.__sent_model = SentenceList(sentence_list)
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
-        for i,mySent in enumerate(filtered_list):
+        for i,mySent in enumerate(sentence_list):
             if found_rtl == True or i >= 5:
                 break
             for myWordBundle in mySent:
