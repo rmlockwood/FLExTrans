@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.9 - 3/6/24 - Ron Lockwood
+#    Fixes #579. Re-write how to handle punctuation in the get interlinear function.
+#
 #   Version 3.10.8 - 3/6/24 - Ron Lockwood
 #    Fixes #581. Skip reporting a bad url link if the report object is None.
 #
@@ -1138,8 +1141,13 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     savedPrePunc = ''
     newParagraph = False
     newSentence = False
+    inMultiLinePuncBlock = False
         
     initProgress(contents, report)
+
+    # Save a regex for splitting on sentence punctuation so we can clump sentence-final and sentence-non-final together
+    # For the string "xy.'):\\" this would produce ['', '::', 'xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
+    reSplitPuncObj = re.compile(rf"([{''.join(sentPunct)}]+)")
     
     # Initialize the text and the first paragraph object
     myText = TextEntirety()
@@ -1176,43 +1184,80 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             puncForm = IPunctuationForm(analysisOccurance.Analysis)
             textPunct = ITsString(puncForm.Form).Text
             
-            # See if one or more symbols is part of the user-defined sentence punctuation. If so, save the punctuation as if it is its own word. E.g. ^.<sent>$
-            if set(list(textPunct)).issubset(set(list(sentPunct))):
-                
-                # create a new word object
-                myWord = TextWord(report)
-                
-                # initialize it with the puctuation and sent as the "POS"
-                myWord.addLemma(textPunct)
-                myWord.setSurfaceForm(textPunct)
-                myWord.addPlainTextAffix('sent')
-                
-                # See if we have any pre-punctuation
-                if len(savedPrePunc) > 0:
-                    myWord.addInitialPunc(savedPrePunc)
-                    savedPrePunc = ""
+            # Divide up the punctuation into sentence ending (ones that are in sentPunct) one ones that aren't
+            myPuncList = reSplitPuncObj.split(textPunct) # also see above where this object is defined
 
-                # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
-                newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
-                
-            # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
-            else:
-                # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
-                if myWord != None and not newSentence and (CHECK_DELIMITER and not textPunct == DELIMITER_STR): 
-                    
-                    myWord.addFinalPunc(spacesStr + textPunct) 
-                else:
-                    # Save this punctuation for initial punctuation on the next word
+            # Go through each cluster
+            for i, myPunc in enumerate(myPuncList):
 
-                    # Add a newline character if we just went to a new paragraph which is shown by the numSpaces being negative
-                    if numSpaces < 0 and len(savedPrePunc) > 0:
-                        savedPrePunc += spacesStr + '\n' + textPunct
+                # Skip empty list elements
+                if myPunc == '':
+                    continue
+
+                # even indexes which are the non-sentence final ones 
+                # or odd indexes (sent final) where we are in the middle of a punctuation section (e.g. \xo 27.2-8)
+                # this is shown by there being some final punctuation or some saved pre-punctuation
+                if i % 2 == 0 or (i % 2 == 1 and myWord and (myWord.getFinalPunc() or savedPrePunc)): 
+
+                    # If we have a word that has been started, that isn't the beginning of a new sentence, and it's not sent. punc., make this final punctuation.
+                    if myWord and not myWord.isSentPunctutationWord() and not newSentence and (CHECK_DELIMITER and not myPunc == DELIMITER_STR): 
+                        
+                        myWord.addFinalPunc(spacesStr + myPunc) 
+                        savedPrePunc = ''
                     else:
-                        savedPrePunc += spacesStr + textPunct
-        
+
+                        # New paragraph
+                        if numSpaces < 0:
+
+                            # if we have some prepunctutation and there's no final punctuation on the word (which means we haven't move pre-punct to final before)
+                            # and we are not in a block of punctuation lines after punctuation lines, move the pre-punctuation to final on the word and reset pre-punctutation
+                            if savedPrePunc and myWord and not myWord.getFinalPunc() and not inMultiLinePuncBlock:
+
+                                myWord.addFinalPunc(savedPrePunc)
+                                savedPrePunc = spacesStr + myPunc
+
+                            # If we haven't processed any pre-punctuation yet, add to saved pre-punctuation as normal (no preceding newline)
+                            elif not savedPrePunc:
+
+                                savedPrePunc += spacesStr + myPunc
+                                inMultiLinePuncBlock = True
+                            
+                            # If we have already had saved pre-punctuation, now add a preceding newline
+                            else:
+                                savedPrePunc += '\n' + spacesStr + myPunc
+
+                        # Not a new paragraph        
+                        else:
+                            savedPrePunc += spacesStr + myPunc
+
+                else: # odd - sent-final ones
+
+                    ## save the punctuation as if it is its own word. E.g. ^.<sent>$
+
+                    # create a new word object
+                    myWord = TextWord(report)
+                    
+                    # initialize it with the puctuation and sent as the "POS"
+                    myWord.addLemma(myPunc)
+                    myWord.setSurfaceForm(myPunc)
+                    myWord.addPlainTextAffix('sent')
+                    
+                    # See if we have any pre-punctuation
+                    if len(savedPrePunc) > 0:
+                        myWord.addInitialPunc(savedPrePunc)
+                        savedPrePunc = ""
+
+                    # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
+                    newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
+
+                # After the first time through, we've dealt with the spaces
+                spacesStr = ''
+
             continue
-        
+
         ## Now we know we have something other than punctuation
+        
+        inMultiLinePuncBlock = False
         
         # Start with a new word
         myWord = TextWord(report)
