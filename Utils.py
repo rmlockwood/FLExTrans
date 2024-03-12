@@ -1257,25 +1257,33 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
 
         ## Now we know we have something other than punctuation
         
-        inMultiLinePuncBlock = False
-        
+        prevWord = myWord
+
         # Start with a new word
         myWord = TextWord(report)
         
         # See if we have any pre-punctuation
-        if len(savedPrePunc) > 0:
+        if savedPrePunc:
 
             # See if we have a new paragraph (which is shown by the numSpaces being negative) which means a paragraph of only punctuation.
             # If so, add a newline to the punctuation
             if numSpaces < 0:
-                savedPrePunc += '\n'
 
-                # prevent a empty 1st paragrah
+                if prevWord and not prevWord.getFinalPunc() and not inMultiLinePuncBlock:
+
+                    prevWord.addFinalPunc(savedPrePunc)
+                    savedPrePunc = ''
+                else:
+                    savedPrePunc += '\n'
+
+                # prevent an empty 1st paragrah
                 if myText.getParagraphCount() == 1 and myText.getSentCount() == 0:
                     newParagraph = False 
 
             myWord.addInitialPunc(savedPrePunc)
             savedPrePunc = ""
+
+        inMultiLinePuncBlock = False
 
         # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
         newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
