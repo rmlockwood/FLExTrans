@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.6 - 3/7/24 - Ron Lockwood
+#    Fixes #579. Space wasn't being inserted when there's punctuation with a space between.
+#
 #   Version 3.10.5 - 3/5/24 - Ron Lockwood
 #    Fixes #580. Correctly form the circumfix affix for HermitCrab.
 #
@@ -1224,6 +1227,7 @@ def convertIt(pfxName, outName, report, sentPunct):
 
     errorList = []
     wordAnaInfoList = []
+    anaObj = None
     
     affixMap = {}
     
@@ -1299,7 +1303,7 @@ def convertIt(pfxName, outName, report, sentPunct):
         wordAnaInfoList.append(anaObj)
 
     # Process a possible last punctuation string
-    if len(tokens) > 0 and tokens[-1] != '':
+    if anaObj and len(tokens) > 0 and tokens[-1] != '':
 
         anaObj.setAfterPunc(re.sub(r'^ ', '', tokens[-1])) # remove preceding space
 
@@ -1317,9 +1321,10 @@ def calculatePrePostPunctuation(puncStr):
 
         # If post punctuation is non-empty add a trailing space. Otherwise we will get two words jammed together by STAMP
         # It doesn't put a space between words when \n is used.
-        # We also don't want the space when there was a newline at the beg. we want it to butt against the word.
+        # DELETE We also don't want the space when there was a newline at the beg. we want it to butt against the word.
         # Also we don't want a space after a newline, that would indent the next line by a space
-        if post and post[0] != '\n' and post[-1] != '\n':
+        # if post and post[0] != '\n' and post[-1] != '\n':
+        if post and post[-1] != '\n':
             post += ' '
     
     return pre, post
