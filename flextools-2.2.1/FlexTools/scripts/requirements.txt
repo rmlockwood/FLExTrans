@@ -1,4 +1,4 @@
 # Runtime requirements for FlexTools
-cdfutils==1.0.6
+cdfutils==1.0.7
 flexlibs==1.2.1.post1
-flextoolslib==2023.8.29
+flextoolslib==2024.3.13
