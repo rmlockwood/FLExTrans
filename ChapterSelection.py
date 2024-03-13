@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.10 - 3/13/24 - Ron Lockwood
+#    Support Paratext lexicon import.
+#
 #   Version 3.9.1 - 12/21/23 - Ron Lockwood
 #    Added apocryphal/deuterocanonical and extra books into the list.
 #
@@ -216,7 +219,7 @@ def InitControls(self, export=True):
     except:
         pass
 
-def doOKbuttonValidation(self, export=True):
+def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True):
     
     # Get values from the 'dialog' window
     projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
@@ -245,7 +248,7 @@ def doOKbuttonValidation(self, export=True):
         return
 
     # Check if the book is valid
-    if bookAbbrev not in bookMap:
+    if checkBookAbbrev and bookAbbrev not in bookMap:
         
         QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
         return
@@ -255,7 +258,7 @@ def doOKbuttonValidation(self, export=True):
     
     parts = glob.glob(bookPath)
     
-    if len(parts) < 1:
+    if checkBookPath and len(parts) < 1:
         
         QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
         return
