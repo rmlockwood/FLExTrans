@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.10.1 - 3/19/24 - Ron Lockwood
+#    Fixes #566. Allow the user to create one text per chapter when importing.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -83,7 +86,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -126,6 +129,7 @@ class Main(QMainWindow):
         self.ui.crossrefsCheckBox.setVisible(False)
         self.ui.makeActiveTextCheckBox.setVisible(False)
         self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
+        self.ui.oneTextPerChapterCheckBox.setVisible(False)
         
         # Resize the main window
         self.resize(self.width(), 148)

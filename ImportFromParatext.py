@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10.2 - 3/19/24 - Ron Lockwood
+#    Fixes #566. Allow the user to create one text per chapter when importing.
+#
 #   Version 3.10.1 - 3/8/24 - Ron Lockwood
 #    Don't add space before a marker.
 #
@@ -96,7 +99,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10.1",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -124,6 +127,7 @@ class Main(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.toChap = self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
@@ -134,11 +138,22 @@ class Main(QMainWindow):
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
-        
+
+        self.enableOneTextPerChapter()
+
     def CancelClicked(self):
         self.retVal = False
         self.close()
-        
+
+    # If more than 1 chapter, enable the one text per chapter checkbox
+    def enableOneTextPerChapter(self):
+
+        if self.toChap - self.fromChap > 0:
+            self.ui.oneTextPerChapterCheckBox.setEnabled(True)
+        else:
+            self.ui.oneTextPerChapterCheckBox.setEnabled(False)
+            self.ui.oneTextPerChapterCheckBox.setChecked(False)
+
     def FromSpinChanged(self):
         
         self.fromChap = self.ui.fromChapterSpinBox.value()
@@ -149,7 +164,9 @@ class Main(QMainWindow):
             
             self.ui.toChapterSpinBox.setValue(self.fromChap)
             self.toChap = self.fromChap
-            
+
+        self.enableOneTextPerChapter()
+
     def ToSpinChanged(self):
         
         self.fromChap = self.ui.fromChapterSpinBox.value()
@@ -161,6 +178,8 @@ class Main(QMainWindow):
             self.ui.fromChapterSpinBox.setValue(self.toChap)
             self.fromChap = self.toChap
             
+        self.enableOneTextPerChapter()
+
     def OKClicked(self):
 
         ChapterSelection.doOKbuttonValidation(self, export=False)
@@ -201,9 +220,6 @@ def do_import(DB, report, chapSelectObj):
     firstTitle = None
     byChapterList = []
 
-    chapSelectObj.oneTextPerChapter = True
-
-    
     # Open the Paratext file and read the contents
     f = open(chapSelectObj.bookPath, encoding='utf-8')
     bookContents = f.read()

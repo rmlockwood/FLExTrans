@@ -24,7 +24,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>153</y>
+      <y>170</y>
       <width>181</width>
       <height>17</height>
      </rect>
@@ -104,7 +104,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>176</y>
+      <y>193</y>
       <width>191</width>
       <height>17</height>
      </rect>
@@ -123,7 +123,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>107</y>
+      <y>124</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -211,13 +211,29 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>130</y>
+      <y>147</y>
       <width>201</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string>Include cross references (\x and \r)</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="oneTextPerChapterCheckBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>100</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Create one text per chapter</string>
     </property>
    </widget>
   </widget>
@@ -227,7 +243,9 @@
   <tabstop>bookAbbrevLineEdit</tabstop>
   <tabstop>fromChapterSpinBox</tabstop>
   <tabstop>toChapterSpinBox</tabstop>
+  <tabstop>oneTextPerChapterCheckBox</tabstop>
   <tabstop>footnotesCheckBox</tabstop>
+  <tabstop>crossrefsCheckBox</tabstop>
   <tabstop>makeActiveTextCheckBox</tabstop>
   <tabstop>useFullBookNameForTitleCheckBox</tabstop>
   <tabstop>OKButton</tabstop>
