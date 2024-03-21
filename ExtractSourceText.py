@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.10.1 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -192,7 +195,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -316,8 +319,17 @@ def MainFunction(DB, report, modifyAllowed):
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return
 
+    noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report)
+    if not noWarningProperNounStr:
+        return
+    
+    if noWarningProperNounStr == 'n':
+        noWarningProperNoun = False
+    else:
+        noWarningProperNoun = True
+
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
         
     if TreeTranSort:
         

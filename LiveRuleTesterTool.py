@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.7 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.6 - 3/2/2024 - Ron Lockwood
 #    Fixes #562 Fixes bug that says 'nothing selected' even though a sentence is selected.
 #
@@ -383,7 +386,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.6",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2530,7 +2533,16 @@ def RunModule(DB, report):
         logInfo = Utils.importGoodParsesLog()
             
     # Get the interlinear data. It's stored in a complex object.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+    noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report)
+    if not noWarningProperNounStr:
+        return
+    
+    if noWarningProperNounStr == 'n':
+        noWarningProperNoun = False
+    else:
+        noWarningProperNoun = True
+
+    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
 
     if TreeTranSort:
         

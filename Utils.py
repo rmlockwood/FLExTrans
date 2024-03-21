@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.10 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.9 - 3/6/24 - Ron Lockwood
 #    Fixes #579. Re-write how to handle punctuation in the get interlinear function.
 #
@@ -1132,7 +1135,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
 # At the end of the function we figure out appropriate warnings for unknown words and we process 
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList):
+def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
     
     prevEndOffset = 0
     currSegNum = 0
@@ -1417,7 +1420,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         myWord.addFinalPunc('\n'+savedPrePunc)
 
     # Don't warn for sfm markers, but warn once for others        
-    if myText.warnForUnknownWords() == True:
+    if myText.warnForUnknownWords(noWarningProperNoun) == True:
         report.Warning('One or more unknown words occurred multiple times.')
 
     # substitute a complex form when its components are found contiguous in the text      

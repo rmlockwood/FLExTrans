@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.6 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.5 - 3/8/24 - Ron Lockwood
 #    Fixes #578. If a change was made in the linking and the user clicks cancel or the 
 #    red X, prompt them to see if they want to save the changes.
@@ -273,7 +276,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.10.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1330,8 +1333,17 @@ def getInterlinearText(DB, report, configMap, contents):
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return None
 
+    noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report)
+    if not noWarningProperNounStr:
+        return
+    
+    if noWarningProperNounStr == 'n':
+        noWarningProperNoun = False
+    else:
+        noWarningProperNoun = True
+
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
     
     return myText
 

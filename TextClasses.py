@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10.2 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.1 - 1/12/24 - Ron Lockwood
 #    Fixes #538. Escape brackets in the pre or post punctuation.
 #
@@ -115,10 +118,10 @@ class TextEntirety():
                 par.findDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
         for par in self.__parList:
             par.substituteDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigPOSList)
-    def warnForUnknownWords(self):
+    def warnForUnknownWords(self, noWarningProperNoun):
         multipleUnknownWords = False
         for par in self.__parList:
-            if par.warnForUnknownWords(self.__unknownWordMap) == True:
+            if par.warnForUnknownWords(self.__unknownWordMap, noWarningProperNoun) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -158,10 +161,10 @@ class TextParagraph():
     def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
         for sent in self.__sentList:
             sent.substituteDiscontiguousComplexForms(cmplxFormMap, discontigPOSList)
-    def warnForUnknownWords(self, unknownWordMap):
+    def warnForUnknownWords(self, unknownWordMap, noWarningProperNoun):
         multipleUnknownWords = False
         for sent in self.__sentList:
-            if sent.warnForUnknownWords(unknownWordMap) == True:
+            if sent.warnForUnknownWords(unknownWordMap, noWarningProperNoun) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -486,31 +489,32 @@ class TextSentence():
 
             myIndex += increment
             
-    def warnForUnknownWords(self, unknownWordMap):
+    def warnForUnknownWords(self, unknownWordMap, noWarningProperNoun):
         multipleUnknownWords = False
         for myIndex, word in enumerate(self.__wordList):
+
             # See if we have an uninitialized word which indicates it's unknown
             if word.isInitialized() == False:
+
                 # Allow some unknown "words" without warning, such as sfm markers
                 if len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0] == '\\':
                     continue
-                if myIndex > 0:
-                    prvWrd = self.__wordList[myIndex-1]
-                    if word.getSurfaceForm().isdigit():
-                        if prvWrd.getInitialPunc() == '\\':
-                            if prvWrd.getSurfaceForm() == 'v' or prvWrd.getSurfaceForm() == 'c':
-                                continue  
-                    if prvWrd.getInitialPunc() == '\\':
-                        if prvWrd.getSurfaceForm() == 'f' or prvWrd.getSurfaceForm() == 'fr':
-                            continue
+
                 # Don't warn on the second time an unknown word is encountered
                 if word.getSurfaceForm() in unknownWordMap:
                     multipleUnknownWords = True
                 else:
+
+                    # Don't warn if the word is capitalized, non-initial and the user wants to ignore non-sentence-initial capitalized words (Proper Nouns)
+                    if noWarningProperNoun == True and len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0].isupper() and myIndex > 0:
+                        continue
+
+                    # Give the warning
                     self.__report.Warning('No analysis found for the word: '+ word.getSurfaceForm() + ' Treating this is an unknown word.')
                     
                     # Check if we've had this unknown word already
                     if word.getSurfaceForm() not in unknownWordMap:
+
                         # Add this word to the unknown word map
                         unknownWordMap[word.getSurfaceForm()] = 1
                         
