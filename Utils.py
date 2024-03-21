@@ -1161,11 +1161,9 @@ def initInterlinParams(configMap, report, contents):
     elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
         return None
 
-    noWarningProperNounStr = MyReadConfig.getConfigVal(configMap, MyReadConfig.NO_PROPER_NOUN_WARNING, report)
-    if not noWarningProperNounStr:
-        return None
+    noWarningProperNounStr = MyReadConfig.getConfigVal(configMap, MyReadConfig.NO_PROPER_NOUN_WARNING, report, giveError=False)
     
-    if noWarningProperNounStr == 'n':
+    if not noWarningProperNounStr or noWarningProperNounStr == 'n':
         noWarningProperNoun = False
     else:
         noWarningProperNoun = True
