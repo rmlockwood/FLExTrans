@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.11 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
 #   Version 3.10.10 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -1122,6 +1125,56 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
     
     return newSentence, newParagraph, mySent, myPar
 
+class GetInterlinParams():
+
+    def __init__(self, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+        self.sentPunct = sentPunct
+        self.contents = contents
+        self.typesList = typesList
+        self.discontigTypesList = discontigTypesList
+        self.discontigPOSList = discontigPOSList
+        self.noWarningProperNoun = noWarningProperNoun
+
+def initInterlinParams(configMap, report, contents):
+    
+    # Get punctuation string
+    sentPunct = MyReadConfig.getConfigVal(configMap, MyReadConfig.SENTENCE_PUNCTUATION, report)
+    
+    if not sentPunct:
+        return
+    
+    typesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report)
+    if not typesList:
+        typesList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report):
+        return None
+
+    discontigTypesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report):
+        return None
+
+    discontigPOSList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
+        return None
+
+    noWarningProperNounStr = MyReadConfig.getConfigVal(configMap, MyReadConfig.NO_PROPER_NOUN_WARNING, report)
+    if not noWarningProperNounStr:
+        return None
+    
+    if noWarningProperNounStr == 'n':
+        noWarningProperNoun = False
+    else:
+        noWarningProperNoun = True
+
+    # Initialize a class
+    interlinParams = GetInterlinParams(sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
+
+    return interlinParams
+
 # This is a key function used by the ExtractSourceText, LinkSenseTool and LiveRuleTesterTool modules
 # Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
 # the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
@@ -1135,7 +1188,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
 # At the end of the function we figure out appropriate warnings for unknown words and we process 
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+def getInterlinData(DB, report, params):
     
     prevEndOffset = 0
     currSegNum = 0
@@ -1146,11 +1199,11 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     newSentence = False
     inMultiLinePuncBlock = False
         
-    initProgress(contents, report)
+    initProgress(params.contents, report)
 
     # Save a regex for splitting on sentence punctuation so we can clump sentence-final and sentence-non-final together
     # For the string "xy.'):\\" this would produce ['', '::', 'xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
-    reSplitPuncObj = re.compile(rf"([{''.join(sentPunct)}]+)")
+    reSplitPuncObj = re.compile(rf"([{''.join(params.sentPunct)}]+)")
     
     # Initialize the text and the first paragraph object
     myText = TextEntirety()
@@ -1160,7 +1213,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     myText.addParagraph(myPar)
     
     # Loop through each thing in the text
-    ss = SegmentServices.StTextAnnotationNavigator(contents)
+    ss = SegmentServices.StTextAnnotationNavigator(params.contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
         report.ProgressUpdate(prog_cnt)
@@ -1420,16 +1473,16 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         myWord.addFinalPunc('\n'+savedPrePunc)
 
     # Don't warn for sfm markers, but warn once for others        
-    if myText.warnForUnknownWords(noWarningProperNoun) == True:
+    if myText.warnForUnknownWords(params.noWarningProperNoun) == True:
         report.Warning('One or more unknown words occurred multiple times.')
 
     # substitute a complex form when its components are found contiguous in the text      
-    myText.processComplexForms(typesList) 
+    myText.processComplexForms(params.typesList) 
     
     # substitute a complex form when its components are found discontiguous in the text  
-    if len(discontigTypesList) > 0 and len(discontigPOSList) > 0 and len(typesList) > 0:
+    if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and len(params.typesList) > 0:
             
-        myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
+        myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList) 
     
     return myText
 

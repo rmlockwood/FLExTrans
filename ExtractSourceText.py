@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.10.2 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
 #   Version 3.10.1 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -195,7 +198,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.10.1",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -253,12 +256,6 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
-    # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    
-    if not sent_punct:
-        return
-    
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     
@@ -301,35 +298,15 @@ def MainFunction(DB, report, modifyAllowed):
     # Process the text
     report.Info("Exporting analyses...")
 
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
+    # Check for an error
+    if interlinParams == None:
         return
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return
-
-    noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report)
-    if not noWarningProperNounStr:
-        return
-    
-    if noWarningProperNounStr == 'n':
-        noWarningProperNoun = False
-    else:
-        noWarningProperNoun = True
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
+    myText = Utils.getInterlinData(DB, report, interlinParams)
         
     if TreeTranSort:
         

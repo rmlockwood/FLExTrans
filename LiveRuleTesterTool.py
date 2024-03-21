@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.8 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
 #   Version 3.10.7 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -386,7 +389,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.7",
+        FTM_Version    : "3.10.8",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2457,30 +2460,6 @@ def RunModule(DB, report):
     if not (sourceText and bilingFile):
         return ERROR_HAPPENED
     
-    # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    
-    if not sent_punct:
-        return ERROR_HAPPENED
-    
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return ERROR_HAPPENED
-
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return ERROR_HAPPENED
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return ERROR_HAPPENED
-
     matchingContentsObjList = []
 
     # Create a list of source text names
@@ -2532,18 +2511,16 @@ def RunModule(DB, report):
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
             
-    # Get the interlinear data. It's stored in a complex object.
-    noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report)
-    if not noWarningProperNounStr:
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
+
+    # Check for an error
+    if interlinParams == None:
         return
-    
-    if noWarningProperNounStr == 'n':
-        noWarningProperNoun = False
-    else:
-        noWarningProperNoun = True
 
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
-
+    # Get interlinear data. A complex text object is returned.
+    myText = Utils.getInterlinData(DB, report, interlinParams)
+        
     if TreeTranSort:
         
         segment_list = []
