@@ -110,13 +110,13 @@ InitPluginsDir
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\All Steps.ini"
+  File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\All Steps.ini"
+  File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
@@ -163,7 +163,7 @@ SetOverwrite on
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "All Steps" $9
+    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" $9
     
     # Find all collection ini files (e.g. tools.ini)
     skip:
@@ -195,8 +195,8 @@ SetOverwrite on
     FindClose $0
     
 
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
