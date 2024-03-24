@@ -1277,7 +1277,7 @@ type="tFlextrans"
 ></object
 > are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.</p
 ><p
->To change to a different collection, click the desired collection tab. </p
+>To change to a different collection, click the desired collection tab.</p
 ><p
 >To manage collections, select <object
 type="tMenu"
@@ -1791,6 +1791,14 @@ type="tFlexx"
 ><p
 >Additional options are the following:</p
 ><ul
+><li
+><object
+type="tBoldItalic"
+>Create one text per chapter</object
+> - when more than one chapter is specified, create one text in <object
+type="tFlexx"
+></object
+> for each chapter.</li
 ><li
 ><object
 type="tBoldItalic"
