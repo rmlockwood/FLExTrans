@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.10.1 - 3/19/24 - Ron Lockwood
+#    Fixes #566. Allow the user to create one text per chapter when importing.
+#
 #   Version 3.10 - 3/13/24 - Ron Lockwood
 #    Support Paratext lexicon import.
 #
@@ -147,7 +150,8 @@ bookMap = {\
 
 class ChapterSelection(object):
         
-    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName):
+    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                 makeActive, useFullBookName, oneTextPerChapter=False):
     
         if export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -164,6 +168,7 @@ class ChapterSelection(object):
         self.includeCrossRefs   = includeCrossRefs
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName     
+        self.oneTextPerChapter  = oneTextPerChapter
         
     def dump(self):
         
@@ -176,7 +181,8 @@ class ChapterSelection(object):
             'includeFootnotes'       : self.includeFootnotes   ,\
             'includeCrossRefs'       : self.includeCrossRefs   ,\
             'makeActive'             : self.makeActive         ,\
-            'useFullBookName'        : self.useFullBookName     \
+            'useFullBookName'        : self.useFullBookName    ,\
+            'oneTextPerChapter'      : self.oneTextPerChapter   \
             }
         return ret
 
@@ -215,6 +221,7 @@ def InitControls(self, export=True):
         self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
         self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
         self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
+        self.ui.oneTextPerChapterCheckBox.setChecked(myMap['oneTextPerChapter'])
         f.close()
     except:
         pass
@@ -230,6 +237,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
     makeActive = self.ui.makeActiveTextCheckBox.isChecked()
     useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
+    oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
     
     ## Validate some stuff
     
@@ -265,7 +273,8 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
     bookPath = parts[0]
     
-    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
+    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                                    makeActive, useFullBookName, oneTextPerChapter)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')
