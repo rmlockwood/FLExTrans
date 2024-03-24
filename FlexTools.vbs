@@ -4,7 +4,7 @@
 
 Set WshShell = CreateObject("WScript.Shell")
 
-PYTHON = "py -3.8"
+PYTHON = "py -3.11"
 
 WshShell.Run PYTHON & " ..\..\FlexTools\FLExTrans.py .\Config\flextools.ini", 0, False
 

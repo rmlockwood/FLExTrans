@@ -5,6 +5,15 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10.2 - 3/19/24 - Ron Lockwood
+#    Fixes #566. Allow the user to create one text per chapter when importing.
+#
+#   Version 3.10.1 - 3/8/24 - Ron Lockwood
+#    Don't add space before a marker.
+#
+#   Version 3.10 - 1/4/24 - Ron Lockwood
+#    Fixes #536. support . for chapter verse separator. Make all between \xt and \x* the analysis WS.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Bumped version to 3.9
 #
@@ -90,7 +99,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -118,6 +127,7 @@ class Main(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.toChap = self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
@@ -128,11 +138,22 @@ class Main(QMainWindow):
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
-        
+
+        self.enableOneTextPerChapter()
+
     def CancelClicked(self):
         self.retVal = False
         self.close()
-        
+
+    # If more than 1 chapter, enable the one text per chapter checkbox
+    def enableOneTextPerChapter(self):
+
+        if self.toChap - self.fromChap > 0:
+            self.ui.oneTextPerChapterCheckBox.setEnabled(True)
+        else:
+            self.ui.oneTextPerChapterCheckBox.setEnabled(False)
+            self.ui.oneTextPerChapterCheckBox.setChecked(False)
+
     def FromSpinChanged(self):
         
         self.fromChap = self.ui.fromChapterSpinBox.value()
@@ -143,7 +164,9 @@ class Main(QMainWindow):
             
             self.ui.toChapterSpinBox.setValue(self.fromChap)
             self.toChap = self.fromChap
-            
+
+        self.enableOneTextPerChapter()
+
     def ToSpinChanged(self):
         
         self.fromChap = self.ui.fromChapterSpinBox.value()
@@ -155,6 +178,8 @@ class Main(QMainWindow):
             self.ui.fromChapterSpinBox.setValue(self.toChap)
             self.fromChap = self.toChap
             
+        self.enableOneTextPerChapter()
+
     def OKClicked(self):
 
         ChapterSelection.doOKbuttonValidation(self, export=False)
@@ -192,32 +217,35 @@ def setSourceNameInConfigFile(report, title):
 def do_import(DB, report, chapSelectObj):
     
     copyUntilEnd = False
-    
-    # Create the text objects
-    m_textFactory = DB.project.ServiceLocator.GetInstance(ITextFactory)
-    m_stTextFactory = DB.project.ServiceLocator.GetInstance(IStTextFactory)
-    m_stTxtParaFactory = DB.project.ServiceLocator.GetInstance(IStTxtParaFactory)
+    firstTitle = None
+    byChapterList = []
 
-    # Create a text and add it to the project      
-    text = m_textFactory.Create()           
-    stText = m_stTextFactory.Create()
-    
-    # Set StText object as the Text contents
-    text.ContentsOA = stText  
-    
-    # Open the Paratext file
+    # Open the Paratext file and read the contents
     f = open(chapSelectObj.bookPath, encoding='utf-8')
-    
     bookContents = f.read()
     
     # Find all the chapter #s
     chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
     
+    # Give error if we can't find the starting chapter
     if str(chapSelectObj.fromChap) not in chapList:
         
         report.Error('Starting chapter not found.')
         return
     
+    # If the user wants full name, look it up
+    if chapSelectObj.useFullBookName:
+        
+        bibleBook = ChapterSelection.bookMap[chapSelectObj.bookAbbrev]
+    else:
+        bibleBook = chapSelectObj.bookAbbrev
+
+    # Create the text object factories
+    m_textFactory = DB.project.ServiceLocator.GetInstance(ITextFactory)
+    m_stTextFactory = DB.project.ServiceLocator.GetInstance(IStTextFactory)
+    m_stTxtParaFactory = DB.project.ServiceLocator.GetInstance(IStTxtParaFactory)
+
+    # Check if the toChapter is there. If not set the end chapter and set a flag.
     if str(chapSelectObj.toChap+1) not in chapList:
         
         copyUntilEnd = True
@@ -225,17 +253,20 @@ def do_import(DB, report, chapSelectObj):
         if len(chapList) > 0:
             chapSelectObj.toChap = int(chapList[-1])
     
-    # Build the search regex
+    # Build the search regex. It starts the search at the fromChapter
     reStr = fr'(\\c {str(chapSelectObj.fromChap)}\s.+?)'
     
+    # The expression ends with the end of the book contents if we need to
     if copyUntilEnd:
         
         reStr += '$'
+
+    # Otherwise the expression ends at the toChapter
     else:
         reStr += fr'\\c {str(chapSelectObj.toChap+1)}\s'
 
+    # Get the results
     matchObj = re.search(reStr, bookContents, flags=re.RegexFlag.DOTALL)
-    
     importText = matchObj.group(1)
     
     # Remove newlines
@@ -257,112 +288,143 @@ def do_import(DB, report, chapSelectObj):
         importText = re.sub(r'\\x.+?\\x\*', '', importText)
         importText = re.sub(r'\\r.+?\\p', r'\\p', importText) # assume a \p directly follows a \r
 
-    # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
-    # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
-    # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
-    # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
-
-    #                  end mrk footnt  footnt ref+dash  footnt ref   cr ref orig+dash cr ref orig  verse+dash   verse    pub verse chap    ref+dash    ref     any marker
-    segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+:\d+-\d+|\\fr \d+:\d+|\\xo \d+:\d+-\d+|\\xo \d+:\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+:\d+-\d+|\d+:\d+|\\\w+)', importText) 
-
-    # Create 1st paragraph object
-    stTxtPara = m_stTxtParaFactory.Create()
+    # If the user wants one text per chapter, split the text on chapters
+    if chapSelectObj.oneTextPerChapter == True:
     
-    # Add it to the stText object
-    stText.ParagraphsOS.Add(stTxtPara)    
+        # This gives us something like: ['', '\\c 3', ' blah blah. ', '\\c 4', ' \\v 1 bkbk end.']
+        tempChapterList = re.split(r'(\\c \d+)', importText)
 
-    bldr = TsStringUtils.MakeStrBldr()
+        # Put the \\c list elements back together with their respective contents
+        for i in range(1, len(tempChapterList), 2):
 
-    # See if we have a script that has both upper and lower case. 
-    if len(segs) >= 2:
-        
-        # Find a non-zero segment vernacular string (an even numbered index)
-        for i in range(2, len(segs), 2):
-            
-            if len(segs[i]) > 0:
-            
-                # if the lower case is equal to the upper case, assume this script has no upper case
-                if segs[i].lower() == segs[i].upper():
-                    
-                    upperCase = False
-                else:
-                    upperCase = True
-                    
-                break
-    
-    # SFMs to start a new paragraph in FLEx
-    newPar = r'\\[cpsqm]'
-    
-    for _, seg in enumerate(segs):
-        
-        if seg and re.search(newPar, seg): # or first segment if not blank
-        
-            # Save the built up string to the Contents member
-            stTxtPara.Contents = bldr.GetString()
-            
-            # Create paragraph object
-            stTxtPara = m_stTxtParaFactory.Create()
-            
-            # Add it to the stText object
-            stText.ParagraphsOS.Add(stTxtPara)  
-        
-            bldr = TsStringUtils.MakeStrBldr()
-        
-        if seg is None or len(seg) == 0:
-            continue
-        
-        # Either an sfm marker or a verse ref should get marked as Analysis WS
-        elif re.search(r'\\|\d+:\d+', seg):
-            
-            # add a space before the marker if we have content before it.
-            if bldr.Length > 0:
-                seg = ' ' + seg
-            
-            # add a section mark if this is a verse or a quote and this is a script that has upper case.
-            # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
-            if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
-                
-                seg += '§'
-            
-            # make this in the Analysis WS
-            tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
-            bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-            
-        else:
-            # make this in the Vernacular WS
-            tss = TsStringUtils.MakeString(seg, DB.project.DefaultVernWs)
-            bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-        
-    stTxtPara.Contents = bldr.GetString()
+            byChapterList.append(tempChapterList[i] + tempChapterList[i+1])
 
-    # If the user wants full name, look it up
-    if chapSelectObj.useFullBookName:
-        
-        bibleBook = ChapterSelection.bookMap[chapSelectObj.bookAbbrev]
+    # Otherwise treat as one chapter (going to one text)
     else:
-        bibleBook = chapSelectObj.bookAbbrev
+        byChapterList = [importText]
 
-    # Build the title string from book abbreviation and chapter range. E.g. EXO 03 or EXO 03-04
-    title = bibleBook + ' ' + str(chapSelectObj.fromChap).zfill(2)
-    
-    if chapSelectObj.fromChap < chapSelectObj.toChap:
+    # Set the starting chapter number for the title which may get incremented
+    titleChapNum = chapSelectObj.fromChap
+
+    # Loop through each 'chapter'
+    for chapterContent in byChapterList:
+
+        # Create a text and add it to the project      
+        text = m_textFactory.Create()           
+        stText = m_stTextFactory.Create()
         
-        title += '-' + str(chapSelectObj.toChap).zfill(2)
+        # Set StText object as the Text contents
+        text.ContentsOA = stText  
+    
+        # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
+        # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
+        # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+        # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
+
+        #                  end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref     any marker
+        segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\w+)', chapterContent) 
+
+        # Create 1st paragraph object
+        stTxtPara = m_stTxtParaFactory.Create()
         
-    # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
-    title = Utils.createUniqueTitle(DB, title)
-    
-    # Set the title of the text
-    tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
-    text.Name.AnalysisDefaultWritingSystem = tss
-    
-    report.Info('Text: "'+title+'" created.')
-    
-    # Make this new text the active text for FLExTrans if necessary
+        # Add it to the stText object
+        stText.ParagraphsOS.Add(stTxtPara)    
+
+        bldr = TsStringUtils.MakeStrBldr()
+
+        # See if we have a script that has both upper and lower case. 
+        if len(segs) >= 2:
+            
+            # Find a non-zero segment vernacular string (an even numbered index)
+            for i in range(2, len(segs), 2):
+                
+                if len(segs[i]) > 0:
+                
+                    # if the lower case is equal to the upper case, assume this script has no upper case
+                    if segs[i].lower() == segs[i].upper():
+                        
+                        upperCase = False
+                    else:
+                        upperCase = True
+                        
+                    break
+        
+        # SFMs to start a new paragraph in FLEx
+        newPar = r'\\[cpsqm]'
+        
+        for _, seg in enumerate(segs):
+            
+            if seg and re.search(newPar, seg): # or first segment if not blank
+            
+                # Save the built up string to the Contents member
+                stTxtPara.Contents = bldr.GetString()
+                
+                # Create paragraph object
+                stTxtPara = m_stTxtParaFactory.Create()
+                
+                # Add it to the stText object
+                stText.ParagraphsOS.Add(stTxtPara)  
+            
+                bldr = TsStringUtils.MakeStrBldr()
+            
+            if seg is None or len(seg) == 0:
+                continue
+            
+            # Either an sfm marker or a verse ref should get marked as Analysis WS
+            elif re.search(r'\\|\d+[.:]\d+', seg):
+                
+                # add a space before the marker if we have content before it.
+                # if bldr.Length > 0:
+                #     seg = ' ' + seg
+                
+                # add a section mark if this is a verse or a quote and this is a script that has upper case.
+                # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
+                if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
+                    
+                    seg += '§'
+                
+                # make this in the Analysis WS
+                tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+                
+            else:
+                # make this in the Vernacular WS
+                tss = TsStringUtils.MakeString(seg, DB.project.DefaultVernWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+            
+        stTxtPara.Contents = bldr.GetString()
+
+        # Build the title string from book abbreviation and chapter.
+        title = bibleBook + ' ' + str(titleChapNum).zfill(2)
+        
+        # Possibly add to the title if we are putting multiple chapters into one text
+        if chapSelectObj.oneTextPerChapter == False:
+
+            if chapSelectObj.fromChap < chapSelectObj.toChap:
+                
+                #  E.g. EXO 03-04
+                title += '-' + str(chapSelectObj.toChap).zfill(2)
+
+        if firstTitle == None:
+
+            firstTitle = title
+            
+        # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
+        title = Utils.createUniqueTitle(DB, title)
+        
+        # Set the title of the text
+        tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
+        text.Name.AnalysisDefaultWritingSystem = tss
+        
+        report.Info('Text: "'+title+'" created.')
+
+        titleChapNum += 1
+        
+    # Make this new text (or the first of the series) the active text for FLExTrans if necessary
     if chapSelectObj.makeActive:
         
-        setSourceNameInConfigFile(report, title)
-        FTPaths.CURRENT_SRC_TEXT = title
+        setSourceNameInConfigFile(report, firstTitle)
+        FTPaths.CURRENT_SRC_TEXT = firstTitle
 
         # Have FlexTools refresh the status bar
         refreshStatusbar()

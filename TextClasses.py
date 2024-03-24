@@ -5,6 +5,15 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10.2 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10.1 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
+#   Version 3.10 - 1/1/24 - Ron Lockwood
+#    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
+#
 #   Version 3.9.2 - 8/17/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -57,6 +66,8 @@ class TextEntirety():
     def createGuidMaps(self):
         for par in self.__parList:
             par.createGuidMaps(self.__insertedWordsList)
+    def getParagraphCount(self):
+        return len(self.__parList)
     def getParagraphs(self):
         return self.__parList
     def getParAndSentIndex(self, sentNum):
@@ -107,10 +118,10 @@ class TextEntirety():
                 par.findDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigTypesList)
         for par in self.__parList:
             par.substituteDiscontiguousComplexForms(self.__discontigCmplxFormMap, discontigPOSList)
-    def warnForUnknownWords(self):
+    def warnForUnknownWords(self, noWarningProperNoun):
         multipleUnknownWords = False
         for par in self.__parList:
-            if par.warnForUnknownWords(self.__unknownWordMap) == True:
+            if par.warnForUnknownWords(self.__unknownWordMap, noWarningProperNoun) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -150,10 +161,10 @@ class TextParagraph():
     def substituteDiscontiguousComplexForms(self, cmplxFormMap, discontigPOSList):
         for sent in self.__sentList:
             sent.substituteDiscontiguousComplexForms(cmplxFormMap, discontigPOSList)
-    def warnForUnknownWords(self, unknownWordMap):
+    def warnForUnknownWords(self, unknownWordMap, noWarningProperNoun):
         multipleUnknownWords = False
         for sent in self.__sentList:
-            if sent.warnForUnknownWords(unknownWordMap) == True:
+            if sent.warnForUnknownWords(unknownWordMap, noWarningProperNoun) == True:
                 multipleUnknownWords = True
         return multipleUnknownWords
     def write(self, fOut):
@@ -478,31 +489,32 @@ class TextSentence():
 
             myIndex += increment
             
-    def warnForUnknownWords(self, unknownWordMap):
+    def warnForUnknownWords(self, unknownWordMap, noWarningProperNoun):
         multipleUnknownWords = False
         for myIndex, word in enumerate(self.__wordList):
+
             # See if we have an uninitialized word which indicates it's unknown
             if word.isInitialized() == False:
+
                 # Allow some unknown "words" without warning, such as sfm markers
                 if len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0] == '\\':
                     continue
-                if myIndex > 0:
-                    prvWrd = self.__wordList[myIndex-1]
-                    if word.getSurfaceForm().isdigit():
-                        if prvWrd.getInitialPunc() == '\\':
-                            if prvWrd.getSurfaceForm() == 'v' or prvWrd.getSurfaceForm() == 'c':
-                                continue  
-                    if prvWrd.getInitialPunc() == '\\':
-                        if prvWrd.getSurfaceForm() == 'f' or prvWrd.getSurfaceForm() == 'fr':
-                            continue
+
                 # Don't warn on the second time an unknown word is encountered
                 if word.getSurfaceForm() in unknownWordMap:
                     multipleUnknownWords = True
                 else:
+
+                    # Don't warn if the word is capitalized, non-initial and the user wants to ignore non-sentence-initial capitalized words (Proper Nouns)
+                    if noWarningProperNoun == True and len(word.getSurfaceForm()) > 0 and word.getSurfaceForm()[0].isupper() and myIndex > 0:
+                        continue
+
+                    # Give the warning
                     self.__report.Warning('No analysis found for the word: '+ word.getSurfaceForm() + ' Treating this is an unknown word.')
                     
                     # Check if we've had this unknown word already
                     if word.getSurfaceForm() not in unknownWordMap:
+
                         # Add this word to the unknown word map
                         unknownWordMap[word.getSurfaceForm()] = 1
                         
@@ -537,11 +549,11 @@ class TextWord():
         self.__affixLists.append([]) # create an empty list
         self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
-        self.__finalPunc += myStr
+        self.__finalPunc += self.escapeReservedApertChars(myStr)
     def addInflFeatures(self, inflFeatAbbrevs):
         self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
     def addInitialPunc(self, myStr):
-        self.__initPunc += myStr
+        self.__initPunc += self.escapeReservedApertChars(myStr)
     def addLemma(self, lemma):
         self.__lemmaList.append(lemma)
     def addLemmaFromObj(self, myObj):
@@ -566,6 +578,8 @@ class TextWord():
                                 
         lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
+    def escapeReservedApertChars(self, inStr):
+        return re.sub(Utils.APERT_RESERVED, r'\\\1', inStr)
     def getAffixSymbols(self):
         # assume no compound roots for this word
         return self.__affixLists[0]

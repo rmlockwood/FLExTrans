@@ -5,6 +5,15 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.10.1 - 3/19/24 - Ron Lockwood
+#    Fixes #566. Allow the user to create one text per chapter when importing.
+#
+#   Version 3.10 - 3/13/24 - Ron Lockwood
+#    Support Paratext lexicon import.
+#
+#   Version 3.9.1 - 12/21/23 - Ron Lockwood
+#    Added apocryphal/deuterocanonical and extra books into the list.
+#
 #   Version 3.7.1 - 1/30/23 - Ron Lockwood
 #    Restructured to put common init and exit code into ChapterSelection.py
 #    Store export project and import project as separate settings.
@@ -96,11 +105,53 @@ bookMap = {\
 '3JN':'3 John',\
 'JUD':'Jude',\
 'REV':'Revelation',\
+'TOB':'Tobit',\
+'JDT':'Judith',\
+'ESG':'Esther Greek',\
+'WIS':'Wisdom of Solomon',\
+'SIR':'Sirach',\
+'BAR':'Baruch',\
+'LJE':'Letter of Jeremiah',\
+'S3Y':'Song of the 3 Young Men',\
+'SUS':'Susanna',\
+'BEL':'Bel and the Dragon',\
+'1MA':'1 Maccabees',\
+'2MA':'2 Maccabees',\
+'3MA':'3 Maccabees',\
+'4MA':'4 Maccabees',\
+'1ES':'1 Esdras (Greek)',\
+'2ES':'2 Esdras (Latin)',\
+'MAN':'Prayer of Manasseh',\
+'PS2':'Psalm 151',\
+'ODA':'Odae/Odes',\
+'PSS':'Psalms of Solomon',\
+'EZA':'Ezra Apocalypse',\
+'5EZ':'5 Ezra',\
+'6EZ':'6 Ezra',\
+'DAG':'Daniel Greek',\
+'PS3':'Psalms 152-155',\
+'2BA':'2 Baruch (Apocalypse)',\
+'LBA':'Letter of Baruch',\
+'JUB':'Jubilees',\
+'ENO':'Enoch',\
+'1MQ':'1 Meqabyan/Mekabis',\
+'REP':'Reproof',\
+'4BA':'4 Baruch',\
+'LAO':'Letter to the Laodiceans',\
+'XXA':'Extra A',\
+'XXB':'Extra B',\
+'XXC':'Extra C',\
+'XXD':'Extra D',\
+'XXE':'Extra E',\
+'XXF':'Extra F',\
+'XXG':'Extra G',\
+'INT':'Introduction',\
 }
 
 class ChapterSelection(object):
         
-    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName):
+    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                 makeActive, useFullBookName, oneTextPerChapter=False):
     
         if export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -117,6 +168,7 @@ class ChapterSelection(object):
         self.includeCrossRefs   = includeCrossRefs
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName     
+        self.oneTextPerChapter  = oneTextPerChapter
         
     def dump(self):
         
@@ -129,7 +181,8 @@ class ChapterSelection(object):
             'includeFootnotes'       : self.includeFootnotes   ,\
             'includeCrossRefs'       : self.includeCrossRefs   ,\
             'makeActive'             : self.makeActive         ,\
-            'useFullBookName'        : self.useFullBookName     \
+            'useFullBookName'        : self.useFullBookName    ,\
+            'oneTextPerChapter'      : self.oneTextPerChapter   \
             }
         return ret
 
@@ -168,11 +221,12 @@ def InitControls(self, export=True):
         self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
         self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
         self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
+        self.ui.oneTextPerChapterCheckBox.setChecked(myMap['oneTextPerChapter'])
         f.close()
     except:
         pass
 
-def doOKbuttonValidation(self, export=True):
+def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True):
     
     # Get values from the 'dialog' window
     projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
@@ -183,6 +237,7 @@ def doOKbuttonValidation(self, export=True):
     includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
     makeActive = self.ui.makeActiveTextCheckBox.isChecked()
     useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
+    oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
     
     ## Validate some stuff
     
@@ -201,7 +256,7 @@ def doOKbuttonValidation(self, export=True):
         return
 
     # Check if the book is valid
-    if bookAbbrev not in bookMap:
+    if checkBookAbbrev and bookAbbrev not in bookMap:
         
         QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
         return
@@ -211,14 +266,15 @@ def doOKbuttonValidation(self, export=True):
     
     parts = glob.glob(bookPath)
     
-    if len(parts) < 1:
+    if checkBookPath and len(parts) < 1:
         
         QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
         return
 
     bookPath = parts[0]
     
-    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, makeActive, useFullBookName)
+    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                                    makeActive, useFullBookName, oneTextPerChapter)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')
