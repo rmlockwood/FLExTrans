@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->22 January 2024</date
+>23 March 2024</date
 ><version
->3.10</version
+>3.10.1</version
 ><contents
 showLevel="4"
 ></contents
@@ -653,10 +653,7 @@ type="tTool"
 > from the <object
 type="tCollection"
 >Tools</object
-> collection. (See <sectionRef
-sec="sCollections"
-></sectionRef
-> for how to change to a collection.) You will see a window that looks like <exampleRef
+> collection. You will see a window that looks like <exampleRef
 letter="xSetupCatAttrib0"
 num="xSetupCatAttrib0"
 ></exampleRef
@@ -746,30 +743,10 @@ id="sLinkSenses"
 >Link Senses</secTitle
 ><ol
 ><li
->Click on the <img
-cssSpecial="Width:5%"
-src="Images/CollectionsBut.PNG"
-></img
-> button which will bring up a list of collections as shown in <exampleRef
-letter="xMyCollections"
-num="xMyCollections"
-></exampleRef
->.<example
-num="xMyCollections"
-><chart
-><img
-XeLaTeXSpecial="scaled='600';"
-cssSpecial="Height:60%;"
-src="Images/LinkerInCollections.png"
-></img
-></chart
-></example
-></li
-><li
 >Click on <object
 type="tCollection"
 >Tools</object
-> in the list and you’ll see list of Tools modules:</li
+> tab and you’ll see list of Tools modules:</li
 ><li
 >Click on <object
 type="tCollection"
@@ -786,10 +763,9 @@ src="Images/LinkerModule.png"
 ></example
 ></li
 ><li
->Click on the <img
-cssSpecial="Width:5%"
-src="Images/RunModifyBut.PNG"
-></img
+>Click on the <object
+type="tButton"
+>Run</object
 > button to run the module. Click OK on the message box that comes up to confirm you want to change <object
 type="tFlexx"
 ></object
@@ -1058,29 +1034,19 @@ type="tFlextrans"
 >In <object
 type="tFlexxTools"
 ></object
->, click on the <img
-cssSpecial="Width:5%"
-src="Images/CollectionsBut.PNG"
-></img
-> button.</li
-><li
->Double-click on <object
+>, click on the <object
 type="tCollection"
 >All Steps</object
-> in the list and you’ll see <exampleRef
+> tab and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
 >.</li
 ><li
->Click on the <img
-cssSpecial="Width:7%"
-src="Images/RunAllModifyBut.PNG"
-></img
-> button to run all the modules. Click OK on the message box that comes up to confirm you want to change <object
-type="tFlexx"
-></object
-> data. You’ll see the modules run and see various bits of output.</li
+>Click on the <object
+type="tButton"
+>Run All</object
+> button to run all the modules. You’ll see the modules run and see various lines of output.</li
 ></ol
 ><p
 >You can see the results by opening the target <object
@@ -1210,11 +1176,6 @@ type="tFlexx"
 ><li
 >The <object
 type="tButton"
->Collections</object
-> button allows you to change to a different collection, as well as add, modify, or delete collections.</li
-><li
->The <object
-type="tButton"
 >Module Info</object
 > button shows more details about whichever module is currently selected.</li
 ><li
@@ -1316,11 +1277,17 @@ type="tFlextrans"
 ></object
 > are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.</p
 ><p
->To change to a different collection, click the <img
-cssSpecial="Width:5%"
-src="Images/CollectionsBut.PNG"
-></img
-> button. This will bring up the Collections Manager, as shown in <exampleRef
+>To change to a different collection, click the desired collection tab.</p
+><p
+>To manage collections, select <object
+type="tMenu"
+>Manage Collections</object
+> from the <object
+type="tMenu"
+>FLExTools</object
+> menu.</p
+><p
+>This will bring up the Collections Manager, as shown in <exampleRef
 letter="xCollectionsManager"
 letterOnly="no"
 num="xCollectionsManager"
@@ -1338,8 +1305,6 @@ src="Images/CollectionsManager.png"
 ><p
 >In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected in this pane, the lower right pane will provide information about that module.</p
 ><p
->To change to a different collection, double click on one of the collection names in the upper left pane.</p
-><p
 >If you want to make your own collection to hold modules that you frequently run together, use the <img
 src="Images/NewButton.png"
 ></img
@@ -1354,7 +1319,10 @@ src="Images/MoveDownButton.png"
 ></img
 > buttons to change the sequence.</p
 ><p
->When you are finished making your collection, click the x in the upper right to close the dialog.</p
+>When you are finished making your collection, click the <object
+type="tButton"
+>Select</object
+> button on the toolbar.</p
 ></section2
 ></section1
 ><section1
@@ -1823,6 +1791,14 @@ type="tFlexx"
 ><p
 >Additional options are the following:</p
 ><ul
+><li
+><object
+type="tBoldItalic"
+>Create one text per chapter</object
+> - when more than one chapter is specified, create one text in <object
+type="tFlexx"
+></object
+> for each chapter.</li
 ><li
 ><object
 type="tBoldItalic"
@@ -2771,7 +2747,7 @@ app="sStartFlextools"
 ><li
 >Verify that the status bar shows the current collection is set to <object
 type="tCollection"
->All Steps</object
+>Drafting</object
 >.</li
 ></ol
 ></section3
@@ -3465,11 +3441,6 @@ type="tFlexxTools"
 > app.</li
 ><li
 >Click the <object
-type="tButton"
->Collections</object
-> button.</li
-><li
->Double-click on the <object
 type="tCollection"
 >Tools</object
 > collection.</li
@@ -4799,7 +4770,7 @@ type="tLiveRuleTester"
 ></object
 > and run the modules in the <object
 type="tCollection"
->All Steps</object
+>Drafting</object
 > to see what our English sentence looks like.</p
 ><p
 >Now we get:</p
@@ -5563,7 +5534,7 @@ type="tFlextrans"
 ></object
 >, in the <object
 type="tCollection"
->All Steps</object
+>Drafting</object
 > collection, use <object
 type="tButton"
 >Run All</object
