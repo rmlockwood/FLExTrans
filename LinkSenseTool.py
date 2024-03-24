@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.7 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
+#   Version 3.10.6 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.5 - 3/8/24 - Ron Lockwood
 #    Fixes #578. If a change was made in the linking and the user clicks cancel or the 
 #    red X, prompt them to see if they want to save the changes.
@@ -273,7 +279,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1306,32 +1312,15 @@ def getMatchesOnGloss(gloss, glossMap, saveMap, doFuzzyCompare):
 
 def getInterlinearText(DB, report, configMap, contents):
     
-    # Get punctuation string
-    sentPunct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    
-    if not sentPunct:
-        return None
-    
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return None
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return None
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return None
+    # Check for an error
+    if interlinParams == None:
+        return
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, interlinParams)
     
     return myText
 

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.10.2 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
 #   Version 3.10.1 - 3/2/24 - Ron Lockwood
 #    Fixes #561. Handle commas in settings values that aren't lists. Do this by having a 
 #    list of properties that must take a list.
@@ -108,6 +111,7 @@ HERMIT_CRAB_MASTER_FILE = 'HermitCrabMasterFile'
 HERMIT_CRAB_SURFACE_FORMS_FILE = 'HermitCrabSurfaceFormsFile'
 HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
 LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
+NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
