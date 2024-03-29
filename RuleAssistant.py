@@ -224,12 +224,12 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 
         if result.returncode != 0:
 
-            report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+            #report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
             return True
 
     except subprocess.CalledProcessError as e:
 
-        report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+        #report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
         return True
     
     return False
@@ -264,7 +264,7 @@ def MainFunction(DB, report, modify=True):
     if StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile) == True:
         return
 
-    CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
+    #CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
