@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.9 - 4/11/24 - Ron Lockwood
+#    Bug fix for TreeTran use. Don't compare guid object to None.
+#
 #   Version 3.10.8 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
 #
@@ -389,7 +392,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.8",
+        FTM_Version    : "3.10.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2558,7 +2561,7 @@ def RunModule(DB, report):
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
-                    if myGuid == None:
+                    if not myGuid:
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
