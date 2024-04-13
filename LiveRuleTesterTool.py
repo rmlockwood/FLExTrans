@@ -5,10 +5,13 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.10.9 - 4/13/24 - Ron Lockwood
+#   Version 3.10.10 - 4/13/24 - Ron Lockwood
 #    Fixes #399. Show **none** on the left size when the source language is in a RTL script.
 #    Also make the tooltip size for all widgets the same as other widgets according to how much
 #    the user has zoomed in or out.
+#
+#   Version 3.10.9 - 4/11/24 - Ron Lockwood
+#    Bug fix for TreeTran use. Don't compare guid object to None.
 #
 #   Version 3.10.8 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
@@ -394,7 +397,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.9",
+        FTM_Version    : "3.10.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2570,7 +2573,7 @@ def RunModule(DB, report):
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
-                    if myGuid == None:
+                    if not myGuid:
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     
