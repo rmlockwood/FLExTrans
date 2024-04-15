@@ -5,6 +5,14 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.10 - 4/13/24 - Ron Lockwood
+#    Fixes #399. Show **none** on the left size when the source language is in a RTL script.
+#    Also make the tooltip size for all widgets the same as other widgets according to how much
+#    the user has zoomed in or out.
+#
+#   Version 3.10.9 - 4/11/24 - Ron Lockwood
+#    Bug fix for TreeTran use. Don't compare guid object to None.
+#
 #   Version 3.10.8 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
 #
@@ -366,7 +374,7 @@ from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
 
 from Testbed import *
 import Utils
@@ -389,7 +397,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.8",
+        FTM_Version    : "3.10.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1824,7 +1832,7 @@ class Main(QMainWindow):
                 tipText = self.formatTextForToolTip(srcTrgPairsList)
             else:
                 tipText = '---'
-            
+
             self.__checkBoxList[i].setToolTip(tipText)
             
         # Make the rest of the unused check boxes invisible
@@ -1874,22 +1882,26 @@ class Main(QMainWindow):
         # Between the source and target we want an arrow, choose left or right arrows depending on the text direction
         if isRtl:
             
-            arrowStr = '\u2B60'
+            arrowStr = '⭠'
         else:
-            arrowStr = '\u2B62'
+            arrowStr = '⭢'
             
         # Go through all pairs and add them to the tool tip
         for source, target in srcTrgtPairsList:
             
             # Combine source and target into one paragraph html string
             tipStr += convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
-            tipStr += f'&nbsp;{arrowStr}&nbsp;' # right arrow
+            tipStr += f'&nbsp;{arrowStr}&nbsp;' 
 
             # If the target is mapped to nothing (which happens if the user chose **None** in the linker),
             # set the right side of the tooltip to **None**
             if target.text is None:
                 
-                tipStr += Utils.NONE_HEADWORD
+                # If we have RTL orientation, prepend the RTL marker character
+                if isRtl:
+                    tipStr += '\u200F' + Utils.NONE_HEADWORD
+                else:
+                    tipStr += Utils.NONE_HEADWORD
             else:
                 tipStr += convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
             
@@ -2425,6 +2437,9 @@ class Main(QMainWindow):
 
             check.setFont(myFont)
 
+        # Set the tooltip size globally
+        QToolTip.setFont(myFont)
+
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
@@ -2558,7 +2573,7 @@ def RunModule(DB, report):
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
-                    if myGuid == None:
+                    if not myGuid:
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     

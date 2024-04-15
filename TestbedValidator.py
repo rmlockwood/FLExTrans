@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.10 - 4/11/24 - Ron Lockwood
+#    Bug fix for TreeTran use -- check msa object is valid.
+#
 #   Version 3.9.1 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -233,7 +236,7 @@ class TestbedValidator():
                         headWord = MyUtils.add_one(headWord)
     
                         # Only take word senses that have a grammatical category set.
-                        if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                        if mySense.MorphoSyntaxAnalysisRA and mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                             msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
                             if msa.PartOfSpeechRA:            
                                                       
