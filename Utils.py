@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.12 - 4/15/24 - Ron Lockwood
+#    Fixed bug of casting to ILexEntry when it should be ILexSense for variants of a sense.
+#
 #   Version 3.10.11 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
 #
@@ -1057,7 +1060,8 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
                         if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].Entry)
+                            mySense = ILexSense(entryRef.ComponentLexemesRS.ToArray()[0])
+                            e = mySense.Entry
                             break
                         else: # normal variant of entry
                             e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0])
