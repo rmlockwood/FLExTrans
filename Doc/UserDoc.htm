@@ -47,12 +47,14 @@
                <ul>
                   <li><a href="#sColorKey">4.1.1&nbsp;Color Coding Key</a></li>
                   <li><a href="#sHowLink">4.1.2&nbsp;Linking</a></li>
-                  <li><a href="#sSearchList">4.1.3&nbsp;Search the All Target Senses List</a></li>
-                  <li><a href="#sFilterList">4.1.4&nbsp;Filtering the List</a></li>
-                  <li><a href="#sSenses2Link">4.1.5&nbsp;Senses to Link Number</a></li>
-                  <li><a href="#sFontControl">4.1.6&nbsp;Font Control</a></li>
-                  <li><a href="#sRebuildBiling">4.1.7&nbsp;Rebuild the Bilingual Lexicon</a></li>
-                  <li><a href="#sSLTChangeSource">4.1.8&nbsp;Change Source Text</a></li>
+                  <li><a href="#sSLTChangeSource">4.1.3&nbsp;Source Text</a></li>
+                  <li><a href="#sSearchList">4.1.4&nbsp;Search the All Target Senses List</a></li>
+                  <li><a href="#sShowUnlinked">4.1.5&nbsp;Show Only Unlinked</a></li>
+                  <li><a href="#sHidePN">4.1.6&nbsp;Hide Proper Nouns</a></li>
+                  <li><a href="#sFontControl">4.1.7&nbsp;Zoom and Font Button</a></li>
+                  <li><a href="#sRebuildBiling">4.1.8&nbsp;Rebuild Bilingual Lexicon</a></li>
+                  <li><a href="#sExportUnlinked">4.1.9&nbsp;Export Unlinked Senses</a></li>
+                  <li><a href="#sSenses2Link">4.1.10&nbsp;Senses to link</a></li>
                </ul>
                <li><a href="#sRuleTester">4.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></a></li>
                <ul>
@@ -369,6 +371,7 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Add a "phoneme" with a grapheme of #.</li>
                <li>Make sure that the phonological features for this phoneme are unique.</li>
+               <li>Replace each space with a # symbol in your lexeme form field for all entries.</li>
             </ol>
             <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> synthesis tool will replace any #s in the input with spaces in the output.
             </p>
@@ -516,7 +519,7 @@
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Navigate to your work project folder.</li>
-         <li>Open the file <span style="font-style:italic; ">transfer_rules.t1x</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(8)</a>. This is the transfer rules file that works with the sample projects.
+         <li>Open the file <span style="font-style:italic; ">transfer_rules-Swedish.t1x</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. It should look something like <a href="#xInitialSampleRules">(8)</a>. This is the transfer rules file that works with the sample projects.
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
                   <tr>
@@ -808,20 +811,33 @@
                <td align="left" valign="top" style="padding-left:.2em">Red Text</td>
                <td align="left" valign="top" style="padding-left:.2em">There is a mismatch of grammatical category even though the glosses match.</td>
             </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em">Green Text</td>
+               <td align="left" valign="top" style="padding-left:.2em">Source headwords</td>
+            </tr>
+            <tr style="">
+               <td align="left" valign="top" style="padding-left:.2em">Blue Text</td>
+               <td align="left" valign="top" style="padding-left:.2em">Target headwords</td>
+            </tr>
          </table>
       </div>
       <h3 style=""><a name="sHowLink"></a>4.1.2&nbsp;Linking
       </h3>
-      <p>For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link
-         It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need
-         to do two things. First, select the target sense that you want to link to in the drop down list of <span style="font-style:normal; font-weight:bold; ">All Target Senses</span> then go to the <span style="font-style:normal; font-weight:bold; ">Target Head Word</span> column for the source sense in question and double-click there. The target sense information should appear with a green background
+      <p>For suggested sense links (colored in blue shades), if you want to link them, simply check the check box in the <span style="font-style:italic; ">Link It</span> column. 
+      </p>
+      <p>To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two
+         things. First, select the target sense that you want to link to in the drop down list of <span style="font-style:normal; font-weight:bold; ">All Target Senses</span> then go to the <span style="font-style:normal; font-weight:bold; ">Target Head Word</span> column for the source sense in question and double-click there. The target sense information should appear with a green background
          color. You can use the search text box to find the appropriate target sense.
       </p>
-      <h3 style=""><a name="sSearchList"></a>4.1.3&nbsp;Search the All Target Senses List
+      <h3 style=""><a name="sSLTChangeSource"></a>4.1.3&nbsp;Source Text
+      </h3>
+      <p>If you want to work on linking senses for a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> will close and restart.
+      </p>
+      <h3 style=""><a name="sSearchList"></a>4.1.4&nbsp;Search the All Target Senses List
       </h3>
       <p>Use the <span style="font-style:normal; font-weight:bold; ">Search here</span> field to find a sense. This will find senses in the list by matching the beginning of the headwords in the list. If you want
          to filter the target sense list to those matching part of a headword or the gloss or the part of speech (using parentheses),
-         click on the <span style="font-style:normal; font-weight:bold; ">Filter on all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box.
+         click on the <span style="font-style:normal; font-weight:bold; ">Filter on all fields</span> check box and then type in the <span style="font-style:normal; font-weight:bold; ">Search here</span> box. Note: if you want the <span style="font-style:normal; font-weight:bold; ">Filter on all fields</span> check box to be checked by default every time, there's a setting for that. Change the <span style="font-weight:bold; color:#964B00; ">Default to filtering on all fields?</span> to <span style="font-style:italic; ">Yes</span> in the <span style="font-style:normal; font-weight:bold; ">Linker Settings</span> section of the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -837,28 +853,35 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sFilterList"></a>4.1.4&nbsp;Filtering the List
+      <h3 style=""><a name="sShowUnlinked"></a>4.1.5&nbsp;Show Only Unlinked
       </h3>
-      <p>If you only want to see the senses that need to be linked, check the box <span style="font-style:normal; font-weight:bold; ">Show Only Unlinked</span>. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both
-         languages) click the box <span style="font-style:normal; font-weight:bold; ">Hide Proper Nouns</span>.
+      <p>If you only want to see the senses that need to be linked, check the box <span style="font-style:normal; font-weight:bold; ">Show Only Unlinked</span>.
       </p>
-      <h3 style=""><a name="sSenses2Link"></a>4.1.5&nbsp;Senses to Link Number
+      <h3 style=""><a name="sHidePN"></a>4.1.6&nbsp;Hide Proper Nouns
       </h3>
-      <p>At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes,
-         rather the number of unique senses that are remaining to link.
+      <p>If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages)
+         click the box <span style="font-style:normal; font-weight:bold; ">Hide Proper Nouns</span>.
       </p>
-      <h3 style=""><a name="sFontControl"></a>4.1.6&nbsp;Font Control
+      <h3 style=""><a name="sFontControl"></a>4.1.7&nbsp;Zoom and Font Button
       </h3>
       <p>Quickly change the font size with the plus and minus buttons next to <span style="font-style:normal; font-weight:bold; ">Zoom</span>. Change all aspects of the font with the <span style="font-style:normal; font-weight:bold; ">Font</span> button.
       </p>
-      <h3 style=""><a name="sRebuildBiling"></a>4.1.7&nbsp;Rebuild the Bilingual Lexicon
+      <h3 style=""><a name="sRebuildBiling"></a>4.1.8&nbsp;Rebuild Bilingual Lexicon
       </h3>
       <p>After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <span style="font-style:normal; font-weight:bold; ">Rebuild the Bilingual Lexicon</span> check box is checked, this will happen automatically when you click OK. If you would like to change whether by default this
          box is checked or unchecked when you start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span>, set the corresponding setting in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Settings Tool</span>.
       </p>
-      <h3 style=""><a name="sSLTChangeSource"></a>4.1.8&nbsp;Change Source Text
+      <h3 style=""><a name="sExportUnlinked"></a>4.1.9&nbsp;Export Unlinked Senses
       </h3>
-      <p>If you want to work on linking senses for a different source text, click the <span style="font-style:normal; font-weight:bold; ">Source Text</span> drop-down box and select the desired text. At this point, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Sense Linker Tool</span> will close and restart.
+      <p>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper
+         Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send
+         to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to
+         open this in a word processor and save it as a document.
+      </p>
+      <h3 style=""><a name="sSenses2Link"></a>4.1.10&nbsp;Senses to link
+      </h3>
+      <p>At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes,
+         rather the number of unique senses that are remaining to link.
       </p>
       <h2 style=""><a name="sRuleTester"></a>4.2&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is a tool that allows you to test source words or sentences live against transfer rules. This tool is especially helpful
@@ -882,24 +905,23 @@
       </div>
       <h3 style=""><a name="sTesterQuickGuide"></a>4.2.1&nbsp;Quick Guide
       </h3>
-      <p>Here&#8217;s a quick guide on using the Live Rule Tester Tool.</p>
+      <p>Here&#8217;s a quick guide on using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
+      </p>
       <ol style="list-style-type:decimal; ">
          <li>First you want to choose something from your source text that you want to test. When you first run the tool, the words of
             the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more
-            words and when you do the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the Select Sentences
-            tab and clicking on the sentence you want.
+            words and when you do the <a href="#gDataStream">data stream format</a> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Sentences</span> tab and clicking on the sentence you want.
          </li>
          <li>Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as
             appropriate. Check them all with the <span style="font-style:normal; font-weight:bold; ">Select All</span> button. Uncheck them all with the <span style="font-style:normal; font-weight:bold; ">Unselect All</span> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.
          </li>
-         <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored area.
+         <li>Now you are ready to test. Click the <span style="font-style:normal; font-weight:bold; ">Transfer</span> button and you will process the selected words. You will see the results in <a href="#gDataStream">data stream format</a> in the green-colored <span style="font-style:italic; ">Target Text</span> area.
          </li>
-         <li>Check the yellow Information box. It will show which words were matched for the rules that were executed.</li>
-         <li>Now you are ready to synthesize. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored
-            area.
+         <li>Check the yellow <span style="font-style:italic; ">Rule Execution Information</span> area. It will show which words were matched for the rules that were executed.
          </li>
-         <li>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the "Testbed". This is essentially a database of expected results
-            for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the Testbed to see if you are still getting the results you expect.
+         <li>Now you are ready to synthesize. Click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button and you will synthesize the target text into target words in the salmon-colored <span style="font-style:italic; ">Synthesized Text</span> area.
+         </li>
+         <li>Use the <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span> button to add the input words and synthesized result to the <a href="#sTestbed">FLExTrans Testbed</a>. This is essentially a database of expected results for a certain inputs. In another part of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> you can run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to see if you are still getting the results you expect.
          </li>
       </ol>
       <h3 style=""><a name="sLRTChangeSource"></a>4.2.2&nbsp;Change Source Text
@@ -908,17 +930,16 @@
       </p>
       <h3 style=""><a name="sHover"></a>4.2.3&nbsp;Hover to See Bilingual Lexicon Entry
       </h3>
-      <p>When you are in the Select Words view in the top pane, you can hover over a word to see what the bilingual lexicon entry looks
-         like for that word. As shown in the image above when the word &#8216;liebe&#8217; was hovered over, the bilingual entry maps &#8216;lieben&#8217;
-         to &#8216;&auml;lska&#8217;. This feature can be very useful when inflection features are present on the target word. These will show in the
-         pop-up as well.
+      <p>When you are in the <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Select Words</span> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown
+         in the image above when you hover over the word &#8216;liebe&#8217;, use see that the bilingual lexicon maps &#8216;lieben&#8217; to &#8216;&auml;lska&#8217;. This
+         feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.
+         If you are using the <a href="#sRepl">replacement file</a>, you may see multiple mappings in the pop-up image.
       </p>
       <h3 style=""><a name="sTesterOther"></a>4.2.4&nbsp;Other Parts of the Tool
       </h3>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
-      <p>You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses)
-         directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">14</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
+      <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">14</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Interchunk</span> and <span style="font-style:normal; font-weight:bold; ">Postchunk</span> tabs are for use in testing rules using the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
       </p>
@@ -927,10 +948,10 @@
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> and <span style="font-style:normal; font-weight:bold; ">Edit Replacement File</span> buttons will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing and editing the respective files.
       </p>
-      <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed lexicon.
+      <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed target lexicon.
       </p>
       <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
-         have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.
+         have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> in one go. Each pair will be its own test.
       </p>
       <h2 style=""><a name="sViewSrcTgt"></a>4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.txt</span> or <span style="font-style:italic; ">target_text.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(20)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(21)</a>.
@@ -1362,7 +1383,7 @@
             </tr>
          </table>
       </div>
-      <p>You should see this same thing when you open the file <span style="font-style:italic; ">transfer_rules.t1x</span> (<span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial</span> folder) in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. (Expand all the elements.)
+      <p>You should see this same thing when you open the file <span style="font-style:italic; ">transfer_rules.t1x</span> (<span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans Documentation\Transfer Rules Tutorial\Croatian-English</span> folder) in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. (Expand all the elements.)
       </p>
       <p>The transfer file is divided into two main parts: a declaration section and a rules section. The rules section uses information
          from the declaration section. In fact, every kind of reference you make in the rules section, you have to declare in the declaration
@@ -1437,8 +1458,6 @@
       <p>Let&#8217;s see what our input and output looks like initially if we run the system. Our input of course, according to <a href="#xCroatEngTable">(35)</a> is: <span style="font-style:italic; ">Oti&#353;la si tiho i bez pozdrava.</span></p>
       <ol style="list-style-type:decimal; ">
          <li>Go to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span> app.
-         </li>
-         <li>Click the <span style="font-style:normal; font-weight:bold; ">Database</span> button that currently says <span style="font-style:italic; font-weight:bold; ">German-FLExTrans-Sample</span>, select <span style="font-style:italic; font-weight:bold; ">Croatian-FLExTrans-Sample</span> and type the Enter key.
          </li>
          <li>Click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> modules.
          </li>
