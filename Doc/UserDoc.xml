@@ -2908,10 +2908,10 @@ type="tModule"
 >View Source/Target Apertium File Tool</object
 >. It is the friendly view of the file <object
 type="tFilename"
->source_text.txt</object
+>source_text-aper.txt</object
 > in the <object
 type="tFoldername"
->project</object
+>Build</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -3016,10 +3016,10 @@ type="tButton"
 >Target</object
 > button. It is the friendly view of the file <object
 type="tFilename"
->target_text.txt</object
+>target_text-aper.txt</object
 > in the <object
 type="tFoldername"
->project</object
+>Output</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -4883,7 +4883,7 @@ type="tFilename"
 >solution.t1x</object
 > in the <object
 type="tFoldername"
->FLExTrans\WorkProjects</object
+>FLExTrans\WorkProjects\Croatian-English</object
 > folder.</p
 ><p
 >You may think this was a lot of work to translate one sentence from Croatian to English, but consider the fact that now every Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will also be handled.</p
@@ -5084,7 +5084,7 @@ id="sOneVerse"
 >Complete Process for Translating One Verse (video)</secTitle
 ><p
 ><link
-href="https://drive.google.com/file/d/1KibhaxIHRPYM8SXiWxYcaxSgxHOlt1fv/view?usp=sharing"
+href="https://vimeo.com/934390273"
 ><img
 cssSpecial=" height:30%"
 src="Images\CompleteVerseVideo.png"
@@ -5446,7 +5446,7 @@ src="Images/VideoIcon.PNG"
 ></secTitle
 ><p
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
-href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
+href="https://vimeo.com/934390874"
 >video</link
 > for an explanation. Also see examples of conditional logic in the rule: <object
 type="tBold"
@@ -5462,7 +5462,7 @@ src="Images/VideoIcon.PNG"
 ></secTitle
 ><p
 >In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this <link
-href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt"
+href="https://vimeo.com/934391130"
 >video</link
 > for an explanation.</p
 ></section3
@@ -5476,12 +5476,9 @@ src="Images/VideoIcon.PNG"
 ><p
 >One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
 ><p
->To see how to do this in a sample language pair, please watch <link
-href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA"
->video 1</link
-> and <link
-href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_"
->video 2</link
+>To see how to do this in a sample language pair, please watch this <link
+href="https://vimeo.com/934391317"
+>video</link
 >.</p
 ><p
 >If you would like to try creating the rules along with the video, please follow the instructions in the file: <object
@@ -5765,7 +5762,7 @@ src="Images/VideoIcon.PNG"
 type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
-href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
+href="https://vimeo.com/934391669"
 >video</link
 >.</p
 ><p
@@ -5791,7 +5788,7 @@ src="Images/VideoIcon.PNG"
 type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
-href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
+href="https://vimeo.com/934391509"
 >video</link
 >.</p
 ><p
