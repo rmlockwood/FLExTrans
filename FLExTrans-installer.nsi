@@ -79,7 +79,7 @@ InitPluginsDir
   # Install python 3.11.7
   MessageBox MB_YESNO "Install Python 3.11.7? $\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe"
+        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe PrependPath=1"
         Goto endPythonSync
   endPythonSync:
   

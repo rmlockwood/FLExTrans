@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->23 March 2024</date
+>19 April 2024</date
 ><version
 >3.10.1</version
 ><contents
@@ -580,6 +580,8 @@ type="tFlexx"
 >Add a "phoneme" with a grapheme of #.</li
 ><li
 >Make sure that the phonological features for this phoneme are unique.</li
+><li
+>Replace each space with a # symbol in your lexeme form field for all entries.</li
 ></ol
 ><p
 >The <object
@@ -826,7 +828,7 @@ id="sWriteRules"
 ><li
 >Open the file <object
 type="tFilename"
->transfer_rules.t1x</object
+>transfer_rules-Swedish.t1x</object
 > in <object
 type="tXMLmindXMLEditor"
 ></object
@@ -1277,7 +1279,7 @@ type="tFlextrans"
 ></object
 > are accomplished by running several modules. To make it easier to find the modules needed for larger tasks, collections provide a way to see only a subset of the available modules, presented in a set sequence. Modules can be in more than one collection.</p
 ><p
->To change to a different collection, click the desired collection tab.</p
+>To change to a different collection, click the desired tab just below the toolbar buttons.</p
 ><p
 >To manage collections, select <object
 type="tMenu"
@@ -1287,7 +1289,10 @@ type="tMenu"
 >FLExTools</object
 > menu.</p
 ><p
->This will bring up the Collections Manager, as shown in <exampleRef
+>This will bring up the <object
+type="tTool"
+>Collections Manager</object
+>, as shown in <exampleRef
 letter="xCollectionsManager"
 letterOnly="no"
 num="xCollectionsManager"
@@ -1303,7 +1308,7 @@ src="Images/CollectionsManager.png"
 ></chart
 ></example
 ><p
->In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the current collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected in this pane, the lower right pane will provide information about that module.</p
+>In the upper left pane is a list of the currently defined collections. The upper right pane shows all the modules that are in the currently selected collection. The lower left pane shows all possible modules in FLExTrans. If a module is selected in this pane, the lower right pane will provide information about that module.</p
 ><p
 >If you want to make your own collection to hold modules that you frequently run together, use the <img
 src="Images/NewButton.png"
@@ -1407,6 +1412,18 @@ border="1"
 ><td
 >There is a mismatch of grammatical category even though the glosses match.</td
 ></tr
+><tr
+><td
+>Green Text</td
+><td
+>Source headwords</td
+></tr
+><tr
+><td
+>Blue Text</td
+><td
+>Target headwords</td
+></tr
 ></table
 ></section3
 ><section3
@@ -1414,13 +1431,31 @@ id="sHowLink"
 ><secTitle
 >Linking</secTitle
 ><p
->For suggested sense links (colored in light blue shades), if you want to link them, simply check the check box in the Link It column. To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of <object
+>For suggested sense links (colored in blue shades), if you want to link them, simply check the check box in the <object
+type="tItalic"
+>Link It</object
+> column.</p
+><p
+>To link a source sense with a target sense where there is no suggestion or to change an existing link, you need to do two things. First, select the target sense that you want to link to in the drop down list of <object
 type="tButton"
 >All Target Senses</object
 > then go to the <object
 type="tButton"
 >Target Head Word</object
 > column for the source sense in question and double-click there. The target sense information should appear with a green background color. You can use the search text box to find the appropriate target sense.</p
+></section3
+><section3
+id="sSLTChangeSource"
+><secTitle
+>Source Text</secTitle
+><p
+>If you want to work on linking senses for a different source text, click the <object
+type="tButton"
+>Source Text</object
+> drop-down box and select the desired text. At this point, the <object
+type="tSenseLinker"
+></object
+> will close and restart.</p
 ></section3
 ><section3
 id="sSearchList"
@@ -1436,7 +1471,22 @@ type="tButton"
 > check box and then type in the <object
 type="tButton"
 >Search here</object
-> box.</p
+> box. Note: if you want the <object
+type="tButton"
+>Filter on all fields</object
+> check box to be checked by default every time, there's a setting for that. Change the <object
+type="tSettingsProperty"
+>Default to filtering on all fields?</object
+> to <object
+type="tSettingsValue"
+>Yes</object
+> in the <object
+type="tButton"
+>Linker Settings</object
+> section of the <object
+type="tSettingsTool"
+></object
+>.</p
 ><example
 num="xLinkerNoLinks-Filter"
 ><chart
@@ -1447,29 +1497,29 @@ src="Images/SenseLinkerNoLinks-Filter.png"
 ></example
 ></section3
 ><section3
-id="sFilterList"
+id="sShowUnlinked"
 ><secTitle
->Filtering the List</secTitle
+>Show Only Unlinked</secTitle
 ><p
 >If you only want to see the senses that need to be linked, check the box <object
 type="tButton"
 >Show Only Unlinked</object
->. If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box <object
+>.</p
+></section3
+><section3
+id="sHidePN"
+><secTitle
+>Hide Proper Nouns</secTitle
+><p
+>If you want to hide proper nouns, which you may not want to bother linking, (especially if the form is the same in both languages) click the box <object
 type="tButton"
 >Hide Proper Nouns</object
 >.</p
 ></section3
 ><section3
-id="sSenses2Link"
-><secTitle
->Senses to Link Number</secTitle
-><p
->At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes, rather the number of unique senses that are remaining to link.</p
-></section3
-><section3
 id="sFontControl"
 ><secTitle
->Font Control</secTitle
+>Zoom and Font Button</secTitle
 ><p
 >Quickly change the font size with the plus and minus buttons next to <object
 type="tButton"
@@ -1482,7 +1532,7 @@ type="tButton"
 ><section3
 id="sRebuildBiling"
 ><secTitle
->Rebuild the Bilingual Lexicon</secTitle
+>Rebuild Bilingual Lexicon</secTitle
 ><p
 >After finishing sense linking, sooner or later you need to rebuild the bilingual lexicon. If the <object
 type="tButton"
@@ -1496,17 +1546,18 @@ type="tSettingsTool"
 >.</p
 ></section3
 ><section3
-id="sSLTChangeSource"
+id="sExportUnlinked"
 ><secTitle
->Change Source Text</secTitle
+>Export Unlinked Senses</secTitle
 ><p
->If you want to work on linking senses for a different source text, click the <object
-type="tButton"
->Source Text</object
-> drop-down box and select the desired text. At this point, the <object
-type="tSenseLinker"
-></object
-> will close and restart.</p
+>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
+></section3
+><section3
+id="sSenses2Link"
+><secTitle
+>Senses to link</secTitle
+><p
+>At the bottom left the number of senses left to link is shown. Note that this is not necessarily the number of unchecked boxes, rather the number of unique senses that are remaining to link.</p
 ></section3
 ></section2
 ><section2
@@ -1539,13 +1590,19 @@ id="sTesterQuickGuide"
 ><secTitle
 >Quick Guide</secTitle
 ><p
->Here’s a quick guide on using the Live Rule Tester Tool.</p
+>Here’s a quick guide on using the <object
+type="tLiveRuleTester"
+></object
+>.</p
 ><ol
 ><li
 >First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the Select Sentences tab and clicking on the sentence you want.</li
+> of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <object
+type="tTab"
+>Select Sentences</object
+> tab and clicking on the sentence you want.</li
 ><li
 >Next select which rule or rules you want to run against the words you selected. Check the check boxes in the purple area as appropriate. Check them all with the <object
 type="tButton"
@@ -1561,22 +1618,37 @@ type="tButton"
 > button and you will process the selected words. You will see the results in <genericRef
 gref="gDataStream"
 >data stream format</genericRef
-> in the green-colored area.</li
+> in the green-colored <object
+type="tArea"
+>Target Text</object
+> area.</li
 ><li
->Check the yellow Information box. It will show which words were matched for the rules that were executed.</li
+>Check the yellow <object
+type="tArea"
+>Rule Execution Information</object
+> area. It will show which words were matched for the rules that were executed.</li
 ><li
 >Now you are ready to synthesize. Click the <object
 type="tButton"
 >Synthesize</object
-> button and you will synthesize the target text lexical entries in the green-colored area into target words in the salmon-colored area.</li
+> button and you will synthesize the target text into target words in the salmon-colored <object
+type="tArea"
+>Synthesized Text</object
+> area.</li
 ><li
 >Use the <object
 type="tButton"
 >Add to Testbed</object
-> button to add the input words and synthesized result to the "Testbed". This is essentially a database of expected results for a certain inputs. In another part of <object
+> button to add the input words and synthesized result to the <genericRef
+gref="sTestbed"
+>FLExTrans Testbed</genericRef
+>. This is essentially a database of expected results for a certain inputs. In another part of <object
 type="tFlextrans"
 ></object
-> you can run the Testbed to see if you are still getting the results you expect.</li
+> you can run the <object
+type="tTestbed"
+></object
+> to see if you are still getting the results you expect.</li
 ></ol
 ></section3
 ><section3
@@ -1597,7 +1669,13 @@ id="sHover"
 ><secTitle
 >Hover to See Bilingual Lexicon Entry</secTitle
 ><p
->When you are in the Select Words view in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when the word ‘liebe’ was hovered over, the bilingual entry maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well.</p
+>When you are in the <object
+type="tTab"
+>Select Words</object
+> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you are using the <genericRef
+gref="sRepl"
+>replacement file</genericRef
+>, you may see multiple mappings in the pop-up image.</p
 ></section3
 ><section3
 id="sTesterOther"
@@ -1612,7 +1690,10 @@ type="tButton"
 >Rebuild Bilingual Lexicon</object
 > button.</p
 ><p
->You may have noticed that there is a Manual Entry tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
+>You may have noticed that there is a <object
+type="tTab"
+>Manual Entry</object
+> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<endnoteRef
 note="nRawDataStream"
 ></endnoteRef
 >. This might be useful if you want to test a word-sense that isn’t in a given text.</p
@@ -1659,7 +1740,7 @@ type="tButton"
 > button to reload it so that upon synthesis, <object
 type="tFlextrans"
 ></object
-> uses the changed lexicon.</p
+> uses the changed target lexicon.</p
 ><p
 >There is a check box that says <object
 type="tButton"
@@ -1670,7 +1751,10 @@ type="tButton"
 >, <object
 type="tFlextrans"
 ></object
-> will add each individual word and its corresponding synthesis to the testbed in one go. Each pair will be its own test.</p
+> will add each individual word and its corresponding synthesis to the <object
+type="tTestbed"
+></object
+> in one go. Each pair will be its own test.</p
 ></section3
 ></section2
 ><section2
@@ -2585,7 +2669,7 @@ type="tFilename"
 >transfer_rules.t1x</object
 > (<object
 type="tFoldername"
->FLExTrans Documentation\Transfer Rules Tutorial</object
+>FLExTrans Documentation\Transfer Rules Tutorial\Croatian-English</object
 > folder) in the <object
 type="tXMLmindXMLEditor"
 ></object
@@ -2775,17 +2859,6 @@ type="tFlexxTools"
 ><li
 >Click the <object
 type="tButton"
->Database</object
-> button that currently says <object
-type="tBoldItalic"
->German-FLExTrans-Sample</object
->, select <object
-type="tBoldItalic"
->Croatian-FLExTrans-Sample</object
-> and type the Enter key.</li
-><li
->Click the <object
-type="tButton"
 >Run All</object
 > button to run all the <object
 type="tFlextrans"
@@ -2838,10 +2911,10 @@ type="tModule"
 >View Source/Target Apertium File Tool</object
 >. It is the friendly view of the file <object
 type="tFilename"
->source_text.txt</object
+>source_text-aper.txt</object
 > in the <object
 type="tFoldername"
->project</object
+>Build</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Otići1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^biti1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^tiho1.1&lt;adv&gt;$ ^i1.1&lt;coordconn&gt;$ ^bez1.1&lt;prep&gt;$ ^pozdrav1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -2946,10 +3019,10 @@ type="tButton"
 >Target</object
 > button. It is the friendly view of the file <object
 type="tFilename"
->target_text.txt</object
+>target_text-aper.txt</object
 > in the <object
 type="tFoldername"
->project</object
+>Output</object
 > folder. The actual content looks like this: <langData
 lang="lVernacular"
 >^Leave1.1&lt;v&gt;&lt;pfv&gt;&lt;ptcp_f_sg&gt;$ ^be1.1&lt;cop&gt;&lt;prs&gt;&lt;sg&gt;&lt;2&gt;$ ^quietly1.1&lt;adv&gt;$ ^and1.1&lt;coordconn&gt;$ ^without1.1&lt;prep&gt;$ ^word1.1&lt;n&gt;&lt;gen_sg&gt;$</langData
@@ -4813,7 +4886,7 @@ type="tFilename"
 >solution.t1x</object
 > in the <object
 type="tFoldername"
->FLExTrans\WorkProjects</object
+>FLExTrans\WorkProjects\Croatian-English</object
 > folder.</p
 ><p
 >You may think this was a lot of work to translate one sentence from Croatian to English, but consider the fact that now every Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will also be handled.</p
@@ -4864,7 +4937,7 @@ type="tButton"
 ><li
 >Now run the testbed to verify that all your previous tests still give the expected result.<ol
 ><li
->Open the <object
+>Switch to the <object
 type="tCollection"
 >Run Testbed</object
 > collection.</li
@@ -5014,7 +5087,7 @@ id="sOneVerse"
 >Complete Process for Translating One Verse (video)</secTitle
 ><p
 ><link
-href="https://drive.google.com/file/d/1KibhaxIHRPYM8SXiWxYcaxSgxHOlt1fv/view?usp=sharing"
+href="https://vimeo.com/934390273"
 ><img
 cssSpecial=" height:30%"
 src="Images\CompleteVerseVideo.png"
@@ -5376,11 +5449,14 @@ src="Images/VideoIcon.PNG"
 ></secTitle
 ><p
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
-href="https://drive.google.com/open?id=1gu5xDKdDzPu4yvFui2xakhnwAjNmF2Rm"
+href="https://vimeo.com/934390874"
 >video</link
-> for an explanation. Also see examples of conditional logic in the rule: <object
+> for an explanation. Also see examples of conditional logic in the sample rule called: <object
 type="tBold"
 >Sample logic to copy and paste</object
+> or in the file <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
 >.</p
 ></section3
 ><section3
@@ -5392,7 +5468,7 @@ src="Images/VideoIcon.PNG"
 ></secTitle
 ><p
 >In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this <link
-href="https://drive.google.com/open?id=1ptqz64B_X8eYnhaHnUEvCXRc7LFj-0kt"
+href="https://vimeo.com/934391130"
 >video</link
 > for an explanation.</p
 ></section3
@@ -5406,12 +5482,9 @@ src="Images/VideoIcon.PNG"
 ><p
 >One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
 ><p
->To see how to do this in a sample language pair, please watch <link
-href="https://drive.google.com/open?id=18D-P4pdXwotGGdRNBO5fYcIhZWzHT0OA"
->video 1</link
-> and <link
-href="https://drive.google.com/open?id=13jWg2lGI9yX74DhLRf0XO24KG9QWalC_"
->video 2</link
+>To see how to do this in a sample language pair, please watch this <link
+href="https://vimeo.com/934391317"
+>video</link
 >.</p
 ><p
 >If you would like to try creating the rules along with the video, please follow the instructions in the file: <object
@@ -5419,7 +5492,7 @@ type="tFilename"
 >Readme.txt</object
 > in the <object
 type="tFoldername"
->Doc\Agreement</object
+>FLExTrans\FLExTrans Documentation\Agreement</object
 > folder. See the file <object
 type="tFilename"
 >transfer_rules - solution.t1x</object
@@ -5430,7 +5503,10 @@ id="sSampleLogic"
 ><secTitle
 >How do I use the Sample logic that's in the transfer rules file?</secTitle
 ><p
->Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule.</p
+>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule. There's also a file called <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> you can copy and paste from that rule file as well.</p
 ></section3
 ></section2
 ><section2
@@ -5452,7 +5528,13 @@ type="tFilename"
 > in the <object
 type="tFoldername"
 >Output</object
-> folder. An example portion of a bilingual lexicon is shown in <exampleRef
+> folder or click on the <object
+type="tButton"
+>View Bilingual Lexicon</object
+> button in the <object
+type="tLiveRuleTester"
+></object
+>. An example portion of a bilingual lexicon is shown in <exampleRef
 letter="xBilingEntries0"
 num="xBilingEntries0"
 ></exampleRef
@@ -5583,7 +5665,13 @@ type="tFilename"
 > in the <object
 type="tFoldername"
 >Output</object
-> folder. Both the <object
+> folder or click on the <object
+type="tButton"
+>View Bilingual Lexicon</object
+> button in the <object
+type="tLiveRuleTester"
+></object
+>. Both the <object
 type="tFilename"
 >replace.dix</object
 > and <object
@@ -5695,7 +5783,7 @@ src="Images/VideoIcon.PNG"
 type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
-href="https://drive.google.com/open?id=13LVKJM7kx6MKwuUDBSfs58j8Hd4i5yd0"
+href="https://vimeo.com/934391669"
 >video</link
 >.</p
 ><p
@@ -5706,7 +5794,7 @@ type="tFilename"
 >Readme.txt</object
 > in the <object
 type="tFoldername"
->Doc\Irregular Form</object
+>FLExTrans\FLExTrans Documentation\Irregular Form</object
 > folder.</p
 ></section3
 ><section3
@@ -5721,7 +5809,7 @@ src="Images/VideoIcon.PNG"
 type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
-href="https://drive.google.com/open?id=1_lqFLEmeBFTeJdoI101B5vId9zFer5Wt"
+href="https://vimeo.com/934391509"
 >video</link
 >.</p
 ><p
@@ -5732,7 +5820,7 @@ type="tFilename"
 >Readme.txt</object
 > in the <object
 type="tFoldername"
->Doc\Irregular Form</object
+>FLExTrans\FLExTrans Documentation\Irregular Form</object
 > folder. Note: be sure to set the <object
 type="tSettingsProperty"
 >Source Text Name</object
@@ -6280,6 +6368,10 @@ id="hr"
 ><comment
 >The following types are provided as pre-set examples. You may well want to create your own types that refer to one or more of these. You do that by typing in the names of the types in the types attribute of your type.</comment
 ><type
+font-style="italic"
+id="tArea"
+></type
+><type
 font-weight="bold"
 id="tBold"
 ></type
@@ -6508,6 +6600,12 @@ types="tTool"
 ><type
 font-style="italic"
 id="tSettingsValue"
+></type
+><type
+color="#a349a4"
+font-style="italic"
+font-weight="bold"
+id="tTab"
 ></type
 ><type
 after="Testbed"
