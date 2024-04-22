@@ -5,10 +5,6 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.10.11 - 4/22/24 - Ron Lockwood
-#    Fixes #602. Rebuild of Biling. Lex. re-selects last sentence used.
-#    Now it works more reliably regardless of the tab that was active.
-#
 #   Version 3.10.10 - 4/13/24 - Ron Lockwood
 #    Fixes #399. Show **none** on the left size when the source language is in a RTL script.
 #    Also make the tooltip size for all widgets the same as other widgets according to how much
@@ -401,7 +397,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.11",
+        FTM_Version    : "3.10.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1004,16 +1000,8 @@ class Main(QMainWindow):
         
         self.fixBilingLex = True
         
-        # Save the last sentence number
-        if self.ui.tabSource.currentIndex() == 0: # check boxes
-            
-            # Save the checked words state
-            self.saveCheckedWords()
-            self.lastSentNum = self.ui.SentCombo.currentIndex()
-        
-        elif self.ui.tabSource.currentIndex() == 1: # sentence list
-
-            self.lastSentNum = self.ui.listSentences.currentIndex().row()
+        # Save the checked words state
+        self.saveCheckedWords()
 
         # Open the project fresh
         projname = self.__DB.ProjectName()
@@ -1045,13 +1033,11 @@ class Main(QMainWindow):
             self.ret_val = False
             return 
         
-        # Make sure the last sentence used gets selected.
-        self.sourceTabClicked()
+        # Force reload of the tooltips
+        self.listSentComboClicked()
 
         # Re-check the words that had been checked, if we were on Select Words view.
-        if self.ui.tabSource.currentIndex() == 0: 
-
-            self.restoreCheckedWords()
+        self.restoreCheckedWords()
 
         self.__ClearStuff()
         
