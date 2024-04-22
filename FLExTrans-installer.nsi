@@ -17,6 +17,7 @@
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEX_TOOLS_WITH_VERSION "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
+!define TEMPLATEDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -98,16 +99,15 @@ InitPluginsDir
   
   SetOverwrite off
 
-  #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
+  SetOutPath "${TEMPLATEDIR}"
 
-  #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
-  File "${GIT_FOLDER}\transfer_rules.t1x"
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+  # Rename the file in the Template folder to not have -Swedish
+  File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
   File "${GIT_FOLDER}\Drafting.ini"
