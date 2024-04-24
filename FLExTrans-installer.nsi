@@ -39,10 +39,13 @@ VIProductVersion 3.10.1.${BUILD_NUM}
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
-#; Directory page
+
+; Directory page
 Page custom nsDialogsPage
+
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
+
 ; Finish page
 !insertmacro MUI_PAGE_FINISH
 
@@ -73,11 +76,8 @@ Section -Prerequisites
 InitPluginsDir
 
   SetOutPath "$INSTDIR\install_files"
-  #Connect to apertium
-  #File "Command2.sh"
-  #ExecWait "bash -ExecutionPolicy Bypass -WindowStyle Hidden -File $INSTDIR\install_files\Command2.sh -FFFeatureOff"
 
-  # Install python 3.11.7
+  # Install python 
   MessageBox MB_YESNO "Install Python 3.11.7? $\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
         File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
         ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe PrependPath=1"
@@ -106,6 +106,7 @@ InitPluginsDir
 
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+  
   # Rename the file in the Template folder to not have -Swedish
   File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
@@ -120,7 +121,8 @@ InitPluginsDir
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
-SetOverwrite on
+  
+  SetOverwrite on
   
   # Find where FLEx is installed
   ReadRegStr $0 HKLM Software\WOW6432Node\SIL\FieldWorks\9 "RootCodeDir"
@@ -172,6 +174,17 @@ SetOverwrite on
       StrCmp $4 "" done2
       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
       
+		# If the Tools collection doesn't have disablerunall set yet, set it to True
+		StrCmp $4 "Tools.ini" 0 skip2 # 0 means go 0 lines down and execute, on failed comparison execution goes to skip2 line
+		
+			# Get the current disablerunall setting
+			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
+			
+			# If we have no value, set disablerunall to True
+			StrCmp $5 "" 0 skip2
+		
+				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
+		skip2:
         # Delete Setting module (it's probably just in the Tools.ini but try deleting it everywhere)
         # TURN THIS ON AGAIN WHEN FLEXTOOLS CAN HANDLE AN INI FILE WITH A ORDER NUMBER MISSING (E.g. 3 FOR SETTINGS)
         #DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "FLExTrans.Settings Tool"
@@ -194,13 +207,6 @@ SetOverwrite on
   done1:
     FindClose $0
     
-
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
-
   # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
