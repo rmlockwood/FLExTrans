@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.13 - 4/27/24 - Ron Lockwood
+#    Fixed bug when using TreeTran where guid of the root of an inflected word didn't match
+#    the TreeTran guid. Fixed the logic in get interlinear to not use the guid of a clitic.
+#
 #   Version 3.10.12 - 4/15/24 - Ron Lockwood
 #    Fixed bug of casting to ILexEntry when it should be ILexSense for variants of a sense.
 #
@@ -1384,10 +1388,15 @@ def getInterlinData(DB, report, params):
                         
                         msa = IMoStemMsa(bundle.MsaRA)
                         
-                        # Just save the the bundle guid for the first root in the bundle
                         tempGuid = myWord.getGuid()
-                        if  len(str(tempGuid)):
-                            myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
+
+                        # Just save the the bundle guid for the first root in the bundle
+                        if tempGuid is None: # we can't use == None because the guid class doesn't implement __eq__
+
+                            # Only save the guid for a root, not a clitic
+                            if not isClitic(tempEntry):
+
+                                myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
             
                         # If we have an invalid POS, give a warning
                         if not msa.PartOfSpeechRA:
