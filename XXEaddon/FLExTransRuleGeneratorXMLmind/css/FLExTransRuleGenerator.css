@@ -26,7 +26,11 @@ FLExTransRules
 
 FLExTransRule:before
 {
-    content: " FLExTransRule: "text-field(attribute,name,background-color,def-name-background-color(),columns,30);
+    content: " FLExTransRule: "text-field(attribute,name,background-color,def-name-background-color(),columns,30)
+    " Create permutations? " combo-box(attribute, create_permutations, 
+                           color, #ff0000,
+                           labels, "yes\A no", 
+                           values, "yes\A no");
     color:Black;
 }
 FLExTransRule

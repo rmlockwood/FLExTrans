@@ -6,6 +6,7 @@
 <!ELEMENT FLExTransRule (Source, Target)>
 <!ATTLIST FLExTransRule
   name CDATA #REQUIRED
+  create_permutations (yes | no) "no"
 >
 
 <!ELEMENT Source (Phrase) >
