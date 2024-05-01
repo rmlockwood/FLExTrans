@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10.3 - 5/1/24 - Ron Lockwood
+#    More checking for None fixes when comparing to a guid.
+#
 #   Version 3.10.2 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -227,18 +230,18 @@ class TextSentence():
     def haveGuid(self, myGuid):
         return myGuid in self.__guidMap
     def matchesFirstWord(self, myGuid):
-        if len(self.__wordList) > 0:
-            if self.__wordList[0].getGuid() == myGuid:
+        if len(self.__wordList) > 0 and myGuid is not None:
+            if self.__wordList[0].getGuid() is not None and self.__wordList[0].getGuid() == myGuid:
                 return True
         return False
     def matchesLastWord(self, myGuid):
-        if len(self.__wordList) > 1: # > 1 since we may go back 2 words
+        if len(self.__wordList) > 1 and myGuid is not None: # > 1 since we may go back 2 words
             
             if self.__wordList[-1].isSentPunctutationWord():
                 last = -2
             else:
                 last = -1
-            if self.__wordList[last].getGuid() == myGuid:
+            if self.__wordList[last].getGuid() is not None and self.__wordList[last].getGuid() == myGuid:
                 return True
         return False
     def write(self, fOut):

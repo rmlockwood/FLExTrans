@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.10.3 - 5/1/24 - Ron Lockwood
+#    More checking for None fixes when comparing to a guid.
+#
 #   Version 3.10.2 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
 #
@@ -198,7 +201,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.10.2",
+        FTM_Version    : "3.10.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -462,7 +465,10 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     for i, wordObj in enumerate(wordObjList):
         
         if i > 0 and i < numWords-1: # not first or last
-            befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
+
+            if wordObjList[i-1].getID() is not None and wordObjList[i+1].getID() is not None:
+
+                befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
             
     # set up the word-gram map which is the current word + 1-n following words. e.g. for abcd: ab, abc, abcd, bc, bcd, cd (if n was 4 or more)
     for i in range(0, numWords-1):
@@ -476,8 +482,8 @@ def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
                         
                         myID = wordObjList[k].getID()
                         
-                        # see if the guid is not '' (can't check for None anymore)
-                        if len(str(myID)) > 0:
+                        # see if the guid is not None
+                        if myID is not None:
                             keyList.append(myID)
                         else:
                             break
