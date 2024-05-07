@@ -5,6 +5,13 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.13 - 4/27/24 - Ron Lockwood
+#    Fixed bug when using TreeTran where guid of the root of an inflected word didn't match
+#    the TreeTran guid. Fixed the logic in get interlinear to not use the guid of a clitic.
+#
+#   Version 3.10.12 - 4/15/24 - Ron Lockwood
+#    Fixed bug of casting to ILexEntry when it should be ILexSense for variants of a sense.
+#
 #   Version 3.10.11 - 3/20/24 - Ron Lockwood
 #    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
 #
@@ -1061,7 +1068,8 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
                         if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
-                            e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].Entry)
+                            mySense = ILexSense(entryRef.ComponentLexemesRS.ToArray()[0])
+                            e = mySense.Entry
                             break
                         else: # normal variant of entry
                             e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0])
@@ -1384,10 +1392,15 @@ def getInterlinData(DB, report, params):
                         
                         msa = IMoStemMsa(bundle.MsaRA)
                         
-                        # Just save the the bundle guid for the first root in the bundle
                         tempGuid = myWord.getGuid()
-                        if  len(str(tempGuid)):
-                            myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
+
+                        # Just save the the bundle guid for the first root in the bundle
+                        if tempGuid is None: # we can't use == None because the guid class doesn't implement __eq__
+
+                            # Only save the guid for a root, not a clitic
+                            if not isClitic(tempEntry):
+
+                                myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
             
                         # If we have an invalid POS, give a warning
                         if not msa.PartOfSpeechRA:

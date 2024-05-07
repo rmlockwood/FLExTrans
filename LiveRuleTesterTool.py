@@ -1,9 +1,16 @@
 #
-#   LiveRuleTesterTool
+#   LiveRuleTesterTool 
 #
 #   Ron Lockwood
 #   SIL International
 #   7/2/16
+#
+#   Version 3.10.12 - 5/3/24 - Ron Lockwood
+#    Performance improvement. catalog target affixes was being called twice in many situations.
+#
+#   Version 3.10.11 - 4/22/24 - Ron Lockwood
+#    Fixes #602. Rebuild of Biling. Lex. re-selects last sentence used.
+#    Now it works more reliably regardless of the tab that was active.
 #
 #   Version 3.10.10 - 4/13/24 - Ron Lockwood
 #    Fixes #399. Show **none** on the left size when the source language is in a RTL script.
@@ -397,7 +404,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.10.10",
+        FTM_Version    : "3.10.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1000,8 +1007,16 @@ class Main(QMainWindow):
         
         self.fixBilingLex = True
         
-        # Save the checked words state
-        self.saveCheckedWords()
+        # Save the last sentence number
+        if self.ui.tabSource.currentIndex() == 0: # check boxes
+            
+            # Save the checked words state
+            self.saveCheckedWords()
+            self.lastSentNum = self.ui.SentCombo.currentIndex()
+        
+        elif self.ui.tabSource.currentIndex() == 1: # sentence list
+
+            self.lastSentNum = self.ui.listSentences.currentIndex().row()
 
         # Open the project fresh
         projname = self.__DB.ProjectName()
@@ -1033,11 +1048,13 @@ class Main(QMainWindow):
             self.ret_val = False
             return 
         
-        # Force reload of the tooltips
-        self.listSentComboClicked()
+        # Make sure the last sentence used gets selected.
+        self.sourceTabClicked()
 
         # Re-check the words that had been checked, if we were on Select Words view.
-        self.restoreCheckedWords()
+        if self.ui.tabSource.currentIndex() == 0: 
+
+            self.restoreCheckedWords()
 
         self.__ClearStuff()
         
@@ -1307,16 +1324,18 @@ class Main(QMainWindow):
                     return
             else:
                 # Redo the catalog of prefixes in case the user changed an affix
-                errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
+                if self.__doCatalog:
 
-                # check for fatal errors
-                fatal, msg = Utils.checkForFatalError(errorList, None)
+                    errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
 
-                if fatal:
-                    QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
-                    self.unsetCursor()
-                    return
-                
+                    # check for fatal errors
+                    fatal, msg = Utils.checkForFatalError(errorList, None)
+
+                    if fatal:
+                        QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                        self.unsetCursor()
+                        return
+                    
                 # Extract the lexicon, STAMP style        
                 errorList = DoStampSynthesis.extract_target_lex(self.__DB, self.__configMap)
 

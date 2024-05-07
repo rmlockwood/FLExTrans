@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.10.1
+SET FLEXTRANS_VERSION=3.10.2
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
@@ -177,7 +177,7 @@ cd ..
 
 if %COMPUTERNAME% == RONS-XPS (
   cd C:\Data\Flextrans\Installer
-  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
   pause
 ) else (

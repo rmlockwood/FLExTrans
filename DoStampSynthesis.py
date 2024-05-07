@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.3 - 5/3/24 - Ron Lockwood
+#    Fixes #611 where crash occurred after refreshing the lexicon. Reset global list and map
+#    each time main synthesis function is called.
+#
 #   Version 3.10.2 - 3/7/24 - Ron Lockwood
 #    Fixes #582. (correct #?) References were mistakenly getting deleted. Like \x 23.5.
 #    Only remove N.N for clean up step when it follows a lemma.
@@ -271,7 +275,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10.2",
+        FTM_Version    : "3.10.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -1213,7 +1217,12 @@ def fix_up_text(synFile, cleanUpText):
 
 def synthesize(configMap, anaFile, synFile, report=None):
     error_list = []
-    
+
+    global stemNameList
+    global reqFeaturesMap
+    stemNameList = []
+    reqFeaturesMap = {}
+
     targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
 
