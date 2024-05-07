@@ -5,6 +5,16 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.10.2 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10.1 - 3/2/24 - Ron Lockwood
+#    Fixes #561. Handle commas in settings values that aren't lists. Do this by having a 
+#    list of properties that must take a list.
+#
+#   Version 3.10 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
 #   Version 3.9.2 - 7/19/23 - Ron Lockwood
 #    Fixes #465. Ignore blank lines. Also, just warn and continue if no = or multiple =s.
 #
@@ -100,6 +110,8 @@ HERMIT_CRAB_PARSES_FILE = 'HermitCrabParsesFile'
 HERMIT_CRAB_MASTER_FILE = 'HermitCrabMasterFile'
 HERMIT_CRAB_SURFACE_FORMS_FILE = 'HermitCrabSurfaceFormsFile'
 HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
+LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
+NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
@@ -132,6 +144,18 @@ TRANSFER_RULES_FILE2 = 'TransferRulesFile2'
 TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
+
+##### IMPORTANT #####
+# If you are adding a new property that will have multiple values, add it to this list variable
+PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
+                             TARGET_MORPHNAMES,
+                             SOURCE_COMPLEX_TYPES,
+                             SOURCE_DISCONTIG_TYPES,
+                             SOURCE_DISCONTIG_SKIPPED,
+                             TARGET_FORMS_INFLECTION_1ST,
+                             TARGET_FORMS_INFLECTION_2ND,
+                             SYNTHESIS_TEST_LIMIT_POS,
+                             CATEGORY_ABBREV_SUB_LIST]
 
 def openConfigFile(report, info):
     
@@ -222,8 +246,8 @@ def readConfig(report):
         
         value = value.rstrip()
         
-        # if the value has commas, save it as a list
-        if re.search(',', value):
+        # if the value has commas and it is in the set of properties that can have multiple values, save it as a list
+        if re.search(',', value) and prop in PROPERTIES_THAT_ARE_LISTS:
             my_list = value.split(',')
             my_map[prop] = my_list
         else:

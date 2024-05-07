@@ -5,6 +5,25 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.2 - 3/7/24 - Ron Lockwood
+#    Fixes #582. (correct #?) References were mistakenly getting deleted. Like \x 23.5.
+#    Only remove N.N for clean up step when it follows a lemma.
+#
+#   Version 3.10.1 - 3/5/24 - Ron Lockwood
+#    Fixes #580. Correctly form the circumfix affix for HermitCrab.
+#
+#   Version 3.10 - 1/18/24 - Ron Lockwood
+#    Bumped to 3.10.
+#
+#   Version 3.9.4 - 11/22/23 - Ron Lockwood
+#    Ignore allomorphs marked as abstract. Also big changes to support required
+#    features which are treated kind of like stem names. Look through all affixes to
+#    see if required features are used and save unique sets of them. For each affix allomoprh
+#    that matches a required features set, label with a morpheme property. Lastly,
+#    affix allomoprhs that have the required features get environments with the morpheme property.
+#    this change also required saving all affixes to a list for later processing after the rest of
+#    the entries. Fixes #507 and #516.
+#
 #   Version 3.9.3 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -252,7 +271,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.10.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -269,6 +288,7 @@ INFIX_TYPE = 'infixType'
 STEM_TYPE = 'stemType'
 
 stemNameList = []
+reqFeaturesMap = {}
 
 #----------------------------------------------------------------
 
@@ -343,24 +363,35 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
         
         return
     
-    # Deal with affix stem name stuff.
-    # A stem name goes on an affix only if the stem name category matches the category of this msa object
-    # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
     if msa:
         
         if morphCategory != STEM_TYPE: # non-stems only
 
+            # Deal with affix stem name stuff.
+            # A stem name goes on an affix only if the stem name category matches the category of this msa object
+            # Also the msa's inflection set has to match one of the inflection sets defined in the stem name definition (Grammar > Category)
             for stemName in stemNameList:
                 
                 if msa.PartOfSpeechRA == stemName[CATEGORY_STR]:
                     
                     for featureSet in stemName[FEATURES_STR]:
                         
-                        # The stem name feature list just has to be a subset of feature for this current morpheme
+                        # The stem name feature list just has to be a subset of the features for this current morpheme
                         if msa.InflFeatsOA and isFeatureSetASubsetofB(featureSet.FeatureSpecsOC, msa.InflFeatsOA.FeatureSpecsOC):
                             
                             f_handle.write(f'\\mp {stemName[STEM_STR]}{AFFIX_STR}\n')
                             break
+
+            # Deal with required features stuff
+            for reqFeatures in reqFeaturesMap.values():
+                
+                for featureSet in reqFeatures[FEATURES_STR]:
+                    
+                    # The required features feature list just has to be a subset of the features for this current morpheme
+                    if msa.InflFeatsOA and isFeatureSetASubsetofB(featureSet.FeatureSpecsOC, msa.InflFeatsOA.FeatureSpecsOC):
+                        
+                        f_handle.write(f'\\mp {reqFeatures[STEM_STR]}{AFFIX_STR}\n')
+                        break
     
         # Write out inflection class as a morpheme property if we have a stem
         else: # stems only
@@ -385,6 +416,10 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
         
         return
     
+    # Skip allomorphs that are marked "Is Abstract Form"
+    if morph.IsAbstract:
+        return
+
     # Save the stem name if we have a stem
     if morphCategory == STEM_TYPE: # stems only
         
@@ -405,7 +440,22 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
         if morph.ClassName != 'MoStemAllomorph':
             
             if morph.ClassName == 'MoAffixAllomorph':
+
                 morph = IMoAffixAllomorph(morph)    
+
+                # See if we need reqFeatures environment
+                if morph.MsEnvFeaturesOA:
+
+                    myFeatAbbrList = []
+                    Utils.get_feat_abbr_list(morph.MsEnvFeaturesOA.FeatureSpecsOC, myFeatAbbrList)
+
+                    if tuple(myFeatAbbrList) in reqFeaturesMap:
+
+                        requiredFeatInnerMap = reqFeaturesMap[tuple(myFeatAbbrList)]
+
+                        # call it the stemName just so it gets put out the same way
+                        stemName = requiredFeatInnerMap[STEM_STR]
+
             elif morph.ClassName == 'MoAffixProcess':
                 morph = IMoAffixProcess(morph)
             
@@ -541,7 +591,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     # Output gloss
     if myGloss:
         
-        f_pf.write('\\g ' + myGloss+'_cfx_part_a' + '\n')
+        f_pf.write('\\g ' + myGloss+Utils.CIRCUMFIX_TAG_A + '\n')
     else:
         f_pf.write('\\g \n')
     
@@ -566,7 +616,7 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
     # Output gloss
     if myGloss:
-        f_sf.write('\\g ' + myGloss+'_cfx_part_b' + '\n')
+        f_sf.write('\\g ' + myGloss+Utils.CIRCUMFIX_TAG_B + '\n')
     else:
         f_sf.write('\\g \n')
     
@@ -747,7 +797,7 @@ def output_cat_info(TargetDB, f_dec):
             
                 stemNameMap[CATEGORY_STR] = pos
                 stemNameMap[STEM_STR] = ITsString(stemNameObj.Abbreviation.BestAnalysisAlternative).Text
-                stemNameMap[FEATURES_STR] = stemNameObj.RegionsOC
+                stemNameMap[FEATURES_STR] = stemNameObj.RegionsOC # list of feature sets
         
                 stemNameList.append(stemNameMap)
             
@@ -772,6 +822,13 @@ def output_cat_info(TargetDB, f_dec):
     
     return
 
+def ouput_req_feature_info(f_dec):
+
+    # write required features names as \mp's (morpheme properties)
+    for reqFeatures in reqFeaturesMap.values():
+        
+        f_dec.write(f'\\mp {reqFeatures[STEM_STR]}{AFFIX_STR}\n')
+        
 def output_nat_class_info(TargetDB, f_dec):
     err_list = []
     
@@ -801,13 +858,13 @@ def output_nat_class_info(TargetDB, f_dec):
                     else:
                         f_dec.write(' '+grapheme)
             f_dec.write('\n')
-    f_dec.close()
     
     return err_list
 
 def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report):
     err_list = []
-        
+    allAffixesList = []
+
     if report is not None:
         report.ProgressStart(TargetDB.LexiconNumberOfEntries())
     
@@ -846,6 +903,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
         # Don't process clitics in this block
         if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
         
+            # Check for an inflectional variant
             for entryRef in e.EntryRefsOS:
                 
                 if entryRef.RefType == 0: # we have a variant
@@ -944,28 +1002,9 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                         
                         if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
                             
-                            if morphType in ['prefix', 'prefixing interfix']:
-                                
-                                process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
-                                pf_cnt += 1
-                                
-                            elif morphType in ['suffix', 'suffixing interfix']:
-                                
-                                process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
-                                sf_cnt += 1
-                                
-                            elif morphType in ['infix', 'infixing interfix']:
-                                
-                                process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense)
-                                if_cnt += 1
-                                
-                            elif morphType == 'circumfix':
-                                
-                                process_circumfix(e, f_pf, f_sf, gloss, mySense)
-                                pf_cnt += 1
-                                sf_cnt += 1
-                            else:
-                                err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+                            # Add the entry and sense and other stuff to a list for processing later
+                            allAffixesList.append((e, gloss, mySense, morphType))
+
                         else:
                             err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
                             
@@ -982,11 +1021,77 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             sf_cnt += 1
                         else:
                             err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
-    
+
+    getRequiredFeaturesInfo(allAffixesList)   
+
+    pf_cnt, sf_cnt, if_cnt = outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt) 
+
     err_list.append((f'STAMP dictionaries created. {str(rt_cnt)} roots, {str(pf_cnt)} prefixes, {str(sf_cnt)} suffixes and {str(if_cnt)} infixes.', 0))
     
     return err_list
-    
+
+def getRequiredFeaturesInfo(allAffixesList):
+
+    # Loop through all affixes and check for required features
+    for e, gloss, mySense, morphType in allAffixesList:
+
+        num = 1
+
+        # Check all allomorphs
+        for allomorph in e.AllAllomorphs:
+
+            # MsEnvFeaturesOA is where the required features are stored
+            if allomorph.ClassName == 'MoAffixAllomorph': 
+            
+                allomorph = IMoAffixAllomorph(allomorph)
+
+                if allomorph.MsEnvFeaturesOA and allomorph.MsEnvFeaturesOA.FeatureSpecsOC:
+                
+                    # See if we have encountered this combination of features before, if so skip it
+                    myFeatAbbrList = []
+                    Utils.get_feat_abbr_list(allomorph.MsEnvFeaturesOA.FeatureSpecsOC, myFeatAbbrList)
+
+                    if tuple(myFeatAbbrList) not in reqFeaturesMap:
+
+                        requiredFeatInnerMap = {}
+                    
+                        requiredFeatInnerMap[CATEGORY_STR] = 'N/A'
+                        requiredFeatInnerMap[STEM_STR] = f'reqFeatsBundleName{num}'
+                        num += 1
+                        requiredFeatInnerMap[FEATURES_STR] = [allomorph.MsEnvFeaturesOA] # list of feature sets (make it a list to be consistent with stem name list)
+                
+                        reqFeaturesMap[tuple(myFeatAbbrList)] = requiredFeatInnerMap
+
+def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt):
+
+    # Loop through all the affixes and process them
+    for e, gloss, mySense, morphType in allAffixesList:
+
+        if morphType in ['prefix', 'prefixing interfix']:
+            
+            process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
+            pf_cnt += 1
+            
+        elif morphType in ['suffix', 'suffixing interfix']:
+            
+            process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
+            sf_cnt += 1
+            
+        elif morphType in ['infix', 'infixing interfix']:
+            
+            process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense)
+            if_cnt += 1
+            
+        elif morphType == 'circumfix':
+            
+            process_circumfix(e, f_pf, f_sf, gloss, mySense)
+            pf_cnt += 1
+            sf_cnt += 1
+        else:
+            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+
+    return pf_cnt, sf_cnt, if_cnt
+
 def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
@@ -1053,18 +1158,19 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     (f_pf, f_if, f_sf, f_rt, f_dec) = create_dictionary_files(partPath)
 
     # Output category info.
-    #error_list.append(('Outputting category information...', 0))
     output_cat_info(TargetDB, f_dec)
     
     # Output natural class info.
-    #error_list.append(('Outputting natural class information...', 0))
     err_list = output_nat_class_info(TargetDB, f_dec)
     error_list.extend(err_list)
     
     # Put data into the STAMP dictionaries
-    #error_list.append(('Making the STAMP dictionaries...', 0))
     err_list = create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, report)
     error_list.extend(err_list)
+
+    # Output required features info to the definition file
+    # This info gets created in the create stamp dictionaries function
+    ouput_req_feature_info(f_dec)
     
     f_pf.close() 
     f_if.close() 
@@ -1076,21 +1182,32 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     
     return error_list
 
+# Remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
 def fix_up_text(synFile, cleanUpText):
-    # Also remove @ signs at the beginning of words and N.N at the end of words if so desired in the configuration file.
+
     f_s = open(synFile, encoding="utf-8")
     line_list = []
+
     for line in f_s:
         line_list.append(line)
 
     f_s.close()
     f_s = open(synFile, 'w', encoding="utf-8")
+
     for line in line_list:
         line = re.sub('_', ' ', line)
         
         if cleanUpText:
-            line = re.sub('\d+\.\d+', '', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+
+            # Remove N.N that is attached to a word (looking for non-whitespace before the N). 
+            # N.N by itself can cause problems because some references use dot between chapter and verse. Assume a space before these references.
+            # [^\s\d] means neither a space nor a number, i.e. a letter or symbol. () to capture the letter
+            # then look for one or more numbers the dot then one or more numbers
+            line = re.sub(r'([^\s\d])\d+\.\d+', r'\1', line, flags=re.RegexFlag.A) # re.A=ASCII-only match
+
+            # Remove at signs. Those indicate a words that weren't found.
             line = re.sub('@', '', line)
+
         f_s.write(line)
     f_s.close()
 

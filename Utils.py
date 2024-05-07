@@ -5,6 +5,48 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.10.11 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
+#   Version 3.10.10 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10.9 - 3/6/24 - Ron Lockwood
+#    Fixes #579. Re-write how to handle punctuation in the get interlinear function.
+#
+#   Version 3.10.8 - 3/6/24 - Ron Lockwood
+#    Fixes #581. Skip reporting a bad url link if the report object is None.
+#
+#   Version 3.10.7 - 3/5/24 - Ron Lockwood
+#    Fixes #580. Correctly form the circumfix affix for HermitCrab.
+#
+#   Version 3.10.6 - 2/26/24 - Ron Lockwood
+#    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
+#    Default to collecting inflection classes for both source and target DBs.
+#
+#   Version 3.10.5 - 1/25/24 - Ron Lockwood
+#    Prevent initial new line.
+#
+#   Version 3.10.4 - 1/25/24 - Ron Lockwood
+#    Fixes #558. Don't add lemma when POS is missing, just give warning.
+#
+#   Version 3.10.3 - 1/24/24 - Ron Lockwood
+#    Fixes #510. Catch an error where the string 'guid' is not present in the link field.
+#
+#   Version 3.10.2 - 1/1/24 - Ron Lockwood
+#    Fixes #503. Fix error message to mention abbrev. or name.
+#
+#   Version 3.10.1 - 1/1/24 - Ron Lockwood
+#    Fixes #506. Better handling of 'punctuation' text that is a complete paragraph (line).
+#
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
+#
+#   Version 3.10.2 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
+#   Version 3.9.9 - 12/9/23 - Ron Lockwood
+#    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
 #
 #   Version 3.9.9 - 9/11/23 - Ron Lockwood
 #    Two functions added to support creating apertium rules.
@@ -382,6 +424,9 @@ import ReadConfig as MyReadConfig
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
 import FTPaths
 
+CIRCUMFIX_TAG_A = '_cfx_part_a'
+CIRCUMFIX_TAG_B = '_cfx_part_b'
+APERT_RESERVED = r'([\[\]@/\\^$><])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -947,8 +992,16 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             get_feat_abbr_list(value.FeatureSpecsOC, feat_abbr_list)
         else: # FsClosedValue - I don't think the other types are in use
             spec = IFsClosedValue(spec)
-            featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-            abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+
+            if spec.FeatureRA:
+                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+            else:
+                featGrpName = "ERR"
+            if spec.ValueRA:
+                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+                abbValue = re.sub('\.', '_', abbValue) # convert dots to underscore
+            else:
+                abbValue = "ERR"
             feat_abbr_list.append((featGrpName, abbValue))
     return
 
@@ -1076,6 +1129,54 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
     
     return newSentence, newParagraph, mySent, myPar
 
+class GetInterlinParams():
+
+    def __init__(self, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+        self.sentPunct = sentPunct
+        self.contents = contents
+        self.typesList = typesList
+        self.discontigTypesList = discontigTypesList
+        self.discontigPOSList = discontigPOSList
+        self.noWarningProperNoun = noWarningProperNoun
+
+def initInterlinParams(configMap, report, contents):
+    
+    # Get punctuation string
+    sentPunct = MyReadConfig.getConfigVal(configMap, MyReadConfig.SENTENCE_PUNCTUATION, report)
+    
+    if not sentPunct:
+        return
+    
+    typesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report)
+    if not typesList:
+        typesList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report):
+        return None
+
+    discontigTypesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report)
+    if not discontigTypesList:
+        discontigTypesList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report):
+        return None
+
+    discontigPOSList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
+    if not discontigPOSList:
+        discontigPOSList = []
+    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
+        return None
+
+    noWarningProperNounStr = MyReadConfig.getConfigVal(configMap, MyReadConfig.NO_PROPER_NOUN_WARNING, report, giveError=False)
+    
+    if not noWarningProperNounStr or noWarningProperNounStr == 'n':
+        noWarningProperNoun = False
+    else:
+        noWarningProperNoun = True
+
+    # Initialize a class
+    interlinParams = GetInterlinParams(sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
+
+    return interlinParams
+
 # This is a key function used by the ExtractSourceText, LinkSenseTool and LiveRuleTesterTool modules
 # Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
 # the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
@@ -1089,7 +1190,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
 # At the end of the function we figure out appropriate warnings for unknown words and we process 
 # complex forms which basically is substituting complex forms when we find contiguous words that match
 # the complex form's components.
-def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList):
+def getInterlinData(DB, report, params):
     
     prevEndOffset = 0
     currSegNum = 0
@@ -1098,8 +1199,13 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     savedPrePunc = ''
     newParagraph = False
     newSentence = False
+    inMultiLinePuncBlock = False
         
-    initProgress(contents, report)
+    initProgress(params.contents, report)
+
+    # Save a regex for splitting on sentence punctuation so we can clump sentence-final and sentence-non-final together
+    # For the string "xy.'):\\" this would produce ['', '::', 'xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
+    reSplitPuncObj = re.compile(rf"([{''.join(params.sentPunct)}]+)")
     
     # Initialize the text and the first paragraph object
     myText = TextEntirety()
@@ -1109,7 +1215,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
     myText.addParagraph(myPar)
     
     # Loop through each thing in the text
-    ss = SegmentServices.StTextAnnotationNavigator(contents)
+    ss = SegmentServices.StTextAnnotationNavigator(params.contents)
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
        
         report.ProgressUpdate(prog_cnt)
@@ -1118,8 +1224,8 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
         numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
         spacesStr = ' '*numSpaces
 
-        # See if we are on a new paragraph (numSpaces is negative)
-        if numSpaces < 0:
+        # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
+        if numSpaces < 0 and myPar.getSentCount() > 0:
             newParagraph = True
             
         # If we are on a different segment, it's a new sentence.
@@ -1136,47 +1242,107 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
             puncForm = IPunctuationForm(analysisOccurance.Analysis)
             textPunct = ITsString(puncForm.Form).Text
             
-            # See if one or more symbols is part of the user-defined sentence punctuation. If so, save the punctuation as if it is its own word. E.g. ^.<sent>$
-            if set(list(textPunct)).issubset(set(list(sentPunct))):
-                
-                # create a new word object
-                myWord = TextWord(report)
-                
-                # initialize it with the puctuation and sent as the "POS"
-                myWord.addLemma(textPunct)
-                myWord.setSurfaceForm(textPunct)
-                myWord.addPlainTextAffix('sent')
-                
-                # See if we have any pre-punctuation
-                if len(savedPrePunc) > 0:
-                    myWord.addInitialPunc(savedPrePunc)
-                    savedPrePunc = ""
+            # Divide up the punctuation into sentence ending (ones that are in sentPunct) one ones that aren't
+            myPuncList = reSplitPuncObj.split(textPunct) # also see above where this object is defined
 
-                # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
-                newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
-                
-            # If not, assume this is non-sentence punctuation and just save the punctuation to go with the current/next word.
-            else:
-                # If we have a word that has been started, that isn't the beginning of a new sentence, make this final punctuation.
-                if myWord != None and not newSentence and (CHECK_DELIMITER and not textPunct == DELIMITER_STR): 
+            # Go through each cluster
+            for i, myPunc in enumerate(myPuncList):
+
+                # Skip empty list elements
+                if myPunc == '':
+                    continue
+
+                # even indexes which are the non-sentence final ones 
+                # or odd indexes (sent final) where we are in the middle of a punctuation section (e.g. \xo 27.2-8)
+                # this is shown by there being some final punctuation or some saved pre-punctuation
+                if i % 2 == 0 or (i % 2 == 1 and myWord and (myWord.getFinalPunc() or savedPrePunc)): 
+
+                    # If we have a word that has been started, that isn't the beginning of a new sentence, and it's not sent. punc., make this final punctuation.
+                    if myWord and not myWord.isSentPunctutationWord() and not newSentence and (CHECK_DELIMITER and not myPunc == DELIMITER_STR): 
+                        
+                        myWord.addFinalPunc(spacesStr + myPunc) 
+                        savedPrePunc = ''
+                    else:
+
+                        # New paragraph
+                        if numSpaces < 0:
+
+                            # if we have some prepunctutation and there's no final punctuation on the word (which means we haven't move pre-punct to final before)
+                            # and we are not in a block of punctuation lines after punctuation lines, move the pre-punctuation to final on the word and reset pre-punctutation
+                            if savedPrePunc and myWord and not myWord.getFinalPunc() and not inMultiLinePuncBlock:
+
+                                myWord.addFinalPunc(savedPrePunc)
+                                savedPrePunc = spacesStr + myPunc
+
+                            # If we haven't processed any pre-punctuation yet, add to saved pre-punctuation as normal (no preceding newline)
+                            elif not savedPrePunc:
+
+                                savedPrePunc += spacesStr + myPunc
+                                inMultiLinePuncBlock = True
+                            
+                            # If we have already had saved pre-punctuation, now add a preceding newline
+                            else:
+                                savedPrePunc += '\n' + spacesStr + myPunc
+
+                        # Not a new paragraph        
+                        else:
+                            savedPrePunc += spacesStr + myPunc
+
+                else: # odd - sent-final ones
+
+                    ## save the punctuation as if it is its own word. E.g. ^.<sent>$
+
+                    # create a new word object
+                    myWord = TextWord(report)
                     
-                    myWord.addFinalPunc(spacesStr + textPunct) 
-                else:
-                    # Save this punctuation for initial punctuation on the next word
-                    savedPrePunc += spacesStr + textPunct
-        
+                    # initialize it with the puctuation and sent as the "POS"
+                    myWord.addLemma(myPunc)
+                    myWord.setSurfaceForm(myPunc)
+                    myWord.addPlainTextAffix('sent')
+                    
+                    # See if we have any pre-punctuation
+                    if len(savedPrePunc) > 0:
+                        myWord.addInitialPunc(savedPrePunc)
+                        savedPrePunc = ""
+
+                    # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
+                    newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
+
+                # After the first time through, we've dealt with the spaces
+                spacesStr = ''
+
             continue
-        
+
         ## Now we know we have something other than punctuation
         
+        prevWord = myWord
+
         # Start with a new word
         myWord = TextWord(report)
         
         # See if we have any pre-punctuation
-        if len(savedPrePunc) > 0:
+        if savedPrePunc:
+
+            # See if we have a new paragraph (which is shown by the numSpaces being negative) which means a paragraph of only punctuation.
+            # If so, add a newline to the punctuation
+            if numSpaces < 0:
+
+                if prevWord and not prevWord.getFinalPunc() and not inMultiLinePuncBlock:
+
+                    prevWord.addFinalPunc(savedPrePunc)
+                    savedPrePunc = ''
+                else:
+                    savedPrePunc += '\n'
+
+                # prevent an empty 1st paragrah
+                if myText.getParagraphCount() == 1 and myText.getSentCount() == 0:
+                    newParagraph = False 
+
             myWord.addInitialPunc(savedPrePunc)
             savedPrePunc = ""
-            
+
+        inMultiLinePuncBlock = False
+
         # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
         newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
         
@@ -1226,7 +1392,7 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
                         # If we have an invalid POS, give a warning
                         if not msa.PartOfSpeechRA:
                             
-                            myWord.addLemmaFromObj(wfiAnalysis.Owner)
+                            #myWord.addLemmaFromObj(wfiAnalysis.Owner)
                             report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
                         
@@ -1303,17 +1469,22 @@ def getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesLi
 
             report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
         
+    # Handle any final punctuation text at the end of the text in its own paragraph
+    if len(savedPrePunc) > 0:
+
+        myWord.addFinalPunc('\n'+savedPrePunc)
+
     # Don't warn for sfm markers, but warn once for others        
-    if myText.warnForUnknownWords() == True:
+    if myText.warnForUnknownWords(params.noWarningProperNoun) == True:
         report.Warning('One or more unknown words occurred multiple times.')
 
     # substitute a complex form when its components are found contiguous in the text      
-    myText.processComplexForms(typesList) 
+    myText.processComplexForms(params.typesList) 
     
     # substitute a complex form when its components are found discontiguous in the text  
-    if len(discontigTypesList) > 0 and len(discontigPOSList) > 0 and len(typesList) > 0:
+    if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and len(params.typesList) > 0:
             
-        myText.processDiscontiguousComplexForms(typesList, discontigTypesList, discontigPOSList) 
+        myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList) 
     
     return myText
 
@@ -1510,8 +1681,8 @@ def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addI
             # add a (possibly changed abbreviation string) to the map
             add_to_cat_map(posMap, posFullNameStr, posAbbrStr)
             
-            # add inflection classes to the map if there are any if we are working on the target database
-            if addInflectionClasses and dbType == dbList[1][1]: #target
+            # add inflection classes to the map if there are any.
+            if addInflectionClasses:
                 
                 process_inflection_classes(posMap, pos)
             
@@ -1571,7 +1742,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if message == 'fatal':
                 
                 if report:
-                    report.Error(f"The abbreviation: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
+                    report.Error(f"The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
                 haveError = True
                 
                 # show all fatal errors
@@ -1586,7 +1757,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
                 
                 if report:
-                    report.Warning(f"The abbreviation: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
+                    report.Warning(f"The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
                                    f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.")
             
             # Give suppressing message when we go 1 beyond the max
@@ -1741,20 +1912,21 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     
     senseNum = int(senseNumStr)
 
-    # Get the guid from the url
-    u = tgtEquivUrl.index('guid')
-    guidSubStr = tgtEquivUrl[u+7:u+7+36]
-
-    # Look up the entry in the trgt project by guid
-    repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
-
     try:
+        # Get the guid from the url
+        u = tgtEquivUrl.index('guid')
+        guidSubStr = tgtEquivUrl[u+7:u+7+36]
+
+        # Look up the entry in the trgt project by guid
+        repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+
         guid = Guid(String(guidSubStr))
         targetObj = repo.GetObject(guid)
     except:
         headWord = ITsString(entry.HeadWord).Text
-        report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
-                     DB.BuildGotoURL(entry))
+        if report:
+            report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
+                        DB.BuildGotoURL(entry))
         return retVal
     
     if targetObj:
@@ -1777,7 +1949,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
 
                         urlStr = preGuidStr + targetSense.Guid.ToString() + '%26tag%3d'
 
-                        writeSenseHyperLink(DB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
+                        writeSenseHyperLink(DB, TargetDB, mySense, targetEntry, targetSense, senseEquivField, urlStr, myStyle)
 
                         # If the sense number field is None, we aren't using it
                         if senseNumField:
@@ -1857,7 +2029,7 @@ def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
 
     return equivStr
 
-def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
+def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
 
     # This headword should have a number if there is more than one of them
     headWordStr = ITsString(targetEntry.HeadWord).Text
@@ -1867,7 +2039,7 @@ def writeSenseHyperLink(DB, sourceSense, targetEntry, targetSense, senseEquivFie
     glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
 
     # Put the string we want for the link name into a tsString
-    linkName = f'linked to entry: {headWordStr}, sense: {glossStr}'
+    linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
 
     # Make the string in the analysis writing system
     tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
@@ -2004,3 +2176,6 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev
                                 break
     return myList
 
+def unescapeReservedApertChars(inStr):
+    
+    return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)

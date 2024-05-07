@@ -108,6 +108,17 @@ case-of:before
 {
     content: " case of - ";
 }
+case-of[side=sl]
+{
+    display:block;
+    content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  side: "  combo-box(attribute, side, 
+                           color, #ff0000,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16);
+    padding-left:.125in;
+}
 case-of
 {
     display:block;
@@ -164,6 +175,19 @@ clip:before
 {
     content: " clip - ";
 }
+clip[side=sl]
+{
+    display:block;
+    content: " item: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " side: "  combo-box(attribute, side, 
+                           color, #ff0000,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16)
+     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
+    padding-left:.125in;
+}
+
 clip
 {
     display:block;

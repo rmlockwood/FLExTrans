@@ -5,6 +5,35 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.10.7 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
+#   Version 3.10.6 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10.5 - 3/8/24 - Ron Lockwood
+#    Fixes #578. If a change was made in the linking and the user clicks cancel or the 
+#    red X, prompt them to see if they want to save the changes.
+#
+#   Version 3.10.4 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
+#   Version 3.10.3 - 1/18/24 - Ron Lockwood
+#    Fixes #550. Handle a target word that doesn't have a category yet assigned.
+#
+#   Version 3.10.2 - 1/8/24 - Ron Lockwood
+#    Fixes #537. Don't do gloss matching for a gloss that comes back from FLEx as ***.
+#
+#   Version 3.10.1 - 1/6/24 - Ron Lockwood
+#    Fixes #499. Only rebuild the bilingual lexicon when OK is clicked.
+#    Fixes #500. Sleep for 3 seconds before rebuilding the bilingual lexicon to let FLEx write data.
+#
+#   Version 3.10 - 1/6/24 - Ron Lockwood
+#    Output the target DB name in the sense link text.
+#
+#   Version 3.9.8 - 12/26/23 - Ron Lockwood
+#    Fixes #501. Fixed typo that returned source headword instead of source gloss.
+#
 #   Version 3.9.7 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -219,6 +248,7 @@ import os
 import sys
 import unicodedata
 import xml.etree.ElementTree as ET
+import time
 
 from fuzzywuzzy import fuzz
 
@@ -249,7 +279,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.9.7",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -446,7 +476,7 @@ class Link(object):
         return self.__tgtHPG.getPOS()
     def getSrcGloss(self):
         return self.__srcHPG.getGloss()
-    def getSrcGloss(self):
+    def getSrcHeadword(self):
         return self.__srcHPG.getHeadword()
     def getTgtGloss(self):
         return self.__tgtHPG.getGloss()
@@ -784,6 +814,7 @@ class Main(QMainWindow):
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.InitRebuildBilingCheckBox()
+        self.InitSearchAllCheckBox()
         
         self.ui.searchTargetEdit.setText(SEARCH_HERE)
         
@@ -815,6 +846,17 @@ class Main(QMainWindow):
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def InitSearchAllCheckBox(self):
+        
+        self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Unchecked)
+        
+        val = ReadConfig.getConfigVal(self.__configMap, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, report=None, giveError=False)
+        
+        if val:
+            if val == 'y':
+                
+                self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Checked)
+                
     def InitRebuildBilingCheckBox(self):
         
         self.ui.RebuildBilingCheckBox.setCheckState(QtCore.Qt.Checked)
@@ -1075,6 +1117,15 @@ class Main(QMainWindow):
         
     def CancelClicked(self):
         self.retVal = 0
+
+        # Check if the user did some linking or unlinking
+        if self.__model.didLinkingChange():
+            
+            # Check if the user wants to save changes
+            if QMessageBox.question(self, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        
+                self.retVal = 1
+        
         self.close()
         
     def filter(self):
@@ -1158,7 +1209,13 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
         
             # Loop through senses
             for senseNum, mySense in enumerate(entryObj.SensesOS):
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                try:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                except:
+                    # Skip an MSA that could not be casted.
+                    continue
+
                 # Skip empty MSAs
                 if msa == None:
                     continue
@@ -1178,7 +1235,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # If we have a valid gloss, add it to the map
-                if gloss and len(gloss) > 0:
+                if gloss and len(gloss) > 0 and gloss != '***':
                     # Create an HPG object
                     myHPG = HPG(mySense, headword, POS, gloss, senseNum+1)
                     
@@ -1255,32 +1312,15 @@ def getMatchesOnGloss(gloss, glossMap, saveMap, doFuzzyCompare):
 
 def getInterlinearText(DB, report, configMap, contents):
     
-    # Get punctuation string
-    sentPunct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    
-    if not sentPunct:
-        return None
-    
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return None
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return None
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return None
+    # Check for an error
+    if interlinParams == None:
+        return
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sentPunct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, interlinParams)
     
     return myText
 
@@ -1433,7 +1473,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
 
     return myData, processedMap
 
-def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField):        
+def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
     updatedSenses = {}
     cnt = 0
@@ -1478,7 +1518,7 @@ def updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumFiel
 
                     tgtEntry = ILexEntry(currLink.getTgtSense().Entry)
 
-                    Utils.writeSenseHyperLink(DB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
+                    Utils.writeSenseHyperLink(DB, TargetDB, currSense, tgtEntry, tgtSense, senseEquivField, urlStr, myStyle)
 
                     # If the sense number field exists, set it to an empty string
                     if senseNumField:
@@ -1893,7 +1933,7 @@ def RunModule(DB, report, configMap):
         # Update the source database with the correct links
         if window.retVal: # True = make the changes        
             
-            updateSourceDb(DB, report, myData, preGuidStr, senseEquivField, senseNumField)
+            updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField)
 
             # Dump linked senses if the user wants to
             if window.exportUnlinked:
@@ -1908,8 +1948,14 @@ def RunModule(DB, report, configMap):
         
         elif window.rebuildBiling:
             
-            TargetDB.CloseProject()
-            return REBUILD_BILING
+            # Only rebuild the bilingual lexicon if the user clicked OK
+            if window.retVal:
+
+                TargetDB.CloseProject()
+
+                # Pause for 3 seconds to perhaps let FLEx write out the links
+                time.sleep(3)
+                return REBUILD_BILING
     
     TargetDB.CloseProject()
     

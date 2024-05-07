@@ -5,6 +5,13 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.10.1 - 1/12/24 - Ron Lockwood
+#    Fixes #538. Escape brackets in the pre or post punctuation.
+#
+#   Version 3.10 - 1/2/24 - Ron Lockwood
+#    Fixes #531. When replacing sentence punctuation lexical units with only the punctuation,
+#    account for the fact that failed synthesis words will also have ^ in the string. Fixed the regex.
+#
 #   Version 3.9.3 - 7/26/23 - Ron Lockwood
 #    Give warnings from GenerateHCConfig. 
 #
@@ -67,7 +74,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.9.3",
+        FTM_Version    : "3.10.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -200,6 +207,8 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     # Read in the surface forms
     surfaceFormsList = fSurfaceForms.readlines()
+
+    # Remove blank lines
     surfaceFormsList = [line for line in surfaceFormsList if line.strip()]
 
     # Do a sanity check to see if the number of surface forms matches the number of Lexical unit strings
@@ -246,8 +255,11 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
         # substitute the Apertium parse with the surface form throughout the target text 
         resultsFileStr = re.sub(re.escape(originalLUStr), " ".join(newSurfaceList), resultsFileStr)
 
-    # Handle the sentence punctuation. Pull out just the lemma (x) from ^x<sent>$
-    resultsFileStr = re.sub(r'\^(.+?)<sent>\$', r'\1', resultsFileStr)
+    # Handle the sentence punctuation. Replace ^x<sent>$ with just the lemma x
+    # This regex looks for a non-% or beg. of string followed by a ^ in order to find the sentence lexical unit. The reason why we need the non-% is because
+    # some of the words may not have synthesized and the error string in the form of %0%^iba1.1<n><PC.1Sg>$% may be there so we don't want to start the string
+    # to replace with the ^ that's right after the % in the error string. Also there might be an error string right before the sentence punc. so allow $%^.
+    resultsFileStr = re.sub(r'([^%]|^|\$%)\^(.+?)<sent>\$', r'\1\2', resultsFileStr)
             
     # Open the synthesis file
     try:
@@ -328,15 +340,15 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList):
 # Also symbols and ^%0%...%$
 def fix_up_text(synFile, cleanUpText):
     
+    # Read the contents
+    f_s = open(synFile, encoding="utf-8")
+    synFileContents = f_s.read()
+    f_s.close()
+
+    # Make replacements
+    f_s = open(synFile, 'w', encoding="utf-8")
+
     if cleanUpText:
-
-        # Read the contents
-        f_s = open(synFile, encoding="utf-8")
-        synFileContents = f_s.read()
-        f_s.close()
-
-        # Make replacements
-        f_s = open(synFile, 'w', encoding="utf-8")
 
         # Remove n.n on lemmas
         synFileContents = re.sub('\d+\.\d+', '', synFileContents, flags=re.RegexFlag.A) # re.A=ASCII-only match
@@ -350,8 +362,11 @@ def fix_up_text(synFile, cleanUpText):
         # Remove the ^%0%...%$ (^ and $ are optional which is the case for unknown punctuation)
         synFileContents = re.sub(r'%0%\^{0,1}(.*?)\${0,1}%', r'\1', synFileContents)
 
-        f_s.write(synFileContents)
-        f_s.close()
+    # Un-escape punctuation text that was escaped before running apertium tools. E.g. convert \] to ]
+    synFileContents = Utils.unescapeReservedApertChars(synFileContents)
+
+    f_s.write(synFileContents)
+    f_s.close()
 
 def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False):
     

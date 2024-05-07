@@ -5,6 +5,42 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.10.10 - 4/13/24 - Ron Lockwood
+#    Fixes #399. Show **none** on the left size when the source language is in a RTL script.
+#    Also make the tooltip size for all widgets the same as other widgets according to how much
+#    the user has zoomed in or out.
+#
+#   Version 3.10.9 - 4/11/24 - Ron Lockwood
+#    Bug fix for TreeTran use. Don't compare guid object to None.
+#
+#   Version 3.10.8 - 3/20/24 - Ron Lockwood
+#    Refactoring to put changes to allow get interlinear parameter changes to all be in Utils
+#
+#   Version 3.10.7 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10.6 - 3/2/2024 - Ron Lockwood
+#    Fixes #562 Fixes bug that says 'nothing selected' even though a sentence is selected.
+#
+#   Version 3.10.5 - 2/23/2024 - Ron Lockwood
+#    Fixes #567 Fixes crash in Catalog Target Affixes when a lexeme form is null.
+#
+#   Version 3.10.4 - 1/27/2024 - Ron Lockwood
+#    Include the LogInfo window in font increase/decrease.
+#
+#   Version 3.10.3 - 1/24/2024 - Ron Lockwood
+#    Fixes #509. Catch all exceptions when reading the biling. lexion which now catches XML parse errors.
+#
+#   Version 3.10.2 - 1/21/2024 - Ron Lockwood
+#    Fixes #549. Resize fonts in text boxes via zoom +/-. And save this info.
+#
+#   Version 3.10.1 - 1/6/2024 - Ron Lockwood
+#    Fixes #533. Recheck the words that were checked on closing the tester.
+#
+#   Version 3.10 - 12/28/23 - Ron Lockwood
+#    Fixes #518. Show the data stream for the checked boxes after rebuilding the 
+#    bilingual lexicon.
+#
 #   Version 3.9.1 - 6/3/23 - Ron Lockwood
 #    Fixes #442. Force the rules to be renumbered when restoring checked rules.
 #
@@ -338,7 +374,7 @@ from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
 
 from Testbed import *
 import Utils
@@ -361,7 +397,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.9.1",
+        FTM_Version    : "3.10.10",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -378,6 +414,7 @@ can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.
 """ }
 
+ZOOM_INCREASE_FACTOR = 1.15
 SAMPLE_LOGIC = 'Sample logic'
 MAX_CHECKBOXES = 80
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
@@ -402,6 +439,8 @@ TARGET_FILE = 'target_text.txt'
 LOG_FILE3 = 'apertium_log3.txt'
 BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
 
+SENT_TAG = '<sent>'
+
 def firstLower(myStr):
     
     if myStr:
@@ -415,17 +454,11 @@ class SentenceList(QtCore.QAbstractListModel):
     def __init__(self, myData = [], parent = None):
         QtCore.QAbstractListModel.__init__(self, parent)
         self.__localData = myData
-        self.__currentSent = myData[0] # start out on the first one
-        self.__currentRow = 0
         self.__RTL = False
-    def getCurrentSent(self):
-        return self.__currentSent
-    def setCurrentSent(self, sentNum):
-        if sentNum < len(self.__localData):
-            self.__currentRow = sentNum
-            self.__currentSent = self.__localData[sentNum]
-    def getSelectedRow(self):
-        return self.__currentRow
+    def getSent(self, sentNum):
+        if sentNum not in range(0, len(self.__localData)):
+            sentNum = 0
+        return self.__localData[sentNum]
     def setRTL(self, val):
         self.__RTL = val
     def getRTL(self):
@@ -433,8 +466,7 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        self.__currentRow = index.row()
-        mySent = self.__localData[self.getSelectedRow()]
+        mySent = self.__localData[index.row()]
         
         if role == QtCore.Qt.DisplayRole:
             value = self.joinTupParts(mySent, 0)
@@ -442,13 +474,13 @@ class SentenceList(QtCore.QAbstractListModel):
             if self.getRTL():
                 value = '\u200F' + value + '\u200F' 
                 
-            self.__currentSent = mySent    
             return value
             
     def setData(self, index, value, role = QtCore.Qt.EditRole):
         return True
     def joinTupParts(self, tupList, i):
         ret = ''
+
         for t in tupList: 
             # don't put a space before sentence punctuation
             if len(t) > i+1 and re.search(SENT_TAG, t[i+1]):
@@ -576,6 +608,10 @@ class Main(QMainWindow):
         self.ui.editTransferRulesButton.clicked.connect(self.EditTransferRulesButtonClicked)
         self.ui.editReplacementButton.clicked.connect(self.EditReplacementButton)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
+        self.ui.ZoomIncreaseSource.clicked.connect(self.ZoomIncreaseSourceClicked)
+        self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
+        self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
+        self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -593,7 +629,9 @@ class Main(QMainWindow):
 
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
+
         for i in range(0, MAX_CHECKBOXES):
+
             myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
@@ -610,6 +648,8 @@ class Main(QMainWindow):
         sourceTab = 0
         selectWordsSentNum = 0
         savedSourceTextName = ''
+        sourceFontSizeStr = ''
+        targetFontSizeStr = ''
         
         # Clear text boxes and labels
         self.__ClearStuff()
@@ -631,6 +671,14 @@ class Main(QMainWindow):
             # Read the 2nd line which is the state of the rule checkboxes
             checkBoxStateStr = f.readline().strip()
             self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
+
+            # Read the 3rd line which is the state of the word checkboxes
+            checkBoxStateWordsStr = f.readline().strip()
+            self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+
+            # Read the 4th line which is the source and target font size
+            fontSizesStr = f.readline().strip()
+            sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
 
             f.close()
         except:
@@ -678,6 +726,15 @@ class Main(QMainWindow):
         if self.ReadBilingualLexicon() == False:
             return
         
+        # Set the source and target widget font sizes
+        if targetFontSizeStr and sourceFontSizeStr:
+
+            try:
+                self.setSourceWidgetsFont(float(sourceFontSizeStr))
+                self.setTargetWidgetsFont(float(targetFontSizeStr))
+            except:
+                pass
+
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
 
@@ -685,12 +742,17 @@ class Main(QMainWindow):
         if savedSourceTextName != sourceText:
 
             selectWordsSentNum = 0
-            
+
         # Set the index of the combo box and sentence list to what was saved before
         self.ui.SentCombo.setCurrentIndex(selectWordsSentNum)
         qIndex = self.__sent_model.createIndex(selectWordsSentNum, 0)
         self.ui.listSentences.setCurrentIndex(qIndex)
         self.listSentClicked()
+
+        if savedSourceTextName == sourceText and sourceTab == 0: # 0 means checkboxes with words
+
+            # Check the saved words
+            self.restoreCheckedWords()
         
         # Copy bilingual file to the tester folder
         try:
@@ -793,7 +855,7 @@ class Main(QMainWindow):
         try:
             bilingEtree = ET.parse(self.__biling_file)
             
-        except IOError:
+        except:
             
             # Try and build the bilingual lexicon
             if self.ExtractBilingLex() == False:
@@ -1194,7 +1256,8 @@ class Main(QMainWindow):
             try:
                 errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
-                QMessageBox.warning(self, 'Locked DB', 'The database appears to be locked.')
+                QMessageBox.warning(self, 'Locked DB?', 'The database could be locked. Check if sharing is checked for the target project. \
+                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.')
                 self.unsetCursor()
                 return
 
@@ -1417,6 +1480,10 @@ class Main(QMainWindow):
         # Loop through all the items in the rule list model
         for i in range(0, len(checkBoxList)):
             
+            # We only need to check the first x that are visible to the user.
+            if checkBoxList[i].isVisible() == False:
+                break
+
             # Save the state of each check box 
             if checkBoxList[i].checkState():
                 myList.append(QtCore.Qt.Checked)
@@ -1462,10 +1529,13 @@ class Main(QMainWindow):
                 
                 # Set the state of each check box
                 checkBoxList[i].setCheckState(myList[i])
+            else:
+                break
 
     def restoreCheckedWords(self):
         
         self.recheckWords(self.wordsCheckedList, self.__checkBoxList)
+        self.SourceCheckBoxClicked()
         
     def restoreChecked(self):
         
@@ -1508,7 +1578,8 @@ class Main(QMainWindow):
         
     def SourceCheckBoxClicked(self):
         self.ui.TestsAddedLabel.setText('')
-        mySent = self.__sent_model.getCurrentSent()
+        
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
         
         # Create a <p> html element
@@ -1535,7 +1606,8 @@ class Main(QMainWindow):
 
     def listSentClicked(self):
         
-        mySent = self.__sent_model.getCurrentSent()
+        self.lastSentNum = self.ui.listSentences.currentIndex().row()
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         self.__lexicalUnits = ''
         
         # Create a <p> html element
@@ -1555,8 +1627,6 @@ class Main(QMainWindow):
         
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-
-        self.lastSentNum = self.__sent_model.getSelectedRow()
         
     def resizeEvent(self, event):
         
@@ -1613,12 +1683,9 @@ class Main(QMainWindow):
         
         if self.ui.tabSource.currentIndex() == 0: # check boxes
             
-            # Set the combo box index to be the same as the list box
-            #ind = self.ui.listSentences.currentIndex()
-
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:            
-                self.__sent_model.setCurrentSent(self.lastSentNum)
+
                 self.ui.SentCombo.setCurrentIndex(self.lastSentNum)
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
@@ -1627,18 +1694,16 @@ class Main(QMainWindow):
         
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
             
-            # Set the list box index to be the same as the combo box
-            #myRow = self.ui.SentCombo.currentIndex()
-            
             # if no selection (-1), don't set the current index
             if self.lastSentNum != -1:
+
                 qIndex = self.__sent_model.createIndex(self.lastSentNum, 0)
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
             self.ui.selectWordsHintLabel.setVisible(False)
             
-        else: # sentences or manual
+        else: # manual entry
             
             self.ui.selectWordsHintLabel.setVisible(False)
             
@@ -1707,16 +1772,19 @@ class Main(QMainWindow):
 
     def listSentComboClicked(self):
         
-        mySent = self.__sent_model.getCurrentSent()
+        self.lastSentNum = self.ui.SentCombo.currentIndex()
+        mySent = self.__sent_model.getSent(self.lastSentNum)
         space_val = 10
         y_spacing = 30
         x_margin = 2
         x = x_margin
         y = 2
 
-        # Clear the source text area
+        # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
         self.__ClearAllChecks()
+        self.__lexicalUnits = ''
+        self.ui.ManualEdit.setPlainText('')
         
         i=0
         # Position a check box for each "word" in the sentence
@@ -1764,7 +1832,7 @@ class Main(QMainWindow):
                 tipText = self.formatTextForToolTip(srcTrgPairsList)
             else:
                 tipText = '---'
-            
+
             self.__checkBoxList[i].setToolTip(tipText)
             
         # Make the rest of the unused check boxes invisible
@@ -1772,9 +1840,6 @@ class Main(QMainWindow):
             
             self.__checkBoxList[j].setVisible(False)
         
-        # Save the sentence number that was selected    
-        self.lastSentNum = self.__sent_model.getSelectedRow()
-
     def getTargetsInBilingMap(self, wrdTup):
         
         dataStreamStr = wrdTup[1].strip() # of the form (\\v 1) ^word1.2<v><3sg>$
@@ -1817,22 +1882,26 @@ class Main(QMainWindow):
         # Between the source and target we want an arrow, choose left or right arrows depending on the text direction
         if isRtl:
             
-            arrowStr = '\u2B60'
+            arrowStr = '⭠'
         else:
-            arrowStr = '\u2B62'
+            arrowStr = '⭢'
             
         # Go through all pairs and add them to the tool tip
         for source, target in srcTrgtPairsList:
             
             # Combine source and target into one paragraph html string
             tipStr += convertXMLEntryToColoredString(source, isRtl)[:-4] # remove </p> at end
-            tipStr += f'&nbsp;{arrowStr}&nbsp;' # right arrow
+            tipStr += f'&nbsp;{arrowStr}&nbsp;' 
 
             # If the target is mapped to nothing (which happens if the user chose **None** in the linker),
             # set the right side of the tooltip to **None**
             if target.text is None:
                 
-                tipStr += Utils.NONE_HEADWORD
+                # If we have RTL orientation, prepend the RTL marker character
+                if isRtl:
+                    tipStr += '\u200F' + Utils.NONE_HEADWORD
+                else:
+                    tipStr += Utils.NONE_HEADWORD
             else:
                 tipStr += convertXMLEntryToColoredString(target, isRtl)[3:] # remove <p> at beginning
             
@@ -1847,11 +1916,23 @@ class Main(QMainWindow):
         self.saveChecked()
         checkedStateStr = ''.join(map(str, self.rulesCheckedList))
 
+        # Save which words were checked.
+        self.saveCheckedWords()
+        checkedWordsState = ''.join(map(str, self.wordsCheckedList))
+
+        # Get the font sizes of source and target widgets
+        myFont = self.ui.SelectedSentencesEdit.font()
+        sourceFontSizeStr = str(myFont.pointSizeF())
+        myFont = self.ui.SynthTextEdit.font()
+        targetFontSizeStr = str(myFont.pointSizeF())
+
         f = open(self.windowsSettingsFile, 'w')
         
         # Save current rules tab, current source tab, last sentence # selected and the last source text
         f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
         f.write(f'{checkedStateStr}\n')
+        f.write(f'{checkedWordsState}\n')
+        f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
         f.close()
         
     def removeSampleLogicRule(self, rulesElement):
@@ -2317,6 +2398,48 @@ class Main(QMainWindow):
                     
         return retStr
 
+    def ZoomIncreaseTargetClicked(self):
+        myFont = self.ui.SynthTextEdit.font()
+        self.setTargetWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
+
+    def ZoomDecreaseTargetClicked(self):
+        myFont = self.ui.SynthTextEdit.font()
+        self.setTargetWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
+
+    def ZoomIncreaseSourceClicked(self):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        self.setSourceWidgetsFont(myFont.pointSizeF() * ZOOM_INCREASE_FACTOR)
+
+    def ZoomDecreaseSourceClicked(self):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        self.setSourceWidgetsFont(myFont.pointSizeF() * 1/ZOOM_INCREASE_FACTOR)
+
+    def setTargetWidgetsFont(self, fontSize):
+        myFont = self.ui.SynthTextEdit.font()
+        myFont.setPointSizeF(fontSize)
+
+        self.ui.SynthTextEdit.setFont(myFont)
+        self.ui.TargetTextEdit.setFont(myFont)
+
+    def setSourceWidgetsFont(self, fontSize):
+        myFont = self.ui.SelectedSentencesEdit.font()
+        myFont.setPointSizeF(fontSize)
+
+        self.ui.SelectedSentencesEdit.setFont(myFont)
+        self.ui.SelectedWordsEdit.setFont(myFont)
+        self.ui.listSentences.setFont(myFont)
+        self.ui.SentCombo.setFont(myFont)
+        self.ui.LogEdit.setFont(myFont)
+
+        # Set the font size of all the check boxes.
+        # This may cause a label to not fit, but on reload or click on another sentence, the check box label gets resized.
+        for check in self.__checkBoxList:
+
+            check.setFont(myFont)
+
+        # Set the tooltip size globally
+        QToolTip.setFont(myFont)
+
 def get_component_count(e):
     # loop through all entryRefs (we'll use just the complex form one)
     for entryRef in e.EntryRefsOS:
@@ -2352,30 +2475,6 @@ def RunModule(DB, report):
     if not (sourceText and bilingFile):
         return ERROR_HAPPENED
     
-    # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    
-    if not sent_punct:
-        return ERROR_HAPPENED
-    
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return ERROR_HAPPENED
-
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return ERROR_HAPPENED
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return ERROR_HAPPENED
-
     matchingContentsObjList = []
 
     # Create a list of source text names
@@ -2427,9 +2526,16 @@ def RunModule(DB, report):
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
             
-    # Get the interlinear data. It's stored in a complex object.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
+    # Check for an error
+    if interlinParams == None:
+        return
+
+    # Get interlinear data. A complex text object is returned.
+    myText = Utils.getInterlinData(DB, report, interlinParams)
+        
     if TreeTranSort:
         
         segment_list = []
@@ -2467,7 +2573,7 @@ def RunModule(DB, report):
                 for wrdNum in range(0, myTreeSent.getLength()):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
                     
-                    if myGuid == None:
+                    if not myGuid:
                         report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
                     

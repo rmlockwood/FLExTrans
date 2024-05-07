@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.9.2
+SET FLEXTRANS_VERSION=3.10.1
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
@@ -18,13 +18,10 @@ mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Bui
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
-rem NOT ANYMORE!
-rem copy the flextools.ini file and force it to be overwritten. 
-rem previously we only did this in the install script and replaced them if they didn't exit
-rem but now we need to get the new settings forced. This means they will have to manually change their
-rem Flex project selection
-rem copy flextools.ini Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config
-rem copy flextools.ini Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config
+rem copy the FlexTrans.config file and force it to be overwritten. 
+
+copy FlexTrans-Swedish.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\FlexTrans.config
+copy FlexTrans.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\FlexTrans.config
 
 rem special flextrans stub files for flextools
 copy FLExTrans.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
@@ -40,8 +37,7 @@ rem flextools files
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQt5==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQtWebEngine==5.14 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 
 rem core models
 copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
@@ -69,8 +65,8 @@ copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swed
 copy Makefile.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
 copy Makefile Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
 copy Makefile.advanced Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Build
-copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
-copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
+rem copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Output
+rem copy source_text.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
 rem Documentation
 mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
@@ -181,7 +177,7 @@ cd ..
 
 if %COMPUTERNAME% == RONS-XPS (
   cd C:\Data\Flextrans\Installer
-  "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
+  "C:\Program Files (x86)\NSIS\Bin\makensis.exe" -V4 -DGIT_FOLDER=C:\Users\rlboo\GitHub\FLExTrans -DBUILD_NUM=99 -DRESOURCE_FOLDER=c:\data\FLExTrans\installer FLExTrans-installer.nsi
   cd C:\Users\rlboo\GitHub\FLExTrans
   pause
 ) else (

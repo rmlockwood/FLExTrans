@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.9.2"
+!define PRODUCT_VERSION "3.10.1"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -24,12 +24,12 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "© 2015-2023 SIL International"
+VIAddVersionKey "LegalCopyright" "© 2015-2024 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.9.2.${BUILD_NUM}
+VIProductVersion 3.10.1.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -76,10 +76,10 @@ InitPluginsDir
   #File "Command2.sh"
   #ExecWait "bash -ExecutionPolicy Bypass -WindowStyle Hidden -File $INSTDIR\install_files\Command2.sh -FFFeatureOff"
 
-  # Install python 3.8.10
-  MessageBox MB_YESNO "Install Python 3.8.10? $\nIMPORTANT! Check the box: 'Add Python 3.8 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
-        File "${RESOURCE_FOLDER}\python-3.8.10-amd64.exe"
-        ExecWait "$INSTDIR\install_files\python-3.8.10-amd64.exe"
+  # Install python 3.11.7
+  MessageBox MB_YESNO "Install Python 3.11.7? $\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'. $\nUse the 'Install now' option" /SD IDYES IDNO endPythonSync
+        File "${RESOURCE_FOLDER}\python-3.11.7-amd64.exe"
+        ExecWait "$INSTDIR\install_files\python-3.11.7-amd64.exe"
         Goto endPythonSync
   endPythonSync:
   
@@ -89,36 +89,34 @@ InitPluginsDir
   File "${GIT_FOLDER}\${PRODUCT_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
+  # Create empty Output folders
+  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
+  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
+  
   # Copy files users may change only if they don't already exist
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  
   SetOverwrite off
 
   #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
-  File "${GIT_FOLDER}\transfer_rules.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
 
   #File "${GIT_FOLDER}\FlexTools.vbs"
   File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
   
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config"
-  
-  File "${GIT_FOLDER}\FlexTrans.config"
-
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config"
-  
-  File "${GIT_FOLDER}\FlexTrans.config"
-
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\All Steps.ini"
+  File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\All Steps.ini"
+  File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
@@ -165,7 +163,7 @@ SetOverwrite on
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "All Steps" $9
+    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
     
     # Find all collection ini files (e.g. tools.ini)
     skip:
@@ -197,14 +195,14 @@ SetOverwrite on
     FindClose $0
     
 
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
-  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans All Steps.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
+  #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Drafting.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Extract Target Lexicon" "FLExTrans.Synthesize Text with STAMP"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Run Testbed.ini" "FLExTrans.Catalog Target Prefixes" "FLExTrans.Catalog Target Affixes"
   #!insertmacro _ReplaceInFile "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections\FLExTrans Tools.ini" "FLExTrans.Set Up Transfer Rule Grammatical Categories" "FLExTrans.Set Up Transfer Rule Categories and Attributes"
 
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python38\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
+  !define mycmd '"$LocalAppdata\Programs\Python\Python311\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
   # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.

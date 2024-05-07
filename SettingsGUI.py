@@ -3,6 +3,12 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.10.1 - 3/20/24 - Ron Lockwood
+#    Fixes #572. Allow user to ignore unanalyzed proper nouns.
+#
+#   Version 3.10 - 2/29/24 - Ron Lockwood
+#    Fixes #571. Setting to determine if filter by all fields is checked.
+#
 #   Version 3.9.4 - 8/12/23 - Ron Lockwood
 #    Changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
 #
@@ -1173,11 +1179,11 @@ widgetList = [
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
    
-#    ["Source Custom Field for Sense Number", "chose_sense_number", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM,\
-#     "The name of the sense-level custom field in the source FLEx project\nthat holds the sense number of the target entry.", GIVE_ERROR, DONT_HIDE],\
-
    ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
     "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, DONT_HIDE],\
+   
+   ["Hide warnings for unanalyzed Proper Nouns", "unanalyzed_proper_noun_yes", "unanalyzed_proper_noun_no", YES_NO, object, object, object, loadYesNo, ReadConfig.NO_PROPER_NOUN_WARNING,\
+    "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.", DONT_GIVE_ERROR, DONT_HIDE],\
    
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
     "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", GIVE_ERROR, DONT_HIDE],\
@@ -1216,11 +1222,19 @@ widgetList = [
 
 
 
-   ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   ["Linker Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
-
+    
    ["Default to rebuilding the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
     "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Default to filtering on all fields?", "filter_all_yes", "filter_all_yno", YES_NO, object, object, object, loadYesNo, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, \
+    "In the Sense Linker tool by default check the checkbox for filtering on all fields.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+
+   ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
 
    ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
     "The path and name of the file containing the transfer rules.", GIVE_ERROR, DONT_HIDE],\
