@@ -11,7 +11,7 @@
             <report test="string-length(normalize-space(.)) &gt; 0 and string(number(.))='NaN'">Warning: The item (pos) attribute is not a valid number.  It must be an integer.</report>
         </rule>
         <rule context="@part">
-            <report test="name(key('Attributes',.))!='def-attr' and .!='lem' and .!='leh' and .!='lemq' and .!='whole' and .!='tags' and .!='chcontent'">
+            <report test="name(key('Attributes',.))!='def-attr' and .!='lem' and .!='lemh' and .!='lemq' and .!='whole' and .!='tags' and .!='chcontent'">
             Warning: The part attribute must either refer to a valid attribute name or have a value of 'lem', 'lemh', 'lemq', 'tags', 'chcontent' or 'whole'.
             </report>
         </rule>
