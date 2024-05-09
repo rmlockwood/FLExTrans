@@ -23,6 +23,146 @@ import time
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as MD
 
+class RuleGenerator:
+    def __init__(self, DB, report, configMap):
+        self.DB = DB
+        self.report = report
+        self.configMap = configMap
+
+        self.definedCategories = {} # {name: ([(lemma, tags, comment), ...], comments)}
+        self.definedAttributes = {} # {name: ([(tags, comment), ...], comment)}
+        self.tagToCategoryName = {}
+        self.featureToAttributeName = {}
+
+        self.variables = {} # {name: (initial_value, comment)}
+        self.lists = {} # {name: ([(value, comment), ...], comment)}
+        self.macros = []
+        self.rules = []
+        self.ruleNames = set()
+
+        # XML validation forces macro, category, etc. IDs
+        # to all be in the same namespaces, so track them all together
+        self.usedIDs = set()
+
+    def processExistingTransferFile(self, fileName):
+        tree = ET.parse(fileName)
+        root = tree.getroot()
+
+        for cat in root.findall('.//def-cat'):
+            name = cat.get('n')
+            comment = cat.get('c')
+            items = [(i.get('lemma'), i.get('tags'), i.get('c')) for i in cat.findall('./cat-item')]
+            self.usedIDs.add(name)
+            self.definedCategories[name] = (items, comment)
+
+            if len(items) == 2:
+                if not items[0][0] and not items[1][0]: # no lemmas
+                    ls = sorted([items[0][1], items[1][1]])
+                    if ls[1] == ls[0] + '.*':
+                        self.tagToCategoryName[ls[0]] = name
+
+        for attr in root.findall('.//def-attr'):
+            name = attr.get('n')
+            comment = attr.get('c')
+            values = [(i.get('tags'), i.get('c')) for i in attr.findall('./attr-item')]
+            self.usedIDs.add(name)
+            self.definedAttributes[name] = (values, comment)
+
+        for var in root.findall('.//def-var'):
+            name = var.get('n')
+            val = var.get('v')
+            comment = var.get('c')
+            self.usedIDs.add(name)
+            self.variables[name] = (val, comment)
+
+        for lst in root.findall('.//def-list'):
+            name = lst.get('n')
+            comment = lst.get('c')
+            values = [(i.get('v'), i.get('c')) for i in lst.findall('./list-item')]
+            self.usedIDs.add(name)
+            self.lists[name] = (values, comment)
+
+        for macro in root.findall('.//def-macro'):
+            self.macros.append(macro)
+            self.usedIDs.add(macro.get('n'))
+
+        for rule in root.findall('.//rule'):
+            self.rules.append(rule)
+            self.ruleNames.add(rule.get('comment'))
+
+    def GetAvailableID(self, start):
+        while start in self.usedIDs:
+            start += '_'
+        return start
+
+    def AddCategories(self, root):
+        for node in root.findall('.//Source//Word'):
+            category = node.get('category')
+            if category and category not in self.tagToCategoryName:
+                cid = self.GetAvailableID('c_'+category)
+                self.definedCategories[cid] = (
+                    [(None, category, None), (None, category+'.*', None)],
+                    None,
+                )
+                self.usedIDs.add(cid)
+
+    def AddAttributes(self, root):
+        for node in root.findall('.//Target//Feature'):
+            label = node.get('label')
+            if not label or label in self.featureToAttributeName:
+                continue
+            # Utils.getLemmasForFeature...
+            # check against definedAttributes
+
+    def ProcessAssistantFile(self, fileName):
+        tree = ET.parse(fileName)
+        root = tree.getroot()
+
+        self.AddCategories(root)
+
+        self.AddAttributes(root)
+
+    def MakeChild(self, element, tag, attributes):
+        attrs = {k:v for k, v in attributes.items() if v}
+        return ET.SubElement(element, tag, attrs)
+
+    def WriteTransferFile(self, fileName):
+        root = ET.Element('transfer')
+
+        section = ET.SubElement(root, 'section-def-cats')
+        for cat, (items, comment) in sorted(self.definedCategories.items()):
+            catEl = self.MakeChild(section, 'def-cat', {'n': cat, 'c': comment})
+            for lemma, tags, comment in items:
+                self.MakeChild(catEl, 'cat-item',
+                               {'lemma': lemma, 'tags': tags, 'c': comment})
+
+        section = ET.SubElement(root, 'section-def-attrs')
+        for attr, (items, comment) in sorted(self.definedAttributes.items()):
+            attrEl = self.MakeChild(section, 'def-attr', {'n': attr, 'c': comment})
+            for tags, comment in items:
+                self.MakeChild(attrEl, 'attr-item', {'tags': tags, 'c': comment})
+
+        section = ET.SubElement(root, 'section-def-vars')
+        for var, (value, comment) in sorted(self.variables.items()):
+            self.MakeChild(section, 'def-var', {'n': var, 'v': value, 'c': comment})
+
+        section = ET.SubElement(root, 'section-def-lists')
+        for name, (items, comment) in sorted(self.lists.items()):
+            listEl = self.MakeChild(section, 'def-list', {'n': name, 'c': comment})
+            for value, comment in items:
+                self.MakeChild(listEl, 'list-item', {'v': value, 'c': comment})
+
+        section = ET.SubElement(root, 'section-def-macros')
+        for macro in self.macros:
+            section.append(macro)
+
+        section = ET.SubElement(root, 'section-rules')
+        for rule in self.rules:
+            section.append(rule)
+
+        with open(fileName, 'wb') as fout:
+            fout.write(MD.parseString(ET.tostring(root)).toprettyxml(indent='\t').encode('utf-8'))
+
 # NOTE: this version is tested on writing to an *empty* apertium file, rename 'transfer_rules.t1x' to try running this, however a backup will be created before anything else is run
 
 # Builds a new .t1x file if one is not given from the user
@@ -95,8 +235,12 @@ def AddCategories(report, apertiumTree, assistantTree):
             for definedCategories in apertiumCategoryNode.iter('def-cat'):
                 if not definedCategories.get('n'):
                     definedCategories.set('n', 'c_' + words.get('category'))
-                    ET.SubElement(definedCategories, 'cat-item')
-                    definedCategories.find('./cat-item').set('tags', words.get('category'))
+                    tags = words.get('category', '*')
+                    ET.SubElement(definedCategories, 'cat-item',
+                                  attrib={'tags': tags})
+                    if tags != '*':
+                        ET.SubElement(definedCategories, 'cat-item',
+                                      attrib={'tags': tags+'.*'})
 
     return apertiumTree
 
