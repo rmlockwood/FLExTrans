@@ -29,15 +29,16 @@ class RuleGenerator:
         self.report = report
         self.configMap = configMap
 
-        self.definedCategories = {} # {name: ([(lemma, tags, comment), ...], comments)}
-        self.definedAttributes = {} # {name: ([(tags, comment), ...], comment)}
-        self.tagToCategoryName = {}
-        self.featureToAttributeName = {}
+        self.root = None
 
-        self.variables = {} # {name: (initial_value, comment)}
-        self.lists = {} # {name: ([(value, comment), ...], comment)}
-        self.macros = []
-        self.rules = []
+        self.definedCategories = {} # {name: [(lemma, tags), ...]}
+        self.definedAttributes = {} # {name: [tags, ...]}
+        self.tagToCategoryName = {} # {category: attribute}
+        self.featureToAttributeName = {} # {(category, label): attribute}
+        self.categoryAttribute = None
+
+        self.variables = {} # {name: initial_value}
+        self.lists = {} # {name: [value, ...]}
         self.ruleNames = set()
 
         # XML validation forces macro, category, etc. IDs
@@ -46,14 +47,13 @@ class RuleGenerator:
 
     def processExistingTransferFile(self, fileName):
         tree = ET.parse(fileName)
-        root = tree.getroot()
+        self.root = tree.getroot()
 
-        for cat in root.findall('.//def-cat'):
+        for cat in self.root.findall('.//def-cat'):
             name = cat.get('n')
-            comment = cat.get('c')
-            items = [(i.get('lemma'), i.get('tags'), i.get('c')) for i in cat.findall('./cat-item')]
+            items = [(i.get('lemma'), i.get('tags')) for i in cat.findall('./cat-item')]
             self.usedIDs.add(name)
-            self.definedCategories[name] = (items, comment)
+            self.definedCategories[name] = items
 
             if len(items) == 2:
                 if not items[0][0] and not items[1][0]: # no lemmas
@@ -61,34 +61,35 @@ class RuleGenerator:
                     if ls[1] == ls[0] + '.*':
                         self.tagToCategoryName[ls[0]] = name
 
-        for attr in root.findall('.//def-attr'):
+        for attr in self.root.findall('.//def-attr'):
             name = attr.get('n')
-            comment = attr.get('c')
-            values = [(i.get('tags'), i.get('c')) for i in attr.findall('./attr-item')]
+            values = set([i.get('tags') for i in attr.findall('./attr-item')])
             self.usedIDs.add(name)
-            self.definedAttributes[name] = (values, comment)
+            self.definedAttributes[name] = values
 
-        for var in root.findall('.//def-var'):
+        for var in self.root.findall('.//def-var'):
             name = var.get('n')
             val = var.get('v')
-            comment = var.get('c')
             self.usedIDs.add(name)
-            self.variables[name] = (val, comment)
+            self.variables[name] = val
 
-        for lst in root.findall('.//def-list'):
+        for lst in self.root.findall('.//def-list'):
             name = lst.get('n')
-            comment = lst.get('c')
-            values = [(i.get('v'), i.get('c')) for i in lst.findall('./list-item')]
+            values = [i.get('v') for i in lst.findall('./list-item')]
             self.usedIDs.add(name)
-            self.lists[name] = (values, comment)
+            self.lists[name] = values
 
-        for macro in root.findall('.//def-macro'):
-            self.macros.append(macro)
+        for macro in self.root.findall('.//def-macro'):
             self.usedIDs.add(macro.get('n'))
 
-        for rule in root.findall('.//rule'):
-            self.rules.append(rule)
+        for rule in self.root.findall('.//rule'):
             self.ruleNames.add(rule.get('comment'))
+
+    def CreateTree(self):
+        self.root = ET.Element('transfer')
+
+        for section in ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']:
+            ET.SubElement(self.root, section)
 
     def GetAvailableID(self, start):
         while start in self.usedIDs:
@@ -96,72 +97,123 @@ class RuleGenerator:
         return start
 
     def AddCategories(self, root):
+        section = self.root.find('section-def-cats')
         for node in root.findall('.//Source//Word'):
             category = node.get('category')
-            if category and category not in self.tagToCategoryName:
-                cid = self.GetAvailableID('c_'+category)
-                self.definedCategories[cid] = (
-                    [(None, category, None), (None, category+'.*', None)],
-                    None,
-                )
-                self.usedIDs.add(cid)
+            if not category or category in self.tagToCategoryName:
+                continue
+            cid = self.GetAvailableID('c_'+category)
+            self.definedCategories[cid] = [(None, category), (None, category+'.*')]
+            self.tagToCategoryName[category] = cid
+            self.usedIDs.add(cid)
+
+            catEl = ET.SubElement(section, 'def-cat', {'n': cid})
+            ET.SubElement(catEl, 'cat-item', {'tags': category})
+            ET.SubElement(catEl, 'cat-item', {'tags': category+'.*'})
+
+    def AddSingleAttribute(self, suggested_name, items):
+        for name, values in self.definedAttributes.items():
+            if values == items:
+                return name
+
+        aid = self.GetAvailableID(suggested_name)
+        self.usedIDs.add(aid)
+        section = self.root.find('section-def-attrs')
+        elem = ET.SubElement(section, 'def-attr', {'n': aid})
+        for tag in sorted(items):
+            ET.SubElement(elem, 'attr-item', {'tags': tag})
+        self.definedAttributes[aid] = items
+        return aid
 
     def AddAttributes(self, root):
-        for node in root.findall('.//Target//Feature'):
-            label = node.get('label')
-            if not label or label in self.featureToAttributeName:
-                continue
-            # Utils.getLemmasForFeature...
-            # check against definedAttributes
+        section = self.root.find('section-def-attrs')
+        for rule in root.findall('.//FLExTransRule'):
+            for word in rule.findall('./Target//Word'):
+                wid = word.get('id')
+                source = rule.find(f'./Source//Word[@id="{wid}"]')
+                if source is None:
+                    self.report.Error('TODO: word does not correspond to source')
+                    continue
+                category = source.get('category')
+                for feature in word.findall('.//Feature'):
+                    label = feature.get('label')
+                    if not label or (category, label) in self.featureToAttributeName:
+                        continue
+                    # TODO: does this actually need getAffixGlossesForFeature sometimes?
+                    attrs = set([l[1] for l in Utils.getLemmasForFeature(
+                        self.DB, self.report, self.configMap,
+                        category, label)])
+                    aid = self.AddSingleAttribute(f'a_{category}_{label}', attrs)
+                    self.featureToAttributeName[(category, label)] = aid
+
+    def ProcessRule(self, rule):
+        name = rule.get('name')
+        if name in self.ruleNames:
+            self.report.Error(f'Rule name "{name}" already exists in the rule file.')
+            return
+
+        ruleEl = ET.SubElement(self.root.find('section-rules'), 'rule',
+                               {'comment': name})
+        self.ruleNames.add(name)
+
+        wordCats = {}
+        patternEl = ET.SubElement(ruleEl, 'pattern')
+        for word in rule.findall('.//Source//Word'):
+            wid = word.get('id')
+            cat = word.get('category')
+            ET.SubElement(patternEl, 'pattern-item', {'n': cat})
+            wordCats[wid] = cat
+
+        actionEl = ET.SubElement(ruleEl, 'action')
+
+        outEl = ET.Element('out')
+
+        # TODO: extract positions for match=
+        # TODO: construct and track macros for replacing lemmas
+        # TODO: construct and track macros for renaming features
+
+        for index, word in enumerate(rule.findall('.//Target//Word')):
+            if index > 0:
+                ET.SubElement(outEl, 'b')
+            lu = ET.SubElement(outEl, 'lu')
+            pos = word.get('id') # TODO: validate ID sequencing
+            cat = wordCats[pos] # TODO: what if it's an inserted word?
+            ET.SubElement(lu, 'clip', {'pos':pos, 'side':'tl', 'part':'lem'})
+            ET.SubElement(
+                lu, 'clip',
+                {'pos':pos, 'side':'tl', 'part':self.categoryAttribute},
+            )
+            for affix in word.findall('.//Affix//Feature'):
+                label = affix.get('label')
+                attr = self.featureToAttributeName[(cat, label)]
+                ET.SubElement(lu, 'clip', {'pos':pos, 'side':'tl', 'part':attr})
+
+        actionEl.append(outEl)
 
     def ProcessAssistantFile(self, fileName):
         tree = ET.parse(fileName)
         root = tree.getroot()
 
+        if self.root is None:
+            self.CreateTree()
+
         self.AddCategories(root)
 
         self.AddAttributes(root)
 
-    def MakeChild(self, element, tag, attributes):
-        attrs = {k:v for k, v in attributes.items() if v}
-        return ET.SubElement(element, tag, attrs)
+        self.report.Info(str(self.tagToCategoryName))
+        self.report.Info(str(self.featureToAttributeName))
+
+        self.categoryAttribute = self.AddSingleAttribute(
+            'a_gram_cat', set(self.tagToCategoryName.keys()))
+
+        for rule in root.findall('.//FLExTransRule'):
+            self.ProcessRule(rule)
 
     def WriteTransferFile(self, fileName):
-        root = ET.Element('transfer')
-
-        section = ET.SubElement(root, 'section-def-cats')
-        for cat, (items, comment) in sorted(self.definedCategories.items()):
-            catEl = self.MakeChild(section, 'def-cat', {'n': cat, 'c': comment})
-            for lemma, tags, comment in items:
-                self.MakeChild(catEl, 'cat-item',
-                               {'lemma': lemma, 'tags': tags, 'c': comment})
-
-        section = ET.SubElement(root, 'section-def-attrs')
-        for attr, (items, comment) in sorted(self.definedAttributes.items()):
-            attrEl = self.MakeChild(section, 'def-attr', {'n': attr, 'c': comment})
-            for tags, comment in items:
-                self.MakeChild(attrEl, 'attr-item', {'tags': tags, 'c': comment})
-
-        section = ET.SubElement(root, 'section-def-vars')
-        for var, (value, comment) in sorted(self.variables.items()):
-            self.MakeChild(section, 'def-var', {'n': var, 'v': value, 'c': comment})
-
-        section = ET.SubElement(root, 'section-def-lists')
-        for name, (items, comment) in sorted(self.lists.items()):
-            listEl = self.MakeChild(section, 'def-list', {'n': name, 'c': comment})
-            for value, comment in items:
-                self.MakeChild(listEl, 'list-item', {'v': value, 'c': comment})
-
-        section = ET.SubElement(root, 'section-def-macros')
-        for macro in self.macros:
-            section.append(macro)
-
-        section = ET.SubElement(root, 'section-rules')
-        for rule in self.rules:
-            section.append(rule)
-
         with open(fileName, 'wb') as fout:
-            fout.write(MD.parseString(ET.tostring(root)).toprettyxml(indent='\t').encode('utf-8'))
+            txt = MD.parseString(ET.tostring(self.root)).toprettyxml(indent='\t')
+            fout.write(txt.encode('utf-8'))
 
 # NOTE: this version is tested on writing to an *empty* apertium file, rename 'transfer_rules.t1x' to try running this, however a backup will be created before anything else is run
 
