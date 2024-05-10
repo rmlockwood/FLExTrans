@@ -49,7 +49,8 @@ class RuleGenerator:
         self.usedIDs = set()
 
     def processExistingTransferFile(self, fileName):
-        tree = ET.parse(fileName)
+        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+        tree = ET.parse(fileName, parser=parser)
         self.root = tree.getroot()
 
         for cat in self.root.findall('.//def-cat'):
