@@ -217,6 +217,11 @@ InitPluginsDir
   IfErrors 0 +2
         Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
 
+  # Install Rule Assistant in silent mode
+  SetOutPath "$INSTDIR\install_files"
+  File "${RESOURCE_FOLDER}\FLExTrans Rule Generator.exe"
+  ExecWait "$INSTDIR\install_files\FLExTrans Rule Generator.exe /SILENT"
+  
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
   MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
@@ -227,7 +232,8 @@ InitPluginsDir
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   SetOutPath "$INSTDIR"
-  #Delete $DOCUMENTS\FLExTools2.0\Command.bat
+
+  # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
 SectionEnd
 
