@@ -142,6 +142,7 @@ cd XXEaddon
 7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
 7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
 7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
+7z a %ADD_ON_ZIP_FILE% FLExTransRuleGeneratorXMLmind  
 
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
