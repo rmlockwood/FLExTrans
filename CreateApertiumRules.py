@@ -22,6 +22,7 @@ import shutil
 import time
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as MD
+from collections import defaultdict
 
 class RuleGenerator:
     def __init__(self, DB, report, configMap):
@@ -40,6 +41,8 @@ class RuleGenerator:
         self.variables = {} # {name: initial_value}
         self.lists = {} # {name: [value, ...]}
         self.ruleNames = set()
+
+        self.attributeMacros = {} # {((cat, label, affix), (cat, label, affix)): (macro_name, var_name)}
 
         # XML validation forces macro, category, etc. IDs
         # to all be in the same namespaces, so track them all together
@@ -125,36 +128,93 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def AddAttributes(self, root):
-        section = self.root.find('section-def-attrs')
-        for rule in root.findall('.//FLExTransRule'):
-            for word in rule.findall('./Target//Word'):
-                wid = word.get('id')
-                source = rule.find(f'./Source//Word[@id="{wid}"]')
-                if source is None:
-                    self.report.Error('TODO: word does not correspond to source')
-                    continue
-                category = source.get('category')
-                for feature in word.findall('.//Feature'):
-                    label = feature.get('label')
-                    if not label or (category, label) in self.featureToAttributeName:
-                        continue
-                    # TODO: does this actually need getAffixGlossesForFeature sometimes?
-                    attrs = set([l[1] for l in Utils.getLemmasForFeature(
-                        self.DB, self.report, self.configMap,
-                        category, label)])
-                    aid = self.AddSingleAttribute(f'a_{category}_{label}', attrs)
-                    self.featureToAttributeName[(category, label)] = aid
+    def EnsureAttribute(self, category, label, isAffix):
+        if (category, label) in self.featureToAttributeName:
+            return self.featureToAttributeName[(category, label)]
+
+        if isAffix:
+            values = set([l[0] for l in Utils.getAffixGlossesForFeature(
+                self.DB, self.report, self.configMap, category, label)])
+        else:
+            values = set([l[1] for l in Utils.getLemmasForFeature(
+                self.DB, self.report, self.configMap, category, label)])
+
+        if isAffix:
+            name = f'a_{category}_{label}'
+        else:
+            name = f'a_{label}'
+        aid = self.AddSingleAttribute(name, values)
+        self.featureToAttributeName[(category, label)] = aid
+        return aid
+
+    def getTags(self, category, label, isAffix):
+        if isAffix:
+            return set(Utils.getAffixGlossesForFeature(
+                self.DB, self.report, self.configMap, category, label))
+        else:
+            return set([(l[1], l[1]) for l in Utils.getLemmasForFeature(
+                self.DB, self.report, self.configMap, category, label)])
+
+    def getAttributeMacro(self, srcSpec, trgSpec):
+        if (srcSpec, trgSpec) in self.attributeMacros:
+            return self.attributeMacros[(srcSpec, trgSpec)]
+
+        src = self.getTags(*srcSpec)
+        trg = self.getTags(*trgSpec)
+
+        if src == trg:
+            self.attributeMacros[(srcSpec, trgSpec)] = (None, None)
+            return (None, None)
+
+        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
+        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
+        ET.SubElement(self.root.find('section-def-vars'), 'def-var',
+                      {'n':varid, 'c':f'Used by macro {macid}'})
+        macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
+                              {'n':macid, 'npar':'1'})
+
+        # strictly speaking, clearing the variable like this is unnecessary
+        # but it might be useful as a signal to the reader
+        let1 = ET.SubElement(macro, 'let')
+        ET.SubElement(let1, 'var', {'n':varid})
+        ET.SubElement(let1, 'lit', {'v':''})
+
+        choose = ET.SubElement(macro, 'choose')
+        for srcTag, srcFeat in src:
+            when = ET.SubElement(choose, 'when')
+            test = ET.SubElement(when, 'test')
+            eq = ET.SubElement(test, 'equal')
+            ET.SubElement(eq, 'clip', {'pos':'1', 'side':'tl',
+                                       'part':self.EnsureAttribute(*srcSpec)})
+            ET.SubElement(eq, 'lit-tag', {'v':srcTag})
+
+            wlet = ET.SubElement(when, 'let')
+            ET.SubElement(wlet, 'var', {'n':varid})
+
+            for trgTag, trgFeat in trg:
+                if trgFeat == srcFeat:
+                    ET.SubElement(wlet, 'lit-tag', {'v':trgTag})
+                    break
+            else:
+                ET.SubElement(wlet, 'lit-tag', {'v':f'{srcFeat}_NOTAG'})
+
+        otherwise = ET.SubElement(choose, 'otherwise')
+        olet = ET.SubElement(otherwise, 'let')
+        ET.SubElement(olet, 'var', {'n':varid})
+        ET.SubElement(olet, 'lit-tag', {'v':f'{trgSpec[1]}_UNK'})
+
+        self.attributeMacros[(srcSpec, trgSpec)] = (macid, varid)
+        return (macid, varid)
 
     def ProcessRule(self, rule):
-        name = rule.get('name')
-        if name in self.ruleNames:
-            self.report.Error(f'Rule name "{name}" already exists in the rule file.')
+        ruleName = rule.get('name')
+        if ruleName in self.ruleNames:
+            self.report.Error(f'Rule name "{ruleName}" already exists in the rule file.')
             return
 
         ruleEl = ET.SubElement(self.root.find('section-rules'), 'rule',
-                               {'comment': name})
-        self.ruleNames.add(name)
+                               {'comment': ruleName})
+        self.ruleNames.add(ruleName)
 
         wordCats = {}
         patternEl = ET.SubElement(ruleEl, 'pattern')
@@ -168,9 +228,35 @@ class RuleGenerator:
 
         outEl = ET.Element('out')
 
-        # TODO: extract positions for match=
+        usedMacros = set()
+
         # TODO: construct and track macros for replacing lemmas
         # TODO: construct and track macros for renaming features
+
+        matches = defaultdict(list)
+        for index, word in enumerate(rule.findall('.//Target//Word')):
+            head = (word.get('head') == 'yes')
+            wid = word.get('id')
+            for feat in word.findall('./Features/Feature'):
+                matches[(feat.get('label'), feat.get('match'))].append(
+                    (wid, head, False))
+            for feat in word.findall('.//Affix//Feature'):
+                matches[(feat.get('label'), feat.get('match'))].append(
+                    (wid, head, True))
+
+        featureSources = {}
+        for (label, match), items in matches.items():
+            cur = None
+            for wid, head, affix in items:
+                if head:
+                    cur = (wid, affix)
+                    break
+                elif not affix and cur is None:
+                    cur = (wid, affix)
+            if cur is None:
+                self.report.Error(f'Unable to determine source for {match} {label} in {ruleName}.')
+            else:
+                featureSources[(label, match)] = cur
 
         for index, word in enumerate(rule.findall('.//Target//Word')):
             if index > 0:
@@ -185,8 +271,22 @@ class RuleGenerator:
             )
             for affix in word.findall('.//Affix//Feature'):
                 label = affix.get('label')
-                attr = self.featureToAttributeName[(cat, label)]
-                ET.SubElement(lu, 'clip', {'pos':pos, 'side':'tl', 'part':attr})
+                match = affix.get('match')
+                apos, isAffix = featureSources.get((label, match), pos)
+                if apos != pos:
+                    mac, var = self.getAttributeMacro(
+                        (wordCats[apos], label, isAffix),
+                        (cat, label, True))
+                    if mac is not None:
+                        if mac not in usedMacros:
+                            callmac = ET.SubElement(actionEl, 'call-macro',
+                                                    {'n': mac})
+                            ET.SubElement(callmac, 'with-param', {'pos':apos})
+                            usedMacros.add(mac)
+                        ET.SubElement(lu, 'var', {'n':var})
+                        continue
+                attr = self.EnsureAttribute(cat, label, True)
+                ET.SubElement(lu, 'clip', {'pos':apos, 'side':'tl', 'part':attr})
 
         actionEl.append(outEl)
 
@@ -199,16 +299,15 @@ class RuleGenerator:
 
         self.AddCategories(root)
 
-        self.AddAttributes(root)
-
         self.report.Info(str(self.tagToCategoryName))
-        self.report.Info(str(self.featureToAttributeName))
 
         self.categoryAttribute = self.AddSingleAttribute(
             'a_gram_cat', set(self.tagToCategoryName.keys()))
 
         for rule in root.findall('.//FLExTransRule'):
             self.ProcessRule(rule)
+
+        self.report.Info(str(self.featureToAttributeName))
 
     def WriteTransferFile(self, fileName):
         with open(fileName, 'wb') as fout:
