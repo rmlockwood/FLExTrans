@@ -5,16 +5,27 @@ SET INSTALL_FOLDER_VERSION=2.2.1
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
-rem Delete everything in Install%INSTALL_FOLDER_VERSION%
+rem A second time just to be sure
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
+rem Name the folders
+set flextransfolder=Install%INSTALL_FOLDER_VERSION%\FLExTrans
+ set flextransdoc=  "%flextransfolder%\FLExTrans Documentation"
+ set sampleproject= "%flextransfolder%\SampleFLExProjects"
+ set flextoolsfolder=%flextransfolder%\FlexTools
+  set toolsflextools=  %flextoolsfolder%\Tools
+  set flextoolsmodules=%flextoolsfolder%\Modules
+   set modulesflextrans=%flextoolsmodules%\FLExTrans
+    set flextranslib=    %modulesflextrans%\Lib
+
 rem Create the folder structure 
-mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
-mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+mkdir %toolsflextools%
+mkdir %flextransdoc%
+mkdir %sampleproject%
+mkdir %flextranslib%
 
 rem Create identical folder structures for two work project folders
-set workprojects=Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects
-
+set workprojects=%flextransfolder%\WorkProjects
 for %%d in (German-Swedish TemplateProject) do (
     mkdir %workprojects%\%%d\Build
     mkdir %workprojects%\%%d\Build\LiveRuleTester
@@ -28,108 +39,100 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy MakefileForLiveRuleTester.advanced %workprojects%\%%d\Build\LiveRuleTester\Makefile.advanced
 )
 
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Images"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Agreement"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Irregular Form"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Synthesis Self-Test"
-mkdir "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
-
 rem copy the FlexTrans.config file and force it to be overwritten. 
-copy FlexTrans-Swedish.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\FlexTrans.config
-copy FlexTrans.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\FlexTrans.config
+copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
+copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
 
 rem build Python requirements file
-xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
-echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
-echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder% 
+echo fuzzywuzzy >> %flextransfolder%\requirements.txt
+echo Levenshtein >> %flextransfolder%\requirements.txt
+echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
 
-rem special flextrans stub files for flextools plus settings tool
-copy FLExTrans.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
-copy Version.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
-copy FLExTransMenu.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
-copy FLExTransStatusbar.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
-copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
+rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
+copy FLExTrans.py %flextoolsfolder%
+copy Version.py %flextoolsfolder%
+copy FLExTransMenu.py %flextoolsfolder%
+copy FLExTransStatusbar.py %flextoolsfolder%
+copy SettingsGUI.py %flextoolsfolder%
 
-rem sub directory paths to Modules
-copy /Y subdirs.pth Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules
+rem sub directory paths file to Modules
+copy /Y subdirs.pth %flextoolsmodules%
 
-rem core models
-copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ConvertTextToSTAMPformat.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractBilingualLexicon.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExtractSourceText.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy DoSynthesis.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy DoHermitCrabSynthesis.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy DoStampSynthesis.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy InsertTargetText.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunApertium.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy RunTreeTran.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+rem core models to Modules\FLExTrans
+copy CatalogTargetAffixes.py %modulesflextrans%
+copy ConvertTextToSTAMPformat.py %modulesflextrans%
+copy ExtractBilingualLexicon.py %modulesflextrans%
+copy ExtractSourceText.py %modulesflextrans%
+copy DoSynthesis.py %modulesflextrans%
+copy DoHermitCrabSynthesis.py %modulesflextrans%
+copy DoStampSynthesis.py %modulesflextrans%
+copy InsertTargetText.py %modulesflextrans%
+copy RunApertium.py %modulesflextrans%
+copy RunTreeTran.py %modulesflextrans%
 
-rem tools
-copy LinkSenseTool.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy LiveRuleTesterTool.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ViewSrcTgt.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy SetUpTransferRuleGramCat.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ImportFromParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy ExportToParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy GenerateParses.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy RuleAssistant.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+rem tools to Modules\FLExTrans
+copy LinkSenseTool.py %modulesflextrans%
+copy LiveRuleTesterTool.py %modulesflextrans%
+copy ViewSrcTgt.py %modulesflextrans%
+copy SetUpTransferRuleGramCat.py %modulesflextrans%
+copy ImportFromParatext.py %modulesflextrans%
+copy ExportToParatext.py %modulesflextrans%
+copy CleanFiles.py %modulesflextrans%
+copy GenerateParses.py %modulesflextrans%
+copy RuleAssistant.py %modulesflextrans%
 
-rem testbed-specific modules
-copy StartTestbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy EndTestbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
-copy TestbedLogViewer.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+rem testbed-specific modules to Modules\FLExTrans
+copy StartTestbed.py %modulesflextrans%
+copy EndTestbed.py %modulesflextrans%
+copy TestbedLogViewer.py %modulesflextrans%
 
 rem support code to Lib
-copy readconfig.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy Utils.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy TextClasses.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy Testbed.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy FTPaths.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy TestbedValidator.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy CreateApertiumRules.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
+copy readconfig.py %flextranslib%
+copy Utils.py %flextranslib%
+copy TextClasses.py %flextranslib%
+copy Testbed.py %flextranslib%
+copy FTPaths.py %flextranslib%
+copy TestbedValidator.py %flextranslib%
+copy CreateApertiumRules.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
-copy MyTableView.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy Linker.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy LiveRuleTester.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy TestbedLog.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy RuleCatsAndAttribs.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
-copy ParatextChapSelectionDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy SrcTgtViewer.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy ChapterSelection.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
-copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
-copy OverWriteTestDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+copy MyTableView.py %flextranslib%
+copy Linker.py %flextranslib%
+copy LiveRuleTester.py %flextranslib%
+copy TestbedLog.py %flextranslib%
+copy RuleCatsAndAttribs.py %flextranslib%
+copy ParatextChapSelectionDlg.py %flextranslib%
+copy SrcTgtViewer.py %flextranslib%
+copy ChapterSelection.py %flextranslib%
+copy ComboBox.py %flextranslib%
+copy OverWriteTestDlg.py %flextranslib%
 
-rem UI resources
-copy FLExTransWindowIcon.ico Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy UpArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy DownArrow.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy Light_green_check.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy Red_x.png             Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools       
-copy Yellow_triangle.png   Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
+rem UI resources to Tools
+copy FLExTransWindowIcon.ico %toolsflextools%
+copy UpArrow.png %toolsflextools%
+copy DownArrow.png %toolsflextools%
+copy Light_green_check.png %toolsflextools%
+copy Red_x.png             %toolsflextools%       
+copy Yellow_triangle.png   %toolsflextools%
 
-rem support programs
-copy stamp64.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
-copy treetran.exe Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
-copy Apertium4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy Make4Windows\*.* Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
+rem support programs to Tools
+copy stamp64.exe %toolsflextools%
+copy treetran.exe %toolsflextools%
+copy Apertium4Windows\*.* %toolsflextools%
+copy Make4Windows\*.* %toolsflextools%
 
-rem Documentation
-copy Doc\*.htm "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation"
-copy Doc\Images\* "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Images"
-copy "Doc\Agreement\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Agreement"
-copy "Doc\Irregular Form\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Irregular Form"
-copy "Doc\Synthesis Self-Test\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Synthesis Self-Test"
-xcopy "Doc\Transfer Rules Tutorial\*" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTrans Documentation\Transfer Rules Tutorial" /s /e
+rem documentation
+copy Doc\*.htm %flextransdoc%
+
+for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Rules Tutorial") do (
+    mkdir %flextransdoc%\%%d
+    xcopy Doc\%%d\* %flextransdoc%\%%d   /s /e
+)
 
 rem SampleProjects
-copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
-copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" "Install%INSTALL_FOLDER_VERSION%\FLExTrans\SampleFLExProjects"
+copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
+copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
