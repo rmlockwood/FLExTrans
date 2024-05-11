@@ -219,8 +219,8 @@ InitPluginsDir
 
   # Install Rule Assistant in silent mode
   SetOutPath "$INSTDIR\install_files"
-  File "${RESOURCE_FOLDER}\FLExTrans Rule Generator.exe"
-  ExecWait "$INSTDIR\install_files\FLExTrans Rule Generator.exe /SILENT"
+  File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
+  ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
   
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
