@@ -23,6 +23,7 @@
 #   - Use QPalette for setting the colors (or whatever the other FLExTrans modules use)
 #   - Read from an actual text file.  (right now it crashes FlexTools)
 #   - Decide if this will process one sentence at a time, or a whole text.  Need scrolling.
+#   - Determine directionality of text programmatically (it's hard coded for now).
 #   - Improve behavior of wrapping of word boxes.
 #       - Is this the real FlowLayout? Would HTML make it easier, or does that not allow combo boxes?
 #       - Something's weird with the math for vertical spacing in RTL.
@@ -410,10 +411,13 @@ def MainFunction(DB, report, modify=True):
         TargetDB.CloseProject()
         report.Error('Could not open the file: "'+synFile+'".')
 
+    # Here are some examples of what the text might look like, for testing
+#    text = "I %3%saw%thought I saw%liked% the big %2%puppy dog%cat% last year.  \nI %3%ate%tried to eat%swallowed% \"some\" %2%cotton candy%popcorn%.  \nI %2%walked%ran% \"to (the)\" %4%store%school%five-and-dime%yard% yesterday.  \n%2%He%She% %2%said%exclaimed% that %2%he%she% was %2%happy%sad%."
+#    text = "%2%لرکا%لرکی% %2%خوشا%خوشی% ہے۔ \nمیں %2%چھوٹا%چھوٹی% چھائے %2%پیا%پی%۔  \nمیں %2%چھوٹا%چھوٹی% پانی %2%پیا%پی%۔"
     
     # Edit one line at a time.  This starts the disambiguator for each sentence.
-    # TODO: Do we want to edit the whole text?  Is that practical?
-    # If not, do we need a way to go backward and forward through the sentences?
+    # TODO: Do we want to edit the whole text at the same time?  Is that practical?
+    # We probably do need it for context, and if we didn't, we'd need more navigation controls.
     # We would need a scrollable window, not what we have now.
     for line in f:
         dialog = DisambDialog(line)
