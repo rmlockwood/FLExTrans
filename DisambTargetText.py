@@ -413,7 +413,7 @@ def MainFunction(DB, report, modify=True):
 
     # Here are some examples of what the text might look like, for testing
 #    text = "I %3%saw%thought I saw%liked% the big %2%puppy dog%cat% last year.  \nI %3%ate%tried to eat%swallowed% \"some\" %2%cotton candy%popcorn%.  \nI %2%walked%ran% \"to (the)\" %4%store%school%five-and-dime%yard% yesterday.  \n%2%He%She% %2%said%exclaimed% that %2%he%she% was %2%happy%sad%."
-#    text = "%2%لرکا%لرکی% %2%خوشا%خوشی% ہے۔ \nمیں %2%چھوٹا%چھوٹی% چھائے %2%پیا%پی%۔  \nمیں %2%چھوٹا%چھوٹی% پانی %2%پیا%پی%۔"
+#    text = "%2%لرکا%لرکی% %2%خوشا%خوشی% ہے۔ \nمیں %2%چھوٹا%چھوٹی% چھائے %2%پیا%پی%۔  \nمیں %2%چھوٹا%چھوٹی% پانی %2%پیا%پی%۔  \nکیا لڑکی گھر میں %2%کھیلتی تھی%کھیلتا تھا%؟  \nکیا لڑکے بہر %2%کھیلتے تھے%کھیلتی تھی%؟"
     
     # Edit one line at a time.  This starts the disambiguator for each sentence.
     # TODO: Do we want to edit the whole text at the same time?  Is that practical?
