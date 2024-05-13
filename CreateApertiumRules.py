@@ -297,7 +297,7 @@ class RuleGenerator:
         for word in rule.findall('.//Source//Word'):
             wid = word.get('id')
             cat = word.get('category')
-            ET.SubElement(patternEl, 'pattern-item', {'n': cat})
+            ET.SubElement(patternEl, 'pattern-item', n=self.tagToCategoryName[cat])
             wordCats[wid] = cat
 
         actionEl = ET.SubElement(ruleEl, 'action')
