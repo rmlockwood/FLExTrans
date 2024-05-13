@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11 - 5/13/24 - Ron Lockwood
+#    Fixed get affix glosses for feature function to only match for the given category.
+#
 #   Version 3.10.13 - 4/27/24 - Ron Lockwood
 #    Fixed bug when using TreeTran where guid of the root of an inflected word didn't match
 #    the TreeTran guid. Fixed the logic in get interlinear to not use the guid of a clitic.
@@ -2089,7 +2092,7 @@ def getHyperLinkStyle(DB):
     
     return Style
 
-def getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev):
+def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev):
 
     myList = [] # [('el1.1','m'),('la1.1','f')]
     sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
@@ -2116,7 +2119,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev):
 
                             abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
 
-                            if abbrev != gramCategory:
+                            if abbrev != gramCategoryAbbrev:
                                 break
                             else:
                                 # Check for a match on the feature
@@ -2147,7 +2150,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev):
                                             break
     return myList
 
-def getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev):
+def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev):
 
     myList = [] #[('MASC_a','m'),('FEM_a','f')]
 
@@ -2171,22 +2174,30 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev
                     
                     senseMsa = IMoInflAffMsa(mySense.MorphoSyntaxAnalysisRA)
 
-                    # Check for a match on the feature
-                    if senseMsa.InflFeatsOA:
-                        
-                        feat_abbr_list = []
-                        
-                        # The features might be complex, make a recursive function call to find all leaf features
-                        get_feat_abbr_list(senseMsa.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
-                        
-                        # loop through feature groups and abbreviations
-                        for grpName, abb in feat_abbr_list:
-                            
-                            if featureAbbrev == grpName:
+                    # Check if this affix matches the desired grammatical category
+                    if senseMsa.PartOfSpeechRA:            
 
-                                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
-                                myList.append((gloss, abb))
-                                break
+                        abbrev = ITsString(senseMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+
+                        if abbrev != gramCategoryAbbrev:
+                            continue
+                        else:
+                            # Check for a match on the feature
+                            if senseMsa.InflFeatsOA:
+                                
+                                feat_abbr_list = []
+                                
+                                # The features might be complex, make a recursive function call to find all leaf features
+                                get_feat_abbr_list(senseMsa.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
+                                
+                                # loop through feature groups and abbreviations
+                                for grpName, abb in feat_abbr_list:
+                                    
+                                    if featureAbbrev == abb:
+
+                                        gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                                        myList.append((gloss, abb))
+                                        break
     return myList
 
 def unescapeReservedApertChars(inStr):

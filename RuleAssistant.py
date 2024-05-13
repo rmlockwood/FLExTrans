@@ -254,6 +254,8 @@ def MainFunction(DB, report, modify=True):
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
+    #mytupList = Utils.getAffixGlossesForFeature(TargetDB, report, configMap, 'adj', 'f')
+    
     # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
     startData = GetRuleAssistantStartData(report, DB, TargetDB)
 
