@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.1 - 5/13/24 - Ron Lockwood
+#    Fixed mistake in not matching feature category abbreviation.
+#
 #   Version 3.11 - 5/13/24 - Ron Lockwood
 #    Fixed get affix glosses for feature function to only match for the given category.
 #
@@ -2092,7 +2095,7 @@ def getHyperLinkStyle(DB):
     
     return Style
 
-def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev):
+def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCategoryAbbrev):
 
     myList = [] # [('el1.1','m'),('la1.1','f')]
     sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
@@ -2133,7 +2136,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev
                                     # loop through feature groups and abbreviations
                                     for grpName, abb in feat_abbr_list:
                                         
-                                        if featureAbbrev == grpName:
+                                        if featureCategoryAbbrev == grpName:
 
                                             # Get the headword string
                                             headWord = ITsString(srcEntry.HeadWord).Text
@@ -2150,7 +2153,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev
                                             break
     return myList
 
-def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, featureAbbrev):
+def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, featureCategoryAbbrev):
 
     myList = [] #[('MASC_a','m'),('FEM_a','f')]
 
@@ -2193,7 +2196,7 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
                                 # loop through feature groups and abbreviations
                                 for grpName, abb in feat_abbr_list:
                                     
-                                    if featureAbbrev == abb:
+                                    if featureCategoryAbbrev == grpName:
 
                                         gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                                         myList.append((gloss, abb))
