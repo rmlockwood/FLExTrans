@@ -96,11 +96,10 @@ class RuleGenerator:
         for section in ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']:
             ET.SubElement(self.root, section)
 
-    def GetAvailableID(self, start, add=False):
+    def GetAvailableID(self, start):
         while start in self.usedIDs:
             start += '_'
-        if add:
-            self.usedIDs.add(start)
+        self.usedIDs.add(start)
         return start
 
     def AddCategories(self, root):
@@ -112,23 +111,23 @@ class RuleGenerator:
             cid = self.GetAvailableID('c_'+category)
             self.definedCategories[cid] = [(None, category), (None, category+'.*')]
             self.tagToCategoryName[category] = cid
-            self.usedIDs.add(cid)
 
-            catEl = ET.SubElement(section, 'def-cat', {'n': cid})
-            ET.SubElement(catEl, 'cat-item', {'tags': category})
-            ET.SubElement(catEl, 'cat-item', {'tags': category+'.*'})
+            catEl = ET.SubElement(section, 'def-cat', n=cid)
+            ET.SubElement(catEl, 'cat-item', tags=category)
+            ET.SubElement(catEl, 'cat-item', tags=category+'.*')
 
-    def AddSingleAttribute(self, suggested_name, items):
+    def AddSingleAttribute(self, suggested_name, items, comment=None):
         for name, values in self.definedAttributes.items():
             if values == items:
                 return name
 
         aid = self.GetAvailableID(suggested_name)
-        self.usedIDs.add(aid)
         section = self.root.find('section-def-attrs')
-        elem = ET.SubElement(section, 'def-attr', {'n': aid})
+        if comment:
+            section.append(ET.Comment(comment))
+        elem = ET.SubElement(section, 'def-attr', n=aid)
         for tag in sorted(items):
-            ET.SubElement(elem, 'attr-item', {'tags': tag})
+            ET.SubElement(elem, 'attr-item', tags=tag)
         self.definedAttributes[aid] = items
         return aid
 
@@ -174,41 +173,42 @@ class RuleGenerator:
             self.attributeMacros[(srcSpec, trgSpec)] = (None, None)
             return (None, None)
 
-        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}', add=True)
-        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}', add=True)
+        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
+        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
+        # TODO: specs say def-var should be alphabetical
         ET.SubElement(self.root.find('section-def-vars'), 'def-var',
-                      {'n':varid, 'c':f'Used by macro {macid}'})
+                      n=varid, c=f'Used by macro {macid}')
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
-                              {'n':macid, 'npar':'1'})
+                              n=macid, npar='1')
 
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         let1 = ET.SubElement(macro, 'let')
-        ET.SubElement(let1, 'var', {'n':varid})
-        ET.SubElement(let1, 'lit', {'v':''})
+        ET.SubElement(let1, 'var', n=varid)
+        ET.SubElement(let1, 'lit', v='')
 
         choose = ET.SubElement(macro, 'choose')
         for srcTag, srcFeat in src:
             when = ET.SubElement(choose, 'when')
             test = ET.SubElement(when, 'test')
             eq = ET.SubElement(test, 'equal')
-            ET.SubElement(eq, 'clip', {'pos':'1', 'side':'tl',
-                                       'part':self.EnsureAttribute(*srcSpec)})
-            ET.SubElement(eq, 'lit-tag', {'v':srcTag})
+            ET.SubElement(eq, 'clip', pos='1', side='tl',
+                          part=self.EnsureAttribute(*srcSpec))
+            ET.SubElement(eq, 'lit-tag', v=srcTag)
 
             wlet = ET.SubElement(when, 'let')
-            ET.SubElement(wlet, 'var', {'n':varid})
+            ET.SubElement(wlet, 'var', n=varid)
 
             for trgTag, trgFeat in trg:
                 if trgFeat == srcFeat:
-                    ET.SubElement(wlet, 'lit-tag', {'v':trgTag})
+                    ET.SubElement(wlet, 'lit-tag', v=trgTag)
                     break
             else:
-                ET.SubElement(wlet, 'lit-tag', {'v':f'{srcFeat}_NOTAG'})
+                ET.SubElement(wlet, 'lit-tag', v=f'{srcFeat}_NOTAG')
 
         otherwise = ET.SubElement(choose, 'otherwise')
         olet = ET.SubElement(otherwise, 'let')
-        ET.SubElement(olet, 'var', {'n':varid})
-        ET.SubElement(olet, 'lit-tag', {'v':f'{trgSpec[1]}_UNK'})
+        ET.SubElement(olet, 'var', n=varid)
+        ET.SubElement(olet, 'lit-tag', v=f'{trgSpec[1]}_UNK')
 
         self.attributeMacros[(srcSpec, trgSpec)] = (macid, varid)
         return (macid, varid)
@@ -220,8 +220,9 @@ class RuleGenerator:
             return self.lemmaMacros[lookupKey]
 
         label = f'{destCategory}_lemma_from_{"-".join(catSequence)}'
-        macid = self.GetAvailableID('m_'+label, add=True)
-        varid = self.GetAvailableID('v_'+label, add=True)
+        macid = self.GetAvailableID('m_'+label)
+        varid = self.GetAvailableID('v_'+label)
+        # TODO: specs say variables should be alphabetical
         ET.SubElement(self.root.find('section-def-vars'), 'def-var',
                       n=varid, c=f'Used by macro {macid}')
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
@@ -236,6 +237,7 @@ class RuleGenerator:
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         SetVar(macro, '')
 
+        labelSeq = [s[1] for s in sources]
         locations = [(macro, None, [])]
         for category, label, isAffix in sources:
             clipPos = str(catSequence.index(category)+1)
@@ -252,7 +254,12 @@ class RuleGenerator:
                 if not lemmas:
                     SetVar(elem, 'no_lemma_for_'+'_'.join(path))
                     continue
-                    
+
+                given = ''
+                if path:
+                    specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
+                    given = f' given {", ".join(specs)}'
+                elem.append(ET.Comment(f'Narrow the set of possible lemmas based on {label}{given}.'))
                 choose = ET.SubElement(elem, 'choose')
                 for tag, feature in tags:
                     when = ET.SubElement(choose, 'when')
@@ -292,7 +299,7 @@ class RuleGenerator:
             return
 
         ruleEl = ET.SubElement(self.root.find('section-rules'), 'rule',
-                               {'comment': ruleName})
+                               comment=ruleName)
         self.ruleNames.add(ruleName)
 
         wordCats = {}
@@ -362,6 +369,7 @@ class RuleGenerator:
             if shouldUseLemmaMacro:
                 macid, varid, catSequence = self.GetLemmaMacro(cat, lemmaTags)
                 if macid not in usedMacros:
+                    actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {varid}.'))
                     callmac = ET.SubElement(actionEl, 'call-macro', n=macid)
                     for srcCat in catSequence:
                         ET.SubElement(callmac, 'with-param',
@@ -384,14 +392,15 @@ class RuleGenerator:
                         (cat, label, True))
                     if mac is not None:
                         if mac not in usedMacros:
+                            actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {var}.'))
                             callmac = ET.SubElement(actionEl, 'call-macro',
                                                     n=mac)
                             ET.SubElement(callmac, 'with-param', pos=apos)
                             usedMacros.add(mac)
-                        ET.SubElement(lu, 'var', {'n':var})
+                        ET.SubElement(lu, 'var', n=var)
                         continue
                 attr = self.EnsureAttribute(cat, label, True)
-                ET.SubElement(lu, 'clip', {'pos':apos, 'side':'tl', 'part':attr})
+                ET.SubElement(lu, 'clip', pos=apos, side='tl', part=attr)
 
         actionEl.append(outEl)
 
@@ -404,15 +413,12 @@ class RuleGenerator:
 
         self.AddCategories(root)
 
-        self.report.Info(str(self.tagToCategoryName))
-
         self.categoryAttribute = self.AddSingleAttribute(
-            'a_gram_cat', set(self.tagToCategoryName.keys()))
+            'a_gram_cat', set(self.tagToCategoryName.keys()),
+            comment='Part-of-speech tags used in the rules')
 
         for rule in root.findall('.//FLExTransRule'):
             self.ProcessRule(rule)
-
-        self.report.Info(str(self.featureToAttributeName))
 
     def WriteTransferFile(self, fileName):
         with open(fileName, 'wb') as fout:
