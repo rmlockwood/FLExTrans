@@ -413,6 +413,8 @@ class RuleGenerator:
 
     def WriteTransferFile(self, fileName):
         with open(fileName, 'wb') as fout:
+            fout.write('<?xml version="1.0" encoding="utf-8"?>'.encode('utf-8'))
+            fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">'.encode('utf-8'))
             txt = MD.parseString(ET.tostring(self.root)).toprettyxml(indent='\t')
             fout.write(txt.encode('utf-8'))
 
