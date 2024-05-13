@@ -43,12 +43,13 @@ class RuleGenerator:
         self.ruleNames = set()
 
         self.attributeMacros = {} # {((cat, label, affix), (cat, label, affix)): (macro_name, var_name)}
+        self.lemmaMacros = {} # {(pos, [(cat, label, affix), ...]): (macro_name, var_name, pos_sequence)}
 
         # XML validation forces macro, category, etc. IDs
         # to all be in the same namespaces, so track them all together
         self.usedIDs = set()
 
-    def processExistingTransferFile(self, fileName):
+    def ProcessExistingTransferFile(self, fileName):
         parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
         tree = ET.parse(fileName, parser=parser)
         self.root = tree.getroot()
@@ -95,9 +96,11 @@ class RuleGenerator:
         for section in ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']:
             ET.SubElement(self.root, section)
 
-    def GetAvailableID(self, start):
+    def GetAvailableID(self, start, add=False):
         while start in self.usedIDs:
             start += '_'
+        if add:
+            self.usedIDs.add(start)
         return start
 
     def AddCategories(self, root):
@@ -148,7 +151,7 @@ class RuleGenerator:
         self.featureToAttributeName[(category, label)] = aid
         return aid
 
-    def getTags(self, category, label, isAffix):
+    def GetTags(self, category, label, isAffix):
         if isAffix:
             return set(Utils.getAffixGlossesForFeature(
                 self.DB, self.report, self.configMap, category, label))
@@ -156,19 +159,19 @@ class RuleGenerator:
             return set([(l[1], l[1]) for l in Utils.getLemmasForFeature(
                 self.DB, self.report, self.configMap, category, label)])
 
-    def getAttributeMacro(self, srcSpec, trgSpec):
+    def GetAttributeMacro(self, srcSpec, trgSpec):
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
-        src = self.getTags(*srcSpec)
-        trg = self.getTags(*trgSpec)
+        src = self.GetTags(*srcSpec)
+        trg = self.GetTags(*trgSpec)
 
         if src == trg:
             self.attributeMacros[(srcSpec, trgSpec)] = (None, None)
             return (None, None)
 
-        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
-        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
+        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}', add=True)
+        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}', add=True)
         ET.SubElement(self.root.find('section-def-vars'), 'def-var',
                       {'n':varid, 'c':f'Used by macro {macid}'})
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
@@ -207,6 +210,78 @@ class RuleGenerator:
         self.attributeMacros[(srcSpec, trgSpec)] = (macid, varid)
         return (macid, varid)
 
+    def GetLemmaMacro(self, destCategory, sources):
+        catSequence = sorted(set([s[0] for s in sources]))
+        lookupKey = (destCategory, tuple(catSequence))
+        if lookupKey in self.lemmaMacros:
+            return self.lemmaMacros[lookupKey]
+
+        label = f'{destCategory}_lemma_from_{"-".join(catSequence)}'
+        macid = self.GetAvailableID('m_'+label, add=True)
+        varid = self.GetAvailableID('v_'+label, add=True)
+        ET.SubElement(self.root.find('section-def-vars'), 'def-var',
+                      n=varid, c=f'Used by macro {macid}')
+        macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
+                              n=macid, npar=str(len(catSequence)))
+        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
+        clear = ET.SubElement(macro, 'let')
+        ET.SubElement(clear, 'var', n=varid)
+        ET.SubElement(clear, 'lit', v='')
+
+        locations = [(macro, None, [])]
+        for category, label, isAffix in sources:
+            clipPos = str(catSequence.index(category)+1)
+            tags = sorted(self.GetTags(category, label, isAffix))
+            allLemmas = Utils.getLemmasForFeature(
+                self.DB, self.report, self.configMap, destCategory, label)
+            newLocations = []
+
+            for elem, possibleLemmas, path in locations:
+                lemmas = allLemmas
+                if possibleLemmas is not None:
+                    lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
+
+                if not lemmas:
+                    let = ET.SubElement(elem, 'let')
+                    ET.SubElement(let, 'var', n=varid)
+                    ET.SubElement(let, 'lit', v='no_lemma_for_'+'_'.join(path))
+                    continue
+                    
+                choose = ET.SubElement(elem, 'choose')
+                for tag, feature in tags:
+                    when = ET.SubElement(choose, 'when')
+                    test = ET.SubElement(when, 'test')
+                    eq = ET.SubElement(test, 'equal')
+                    ET.SubElement(
+                        eq, 'clip', pos=clipPos, side='tl',
+                        part=self.EnsureAttribute(category, label, isAffix))
+                    ET.SubElement(eq, 'lit-tag', v=tag)
+                    nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
+                    newLocations.append((when, nextLemmas, path+[feature]))
+
+                otherwise = ET.SubElement(choose, 'otherwise')
+                let = ET.SubElement(otherwise, 'let')
+                ET.SubElement(let, 'var', n=varid)
+                ET.SubElement(let, 'lit', v='no_lemma')
+
+            locations = newLocations
+
+        for elem, possibleLemmas, path in locations:
+            let = ET.SubElement(elem, 'let')
+            ET.SubElement(let, 'var', n=varid)
+            error = 'lemma_for_' + '_'.join(path)
+            if len(possibleLemmas) == 0:
+                ET.SubElement(let, 'lit', v='no_'+error)
+            elif len(possibleLemmas) == 1:
+                ET.SubElement(let, 'lit', v=list(possibleLemmas)[0])
+            else:
+                lemmas = ', '.join(sorted(possibleLemmas))
+                let.append(ET.Comment(f'Possible lemmas with this combination of tags: {lemmas}'))
+                ET.SubElement(let, 'lit', v='multiple_'+error)
+
+        self.lemmaMacros[lookupKey] = (macid, varid, catSequence)
+        return (macid, varid, catSequence)
+
     def ProcessRule(self, rule):
         ruleName = rule.get('name')
         if ruleName in self.ruleNames:
@@ -230,9 +305,6 @@ class RuleGenerator:
         outEl = ET.Element('out')
 
         usedMacros = set()
-
-        # TODO: construct and track macros for replacing lemmas
-        # TODO: construct and track macros for renaming features
 
         matches = defaultdict(list)
         for index, word in enumerate(rule.findall('.//Target//Word')):
@@ -265,24 +337,53 @@ class RuleGenerator:
             lu = ET.SubElement(outEl, 'lu')
             pos = word.get('id') # TODO: validate ID sequencing
             cat = wordCats[pos] # TODO: what if it's an inserted word?
-            ET.SubElement(lu, 'clip', {'pos':pos, 'side':'tl', 'part':'lem'})
+
+            lemmaTags = []
+            lemmaLocs = {}
+            for feature in word.findall('./Features/Feature'):
+                label = feature.get('label')
+                match = feature.get('match')
+                apos, isAffix = featureSources.get((label, match), pos)
+                lemmaTags.append((wordCats[apos], label, isAffix))
+                lemmaLocs[wordCats[apos]] = apos
+            shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
+
+            # TODO: check that it's not a proper noun
+            if index == 0 and (pos != '1' or shouldUseLemmaMacro):
+                lemCase = ET.SubElement(lu, 'get-case-from', pos='1')
+            elif index > 0 and pos == '1':
+                lemCase = ET.SubElement(lu, 'get-case-from', pos=str(index+1))
+            else:
+                lemCase = lu
+
+            if shouldUseLemmaMacro:
+                macid, varid, catSequence = self.GetLemmaMacro(cat, lemmaTags)
+                if macid not in usedMacros:
+                    callmac = ET.SubElement(actionEl, 'call-macro', n=macid)
+                    for srcCat in catSequence:
+                        ET.SubElement(callmac, 'with-param',
+                                      pos=lemmaLocs[srcCat])
+                    usedMacros.add(macid)
+                ET.SubElement(lemCase, 'var', n=varid)
+            else:
+                ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
+
             ET.SubElement(
-                lu, 'clip',
-                {'pos':pos, 'side':'tl', 'part':self.categoryAttribute},
+                lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
             )
             for affix in word.findall('.//Affix//Feature'):
                 label = affix.get('label')
                 match = affix.get('match')
                 apos, isAffix = featureSources.get((label, match), pos)
                 if apos != pos:
-                    mac, var = self.getAttributeMacro(
+                    mac, var = self.GetAttributeMacro(
                         (wordCats[apos], label, isAffix),
                         (cat, label, True))
                     if mac is not None:
                         if mac not in usedMacros:
                             callmac = ET.SubElement(actionEl, 'call-macro',
-                                                    {'n': mac})
-                            ET.SubElement(callmac, 'with-param', {'pos':apos})
+                                                    n=mac)
+                            ET.SubElement(callmac, 'with-param', pos=apos)
                             usedMacros.add(mac)
                         ET.SubElement(lu, 'var', {'n':var})
                         continue
@@ -315,288 +416,8 @@ class RuleGenerator:
             txt = MD.parseString(ET.tostring(self.root)).toprettyxml(indent='\t')
             fout.write(txt.encode('utf-8'))
 
-# NOTE: this version is tested on writing to an *empty* apertium file, rename 'transfer_rules.t1x' to try running this, however a backup will be created before anything else is run
-
-# Builds a new .t1x file if one is not given from the user
-def CreateNewApertiumTree():
-    apertiumAttributes = ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']
-
-    apertiumRoot = ET.Element('transfer')
-
-    for section in apertiumAttributes:
-        ET.SubElement(apertiumRoot, section)
-
-    return ET.ElementTree(apertiumRoot)
-
-# Check categories and attributes referenced in the ruleAssistantFiles
-# FIXME: refactor all this - will not work
-def CheckAssistantFile(report, apertiumTree, assistantTree):
-    apertiumRoot = apertiumTree.getroot()
-
-    apertiumTreeAttributes = []
-    apertiumTreeCategories = []
-    assistantTreeAttributes = []
-    assistantTreeCategories = []
-
-    # Get the attributes from the Apertium transfer file
-    for attribute in apertiumRoot.iter('cat-item'):
-        apertiumTreeAttributes.append(attribute.get('tags'))
-
-    # Get the categories from the Apertium trasnfer file
-    for category in apertiumRoot.iter('attr-item'):
-        apertiumTreeCategories.append(category.get('tags'))
-
-    # Get the attributes from the RuleAssistant file
-    # TODO: ensure this is the correct info
-    for attribute in assistantTree.findall('.//Target//Feature'):
-        assistantTreeAttributes.append(attribute.get('label'))
-
-    # Get the category from the RuleAssistant file
-    # TODO: ensure this is the correct info
-    for category in assistantTree.findall('.//Source//Word'):
-        assistantTreeCategories.append(category.get('category'))
-
-    # Check to see if there's a category or attribute in the RuleAssistant File
-    # which isn't in the Apertium transfer file
-    # TODO: Ensure the compared categories and features are truly the ones needed
-    # if (list(set(assistantTreeCategories) - set(apertiumTreeCategories))) \
-    #     or (list(set(assistantTreeAttributes) - set(apertiumTreeAttributes))):
-    #     return -1
-
-    return 0
-
-# Add the information within the <section-def-cats> in the Apertium t1x file
-# TODO: Ensure this works if there already exists an Apertium file (look for overwrites, redundancies, etc)
-# TODO: This can also be done by pulling from the Utils file - but this should be robust as the AssistantFile is built from FLEx...
-def AddCategories(report, apertiumTree, assistantTree):
-    apertiumCategoryNode = apertiumTree.getroot().find('.//section-def-cats')
-
-    for words in assistantTree.findall('.//Source//Word'):
-        # Check to see if the category is already classified
-        # TODO: move lower
-        if apertiumCategoryNode.find('.//cat-item') and \
-            apertiumCategoryNode.find('.//cat-item').get('tags') == words.get('category'):
-            continue
-
-        # Check to see if there already exists a defined category for the categorical label
-        # TODO: check logic here
-        if apertiumCategoryNode.find(".//def-cat[@n='" + words.get('category') + "']") is not None:
-            pass
-        else:
-            ET.SubElement(apertiumCategoryNode, 'def-cat')
-            for definedCategories in apertiumCategoryNode.iter('def-cat'):
-                if not definedCategories.get('n'):
-                    definedCategories.set('n', 'c_' + words.get('category'))
-                    tags = words.get('category', '*')
-                    ET.SubElement(definedCategories, 'cat-item',
-                                  attrib={'tags': tags})
-                    if tags != '*':
-                        ET.SubElement(definedCategories, 'cat-item',
-                                      attrib={'tags': tags+'.*'})
-
-    return apertiumTree
-
-# Adds the information within the <section-def-attrs> in the Apertium t1x file
-def AddAttributes(DB, report, configMap, apertiumTree, assistantTree):
-    apertiumAttributeNode = apertiumTree.getroot().find('.//section-def-attrs')
-
-    for features in assistantTree.findall('.//Target//Feature'):
-        # Check to see if the attribute is already classified
-        # TODO: move lower - check the lower level after the upper level
-        # if apertiumAttributeNode.find('.//attr-item') and \
-        #     apertiumAttributeNode.find(".//attr-item[@n='" + features.get('label') + "']"):
-        #     continue 
-        # report.Info(".//def-attr[@n='a_" + features.get('label') + "']")
-        # Check to see if there already exists a defined attribute for the attribute label
-        # TODO: check the logic here
-        if apertiumAttributeNode.find(".//def-attr[@n='a_" + features.get('label') + "']") is not None:
-            pass
-        else:
-            ET.SubElement(apertiumAttributeNode, 'def-attr')
-            for definedAttributes in apertiumAttributeNode.iter('def-attr'):
-                if not definedAttributes.get('n'):
-                    definedAttributes.set('n', 'a_' + features.get('label'))
-
-                    # add the tags, so get the lemmas from Utils
-                    attributeList = set()
-                    for words in assistantTree.findall('.//Source//Word'):
-                        lemmas = Utils.getLemmasForFeature(DB, report, configMap, words.get('category'), features.get('label'))
-                        for lemma in lemmas:
-                            attributeList.add(lemma[1])
-
-                    # add the attributes to the Apertium file
-                    for attribute in list(attributeList):
-                        if definedAttributes.find("./attr-item[@tags='" + attribute + "']") is None:
-                            ET.SubElement(definedAttributes, 'attr-item')
-                            definedAttributes.find('./attr-item[last()]').set('tags', attribute)
-
-    return apertiumTree
-
-# The largest burden of logic is here (i.e. the contents of the <action> tags)
-# FIXME: finish the generalization of logic through this part of the file
-def AddAction(DB, report, configMap, apertiumTree, assistantTree, apertiumRuleNode):
-    # set up the wrapper around these procedures
-    ET.SubElement(apertiumRuleNode, 'action')
-
-    # TODO: generalize this to get all features from all the word features in the target phrase
-    feature = assistantTree.find('.//Feature')
-
-    # Get the unique lemmas for the feature relevant for the label specified in the assistant file
-    attributeList = set()
-    for words in assistantTree.findall('.//Source//Word'):
-        lemmas = Utils.getLemmasForFeature(DB, report, configMap, words.get('category'), feature.get('label'))
-        for lemma in lemmas:
-            attributeList.add(lemma[1])
-    attributeList = list(attributeList)
-
-    # find the location of the head in the target phrase for the Apertium positional argument
-    targetPhraseWords = assistantTree.find('.//Target//Words')
-    head_pos = 1
-    for word in targetPhraseWords:
-        if word.get('head') == 'yes':
-            break
-        else:
-            head_pos += 1
-
-    # build the choose-when blocks as we encounter them
-    # TODO: check logic to determine how many 'choose-when' blocks are needed
-    if len(attributeList) > 1:
-        ET.SubElement(apertiumRuleNode.find('./action'), 'choose')
-
-    # We have the number of attributes, so we will iterate through all but the last to form sub-when blocks
-    for attribute in attributeList[:-1]:
-
-        # TODO: make generic and clean up
-        # Build up the various Apertium sub-nodes for the choose-when block
-        ET.SubElement(apertiumRuleNode.find('./action/choose'), 'when')
-        whenNode = apertiumRuleNode.find(".//action/choose/when[last()]")
-        ET.SubElement(whenNode, 'test')
-        ET.SubElement(whenNode.find('./test'), 'equal')
-        ET.SubElement(whenNode.find('./test/equal'), 'clip')
-        ET.SubElement(whenNode.find('./test/equal'), 'lit-tag')
-
-        # TODO: make generic by converting this to a function which will process whether this needs to be a clip section or not
-        # Add necessary information within the clip node within the Apertium file
-        clipNode = whenNode.find('./test/equal/clip')
-        clipNode.set('pos', str(head_pos))
-        clipNode.set('side', 'tl')
-        clipNode.set('part', 'a_' + assistantTree.find('.//Target//Feature').get('label'))
-
-        # TODO: make generic, as this 
-        # Add the necessary information within the lit-tag node within the Apertium file
-        litTagNode = whenNode.find('./test/equal/lit-tag')
-        litTagNode.set('v', attribute)
-
-        # TODO: make generic, as there can be multiple <lu> elements, and it could just be a clip, instead of a <lit> tag
-        # form the out node of the rule
-        ET.SubElement(whenNode, 'out')
-        ET.SubElement(whenNode.find('./out'), 'lu')
-        ET.SubElement(whenNode.find('./out/lu'), 'get-case-from')
-        ET.SubElement(whenNode.find('./out/lu/get-case-from'), 'lit')
-        ET.SubElement(whenNode.find('./out/lu'), 'lit-tag')
-
-    # TODO: Add the final otherwise block and labels on the 
-
-    return apertiumTree
-
-# The main cluster of logic to write to the Apertium file is here
-def AddRule(DB, report, configMap, apertiumTree, assistantTree):
-    # TODO: Clarify this process
-    # TODO: Adjust code to write n rules if there are n rules in the assistant file
-    apertiumRoot = apertiumTree.getroot()
-    assistantRoot = assistantTree.getroot()
-
-    # store a list of all Apertium rule names so we can check existence and uniqueness
-    apertiumRuleNames = []
-    for apertiumRules in apertiumRoot.iter('rule'):
-        apertiumRuleNames.append(apertiumRules.get('comment'))
-
-    # Get the rule name from the assistant file to prepare to copy it to the Apertium file
-    for assistantRule in assistantRoot.iter('FLExTransRule'):
-        
-        # Check if name of rule already exists in t1x file, and update rule name accordingly
-        assistantRuleName = assistantRule.get('name')
-        if assistantRuleName in apertiumRuleNames:
-            report.Error("An Aperitum rule already exists with the given Assistant rule name")
-            return -1
-
-        # Add a new rule to the Aperitum file
-        ET.SubElement(apertiumRoot.find('section-rules'), 'rule')
-
-        # Add the rule name to the Apertium file
-        for rule in apertiumRoot.iter('rule'):
-            if not rule.get('comment'):
-                rule.set('comment', assistantRuleName)
-
-    # Select the node on which we'd like to add information
-    # TODO: change this if there are multiple rules which need to be written to the apertium file
-    apertiumRuleNode = apertiumRoot.find(".//rule[@comment='" + assistantRuleName + "']")
-
-    # Add the pattern from the Assistant file to the Apertium file
-    ET.SubElement(apertiumRuleNode, 'pattern')
-    for assistantWord in assistantRoot.findall('.//Source//Word'):
-        ET.SubElement(apertiumRuleNode.find('.//pattern'), 'pattern-item')
-        apertiumRuleNode.find('./pattern/pattern-item[last()]').set('n', assistantWord.get('category'))
-
-    # Add the Categories to the Apertium file
-    apertiumTree = AddCategories(report, apertiumTree, assistantTree)
-
-    # Add the Attributes to the Apertium file
-    apertiumTree = AddAttributes(DB, report, configMap, apertiumTree, assistantTree)
-
-    # add the specific rule for each rule name
-    apertiumTree = AddAction(DB, report, configMap, apertiumTree, assistantTree, apertiumRuleNode)
-
-    # NOTE: probably won't be able to use macros with this t1x file
-
-    return apertiumTree
-
-# Wrapper function to display information needed for debugging purposes
-def GetInfo(DB, report, configMap, apertiumTree, assistantTree):
-    
-    # Read Source Phrase into a list of dictionaries
-    sourcePhrase = []
-    for word in assistantTree.findall('.//Source//Word'):
-        sourcePhrase.append(word.attrib)
-
-    # Read Target Phrase into a list of dictionaries
-    targetPhrase = []
-    for word in assistantTree.findall('.//Target//Word'):
-        # Need to read in the features contained in the 'Word' tag and in the 'Feature' tag, so we combine the two attribute dicts
-        tmpWordFeatures = word.attrib
-        tmpWordFeatures.update(word.find('.//Feature').attrib)
-        targetPhrase.append(tmpWordFeatures)
-
-    gramCategory = 'n'
-    # gramCategory= 'def'
-    # gramCategory= 'adj'
-    featureAbbrev = 'gender'
-    # Use this function to get a list of tuples (gloss, featureValue) for this category that have this feature assigned. 
-    # An empty list is returned if there are errors.
-    lemmaList = Utils.getLemmasForFeature(DB, report, configMap, gramCategory, featureAbbrev)
-    glossList = Utils.getAffixGlossesForFeature(DB, report, configMap, gramCategory, featureAbbrev)
-
-    report.Info("Target Phrase: " + str(targetPhrase))
-    report.Info("Source Phrase: " + str(sourcePhrase))
-    report.Info("Gloss list: " + str(glossList))
-    report.Info("Lemma list: " + str(lemmaList))
-
 # Wrapper function which calls the necessary logic to write rules to the Aperitum file
 def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath):
-
-    # If there is a trasnfer rule file, read it in
-    if (os.path.exists(transferRulePath)):
-        # TODO check for proper reading mode ("w" or "wb")
-        with open(transferRulePath, "r") as apertiumFile:
-            apertiumTree = ET.parse(apertiumFile)
-
-        # make an Apertium transfer rule backup
-        # TODO change to more informative name
-        shutil.copy(transferRulePath, transferRulePath + "." + str(int(time.time())) + ".bak")
-
-    # If there isn't a transfer rule file, create one
-    else:
-        apertiumTree = CreateNewApertiumTree()
 
     # TODO check for proper reading mode ("w" or "wb")
     try:
@@ -612,22 +433,18 @@ def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath):
     #     report.Error("Please run the Set Up Transfer Rule Categories and Attributes tool")
     #     return -1
 
-    # Useful function to display needed debugging information
-    GetInfo(DB, report, configMap, apertiumTree, assistantTree)
+    generator = RuleGenerator(DB, report, configMap)
 
-    # Wrapper function to add each new rule found in the assistant tree file
-    apertiumTree = AddRule(DB, report, configMap, apertiumTree, assistantTree)
+    if os.path.exists(transferRulePath):
+        # TODO change to more informative name
+        backupPath = f'{transferRulePath}.{int(time.time())}.bak'
+        report.Info(f'Copying prior version of transfer rules to {backupPath}.')
+        shutil.copy(transferRulePath, backupPath)
+        generator.ProcessExistingTransferFile(transferRulePath)
 
-    # test to add a comment to the xml file
-    # NOTE: works! copy code and add comments throughout the rest of the apertium file creation
-    comment = ET.Comment('this is a test comment at the root level')
-    apertiumTree.getroot().insert(0, comment)
+    generator.ProcessAssistantFile(ruleAssistantFile)
 
-    # write the new tree information to the XML file
-    # current file location: "[DIRECTORY TO FLEx]\FLExTrans\WorkProjects\[PROJECT NAME]\Config\test.xml"
-    # TODO: use the actual aperitum file (path above) for this
-    with open("test.xml", "wb") as xmlFile:
-        xmlString = MD.parseString(ET.tostring(apertiumTree.getroot())).toprettyxml(indent = '\t')
-        xmlFile.write(xmlString.encode('utf-8'))
+    generator.WriteTransferFile(transferRulePath)
 
     return True
+
