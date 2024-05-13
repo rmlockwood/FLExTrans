@@ -346,7 +346,17 @@ class RuleGenerator:
                 apos, isAffix = featureSources.get((label, match), pos)
                 lemmaTags.append((wordCats[apos], label, isAffix))
                 lemmaLocs[wordCats[apos]] = apos
-            if lemmaTags and lemmaLocs != {cat:pos}:
+            shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
+
+            # TODO: check that it's not a proper noun
+            if index == 0 and (pos != '1' or shouldUseLemmaMacro):
+                lemCase = ET.SubElement(lu, 'get-case-from', pos='1')
+            elif index > 0 and pos == '1':
+                lemCase = ET.SubElement(lu, 'get-case-from', pos=str(index+1))
+            else:
+                lemCase = lu
+
+            if shouldUseLemmaMacro:
                 macid, varid, catSequence = self.GetLemmaMacro(cat, lemmaTags)
                 if macid not in usedMacros:
                     callmac = ET.SubElement(actionEl, 'call-macro', n=macid)
@@ -354,13 +364,12 @@ class RuleGenerator:
                         ET.SubElement(callmac, 'with-param',
                                       pos=lemmaLocs[srcCat])
                     usedMacros.add(macid)
-                ET.SubElement(lu, 'var', n=varid)
+                ET.SubElement(lemCase, 'var', n=varid)
             else:
-                ET.SubElement(lu, 'clip', {'pos':pos, 'side':'tl', 'part':'lem'})
+                ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
             ET.SubElement(
-                lu, 'clip',
-                {'pos':pos, 'side':'tl', 'part':self.categoryAttribute},
+                lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
             )
             for affix in word.findall('.//Affix//Feature'):
                 label = affix.get('label')
@@ -373,8 +382,8 @@ class RuleGenerator:
                     if mac is not None:
                         if mac not in usedMacros:
                             callmac = ET.SubElement(actionEl, 'call-macro',
-                                                    {'n': mac})
-                            ET.SubElement(callmac, 'with-param', {'pos':apos})
+                                                    n=mac)
+                            ET.SubElement(callmac, 'with-param', pos=apos)
                             usedMacros.add(mac)
                         ET.SubElement(lu, 'var', {'n':var})
                         continue
