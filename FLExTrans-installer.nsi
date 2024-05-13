@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.10.2"
+!define PRODUCT_VERSION "3.11"
 
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
@@ -30,7 +30,7 @@ VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.10.2.${BUILD_NUM}
+VIProductVersion 3.11.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -217,6 +217,11 @@ InitPluginsDir
   IfErrors 0 +2
         Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
 
+  # Install Rule Assistant in silent mode
+  SetOutPath "$INSTDIR\install_files"
+  File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
+  ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
+  
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
   MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
@@ -227,7 +232,8 @@ InitPluginsDir
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   SetOutPath "$INSTDIR"
-  #Delete $DOCUMENTS\FLExTools2.0\Command.bat
+
+  # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
 SectionEnd
 
