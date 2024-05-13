@@ -136,11 +136,12 @@ class RuleGenerator:
         if (category, label) in self.featureToAttributeName:
             return self.featureToAttributeName[(category, label)]
 
+        # TODO: find and use actual tag escaping logic
         if isAffix:
-            values = set([l[0] for l in Utils.getAffixGlossesForFeature(
+            values = set([l[0].replace('.', '_') for l in Utils.getAffixGlossesForFeature(
                 self.DB, self.report, self.configMap, category, label)])
         else:
-            values = set([l[1] for l in Utils.getLemmasForFeature(
+            values = set([l[1].replace('.', '_') for l in Utils.getLemmasForFeature(
                 self.DB, self.report, self.configMap, category, label)])
 
         if isAffix:
@@ -152,11 +153,14 @@ class RuleGenerator:
         return aid
 
     def GetTags(self, category, label, isAffix):
+        def cleantag(x):
+            # TODO: find and use actual tag escaping logic
+            return x.replace('.', '_')
         if isAffix:
-            return set(Utils.getAffixGlossesForFeature(
-                self.DB, self.report, self.configMap, category, label))
+            return set([(cleantag(l[0]), cleantag(l[1])) for l in Utils.getAffixGlossesForFeature(
+                self.DB, self.report, self.configMap, category, label)])
         else:
-            return set([(l[1], l[1]) for l in Utils.getLemmasForFeature(
+            return set([(cleantag(l[1]), cleantag(l[1])) for l in Utils.getLemmasForFeature(
                 self.DB, self.report, self.configMap, category, label)])
 
     def GetAttributeMacro(self, srcSpec, trgSpec):
@@ -177,8 +181,7 @@ class RuleGenerator:
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
                               {'n':macid, 'npar':'1'})
 
-        # strictly speaking, clearing the variable like this is unnecessary
-        # but it might be useful as a signal to the reader
+        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         let1 = ET.SubElement(macro, 'let')
         ET.SubElement(let1, 'var', {'n':varid})
         ET.SubElement(let1, 'lit', {'v':''})
@@ -223,10 +226,15 @@ class RuleGenerator:
                       n=varid, c=f'Used by macro {macid}')
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
                               n=macid, npar=str(len(catSequence)))
+
+        def SetVar(parent, value):
+            nonlocal varid
+            let = ET.SubElement(parent, 'let')
+            ET.SubElement(let, 'var', n=varid)
+            ET.SubElement(let, 'lit', v=value)
+
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
-        clear = ET.SubElement(macro, 'let')
-        ET.SubElement(clear, 'var', n=varid)
-        ET.SubElement(clear, 'lit', v='')
+        SetVar(macro, '')
 
         locations = [(macro, None, [])]
         for category, label, isAffix in sources:
@@ -242,9 +250,7 @@ class RuleGenerator:
                     lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
 
                 if not lemmas:
-                    let = ET.SubElement(elem, 'let')
-                    ET.SubElement(let, 'var', n=varid)
-                    ET.SubElement(let, 'lit', v='no_lemma_for_'+'_'.join(path))
+                    SetVar(elem, 'no_lemma_for_'+'_'.join(path))
                     continue
                     
                 choose = ET.SubElement(elem, 'choose')
@@ -259,25 +265,22 @@ class RuleGenerator:
                     nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
                     newLocations.append((when, nextLemmas, path+[feature]))
 
-                otherwise = ET.SubElement(choose, 'otherwise')
-                let = ET.SubElement(otherwise, 'let')
-                ET.SubElement(let, 'var', n=varid)
-                ET.SubElement(let, 'lit', v='no_lemma')
+                SetVar(ET.SubElement(choose, 'otherwise'),
+                       'no_lemma_for_'+'_'.join(path))
 
             locations = newLocations
 
         for elem, possibleLemmas, path in locations:
-            let = ET.SubElement(elem, 'let')
-            ET.SubElement(let, 'var', n=varid)
             error = 'lemma_for_' + '_'.join(path)
             if len(possibleLemmas) == 0:
-                ET.SubElement(let, 'lit', v='no_'+error)
+                value = 'no_'+error
             elif len(possibleLemmas) == 1:
-                ET.SubElement(let, 'lit', v=list(possibleLemmas)[0])
+                value = list(possibleLemmas)[0]
             else:
                 lemmas = ', '.join(sorted(possibleLemmas))
-                let.append(ET.Comment(f'Possible lemmas with this combination of tags: {lemmas}'))
-                ET.SubElement(let, 'lit', v='multiple_'+error)
+                elem.append(ET.Comment(f'Possible lemmas with this combination of tags: {lemmas}'))
+                value = 'multiple_'+error
+            SetVar(elem, value)
 
         self.lemmaMacros[lookupKey] = (macid, varid, catSequence)
         return (macid, varid, catSequence)
