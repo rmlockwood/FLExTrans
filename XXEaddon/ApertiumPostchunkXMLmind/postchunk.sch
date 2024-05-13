@@ -8,7 +8,7 @@
             <dir value="ltr">Well-formed attributes</dir>
         </title>
         <rule context="@part">
-            <report test="name(key('Attributes',.))!='def-attr' and .!='lem' and .!='leh' and .!='lemq' and .!='whole'">Warning: The part attribute must either refer to a valid attribute name or have a value of 'lem', 'lemh', 'lemq', or 'whole'.</report>
+            <report test="name(key('Attributes',.))!='def-attr' and .!='lem' and .!='lemh' and .!='lemq' and .!='whole'">Warning: The part attribute must either refer to a valid attribute name or have a value of 'lem', 'lemh', 'lemq', or 'whole'.</report>
         </rule>
         <rule context="@namefrom">
             <report test="name(key('Variables',.))!='def-var'">Warning: The namefrom attribute must refer to a valid variable name.</report>
