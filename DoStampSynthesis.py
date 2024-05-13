@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.10.4 - 5/8/24 - Ron Lockwood
+#    Fixes crash where sense's MorphoSyntaxAnalysis RA object is None. Check for that now.
+#
 #   Version 3.10.3 - 5/3/24 - Ron Lockwood
 #    Fixes #611 where crash occurred after refreshing the lexicon. Reset global list and map
 #    each time main synthesis function is called.
@@ -275,7 +278,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10.3",
+        FTM_Version    : "3.10.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -353,7 +356,7 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
     ## Now put out the one-time stuff for the entry
 
     # We will only process inflectional affixes and stems (i.e. not derrivational affixes, etc.)
-    if sense is None:
+    if sense is None or sense.MorphoSyntaxAnalysisRA is None:
         return
     if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
         msa = IMoInflAffMsa(sense.MorphoSyntaxAnalysisRA)
