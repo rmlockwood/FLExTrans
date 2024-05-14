@@ -116,9 +116,10 @@ class RuleGenerator:
             ET.SubElement(catEl, 'cat-item', tags=category)
             ET.SubElement(catEl, 'cat-item', tags=category+'.*')
 
-    def AddSingleAttribute(self, suggested_name, items, comment=None):
+    def AddSingleAttribute(self, suggested_name, items, comment=None,
+                           subset_ok=False):
         for name, values in self.definedAttributes.items():
-            if values == items:
+            if values == items or (subset_ok and items < values):
                 return name
 
         aid = self.GetAvailableID(suggested_name)
@@ -135,13 +136,16 @@ class RuleGenerator:
         if (category, label) in self.featureToAttributeName:
             return self.featureToAttributeName[(category, label)]
 
-        # TODO: find and use actual tag escaping logic
         if isAffix:
-            values = set([l[0].replace('.', '_') for l in Utils.getAffixGlossesForFeature(
-                self.DB, self.report, self.configMap, category, label)])
+            values = set([Utils.underscores(l[0])
+                          for l in Utils.getAffixGlossesForFeature(
+                                  self.DB, self.report, self.configMap,
+                                  category, label)])
         else:
-            values = set([l[1].replace('.', '_') for l in Utils.getLemmasForFeature(
-                self.DB, self.report, self.configMap, category, label)])
+            values = set([Utils.underscores(l[1])
+                          for l in Utils.getLemmasForFeature(
+                                  self.DB, self.report, self.configMap,
+                                  category, label)])
 
         if isAffix:
             name = f'a_{category}_{label}'
@@ -151,16 +155,48 @@ class RuleGenerator:
         self.featureToAttributeName[(category, label)] = aid
         return aid
 
+    def AddVariable(self, name, comment=None):
+        def GetIndex(section, name):
+            # If there is a variable that is lexicographically after the one
+            # that we're adding, we want to insert the new variable immediately
+            # after the previous variable (assuming that comments generally
+            # apply to the element that follows them).
+            last = 0
+            for index, node in enumerate(section):
+                if node.tag == 'def-var':
+                    n = node.get('n')
+                    if n and n > name:
+                        return last
+                else:
+                    last = index
+            # However, if there is no following variable, we want to skip any
+            # trailing comments, so we put it at the very end.
+            return len(section)
+
+        section = self.root.find('section-def-vars')
+        loc = GetIndex(section, name)
+
+        if comment:
+            section.insert(loc, ET.Comment(comment))
+            loc += 1
+        section.insert(loc, ET.Element('def-var', n=name))
+
     def GetTags(self, category, label, isAffix):
-        def cleantag(x):
-            # TODO: find and use actual tag escaping logic
-            return x.replace('.', '_')
+        # Return a set of tuples where the first element is the tag that
+        # would appear in the stream and the second element is the feature
+        # value so that we can match it up with the tags for other categories.
         if isAffix:
-            return set([(cleantag(l[0]), cleantag(l[1])) for l in Utils.getAffixGlossesForFeature(
-                self.DB, self.report, self.configMap, category, label)])
+            return set([(Utils.underscores(l[0]), Utils.underscores(l[1]))
+                        for l in Utils.getAffixGlossesForFeature(
+                                self.DB, self.report, self.configMap,
+                                category, label)])
         else:
-            return set([(cleantag(l[1]), cleantag(l[1])) for l in Utils.getLemmasForFeature(
-                self.DB, self.report, self.configMap, category, label)])
+            # If we're getting lemma features, they will show up as their
+            # values, so we discard the actual lemmas.
+            return set([(Utils.underscores(l[1]), Utils.underscores(l[1]))
+                        for l in Utils.getLemmasForFeature(
+                                self.DB, self.report, self.configMap,
+                                category, label)])
 
     def GetAttributeMacro(self, srcSpec, trgSpec):
         if (srcSpec, trgSpec) in self.attributeMacros:
@@ -175,9 +211,7 @@ class RuleGenerator:
 
         macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
         varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
-        # TODO: specs say def-var should be alphabetical
-        ET.SubElement(self.root.find('section-def-vars'), 'def-var',
-                      n=varid, c=f'Used by macro {macid}')
+        self.AddVariable(varid, f'Used by macro {macid}')
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
                               n=macid, npar='1')
 
@@ -222,9 +256,7 @@ class RuleGenerator:
         label = f'{destCategory}_lemma_from_{"-".join(catSequence)}'
         macid = self.GetAvailableID('m_'+label)
         varid = self.GetAvailableID('v_'+label)
-        # TODO: specs say variables should be alphabetical
-        ET.SubElement(self.root.find('section-def-vars'), 'def-var',
-                      n=varid, c=f'Used by macro {macid}')
+        self.AddVariable(varid, f'Used by macro {macid}')
         macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
                               n=macid, npar=str(len(catSequence)))
 
@@ -415,7 +447,7 @@ class RuleGenerator:
 
         self.categoryAttribute = self.AddSingleAttribute(
             'a_gram_cat', set(self.tagToCategoryName.keys()),
-            comment='Part-of-speech tags used in the rules')
+            comment='Part-of-speech tags used in the rules', subset_ok=True)
 
         for rule in root.findall('.//FLExTransRule'):
             self.ProcessRule(rule)
