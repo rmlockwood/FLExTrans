@@ -598,7 +598,7 @@ def MainFunction(DB, report, modifyAllowed):
                             existingCliticList.append((False, lex))
                 
             # Get Glosses for affixes.  (just the first gloss for now)
-            elif morphType in ['suffix', 'prefix']:   
+            elif morphType in ['suffix', 'prefix', 'infix', 'circumfix']:   
                   
                 # BB: Store the Lexeme Form of this affix, just for debugging purposes
                 # Remembering it because we are about to adjust lex
