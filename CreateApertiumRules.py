@@ -22,6 +22,7 @@ import shutil
 import time
 import xml.etree.ElementTree as ET
 from collections import defaultdict
+from typing import Optional
 
 class RuleGenerator:
     def __init__(self, DB, report, configMap):
@@ -29,17 +30,37 @@ class RuleGenerator:
         self.report = report
         self.configMap = configMap
 
-        self.root = None
+        self.root: Optional[ET.Element] = None
 
-        self.definedCategories = {} # {name: [(lemma, tags), ...]}
-        self.definedAttributes = {} # {name: [tags, ...]}
-        self.tagToCategoryName = {} # {category: attribute}
-        self.featureToAttributeName = {} # {(category, label): attribute}
-        self.categoryAttribute = None
+        # All current <def-cat>s
+        # {name: [(lemma, tags), ...]}
+        self.definedCategories: dict[str, list[tuple[str, str]]] = {}
 
-        self.variables = {} # {name: initial_value}
-        self.lists = {} # {name: [value, ...]}
-        self.ruleNames = set()
+        # All current <def-attr>s
+        # {name: [tags, ...]}
+        self.definedAttributes: dict[str, set[str]] = {}
+
+        # Mapping from part-of-speech tags to <def-cat> names
+        # {category: attribute}
+        self.tagToCategoryName: dict[str, str] = {}
+
+        # Mapping from part-of-speech + feature name to <def-attr> name
+        # {(category, label): attribute}
+        self.featureToAttributeName: dict[tuple[str, str], str] = {}
+
+        # Name of the <def-attr> for part-of-speech tags
+        self.categoryAttribute: Optional[str] = None
+
+        # All current <def-var>s
+        # {name: initial_value}
+        self.variables: dict[str, Optional[str]] = {}
+
+        # All current <def-list>s
+        # {name: [value, ...]}
+        self.lists: dict[str, set[str]] = {}
+
+        # The names of all current rules
+        self.ruleNames: set[str] = set()
 
         self.attributeMacros = {} # {((cat, label, affix), (cat, label, affix)): (macro_name, var_name)}
         self.lemmaMacros = {} # {(pos, [(cat, label, affix), ...]): (macro_name, var_name, pos_sequence)}
@@ -48,7 +69,9 @@ class RuleGenerator:
         # to all be in the same namespaces, so track them all together
         self.usedIDs = set()
 
-    def ProcessExistingTransferFile(self, fileName):
+    def ProcessExistingTransferFile(self, fileName: str) -> None:
+        '''Load an existing transfer file.'''
+
         parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
         tree = ET.parse(fileName, parser=parser)
         self.root = tree.getroot()
@@ -79,7 +102,7 @@ class RuleGenerator:
 
         for lst in self.root.findall('.//def-list'):
             name = lst.get('n')
-            values = [i.get('v') for i in lst.findall('./list-item')]
+            values = set([i.get('v') for i in lst.findall('./list-item')])
             self.usedIDs.add(name)
             self.lists[name] = values
 
@@ -89,13 +112,18 @@ class RuleGenerator:
         for rule in self.root.findall('.//rule'):
             self.ruleNames.add(rule.get('comment'))
 
-    def CreateTree(self):
+    def CreateTree(self) -> None:
+        '''Generate a blank Apertium transfer XML tree.'''
+
         self.root = ET.Element('transfer')
 
         for section in ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']:
             ET.SubElement(self.root, section)
 
-    def GetAvailableID(self, start):
+    def GetAvailableID(self, start: str) -> str:
+        '''Check whether `start` is already in use as an XML ID. If it is,
+        modify it until it is not. Mark the resulting ID as in-use.'''
+
         while start in self.usedIDs:
             start += '_'
         self.usedIDs.add(start)
@@ -115,8 +143,9 @@ class RuleGenerator:
             ET.SubElement(catEl, 'cat-item', tags=category)
             ET.SubElement(catEl, 'cat-item', tags=category+'.*')
 
-    def AddSingleAttribute(self, suggested_name, items, comment=None,
-                           subset_ok=False):
+    def AddSingleAttribute(self, suggested_name: str, items: set[str],
+                           comment: Optional[str] = None,
+                           subset_ok: bool = False) -> str:
         for name, values in self.definedAttributes.items():
             if values == items or (subset_ok and items < values):
                 return name
@@ -131,7 +160,7 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def EnsureAttribute(self, category, label, isAffix):
+    def EnsureAttribute(self, category: str, label: str, isAffix: bool) -> str:
         if (category, label) in self.featureToAttributeName:
             return self.featureToAttributeName[(category, label)]
 
@@ -154,7 +183,10 @@ class RuleGenerator:
         self.featureToAttributeName[(category, label)] = aid
         return aid
 
-    def AddVariable(self, name, comment=None):
+    def AddVariable(self, name: str, comment: Optional[str] = None) -> None:
+        '''Add a variable definition to <section-def-vars>, attempting
+        to keep the section alphabetical.'''
+
         def GetIndex(section, name):
             # If there is a variable that is lexicographically after the one
             # that we're adding, we want to insert the new variable immediately
@@ -179,11 +211,14 @@ class RuleGenerator:
             section.insert(loc, ET.Comment(comment))
             loc += 1
         section.insert(loc, ET.Element('def-var', n=name))
+        self.variables[name] = None
 
-    def GetTags(self, category, label, isAffix):
-        # Return a set of tuples where the first element is the tag that
-        # would appear in the stream and the second element is the feature
-        # value so that we can match it up with the tags for other categories.
+    def GetTags(self, category: str, label: str,
+                isAffix: bool) -> set[tuple[str, str]]:
+        '''Return a set of tuples where the first element is the tag that
+        would appear in the stream and the second element is the feature
+        value so that we can match it up with the tags for other categories.'''
+
         if isAffix:
             return set([(Utils.underscores(l[0]), Utils.underscores(l[1]))
                         for l in Utils.getAffixGlossesForFeature(
@@ -246,7 +281,13 @@ class RuleGenerator:
         self.attributeMacros[(srcSpec, trgSpec)] = (macid, varid)
         return (macid, varid)
 
-    def GetLemmaMacro(self, destCategory, sources):
+    def GetLemmaMacro(self, destCategory: str,
+                      sources: list[tuple[str, str, str]]) -> tuple[str, str, list[str]]:
+        '''Find or generate the appropriate macro for changing the lemma of
+        a word with part of speech `destCategory` based on a set of agreement
+        features (`sources`). Return the macro name, the variable name, and
+        the order of the arguments to the macro by part-of-speech tag.'''
+
         catSequence = sorted(set([s[0] for s in sources]))
         lookupKey = (destCategory, tuple(catSequence))
         if lookupKey in self.lemmaMacros:
@@ -323,7 +364,10 @@ class RuleGenerator:
         self.lemmaMacros[lookupKey] = (macid, varid, catSequence)
         return (macid, varid, catSequence)
 
-    def ProcessRule(self, rule):
+    def ProcessRule(self, rule: ET.Element) -> None:
+        '''Convert a Rule Assistant <Rule> node `rule` to an Apertium <rule>
+        node and append it to the current XML tree.'''
+
         ruleName = rule.get('name')
         if ruleName in self.ruleNames:
             self.report.Error(f'Rule name "{ruleName}" already exists in the rule file.')
@@ -358,6 +402,12 @@ class RuleGenerator:
                 matches[(feat.get('label'), feat.get('match'))].append(
                     (wid, head, True))
 
+        # For each combination of feature and match set, find the best source,
+        # where the head word is preferred, if available, and otherwise we
+        # take the rightmost word that has it as a stem feature rather than
+        # an affix (rightmost not for any theoretical reason, but simply
+        # because that was the easiest way to structure the loop).
+        # If no such source is found, report an error.
         featureSources = {}
         for (label, match), items in matches.items():
             cur = None
@@ -379,6 +429,8 @@ class RuleGenerator:
             pos = word.get('id') # TODO: validate ID sequencing
             cat = wordCats[pos] # TODO: what if it's an inserted word?
 
+            # If the stem features have a source that isn't this word,
+            # we want to use a macro to check that we have the right lemma.
             lemmaTags = []
             lemmaLocs = {}
             for feature in word.findall('./Features/Feature'):
@@ -413,9 +465,21 @@ class RuleGenerator:
             ET.SubElement(
                 lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
             )
-            for affix in word.findall('.//Affix//Feature'):
-                label = affix.get('label')
-                match = affix.get('match')
+
+            # Force prefixes to be before suffixes
+            prefixFeatures = []
+            suffixFeatures = []
+            for affix in word.findall('.//Affix'):
+                prefix = (affix.get('type', 'suffix') == 'prefix')
+                for feature in word.findall('.//Feature'):
+                    label = feature.get('label')
+                    match = feature.get('match')
+                    if prefix:
+                        prefixFeatures.append((label, match))
+                    else:
+                        suffixFeatures.append((label, match))
+
+            for label, match in prefixFeatures + suffixFeatures:
                 apos, isAffix = featureSources.get((label, match), pos)
                 if apos != pos:
                     mac, var = self.GetAttributeMacro(
@@ -435,7 +499,10 @@ class RuleGenerator:
 
         actionEl.append(outEl)
 
-    def ProcessAssistantFile(self, fileName):
+    def ProcessAssistantFile(self, fileName: str) -> None:
+        '''Process the Rule Assistant file `fileName` and generate Apertium
+        transfer rules.'''
+
         tree = ET.parse(fileName)
         root = tree.getroot()
 
@@ -451,7 +518,9 @@ class RuleGenerator:
         for rule in root.findall('.//FLExTransRule'):
             self.ProcessRule(rule)
 
-    def WriteTransferFile(self, fileName):
+    def WriteTransferFile(self, fileName: str) -> None:
+        '''Write the generated transfer rules XML to `fileName`.'''
+
         with open(fileName, 'wb') as fout:
             fout.write('<?xml version="1.0" encoding="utf-8"?>\n'.encode('utf-8'))
             fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">\n'.encode('utf-8'))
