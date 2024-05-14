@@ -23,6 +23,7 @@ import time
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
+from itertools import chain, combinations
 
 class RuleGenerator:
     def __init__(self, DB, report, configMap):
@@ -364,26 +365,40 @@ class RuleGenerator:
         self.lemmaMacros[lookupKey] = (macid, varid, catSequence)
         return (macid, varid, catSequence)
 
-    def ProcessRule(self, rule: ET.Element) -> None:
+    def ProcessRule(self, rule: ET.Element, skip: Optional[set[str]] = None) -> bool:
         '''Convert a Rule Assistant <Rule> node `rule` to an Apertium <rule>
-        node and append it to the current XML tree.'''
+        node and append it to the current XML tree. Return whether a rule
+        was created. Skip any words whose id field is in `skip`.'''
+
+        sourceWords = []
+        for word in rule.findall('.//Source//Word'):
+            wid = word.get('id')
+            cat = word.get('category')
+            sourceWords.append((wid, cat))
 
         ruleName = rule.get('name')
+        if skip is not None:
+            ruleName += ': '
+            ruleName += ' '.join([w[1] for w in sourceWords if w[0] not in skip])
         if ruleName in self.ruleNames:
             self.report.Error(f'Rule name "{ruleName}" already exists in the rule file.')
-            return
+            return False
 
         ruleEl = ET.SubElement(self.root.find('section-rules'), 'rule',
                                comment=ruleName)
         self.ruleNames.add(ruleName)
 
         wordCats = {}
+        wordLocation = {}
         patternEl = ET.SubElement(ruleEl, 'pattern')
-        for word in rule.findall('.//Source//Word'):
-            wid = word.get('id')
-            cat = word.get('category')
+        index = 0
+        for wid, cat in sourceWords:
+            if skip and wid in skip:
+                continue
+            index += 1
             ET.SubElement(patternEl, 'pattern-item', n=self.tagToCategoryName[cat])
-            wordCats[wid] = cat
+            wordLocation[wid] = str(index)
+            wordCats[str(index)] = cat
 
         actionEl = ET.SubElement(ruleEl, 'action')
 
@@ -395,12 +410,15 @@ class RuleGenerator:
         for index, word in enumerate(rule.findall('.//Target//Word')):
             head = (word.get('head') == 'yes')
             wid = word.get('id')
+            if skip and wid in skip:
+                continue
+            pos = wordLocation.get(wid)
             for feat in word.findall('./Features/Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (wid, head, False))
+                    (pos, head, False))
             for feat in word.findall('.//Affix//Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (wid, head, True))
+                    (pos, head, True))
 
         # For each combination of feature and match set, find the best source,
         # where the head word is preferred, if available, and otherwise we
@@ -422,12 +440,21 @@ class RuleGenerator:
             else:
                 featureSources[(label, match)] = cur
 
-        for index, word in enumerate(rule.findall('.//Target//Word')):
+        index = -1
+        for word in rule.findall('.//Target//Word'):
+            wid = word.get('id')
+            if skip and wid in skip:
+                continue
+            index += 1
             if index > 0:
                 ET.SubElement(outEl, 'b')
             lu = ET.SubElement(outEl, 'lu')
-            pos = word.get('id') # TODO: validate ID sequencing
-            cat = wordCats[pos] # TODO: what if it's an inserted word?
+            pos = wordLocation.get(wid)
+            if pos is None:
+                self.report.Error(f'Word insertion not currently supported (attempted in {ruleName}).')
+                self.root.find('section-rules').remove(ruleEl)
+                return False
+            cat = wordCats[pos]
 
             # If the stem features have a source that isn't this word,
             # we want to use a macro to check that we have the right lemma.
@@ -471,7 +498,7 @@ class RuleGenerator:
             suffixFeatures = []
             for affix in word.findall('.//Affix'):
                 prefix = (affix.get('type', 'suffix') == 'prefix')
-                for feature in word.findall('.//Feature'):
+                for feature in affix.findall('.//Feature'):
                     label = feature.get('label')
                     match = feature.get('match')
                     if prefix:
@@ -499,9 +526,13 @@ class RuleGenerator:
 
         actionEl.append(outEl)
 
-    def ProcessAssistantFile(self, fileName: str) -> None:
+        return True
+
+    def ProcessAssistantFile(self, fileName: str,
+                             ruleNumber: Optional[int] = None) -> None:
         '''Process the Rule Assistant file `fileName` and generate Apertium
-        transfer rules.'''
+        transfer rules. If `ruleNumber` is specified, only generate the rule
+        at that index.'''
 
         tree = ET.parse(fileName)
         root = tree.getroot()
@@ -515,8 +546,27 @@ class RuleGenerator:
             'a_gram_cat', set(self.tagToCategoryName.keys()),
             comment='Part-of-speech tags used in the rules', subset_ok=True)
 
-        for rule in root.findall('.//FLExTransRule'):
-            self.ProcessRule(rule)
+        ruleCount = 0
+        for index, rule in enumerate(root.findall('.//FLExTransRule')):
+            if ruleNumber is not None and index != ruleNumber:
+                continue
+            if rule.get('create_permutations', 'no') == 'yes':
+                deletable = []
+                for word in rule.findall('.//Source//Word'):
+                    wid = word.get('id')
+                    if word.get('head') == 'yes':
+                        continue
+                    elif rule.find(f".//Target//Word[@id='{wid}'][@head='yes']"):
+                        continue
+                    deletable.append(wid)
+                for skip in chain.from_iterable(combinations(deletable, length) for length in range(len(deletable))):
+                    if self.ProcessRule(rule, skip=set(skip)):
+                        ruleCount += 1
+            else:
+                if self.ProcessRule(rule):
+                    ruleCount += 1
+
+        self.report.Info(f'Added {ruleCount} rule(s) from {fileName}.')
 
     def WriteTransferFile(self, fileName: str) -> None:
         '''Write the generated transfer rules XML to `fileName`.'''
@@ -528,7 +578,7 @@ class RuleGenerator:
             fout.write(ET.tostring(self.root, encoding='utf-8'))
 
 # Wrapper function which calls the necessary logic to write rules to the Aperitum file
-def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath):
+def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath, ruleNumber):
 
     # TODO check for proper reading mode ("w" or "wb")
     try:
@@ -553,7 +603,7 @@ def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath):
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
 
-    generator.ProcessAssistantFile(ruleAssistantFile)
+    generator.ProcessAssistantFile(ruleAssistantFile, ruleNumber)
 
     generator.WriteTransferFile(transferRulePath)
 

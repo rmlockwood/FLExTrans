@@ -227,18 +227,26 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 
         result = subprocess.run(params, capture_output=True)
 
-        # Right now the agreed upone return codes are 0 for cancel, 1 for save and create, 2 for save and create all
+        # Right now the agreed upon return codes are 0 for cancel, 1 for save and create, 2 for save and create all
         if result.returncode != 0:
 
-            # TODO: We need a way to figure out which rule the user wants to create. Maybe the rule number goes to stdout?
-            return True
+            rule = None
+            if result.returncode == 1:
+                try:
+                    output = result.stdout.decode('utf-8')
+                    rule = int(output.split()[1])
+                except:
+                    # default to the first rule - TODO
+                    rule = 0
+
+            return (True, rule)
 
     except Exception as e:
 
         report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
-        return False
+        return (False, None)
     
-    return False
+    return (False, None)
 
 #----------------------------------------------------------------
 # The main processing function
@@ -267,9 +275,10 @@ def MainFunction(DB, report, modify=True):
     ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, startData)
     
     # Start the Rule Assistant GUI
-    if StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile) == True:
+    saved, rule = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile)
 
-        CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
+    if saved:
+        CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
