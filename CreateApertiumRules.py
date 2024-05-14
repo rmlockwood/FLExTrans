@@ -21,7 +21,6 @@ import unicodedata
 import shutil
 import time
 import xml.etree.ElementTree as ET
-import xml.dom.minidom as MD
 from collections import defaultdict
 
 class RuleGenerator:
@@ -456,9 +455,8 @@ class RuleGenerator:
         with open(fileName, 'wb') as fout:
             fout.write('<?xml version="1.0" encoding="utf-8"?>\n'.encode('utf-8'))
             fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">\n'.encode('utf-8'))
-            node = MD.parseString(ET.tostring(self.root)).firstChild
-            txt = node.toprettyxml(indent='\t', encoding='utf-8')
-            fout.write(txt)
+            ET.indent(self.root)
+            fout.write(ET.tostring(self.root, encoding='utf-8'))
 
 # Wrapper function which calls the necessary logic to write rules to the Aperitum file
 def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath):
