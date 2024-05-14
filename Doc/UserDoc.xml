@@ -2209,7 +2209,7 @@ src="Images/SynthTestSettings.png"
 >You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and it uses the same criteria each time.) Click the <img
 cssSpecial="Width:10%"
 height="60%"
-src="Images/ApplyAndCloseButton.PNG"
+src="Images/ApplyAndCloseButton.png"
 ></img
 > button.</li
 ><li
