@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.11 - 5/14/24 - Ron Lockwood
+#    Connect to the now functioning CreateRules routine.
+#    Rearrange the logic for the return code from the GUI program. Pretty print the GUIinput xml.
+#
 #   Version 3.9.3 - 12/20/23 - Ron Lockwood
 #    Use data classes to pass around category and feature lists.
 #
@@ -42,7 +46,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.9",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",  
@@ -122,6 +126,7 @@ def writeXMLData(srcDB, tgtDB, startData):
 
     # Create an Element Tree object and write the xml file.
     tree = ET.ElementTree(rootNode)
+    ET.indent(tree)
     tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
 
     return ruleAssistGUIinputXMLfile
@@ -220,17 +225,18 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
         
         params = [fullRApath, ruleAssistantFile, ruleAssistGUIinputfile]
 
-        result = subprocess.run(params, capture_output=True, check=True)
+        result = subprocess.run(params, capture_output=True)
 
+        # Right now the agreed upone return codes are 0 for cancel, 1 for save and create, 2 for save and create all
         if result.returncode != 0:
 
-            #report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+            # TODO: We need a way to figure out which rule the user wants to create. Maybe the rule number goes to stdout?
             return True
 
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
 
-        #report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
-        return True
+        report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
+        return False
     
     return False
 
@@ -254,8 +260,6 @@ def MainFunction(DB, report, modify=True):
 
     TargetDB = Utils.openTargetProject(configMap, report)
 
-    #mytupList = Utils.getAffixGlossesForFeature(TargetDB, report, configMap, 'adj', 'f')
-    
     # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
     startData = GetRuleAssistantStartData(report, DB, TargetDB)
 
@@ -264,9 +268,8 @@ def MainFunction(DB, report, modify=True):
     
     # Start the Rule Assistant GUI
     if StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile) == True:
-        return
 
-    #CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
+        CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath)
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
