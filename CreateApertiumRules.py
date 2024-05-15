@@ -214,9 +214,9 @@ class RuleGenerator:
                                   category, label)])
 
         if isAffix:
-            name = f'a_{category}_{label}'
+            name = f'a_{category}_{label}_slot'
         else:
-            name = f'a_{label}'
+            name = f'a_{label}_feature'
         aid = self.AddSingleAttribute(name, values)
         self.featureToAttributeName[(category, label)] = aid
         return aid
