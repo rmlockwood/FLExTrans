@@ -418,8 +418,14 @@ class RuleGenerator:
             ruleName += ': '
             ruleName += ' '.join([w[1] for w in sourceWords if w[0] not in skip])
         if ruleName in self.ruleNames:
-            self.report.Error(f'Rule name "{ruleName}" already exists in the rule file.')
-            return False
+            index = 1
+            while True:
+                altName = f'{ruleName} ({index})'
+                if altName not in self.ruleNames:
+                    break
+                index += 1
+            self.report.Info(f'Rule name "{ruleName}" already exists in the rule file. Renaming added rule to "{altName}".')
+            ruleName = altName
 
         ruleEl = ET.SubElement(self.GetSection('section-rules'), 'rule',
                                comment=ruleName)
