@@ -19,7 +19,7 @@ import re
 import os
 import unicodedata
 import shutil
-import time
+import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
@@ -627,8 +627,7 @@ def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath, rule
     generator = RuleGenerator(DB, report, configMap)
 
     if os.path.exists(transferRulePath):
-        # TODO change to more informative name
-        backupPath = f'{transferRulePath}.{int(time.time())}.bak'
+        backupPath = f'{transferRulePath}.{datetime.datetime.now().isoformat()}.bak'
         report.Info(f'Copying prior version of transfer rules to {backupPath}.')
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
