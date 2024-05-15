@@ -279,6 +279,8 @@ def MainFunction(DB, report, modify=True):
 
     if saved:
         CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
+    else:
+        report.Info('No rules created.')
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
