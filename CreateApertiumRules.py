@@ -26,6 +26,10 @@ from typing import Optional
 from itertools import chain, combinations
 
 class RuleGenerator:
+
+    SectionSequence = ['section-def-cats', 'section-def-attrs',
+                       'section-def-vars', 'section-def-macros', 'section-rules']
+
     def __init__(self, DB, report, configMap):
         self.DB = DB
         self.report = report
@@ -69,6 +73,32 @@ class RuleGenerator:
         # XML validation forces macro, category, etc. IDs
         # to all be in the same namespaces, so track them all together
         self.usedIDs = set()
+
+        # The <section-*> elements of the XML tree
+        self.sections: dict[str: ET.Element] = {}
+
+    def GetSection(self, sectionName: str) -> ET.Element:
+        '''Retrieve a section of the rule file, creating it if necessary.'''
+
+        if sectionName in self.sections:
+            return self.sections[sectionName]
+        elem = self.root.find(sectionName)
+        if elem is None:
+            index = RuleGenerator.SectionSequence.index(sectionName)
+            elem = ET.Element(sectionName)
+            if index == 0:
+                # it's the first section, so just insert it
+                self.root.insert(0, elem)
+            else:
+                # ensure that the preceding section exists
+                prevTag = RuleGenerator.SectionSequence[index-1]
+                self.GetSection(prevTag)
+                for i, el in enumerate(self.root):
+                    if el.tag == prevTag:
+                        self.root.insert(i+1, elem)
+                        break
+        self.sections[sectionName] = elem
+        return elem
 
     def ProcessExistingTransferFile(self, fileName: str) -> None:
         '''Load an existing transfer file.'''
@@ -118,8 +148,8 @@ class RuleGenerator:
 
         self.root = ET.Element('transfer')
 
-        for section in ['section-def-cats', 'section-def-attrs', 'section-def-vars', 'section-def-macros', 'section-rules']:
-            ET.SubElement(self.root, section)
+        for section in RuleGenerator.SectionSequence:
+            self.sections[section] = ET.SubElement(self.root, section)
 
     def GetAvailableID(self, start: str) -> str:
         '''Check whether `start` is already in use as an XML ID. If it is,
@@ -131,7 +161,7 @@ class RuleGenerator:
         return start
 
     def AddCategories(self, root):
-        section = self.root.find('section-def-cats')
+        section = self.GetSection('section-def-cats')
         for node in root.findall('.//Source//Word'):
             category = node.get('category')
             if not category or category in self.tagToCategoryName:
@@ -152,7 +182,7 @@ class RuleGenerator:
                 return name
 
         aid = self.GetAvailableID(suggested_name)
-        section = self.root.find('section-def-attrs')
+        section = self.GetSection('section-def-attrs')
         if comment:
             section.append(ET.Comment(comment))
         elem = ET.SubElement(section, 'def-attr', n=aid)
@@ -205,7 +235,7 @@ class RuleGenerator:
             # trailing comments, so we put it at the very end.
             return len(section)
 
-        section = self.root.find('section-def-vars')
+        section = self.GetSection('section-def-vars')
         loc = GetIndex(section, name)
 
         if comment:
@@ -247,7 +277,7 @@ class RuleGenerator:
         macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
         varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
         self.AddVariable(varid, f'Used by macro {macid}')
-        macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
+        macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar='1')
 
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
@@ -298,7 +328,7 @@ class RuleGenerator:
         macid = self.GetAvailableID('m_'+label)
         varid = self.GetAvailableID('v_'+label)
         self.AddVariable(varid, f'Used by macro {macid}')
-        macro = ET.SubElement(self.root.find('section-def-macros'), 'def-macro',
+        macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar=str(len(catSequence)))
 
         def SetVar(parent, value):
@@ -384,7 +414,7 @@ class RuleGenerator:
             self.report.Error(f'Rule name "{ruleName}" already exists in the rule file.')
             return False
 
-        ruleEl = ET.SubElement(self.root.find('section-rules'), 'rule',
+        ruleEl = ET.SubElement(self.GetSection('section-rules'), 'rule',
                                comment=ruleName)
         self.ruleNames.add(ruleName)
 
@@ -452,7 +482,7 @@ class RuleGenerator:
             pos = wordLocation.get(wid)
             if pos is None:
                 self.report.Error(f'Word insertion not currently supported (attempted in {ruleName}).')
-                self.root.find('section-rules').remove(ruleEl)
+                self.GetSection('section-rules').remove(ruleEl)
                 return False
             cat = wordCats[pos]
 
