@@ -155,10 +155,17 @@ class RuleGenerator:
         '''Check whether `start` is already in use as an XML ID. If it is,
         modify it until it is not. Mark the resulting ID as in-use.'''
 
-        while start in self.usedIDs:
-            start += '_'
-        self.usedIDs.add(start)
-        return start
+        if start not in self.usedIDs:
+            self.usedIDs.add(start)
+            return start
+
+        n = 2
+        while True:
+            s = f'{start}{n}'
+            if s not in self.usedIDs:
+                self.usedIDs.add(s)
+                return s
+            n += 1
 
     def AddCategories(self, root):
         section = self.GetSection('section-def-cats')
