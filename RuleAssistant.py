@@ -227,19 +227,13 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 
         result = subprocess.run(params, capture_output=True)
 
-        # Right now the agreed upon return codes are 0 for cancel, 1 for save and create, 2 for save and create all
-        if result.returncode != 0:
-
-            rule = None
-            if result.returncode == 1:
-                try:
-                    output = result.stdout.decode('utf-8')
-                    rule = int(output.split()[1])
-                except:
-                    # default to the first rule - TODO
-                    rule = 0
-
-            return (True, rule)
+        output = result.stdout.decode('utf-8').strip().split()
+        if not output or output[0] not in ['1', '2']:
+            return (False, None)
+        elif output[0] == '1':
+            return (True, int(output[1])) # create single rule
+        else:
+            return (True, None) # create all rules
 
     except Exception as e:
 
