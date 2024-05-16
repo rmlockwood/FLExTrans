@@ -406,13 +406,21 @@ class RuleGenerator:
         node and append it to the current XML tree. Return whether a rule
         was created. Skip any words whose id field is in `skip`.'''
 
+        ruleName = rule.get('name')
+
         sourceWords = []
         for word in rule.findall('.//Source//Word'):
             wid = word.get('id')
             cat = word.get('category')
+            if cat is None:
+                self.report.Error(f'Source word {wid} in rule "{ruleName}" has no category.')
+                return False
             sourceWords.append((wid, cat))
 
-        ruleName = rule.get('name')
+        if rule.find(".//Target//Word[@head='yes']") is None:
+            self.report.Error(f'No target word has been set as head in rule "{ruleName}".')
+            return False
+
         if skip is not None:
             ruleName += ': '
             ruleName += ' '.join([w[1] for w in sourceWords if w[0] not in skip])
