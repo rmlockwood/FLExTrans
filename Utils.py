@@ -406,6 +406,7 @@ import shutil
 import xml.etree.ElementTree as ET
 import subprocess
 import unicodedata
+import itertools
 
 from System import Guid
 from System import String
@@ -2202,6 +2203,59 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
                                         myList.append((gloss, abb))
                                         break
     return myList
+
+def getAffixSlotCategories(slot, gramCategoryAbbrev):
+    feat_abbr_list = []
+    for affix in slot.Affixes:
+        abbrev = ITsString(affix.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+        if abbrev != gramCategoryAbbrev or not affix.InflFeatsOA:
+            continue
+        get_feat_abbr_list(affix.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
+    return tuple(sorted(set([feat[0] for feat in feat_abbr_list])))
+
+def getAffixTemplates(DB, gramCategoryAbbrev):
+    templates = set()
+    for pos in DB.lp.AllPartsOfSpeech:
+        abbrev = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+        if abbrev != gramCategoryAbbrev:
+            continue
+        for template in pos.AffixTemplatesOS:
+            slots = []
+            for slot in template.PrefixSlotsRS:
+                slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'prefix'))
+            for slot in template.SuffixSlotsRS:
+                slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'suffix'))
+            cats, types = list(zip(*slots))
+            for prod in itertools.product(*cats):
+                templates.add(tuple(zip(prod, types)))
+    return sorted(templates)
+
+def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
+    features = set()
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
+
+    for entry in DB.LexiconAllEntries():
+        LF = entry.LexemeFormOA
+        if not LF or LF.ClassName != 'MoStemAllomorph':
+            continue
+        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+            continue
+
+        for sense in entry.SensesOS:
+            msara = sense.MorphoSyntaxAnalysisRA
+            if not msara or msara.ClassName != 'MoStemMsa':
+                continue
+            msa = IMoStemMsa(msara)
+            if not msa.PartOfSpeechRA:
+                continue
+            abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+            if abbrev != gramCategoryAbbrev:
+                continue
+            if msa.MsFeaturesOA:
+                abbr_list = []
+                get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, abbr_list)
+                features.update([name for name, abb in abbr_list])
+    return sorted(features)
 
 def unescapeReservedApertChars(inStr):
     
