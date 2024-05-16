@@ -182,10 +182,9 @@ class RuleGenerator:
             ET.SubElement(catEl, 'cat-item', tags=category+'.*')
 
     def AddSingleAttribute(self, suggested_name: str, items: set[str],
-                           comment: Optional[str] = None,
-                           subset_ok: bool = False) -> str:
+                           comment: Optional[str] = None) -> str:
         for name, values in self.definedAttributes.items():
-            if values == items or (subset_ok and items < values):
+            if items <= values:
                 return name
 
         aid = self.GetAvailableID(suggested_name)
@@ -587,7 +586,7 @@ class RuleGenerator:
 
         self.categoryAttribute = self.AddSingleAttribute(
             'a_gram_cat', set(self.tagToCategoryName.keys()),
-            comment='Part-of-speech tags used in the rules', subset_ok=True)
+            comment='Part-of-speech tags used in the rules')
 
         ruleCount = 0
         for index, rule in enumerate(root.findall('.//FLExTransRule')):
