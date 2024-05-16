@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place.
 #
+#   Version 3.11.1 - 5/16/24 - Ron Lockwood
+#    Change the folder name too.
+#
 #   Version 3.11 - 5/15/24 - Ron Lockwood
 #    Changed the value of RULE ASSISTANT.
 #
@@ -41,5 +44,5 @@ TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
 HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
-RULE_ASSISTANT_DIR = 'FLExTrans Rule Generator'
+RULE_ASSISTANT_DIR = 'FLExTrans Rule Assistant'
 RULE_ASSISTANT     = 'FLExTrans Rule Assistant.exe'
