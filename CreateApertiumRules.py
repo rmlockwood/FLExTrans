@@ -640,7 +640,9 @@ def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath, rule
     generator = RuleGenerator(DB, report, configMap)
 
     if os.path.exists(transferRulePath):
-        backupPath = f'{transferRulePath}.{datetime.datetime.now().isoformat()}.bak'
+
+        datetimeStr = re.sub(':', '-', datetime.datetime.now().isoformat(sep=' ', timespec='seconds'))
+        backupPath = f'{transferRulePath}.{datetimeStr}.bak'
         report.Info(f'Copying prior version of transfer rules to {backupPath}.')
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
