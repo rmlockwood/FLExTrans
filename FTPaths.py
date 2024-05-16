@@ -4,7 +4,7 @@
 #   Define all the paths used by FlexTrans in one place.
 #
 #   Version 3.11 - 5/15/24 - Ron Lockwood
-#    Changed the name of RULE ASSISTANT.
+#    Changed the value of RULE ASSISTANT.
 #
 #   Version 3.9 - 12/19/23 - Ron Lockwood
 #    Addded constants for the Rule Assistant program.
