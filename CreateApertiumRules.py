@@ -198,6 +198,9 @@ class RuleGenerator:
         return aid
 
     def EnsureAttribute(self, category: str, label: str, isAffix: bool) -> str:
+        '''Return the name of the attribute corresponding to feature `label`
+        for part of speech `category`, creating it if necessary.'''
+
         if (category, label) in self.featureToAttributeName:
             return self.featureToAttributeName[(category, label)]
 
@@ -224,7 +227,7 @@ class RuleGenerator:
         '''Add a variable definition to <section-def-vars>, attempting
         to keep the section alphabetical.'''
 
-        def GetIndex(section, name):
+        def GetIndex(section: ET.Element, name: str) -> int:
             # If there is a variable that is lexicographically after the one
             # that we're adding, we want to insert the new variable immediately
             # after the previous variable (assuming that comments generally
@@ -269,7 +272,13 @@ class RuleGenerator:
                                 self.DB, self.report, self.configMap,
                                 category, label)])
 
-    def GetAttributeMacro(self, srcSpec, trgSpec):
+    def GetAttributeMacro(self, srcSpec: tuple[str, str, bool],
+                          trgSpec: tuple[str, str, bool]) -> tuple[Optional[str], Optional[str]]:
+        '''Return the macro and variable names for converting between the
+        category+attribute pairs `srcSpec` and `trgSpec`, creating the macro
+        if necessary. If no conversion is needed and a simple <clip> can be
+        used, then `(None, None)` will be returned.'''
+
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
