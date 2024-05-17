@@ -74,6 +74,7 @@ class DBStartData:
  
     categoryList: list
     featureList: list
+    categoryFeatures: dict
  
 @dataclass
 class StartData:
@@ -156,7 +157,7 @@ def getFeatureData(DB, myFeatureList):
     # Sort the main list. By default sort uses the first tuple element for sorting.    
     myFeatureList.sort()
 
-def GetRuleAssistantStartData(report, DB, TargetDB):
+def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
 
     posMap = {}
     srcFeatureList = []
@@ -176,7 +177,18 @@ def GetRuleAssistantStartData(report, DB, TargetDB):
     getFeatureData(DB, srcFeatureList)
     getFeatureData(TargetDB, tgtFeatureList)
 
-    myStartData = StartData(DBStartData(srcCatList, srcFeatureList), DBStartData(tgtCatList, tgtFeatureList))
+    tgtCatFeatures = {}
+    for cat in tgtCatList:
+        stemFeats = Utils.getStemFeatures(TargetDB, report, configMap, cat)
+        tgtCatFeatures[cat] = {feat: {'stem'} for feat in stemFeats}
+        templates = Utils.getAffixTemplates(TargetDB, report, cat)
+        for tmpl in templates:
+            for feat, side in tmpl:
+                if feat not in tgtCatFeatures[cat]:
+                    tgtCatFeatures[cat][feat] = set()
+                tgtCatFeatures[cat][feat].add(side)
+
+    myStartData = StartData(DBStartData(srcCatList, srcFeatureList, {}), DBStartData(tgtCatList, tgtFeatureList, tgtCatFeatures))
 
     return myStartData
 
@@ -192,8 +204,11 @@ def createElements(myDB, rootNode, dataElemStr, dbStartData):
     # Add all the FLExCategory elements 
     for catStr in dbStartData.categoryList:
 
-        myCat = ET.SubElement(myCats, FLEXCATEGORY)
-        myCat.attrib[ABBREV] = catStr
+        catEl = ET.SubElement(myCats, FLEXCATEGORY, {ABBREV: catStr})
+        dct = dbStartData.categoryFeatures.get(catStr, {})
+        for feat, types in sorted(dct.items()):
+            ET.SubElement(catEl, 'ValidFeature', name=feat,
+                          type='|'.join(sorted(types)))
 
     # Proceed if we have at least one feature
     if len(dbStartData.featureList) > 0:
@@ -205,8 +220,7 @@ def createElements(myDB, rootNode, dataElemStr, dbStartData):
         for featName, valueList in dbStartData.featureList:
 
             # Create the FLExFeature element
-            myFeat = ET.SubElement(myFeats, FLEXFEATURE)
-            myFeat.attrib[NAME] = featName
+            myFeat = ET.SubElement(myFeats, FLEXFEATURE, {NAME: featName})
 
             # Create the Values element
             myValues = ET.SubElement(myFeat, VALUES)
@@ -214,8 +228,7 @@ def createElements(myDB, rootNode, dataElemStr, dbStartData):
             # Add all the FLExFeatureValue sub-elements
             for valueStr in valueList:
 
-                myValue = ET.SubElement(myValues, FLEXFEATUREVALUE)
-                myValue.attrib[ABBREV] = valueStr
+                ET.SubElement(myValues, FLEXFEATUREVALUE, {ABBREV: valueStr})
 
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 
@@ -263,7 +276,7 @@ def MainFunction(DB, report, modify=True):
     TargetDB = Utils.openTargetProject(configMap, report)
 
     # Get the FLEx info. for source & target projects that the Rule Assistant font-end needs
-    startData = GetRuleAssistantStartData(report, DB, TargetDB)
+    startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
     # Write the data to an XML file
     ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, startData)
