@@ -205,10 +205,12 @@ def createElements(myDB, rootNode, dataElemStr, dbStartData):
     for catStr in dbStartData.categoryList:
 
         catEl = ET.SubElement(myCats, FLEXCATEGORY, {ABBREV: catStr})
-        dct = dbStartData.categoryFeatures.get(catStr, {})
-        for feat, types in sorted(dct.items()):
-            ET.SubElement(catEl, 'ValidFeature', name=feat,
-                          type='|'.join(sorted(types)))
+        dct = dbStartData.categoryFeatures.get(catStr)
+        if dct:
+            group = ET.SubElement(catEl, 'ValidFeatures')
+            for feat, types in sorted(dct.items()):
+                ET.SubElement(group, 'ValidFeature', name=feat,
+                              type='|'.join(sorted(types)))
 
     # Proceed if we have at least one feature
     if len(dbStartData.featureList) > 0:
