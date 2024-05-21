@@ -181,7 +181,7 @@ def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
     for cat in tgtCatList:
         stemFeats = Utils.getStemFeatures(TargetDB, report, configMap, cat)
         tgtCatFeatures[cat] = {feat: {'stem'} for feat in stemFeats}
-        templates = Utils.getAffixTemplates(TargetDB, report, cat)
+        templates = Utils.getAffixTemplates(TargetDB, cat)
         for tmpl in templates:
             for feat, side in tmpl:
                 if feat not in tgtCatFeatures[cat]:
