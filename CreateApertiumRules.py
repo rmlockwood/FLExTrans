@@ -155,13 +155,15 @@ class RuleGenerator:
         '''Check whether `start` is already in use as an XML ID. If it is,
         modify it until it is not. Mark the resulting ID as in-use.'''
 
-        if start not in self.usedIDs:
-            self.usedIDs.add(start)
-            return start
+        clean = start.replace(' ', '_')
+
+        if clean not in self.usedIDs:
+            self.usedIDs.add(clean)
+            return clean
 
         n = 2
         while True:
-            s = f'{start}{n}'
+            s = f'{clean}{n}'
             if s not in self.usedIDs:
                 self.usedIDs.add(s)
                 return s
