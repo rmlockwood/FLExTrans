@@ -369,7 +369,7 @@ class RuleGenerator:
                 if possibleLemmas is not None:
                     lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
 
-                if not lemmas:
+                if not lemmas or not tags:
                     SetVar(elem, 'no_lemma_for_'+'_'.join(path))
                     continue
 
