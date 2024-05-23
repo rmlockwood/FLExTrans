@@ -418,8 +418,13 @@ class RuleGenerator:
         ruleName = rule.get('name')
 
         sourceWords = []
+        sourceIDs = set()
         for word in rule.findall('.//Source//Word'):
             wid = word.get('id')
+            if wid in sourceIDs:
+                self.report.Error(f'Multiple source words have ID {wid} in rule "{ruleName}".')
+                return False
+            sourceIDs.add(wid)
             cat = word.get('category')
             if cat is None:
                 self.report.Error(f'Source word {wid} in rule "{ruleName}" has no category.')
