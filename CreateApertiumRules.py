@@ -28,7 +28,8 @@ from itertools import chain, combinations
 class RuleGenerator:
 
     SectionSequence = ['section-def-cats', 'section-def-attrs',
-                       'section-def-vars', 'section-def-macros', 'section-rules']
+                       'section-def-vars', 'section-def-lists',
+                       'section-def-macros', 'section-rules']
 
     def __init__(self, DB, report, configMap):
         self.DB = DB
