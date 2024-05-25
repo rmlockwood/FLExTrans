@@ -1,7 +1,7 @@
 #
 #   FTPaths.py
 #
-#   Define all the paths used by FlexTrans in one place.
+#   Define all the paths used by FlexTrans in one place. 
 #
 #   Version 3.11.1 - 5/16/24 - Ron Lockwood
 #    Change the folder name too.
