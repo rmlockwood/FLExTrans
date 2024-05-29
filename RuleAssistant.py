@@ -71,16 +71,52 @@ ABBREV = 'abbr'
 
 @dataclass
 class DBStartData:
- 
+
+    projectName: str
     categoryList: list
     featureList: list
     categoryFeatures: dict
- 
+
+    def toXml(self, root, tag):
+        parent = ET.SubElement(root, tag, {NAME: self.projectName})
+
+        catsEl = ET.SubElement(parent, CATEGORIES)
+
+        for cat in self.categoryList:
+            elem = ET.SubElement(catsEl, FLEXCATEGORY, {ABBREV: cat})
+            dct = self.categoryFeatures.get(cat)
+            if not dct:
+                continue
+            group = ET.SubElement(elem, 'ValidFeatures')
+            for feat, types in sorted(dct.items()):
+                ET.SubElement(group, 'ValidFeature', name=feat,
+                              type='|'.join(sorted(types)))
+
+        if not self.featureList:
+            return
+
+        featsEl = ET.SubElement(parent, FEATURES)
+
+        for name, values in self.featureList:
+            featEl = ET.SubElement(featsEl, FLEXFEATURE, {NAME: name})
+            group = ET.SubElement(featEl, VALUES)
+            for val in values:
+                ET.SubElement(group, FLEXFEATUREVALUE, {ABBREV: val})
+
 @dataclass
 class StartData:
  
     src: DBStartData
     tgt: DBStartData
+
+    def write(self, fileName):
+        root = ET.Element(FLEXDATA)
+        self.src.toXml(root, SOURCEDATA)
+        self.tgt.toXml(root, TARGETDATA)
+
+        tree = ET.ElementTree(root)
+        ET.indent(tree)
+        tree.write(fileName, encoding='utf-8', xml_declaration=True)
 
 # Trying to get something like this:
 #
@@ -113,24 +149,6 @@ class StartData:
 #   similar to above ...
 #  </TargetData>
 # </FLExData>
-def writeXMLData(srcDB, tgtDB, startData):
-
-    # Create a full path to the Rule Assistant GUI input file.
-    ruleAssistGUIinputXMLfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT_FILE)
-
-    # Start an XML object with root FLExData
-    rootNode = ET.Element(FLEXDATA)
-
-    # Add all the sub-element data to the root element
-    createElements(srcDB, rootNode, SOURCEDATA, startData.src)
-    createElements(tgtDB, rootNode, TARGETDATA, startData.tgt)
-
-    # Create an Element Tree object and write the xml file.
-    tree = ET.ElementTree(rootNode)
-    ET.indent(tree)
-    tree.write(ruleAssistGUIinputXMLfile, encoding='utf-8', xml_declaration=True)
-
-    return ruleAssistGUIinputXMLfile
 
 def getFeatureData(DB):
 
@@ -171,52 +189,12 @@ def GetStartData(report, DB, configMap):
                     catFeatures[cat][feat] = set()
                 catFeatures[cat][feat].add(side)
 
-    return DBStartData(catList, featureList, catFeatures)
+    return DBStartData(DB.ProjectName(), catList, featureList, catFeatures)
 
 def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
 
     return StartData(GetStartData(report, DB, configMap),
                      GetStartData(report, TargetDB, configMap))
-
-def createElements(myDB, rootNode, dataElemStr, dbStartData):
-
-    # Create the Source/TargetData element and set the name to the FLEx project name
-    dataElement = ET.SubElement(rootNode, dataElemStr)
-    dataElement.attrib[NAME] = myDB.ProjectName()
-
-    # Create the Categories element
-    myCats = ET.SubElement(dataElement, CATEGORIES)
-
-    # Add all the FLExCategory elements 
-    for catStr in dbStartData.categoryList:
-
-        catEl = ET.SubElement(myCats, FLEXCATEGORY, {ABBREV: catStr})
-        dct = dbStartData.categoryFeatures.get(catStr)
-        if dct:
-            group = ET.SubElement(catEl, 'ValidFeatures')
-            for feat, types in sorted(dct.items()):
-                ET.SubElement(group, 'ValidFeature', name=feat,
-                              type='|'.join(sorted(types)))
-
-    # Proceed if we have at least one feature
-    if len(dbStartData.featureList) > 0:
-
-        # Create the Features element
-        myFeats = ET.SubElement(dataElement, FEATURES)
-
-        # Loop through features
-        for featName, valueList in dbStartData.featureList:
-
-            # Create the FLExFeature element
-            myFeat = ET.SubElement(myFeats, FLEXFEATURE, {NAME: featName})
-
-            # Create the Values element
-            myValues = ET.SubElement(myFeat, VALUES)
-
-            # Add all the FLExFeatureValue sub-elements
-            for valueStr in valueList:
-
-                ET.SubElement(myValues, FLEXFEATUREVALUE, {ABBREV: valueStr})
 
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 
@@ -267,7 +245,8 @@ def MainFunction(DB, report, modify=True):
     startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
     # Write the data to an XML file
-    ruleAssistGUIinputfile = writeXMLData(DB, TargetDB, startData)
+    ruleAssistGUIinputfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT_FILE)
+    startData.write(ruleAssistGUIinputfile)
     
     # Start the Rule Assistant GUI
     saved, rule = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile)
