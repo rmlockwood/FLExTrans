@@ -132,65 +132,51 @@ def writeXMLData(srcDB, tgtDB, startData):
 
     return ruleAssistGUIinputXMLfile
 
-def getFeatureData(DB, myFeatureList):
+def getFeatureData(DB):
+
+    myFeatureList = []
 
     # Loop through all closed features in the database. Closed features are ones that don't embed other feature structures
     for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
 
         # Get the feature name in the best analysis language (typically English)
-        featName = ITsString(feature.Name.BestAnalysisAlternative).Text
-        featValueList = []
-
+        featName = Utils.as_string(feature.Name)
         # Loop through possible feature values and save the abbreviation
-        for value in feature.ValuesOC:
-
-            abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
-            abbr = re.sub(r'\.', '_', abbr) # change underscores to periods
-            featValueList.append(abbr)
-
-        # Sort the values
-        featValueList.sort()
+        featValueList = sorted([Utils.as_tag(val) for val in feature.ValuesOC])
 
         # Add the name and the value list as a tuple to main list
         myFeatureList.append((featName, featValueList))
 
     # Sort the main list. By default sort uses the first tuple element for sorting.    
     myFeatureList.sort()
+    return myFeatureList
+
+def GetStartData(report, DB, configMap):
+    posMap = {}
+    # Put categories in posMap
+    Utils.get_categories(DB, report, posMap, TargetDB=None,
+                         numCatErrorsToShow=1, addInflectionClasses=False)
+    catList = sorted(posMap.keys())
+
+    featureList = getFeatureData(DB)
+
+    catFeatures = {}
+    for cat in catList:
+        stemFeats = Utils.getStemFeatures(DB, report, configMap, cat)
+        catFeatures[cat] = {feat: {'stem'} for feat in stemFeats}
+        templates = Utils.getAffixTemplates(DB, cat)
+        for tmpl in templates:
+            for feat, side in tmpl:
+                if feat not in catFeatures[cat]:
+                    catFeatures[cat][feat] = set()
+                catFeatures[cat][feat].add(side)
+
+    return DBStartData(catList, featureList, catFeatures)
 
 def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
 
-    posMap = {}
-    srcFeatureList = []
-    tgtFeatureList = []
-
-    # Get categories. They end up in the posMap which is a dict. 
-    Utils.get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
-
-    # Turn them into a sorted list.
-    srcCatList = sorted(posMap.keys())
-
-    # Same for the target database
-    Utils.get_categories(TargetDB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=False)
-    tgtCatList = sorted(posMap.keys())
-
-    # Get features. They come back sorted.
-    getFeatureData(DB, srcFeatureList)
-    getFeatureData(TargetDB, tgtFeatureList)
-
-    tgtCatFeatures = {}
-    for cat in tgtCatList:
-        stemFeats = Utils.getStemFeatures(TargetDB, report, configMap, cat)
-        tgtCatFeatures[cat] = {feat: {'stem'} for feat in stemFeats}
-        templates = Utils.getAffixTemplates(TargetDB, cat)
-        for tmpl in templates:
-            for feat, side in tmpl:
-                if feat not in tgtCatFeatures[cat]:
-                    tgtCatFeatures[cat][feat] = set()
-                tgtCatFeatures[cat][feat].add(side)
-
-    myStartData = StartData(DBStartData(srcCatList, srcFeatureList, {}), DBStartData(tgtCatList, tgtFeatureList, tgtCatFeatures))
-
-    return myStartData
+    return StartData(GetStartData(report, DB, configMap),
+                     GetStartData(report, TargetDB, configMap))
 
 def createElements(myDB, rootNode, dataElemStr, dbStartData):
 

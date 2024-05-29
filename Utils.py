@@ -997,6 +997,12 @@ def do_capitalization(wordToChange, modelWord):
             return wordToChange[0].upper()+wordToChange[1:]
     return wordToChange
 
+def as_string(obj):
+    return ITsString(obj.BestAnalysisAlternative).Text
+
+def as_tag(obj):
+    return underscores(as_string(obj.Abbreviation))
+
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
@@ -1008,12 +1014,11 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             spec = IFsClosedValue(spec)
 
             if spec.FeatureRA:
-                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+                featGrpName = as_string(spec.FeatureRA.Name)
             else:
                 featGrpName = "ERR"
             if spec.ValueRA:
-                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-                abbValue = re.sub('\.', '_', abbValue) # convert dots to underscore
+                abbValue = as_tag(spec.ValueRA)
             else:
                 abbValue = "ERR"
             feat_abbr_list.append((featGrpName, abbValue))
@@ -1658,8 +1663,8 @@ def get_sub_inflection_classes(mySubClasses):
     
     for ic in mySubClasses:
         
-        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
-        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        icAbbr = as_string(ic.Abbreviation)
+        icName = as_string(ic.Name)
         
         ic_list.append((icAbbr,icName))
         
@@ -1692,7 +1697,7 @@ def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addI
         for pos in dbObj.lp.AllPartsOfSpeech:
     
             # save abbreviation and full name
-            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posAbbrStr = as_string(pos.Abbreviation)
             posFullNameStr = pos.ToString()
             
             # check for errors or warnings, pass in the error counter list which may have been incremented
@@ -1833,7 +1838,7 @@ def getSourceTextList(DB, matchingContentsObjList=None):
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
+        sourceList.append(as_string(interlinText.Name).strip())
 
         # if the caller wants to get a list of contents objects, add to the provided list
         if matchingContentsObjList != None:
@@ -2056,7 +2061,7 @@ def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, sen
 
     # Add a fake .1 so we can remove any 1.Xs
     headWordStr = removeLemmaOnePointSomething(headWordStr + '.1')
-    glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
+    glossStr = as_string(targetSense.Gloss)
 
     # Put the string we want for the link name into a tsString
     linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
@@ -2121,7 +2126,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
 
                         if msa.PartOfSpeechRA:            
 
-                            abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
 
                             if abbrev != gramCategoryAbbrev:
                                 break
@@ -2181,7 +2186,7 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
                     # Check if this affix matches the desired grammatical category
                     if senseMsa.PartOfSpeechRA:            
 
-                        abbrev = ITsString(senseMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                        abbrev = as_string(senseMsa.PartOfSpeechRA.Abbreviation)
 
                         if abbrev != gramCategoryAbbrev:
                             continue
@@ -2199,7 +2204,7 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
                                     
                                     if featureCategoryAbbrev == grpName:
 
-                                        gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                                        gloss = as_string(mySense.Gloss)
                                         myList.append((gloss, abb))
                                         break
     return myList
@@ -2207,7 +2212,7 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
 def getAffixSlotCategories(slot, gramCategoryAbbrev):
     feat_abbr_list = []
     for affix in slot.Affixes:
-        abbrev = ITsString(affix.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+        abbrev = as_string(affix.PartOfSpeechRA.Abbreviation)
         if abbrev != gramCategoryAbbrev or not affix.InflFeatsOA:
             continue
         get_feat_abbr_list(affix.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
@@ -2216,8 +2221,7 @@ def getAffixSlotCategories(slot, gramCategoryAbbrev):
 def getAffixTemplates(DB, gramCategoryAbbrev):
     templates = set()
     for pos in DB.lp.AllPartsOfSpeech:
-        abbrev = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-        if abbrev != gramCategoryAbbrev:
+        if gramCategoryAbbrev != as_string(pos.Abbreviation):
             continue
         for template in pos.AffixTemplatesOS:
             slots = []
@@ -2248,7 +2252,7 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
             msa = IMoStemMsa(msara)
             if not msa.PartOfSpeechRA:
                 continue
-            abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
             if abbrev != gramCategoryAbbrev:
                 continue
             if msa.MsFeaturesOA:
