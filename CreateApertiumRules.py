@@ -24,6 +24,19 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
 from itertools import chain, combinations
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class FeatureSpec:
+    category: str
+    label: str
+    isAffix: bool
+
+@dataclass
+class MacroSpec:
+    macid: str
+    varid: str
+    catSequence: list[str]
 
 class RuleGenerator:
 
@@ -200,30 +213,30 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def EnsureAttribute(self, category: str, label: str, isAffix: bool) -> str:
+    def EnsureAttribute(self, spec: FeatureSpec) -> str:
         '''Return the name of the attribute corresponding to feature `label`
         for part of speech `category`, creating it if necessary.'''
 
-        if (category, label) in self.featureToAttributeName:
-            return self.featureToAttributeName[(category, label)]
+        if (spec.category, spec.label) in self.featureToAttributeName:
+            return self.featureToAttributeName[(spec.category, spec.label)]
 
-        if isAffix:
+        if spec.isAffix:
             values = set([Utils.underscores(l[0])
                           for l in Utils.getAffixGlossesForFeature(
                                   self.DB, self.report, self.configMap,
-                                  category, label)])
+                                  spec.category, spec.label)])
         else:
             values = set([Utils.underscores(l[1])
                           for l in Utils.getLemmasForFeature(
                                   self.DB, self.report, self.configMap,
-                                  category, label)])
+                                  spec.category, spec.label)])
 
-        if isAffix:
-            name = f'a_{category}_{label}_slot'
+        if spec.isAffix:
+            name = f'a_{spec.category}_{spec.label}_slot'
         else:
-            name = f'a_{label}_feature'
+            name = f'a_{spec.label}_feature'
         aid = self.AddSingleAttribute(name, values)
-        self.featureToAttributeName[(category, label)] = aid
+        self.featureToAttributeName[(spec.category, spec.label)] = aid
         return aid
 
     def AddVariable(self, name: str, comment: Optional[str] = None) -> None:
@@ -256,27 +269,25 @@ class RuleGenerator:
         section.insert(loc, ET.Element('def-var', n=name))
         self.variables[name] = None
 
-    def GetTags(self, category: str, label: str,
-                isAffix: bool) -> set[tuple[str, str]]:
+    def GetTags(self, spec: FeatureSpec) -> set[tuple[str, str]]:
         '''Return a set of tuples where the first element is the tag that
         would appear in the stream and the second element is the feature
         value so that we can match it up with the tags for other categories.'''
 
-        if isAffix:
+        if spec.isAffix:
             return set([(Utils.underscores(l[0]), Utils.underscores(l[1]))
                         for l in Utils.getAffixGlossesForFeature(
                                 self.DB, self.report, self.configMap,
-                                category, label)])
+                                spec.category, spec.label)])
         else:
             # If we're getting lemma features, they will show up as their
             # values, so we discard the actual lemmas.
             return set([(Utils.underscores(l[1]), Utils.underscores(l[1]))
                         for l in Utils.getLemmasForFeature(
                                 self.DB, self.report, self.configMap,
-                                category, label)])
+                                spec.category, spec.label)])
 
-    def GetAttributeMacro(self, srcSpec: tuple[str, str, bool],
-                          trgSpec: tuple[str, str, bool]) -> tuple[Optional[str], Optional[str]]:
+    def GetAttributeMacro(self, srcSpec: FeatureSpec, trgSpec: FeatureSpec) -> Optional[MacroSpec]:
         '''Return the macro and variable names for converting between the
         category+attribute pairs `srcSpec` and `trgSpec`, creating the macro
         if necessary. If no conversion is needed and a simple <clip> can be
@@ -285,15 +296,15 @@ class RuleGenerator:
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
-        src = self.GetTags(*srcSpec)
-        trg = self.GetTags(*trgSpec)
+        src = self.GetTags(srcSpec)
+        trg = self.GetTags(trgSpec)
 
         if src == trg:
-            self.attributeMacros[(srcSpec, trgSpec)] = (None, None)
-            return (None, None)
+            self.attributeMacros[(srcSpec, trgSpec)] = None
+            return None
 
-        macid = self.GetAvailableID(f'm_{srcSpec[0]}_{srcSpec[1]}-to-{trgSpec[0]}_{trgSpec[1]}')
-        varid = self.GetAvailableID(f'v_{trgSpec[0]}_{trgSpec[1]}')
+        macid = self.GetAvailableID(f'm_{srcSpec.category}_{srcSpec.label}-to-{trgSpec.category}_{trgSpec.label}')
+        varid = self.GetAvailableID(f'v_{trgSpec.category}_{trgSpec.label}')
         self.AddVariable(varid, f'Used by macro {macid}')
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar='1')
@@ -309,7 +320,7 @@ class RuleGenerator:
             test = ET.SubElement(when, 'test')
             eq = ET.SubElement(test, 'equal')
             ET.SubElement(eq, 'clip', pos='1', side='tl',
-                          part=self.EnsureAttribute(*srcSpec))
+                          part=self.EnsureAttribute(srcSpec))
             ET.SubElement(eq, 'lit-tag', v=srcTag)
 
             wlet = ET.SubElement(when, 'let')
@@ -325,19 +336,19 @@ class RuleGenerator:
         otherwise = ET.SubElement(choose, 'otherwise')
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
-        ET.SubElement(olet, 'lit-tag', v=f'{trgSpec[1]}_UNK')
+        ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}_UNK')
 
-        self.attributeMacros[(srcSpec, trgSpec)] = (macid, varid)
-        return (macid, varid)
+        spec = MacroSpec(macid, varid, [srcSpec.category])
+        self.attributeMacros[(srcSpec, trgSpec)] = spec
+        return spec
 
-    def GetLemmaMacro(self, destCategory: str,
-                      sources: list[tuple[str, str, str]]) -> tuple[str, str, list[str]]:
+    def GetLemmaMacro(self, destCategory: str, sources: list[FeatureSpec]) -> MacroSpec:
         '''Find or generate the appropriate macro for changing the lemma of
         a word with part of speech `destCategory` based on a set of agreement
         features (`sources`). Return the macro name, the variable name, and
         the order of the arguments to the macro by part-of-speech tag.'''
 
-        catSequence = sorted(set([s[0] for s in sources]))
+        catSequence = sorted(set([s.category for s in sources]))
         lookupKey = (destCategory, tuple(catSequence))
         if lookupKey in self.lemmaMacros:
             return self.lemmaMacros[lookupKey]
@@ -358,13 +369,13 @@ class RuleGenerator:
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         SetVar(macro, '')
 
-        labelSeq = [s[1] for s in sources]
+        labelSeq = [s.label for s in sources]
         locations = [(macro, None, [])]
-        for category, label, isAffix in sources:
-            clipPos = str(catSequence.index(category)+1)
-            tags = sorted(self.GetTags(category, label, isAffix))
+        for source in sources:
+            clipPos = str(catSequence.index(source.category)+1)
+            tags = sorted(self.GetTags(source))
             allLemmas = Utils.getLemmasForFeature(
-                self.DB, self.report, self.configMap, destCategory, label)
+                self.DB, self.report, self.configMap, destCategory, source.label)
             newLocations = []
 
             for elem, possibleLemmas, path in locations:
@@ -388,7 +399,7 @@ class RuleGenerator:
                     eq = ET.SubElement(test, 'equal')
                     ET.SubElement(
                         eq, 'clip', pos=clipPos, side='tl',
-                        part=self.EnsureAttribute(category, label, isAffix))
+                        part=self.EnsureAttribute(source))
                     ET.SubElement(eq, 'lit-tag', v=tag)
                     nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
                     newLocations.append((when, nextLemmas, path+[feature]))
@@ -410,8 +421,9 @@ class RuleGenerator:
                 value = 'multiple_'+error
             SetVar(elem, value)
 
-        self.lemmaMacros[lookupKey] = (macid, varid, catSequence)
-        return (macid, varid, catSequence)
+        spec = MacroSpec(macid, varid, catSequence)
+        self.lemmaMacros[lookupKey] = spec
+        return spec
 
     def ProcessRule(self, rule: ET.Element, skip: Optional[set[str]] = None) -> bool:
         '''Convert a Rule Assistant <Rule> node `rule` to an Apertium <rule>
@@ -474,7 +486,25 @@ class RuleGenerator:
         usedMacros = set()
 
         matches = defaultdict(list)
-        for index, word in enumerate(rule.findall('.//Target//Word')):
+
+        # If there are match groups on the source side, list them first
+        # so that their positions override the target match group positions.
+        for word in rule.findall('.//Source//Word'):
+            wid = word.get('id')
+            if skip and wid in skip:
+                continue
+            pos = wordLocation.get(wid)
+            for feat in word.findall('./Features/Feature'):
+                matches[(feat.get('label'), feat.get('match'))].append(
+                    (pos, True, False))
+            for feat in word.findall('.//Affix//Feature'):
+                matches[(feat.get('label'), feat.get('match'))].append(
+                    (pos, True, True))
+
+        # Now record the match groups on the target side, tracking whether
+        # the word they appear on is marked as head or not, since we want
+        # information to flow from head to dependent by default.
+        for word in rule.findall('.//Target//Word'):
             head = (word.get('head') == 'yes')
             wid = word.get('id')
             if skip and wid in skip:
@@ -495,6 +525,8 @@ class RuleGenerator:
         # If no such source is found, report an error.
         featureSources = {}
         for (label, match), items in matches.items():
+            if match is None:
+                continue
             cur = None
             for wid, head, affix in items:
                 if head:
@@ -530,8 +562,8 @@ class RuleGenerator:
             for feature in word.findall('./Features/Feature'):
                 label = feature.get('label')
                 match = feature.get('match')
-                apos, isAffix = featureSources.get((label, match), pos)
-                lemmaTags.append((wordCats[apos], label, isAffix))
+                apos, isAffix = featureSources.get((label, match), (pos, False))
+                lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix))
                 lemmaLocs[wordCats[apos]] = apos
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
 
@@ -544,15 +576,15 @@ class RuleGenerator:
                 lemCase = lu
 
             if shouldUseLemmaMacro:
-                macid, varid, catSequence = self.GetLemmaMacro(cat, lemmaTags)
-                if macid not in usedMacros:
-                    actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {varid}.'))
-                    callmac = ET.SubElement(actionEl, 'call-macro', n=macid)
-                    for srcCat in catSequence:
+                spec = self.GetLemmaMacro(cat, lemmaTags)
+                if spec.macid not in usedMacros:
+                    actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.'))
+                    callmac = ET.SubElement(actionEl, 'call-macro', n=spec.macid)
+                    for srcCat in spec.catSequence:
                         ET.SubElement(callmac, 'with-param',
                                       pos=lemmaLocs[srcCat])
-                    usedMacros.add(macid)
-                ET.SubElement(lemCase, 'var', n=varid)
+                    usedMacros.add(spec.macid)
+                ET.SubElement(lemCase, 'var', n=spec.varid)
             else:
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
@@ -563,32 +595,52 @@ class RuleGenerator:
             # Force prefixes to be before suffixes
             prefixFeatures = []
             suffixFeatures = []
+            prefixes = []
+            suffixes = []
             for affix in word.findall('.//Affix'):
                 prefix = (affix.get('type', 'suffix') == 'prefix')
+                if prefix:
+                    prefixes.append(affix)
+                else:
+                    suffixes.append(affix)
                 for feature in affix.findall('.//Feature'):
                     label = feature.get('label')
                     match = feature.get('match')
+                    value = feature.get('value')
                     if prefix:
-                        prefixFeatures.append((label, match))
+                        prefixFeatures.append((label, match, value))
                     else:
-                        suffixFeatures.append((label, match))
+                        suffixFeatures.append((label, match, value))
 
-            for label, match in prefixFeatures + suffixFeatures:
-                apos, isAffix = featureSources.get((label, match), pos)
+            for label, match, value in prefixFeatures + suffixFeatures:
+
+                if value is not None:
+                    tags = self.GetTags(FeatureSpec(wordCats[pos], label, True))
+                    for tag, val in tags:
+                        if val == value:
+                            ET.SubElement(lu, 'lit-tag', v=tag)
+                            break
+                    else:
+                        self.report.Error(f'No tag found for value {value} of feature {label}')
+                        self.GetSection('section-rules').remove(ruleEl)
+                        return False
+                    continue
+
+                apos, isAffix = featureSources.get((label, match), (pos, True))
                 if apos != pos:
-                    mac, var = self.GetAttributeMacro(
-                        (wordCats[apos], label, isAffix),
-                        (cat, label, True))
-                    if mac is not None:
-                        if mac not in usedMacros:
-                            actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {var}.'))
+                    spec = self.GetAttributeMacro(
+                        FeatureSpec(wordCats[apos], label, isAffix),
+                        FeatureSpec(cat, label, True))
+                    if spec is not None:
+                        if spec.macid not in usedMacros:
+                            actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {spec.varid}.'))
                             callmac = ET.SubElement(actionEl, 'call-macro',
-                                                    n=mac)
+                                                    n=spec.macid)
                             ET.SubElement(callmac, 'with-param', pos=apos)
-                            usedMacros.add(mac)
-                        ET.SubElement(lu, 'var', n=var)
+                            usedMacros.add(spec.macid)
+                        ET.SubElement(lu, 'var', n=spec.varid)
                         continue
-                attr = self.EnsureAttribute(cat, label, True)
+                attr = self.EnsureAttribute(FeatureSpec(cat, label, True))
                 ET.SubElement(lu, 'clip', pos=apos, side='tl', part=attr)
 
         actionEl.append(outEl)
