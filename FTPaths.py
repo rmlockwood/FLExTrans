@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
+#   Version 3.11.2 - 6/3/24 - Ron Lockwood
+#    RA folder and exe names now have no spaces.
+#
 #   Version 3.11.1 - 5/16/24 - Ron Lockwood
 #    Change the folder name too.
 #
@@ -44,5 +47,5 @@ TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
 HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
-RULE_ASSISTANT_DIR = 'FLExTrans Rule Assistant'
-RULE_ASSISTANT     = 'FLExTrans Rule Assistant.exe'
+RULE_ASSISTANT_DIR = 'FLExTransRuleAssistant'
+RULE_ASSISTANT     = 'FLExTransRuleAssistant.exe'
