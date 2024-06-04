@@ -733,6 +733,13 @@ class RuleGenerator:
     def WriteTransferFile(self, fileName: str) -> None:
         '''Write the generated transfer rules XML to `fileName`.'''
 
+        # The transfer DTD doesn't allow sections to be empty,
+        # so simply don't include them in that case.
+        for name in RuleGenerator.SectionSequence:
+            elem = self.GetSection(name)
+            if len(elem) == 0:
+                self.root.remove(elem)
+
         with open(fileName, 'wb') as fout:
             fout.write('<?xml version="1.0" encoding="utf-8"?>\n'.encode('utf-8'))
             fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">\n'.encode('utf-8'))
