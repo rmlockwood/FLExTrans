@@ -1819,9 +1819,9 @@ def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
         
         strippedLine = line.strip()
         
-        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
-               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
-               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+        if strippedLine.startswith('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"') or \
+               strippedLine.startswith('<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"') or \
+               strippedLine.startswith('<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"') or \
                strippedLine == '"transfer.dtd">' or \
                strippedLine == '"interchunk.dtd">' or \
                strippedLine == '"postchunk.dtd">':
