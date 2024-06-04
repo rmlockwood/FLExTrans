@@ -11,7 +11,6 @@ from RuleAssistantTests import Utils
 CreateApertiumRules = None
 
 ParentFolder = os.path.dirname(__file__)
-print(ParentFolder)
 DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
 
@@ -62,76 +61,190 @@ class BaseTest:
     TestPairs = [
         ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
          '^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
     ]
 
-    @classmethod
-    def fileName(cls, ext):
-        return os.path.join(TestFolder, cls.__name__ + '.' + ext)
-
-    @classmethod
-    def setUpClass(cls):
+    def runTest(self):
         global Utils
-        dest = cls.fileName('t1x')
-        print(f'checking for {dest}')
-        if os.path.exists(dest):
-            print(f'removing {dest}')
-            os.remove(dest)
-        if cls.TransferFile is not None:
-            shutil.copy(os.path.join(DataFolder, cls.TransferFile), dest)
-        Utils.DATA = cls.Data
+        prefix = os.path.join(TestFolder, self.__class__.__name__)
+        t1xFile = prefix + '.t1x'
+        binFile = prefix + '.bin'
 
-    @classmethod
-    def tearDownClass(cls):
-        global Utils
-        Utils.DATA = {}
-
-    def test_step1_create(self):
+        if os.path.exists(t1xFile):
+            os.remove(t1xFile)
+        if self.TransferFile is not None:
+            shutil.copy(os.path.join(DataFolder, self.TransferFile), t1xFile)
+        Utils.DATA = self.Data
+        
+        # Create rules
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
         self.assertTrue(CreateApertiumRules.CreateRules(
-            None, report, None, path, self.fileName('t1x'), self.RuleNumber,
+            None, report, None, path, t1xFile, self.RuleNumber,
         ))
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
 
-    def test_step2_validate(self):
-        proc = subprocess.run(
-            ['apertium-validate-transfer', self.fileName('t1x')],
+        # Validate rules
+        validate = subprocess.run(
+            ['apertium-validate-transfer', t1xFile],
             text=True, check=False, capture_output=True,
         )
-        self.assertEqual(0, proc.returncode)
+        self.assertEqual(0, validate.returncode)
 
-    def test_step3_compile(self):
-        proc = subprocess.run(
-            ['apertium-preprocess-transfer',
-             self.fileName('t1x'), self.fileName('bin')],
+        # Compile rules
+        preproc = subprocess.run(
+            ['apertium-preprocess-transfer', t1xFile, binFile],
             text=True, check=False, capture_output=True,
         )
-        self.assertEqual(0, proc.returncode)
+        self.assertEqual(0, preproc.returncode)
 
-    def test_step4_run(self):
+        # Apply rules
         proc = subprocess.Popen(
-            ['apertium-transfer', '-b', '-z',
-             self.fileName('t1x'), self.fileName('bin')],
+            ['apertium-transfer', '-b', '-z', t1xFile, binFile],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        for i, (inp, exp) in enumerate(self.TestPairs, 1):
-            with self.subTest(input_line=i):
+        for inp, exp in self.TestPairs:
+            with self.subTest(input_line=inp):
                 proc.stdin.write(inp.encode('utf-8') + b'\0')
                 proc.stdin.flush()
                 out = b''
                 while (c := proc.stdout.read(1)) != b'\0':
                     out += c
                 self.assertEqual(exp, out.decode('utf-8'))
+        # End process
         proc.communicate()
         proc.stdin.close()
         proc.stdout.close()
         proc.stderr.close()
         self.assertEqual(proc.poll(), 0)
 
+        Utils.DATA = {}
+
 class SpanishAdjNoun(BaseTest, unittest.TestCase):
     pass
+
+class SpanishDefNoun_MissingSG(BaseTest, unittest.TestCase):
+    Data = {
+        'def': {
+            'gender': {
+                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
+                          ('la1.1', 'f')],
+            },
+            'number': {
+                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
+                          ('la1.1', 'sg')]
+            },
+        },
+        'n': {
+            'gender': {
+                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl')],
+            },
+        },
+    }
+    RuleFile = 'Ex1b_Def-Noun.xml'
+    TestPairs = [
+        ('^the1.1<def>/el1.1<def>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^no_lemma_for_m<def>$ ^camino1.1<n>$'),
+        ('^the1.1<def>/el1.1<def>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^los1.1<def>$ ^camino1.1<n><PL>$'),
+        ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^no_lemma_for_f<def>$ ^bicicleta1.1<n>$'),
+        ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^las1.1<def>$ ^bicicleta1.1<n><PL>$'),
+    ]
+
+class SpanishDefNoun_NullSG(BaseTest, unittest.TestCase):
+    Data = {
+        'def': {
+            'gender': {
+                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
+                          ('la1.1', 'f')],
+            },
+            'number': {
+                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
+                          ('la1.1', 'sg')]
+            },
+        },
+        'n': {
+            'gender': {
+                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
+    RuleFile = 'Ex1b_Def-Noun.xml'
+    TestPairs = [
+        ('^the1.1<def>/el1.1<def>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^el1.1<def>$ ^camino1.1<n><SG>$'),
+        ('^the1.1<def>/el1.1<def>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^los1.1<def>$ ^camino1.1<n><PL>$'),
+        ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^la1.1<def>$ ^bicicleta1.1<n><SG>$'),
+        ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^las1.1<def>$ ^bicicleta1.1<n><PL>$'),
+    ]
+
+class SpanishDefAdjNoun(BaseTest, unittest.TestCase):
+    Data = {
+        'adj': {
+            'gender': {
+                'affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+        'def': {
+            'gender': {
+                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
+                          ('la1.1', 'f')],
+            },
+            'number': {
+                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
+                          ('la1.1', 'sg')]
+            },
+        },
+        'n': {
+            'gender': {
+                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
+    RuleFile = 'Ex4a_Def-Adj-Noun.xml'
+    TestPairs = [
+        ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^el1.1<def>$ ^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^los1.1<def>$ ^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^la1.1<def>$ ^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
+        ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^las1.1<def>$ ^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
+    ]
 
 if __name__ == '__main__':
     unittest.main()
