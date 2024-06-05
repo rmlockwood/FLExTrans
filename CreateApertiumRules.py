@@ -578,7 +578,7 @@ class RuleGenerator:
                 label = feature.get('label')
                 match = feature.get('match')
                 value = feature.get('value')
-                if value is None:
+                if not value:
                     apos, isAffix = featureSources.get((label, match),
                                                        (pos, False))
                 else:
@@ -658,7 +658,7 @@ class RuleGenerator:
 
                 label, match, value = affix[0]
 
-                if value is not None:
+                if value:
                     tags = self.GetTags(FeatureSpec(wordCats[pos], label, True,
                                                     value=value))
                     if tags:
