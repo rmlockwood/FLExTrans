@@ -32,6 +32,14 @@ class FeatureSpec:
     label: str
     isAffix: bool
     value: Optional[str] = None
+    default: Optional[str] = None
+
+    @property
+    def xmlLabel(self):
+        ls = [self.category, self.label]
+        if self.default:
+            ls += ['or', self.default]
+        return '_'.join(ls)
 
 @dataclass
 class MacroSpec:
@@ -303,12 +311,51 @@ class RuleGenerator:
         src = self.GetTags(srcSpec)
         trg = self.GetTags(trgSpec)
 
-        if src == trg:
-            self.attributeMacros[(srcSpec, trgSpec)] = None
-            return None
+        def FindTag(srcFeat):
+            nonlocal trg
+            for trgTag, trgFeat in trg:
+                if trgFeat == srcFeat:
+                    return trgTag
+            return f'{srcFeat}_NOTAG'
 
-        macid = self.GetAvailableID(f'm_{srcSpec.category}_{srcSpec.label}-to-{trgSpec.category}_{trgSpec.label}')
-        varid = self.GetAvailableID(f'v_{trgSpec.category}_{trgSpec.label}')
+        def MakeWhenClause(element, varid, value):
+            when = ET.SubElement(element, 'when')
+            test = ET.SubElement(when, 'test')
+            eq = ET.SubElement(test, 'equal')
+            let = ET.SubElement(when, 'let')
+            ET.SubElement(let, 'var', n=varid)
+            ET.SubElement(let, 'lit-tag', v=value)
+            return eq
+
+        if src == trg:
+            if not srcSpec.default:
+                self.attributeMacros[(srcSpec, trgSpec)] = None
+                return None
+
+            # If there's a default value, we still need to check for the empty
+            # case, but we can skip the rest of the conditional.
+
+            macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+            varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
+            self.AddVariable(varid, f'Used by macro {macid}')
+            macro = ET.SubElement(self.GetSection('section-def-macros'),
+                                  'def-macro', n=macid, npar='1')
+            let1 = ET.SubElement(macro, 'let')
+            ET.SubElement(let1, 'var', n=varid)
+            ET.SubElement(let1, 'clip', pos='1', side='tl',
+                          part=self.EnsureAttribute(srcSpec))
+
+            choose = ET.SubElement(macro, 'choose')
+            eq = MakeWhenClause(choose, varid, FindTag(srcSpec.default))
+            ET.SubElement(eq, 'var', n=varid)
+            ET.SubElement(eq, 'lit', v='')
+
+            spec = MacroSpec(macid, varid, [srcSpec.category])
+            self.attributeMacros[(srcSpec, trgSpec)] = spec
+            return spec
+
+        macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+        varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
         self.AddVariable(varid, f'Used by macro {macid}')
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar='1')
@@ -320,27 +367,21 @@ class RuleGenerator:
 
         choose = ET.SubElement(macro, 'choose')
         for srcTag, srcFeat in src:
-            when = ET.SubElement(choose, 'when')
-            test = ET.SubElement(when, 'test')
-            eq = ET.SubElement(test, 'equal')
+            if srcFeat == srcSpec.default:
+                continue
+
+            eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
             ET.SubElement(eq, 'clip', pos='1', side='tl',
                           part=self.EnsureAttribute(srcSpec))
             ET.SubElement(eq, 'lit-tag', v=srcTag)
 
-            wlet = ET.SubElement(when, 'let')
-            ET.SubElement(wlet, 'var', n=varid)
-
-            for trgTag, trgFeat in trg:
-                if trgFeat == srcFeat:
-                    ET.SubElement(wlet, 'lit-tag', v=trgTag)
-                    break
-            else:
-                ET.SubElement(wlet, 'lit-tag', v=f'{srcFeat}_NOTAG')
-
         otherwise = ET.SubElement(choose, 'otherwise')
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
-        ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}_UNK')
+        if srcSpec.default:
+            ET.SubElement(olet, 'lit-tag', v=FindTag(srcSpec.default))
+        else:
+            ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}_UNK')
 
         spec = MacroSpec(macid, varid, [srcSpec.category])
         self.attributeMacros[(srcSpec, trgSpec)] = spec
@@ -409,6 +450,10 @@ class RuleGenerator:
                 elem.append(ET.Comment(f'Narrow the set of possible values based on {label}{given}.'))
                 choose = ET.SubElement(elem, 'choose')
                 for tag, feature in tags:
+                    if feature == source.default:
+                        # Handle this in the <otherwise> block
+                        continue
+
                     when = ET.SubElement(choose, 'when')
                     test = ET.SubElement(when, 'test')
                     eq = ET.SubElement(test, 'equal')
@@ -419,8 +464,12 @@ class RuleGenerator:
                     nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
                     newLocations.append((when, nextLemmas, path+[feature]))
 
-                SetVar(ET.SubElement(choose, 'otherwise'),
-                       f'no_{macType}_for_'+'_'.join(path))
+                otherwise = ET.SubElement(choose, 'otherwise')
+                if source.default:
+                    nextLemmas = set(l[0] for l in lemmas if l[1] == source.default)
+                    newLocations.append((otherwise, nextLemmas, path+[source.default]))
+                else:
+                    SetVar(otherwise, f'no_{macType}_for_'+'_'.join(path))
 
             locations = newLocations
 
@@ -511,10 +560,10 @@ class RuleGenerator:
             pos = wordLocation.get(wid)
             for feat in word.findall('./Features/Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, True, False))
+                    (pos, True, False, feat.get('unmarked_default')))
             for feat in word.findall('.//Affix//Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, True, True))
+                    (pos, True, True, feat.get('unmarked_default')))
 
         # Now record the match groups on the target side, tracking whether
         # the word they appear on is marked as head or not, since we want
@@ -527,10 +576,10 @@ class RuleGenerator:
             pos = wordLocation.get(wid)
             for feat in word.findall('./Features/Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, head, False))
+                    (pos, head, False, feat.get('unmarked_default')))
             for feat in word.findall('.//Affix//Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, head, True))
+                    (pos, head, True, feat.get('unmarked_default')))
 
         # For each combination of feature and match set, find the best source,
         # where the head word is preferred, if available, and otherwise we
@@ -543,12 +592,12 @@ class RuleGenerator:
             if match is None:
                 continue
             cur = None
-            for wid, head, affix in items:
+            for wid, head, affix, default in items:
                 if head:
-                    cur = (wid, affix)
+                    cur = (wid, affix, default)
                     break
                 elif not affix and cur is None:
-                    cur = (wid, affix)
+                    cur = (wid, affix, default)
             if cur is None:
                 self.report.Error(f'Unable to determine source for {match} {label} in {ruleName}.')
             else:
@@ -579,12 +628,12 @@ class RuleGenerator:
                 match = feature.get('match')
                 value = feature.get('value')
                 if not value:
-                    apos, isAffix = featureSources.get((label, match),
-                                                       (pos, False))
+                    apos, isAffix, default = featureSources.get((label, match),
+                                                                (pos, False))
                 else:
-                    apos, isAffix = pos, False
+                    apos, isAffix, default = pos, False, None
                 lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix,
-                                             value=value))
+                                             value=value, default=default))
                 lemmaLocs[wordCats[apos]] = apos
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
 
@@ -639,10 +688,11 @@ class RuleGenerator:
                     specList = []
                     catLoc = {}
                     for label, match, value in affix:
-                        apos, isAffix = featureSources.get((label, match),
-                                                           (pos, True))
+                        apos, isAffix, default = featureSources.get(
+                            (label, match), (pos, True, None))
                         specList.append(FeatureSpec(wordCats[apos], label,
-                                                    isAffix, value=value))
+                                                    isAffix, value=value,
+                                                    default=default))
                         catLoc[wordCats[apos]] = apos
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
                     if spec.macid not in usedMacros:
@@ -669,10 +719,12 @@ class RuleGenerator:
                         return False
                     continue
 
-                apos, isAffix = featureSources.get((label, match), (pos, True))
+                apos, isAffix, default = featureSources.get(
+                    (label, match), (pos, True, None))
                 if apos != pos:
                     spec = self.GetAttributeMacro(
-                        FeatureSpec(wordCats[apos], label, isAffix),
+                        FeatureSpec(wordCats[apos], label, isAffix,
+                                    default=default),
                         FeatureSpec(cat, label, True))
                     if spec is not None:
                         if spec.macid not in usedMacros:

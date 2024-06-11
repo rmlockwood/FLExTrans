@@ -246,5 +246,53 @@ class SpanishDefAdjNoun(BaseTest, unittest.TestCase):
          '^las1.1<def>$ ^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
     ]
 
+class UnmarkedDefault(BaseTest, unittest.TestCase):
+    RuleFile = 'unmarked_default.xml'
+    Data = {
+        'adj': {
+            'gender': {
+                'affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+        'n': {
+            'gender': {
+                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+            },
+            'number': {
+                'affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
+    TestPairs = [
+        # normal inputs
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
+        # missing gender
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><SG>$',
+         '^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        # missing number
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n>/camino1.1<n><m>$',
+         '^camino1.1<n>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n>/bicicleta1.1<n><f>$',
+         '^bicicleta1.1<n>$ ^largo1.1<adj><FEM_a><SG>$'),
+        # missing both
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n>/camino1.1<n>$',
+         '^camino1.1<n>$ ^largo1.1<adj><MASC_a><SG>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()
