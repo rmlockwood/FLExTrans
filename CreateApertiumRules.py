@@ -756,9 +756,18 @@ class RuleGenerator:
 
         self.AddCategories(root)
 
-        self.categoryAttribute = self.AddSingleAttribute(
-            'a_gram_cat', set(self.tagToCategoryName.keys()),
-            comment='Part-of-speech tags used in the rules')
+        self.categoryAttribute = 'a_gram_cat'
+        if self.categoryAttribute not in self.definedAttributes:
+            # Hypothetically, someone could have named a variable or macro
+            # "a_gram_cat", and we don't want to conflict with that.
+            self.categoryAttribute = self.AddSingleAttribute(
+                'a_gram_cat', set(self.tagToCategoryName.keys()),
+                comment='Part-of-speech tags used in the rules')
+        catElem = self.root.find(f".//def-attr[@n='{self.categoryAttribute}']")
+        for tag in self.tagToCategoryName:
+            if tag not in self.definedAttributes[self.categoryAttribute]:
+                ET.SubElement(catElem, 'attr-item', tags=tag)
+                self.definedAttributes[self.categoryAttribute].add(tag)
 
         ruleCount = 0
         for index, rule in enumerate(root.findall('.//FLExTransRule')):
