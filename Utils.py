@@ -407,6 +407,7 @@ import xml.etree.ElementTree as ET
 import subprocess
 import unicodedata
 import itertools
+from collections import defaultdict
 
 from System import Guid
 from System import String
@@ -419,6 +420,7 @@ from SIL.LCModel import (
     IPunctuationForm,
     IMoStemMsa,
     IFsFeatStruc,
+    IFsComplexFeature,
     IFsComplexValue,
     IFsClosedValue,
     IStStyleRepository,
@@ -2260,6 +2262,17 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
                 get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, abbr_list)
                 features.update([name for name, abb in abbr_list])
     return sorted(features)
+
+def getAllInflectableFeatures(DB):
+    ret = defaultdict(set)
+    for pos in DB.lp.AllPartsOfSpeech:
+        abbr = as_string(pos.Abbreviation)
+        for infl in pos.InflectableFeatsRC:
+            # TODO: are there other possibilities?
+            if infl.ClassName == 'FsComplexFeature':
+                for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
+                    ret[abbr].add(as_string(feat.Name))
+    return ret
 
 def unescapeReservedApertChars(inStr):
     

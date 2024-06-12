@@ -178,6 +178,8 @@ def GetStartData(report, DB, configMap):
 
     featureList = getFeatureData(DB)
 
+    inflFeatures = Utils.getAllInflectableFeatures(DB)
+
     catFeatures = {}
     for cat in catList:
         stemFeats = Utils.getStemFeatures(DB, report, configMap, cat)
@@ -188,6 +190,12 @@ def GetStartData(report, DB, configMap):
                 if feat not in catFeatures[cat]:
                     catFeatures[cat][feat] = set()
                 catFeatures[cat][feat].add(side)
+
+        for feat in inflFeatures[cat]:
+            if feat not in catFeatures[cat]:
+                catFeatures[cat][feat] = set()
+            catFeatures[cat][feat].add('prefix')
+            catFeatures[cat][feat].add('suffix')
 
     return DBStartData(DB.ProjectName(), catList, featureList, catFeatures)
 
