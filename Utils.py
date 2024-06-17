@@ -423,6 +423,7 @@ from SIL.LCModel import (
     IFsComplexFeature,
     IFsComplexValue,
     IFsClosedValue,
+    IFsClosedFeatureRepository,
     IStStyleRepository,
     IWfiAnalysis,
     ILexEntryInflType,
@@ -2273,6 +2274,12 @@ def getAllInflectableFeatures(DB):
                 for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
                     ret[abbr].add(as_string(feat.Name))
     return ret
+
+def getPossibleFeatureValues(DB, featureName):
+    for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
+        if as_string(feature.Name) == featureName:
+            return sorted(as_tag(val) for val in feature.ValuesOC)
+    return []
 
 def unescapeReservedApertChars(inStr):
     

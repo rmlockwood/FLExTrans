@@ -260,7 +260,7 @@ def MainFunction(DB, report, modify=True):
     saved, rule = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile)
 
     if saved:
-        CreateApertiumRules.CreateRules(TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
+        CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
         report.Info('No rules created.')
 

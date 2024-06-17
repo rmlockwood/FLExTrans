@@ -33,41 +33,12 @@ class Reporter:
         self.errors.append(args)
 
 class BaseTest:
-    Data = {
-        'adj': {
-            'gender': {
-                'affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
-            },
-            'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
-            },
-        },
-        'n': {
-            'gender': {
-                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
-                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
-                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
-                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
-            },
-            'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
-            },
-        },
-    }
+    Data = {}
     RuleFile = 'Ex3_Adj-Noun.xml'
     RuleNumber = None
     RuleCount = 1
     TransferFile = None
-    TestPairs = [
-        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
-         '^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
-        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
-         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
-        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
-         '^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
-        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
-         '^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
-    ]
+    TestPairs = []
 
     def runTest(self):
         global Utils
@@ -85,7 +56,7 @@ class BaseTest:
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
         self.assertTrue(CreateApertiumRules.CreateRules(
-            None, report, None, path, t1xFile, self.RuleNumber,
+            'source', 'target', report, None, path, t1xFile, self.RuleNumber,
         ))
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
@@ -127,66 +98,117 @@ class BaseTest:
 
         Utils.DATA = {}
 
-class SpanishAdjNoun(BaseTest, unittest.TestCase):
-    pass
-
-class SpanishDefNoun_MissingSG(BaseTest, unittest.TestCase):
+class FrenchSpanishAdjNoun(BaseTest, unittest.TestCase):
     Data = {
-        'def': {
+        None: {
             'gender': {
-                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
-                          ('la1.1', 'f')],
+                'source_features': ['f', 'm'],
+            },
+        },
+        'adj': {
+            'gender': {
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
             },
             'number': {
-                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
-                          ('la1.1', 'sg')]
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
         'n': {
             'gender': {
-                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
-                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
-                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
-                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
             },
             'number': {
-                'affix': [('PL', 'pl')],
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
+         '^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
+    ]
+
+class FrenchSpanishDefNoun_MissingSG(BaseTest, unittest.TestCase):
+    Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
+        'def': {
+            'gender': {
+                'target_lemma': [('el1.1', 'm'), ('los1.1', 'm'),
+                                 ('las1.1', 'f'), ('la1.1', 'f')],
+            },
+            'number': {
+                'target_lemma': [('el1.1', 'sg'), ('los1.1', 'pl'),
+                                 ('las1.1', 'pl'), ('la1.1', 'sg')]
+            },
+        },
+        'n': {
+            'gender': {
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
+            },
+            'number': {
+                'source_affix': [('PL', 'pl')],
+                'target_affix': [('PL', 'pl')],
             },
         },
     }
     RuleFile = 'Ex1b_Def-Noun.xml'
     TestPairs = [
         ('^the1.1<def>/el1.1<def>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
-         '^no_lemma_for_m<def>$ ^camino1.1<n>$'),
+         '^no-lemma-for-m<def>$ ^camino1.1<n>$'),
         ('^the1.1<def>/el1.1<def>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
          '^los1.1<def>$ ^camino1.1<n><PL>$'),
         ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><SG>/bicicleta1.1<n><f><SG>$',
-         '^no_lemma_for_f<def>$ ^bicicleta1.1<n>$'),
+         '^no-lemma-for-f<def>$ ^bicicleta1.1<n>$'),
         ('^the1.1<def>/el1.1<def>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
          '^las1.1<def>$ ^bicicleta1.1<n><PL>$'),
     ]
 
-class SpanishDefNoun_NullSG(BaseTest, unittest.TestCase):
+class FrenchSpanishDefNoun_NullSG(BaseTest, unittest.TestCase):
     Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
         'def': {
             'gender': {
-                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
-                          ('la1.1', 'f')],
+                'target_lemma': [('el1.1', 'm'), ('los1.1', 'm'),
+                                 ('las1.1', 'f'), ('la1.1', 'f')],
             },
             'number': {
-                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
-                          ('la1.1', 'sg')]
+                'target_lemma': [('el1.1', 'sg'), ('los1.1', 'pl'),
+                                 ('las1.1', 'pl'), ('la1.1', 'sg')]
             },
         },
         'n': {
             'gender': {
-                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
-                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
-                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
-                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
             },
             'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
     }
@@ -202,35 +224,45 @@ class SpanishDefNoun_NullSG(BaseTest, unittest.TestCase):
          '^las1.1<def>$ ^bicicleta1.1<n><PL>$'),
     ]
 
-class SpanishDefAdjNoun(BaseTest, unittest.TestCase):
+class FrenchSpanishDefAdjNoun(BaseTest, unittest.TestCase):
     Data = {
-        'adj': {
+        None: {
             'gender': {
-                'affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+                'source_features': ['f', 'm'],
             },
             'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
+                'source_features': ['sg', 'pl'],
+            },
+        },
+        'adj': {
+            'gender': {
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
         'def': {
             'gender': {
-                'lemma': [('el1.1', 'm'), ('los1.1', 'm'), ('las1.1', 'f'),
-                          ('la1.1', 'f')],
+                'target_lemma': [('el1.1', 'm'), ('los1.1', 'm'),
+                                 ('las1.1', 'f'), ('la1.1', 'f')],
             },
             'number': {
-                'lemma': [('el1.1', 'sg'), ('los1.1', 'pl'), ('las1.1', 'pl'),
-                          ('la1.1', 'sg')]
+                'target_lemma': [('el1.1', 'sg'), ('los1.1', 'pl'),
+                                 ('las1.1', 'pl'), ('la1.1', 'sg')]
             },
         },
         'n': {
             'gender': {
-                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
-                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
-                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
-                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
             },
             'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
     }
@@ -249,23 +281,30 @@ class SpanishDefAdjNoun(BaseTest, unittest.TestCase):
 class UnmarkedDefault(BaseTest, unittest.TestCase):
     RuleFile = 'unmarked_default.xml'
     Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
         'adj': {
             'gender': {
-                'affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
             },
             'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
         'n': {
             'gender': {
-                'lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
-                          ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
-                          ('niña1.1', 'f'), ('manzana1.1', 'f'),
-                          ('luz1.1', 'f'), ('niño1.1', 'm'), ('camino1.1', 'm')],
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
             },
             'number': {
-                'affix': [('PL', 'pl'), ('SG', 'sg')],
+                'source_affix': [('PL', 'pl'), ('SG', 'sg')],
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
             },
         },
     }

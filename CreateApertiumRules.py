@@ -53,8 +53,9 @@ class RuleGenerator:
                        'section-def-vars', 'section-def-lists',
                        'section-def-macros', 'section-rules']
 
-    def __init__(self, DB, report, configMap):
-        self.DB = DB
+    def __init__(self, sourceDB, targetDB, report, configMap):
+        self.sourceDB = sourceDB
+        self.targetDB = targetDB
         self.report = report
         self.configMap = configMap
 
@@ -232,12 +233,12 @@ class RuleGenerator:
         if spec.isAffix:
             values = set([Utils.underscores(l[0])
                           for l in Utils.getAffixGlossesForFeature(
-                                  self.DB, self.report, self.configMap,
+                                  self.targetDB, self.report, self.configMap,
                                   spec.category, spec.label)])
         else:
             values = set([Utils.underscores(l[1])
                           for l in Utils.getLemmasForFeature(
-                                  self.DB, self.report, self.configMap,
+                                  self.targetDB, self.report, self.configMap,
                                   spec.category, spec.label)])
 
         if spec.isAffix:
@@ -278,19 +279,30 @@ class RuleGenerator:
         section.insert(loc, ET.Element('def-var', n=name))
         self.variables[name] = None
 
-    def GetTags(self, spec: FeatureSpec) -> set[tuple[str, str]]:
+    def GetTags(self, spec: FeatureSpec, source: bool = False) -> set[tuple[str, str]]:
         '''Return a set of tuples where the first element is the tag that
         would appear in the stream and the second element is the feature
         value so that we can match it up with the tags for other categories.'''
 
-        if spec.isAffix:
-            ret = Utils.getAffixGlossesForFeature(
-                self.DB, self.report, self.configMap, spec.category, spec.label)
+        if source:
+            if spec.isAffix:
+                ret = Utils.getAffixGlossesForFeature(
+                    self.sourceDB, self.report, self.configMap,
+                    spec.category, spec.label)
+            else:
+                ret = [(tag, tag) for tag in Utils.getPossibleFeatureValues(
+                    self.sourceDB, spec.label)]
         else:
-            # If we're getting lemma features, they will show up as their
-            # values, so we discard the actual lemmas.
-            ret = [(l[1], l[1]) for l in Utils.getLemmasForFeature(
-                self.DB, self.report, self.configMap, spec.category, spec.label)]
+            if spec.isAffix:
+                ret = Utils.getAffixGlossesForFeature(
+                    self.targetDB, self.report, self.configMap,
+                    spec.category, spec.label)
+            else:
+                # If we're getting lemma features, they will show up as their
+                # values, so we discard the actual lemmas.
+                ret = [(l[1], l[1]) for l in Utils.getLemmasForFeature(
+                    self.targetDB, self.report, self.configMap,
+                    spec.category, spec.label)]
 
         ret = [(Utils.underscores(a), Utils.underscores(b)) for a, b in ret]
 
@@ -308,7 +320,7 @@ class RuleGenerator:
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
-        src = self.GetTags(srcSpec)
+        src = self.GetTags(srcSpec, source=True)
         trg = self.GetTags(trgSpec)
 
         def FindTag(srcFeat):
@@ -316,7 +328,7 @@ class RuleGenerator:
             for trgTag, trgFeat in trg:
                 if trgFeat == srcFeat:
                     return trgTag
-            return f'{srcFeat}_NOTAG'
+            return f'{srcFeat}-NOTAG'
 
         def MakeWhenClause(element, varid, value):
             when = ET.SubElement(element, 'when')
@@ -381,7 +393,7 @@ class RuleGenerator:
         if srcSpec.default:
             ET.SubElement(olet, 'lit-tag', v=FindTag(srcSpec.default))
         else:
-            ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}_UNK')
+            ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}-UNK')
 
         spec = MacroSpec(macid, varid, [srcSpec.category])
         self.attributeMacros[(srcSpec, trgSpec)] = spec
@@ -423,10 +435,10 @@ class RuleGenerator:
         locations = [(macro, None, [])]
         for source in sources:
             clipPos = str(catSequence.index(source.category)+1)
-            tags = sorted(self.GetTags(source))
+            tags = sorted(self.GetTags(source, source=(source.isAffix)))
             if isLemma:
                 allLemmas = Utils.getLemmasForFeature(
-                    self.DB, self.report, self.configMap, destCategory,
+                    self.targetDB, self.report, self.configMap, destCategory,
                     source.label)
             else:
                 allLemmas = self.GetTags(FeatureSpec(destCategory, source.label,
@@ -440,7 +452,7 @@ class RuleGenerator:
                     lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
 
                 if not lemmas or not tags:
-                    SetVar(elem, f'no_{macType}_for_'+'_'.join(path))
+                    SetVar(elem, f'no-{macType}-for-'+'-'.join(path))
                     continue
 
                 given = ''
@@ -469,20 +481,20 @@ class RuleGenerator:
                     nextLemmas = set(l[0] for l in lemmas if l[1] == source.default)
                     newLocations.append((otherwise, nextLemmas, path+[source.default]))
                 else:
-                    SetVar(otherwise, f'no_{macType}_for_'+'_'.join(path))
+                    SetVar(otherwise, f'no-{macType}-for-'+'-'.join(path))
 
             locations = newLocations
 
         for elem, possibleLemmas, path in locations:
-            error = f'{macType}_for_' + '_'.join(path)
+            error = f'{macType}-for-' + '-'.join(path)
             if len(possibleLemmas) == 0:
-                value = 'no_'+error
+                value = 'no-'+error
             elif len(possibleLemmas) == 1:
                 value = list(possibleLemmas)[0]
             else:
                 lemmas = ', '.join(sorted(possibleLemmas))
                 elem.append(ET.Comment(f'Possible values with this combination of tags: {lemmas}'))
-                value = 'multiple_'+error
+                value = 'multiple-'+error
             SetVar(elem, value)
 
         spec = MacroSpec(macid, varid, catSequence)
@@ -808,7 +820,7 @@ class RuleGenerator:
             fout.write(ET.tostring(self.root, encoding='utf-8'))
 
 # Wrapper function which calls the necessary logic to write rules to the Aperitum file
-def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath, ruleNumber):
+def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transferRulePath, ruleNumber):
 
     # TODO check for proper reading mode ("w" or "wb")
     try:
@@ -824,7 +836,7 @@ def CreateRules(DB, report, configMap, ruleAssistantFile, transferRulePath, rule
     #     report.Error("Please run the Set Up Transfer Rule Categories and Attributes tool")
     #     return -1
 
-    generator = RuleGenerator(DB, report, configMap)
+    generator = RuleGenerator(sourceDB, targetDB, report, configMap)
 
     if os.path.exists(transferRulePath):
 
