@@ -230,16 +230,15 @@ class RuleGenerator:
         if (spec.category, spec.label) in self.featureToAttributeName:
             return self.featureToAttributeName[(spec.category, spec.label)]
 
+        args = [self.report, self.configMap, spec.category, spec.label]
         if spec.isAffix:
-            values = set([Utils.underscores(l[0])
-                          for l in Utils.getAffixGlossesForFeature(
-                                  self.targetDB, self.report, self.configMap,
-                                  spec.category, spec.label)])
+            srcValues = Utils.getAffixGlossesForFeature(self.sourceDB, *args)
+            trgValues = Utils.getAffixGlossesForFeature(self.targetDB, *args)
+            values = set(Utils.underscores(l[0]) for l in srcValues + trgValues)
         else:
-            values = set([Utils.underscores(l[1])
-                          for l in Utils.getLemmasForFeature(
-                                  self.targetDB, self.report, self.configMap,
-                                  spec.category, spec.label)])
+            srcValues = Utils.getLemmasForFeature(self.sourceDB, *args)
+            trgValues = Utils.getLemmasForFeature(self.targetDB, *args)
+            values = set(Utils.underscores(l[1]) for l in srcValues + trgValues)
 
         if spec.isAffix:
             name = f'a_{spec.category}_{spec.label}_slot'
