@@ -322,12 +322,12 @@ class RuleGenerator:
         src = self.GetTags(srcSpec, source=True)
         trg = self.GetTags(trgSpec)
 
-        def FindTag(srcFeat):
+        def FindTag(srcFeat, fallback=None):
             nonlocal trg
             for trgTag, trgFeat in trg:
                 if trgFeat == srcFeat:
                     return trgTag
-            return f'{srcFeat}-NOTAG'
+            return fallback or f'{srcFeat}-NOTAG'
 
         def MakeWhenClause(element, varid, value):
             when = ET.SubElement(element, 'when')
@@ -335,11 +335,19 @@ class RuleGenerator:
             eq = ET.SubElement(test, 'equal')
             let = ET.SubElement(when, 'let')
             ET.SubElement(let, 'var', n=varid)
-            ET.SubElement(let, 'lit-tag', v=value)
+            ET.SubElement(let, ('lit-tag' if value else 'lit'), v=value)
             return eq
 
         if src == trg:
             if not srcSpec.default:
+                self.attributeMacros[(srcSpec, trgSpec)] = None
+                return None
+
+            # If the target POS doesn't have an affix for the default
+            # value, then we don't need a choose block and can just do
+            # a plain clip.
+            hasDefault = any(t[1] == srcSpec.default for t in trg)
+            if not hasDefault:
                 self.attributeMacros[(srcSpec, trgSpec)] = None
                 return None
 
@@ -390,7 +398,8 @@ class RuleGenerator:
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
         if srcSpec.default:
-            ET.SubElement(olet, 'lit-tag', v=FindTag(srcSpec.default))
+            ET.SubElement(olet, 'lit-tag', v=FindTag(srcSpec.default,
+                                                     fallback=''))
         else:
             ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}-UNK')
 

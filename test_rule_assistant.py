@@ -333,5 +333,54 @@ class UnmarkedDefault(BaseTest, unittest.TestCase):
          '^camino1.1<n>$ ^largo1.1<adj><MASC_a><SG>$'),
     ]
 
+class UnmarkedDefault_WithBlanks(BaseTest, unittest.TestCase):
+    RuleFile = 'unmarked_default.xml'
+    Data = {
+        None: {
+            'gender': {
+                'source_features': ['f', 'm'],
+            },
+        },
+        'adj': {
+            'gender': {
+                'target_affix': [('FEM.a', 'f'), ('MASC.a', 'm')],
+            },
+            'number': {
+                'target_affix': [('PL', 'pl')],
+            },
+        },
+        'n': {
+            'gender': {
+                'target_lemma': [('bicicleta1.1', 'f'), ('coche1.1', 'm'),
+                                 ('carmelo1.1', 'm'), ('cosa1.1', 'f'),
+                                 ('niña1.1', 'f'), ('manzana1.1', 'f'),
+                                 ('luz1.1', 'f'), ('niño1.1', 'm'),
+                                 ('camino1.1', 'm')],
+            },
+            'number': {
+                'source_affix': [('PL', 'pl')],
+                'target_affix': [('PL', 'pl')],
+            },
+        },
+    }
+    TestPairs = [
+        # normal inputs
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
+         '^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
+        # missing gender
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><PL>$',
+         '^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        # missing number
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n>/camino1.1<n><m>$',
+         '^camino1.1<n>$ ^largo1.1<adj><MASC_a>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n>/bicicleta1.1<n><f>$',
+         '^bicicleta1.1<n>$ ^largo1.1<adj><FEM_a>$'),
+        # missing both
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n>/camino1.1<n>$',
+         '^camino1.1<n>$ ^largo1.1<adj><MASC_a>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()
