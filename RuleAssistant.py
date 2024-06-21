@@ -55,8 +55,6 @@ docs = {FTM_Name       : "Rule Assistant",
         FTM_Help  : "",  
         FTM_Description:    descr}     
 
-RA_GUI_INPUT_FILE = 'ruleAssistantGUIinput.xml'
-
 # Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData" 
 SOURCEDATA        = "SourceData"
@@ -262,7 +260,7 @@ def MainFunction(DB, report, modify=True):
     startData = GetRuleAssistantStartData(report, DB, TargetDB, configMap)
 
     # Write the data to an XML file
-    ruleAssistGUIinputfile = os.path.join(FTPaths.BUILD_DIR, RA_GUI_INPUT_FILE)
+    ruleAssistGUIinputfile = os.path.join(FTPaths.BUILD_DIR, Utils.RA_GUI_INPUT_FILE)
     startData.write(ruleAssistGUIinputfile)
     
     # Start the Rule Assistant GUI

@@ -469,6 +469,8 @@ ID = 'id'
 OUTPUT_FOLDER = 'Output'
 BUILD_FOLDER = 'Build'
 
+RA_GUI_INPUT_FILE = 'ruleAssistantGUIinput.xml'
+
 # Style used for hyperlink style
 globalStyle = 'NotSet'
 

@@ -1327,7 +1327,7 @@ widgetList = [
    ["Rule Assistant", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
 
-   ["Rule Assitant Rule File", "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
+   ["Rule Assistant Rule File", "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
     "The path and name of the rule assistant rule definition file.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
