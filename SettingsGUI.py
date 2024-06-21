@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.11 - 6/21/24 - Ron Lockwood
+#    Use Setting for location and name of the Rule Assistant rules file.
+#
 #   Version 3.10.1 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -1319,6 +1322,13 @@ widgetList = [
 
    ["Testbed Results Log File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
     "The path and name of the testbed results log file", GIVE_ERROR, DONT_HIDE],\
+
+
+   ["Rule Assistant", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+
+   ["Rule Assitant Rule File", "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
+    "The path and name of the rule assistant rule definition file.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 

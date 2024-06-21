@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.11.1 - 6/21/24 - Ron Lockwood
+#    Use Setting for location and name of the Rule Assistant rules file.
+#
 #   Version 3.11 - 5/14/24 - Ron Lockwood
 #    Connect to the now functioning CreateRules routine.
 #    Rearrange the logic for the return code from the GUI program. Pretty print the GUIinput xml.
@@ -46,7 +49,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",  
@@ -233,17 +236,23 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile):
 # The main processing function
 def MainFunction(DB, report, modify=True):
 
-    # Get parent folder of the folder flextools.ini is in and add \Build to it
-    buildFolder = FTPaths.BUILD_DIR
-
-    ruleAssistantFile = os.path.join(buildFolder, 'RuleAssistantRules.xml')
-
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
+    # Get the path to the rule assistant rules file
+    ruleAssistantFile = ReadConfig.getConfigVal(configMap, ReadConfig.RULE_ASSISTANT_FILE, report, giveError=False)
+
+    if not ruleAssistantFile:
+
+        # Get build folder
+        buildFolder = FTPaths.BUILD_DIR
+
+        ruleAssistantFile = os.path.join(buildFolder, 'RuleAssistantRules.xml')
+
     # Get the path to the transfer rules file
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
+
     if not tranferRulePath:
         return
 

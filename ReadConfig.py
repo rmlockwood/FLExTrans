@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11 - 6/21/24 - Ron Lockwood
+#    Use Setting for location and name of the Rule Assistant rules file.
+#
 #   Version 3.10.2 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
@@ -122,6 +125,7 @@ SOURCE_DISCONTIG_SKIPPED = 'SourceDiscontigousComplexFormSkippedWordGrammaticalC
 SOURCE_MORPHNAMES = 'SourceMorphNamesCountedAsRoots'
 SOURCE_TEXT_NAME = 'SourceTextName'
 REBUILD_BILING_LEX_BY_DEFAULT = 'RebuildBilingualLexiconByDefaultInSenseLinker'
+RULE_ASSISTANT_FILE = 'RuleAssistantRulesFile'
 SYNTHESIS_TEST_LIMIT_POS = 'SynthesisTestLimitPOS'
 SYNTHESIS_TEST_LIMIT_STEM_COUNT = 'SynthesisTestLimitStemCount'
 SYNTHESIS_TEST_LIMIT_LEXEME = 'SynthesisTestLimitLexeme'
