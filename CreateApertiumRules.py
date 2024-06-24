@@ -59,6 +59,9 @@ class RuleGenerator:
         self.report = report
         self.configMap = configMap
 
+        self.sourceHierarchy = Utils.getCategoryHierarchy(sourceDB)
+        self.targetHierarchy = Utils.getCategoryHierarchy(targetDB)
+
         self.root: Optional[ET.Element] = None
 
         # All current <def-cat>s
@@ -100,6 +103,15 @@ class RuleGenerator:
 
         # The <section-*> elements of the XML tree
         self.sections: dict[str: ET.Element] = {}
+
+    def GetCategory(self, category: str, source: bool = True,
+                    target: bool = True) -> set[str]:
+        ls = [category]
+        if source:
+            ls += self.sourceHierarchy.get(category, [])
+        if target:
+            ls += self.targetHierarchy.get(category, [])
+        return set(ls)
 
     def GetSection(self, sectionName: str) -> ET.Element:
         '''Retrieve a section of the rule file, creating it if necessary.'''
@@ -232,6 +244,7 @@ class RuleGenerator:
 
         args = [self.report, self.configMap, spec.category, spec.label]
         if spec.isAffix:
+            args[2] = self.GetCategory(spec.category)
             srcValues = Utils.getAffixGlossesForFeature(self.sourceDB, *args)
             trgValues = Utils.getAffixGlossesForFeature(self.targetDB, *args)
             values = set(Utils.underscores(l[0]) for l in srcValues + trgValues)
@@ -287,7 +300,7 @@ class RuleGenerator:
             if spec.isAffix:
                 ret = Utils.getAffixGlossesForFeature(
                     self.sourceDB, self.report, self.configMap,
-                    spec.category, spec.label)
+                    self.GetCategory(spec.category, target=False), spec.label)
             else:
                 ret = [(tag, tag) for tag in Utils.getPossibleFeatureValues(
                     self.sourceDB, spec.label)]
@@ -295,7 +308,7 @@ class RuleGenerator:
             if spec.isAffix:
                 ret = Utils.getAffixGlossesForFeature(
                     self.targetDB, self.report, self.configMap,
-                    spec.category, spec.label)
+                    self.GetCategory(spec.category, source=False), spec.label)
             else:
                 # If we're getting lemma features, they will show up as their
                 # values, so we discard the actual lemmas.

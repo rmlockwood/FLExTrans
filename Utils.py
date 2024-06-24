@@ -2193,7 +2193,13 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
 
                         abbrev = as_string(senseMsa.PartOfSpeechRA.Abbreviation)
 
-                        if abbrev != gramCategoryAbbrev:
+                        ok = False
+                        if isinstance(gramCategoryAbbrev, str):
+                            ok = (abbrev == gramCategoryAbbrev)
+                        elif isinstance(gramCategoryAbbrev, set):
+                            ok = (abbrev in gramCategoryAbbrev)
+
+                        if not ok:
                             continue
                         else:
                             # Check for a match on the feature
@@ -2282,6 +2288,14 @@ def getPossibleFeatureValues(DB, featureName):
         if as_string(feature.Name) == featureName:
             return sorted(as_tag(val) for val in feature.ValuesOC)
     return []
+
+def getCategoryHierarchy(DB):
+    SEP = '\ufffc' # Object Replacement Character
+    ret = {}
+    for pos in DB.lp.AllPartsOfSpeech:
+        abbr = as_string(pos.Abbreviation)
+        ret[abbr] = pos.AbbrevHierarchyString.split(SEP)
+    return ret
 
 def unescapeReservedApertChars(inStr):
     
