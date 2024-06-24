@@ -180,11 +180,11 @@ def GetStartData(report, DB, configMap):
     featureList = getFeatureData(DB)
 
     inflFeatures = Utils.getAllInflectableFeatures(DB)
+    stemFeatures = Utils.getAllStemFeatures(DB, report, configMap)
 
     catFeatures = {}
     for cat in catList:
-        stemFeats = Utils.getStemFeatures(DB, report, configMap, cat)
-        catFeatures[cat] = {feat: {'stem'} for feat in stemFeats}
+        catFeatures[cat] = {feat: {'stem'} for feat in stemFeatures[cat]}
         templates = Utils.getAffixTemplates(DB, cat)
         for tmpl in templates:
             for feat, side in tmpl:

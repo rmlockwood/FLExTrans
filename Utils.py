@@ -2272,6 +2272,31 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
                 features.update([name for name, abb in abbr_list])
     return sorted(features)
 
+def getAllStemFeatures(DB, report, configMap):
+    features = defaultdict(set)
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
+
+    for entry in DB.LexiconAllEntries():
+        LF = entry.LexemeFormOA
+        if not LF or LF.ClassName != 'MoStemAllomorph':
+            continue
+        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+            continue
+
+        for sense in entry.SensesOS:
+            msara = sense.MorphoSyntaxAnalysisRA
+            if not msara or msara.ClassName != 'MoStemMsa':
+                continue
+            msa = IMoStemMsa(msara)
+            if not msa.PartOfSpeechRA:
+                continue
+            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
+            if msa.MsFeaturesOA:
+                abbr_list = []
+                get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, abbr_list)
+                features[abbrev].update([name for name, abb in abbr_list])
+    return features
+
 def getAllInflectableFeatures(DB):
     ret = defaultdict(set)
     for pos in DB.lp.AllPartsOfSpeech:
