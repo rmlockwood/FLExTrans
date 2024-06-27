@@ -482,13 +482,14 @@ class RuleGenerator:
                 if path:
                     specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
                     given = f' given {", ".join(specs)}'
-                elem.append(ET.Comment(f'Narrow the set of possible values based on {label}{given}.'))
+                elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(t[1] for t in tags))}){given}.'))
                 choose = ET.SubElement(elem, 'choose')
                 for tag, feature in tags:
                     if feature == source.default:
                         # Handle this in the <otherwise> block
                         continue
 
+                    choose.append(ET.Comment(f'Set {varid} based on {source.label} = {feature}.'))
                     when = ET.SubElement(choose, 'when')
                     test = ET.SubElement(when, 'test')
                     eq = ET.SubElement(test, 'equal')
