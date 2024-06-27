@@ -340,7 +340,9 @@ class RuleGenerator:
             for trgTag, trgFeat in trg:
                 if trgFeat == srcFeat:
                     return trgTag
-            return fallback or f'{srcFeat}-NOTAG'
+            if fallback is not None:
+                return fallback
+            return f'{srcFeat}-NOTAG'
 
         def MakeWhenClause(element, varid, value):
             when = ET.SubElement(element, 'when')
@@ -411,8 +413,8 @@ class RuleGenerator:
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
         if srcSpec.default:
-            ET.SubElement(olet, 'lit-tag', v=FindTag(srcSpec.default,
-                                                     fallback=''))
+            val = FindTag(srcSpec.default, fallback='')
+            ET.SubElement(olet, ('lit-tag' if val else 'lit'), v=val)
         else:
             ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}-UNK')
 
