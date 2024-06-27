@@ -2117,6 +2117,9 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
         # Don't process affixes, clitics
         if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
             srcEntry.LexemeFormOA.MorphTypeRA and morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+
+            if srcEntry.LexemeFormOA.IsAbstract:
+                continue
         
             # Loop through senses
             for i, mySense in enumerate(srcEntry.SensesOS):
@@ -2173,6 +2176,9 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
     
         # Check that the objects we need are valid
         if not entry.LexemeFormOA:
+            continue
+
+        if entry.LexemeFormOA.IsAbstract:
             continue
             
         if not entry.LexemeFormOA.MorphTypeRA or not entry.LexemeFormOA.MorphTypeRA.Name:
@@ -2251,7 +2257,7 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
 
     for entry in DB.LexiconAllEntries():
         LF = entry.LexemeFormOA
-        if not LF or LF.ClassName != 'MoStemAllomorph':
+        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
             continue
         if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
             continue
@@ -2278,7 +2284,7 @@ def getAllStemFeatures(DB, report, configMap):
 
     for entry in DB.LexiconAllEntries():
         LF = entry.LexemeFormOA
-        if not LF or LF.ClassName != 'MoStemAllomorph':
+        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
             continue
         if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
             continue
