@@ -23,7 +23,7 @@ import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
-from itertools import chain, combinations
+from itertools import chain, combinations, permutations
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
@@ -75,6 +75,7 @@ class RuleGenerator:
         # Mapping from part-of-speech tags to <def-cat> names
         # {category: attribute}
         self.tagToCategoryName: dict[str, str] = {}
+        self.tagAndFeaturesToCategoryName: dict[tuple[str, frozenset, frozenset], str] = {}
 
         # Mapping from part-of-speech + feature name to <def-attr> name
         # {(category, label): attribute}
@@ -112,6 +113,40 @@ class RuleGenerator:
         if target:
             ls += self.targetHierarchy.get(category, [])
         return set(ls)
+
+    def GetCategoryName(self, category: str, features: set[tuple[str, str]],
+                        affixes: set[tuple[str, str]]) -> str:
+        if not features and not affixes:
+            return self.tagToCategoryName[category]
+        key = (category, frozenset(features), frozenset(affixes))
+        if key in self.tagAndFeaturesToCategoryName:
+            return self.tagAndFeaturesToCategoryName[key]
+
+        pieces = ['c', category] + \
+            sorted(v[1] for v in features) + \
+            sorted(v[1] for v in affixes)
+        name = self.GetAvailableID('_'.join(pieces))
+
+        tag_list = [category, category+'.*']
+        next_tag_list = []
+        for seq in permutations(sorted(features)):
+            append = ['']
+            for label, value in seq:
+                append = [f'{a}.{value}' for a in append] + \
+                    [f'{a}.{value}.*' for a in append]
+            next_tag_list += [t+a for t in tag_list for a in append]
+        if next_tag_list:
+            tag_list = next_tag_list
+        # TODO: get tags for affixes
+
+        elem = ET.SubElement(self.GetSection('section-def-cats'), 'def-cat',
+                             n=name)
+        for tg in tag_list:
+            ET.SubElement(elem, 'cat-item', tags=tg)
+
+        self.definedCategories[name] = [(None, t) for t in tag_list]
+        self.tagAndFeaturesToCategoryName[key] = name
+        return name
 
     def GetSection(self, sectionName: str) -> ET.Element:
         '''Retrieve a section of the rule file, creating it if necessary.'''
@@ -249,7 +284,8 @@ class RuleGenerator:
             trgValues = Utils.getAffixGlossesForFeature(self.targetDB, *args)
             values = set(Utils.underscores(l[0]) for l in srcValues + trgValues)
         else:
-            srcValues = Utils.getLemmasForFeature(self.sourceDB, *args)
+            srcValues = [(t, t) for t in Utils.getPossibleFeatureValues(
+                self.sourceDB, spec.label)]
             trgValues = Utils.getLemmasForFeature(self.targetDB, *args)
             values = set(Utils.underscores(l[1]) for l in srcValues + trgValues)
 
@@ -257,6 +293,8 @@ class RuleGenerator:
             name = f'a_{spec.category}_{spec.label}_slot'
         else:
             name = f'a_{spec.label}_feature'
+        if not values:
+            self.report.Error(f'Could not find any tags for feature {spec.label} of part-of-speech {spec.category}.')
         aid = self.AddSingleAttribute(name, values)
         self.featureToAttributeName[(spec.category, spec.label)] = aid
         return aid
@@ -544,7 +582,15 @@ class RuleGenerator:
             if cat is None:
                 self.report.Error(f'Source word {wid} in rule "{ruleName}" has no category.')
                 return False
-            sourceWords.append((wid, cat))
+            features = set()
+            affixes = set()
+            for feat in word.findall('./Features/Feature'):
+                if value := feat.get('value'):
+                    features.add((feat.get('label'), value))
+            for feat in word.findall('.//Affix/Feature'):
+                if value := feat.get('value'):
+                    affixes.add((feat.get('label'), value))
+            sourceWords.append((wid, cat, features, affixes))
 
         if rule.find(".//Target//Word[@head='yes']") is None:
             self.report.Error(f'No target word has been set as head in rule "{ruleName}".')
@@ -571,11 +617,12 @@ class RuleGenerator:
         wordLocation = {}
         patternEl = ET.SubElement(ruleEl, 'pattern')
         index = 0
-        for wid, cat in sourceWords:
+        for wid, cat, features, affixes in sourceWords:
             if skip and wid in skip:
                 continue
             index += 1
-            ET.SubElement(patternEl, 'pattern-item', n=self.tagToCategoryName[cat])
+            name = self.GetCategoryName(cat, features, affixes)
+            ET.SubElement(patternEl, 'pattern-item', n=name)
             wordLocation[wid] = str(index)
             wordCats[str(index)] = cat
 
@@ -710,7 +757,8 @@ class RuleGenerator:
                     label = feature.get('label')
                     match = feature.get('match')
                     value = feature.get('value')
-                    features.append((label, match, value))
+                    default = feature.get('unmarked_default')
+                    features.append((label, match, value, default))
                 if not features:
                     continue
                 if prefix:
@@ -723,9 +771,10 @@ class RuleGenerator:
                 if len(affix) > 1:
                     specList = []
                     catLoc = {}
-                    for label, match, value in affix:
-                        apos, isAffix, default = featureSources.get(
+                    for label, match, value, tgtDefault in affix:
+                        apos, isAffix, srcDefault = featureSources.get(
                             (label, match), (pos, True, None))
+                        default = tgtDefault or srcDefault
                         specList.append(FeatureSpec(wordCats[apos], label,
                                                     isAffix, value=value,
                                                     default=default))
@@ -742,7 +791,7 @@ class RuleGenerator:
                     ET.SubElement(lu, 'var', n=spec.varid)
                     continue
 
-                label, match, value = affix[0]
+                label, match, value, tgtDefault = affix[0]
 
                 if value:
                     tags = self.GetTags(FeatureSpec(wordCats[pos], label, True,
@@ -755,8 +804,9 @@ class RuleGenerator:
                         return False
                     continue
 
-                apos, isAffix, default = featureSources.get(
+                apos, isAffix, srcDefault = featureSources.get(
                     (label, match), (pos, True, None))
+                default = tgtDefault or srcDefault
                 if apos != pos:
                     spec = self.GetAttributeMacro(
                         FeatureSpec(wordCats[apos], label, isAffix,
@@ -875,4 +925,3 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
     generator.WriteTransferFile(transferRulePath)
 
     return True
-

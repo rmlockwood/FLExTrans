@@ -51,13 +51,14 @@ class BaseTest:
         if self.TransferFile is not None:
             shutil.copy(os.path.join(DataFolder, self.TransferFile), t1xFile)
         Utils.DATA = self.Data
-        
+
         # Create rules
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
         self.assertTrue(CreateApertiumRules.CreateRules(
             'source', 'target', report, None, path, t1xFile, self.RuleNumber,
         ))
+        self.assertListEqual([], report.errors)
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
 
@@ -276,6 +277,35 @@ class FrenchSpanishDefAdjNoun(BaseTest, unittest.TestCase):
          '^la1.1<def>$ ^bicicleta1.1<n><SG>$ ^largo1.1<adj><FEM_a><SG>$'),
         ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^bike1.1<n><PL>/bicicleta1.1<n><f><PL>$',
          '^las1.1<def>$ ^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
+    ]
+
+class PatternFeature(BaseTest, unittest.TestCase):
+    RuleFile = 'PatternFeature.xml'
+    Data = {
+        None: {
+            'number': {
+                'source_features': ['pl', 'sg'],
+            },
+        },
+        'def': {},
+        'n': {
+            'definiteness': {
+                'target_affix': [('DEF', 'defid')],
+            },
+            'number': {
+                'target_affix': [('PL', 'pl'), ('SG', 'sg')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^A<def><defid><sg>/A<def><defid><sg>$ ^B<n>/B<n>$',
+         '^B<n><SG><DEF>$'),
+        ('^A<def><defid><pl>/A<def><defid><pl>$ ^B<n>/B<n>$',
+         '^B<n><PL><DEF>$'),
+        ('^A<def><indf><sg>/A<def><indf><sg>$ ^B<n>/B<n>$',
+         '^A<def><indf><sg>$ ^B<n>$'),
+        ('^A<def><indf><pl>/A<def><indf><pl>$ ^B<n>/B<n>$',
+         '^A<def><indf><pl>$ ^B<n>$'),
     ]
 
 class UnmarkedDefault(BaseTest, unittest.TestCase):
