@@ -482,6 +482,9 @@ class RuleGenerator:
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar=str(len(catSequence)))
 
+        for n, cat in enumerate(catSequence, 1):
+            macro.append(ET.Comment(f'Item {n} is part-of-speech {cat}.'))
+
         def SetVar(parent, value):
             nonlocal varid, isLemma
             let = ET.SubElement(parent, 'let')
