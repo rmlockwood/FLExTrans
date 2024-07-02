@@ -480,5 +480,27 @@ class BantuTakwaneMeetto: # TODO
 ^bwe1.1<n><5~6><5~6_pl>$ ^nika1.1<n><9~10_pl>$
 '''
 
+class GermanSwedishDefToAffix(BaseTest, unittest.TestCase):
+    RuleFile = 'GermanSwedishDefToAffix.xml'
+    Data = {
+        None: {
+            'definiteness': {'source_features': ['defid']},
+            'gender': {'source_features': ['f', 'm', 'neut']},
+            'number': {'source_features': ['pl', 'sg']},
+        },
+        'n': {
+            'definiteness': {
+                'target_affix': [('DEF_SG_N', 'defid'), ('DEF_SG_C', 'defid')],
+            },
+            'number': {
+                'target_affix': [('DEF_SG_N', 'sg'), ('DEF_SG_C', 'sg')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^der1.1<def><m><sg><defid>/$ ^Meer1.1<n>/hav1.1<n>$',
+         '^hav1.1<n><multiple-affix-for-defid-sg>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()

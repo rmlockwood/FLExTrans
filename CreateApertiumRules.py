@@ -33,6 +33,7 @@ class FeatureSpec:
     isAffix: bool
     value: Optional[str] = None
     default: Optional[str] = None
+    isSource: bool = False
 
     @property
     def xmlLabel(self):
@@ -340,7 +341,7 @@ class RuleGenerator:
         would appear in the stream and the second element is the feature
         value so that we can match it up with the tags for other categories.'''
 
-        if source:
+        if source or spec.isSource:
             if spec.isAffix:
                 ret = Utils.getAffixGlossesForFeature(
                     self.sourceDB, self.report, self.configMap,
@@ -542,8 +543,11 @@ class RuleGenerator:
                     when = ET.SubElement(choose, 'when')
                     test = ET.SubElement(when, 'test')
                     eq = ET.SubElement(test, 'equal')
+                    side = 'tl'
+                    if source.isSource and not source.isAffix:
+                        side = 'sl'
                     ET.SubElement(
-                        eq, 'clip', pos=clipPos, side='tl',
+                        eq, 'clip', pos=clipPos, side=side,
                         part=self.EnsureAttribute(source))
                     ET.SubElement(eq, 'lit-tag', v=tag)
                     nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
@@ -654,10 +658,10 @@ class RuleGenerator:
             pos = wordLocation.get(wid)
             for feat in word.findall('./Features/Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, True, False, feat.get('unmarked_default')))
+                    (pos, True, False, feat.get('unmarked_default'), True))
             for feat in word.findall('.//Affix//Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, True, True, feat.get('unmarked_default')))
+                    (pos, True, True, feat.get('unmarked_default'), True))
 
         # Now record the match groups on the target side, tracking whether
         # the word they appear on is marked as head or not, since we want
@@ -670,10 +674,10 @@ class RuleGenerator:
             pos = wordLocation.get(wid)
             for feat in word.findall('./Features/Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, head, False, feat.get('unmarked_default')))
+                    (pos, head, False, feat.get('unmarked_default'), False))
             for feat in word.findall('.//Affix//Feature'):
                 matches[(feat.get('label'), feat.get('match'))].append(
-                    (pos, head, True, feat.get('unmarked_default')))
+                    (pos, head, True, feat.get('unmarked_default'), False))
 
         # For each combination of feature and match set, find the best source,
         # where the head word is preferred, if available, and otherwise we
@@ -686,12 +690,12 @@ class RuleGenerator:
             if match is None:
                 continue
             cur = None
-            for wid, head, affix, default in items:
+            for wid, head, affix, default, isSource in items:
                 if head:
-                    cur = (wid, affix, default)
+                    cur = (wid, affix, default, isSource)
                     break
                 elif not affix and cur is None:
-                    cur = (wid, affix, default)
+                    cur = (wid, affix, default, isSource)
             if cur is None:
                 self.report.Error(f'Unable to determine source for {match} {label} in {ruleName}.')
             else:
@@ -722,12 +726,13 @@ class RuleGenerator:
                 match = feature.get('match')
                 value = feature.get('value')
                 if not value:
-                    apos, isAffix, default = featureSources.get((label, match),
-                                                                (pos, False))
+                    apos, isAffix, default, isSource = featureSources.get(
+                        (label, match), (pos, False, None, False))
                 else:
-                    apos, isAffix, default = pos, False, None
+                    apos, isAffix, default = pos, False, None, False
                 lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix,
-                                             value=value, default=default))
+                                             value=value, default=default,
+                                             isSource=isSource))
                 lemmaLocs[wordCats[apos]] = apos
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
 
@@ -783,12 +788,13 @@ class RuleGenerator:
                     specList = []
                     catLoc = {}
                     for label, match, value, tgtDefault in affix:
-                        apos, isAffix, srcDefault = featureSources.get(
-                            (label, match), (pos, True, None))
+                        apos, isAffix, srcDefault, isSource = featureSources.get(
+                            (label, match), (pos, True, None, False))
                         default = tgtDefault or srcDefault
                         specList.append(FeatureSpec(wordCats[apos], label,
                                                     isAffix, value=value,
-                                                    default=default))
+                                                    default=default,
+                                                    isSource=isSource))
                         catLoc[wordCats[apos]] = apos
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
                     if spec.macid not in usedMacros:
@@ -815,13 +821,13 @@ class RuleGenerator:
                         return False
                     continue
 
-                apos, isAffix, srcDefault = featureSources.get(
-                    (label, match), (pos, True, None))
+                apos, isAffix, srcDefault, isSource = featureSources.get(
+                    (label, match), (pos, True, None, False))
                 default = tgtDefault or srcDefault
                 if apos != pos:
                     spec = self.GetAttributeMacro(
                         FeatureSpec(wordCats[apos], label, isAffix,
-                                    default=default),
+                                    default=default, isSource=isSource),
                         FeatureSpec(cat, label, True))
                     if spec is not None:
                         if spec.macid not in usedMacros:
