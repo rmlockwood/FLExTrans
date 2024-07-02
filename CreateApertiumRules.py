@@ -210,6 +210,12 @@ class RuleGenerator:
 
         for macro in self.root.findall('.//def-macro'):
             self.usedIDs.add(macro.get('n'))
+            if code := macro.get('c'):
+                items = code.split()
+                if len(items) > 3 and items[0] == 'FTM':
+                    lookupKey = (items[2], tuple(items[3:]))
+                    self.lemmaMacros[lookupKey] = MacroSpec(
+                        macro.get('n'), items[1], items[3:])
 
         for rule in self.root.findall('.//rule'):
             self.ruleNames.add(rule.get('comment'))
@@ -479,8 +485,10 @@ class RuleGenerator:
         macid = self.GetAvailableID('m_'+label)
         varid = self.GetAvailableID('v_'+label)
         self.AddVariable(varid, f'Used by macro {macid}')
+        code = ' '.join([destCategory] + catSequence)
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
-                              n=macid, npar=str(len(catSequence)))
+                              n=macid, npar=str(len(catSequence)),
+                              c=f'FTM {varid} {code}')
 
         for n, cat in enumerate(catSequence, 1):
             macro.append(ET.Comment(f'Item {n} is part-of-speech {cat}.'))

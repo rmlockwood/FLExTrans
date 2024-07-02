@@ -412,5 +412,73 @@ class UnmarkedDefault_WithBlanks(BaseTest, unittest.TestCase):
          '^camino1.1<n>$ ^largo1.1<adj><MASC_a>$'),
     ]
 
+class ReuseMacro(FrenchSpanishDefAdjNoun):
+    TransferFile = 'reuse_macro.t1x'
+    TestPairs = [
+        ('^the1.1<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^hi<xyz>$^potato<def>$ ^camino1.1<n><SG>$ ^largo1.1<adj><MASC_a><SG>$'),
+        ('^the1.<def>/el1.1<def>$ ^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^hi<xyz>$^potato<def>$ ^camino1.1<n><PL>$ ^largo1.1<adj><MASC_a><PL>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><SG>/camino1.1<n><m><SG>$',
+         '^largo1.1<adj>$ ^camino1.1<n><m><SG>$'),
+        ('^long1.1<adj>/largo1.1<adj>$ ^road1.1<n><PL>/camino1.1<n><m><PL>$',
+         '^largo1.1<adj>$ ^camino1.1<n><m><PL>$'),
+    ]
+
+# This test isn't done yet, so it doesn't actually run
+class BantuTakwaneMeetto: # TODO
+    RuleFile = 'Takwane-Meetto.xml'
+    Data = {} # TODO
+    TestPairs = [
+        ('^ttengu1.1<n><7~8><7~8_sg>/cipo1.1<n><5~6><7~8_sg>$',
+         '^cipo1.1<n><5~6_sg>$'),
+        ('^ttengu1.1<n><7~8><7~8_pl>/cipo1.1<n><5~6><7~8_pl>$',
+         '^cipo1.1<n><5~6_pl>$'),
+        ('^lobwana1.1<n><1~2><1~2_sg>/lopwana1.1<n><1~2><1~2_sg>$',
+         '^lopwana1.1<n><1~2_sg>$'),
+        ('^lobwana1.1<n><1~2><1~2_pl>/lopwana1.1<n><1~2><1~2_pl>$',
+         '^lopwana1.1<n><1~2_pl>$'),
+        ('^ru1.1<n><3~4><3~4_sg>/uru1.1<n><3~4><3~4_sg>$',
+         '^uru1.1<n><3~4_sg>$'),
+        ('^ru1.1<n><3~4><3~4_pl>/uru1.1<n><3~4><3~4_pl>$',
+         '^uru1.1<n><3~4_pl>$'),
+        ('^aalago1.1<n><3~4><3~4_sg>/vaka1.1<n><5~6><3~4_sg>$',
+         '^vaka1.1<n><5~6_sg>$'),
+        ('^aalago1.1<n><3~4><3~4_pl>/vaka1.1<n><5~6><3~4_pl>$',
+         '^vaka1.1<n><5~6_pl>$'),
+        ('^lobwana1.1<n><1~2><1~2_sg>/lopwana1.1<n><1~2><1~2_sg>$ ^ngono1.1<adj><1~2>/nkani1.1<adj><1~2>$',
+         '^lopwana1.1<n><1~2_sg>$ ^nkani1.1<adj><1~2_sg_a>$'),
+        ('^lobwana1.1<n><1~2><1~2_pl>/lopwana1.1<n><1~2><1~2_pl>$ ^ngono1.1<adj><1~2>/nkani1.1<adj><1~2>$',
+         '^lopwana1.1<n><1~2_pl>$ ^nkani1.1<adj><1~2_pl_a>$'),
+        ('^hobo1.1<n><3~4><3~4_sg>/nika2.1<n><3~4><3~4_sg>$ ^ngono1.1<adj><3~4>/nkani1.1<adj><3~4>$',
+         '^nika2.1<n><3~4_sg>$ ^nkani1.1<adj><3~4_sg_a>$'),
+        ('^hobo1.1<n><3~4><3~4_pl>/nika2.1<n><3~4><3~4_pl>$ ^ngono1.1<adj><3~4>/nkani1.1<adj><3~4>$',
+         '^nika2.1<n><3~4_pl>$ ^nkani1.1<adj><3~4_pl_a>$'),
+        ('^aalago1.1<n><3~4><3~4_sg>/vaka1.1<n><5~6><3~4_sg>$ ^ngono1.1<adj><3~4>/nkani1.1<adj><3~4>$',
+         '^vaka1.1<n><5~6_sg>$ ^nkani1.1<adj><5~6_sg_a>$'),
+        ('^aalago1.1<n><3~4><3~4_pl>/vaka1.1<n><5~6><3~4_pl>$ ^ngono1.1<adj><3~4>/nkani1.1<adj><3~4>$',
+         '^vaka1.1<n><5~6_pl>$ ^nkani1.1<adj><5~6_pl_a>$'),
+    ]
+
+'''
+^mbuzi1.1<n><9~10_sg>$ ^puri1.1<n><9~10_sg>$
+^guwo1.1<n><9~10_pl>$ ^kuwo1.1<n><9~10_pl>$
+^somba1.1<n><9~10_sg>$ ^hopa1.1<n><9~10_sg>$
+^somba1.1<n><9~10_pl>$ ^hopa1.1<n><9~10_pl>$
+
+^mbuzi1.1<n><9~10_sg>$ ^ngono1.1<adj><9~10_sg_a>$
+=>
+^puri1.1<n><9~10_sg>$ ^nkani1.1<adj><9~10_sg_a>$
+
+^mbuzi1.1<n><9~10_pl>$ ^ngono1.1<adj><9~10_pl_a>$
+=>
+^puri1.1<n><9~10_pl>$ ^nkani1.1<adj><9~10_pl_a>$
+
+^enwi1.1<n><9~10_sg>$ ^rawo1.1<n><11~10_sg>$
+^ngame1.1<n><5~6><5~6_sg>$ ^kame1.1<n><11~10_sg>$
+^bwe1.1<n><5~6><5~6_sg>$ ^nika1.1<n><9~10_sg>$
+^bwe1.1<n><5~6><5~6_pl>$ ^nika1.1<n><9~10_pl>$
+'''
+
 if __name__ == '__main__':
     unittest.main()
