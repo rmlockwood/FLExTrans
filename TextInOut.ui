@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Text Out Rules</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="layoutWidget">
@@ -20,29 +20,56 @@
       <x>10</x>
       <y>10</y>
       <width>405</width>
-      <height>22</height>
+      <height>24</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="searchLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Search for:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="searchTextBox"/>
+      <widget class="QLineEdit" name="searchTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="replaceLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Replace with:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="replaceTextBox"/>
+      <widget class="QLineEdit" name="replaceTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -51,9 +78,14 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>331</width>
+      <width>231</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <layout class="QHBoxLayout" name="buttonLayout">
      <property name="sizeConstraint">
@@ -61,11 +93,22 @@
      </property>
      <item>
       <widget class="QPushButton" name="addButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Add search and replace text as a new rule.</string>
        </property>
        <property name="text">
         <string>Add</string>
@@ -74,11 +117,22 @@
      </item>
      <item>
       <widget class="QPushButton" name="updateButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Update the rule selected below with the above search and replace text.</string>
        </property>
        <property name="text">
         <string>Update</string>
@@ -87,21 +141,25 @@
      </item>
      <item>
       <widget class="QPushButton" name="deleteButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
         </size>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Delete the below selected rule.</string>
+       </property>
        <property name="text">
         <string>Delete</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="regexCheckBox">
-       <property name="text">
-        <string>RegEx</string>
        </property>
       </widget>
      </item>
@@ -116,6 +174,14 @@
       <height>71</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(225, 255, 255);</string>
+    </property>
    </widget>
    <widget class="QTextEdit" name="outputText">
     <property name="geometry">
@@ -126,28 +192,53 @@
       <height>71</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(229, 255, 236);</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="markdown">
+     <string/>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8.25pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
    </widget>
    <widget class="QPushButton" name="testButton">
     <property name="geometry">
      <rect>
       <x>91</x>
       <y>366</y>
-      <width>71</width>
+      <width>101</width>
       <height>23</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Test the checked rules above with the input text.</string>
+    </property>
     <property name="text">
      <string>Test</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="rulesList">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>80</y>
-      <width>421</width>
-      <height>121</height>
-     </rect>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget_3">
@@ -155,16 +246,21 @@
      <rect>
       <x>10</x>
       <y>210</y>
-      <width>180</width>
+      <width>190</width>
       <height>42</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <layout class="QHBoxLayout" name="buttonLayout_2">
      <item>
-      <widget class="QPushButton" name="button1">
+      <widget class="QPushButton" name="moveUpButton">
        <property name="minimumSize">
         <size>
-         <width>30</width>
+         <width>40</width>
          <height>30</height>
         </size>
        </property>
@@ -173,16 +269,19 @@
          <pointsize>14</pointsize>
         </font>
        </property>
+       <property name="toolTip">
+        <string>Move the selected rule up.</string>
+       </property>
        <property name="text">
-        <string>↑</string>
+        <string notr="true"/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button2">
+      <widget class="QPushButton" name="moveDownButton">
        <property name="minimumSize">
         <size>
-         <width>30</width>
+         <width>40</width>
          <height>30</height>
         </size>
        </property>
@@ -191,16 +290,19 @@
          <pointsize>14</pointsize>
         </font>
        </property>
+       <property name="toolTip">
+        <string>Move the selected rule down.</string>
+       </property>
        <property name="text">
-        <string>↓</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button3">
+      <widget class="QPushButton" name="uncheckAllButton">
        <property name="minimumSize">
         <size>
-         <width>30</width>
+         <width>40</width>
          <height>30</height>
         </size>
        </property>
@@ -208,6 +310,9 @@
         <font>
          <pointsize>14</pointsize>
         </font>
+       </property>
+       <property name="toolTip">
+        <string>Uncheck all rules.</string>
        </property>
        <property name="text">
         <string>☐</string>
@@ -215,7 +320,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button4">
+      <widget class="QPushButton" name="checkAllButton">
        <property name="minimumSize">
         <size>
          <width>30</width>
@@ -226,6 +331,9 @@
         <font>
          <pointsize>14</pointsize>
         </font>
+       </property>
+       <property name="toolTip">
+        <string>Check all rules.</string>
        </property>
        <property name="text">
         <string>☒</string>
@@ -243,8 +351,19 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Close</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+    <property name="default">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="testInputLabel">
@@ -255,6 +374,11 @@
       <width>70</width>
       <height>16</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Test input</string>
@@ -269,12 +393,95 @@
       <height>16</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Test output</string>
     </property>
    </widget>
+   <widget class="QLabel" name="errorLabel">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>480</y>
+      <width>331</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Error Msg here</string>
+    </property>
+   </widget>
+   <widget class="QListView" name="rulesList">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>421</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(240, 221, 255);</string>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::EditKeyPressed</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="regexCheckBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>40</y>
+      <width>131</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Treat the search and replace text as regular expressions.</string>
+    </property>
+    <property name="text">
+     <string>Regular Expression</string>
+    </property>
+   </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>searchTextBox</tabstop>
+  <tabstop>replaceTextBox</tabstop>
+  <tabstop>addButton</tabstop>
+  <tabstop>updateButton</tabstop>
+  <tabstop>deleteButton</tabstop>
+  <tabstop>moveUpButton</tabstop>
+  <tabstop>moveDownButton</tabstop>
+  <tabstop>uncheckAllButton</tabstop>
+  <tabstop>checkAllButton</tabstop>
+  <tabstop>inputText</tabstop>
+  <tabstop>testButton</tabstop>
+  <tabstop>outputText</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
