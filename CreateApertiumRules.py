@@ -34,6 +34,7 @@ class FeatureSpec:
     value: Optional[str] = None
     default: Optional[str] = None
     isSource: bool = False
+    ranking: Optional[int] = None
 
     @property
     def xmlLabel(self):
@@ -504,9 +505,15 @@ class RuleGenerator:
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         SetVar(macro, '')
 
+        ranked = False
+        sourceList = sources
+        if all(s.ranking for s in sources):
+            ranked = True
+            sourceList = sorted(sources, key=lambda s: s.ranking)
+
         labelSeq = [s.label for s in sources]
         locations = [(macro, None, [])]
-        for source in sources:
+        for source in sourceList:
             clipPos = str(catSequence.index(source.category)+1)
             tags = sorted(self.GetTags(source, source=(source.isAffix)))
             if isLemma:
@@ -525,7 +532,13 @@ class RuleGenerator:
                     lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
 
                 if not lemmas or not tags:
-                    SetVar(elem, f'no-{macType}-for-'+'-'.join(path))
+                    error = macType+'-for-'+'-'.join(path)
+                    if not ranked or not possibleLemmas:
+                        SetVar(elem, 'no-'+error)
+                    elif len(possibleLemmas) > 1:
+                        SetVar(elem, 'multiple'+error)
+                    else:
+                        SetVar(elem, list(possibleLemmas)[0])
                     continue
 
                 given = ''
@@ -725,13 +738,18 @@ class RuleGenerator:
                 label = feature.get('label')
                 match = feature.get('match')
                 value = feature.get('value')
+                tgtDefault = feature.get('unmarked_default')
+                ranking = feature.get('ranking')
+                if ranking:
+                    ranking = int(ranking)
                 if not value:
-                    apos, isAffix, default, isSource = featureSources.get(
+                    apos, isAffix, srcDefault, isSource = featureSources.get(
                         (label, match), (pos, False, None, False))
                 else:
-                    apos, isAffix, default, isSource = pos, False, None, False
+                    apos, isAffix, srcDefault, isSource = pos, False, None, False
                 lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix,
-                                             value=value, default=default,
+                                             value=value, ranking=ranking,
+                                             default=(tgtDefault or srcDefault),
                                              isSource=isSource))
                 lemmaLocs[wordCats[apos]] = apos
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
@@ -774,7 +792,10 @@ class RuleGenerator:
                     match = feature.get('match')
                     value = feature.get('value')
                     default = feature.get('unmarked_default')
-                    features.append((label, match, value, default))
+                    ranking = feature.get('ranking')
+                    if ranking:
+                        ranking = int(ranking)
+                    features.append((label, match, value, default, ranking))
                 if not features:
                     continue
                 if prefix:
@@ -787,14 +808,15 @@ class RuleGenerator:
                 if len(affix) > 1:
                     specList = []
                     catLoc = {}
-                    for label, match, value, tgtDefault in affix:
+                    for label, match, value, tgtDefault, ranking in affix:
                         apos, isAffix, srcDefault, isSource = featureSources.get(
                             (label, match), (pos, True, None, False))
                         default = tgtDefault or srcDefault
                         specList.append(FeatureSpec(wordCats[apos], label,
                                                     isAffix, value=value,
                                                     default=default,
-                                                    isSource=isSource))
+                                                    isSource=isSource,
+                                                    ranking=ranking))
                         catLoc[wordCats[apos]] = apos
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
                     if spec.macid not in usedMacros:
@@ -808,7 +830,7 @@ class RuleGenerator:
                     ET.SubElement(lu, 'var', n=spec.varid)
                     continue
 
-                label, match, value, tgtDefault = affix[0]
+                label, match, value, tgtDefault, ranking = affix[0]
 
                 if value:
                     tags = self.GetTags(FeatureSpec(wordCats[pos], label, True,

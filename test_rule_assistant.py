@@ -502,5 +502,41 @@ class GermanSwedishDefToAffix(BaseTest, unittest.TestCase):
          '^hav1.1<n><multiple-affix-for-defid-sg>$'),
     ]
 
+class Ranking(BaseTest, unittest.TestCase):
+    RuleFile = 'ranking.xml'
+    Data = {
+        None: {
+            'gender': {'source_features': ['f', 'm']},
+            'number': {'source_features': ['pl', 'sg']},
+        },
+        'def': {
+            'gender': {
+                'target_lemma': [('la', 'f'), ('lo', 'm')],
+            },
+            'number': {
+                'target_lemma': [('la', 'sg'), ('lo', 'sg'), ('les', 'pl')],
+            },
+        },
+        'n': {
+            'gender': {
+                'target_lemma': [('camisa', 'f'), ('libro', 'm')],
+            },
+            'number': {
+                'source_affix': [('SG', 'sg'), ('PL', 'pl')],
+                'target_affix': [('SG', 'sg'), ('PL', 'pl')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^the<def>/la<def>$ ^shirt<n><SG>/camisa<n><f><SG>$',
+         '^la<def>$ ^camisa<n><SG>$'),
+        ('^the<def>/la<def>$ ^shirt<n><PL>/camisa<n><f><PL>$',
+         '^les<def>$ ^camisa<n><PL>$'),
+        ('^the<def>/la<def>$ ^book<n><SG>/libro<n><m><SG>$',
+         '^lo<def>$ ^libro<n><SG>$'),
+        ('^the<def>/la<def>$ ^book<n><PL>/libro<n><m><PL>$',
+         '^les<def>$ ^libro<n><PL>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()
