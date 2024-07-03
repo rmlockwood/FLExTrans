@@ -729,7 +729,7 @@ class RuleGenerator:
                     apos, isAffix, default, isSource = featureSources.get(
                         (label, match), (pos, False, None, False))
                 else:
-                    apos, isAffix, default = pos, False, None, False
+                    apos, isAffix, default, isSource = pos, False, None, False
                 lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix,
                                              value=value, default=default,
                                              isSource=isSource))
