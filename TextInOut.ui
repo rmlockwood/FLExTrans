@@ -465,6 +465,30 @@ p, li { white-space: pre-wrap; }
      <string>Regular Expression</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="wildebeastCheckBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>220</y>
+      <width>191</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Treat the search and replace text as regular expressions.</string>
+    </property>
+    <property name="text">
+     <string>Run the Wildebeast cleanup tool</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <tabstops>
