@@ -882,7 +882,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             errorList.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
             return errorList
         
-        errorList.append(("Outputing category information...", 0))
+        errorList.append(("Outputting category information...", 0))
         
         fOut.write('<?xml version="1.0" encoding="utf-8"?>\n')
         fOut.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
