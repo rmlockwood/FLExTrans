@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11.1 - 7/8/24 - Ron Lockwood
+#    Use common code in InOutUtils for replacing text.
+#
 #   Version 3.11 - 7/1/24 - Ron Lockwood
 #    Initial version.
 #
@@ -70,10 +73,6 @@ def MainFunction(DB, report, modify=True):
         report.Error(f'The rules file: {textOutRulesFile} has invalid XML data.')
         return 
 
-    # Get the parent element where the rules are listed.
-    root = tree.getroot()
-    searchReplaceRulesElement = root.find(TextInOutUtils.SEARCH_REPLACE_RULES_ELEM)
-
     f = open(synthFile, encoding='utf-8')
     lines = f.readlines()
     f.close()
@@ -82,25 +81,14 @@ def MainFunction(DB, report, modify=True):
 
     for line in lines:
 
-        newStr = line
+        # Do user-defined search/replace rules
+        newStr, errMsg = TextInOutUtils.applySearchReplaceRules(line, tree)
 
-        # Loop through each rule
-        for ruleEl in searchReplaceRulesElement:
+        if newStr is None:
 
-            searchReplObj = TextInOutUtils.getRuleFromElement(ruleEl)
+            report.Error(errMsg)
+            break            
 
-            try:
-                if searchReplObj.isRegEx:
-
-                    newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, newStr)
-
-                else:
-                    newStr = newStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
-            except:
-                report.Error(f'Test stopped on failure of rule: ' + TextInOutUtils.buildRuleStringFromElement(ruleEl) + 
-                             f'The current line was {line}') 
-                break
-        
         newLines.append(newStr)
 
     f = open(synthFile, 'w', encoding='utf-8')

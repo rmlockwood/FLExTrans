@@ -1289,6 +1289,9 @@ widgetList = [
    ["Fix Up Synthesis Text Rules File", "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
     "The file that holds the search/replace rules to fix up the synthesis result text.", DONT_GIVE_ERROR, DONT_HIDE],\
 
+   ["Fix Up Paratext Text Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
+    "The file that holds the search/replace rules to fix up the Paratext inport text.", DONT_GIVE_ERROR, DONT_HIDE],\
+
 
 
    ["Synthesis Test Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\

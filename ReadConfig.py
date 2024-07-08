@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11 - 6/29/24 - Ron Lockwood
+#    Support text in/out.
+#
 #   Version 3.10.2 - 3/20/24 - Ron Lockwood
 #    Fixes #572. Allow user to ignore unanalyzed proper nouns.
 #
