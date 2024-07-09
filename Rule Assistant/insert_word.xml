@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator>
+	<FLExTransRules>
+		<FLExTransRule name="Def (remove src word 1)" create_permutations="no">
+			<Source>
+				<Phrase>
+					<Words>
+						<Word category="n" head="no" id="2">
+							<Features/>
+							<Affixes>
+								<Affix type="suffix">
+									<Features>
+										<Feature label="definiteness" match="" ranking="0" unmarked_default="" value="defid"/>
+										<Feature label="number" match="β" ranking="0" unmarked_default="" value=""/>
+									</Features>
+								</Affix>
+							</Affixes>
+						</Word>
+					</Words>
+				</Phrase>
+			</Source>
+			<Target>
+				<Phrase>
+					<Words>
+						<Word category="def" head="no" id="1">
+							<Features>
+								<Feature label="definiteness" match="" ranking="0" unmarked_default="" value="defid"/>
+								<Feature label="gender" match="α" ranking="0" unmarked_default="" value=""/>
+								<Feature label="number" match="β" ranking="0" unmarked_default="" value=""/>
+							</Features>
+							<Affixes/>
+						</Word>
+						<Word category="" head="yes" id="2">
+							<Features>
+								<Feature label="gender" match="α" ranking="0" unmarked_default="" value=""/>
+							</Features>
+							<Affixes/>
+						</Word>
+					</Words>
+				</Phrase>
+			</Target>
+		</FLExTransRule>
+	</FLExTransRules>
+</FLExTransRuleGenerator>

@@ -538,5 +538,45 @@ class Ranking(BaseTest, unittest.TestCase):
          '^les<def>$ ^libro<n><PL>$'),
     ]
 
+class DefSuffixToDeterminer(BaseTest, unittest.TestCase):
+    RuleFile = 'insert_word.xml'
+    Data = {
+        'def': {
+            'definiteness': {
+                'target_lemma': [('thems', 'defid'), ('themp', 'defid'),
+                                 ('thefs', 'defid'), ('thefp', 'defid')],
+            },
+            'gender': {
+                'target_lemma': [('thems', 'm'), ('themp', 'm'),
+                                 ('thefs', 'f'), ('thefp', 'f')],
+            },
+            'number': {
+                'target_lemma': [('thems', 'sg'), ('themp', 'pl'),
+                                 ('thefs', 'sg'), ('thefp', 'pl')],
+            },
+        },
+        'n': {
+            'definiteness': {
+                'source_affix': [('DEF_SG', 'defid'), ('DEF_PL', 'defid')],
+            },
+            'gender': {
+                'target_lemma': [('apartment', 'm'), ('table', 'f')],
+            },
+            'number': {
+                'source_affix': [('DEF_SG', 'sg'), ('DEF_PL', 'pl')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^leilighet<n><DEF_SG>/apartment<n><m><DEF_SG>$',
+         '^thems<def>$ ^apartment<n>$'),
+        ('^leilighet<n><DEF_PL>/apartment<n><m><DEF_PL>$',
+         '^themp<def>$ ^apartment<n>$'),
+        ('^bord<n><DEF_SG>/table<n><f><DEF_SG>$',
+         '^thefs<def>$ ^table<n>$'),
+        ('^bord<n><DEF_PL>/table<n><f><DEF_PL>$',
+         '^thefp<def>$ ^table<n>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()

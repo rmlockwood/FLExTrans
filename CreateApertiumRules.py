@@ -477,7 +477,7 @@ class RuleGenerator:
         # TODO: most of the variable names in this function are from when
         # it was solely for lemmas. They should probably be updated.
 
-        catSequence = sorted(set([s.category for s in sources]))
+        catSequence = sorted(set([s.category for s in sources if not s.value]))
         lookupKey = (destCategory, tuple(catSequence))
         if lookupKey in self.lemmaMacros:
             return self.lemmaMacros[lookupKey]
@@ -514,7 +514,12 @@ class RuleGenerator:
         labelSeq = [s.label for s in sources]
         locations = [(macro, None, [])]
         for source in sourceList:
-            clipPos = str(catSequence.index(source.category)+1)
+            if source.category in catSequence:
+                clipPos = str(catSequence.index(source.category)+1)
+            else:
+                # anything not in catSequence should have non-empty value,
+                # so we shouldn't ever insert clipPos anywhere
+                clipPos = 'ERROR'
             tags = sorted(self.GetTags(source, source=(source.isAffix)))
             if isLemma:
                 allLemmas = Utils.getLemmasForFeature(
@@ -525,6 +530,17 @@ class RuleGenerator:
                                                      True))
 
             newLocations = []
+
+            if source.value:
+                allLemmas = [l for l in allLemmas if l[1] == source.value]
+                for elem, possibleLemmas, path in locations:
+                    lemmas = allLemmas
+                    if possibleLemmas is not None:
+                        lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
+                    newLocations.append((elem, [l[0] for l in lemmas],
+                                         path+[source.value]))
+                locations = newLocations
+                continue
 
             for elem, possibleLemmas, path in locations:
                 lemmas = allLemmas
@@ -725,10 +741,13 @@ class RuleGenerator:
             lu = ET.SubElement(outEl, 'lu')
             pos = wordLocation.get(wid)
             if pos is None:
-                self.report.Error(f'Word insertion not currently supported (attempted in {ruleName}).')
-                self.GetSection('section-rules').remove(ruleEl)
-                return False
-            cat = wordCats[pos]
+                cat = word.get('category')
+                if not cat:
+                    self.report.Error(f'Missing category for inserted word {wid} in rule {ruleName}.')
+                    self.GetSection('section-rules').remove(ruleEl)
+                    return False
+            else:
+                cat = wordCats[pos]
 
             # If the stem features have a source that isn't this word,
             # we want to use a macro to check that we have the right lemma.
@@ -747,17 +766,35 @@ class RuleGenerator:
                         (label, match), (pos, False, None, False))
                 else:
                     apos, isAffix, srcDefault, isSource = pos, False, None, False
-                lemmaTags.append(FeatureSpec(wordCats[apos], label, isAffix,
+                srcCat = wordCats.get(apos)
+                if apos is None:
+                    if value:
+                        srcCat = cat
+                    else:
+                        self.report.Error(f'Missing source for feature {label} on inserted word {wid} in rule {ruleName}.')
+                        self.GetSection('section-rules').remove(ruleEl)
+                        return False
+                lemmaTags.append(FeatureSpec(srcCat, label, isAffix,
                                              value=value, ranking=ranking,
                                              default=(tgtDefault or srcDefault),
                                              isSource=isSource))
-                lemmaLocs[wordCats[apos]] = apos
+                if apos is not None:
+                    lemmaLocs[srcCat] = apos
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
+
+            if pos is None and not shouldUseLemmaMacro:
+                self.report.Error(f'Unable to generate lemma for inserted word {wid} in rule {ruleName}.')
+                self.GetSection('section-rules').reomve(ruleEl)
+                return False
 
             # TODO: check that it's not a proper noun
             if index == 0 and (pos != '1' or shouldUseLemmaMacro):
                 lemCase = ET.SubElement(lu, 'get-case-from', pos='1')
-            elif index > 0 and pos == '1':
+            elif index > 0 and pos == '1' and index < len(sourceWords):
+                # The last condition applies when we have an inserted word,
+                # and it might result in outputting a capitalized word in
+                # non-initial position. I'm not entirely sure what to do
+                # about this though.
                 lemCase = ET.SubElement(lu, 'get-case-from', pos=str(index+1))
             else:
                 lemCase = lu
@@ -775,9 +812,12 @@ class RuleGenerator:
             else:
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
-            ET.SubElement(
-                lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
-            )
+            if pos is None:
+                ET.SubElement(lu, 'lit-tag', v=cat)
+            else:
+                ET.SubElement(
+                    lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
+                )
 
             # Force prefixes to be before suffixes
             prefixFeatures = []
@@ -811,13 +851,21 @@ class RuleGenerator:
                     for label, match, value, tgtDefault, ranking in affix:
                         apos, isAffix, srcDefault, isSource = featureSources.get(
                             (label, match), (pos, True, None, False))
+                        srcCat = wordCats.get(apos)
+                        if apos is None:
+                            if value:
+                                srcCat = cat
+                            else:
+                                self.report.Error('Unable to find source for feature {label} on word {wid} in rule {ruleName}.')
+                                self.GetSection('section-rules').reomve(ruleEl)
+                                return False
                         default = tgtDefault or srcDefault
-                        specList.append(FeatureSpec(wordCats[apos], label,
+                        specList.append(FeatureSpec(srcCat, label,
                                                     isAffix, value=value,
                                                     default=default,
                                                     isSource=isSource,
                                                     ranking=ranking))
-                        catLoc[wordCats[apos]] = apos
+                        catLoc[srcCat] = apos
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
                     if spec.macid not in usedMacros:
                         actionEl.append(ET.Comment(f'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.'))
@@ -845,6 +893,10 @@ class RuleGenerator:
 
                 apos, isAffix, srcDefault, isSource = featureSources.get(
                     (label, match), (pos, True, None, False))
+                if apos is None:
+                    self.report.Error('Unable to find source for feature {label} on word {wid} in rule {ruleName}.')
+                    self.GetSection('section-rules').reomve(ruleEl)
+                    return False
                 default = tgtDefault or srcDefault
                 if apos != pos:
                     spec = self.GetAttributeMacro(
