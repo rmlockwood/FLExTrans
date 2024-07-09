@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>509</height>
+    <width>540</width>
+    <height>581</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>405</width>
-      <height>24</height>
+      <y>40</y>
+      <width>521</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -29,27 +29,6 @@
      </font>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="searchLabel">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Search for:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="searchTextBox">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-      </widget>
-     </item>
      <item>
       <widget class="QLabel" name="replaceLabel">
        <property name="font">
@@ -69,6 +48,9 @@
          <pointsize>10</pointsize>
         </font>
        </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
       </widget>
      </item>
     </layout>
@@ -77,7 +59,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>110</y>
       <width>231</width>
       <height>31</height>
      </rect>
@@ -169,8 +151,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
-      <width>421</width>
+      <y>350</y>
+      <width>521</width>
       <height>71</height>
      </rect>
     </property>
@@ -187,8 +169,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>400</y>
-      <width>421</width>
+      <y>470</y>
+      <width>521</width>
       <height>71</height>
      </rect>
     </property>
@@ -224,7 +206,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>91</x>
-      <y>366</y>
+      <y>436</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -245,7 +227,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>280</y>
       <width>190</width>
       <height>42</height>
      </rect>
@@ -346,7 +328,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>480</y>
+      <y>550</y>
       <width>71</width>
       <height>23</height>
      </rect>
@@ -370,7 +352,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
+      <y>330</y>
       <width>70</width>
       <height>16</height>
      </rect>
@@ -388,7 +370,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>380</y>
+      <y>450</y>
       <width>70</width>
       <height>16</height>
      </rect>
@@ -406,7 +388,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>480</y>
+      <y>550</y>
       <width>331</width>
       <height>20</height>
      </rect>
@@ -424,8 +406,8 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>80</y>
-      <width>421</width>
+      <y>150</y>
+      <width>521</width>
       <height>121</height>
      </rect>
     </property>
@@ -441,30 +423,6 @@ p, li { white-space: pre-wrap; }
      <set>QAbstractItemView::EditKeyPressed</set>
     </property>
    </widget>
-   <widget class="QCheckBox" name="regexCheckBox">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>40</y>
-      <width>131</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>8</pointsize>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>Treat the search and replace text as regular expressions.</string>
-    </property>
-    <property name="text">
-     <string>Regular Expression</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="wildebeastCheckBox">
     <property name="enabled">
      <bool>true</bool>
@@ -472,7 +430,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>220</y>
+      <y>290</y>
       <width>191</width>
       <height>17</height>
      </rect>
@@ -489,18 +447,150 @@ p, li { white-space: pre-wrap; }
      <string>Run the Wildebeast cleanup tool</string>
     </property>
    </widget>
+   <widget class="QWidget" name="layoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>521</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="searchLabel">
+       <property name="minimumSize">
+        <size>
+         <width>65</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Search for:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="searchTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>521</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="commentLabel">
+       <property name="minimumSize">
+        <size>
+         <width>65</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Comment:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="commentTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="regexCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Treat the search and replace text as regular expressions.</string>
+       </property>
+       <property name="text">
+        <string>Regular Expression</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="inactiveCheckBox">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Treat the search and replace text as regular expressions.</string>
+       </property>
+       <property name="text">
+        <string>Inactive</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <tabstops>
   <tabstop>searchTextBox</tabstop>
   <tabstop>replaceTextBox</tabstop>
+  <tabstop>commentTextBox</tabstop>
+  <tabstop>regexCheckBox</tabstop>
+  <tabstop>inactiveCheckBox</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>updateButton</tabstop>
   <tabstop>deleteButton</tabstop>
+  <tabstop>rulesList</tabstop>
   <tabstop>moveUpButton</tabstop>
   <tabstop>moveDownButton</tabstop>
   <tabstop>uncheckAllButton</tabstop>
   <tabstop>checkAllButton</tabstop>
+  <tabstop>wildebeastCheckBox</tabstop>
   <tabstop>inputText</tabstop>
   <tabstop>testButton</tabstop>
   <tabstop>outputText</tabstop>

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11.2 - 7/9/24 - Ron Lockwood
+#    Added comment and inactive properties to rules.
+#
 #   Version 3.11.1 - 7/8/24 - Ron Lockwood
 #    Added Text In module putting common window code in InOutUtils.
 #
@@ -31,15 +34,19 @@ SEARCH_REPL_RULE_ELEM = 'SearchReplaceRule'
 SEARCH_STRING_ELEM = 'SearchString'
 REPL_STRING_ELEM = 'ReplaceString'
 REGEX_ATTRIB = 'RegEx'
+INACTIVE_ATTRIB = 'Inactive'
+COMMENT_ATTRIB = 'Comment'
 ARROW_CHAR = '⭢'
 
 class SearchReplaceRuleData():
 
-    def __init__(self, searchStr, replStr, isRegEx):
+    def __init__(self, searchStr, replStr, isRegEx, isInactive, comment):
 
         self.searchStr = "" if searchStr is None else searchStr
         self.replStr = "" if replStr is None else replStr
         self.isRegEx = isRegEx
+        self.isInactive = isInactive
+        self.comment = "" if comment is None else comment
 
 def getRuleFromElement(element):
 
@@ -55,30 +62,48 @@ def getRuleFromElement(element):
     else:
         isRegEx = False
 
-    searchReplaceRuleData = SearchReplaceRuleData(searchEl.text, replaceEl.text, isRegEx)
+    # Get the inactive flag
+    inactiveVal = element.get(INACTIVE_ATTRIB)
+
+    if inactiveVal == 'yes':
+        isInactive = True
+    else:
+        isInactive = False
+
+    # Get the comment
+    comment = element.get(COMMENT_ATTRIB)
+
+    searchReplaceRuleData = SearchReplaceRuleData(searchEl.text, replaceEl.text, isRegEx, isInactive, comment)
 
     return searchReplaceRuleData
 
-def buildRuleString(searchStr, replStr, isRegExChecked):
+def buildRuleString(searchRplObj):
 
     # Create a regex indicator string if reg ex is checked
-    if isRegExChecked:
+    if searchRplObj.isRegEx:
 
         regExStr = (' (✓ RegEx)')
     else:
         regExStr = ""
 
-    # Build rule display string including codes for invisible chars.
-    searchStr = getPrintableString(searchStr)
-    replStr = getPrintableString(replStr)
+    # Create an inactive indicator string if reg ex is checked
+    if searchRplObj.isInactive:
 
-    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}'
+        inactiveStr = ('🚫')
+    else:
+        inactiveStr = ""
+
+    # Build rule display string including codes for invisible chars.
+    searchStr = getPrintableString(searchRplObj.searchStr)
+    replStr = getPrintableString(searchRplObj.replStr)
+
+    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}'
 
 def buildRuleStringFromElement(element):
 
     SRobj = getRuleFromElement(element)
 
-    return buildRuleString(SRobj.searchStr, SRobj.replStr, SRobj.isRegEx)
+    return buildRuleString(SRobj)
 
 def getPrintableString(myStr):
     
@@ -108,18 +133,23 @@ def applySearchReplaceRules(inputStr, tree):
 
         searchReplObj = getRuleFromElement(ruleEl)
 
-        try:
-            if searchReplObj.isRegEx:
+        # Skip a rule if it is marked inactive
+        if searchReplObj.isInactive == False:
 
-                newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, inputStr)
-            else:
-                newStr = inputStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
-        except:
-            newStr = None
-            errorMsg = f'Test stopped on failure of rule: ' + buildRuleStringFromElement(ruleEl)
-            break
+            try:
+                if searchReplObj.isRegEx:
+
+                    newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, inputStr)
+                else:
+                    newStr = inputStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
+            except:
+                newStr = None
+                errorMsg = f'Test stopped on failure of rule: ' + buildRuleStringFromElement(ruleEl)
+                break
 
     return newStr, errorMsg
+
+
 
 class TextInOutRulesWindow(QMainWindow):
 
@@ -178,7 +208,7 @@ class TextInOutRulesWindow(QMainWindow):
     def AddClicked(self):
         
         # Build the rule string for the rule list
-        ruleStr = buildRuleString(self.ui.searchTextBox.text(), self.ui.replaceTextBox.text(), self.ui.regexCheckBox.checkState() == QtCore.Qt.Checked)
+        ruleStr = buildRuleString(self.initDataObj())
 
         # Get the row #
         if self.ruleIndex:
@@ -197,17 +227,11 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Construct the etree elements
         newRuleEl = ET.Element(SEARCH_REPL_RULE_ELEM)
-        newSearchEl = ET.SubElement(newRuleEl, SEARCH_STRING_ELEM)
-        newReplEl = ET.SubElement(newRuleEl, REPL_STRING_ELEM)
-        newSearchEl.text = self.ui.searchTextBox.text()
-        newReplEl.text = self.ui.replaceTextBox.text()
+        ET.SubElement(newRuleEl, SEARCH_STRING_ELEM)
+        ET.SubElement(newRuleEl, REPL_STRING_ELEM)
 
-        if self.ui.regexCheckBox.checkState():
-            isRegexStr = "yes"
-        else:
-            isRegexStr = "no"
-
-        newRuleEl.attrib[REGEX_ATTRIB] = isRegexStr
+        # Set element text and attributes
+        self.setElementInfo(newRuleEl)
 
         # Add it to the element tree
         self.searchReplaceRulesElement.insert(rowNum, newRuleEl)
@@ -290,6 +314,16 @@ class TextInOutRulesWindow(QMainWindow):
         else:
             self.ui.regexCheckBox.setCheckState(QtCore.Qt.Unchecked)
 
+        # Set the Inactive check box
+        if searchReplaceRuleData.isInactive:
+
+            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.Checked)
+        else:
+            self.ui.inactiveCheckBox.setCheckState(QtCore.Qt.Unchecked)
+
+        # Set comment
+        self.ui.commentTextBox.setText(searchReplaceRuleData.comment)
+
         # Enable controls
         self.enableControls()
 
@@ -300,6 +334,7 @@ class TextInOutRulesWindow(QMainWindow):
 
             self.ui.addButton.setEnabled(True)
             self.ui.regexCheckBox.setEnabled(True)
+            self.ui.inactiveCheckBox.setEnabled(True)
 
             # If a rule is selected, enable the update button
             if self.ruleIndex:
@@ -311,6 +346,7 @@ class TextInOutRulesWindow(QMainWindow):
             self.ui.addButton.setEnabled(False)
             self.ui.updateButton.setEnabled(False)
             self.ui.regexCheckBox.setEnabled(False)
+            self.ui.inactiveCheckBox.setEnabled(False)
                 
     def TestClicked(self):
 
@@ -329,16 +365,18 @@ class TextInOutRulesWindow(QMainWindow):
 
                 searchReplDataObj = getRuleFromElement(ruleEl)
 
-                try:
-                    if searchReplDataObj.isRegEx:
+                if searchReplDataObj.isInactive == False:
 
-                        newStr = regex.sub(searchReplDataObj.searchStr, searchReplDataObj.replStr, newStr)
+                    try:
+                        if searchReplDataObj.isRegEx:
 
-                    else:
-                        newStr = newStr.replace(searchReplDataObj.searchStr, searchReplDataObj.replStr)
-                except:
-                    self.ui.errorLabel.setText(f'Test stopped on failure of rule {str(ind+1)}: ' + buildRuleStringFromElement(ruleEl)) # it might be more efficient to get this from the rule model
-                    break
+                            newStr = regex.sub(searchReplDataObj.searchStr, searchReplDataObj.replStr, newStr)
+
+                        else:
+                            newStr = newStr.replace(searchReplDataObj.searchStr, searchReplDataObj.replStr)
+                    except:
+                        self.ui.errorLabel.setText(f'Test stopped on failure of rule {str(ind+1)}: ' + buildRuleStringFromElement(ruleEl)) # it might be more efficient to get this from the rule model
+                        break
 
         self.ui.outputText.setText(newStr)
         return
@@ -384,7 +422,7 @@ class TextInOutRulesWindow(QMainWindow):
         myItem = self.rulesModel.itemFromIndex(self.ruleIndex)
 
         # Build the rule string for the rule list
-        ruleStr = buildRuleString(self.ui.searchTextBox.text(), self.ui.replaceTextBox.text(), self.ui.regexCheckBox.checkState() == QtCore.Qt.Checked)
+        ruleStr = buildRuleString(self.initDataObj())
 
         # Update the selected rule
         myItem.setText(ruleStr)
@@ -393,18 +431,8 @@ class TextInOutRulesWindow(QMainWindow):
         # Update the etree elements
         ruleEl = self.searchReplaceRulesElement[self.ruleIndex.row()]
 
-        searchEl = ruleEl[0]
-        replaceEl = ruleEl[1]
-
-        searchEl.text = self.ui.searchTextBox.text()
-        replaceEl.text = self.ui.replaceTextBox.text()
-
-        if self.ui.regexCheckBox.checkState():
-            isRegexStr = "yes"
-        else:
-            isRegexStr = "no"
-
-        ruleEl.attrib[REGEX_ATTRIB] = isRegexStr
+        # Set element text and attributes
+        self.setElementInfo(ruleEl)
 
         # Enable the delete button in case we were at 0 rows before.
         self.ui.deleteButton.setEnabled(True)
@@ -416,7 +444,7 @@ class TextInOutRulesWindow(QMainWindow):
                         
             searchReplObj = getRuleFromElement(ruleEl)
 
-            ruleStr = buildRuleString(searchReplObj.searchStr, searchReplObj.replStr, searchReplObj.isRegEx)
+            ruleStr = buildRuleString(searchReplObj)
 
             # Create an item object
             item = QStandardItem(ruleStr) 
@@ -432,6 +460,13 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.updateButton.setEnabled(True)
         self.ui.deleteButton.setEnabled(True)
         self.ui.regexCheckBox.setEnabled(True)
+        self.ui.inactiveCheckBox.setEnabled(True)
+
+    def initDataObj(self):
+
+        searchRplObj = SearchReplaceRuleData(self.ui.searchTextBox.text(), self.ui.replaceTextBox.text(), self.ui.regexCheckBox.checkState() == QtCore.Qt.Checked, 
+                                        self.ui.inactiveCheckBox.checkState() == QtCore.Qt.Checked, self.ui.commentTextBox.text())
+        return searchRplObj
 
     def loadRules(self):
             
@@ -459,6 +494,32 @@ class TextInOutRulesWindow(QMainWindow):
             'The fix up synthesis rule file has no SearchReplaceRules.')
             return False
         
+    def setElementInfo(self, ruleEl):
+
+        searchEl = ruleEl[0]
+        replaceEl = ruleEl[1]
+        searchEl.text = self.ui.searchTextBox.text()
+        replaceEl.text = self.ui.replaceTextBox.text()
+
+        # Set regex attribute
+        if self.ui.regexCheckBox.checkState():
+            isRegexStr = "yes"
+        else:
+            isRegexStr = "no"
+
+        ruleEl.attrib[REGEX_ATTRIB] = isRegexStr
+
+        # Set inactive attribute
+        if self.ui.inactiveCheckBox.checkState():
+            isInactiveStr = "yes"
+        else:
+            isInactiveStr = "no"
+
+        ruleEl.attrib[INACTIVE_ATTRIB] = isInactiveStr
+
+        # Set comment attribute
+        ruleEl.attrib[COMMENT_ATTRIB] = self.ui.commentTextBox.text()
+
     def writeXMLfile(self):
 
         ET.indent(self.ruleFileXMLtree)
