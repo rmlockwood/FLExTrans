@@ -681,6 +681,9 @@ class RuleGenerator:
                                comment=ruleName)
         self.ruleNames.add(ruleName)
 
+        if desc := rule.find('./Description'):
+            ruleEl.append(ET.Comment('Rule Assistant Description: '+desc.text))
+
         wordCats = {}
         wordLocation = {}
         patternEl = ET.SubElement(ruleEl, 'pattern')
