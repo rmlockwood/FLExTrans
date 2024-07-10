@@ -544,16 +544,10 @@ class DefSuffixToDeterminer(BaseTest, unittest.TestCase):
     Data = {
         'def': {
             'definiteness': {
-                'target_lemma': [('thems', 'defid'), ('themp', 'defid'),
-                                 ('thefs', 'defid'), ('thefp', 'defid')],
+                'target_lemma': [('lo', 'defid'), ('la', 'defid')],
             },
             'gender': {
-                'target_lemma': [('thems', 'm'), ('themp', 'm'),
-                                 ('thefs', 'f'), ('thefp', 'f')],
-            },
-            'number': {
-                'target_lemma': [('thems', 'sg'), ('themp', 'pl'),
-                                 ('thefs', 'sg'), ('thefp', 'pl')],
+                'target_lemma': [('lo', 'm'), ('la', 'f')],
             },
         },
         'n': {
@@ -565,18 +559,19 @@ class DefSuffixToDeterminer(BaseTest, unittest.TestCase):
             },
             'number': {
                 'source_affix': [('DEF_SG', 'sg'), ('DEF_PL', 'pl')],
+                'target_affix': [('PL', 'pl')],
             },
         },
     }
     TestPairs = [
         ('^leilighet<n><DEF_SG>/apartment<n><m><DEF_SG>$',
-         '^thems<def>$ ^apartment<n>$'),
+         '^lo<def>$ ^apartment<n>$'),
         ('^leilighet<n><DEF_PL>/apartment<n><m><DEF_PL>$',
-         '^themp<def>$ ^apartment<n>$'),
+         '^lo<def>$ ^apartment<n><PL>$'),
         ('^bord<n><DEF_SG>/table<n><f><DEF_SG>$',
-         '^thefs<def>$ ^table<n>$'),
+         '^la<def>$ ^table<n>$'),
         ('^bord<n><DEF_PL>/table<n><f><DEF_PL>$',
-         '^thefp<def>$ ^table<n>$'),
+         '^la<def>$ ^table<n><PL>$'),
     ]
 
 if __name__ == '__main__':

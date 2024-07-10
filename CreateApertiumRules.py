@@ -374,6 +374,15 @@ class RuleGenerator:
 
         return set(ret)
 
+    def SameAffixTags(self, cat: str, label: str):
+        '''Check whether the source and target projects have the same
+        set of affixes for a particular feature.'''
+
+        src = self.GetTags(FeatureSpec(cat, label, True, isSource=True))
+        trg = self.GetTags(FeatureSpec(cat, label, True, isSource=False))
+
+        return src == trg
+
     def GetAttributeMacro(self, srcSpec: FeatureSpec, trgSpec: FeatureSpec) -> Optional[MacroSpec]:
         '''Return the macro and variable names for converting between the
         category+attribute pairs `srcSpec` and `trgSpec`, creating the macro
@@ -384,7 +393,7 @@ class RuleGenerator:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
         src = self.GetTags(srcSpec, source=True)
-        trg = self.GetTags(trgSpec)
+        trg = self.GetTags(trgSpec, source=False)
 
         def FindTag(srcFeat, fallback=None):
             nonlocal trg
@@ -903,7 +912,7 @@ class RuleGenerator:
                     self.GetSection('section-rules').reomve(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
-                if apos != pos:
+                if apos != pos or not self.SameAffixTags(wordCats[apos], label):
                     spec = self.GetAttributeMacro(
                         FeatureSpec(wordCats[apos], label, isAffix,
                                     default=default, isSource=isSource),

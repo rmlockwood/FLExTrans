@@ -28,7 +28,6 @@
 							<Features>
 								<Feature label="definiteness" match="" ranking="0" unmarked_default="" value="defid"/>
 								<Feature label="gender" match="α" ranking="0" unmarked_default="" value=""/>
-								<Feature label="number" match="β" ranking="0" unmarked_default="" value=""/>
 							</Features>
 							<Affixes/>
 						</Word>
@@ -36,7 +35,13 @@
 							<Features>
 								<Feature label="gender" match="α" ranking="0" unmarked_default="" value=""/>
 							</Features>
-							<Affixes/>
+							<Affixes>
+								<Affix type="suffix">
+									<Features>
+										<Feature label="number" match="β" ranking="0" unmarked_default="sg" value=""/>
+									</Features>
+								</Affix>
+							</Affixes>
 						</Word>
 					</Words>
 				</Phrase>
