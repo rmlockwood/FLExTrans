@@ -551,7 +551,7 @@ class RuleGenerator:
                     lemmas = allLemmas
                     if possibleLemmas is not None:
                         lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
-                    newLocations.append((elem, [l[0] for l in lemmas],
+                    newLocations.append((elem, set([l[0] for l in lemmas]),
                                          path+[source.value]))
                 locations = newLocations
                 continue
@@ -560,6 +560,14 @@ class RuleGenerator:
                 lemmas = allLemmas
                 if possibleLemmas is not None:
                     lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
+
+                if not lemmas and source.default:
+                    newPossible = set([l for l in possibleLemmas
+                                       if all(a[0] != l for a in allLemmas)])
+                    if newPossible:
+                        newLocations.append((elem, newPossible,
+                                             path+[source.default]))
+                        continue
 
                 if not lemmas or not tags:
                     error = macType+'-for-'+'-'.join(path)
@@ -599,7 +607,7 @@ class RuleGenerator:
                 otherwise = ET.SubElement(choose, 'otherwise')
                 if source.default:
                     nextLemmas = set(l[0] for l in lemmas if l[1] == source.default)
-                    newLocations.append((otherwise, nextLemmas, path+[source.default]))
+                    newLocations.append((otherwise, nextLemmas or None, path+[source.default]))
                 else:
                     SetVar(otherwise, f'no-{macType}-for-'+'-'.join(path))
 
@@ -607,7 +615,9 @@ class RuleGenerator:
 
         for elem, possibleLemmas, path in locations:
             error = f'{macType}-for-' + '-'.join(path)
-            if len(possibleLemmas) == 0:
+            if possibleLemmas is None:
+                value = ''
+            elif len(possibleLemmas) == 0:
                 value = 'no-'+error
             elif len(possibleLemmas) == 1:
                 value = list(possibleLemmas)[0]

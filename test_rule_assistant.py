@@ -574,5 +574,28 @@ class DefSuffixToDeterminer(BaseTest, unittest.TestCase):
          '^la<def>$ ^table<n><PL>$'),
     ]
 
+class GermanEnglishDoubleDefault(BaseTest, unittest.TestCase):
+    RuleFile = 'GermanEnglishDoubleDefault.xml'
+    Data = {
+        'n': {
+            'case': {
+                'source_affix': [('NOM', 'nom'), ('GEN', 'gen'), ('ACC', 'acc')],
+                'target_affix': [('GEN', 'gen')],
+            },
+            'number': {
+                'source_affix': [('SG', 'sg'), ('PL', 'pl')],
+                'target_affix': [('PL', 'pl')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^hund<n><NOM><SG>/dog<n><NOM><SG>$', '^dog<n>$'),
+        ('^hund<n><NOM><PL>/dog<n><NOM><PL>$', '^dog<n><PL>$'),
+        ('^hund<n><ACC><SG>/dog<n><ACC><SG>$', '^dog<n><no-affix-for-sg-acc>$'),
+        ('^hund<n><ACC><PL>/dog<n><ACC><PL>$', '^dog<n><PL>$'),
+        ('^hund<n><GEN><SG>/dog<n><GEN><SG>$', '^dog<n><GEN>$'),
+        ('^hund<n><GEN><PL>/dog<n><GEN><PL>$', '^dog<n><PL>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()
