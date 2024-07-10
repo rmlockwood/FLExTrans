@@ -212,12 +212,17 @@ class RuleGenerator:
 
         for macro in self.root.findall('.//def-macro'):
             self.usedIDs.add(macro.get('n'))
+            # The block below allows multi-source macros to be reused,
+            # but this causes some problems, so we're disabling it for now.
+            # See #661
+            '''
             if code := macro.get('c'):
                 items = code.split()
                 if len(items) > 3 and items[0] == 'FTM':
                     lookupKey = (items[2], tuple(items[3:]))
                     self.lemmaMacros[lookupKey] = MacroSpec(
                         macro.get('n'), items[1], items[3:])
+            '''
 
         for rule in self.root.findall('.//rule'):
             self.ruleNames.add(rule.get('comment'))
@@ -240,7 +245,7 @@ class RuleGenerator:
             self.usedIDs.add(clean)
             return clean
 
-        n = 2
+        n = 1
         while True:
             s = f'{clean}{n}'
             if s not in self.usedIDs:

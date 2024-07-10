@@ -412,6 +412,7 @@ class UnmarkedDefault_WithBlanks(BaseTest, unittest.TestCase):
          '^camino1.1<n>$ ^largo1.1<adj><MASC_a>$'),
     ]
 
+@unittest.skip('Disabling functionality per #661')
 class ReuseMacro(FrenchSpanishDefAdjNoun):
     TransferFile = 'reuse_macro.t1x'
     TestPairs = [
