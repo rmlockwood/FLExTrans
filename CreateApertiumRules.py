@@ -24,9 +24,9 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
 from itertools import chain, combinations, permutations
-from dataclasses import dataclass
+import dataclasses
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class FeatureSpec:
     category: str
     label: str
@@ -43,7 +43,7 @@ class FeatureSpec:
             ls += ['or', self.default]
         return '_'.join(ls)
 
-@dataclass
+@dataclasses.dataclass
 class MacroSpec:
     macid: str
     varid: str
@@ -80,8 +80,8 @@ class RuleGenerator:
         self.tagAndFeaturesToCategoryName: dict[tuple[str, frozenset, frozenset], str] = {}
 
         # Mapping from part-of-speech + feature name to <def-attr> name
-        # {(category, label): attribute}
-        self.featureToAttributeName: dict[tuple[str, str], str] = {}
+        # {(category, label, isAffix): attribute}
+        self.featureToAttributeName: dict[tuple[str, str, bool], str] = {}
 
         # Name of the <def-attr> for part-of-speech tags
         self.categoryAttribute: Optional[str] = None
@@ -106,6 +106,12 @@ class RuleGenerator:
 
         # The <section-*> elements of the XML tree
         self.sections: dict[str: ET.Element] = {}
+
+        self.BantuMacro: Optional[str] = None
+        self.BantuVariable: Optional[str] = None
+        self.BantuFeature: Optional[str] = None
+        self.BantuValues: Optional[set[str]] = None
+        self.BantuParts: Optional[tuple[str, str]] = None
 
     def GetCategory(self, category: str, source: bool = True,
                     target: bool = True) -> set[str]:
@@ -287,8 +293,10 @@ class RuleGenerator:
         '''Return the name of the attribute corresponding to feature `label`
         for part of speech `category`, creating it if necessary.'''
 
-        if (spec.category, spec.label) in self.featureToAttributeName:
-            return self.featureToAttributeName[(spec.category, spec.label)]
+        key = (spec.category, spec.label, spec.isAffix)
+
+        if key in self.featureToAttributeName:
+            return self.featureToAttributeName[key]
 
         args = [self.report, self.configMap, spec.category, spec.label]
         if spec.isAffix:
@@ -309,7 +317,7 @@ class RuleGenerator:
         if not values:
             self.report.Error(f'Could not find any tags for feature {spec.label} of part-of-speech {spec.category}.')
         aid = self.AddSingleAttribute(name, values)
-        self.featureToAttributeName[(spec.category, spec.label)] = aid
+        self.featureToAttributeName[key] = aid
         return aid
 
     def AddVariable(self, name: str, comment: Optional[str] = None) -> None:
@@ -346,6 +354,12 @@ class RuleGenerator:
         '''Return a set of tuples where the first element is the tag that
         would appear in the stream and the second element is the feature
         value so that we can match it up with the tags for other categories.'''
+
+        if spec.label == self.BantuFeature:
+            sg, pl = self.BantuParts
+            sgTags = self.GetTags(dataclasses.replace(spec, label=sg), source)
+            plTags = self.GetTags(dataclasses.replace(spec, label=pl), source)
+            return sgTags | plTags
 
         if source or spec.isSource:
             if spec.isAffix:
@@ -392,7 +406,12 @@ class RuleGenerator:
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
-        src = self.GetTags(srcSpec, source=True)
+        if srcSpec.category == 'n' and srcSpec.label == self.BantuFeature:
+            bantu = True
+            src = set([(x, x) for x in self.BantuValues])
+        else:
+            bantu = False
+            src = self.GetTags(srcSpec, source=True)
         trg = self.GetTags(trgSpec, source=False)
 
         def FindTag(srcFeat, fallback=None):
@@ -413,7 +432,7 @@ class RuleGenerator:
             ET.SubElement(let, ('lit-tag' if value else 'lit'), v=value)
             return eq
 
-        if src == trg:
+        if not bantu and src == trg:
             if not srcSpec.default:
                 self.attributeMacros[(srcSpec, trgSpec)] = None
                 return None
@@ -459,14 +478,22 @@ class RuleGenerator:
         ET.SubElement(let1, 'var', n=varid)
         ET.SubElement(let1, 'lit', v='')
 
+        if bantu:
+            macro.append(ET.Comment('Determine the appropriate noun class'))
+            callmac = ET.SubElement(macro, 'call-macro', n=self.BantuMacro)
+            ET.SubElement(callmac, 'with-param', pos='1')
+
         choose = ET.SubElement(macro, 'choose')
         for srcTag, srcFeat in src:
             if srcFeat == srcSpec.default:
                 continue
 
             eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
-            ET.SubElement(eq, 'clip', pos='1', side='tl',
-                          part=self.EnsureAttribute(srcSpec))
+            if bantu:
+                ET.SubElement(eq, 'var', n=self.BantuVariable)
+            else:
+                ET.SubElement(eq, 'clip', pos='1', side='tl',
+                              part=self.EnsureAttribute(srcSpec))
             ET.SubElement(eq, 'lit-tag', v=srcTag)
 
         otherwise = ET.SubElement(choose, 'otherwise')
@@ -481,6 +508,65 @@ class RuleGenerator:
         spec = MacroSpec(macid, varid, [srcSpec.category])
         self.attributeMacros[(srcSpec, trgSpec)] = spec
         return spec
+
+    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str) -> None:
+        self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
+        self.BantuVariable = self.GetAvailableID('v_Bantu_noun_class_from_n')
+
+        sgAffix = self.EnsureAttribute(FeatureSpec('n', singularFeature,
+                                                   isAffix=True))
+        plAffix = self.EnsureAttribute(FeatureSpec('n', pluralFeature,
+                                                   isAffix=True))
+        sgStem = self.EnsureAttribute(FeatureSpec('n', singularFeature,
+                                                   isAffix=False))
+        plStem = self.EnsureAttribute(FeatureSpec('n', pluralFeature,
+                                                   isAffix=False))
+
+        self.AddVariable(self.BantuVariable)
+        macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
+                              n=self.BantuMacro, npar='1')
+
+        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
+        let = ET.SubElement(macro, 'let')
+        ET.SubElement(let, 'var', n=self.BantuVariable)
+        ET.SubElement(let, 'lit', v='')
+
+        chooseNumber = ET.SubElement(macro, 'choose')
+        whenSg = ET.SubElement(chooseNumber, 'when')
+        testSg = ET.SubElement(whenSg, 'test')
+        testSg.append(ET.Comment("If there's no plural prefix, it must be singular."))
+        equalSg = ET.SubElement(testSg, 'equal')
+        ET.SubElement(equalSg, 'clip', pos='1', part=plAffix, side='tl')
+        ET.SubElement(equalSg, 'lit', v='')
+
+        otherwisePl = ET.SubElement(chooseNumber, 'otherwise')
+
+        sgTags = self.GetTags(FeatureSpec('n', singularFeature, isAffix=False))
+        plTags = self.GetTags(FeatureSpec('n', pluralFeature, isAffix=False))
+
+        trees = [(sgTags, sgStem, whenSg, 'sg'),
+                 (plTags, plStem, otherwisePl, 'pl')]
+
+        self.BantuValues = set()
+
+        for tagSet, feature, parent, default in trees:
+            choose = ET.SubElement(parent, 'choose')
+            for tag, value in sorted(tagSet):
+                when = ET.SubElement(choose, 'when')
+                test = ET.SubElement(when, 'test')
+                equal = ET.SubElement(test, 'equal')
+                ET.SubElement(equal, 'clip', pos='1', part=feature, side='tl')
+                ET.SubElement(equal, 'lit-tag', v=tag)
+                let = ET.SubElement(when, 'let')
+                ET.SubElement(let, 'var', n=self.BantuVariable)
+                ET.SubElement(let, 'lit-tag', v=value)
+                self.BantuValues.add(value)
+
+            otherwise = ET.SubElement(choose, 'otherwise')
+            let = ET.SubElement(otherwise, 'let')
+            ET.SubElement(let, 'var', n=self.BantuVariable)
+            ET.SubElement(let, 'lit-tag', v=default)
+            self.BantuValues.add(default)
 
     def GetMultiFeatureMacro(self, destCategory: str, isLemma: bool, sources: list[FeatureSpec]) -> MacroSpec:
         '''Find or generate the appropriate macro for changing the lemma of
@@ -925,7 +1011,10 @@ class RuleGenerator:
                     self.GetSection('section-rules').reomve(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
-                if apos != pos or not self.SameAffixTags(wordCats[apos], label):
+                samePos = (apos == pos)
+                sameTags = self.SameAffixTags(wordCats[apos], label)
+                isBantu = (label == self.BantuFeature)
+                if not samePos or not sameTags or isBantu:
                     spec = self.GetAttributeMacro(
                         FeatureSpec(wordCats[apos], label, isAffix,
                                     default=default, isSource=isSource),
@@ -972,6 +1061,13 @@ class RuleGenerator:
             if tag not in self.definedAttributes[self.categoryAttribute]:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
                 self.definedAttributes[self.categoryAttribute].add(tag)
+
+        classAttrs = ['SingularClass', 'PluralClass', 'MergedClass']
+        if all(ca in root.attrib for ca in classAttrs):
+            vals = [root.get(ca) for ca in classAttrs]
+            self.MakeBantuMacro(vals[0], vals[1])
+            self.BantuFeature = vals[2]
+            self.BantuParts = (vals[0], vals[1])
 
         ruleCount = 0
         for index, rule in enumerate(root.findall('.//FLExTransRule')):

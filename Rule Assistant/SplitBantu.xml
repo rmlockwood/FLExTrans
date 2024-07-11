@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator SingularClass="BantuSG" PluralClass="BantuPL" MergedClass="BantuNounClass">
+	<FLExTransRules>
+		<FLExTransRule name="Noun" create_permutations="no" bantu="yes">
+			<Source>
+				<Phrase>
+					<Words>
+						<Word category="n" head="no" id="1">
+							<Features/>
+							<Affixes/>
+						</Word>
+					</Words>
+				</Phrase>
+			</Source>
+			<Target>
+				<Phrase>
+					<Words>
+						<Word category="" head="yes" id="1">
+							<Features>
+								<Feature label="BantuNounClass" match="α"/>
+							</Features>
+							<Affixes>
+								<Affix type="prefix">
+									<Features>
+										<Feature label="BantuNounClass" match="α"/>
+									</Features>
+								</Affix>
+							</Affixes>
+						</Word>
+					</Words>
+				</Phrase>
+			</Target>
+		</FLExTransRule>
+		<FLExTransRule name="Noun Adj" create_permutations="no">
+			<Source>
+				<Phrase>
+					<Words>
+						<Word category="n" head="no" id="1">
+							<Features/>
+							<Affixes/>
+						</Word>
+						<Word category="adj" head="no" id="2">
+							<Features/>
+							<Affixes/>
+						</Word>
+					</Words>
+				</Phrase>
+			</Source>
+			<Target>
+				<Phrase>
+					<Words>
+						<Word category="" head="yes" id="1">
+							<Features>
+								<Feature label="BantuNounClass" match="α"/>
+							</Features>
+							<Affixes>
+								<Affix type="prefix">
+									<Features>
+										<Feature label="BantuNounClass" match="α"/>
+									</Features>
+								</Affix>
+							</Affixes>
+						</Word>
+						<Word category="" head="no" id="2">
+							<Features>
+							</Features>
+							<Affixes>
+								<Affix type="prefix">
+									<Features>
+										<Feature label="BantuNounClass" match="α"/>
+									</Features>
+								</Affix>
+							</Affixes>
+						</Word>
+					</Words>
+				</Phrase>
+			</Target>
+		</FLExTransRule>
+	</FLExTransRules>
+</FLExTransRuleGenerator>

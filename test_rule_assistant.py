@@ -597,5 +597,52 @@ class GermanEnglishDoubleDefault(BaseTest, unittest.TestCase):
         ('^hund<n><GEN><PL>/dog<n><GEN><PL>$', '^dog<n><PL>$'),
     ]
 
+class SplitBantu(BaseTest, unittest.TestCase):
+    RuleFile = 'SplitBantu.xml'
+    RuleCount = 2
+    Data = {
+        None: {
+            'BantuSG': {
+                'source_features': ['1', '3', '5'],
+            },
+            'BantuPL': {
+                'source_features': ['2', '4', '6'],
+            },
+        },
+        'adj': {
+            'BantuSG': {
+                'target_affix': [('1A', '1'), ('5A', '5'), ('7A', '7')],
+            },
+            'BantuPL': {
+                'target_affix': [('2A', '2'), ('6A', '6'), ('8A', '8')],
+            },
+        },
+        'n': {
+            'BantuSG': {
+                'source_affix': [('1P', '1'), ('3P', '3'), ('5P', '5')],
+                'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7')],
+                'target_lemma': [('X', '1'), ('Y', '5'), ('Z', '7')],
+            },
+            'BantuPL': {
+                'source_affix': [('2P', '2'), ('4P', '4'), ('6P', '6')],
+                'target_affix': [('2P', '2'), ('6P', '6'), ('8P', '8')],
+                'target_lemma': [('X', '2'), ('Y', '6'), ('Z', '8')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^N12<n><1><2><1P>/X<n><1><2><1P>$', '^X<n><1P>$'),
+        ('^N12<n><1><2><2P>/X<n><1><2><2P>$', '^X<n><2P>$'),
+        ('^N34<n><3><4><3P>/Y<n><5><6><3P>$', '^Y<n><5P>$'),
+        ('^N34<n><3><4><4P>/Y<n><5><6><4P>$', '^Y<n><6P>$'),
+        ('^N56<n><5><6><5P>/Z<n><7><7><5P>$', '^Z<n><7P>$'),
+        ('^N56<n><5><6><6P>/Z<n><7><8><6P>$', '^Z<n><8P>$'),
+        ('^N12<n><1><2><1P>/Y<n><5><6><1P>$', '^Y<n><5P>$'),
+        ('^N12<n><1><2><2P>/Y<n><5><6><2P>$', '^Y<n><6P>$'),
+        ('^N34<n><3><4><3P>/Z<n><7><8><3P>$', '^Z<n><7P>$'),
+        ('^N34<n><3><4><4P>/Z<n><7><8><4P>$', '^Z<n><8P>$'),
+    ]
+
+
 if __name__ == '__main__':
     unittest.main()
