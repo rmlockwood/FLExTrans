@@ -611,7 +611,8 @@ class SplitBantu(BaseTest, unittest.TestCase):
         },
         'adj': {
             'BantuSG': {
-                'target_affix': [('1A', '1'), ('5A', '5'), ('7A', '7')],
+                'target_affix': [('1A', '1'), ('5A', '5'), ('7A', '7'),
+                                 ('14A', '14')],
             },
             'BantuPL': {
                 'target_affix': [('2A', '2'), ('6A', '6'), ('8A', '8')],
@@ -620,13 +621,16 @@ class SplitBantu(BaseTest, unittest.TestCase):
         'n': {
             'BantuSG': {
                 'source_affix': [('1P', '1'), ('3P', '3'), ('5P', '5')],
-                'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7')],
-                'target_lemma': [('X', '1'), ('Y', '5'), ('Z', '7')],
+                'target_affix': [('1P', '1'), ('5P', '5'), ('7P', '7'),
+                                 ('14P', '14')],
+                'target_lemma': [('X', '1'), ('Y', '5'), ('Z', '7'),
+                                 ('S', '14')],
             },
             'BantuPL': {
                 'source_affix': [('2P', '2'), ('4P', '4'), ('6P', '6')],
                 'target_affix': [('2P', '2'), ('6P', '6'), ('8P', '8')],
-                'target_lemma': [('X', '2'), ('Y', '6'), ('Z', '8')],
+                'target_lemma': [('X', '2'), ('Y', '6'), ('Z', '8'),
+                                 ('S', 'NApl')],
             },
         },
     }
@@ -641,6 +645,38 @@ class SplitBantu(BaseTest, unittest.TestCase):
         ('^N12<n><1><2><2P>/Y<n><5><6><2P>$', '^Y<n><6P>$'),
         ('^N34<n><3><4><3P>/Z<n><7><8><3P>$', '^Z<n><7P>$'),
         ('^N34<n><3><4><4P>/Z<n><7><8><4P>$', '^Z<n><8P>$'),
+
+        # singletons
+        ('^N12<n><1><2><1P>/S<n><14><NApl><1P>$', '^S<n><14P>$'),
+        ('^N12<n><1><2><2P>/S<n><14><NApl><2P>$', '^S<n><14P>$'),
+
+        # adjectives
+        ('^N12<n><1><2><1P>/X<n><1><2><1P>$ ^J<adj><1A>/K<adj><1A>$',
+         '^X<n><1P>$ ^K<adj><1A>$'),
+        ('^N12<n><1><2><2P>/X<n><1><2><2P>$ ^J<adj><1A>/K<adj><2A>$',
+         '^X<n><2P>$ ^K<adj><2A>$'),
+        ('^N34<n><3><4><3P>/Y<n><5><6><3P>$ ^J<adj><1A>/K<adj><3A>$',
+         '^Y<n><5P>$ ^K<adj><5A>$'),
+        ('^N34<n><3><4><4P>/Y<n><5><6><4P>$ ^J<adj><1A>/K<adj><4A>$',
+         '^Y<n><6P>$ ^K<adj><6A>$'),
+        ('^N56<n><5><6><5P>/Z<n><7><7><5P>$ ^J<adj><1A>/K<adj><5A>$',
+         '^Z<n><7P>$ ^K<adj><7A>$'),
+        ('^N56<n><5><6><6P>/Z<n><7><8><6P>$ ^J<adj><1A>/K<adj><6A>$',
+         '^Z<n><8P>$ ^K<adj><8A>$'),
+        ('^N12<n><1><2><1P>/Y<n><5><6><1P>$ ^J<adj><1A>/K<adj><1A>$',
+         '^Y<n><5P>$ ^K<adj><5A>$'),
+        ('^N12<n><1><2><2P>/Y<n><5><6><2P>$ ^J<adj><1A>/K<adj><2A>$',
+         '^Y<n><6P>$ ^K<adj><6A>$'),
+        ('^N34<n><3><4><3P>/Z<n><7><8><3P>$ ^J<adj><1A>/K<adj><3A>$',
+         '^Z<n><7P>$ ^K<adj><7A>$'),
+        ('^N34<n><3><4><4P>/Z<n><7><8><4P>$ ^J<adj><1A>/K<adj><4A>$',
+         '^Z<n><8P>$ ^K<adj><8A>$'),
+
+        # singletons with adjectives
+        ('^N12<n><1><2><1P>/S<n><14><NApl><1P>$ ^J<adj><1A>/K<adj><1A>$',
+         '^S<n><14P>$ ^K<adj><14A>$'),
+        ('^N12<n><1><2><2P>/S<n><14><NApl><2P>$ ^J<adj><1A>/K<adj><2A>$',
+         '^S<n><14P>$ ^K<adj><14A>$'),
     ]
 
 
