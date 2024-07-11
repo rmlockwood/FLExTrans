@@ -372,7 +372,7 @@ lit:before
 lit
 {
     display:block;
-    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,10);
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,20);
     padding-left: .125in;
 }
 
