@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11.3 - 7/12/24 - Ron Lockwood
+#    Added Wildebeest support.
+#
 #   Version 3.11.2 - 7/9/24 - Ron Lockwood
 #    Added comment and inactive properties to rules.
 #
@@ -21,6 +24,7 @@ import FTPaths
 import regex
 import os
 import xml.etree.ElementTree as ET
+from wildebeest.wb_normalize import Wildebeest
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
@@ -33,9 +37,21 @@ SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules'
 SEARCH_REPL_RULE_ELEM = 'SearchReplaceRule' 
 SEARCH_STRING_ELEM = 'SearchString'
 REPL_STRING_ELEM = 'ReplaceString'
+WB_SETTINGS_ELEM = 'WildebeestSettings'
+WB_ADD_STEPS_ELEM = 'AddSteps'
+WB_SKIP_STEPS_ELEM = 'SkipSteps'
 REGEX_ATTRIB = 'RegEx'
 INACTIVE_ATTRIB = 'Inactive'
 COMMENT_ATTRIB = 'Comment'
+APPLY_WILDEBEEST_ATTRIB = 'ApplyWildebeest'
+WB_BASE_ATTRIB = 'Base'
+WB_BASE_DEFAULT = 'DEFAULT'
+WB_BASE_ALL = 'ALL'
+WB_BASE_NONE = 'NONE'
+WB_LANG_CODE_ATTRIB = 'LangCode'
+WB_ADD_STEP_ATTRIB = 'AddStep'
+WB_SKIP_STEP_ATTRIB = 'SkipStep'
+
 ARROW_CHAR = '⭢'
 
 class SearchReplaceRuleData():
@@ -124,9 +140,18 @@ replacementsMap = {
 
 def applySearchReplaceRules(inputStr, tree):
     
+    newStr = inputStr
+
     # Get the parent element where the rules are listed.
     root = tree.getroot()
     searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
+
+    # See if we have Wildebeest to run, if so run it
+    wildebeestStr = root.get(APPLY_WILDEBEEST_ATTRIB)
+
+    if wildebeestStr == 'yes':
+
+       newStr = runWildebeest(root, newStr)
 
     # Loop through each rule
     for ruleEl in searchReplaceRulesElement:
@@ -139,9 +164,9 @@ def applySearchReplaceRules(inputStr, tree):
             try:
                 if searchReplObj.isRegEx:
 
-                    newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, inputStr)
+                    newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, newStr)
                 else:
-                    newStr = inputStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
+                    newStr = newStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
             except:
                 newStr = None
                 errorMsg = f'Test stopped on failure of rule: ' + buildRuleStringFromElement(ruleEl)
@@ -149,7 +174,42 @@ def applySearchReplaceRules(inputStr, tree):
 
     return newStr, errorMsg
 
+def runWildebeest(root, inputStr):
 
+    newStr = inputStr
+    addList = []
+    skipList = []
+
+    WBelem = root.find(WB_SETTINGS_ELEM)
+
+    if WBelem:
+
+        # Get base string
+        baseStr = WBelem.get(WB_BASE_ATTRIB)
+
+        # Get add and skip steps
+        addStepsElem = WBelem.find(WB_ADD_STEPS_ELEM)
+        skipStepsElem = WBelem.find(WB_SKIP_STEPS_ELEM)
+
+        if addStepsElem is not None and addStepsElem.text:
+
+            addStr = addStepsElem.text
+            addList = addStr.split()
+
+        if skipStepsElem is not None and skipStepsElem.text:
+
+            skipStr = skipStepsElem.text
+            skipList = skipStr.split()
+
+        # Get language code
+        langCode = WBelem.get(WB_LANG_CODE_ATTRIB)
+
+        # clean the string with Wildebeest
+        wb = Wildebeest()
+        ht = wb.build_norm_step_dict(base=baseStr, skip=skipList, add=addList)
+        newStr = wb.norm_clean_string(newStr, ht, lang_code=langCode)
+
+    return newStr
 
 class TextInOutRulesWindow(QMainWindow):
 
@@ -165,6 +225,19 @@ class TextInOutRulesWindow(QMainWindow):
         self.ruleFileXMLtree = ""
         self.rulesModel = None
         self.ruleIndex = None
+
+        self.WBcontrols = [
+            self.ui.WBlangCodeTextBox,
+            self.ui.WBstepsDefaultRadio,
+            self.ui.WBstepsAllRadio,
+            self.ui.WBstepsNoneRadio,
+            self.ui.WBaddStepsTextBox,
+            self.ui.WBskipStepsTextBox,
+            self.ui.WBlangLabel,
+            self.ui.WBstepsLabel,
+            self.ui.WBaddLabel,
+            self.ui.WBskipLabel         
+        ]
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
@@ -182,11 +255,12 @@ class TextInOutRulesWindow(QMainWindow):
         # See if we are doing text in or out
         if not self.textIn:
 
-            # If we are doing text out, don't show the wildebeast checkbox
-            self.ui.wildebeastCheckBox.setVisible(False)
+            # If we are doing text out, don't show the wildebeest checkbox
+            self.hideWildebeestStuff()
 
             self.setWindowTitle('Text Out Rules')
         else:
+             
              self.setWindowTitle('Text In Rules')
            
         self.ui.addButton.clicked.connect(self.AddClicked)
@@ -201,6 +275,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.testButton.clicked.connect(self.TestClicked)
         self.ui.uncheckAllButton.clicked.connect(self.UncheckAllClicked)
         self.ui.updateButton.clicked.connect(self.UpdateClicked)
+        self.ui.wildebeestCheckBox.clicked.connect(self.WildebeestClicked)
 
         # Load the rules
         self.loadRules()
@@ -357,6 +432,11 @@ class TextInOutRulesWindow(QMainWindow):
         inStr = self.ui.inputText.toPlainText()
         newStr = inStr
 
+        # Run Wildebeest if needed
+        if self.ui.wildebeestCheckBox.isChecked():
+
+            newStr = runWildebeest(self.root, newStr)
+
         # Loop through the rules and apply each checked one in turn
         for ind, ruleEl in enumerate(self.searchReplaceRulesElement):
 
@@ -437,6 +517,14 @@ class TextInOutRulesWindow(QMainWindow):
         # Enable the delete button in case we were at 0 rows before.
         self.ui.deleteButton.setEnabled(True)
 
+    def WildebeestClicked(self):
+
+        if self.ui.wildebeestCheckBox.isChecked():
+
+            self.setWildebeestVisibility(True)
+        else:
+            self.setWildebeestVisibility(False)
+
     def displayRules(self, rulesElement, rulesModel):
         
         # Loop through each rule
@@ -462,11 +550,69 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.regexCheckBox.setEnabled(True)
         self.ui.inactiveCheckBox.setEnabled(True)
 
+    def hideWildebeestStuff(self):
+
+        self.ui.wildebeestCheckBox.setVisible(False)
+        self.ui.WBlinkLabel.setVisible(False)
+
+        # Hide the rest of the wildebeest controls
+        self.setWildebeestVisibility(False)
+
     def initDataObj(self):
 
-        searchRplObj = SearchReplaceRuleData(self.ui.searchTextBox.text(), self.ui.replaceTextBox.text(), self.ui.regexCheckBox.checkState() == QtCore.Qt.Checked, 
-                                        self.ui.inactiveCheckBox.checkState() == QtCore.Qt.Checked, self.ui.commentTextBox.text())
+        searchRplObj = SearchReplaceRuleData(self.ui.searchTextBox.text(), self.ui.replaceTextBox.text(), self.ui.regexCheckBox.isChecked(), 
+                                        self.ui.inactiveCheckBox.isChecked(), self.ui.commentTextBox.text())
         return searchRplObj
+
+    def initWBcontrols(self, testRoot):
+                
+        # Get the Wildebeest attribute
+        wildebeest = testRoot.get(APPLY_WILDEBEEST_ATTRIB)
+
+        if wildebeest and wildebeest == 'yes':
+
+            self.ui.wildebeestCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.setWildebeestVisibility(True)
+        else:
+            self.setWildebeestVisibility(False)
+        
+        # Find the Wildebeest section
+        self.WBelem = testRoot.find(WB_SETTINGS_ELEM)
+
+        if self.WBelem:
+
+            # Set the base radio buttons
+            if self.WBelem.get(WB_BASE_ATTRIB) == WB_BASE_DEFAULT:
+
+                self.ui.WBstepsDefaultRadio.setChecked(True)
+                self.ui.WBstepsAllRadio.setChecked(False)
+                self.ui.WBstepsNoneRadio.setChecked(False)
+        
+            elif self.WBelem.get(WB_BASE_ATTRIB) == WB_BASE_ALL:
+
+                self.ui.WBstepsDefaultRadio.setChecked(False)
+                self.ui.WBstepsAllRadio.setChecked(True)
+                self.ui.WBstepsNoneRadio.setChecked(False)
+        
+            else:
+                self.ui.WBstepsDefaultRadio.setChecked(False)
+                self.ui.WBstepsAllRadio.setChecked(False)
+                self.ui.WBstepsNoneRadio.setChecked(True)
+
+            # Set the language code text box
+            self.ui.WBlangCodeTextBox.setText(self.WBelem.get(WB_LANG_CODE_ATTRIB))
+
+            # Set the add and skip steps text boxes
+            addStepsElem = self.WBelem.find(WB_ADD_STEPS_ELEM)
+            skipStepsElem = self.WBelem.find(WB_SKIP_STEPS_ELEM)
+
+            if addStepsElem is not None and addStepsElem.text:
+
+                self.ui.WBaddStepsTextBox.setText(addStepsElem.text)
+        
+            if skipStepsElem is not None and skipStepsElem.text:
+
+                self.ui.WBskipStepsTextBox.setText(skipStepsElem.text)
 
     def loadRules(self):
             
@@ -477,8 +623,10 @@ class TextInOutRulesWindow(QMainWindow):
             QMessageBox.warning(self, 'Invalid File', 'The fix up synthesis text rules file you selected is invalid.')
             return False
         
-        test_rt = testTree.getroot()
-        self.searchReplaceRulesElement = test_rt.find(SEARCH_REPLACE_RULES_ELEM)
+        self.root = testTree.getroot()
+
+        # Find the Rules section
+        self.searchReplaceRulesElement = self.root.find(SEARCH_REPLACE_RULES_ELEM)
         
         if self.searchReplaceRulesElement is not None:
             
@@ -494,6 +642,63 @@ class TextInOutRulesWindow(QMainWindow):
             'The fix up synthesis rule file has no SearchReplaceRules.')
             return False
         
+        # Set Wildebeest controls
+        self.initWBcontrols(self.root)
+        
+    def saveWBinfo(self):
+
+        # Set root wildebeest boolean
+        if not self.ui.wildebeestCheckBox.isChecked():
+
+            self.root.attrib[APPLY_WILDEBEEST_ATTRIB] = "no"
+
+        else:
+            self.root.attrib[APPLY_WILDEBEEST_ATTRIB] = "yes"
+        
+        # Find the Wildebeest section
+        self.WBelem = self.root.find(WB_SETTINGS_ELEM)
+
+        # Delete an existing wildebeest subelement if needed
+        if self.WBelem:
+
+            self.root.remove(self.WBelem)
+
+        ## Now rebuild the wildebeest subelement
+        self.WBelem = ET.SubElement(self.root, WB_SETTINGS_ELEM)
+
+        # Set the base value
+        if self.ui.WBstepsDefaultRadio.isChecked():
+
+            self.WBelem.attrib[WB_BASE_ATTRIB] = WB_BASE_DEFAULT
+
+        elif self.ui.WBstepsAllRadio.isChecked():
+
+            self.WBelem.attrib[WB_BASE_ATTRIB] = WB_BASE_ALL
+        else:
+            self.WBelem.attrib[WB_BASE_ATTRIB] = WB_BASE_NONE
+        
+        # Set the language code
+        self.WBelem.attrib[WB_LANG_CODE_ATTRIB] = self.ui.WBlangCodeTextBox.text()
+
+        # Create the add and skip sub-elements
+        addStepsElem = ET.SubElement(self.WBelem, WB_ADD_STEPS_ELEM)
+        skipStepsElem = ET.SubElement(self.WBelem, WB_SKIP_STEPS_ELEM)
+
+        # Remove commas, semicolons spaces or bars and put together again with spaces
+        temp = self.ui.WBaddStepsTextBox.text()
+        temp = " ".join(regex.split('[\s,;|]+', temp))
+        addStepsElem.text = temp
+
+        temp = self.ui.WBskipStepsTextBox.text()
+        temp = " ".join(regex.split('[\s,;|]+', temp))
+        skipStepsElem.text = temp
+
+    def setWildebeestVisibility(self, makeVisible):
+
+        for widget in self.WBcontrols:
+
+            widget.setVisible(makeVisible)
+
     def setElementInfo(self, ruleEl):
 
         searchEl = ruleEl[0]
@@ -502,7 +707,7 @@ class TextInOutRulesWindow(QMainWindow):
         replaceEl.text = self.ui.replaceTextBox.text()
 
         # Set regex attribute
-        if self.ui.regexCheckBox.checkState():
+        if self.ui.regexCheckBox.isChecked():
             isRegexStr = "yes"
         else:
             isRegexStr = "no"
@@ -510,7 +715,7 @@ class TextInOutRulesWindow(QMainWindow):
         ruleEl.attrib[REGEX_ATTRIB] = isRegexStr
 
         # Set inactive attribute
-        if self.ui.inactiveCheckBox.checkState():
+        if self.ui.inactiveCheckBox.isChecked():
             isInactiveStr = "yes"
         else:
             isInactiveStr = "no"
@@ -522,5 +727,9 @@ class TextInOutRulesWindow(QMainWindow):
 
     def writeXMLfile(self):
 
+        # Get all the wildebeest info. and save it in the element tree
+        self.saveWBinfo()
+
+        # Indent the xml to make it pretty then write it to a file.
         ET.indent(self.ruleFileXMLtree)
         self.ruleFileXMLtree.write(self.searchReplacefile, encoding='utf-8', xml_declaration=True)

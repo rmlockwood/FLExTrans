@@ -423,15 +423,15 @@ p, li { white-space: pre-wrap; }
      <set>QAbstractItemView::EditKeyPressed</set>
     </property>
    </widget>
-   <widget class="QCheckBox" name="wildebeastCheckBox">
+   <widget class="QCheckBox" name="wildebeestCheckBox">
     <property name="enabled">
      <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>290</y>
-      <width>191</width>
+      <x>220</x>
+      <y>280</y>
+      <width>181</width>
       <height>17</height>
      </rect>
     </property>
@@ -441,10 +441,10 @@ p, li { white-space: pre-wrap; }
      </font>
     </property>
     <property name="toolTip">
-     <string>Treat the search and replace text as regular expressions.</string>
+     <string>This tool will run before other rules.</string>
     </property>
     <property name="text">
-     <string>Run the Wildebeast cleanup tool</string>
+     <string>Run the Wildebeest cleanup tool</string>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget_4">
@@ -565,7 +565,7 @@ p, li { white-space: pre-wrap; }
         </font>
        </property>
        <property name="toolTip">
-        <string>Treat the search and replace text as regular expressions.</string>
+        <string/>
        </property>
        <property name="text">
         <string>Inactive</string>
@@ -573,6 +573,228 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QLabel" name="WBlinkLabel">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>279</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::TextBrowserInteraction</set>
+    </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>298</y>
+      <width>261</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QRadioButton" name="WBstepsDefaultRadio">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>15</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Default</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="WBstepsAllRadio">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>15</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="WBstepsNoneRadio">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>15</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="WBlangLabel">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>15</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Lang:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="WBlangCodeTextBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>3-letter ISO 639-3 code</string>
+       </property>
+       <property name="placeholderText">
+        <string>code</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>320</y>
+      <width>261</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="WBaddLabel">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="WBaddStepsTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Steps to add to the base number of steps selected above.
+Separate steps with spaces or commas.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="WBskipLabel">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Skip:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="WBskipStepsTextBox">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>Steps to skip from the base number of steps selected above.
+Separate steps with spaces or commas.</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="WBstepsLabel">
+    <property name="geometry">
+     <rect>
+      <x>229</x>
+      <y>302</y>
+      <width>44</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Steps:</string>
+    </property>
    </widget>
   </widget>
  </widget>
@@ -590,7 +812,13 @@ p, li { white-space: pre-wrap; }
   <tabstop>moveDownButton</tabstop>
   <tabstop>uncheckAllButton</tabstop>
   <tabstop>checkAllButton</tabstop>
-  <tabstop>wildebeastCheckBox</tabstop>
+  <tabstop>wildebeestCheckBox</tabstop>
+  <tabstop>WBstepsDefaultRadio</tabstop>
+  <tabstop>WBstepsAllRadio</tabstop>
+  <tabstop>WBstepsNoneRadio</tabstop>
+  <tabstop>WBlangCodeTextBox</tabstop>
+  <tabstop>WBaddStepsTextBox</tabstop>
+  <tabstop>WBskipStepsTextBox</tabstop>
   <tabstop>inputText</tabstop>
   <tabstop>testButton</tabstop>
   <tabstop>outputText</tabstop>
