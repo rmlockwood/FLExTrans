@@ -592,9 +592,9 @@ class GermanEnglishDoubleDefault(BaseTest, unittest.TestCase):
         ('^hund<n><NOM><SG>/dog<n><NOM><SG>$', '^dog<n>$'),
         ('^hund<n><NOM><PL>/dog<n><NOM><PL>$', '^dog<n><PL>$'),
         ('^hund<n><ACC><SG>/dog<n><ACC><SG>$', '^dog<n><no-affix-for-sg-acc>$'),
-        ('^hund<n><ACC><PL>/dog<n><ACC><PL>$', '^dog<n><PL>$'),
+        ('^hund<n><ACC><PL>/dog<n><ACC><PL>$', '^dog<n><no-affix-for-pl-acc>$'),
         ('^hund<n><GEN><SG>/dog<n><GEN><SG>$', '^dog<n><GEN>$'),
-        ('^hund<n><GEN><PL>/dog<n><GEN><PL>$', '^dog<n><PL>$'),
+        ('^hund<n><GEN><PL>/dog<n><GEN><PL>$', '^dog<n><no-affix-for-pl-gen>$'),
     ]
 
 class SplitBantu(BaseTest, unittest.TestCase):
