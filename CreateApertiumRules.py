@@ -814,10 +814,6 @@ class RuleGenerator:
 
         actionEl = ET.SubElement(ruleEl, 'action')
 
-        outEl = ET.Element('out')
-
-        usedMacros = set()
-
         matches = defaultdict(list)
 
         # If there are match groups on the source side, list them first
@@ -877,6 +873,7 @@ class RuleGenerator:
             wid = word.get('id')
             if skip and wid in skip:
                 continue
+            outEl = ET.Element('out')
             index += 1
             if index > 0:
                 ET.SubElement(outEl, 'b')
@@ -890,6 +887,8 @@ class RuleGenerator:
                     return False
             else:
                 cat = wordCats[pos]
+
+            actionEl.append(ET.Comment(f'Generate and output {cat}'))
 
             # If the stem features have a source that isn't this word,
             # we want to use a macro to check that we have the right lemma.
@@ -943,13 +942,11 @@ class RuleGenerator:
 
             if shouldUseLemmaMacro:
                 spec = self.GetMultiFeatureMacro(cat, True, lemmaTags)
-                if spec.macid not in usedMacros:
-                    actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.'))
-                    callmac = ET.SubElement(actionEl, 'call-macro', n=spec.macid)
-                    for srcCat in spec.catSequence:
-                        ET.SubElement(callmac, 'with-param',
-                                      pos=lemmaLocs[srcCat])
-                    usedMacros.add(spec.macid)
+                actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.'))
+                callmac = ET.SubElement(actionEl, 'call-macro', n=spec.macid)
+                for srcCat in spec.catSequence:
+                    ET.SubElement(callmac, 'with-param',
+                                  pos=lemmaLocs[srcCat])
                 ET.SubElement(lemCase, 'var', n=spec.varid)
             else:
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
@@ -1009,14 +1006,12 @@ class RuleGenerator:
                                                     ranking=ranking))
                         catLoc[srcCat] = apos
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
-                    if spec.macid not in usedMacros:
-                        actionEl.append(ET.Comment(f'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.'))
-                        callmac = ET.SubElement(actionEl, 'call-macro',
-                                                n=spec.macid)
-                        for srcCat in spec.catSequence:
-                            ET.SubElement(callmac, 'with-param',
-                                          pos=catLoc[srcCat])
-                        usedMacros.add(spec.macid)
+                    actionEl.append(ET.Comment(f'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.'))
+                    callmac = ET.SubElement(actionEl, 'call-macro',
+                                            n=spec.macid)
+                    for srcCat in spec.catSequence:
+                        ET.SubElement(callmac, 'with-param',
+                                      pos=catLoc[srcCat])
                     ET.SubElement(lu, 'var', n=spec.varid)
                     continue
 
@@ -1049,18 +1044,16 @@ class RuleGenerator:
                                     default=default, isSource=isSource),
                         FeatureSpec(cat, label, True))
                     if spec is not None:
-                        if spec.macid not in usedMacros:
-                            actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {spec.varid}.'))
-                            callmac = ET.SubElement(actionEl, 'call-macro',
-                                                    n=spec.macid)
-                            ET.SubElement(callmac, 'with-param', pos=apos)
-                            usedMacros.add(spec.macid)
+                        actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {spec.varid}.'))
+                        callmac = ET.SubElement(actionEl, 'call-macro',
+                                                n=spec.macid)
+                        ET.SubElement(callmac, 'with-param', pos=apos)
                         ET.SubElement(lu, 'var', n=spec.varid)
                         continue
                 attr = self.EnsureAttribute(FeatureSpec(cat, label, True))
                 ET.SubElement(lu, 'clip', pos=apos, side='tl', part=attr)
 
-        actionEl.append(outEl)
+            actionEl.append(outEl)
 
         return True
 
