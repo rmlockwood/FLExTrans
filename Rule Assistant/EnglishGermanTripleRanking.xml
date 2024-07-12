@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator>
+    <FLExTransRules>
+        <FLExTransRule name="def n simple" create_permutations="no">
+            <Description>number is rank 1 because die (pl) is used often for all genders
+case is rank 2 because for a case often the form is the same for all genders</Description>
+            <Source>
+                <Phrase>
+                    <Words>
+                        <Word category="def" head="no" id="1">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                        <Word category="n" head="no" id="3">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Source>
+            <Target>
+                <Phrase>
+                    <Words>
+                        <Word category="" head="no" id="1">
+                            <Features>
+<Feature label="gender" match="α" ranking="3" unmarked_default="" value=""/>
+<Feature label="number" match="β" ranking="1" unmarked_default="" value=""/>
+<Feature label="case" match="γ" ranking="2" unmarked_default="" value=""/>
+                            </Features>
+                            <Affixes/>
+                        </Word>
+                        <Word category="" head="yes" id="3">
+                            <Features>
+<Feature label="gender" match="α" ranking="0" unmarked_default="" value="α"/>
+                            </Features>
+                            <Affixes>
+<Affix type="suffix">
+    <Features>
+        <Feature label="number" match="β" ranking="0" unmarked_default="sg" value=""/>
+        <Feature label="case" match="γ" ranking="0" unmarked_default="nom" value=""/>
+    </Features>
+</Affix>
+                            </Affixes>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Target>
+        </FLExTransRule>
+    </FLExTransRules>
+</FLExTransRuleGenerator>

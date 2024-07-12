@@ -623,51 +623,64 @@ class RuleGenerator:
             ranked = True
             sourceList = sorted(sources, key=lambda s: s.ranking)
 
-        labelSeq = [s.label for s in sources]
-        locations = [(macro, None, [])]
+        affixesByFeatureValue = []
+        allAffixes = set()
         for source in sourceList:
+            affixesByFeatureValue.append(defaultdict(set))
+            if isLemma:
+                affixes = Utils.getLemmasForFeature(
+                    self.targetDB, self.report, self.configMap,
+                    destCategory, source.label)
+            else:
+                affixes = self.GetTags(FeatureSpec(destCategory, source.label,
+                                                   isAffix=True))
+            for affix, value in affixes:
+                affixesByFeatureValue[-1][value].add(affix)
+                allAffixes.add(affix)
+
+        if not isLemma and all(source.default for source in sources):
+            allAffixes.add('')
+
+        # Fill in default values
+        for index, source in enumerate(sourceList):
+            if source.default:
+                missing = allAffixes
+                for s in affixesByFeatureValue[index].values():
+                    missing = missing - s
+                affixesByFeatureValue[index][source.default].update(missing)
+
+        labelSeq = [s.label for s in sourceList]
+        locations = [(macro, allAffixes, [])]
+        for index, source in enumerate(sourceList):
             if source.category in catSequence:
                 clipPos = str(catSequence.index(source.category)+1)
             else:
                 # anything not in catSequence should have non-empty value,
                 # so we shouldn't ever insert clipPos anywhere
                 clipPos = 'ERROR'
-            tags = sorted(self.GetTags(source, source=(source.isAffix)))
-            if isLemma:
-                allLemmas = Utils.getLemmasForFeature(
-                    self.targetDB, self.report, self.configMap, destCategory,
-                    source.label)
-            else:
-                allLemmas = self.GetTags(FeatureSpec(destCategory, source.label,
-                                                     True))
+            tags = self.GetTags(source, source=(source.isAffix))
+            tagsByValue = defaultdict(set)
+            for tag, value in tags:
+                tagsByValue[value].add(tag)
+            valueDict = affixesByFeatureValue[index]
 
             newLocations = []
 
             if source.value:
-                allLemmas = [l for l in allLemmas if l[1] == source.value]
                 for elem, possibleLemmas, path in locations:
-                    lemmas = allLemmas
-                    if possibleLemmas is not None:
-                        lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
-                    newLocations.append((elem, set([l[0] for l in lemmas]),
-                                         path+[source.value]))
+                    newLocations.append(
+                        (elem, possibleLemmas & valueDict[source.value],
+                         path+[source.value]))
                 locations = newLocations
                 continue
 
             for elem, possibleLemmas, path in locations:
-                lemmas = allLemmas
-                if possibleLemmas is not None:
-                    lemmas = [l for l in allLemmas if l[0] in possibleLemmas]
 
-                if not lemmas and source.default:
-                    newPossible = set([l for l in possibleLemmas
-                                       if all(a[0] != l for a in allLemmas)])
-                    if newPossible:
-                        newLocations.append((elem, newPossible,
-                                             path+[source.default]))
-                        continue
+                if ranked and len(possibleLemmas) == 1:
+                    SetVar(elem, list(possibleLemmas)[0])
+                    continue
 
-                if not lemmas or not tags:
+                if not possibleLemmas or not tags:
                     error = macType+'-for-'+'-'.join(path)
                     if not ranked or not possibleLemmas:
                         SetVar(elem, 'no-'+error)
@@ -683,7 +696,7 @@ class RuleGenerator:
                     given = f' given {", ".join(specs)}'
                 elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(t[1] for t in tags))}){given}.'))
                 choose = ET.SubElement(elem, 'choose')
-                for tag, feature in tags:
+                for feature, tagSet in sorted(tagsByValue.items()):
                     if feature == source.default:
                         # Handle this in the <otherwise> block
                         continue
@@ -691,21 +704,25 @@ class RuleGenerator:
                     choose.append(ET.Comment(f'Set {varid} based on {source.label} = {feature}.'))
                     when = ET.SubElement(choose, 'when')
                     test = ET.SubElement(when, 'test')
-                    eq = ET.SubElement(test, 'equal')
                     side = 'tl'
                     if source.isSource and not source.isAffix:
                         side = 'sl'
-                    ET.SubElement(
-                        eq, 'clip', pos=clipPos, side=side,
-                        part=self.EnsureAttribute(source))
-                    ET.SubElement(eq, 'lit-tag', v=tag)
-                    nextLemmas = set(l[0] for l in lemmas if l[1] == feature)
-                    newLocations.append((when, nextLemmas, path+[feature]))
+                    parent = test
+                    if len(tagSet) > 1:
+                        parent = ET.SubElement(test, 'or')
+                    for tag in sorted(tagSet):
+                        eq = ET.SubElement(parent, 'equal')
+                        ET.SubElement(
+                            eq, 'clip', pos=clipPos, side=side,
+                            part=self.EnsureAttribute(source))
+                        ET.SubElement(eq, 'lit-tag', v=tag)
+                    newLocations.append(
+                        (when, possibleLemmas & valueDict[feature],
+                         path+[feature]))
 
                 otherwise = ET.SubElement(choose, 'otherwise')
                 if source.default:
-                    nextLemmas = set(l[0] for l in lemmas if l[1] == source.default)
-                    newLocations.append((otherwise, nextLemmas or None, path+[source.default]))
+                    newLocations.append((otherwise, possibleLemmas & valueDict[source.default], path+[source.default]))
                 else:
                     SetVar(otherwise, f'no-{macType}-for-'+'-'.join(path))
 
