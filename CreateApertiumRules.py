@@ -274,9 +274,12 @@ class RuleGenerator:
             ET.SubElement(catEl, 'cat-item', tags=category+'.*')
 
     def AddSingleAttribute(self, suggested_name: str, items: set[str],
-                           comment: Optional[str] = None) -> str:
+                           comment: Optional[str] = None,
+                           reject: Optional[set[str]] = None) -> str:
         for name, values in self.definedAttributes.items():
             if items <= values:
+                if reject and reject <= values:
+                    continue
                 return name
 
         aid = self.GetAvailableID(suggested_name)
@@ -289,15 +292,7 @@ class RuleGenerator:
         self.definedAttributes[aid] = items
         return aid
 
-    def EnsureAttribute(self, spec: FeatureSpec) -> str:
-        '''Return the name of the attribute corresponding to feature `label`
-        for part of speech `category`, creating it if necessary.'''
-
-        key = (spec.category, spec.label, spec.isAffix)
-
-        if key in self.featureToAttributeName:
-            return self.featureToAttributeName[key]
-
+    def GetAttributeValues(self, spec: FeatureSpec) -> set[tuple[str, str]]:
         args = [self.report, self.configMap, spec.category, spec.label]
         if spec.isAffix:
             args[2] = self.GetCategory(spec.category)
@@ -309,6 +304,19 @@ class RuleGenerator:
                 self.sourceDB, spec.label)]
             trgValues = Utils.getLemmasForFeature(self.targetDB, *args)
             values = set(Utils.underscores(l[1]) for l in srcValues + trgValues)
+
+        return values
+
+    def EnsureAttribute(self, spec: FeatureSpec) -> str:
+        '''Return the name of the attribute corresponding to feature `label`
+        for part of speech `category`, creating it if necessary.'''
+
+        key = (spec.category, spec.label, spec.isAffix)
+
+        if key in self.featureToAttributeName:
+            return self.featureToAttributeName[key]
+
+        values = self.GetAttributeValues(spec)
 
         if spec.isAffix:
             name = f'a_{spec.category}_{spec.label}_slot'
@@ -518,14 +526,26 @@ class RuleGenerator:
         self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
         self.BantuVariable = self.GetAvailableID('v_Bantu_noun_class_from_n')
 
-        sgAffix = self.EnsureAttribute(FeatureSpec('n', singularFeature,
-                                                   isAffix=True))
-        plAffix = self.EnsureAttribute(FeatureSpec('n', pluralFeature,
-                                                   isAffix=True))
-        sgStem = self.EnsureAttribute(FeatureSpec('n', singularFeature,
-                                                   isAffix=False))
-        plStem = self.EnsureAttribute(FeatureSpec('n', pluralFeature,
-                                                   isAffix=False))
+        # Manually create separate attributes so we don't accidentaly reuse
+        # some existing attribute that contains both.
+
+        sgAffixValues = self.GetAttributeValues(
+            FeatureSpec('n', singularFeature, isAffix=True))
+        plAffixValues = self.GetAttributeValues(
+            FeatureSpec('n', pluralFeature, isAffix=True))
+        sgStemValues = self.GetAttributeValues(
+            FeatureSpec('n', singularFeature, isAffix=False))
+        plStemValues = self.GetAttributeValues(
+            FeatureSpec('n', pluralFeature, isAffix=False))
+
+        sgAffix = self.AddSingleAttribute('a_n_singular_class_slot',
+                                          sgAffixValues, reject=plAffixValues)
+        plAffix = self.AddSingleAttribute('a_n_plural_class_slot',
+                                          plAffixValues, reject=sgAffixValues)
+        sgStem = self.AddSingleAttribute('a_n_singular_class_feature',
+                                         sgStemValues, reject=plStemValues)
+        plStem = self.AddSingleAttribute('a_n_plural_class_feature',
+                                         plStemValues, reject=sgStemValues)
 
         self.AddVariable(self.BantuVariable)
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
