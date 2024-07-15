@@ -406,6 +406,12 @@ class RuleGenerator:
         if (srcSpec, trgSpec) in self.attributeMacros:
             return self.attributeMacros[(srcSpec, trgSpec)]
 
+        ret = self.CreateAttributeMacro(srcSpec, trgSpec)
+        self.attributeMacros[(srcSpec, trgSpec)] = ret
+        return ret
+
+    def CreateAttributeMacro(self, srcSpec: FeatureSpec, trgSpec: FeatureSpec) -> bool:
+
         if srcSpec.category == 'n' and srcSpec.label == self.BantuFeature:
             bantu = True
             src = set([(x, x) for x in self.BantuValues])
@@ -434,7 +440,6 @@ class RuleGenerator:
 
         if not bantu and src == trg:
             if not srcSpec.default:
-                self.attributeMacros[(srcSpec, trgSpec)] = None
                 return None
 
             # If the target POS doesn't have an affix for the default
@@ -442,7 +447,6 @@ class RuleGenerator:
             # a plain clip.
             hasDefault = any(t[1] == srcSpec.default for t in trg)
             if not hasDefault:
-                self.attributeMacros[(srcSpec, trgSpec)] = None
                 return None
 
             # If there's a default value, we still need to check for the empty
@@ -463,9 +467,7 @@ class RuleGenerator:
             ET.SubElement(eq, 'var', n=varid)
             ET.SubElement(eq, 'lit', v='')
 
-            spec = MacroSpec(macid, varid, [srcSpec.category])
-            self.attributeMacros[(srcSpec, trgSpec)] = spec
-            return spec
+            return MacroSpec(macid, varid, [srcSpec.category])
 
         macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
         varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
@@ -477,6 +479,11 @@ class RuleGenerator:
         let1 = ET.SubElement(macro, 'let')
         ET.SubElement(let1, 'var', n=varid)
         ET.SubElement(let1, 'lit', v='')
+
+        if len(trg) == 0:
+            self.report.Warning(f"No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.")
+            macro.append(ET.Comment("There are no target affixes, so there's nothing further to do here."))
+            return MacroSpec(macid, varid, [srcSpec.category])
 
         if bantu:
             macro.append(ET.Comment('Determine the appropriate noun class'))
@@ -505,9 +512,7 @@ class RuleGenerator:
         else:
             ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}-UNK')
 
-        spec = MacroSpec(macid, varid, [srcSpec.category])
-        self.attributeMacros[(srcSpec, trgSpec)] = spec
-        return spec
+        return MacroSpec(macid, varid, [srcSpec.category])
 
     def MakeBantuMacro(self, singularFeature: str, pluralFeature: str) -> None:
         self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
