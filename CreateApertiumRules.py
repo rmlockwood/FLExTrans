@@ -430,12 +430,29 @@ class RuleGenerator:
 
         def FindTag(srcFeat, fallback=None):
             nonlocal trg
-            for trgTag, trgFeat in trg:
-                if trgFeat == srcFeat:
-                    return trgTag
-            if fallback is not None:
-                return fallback
-            return f'{srcFeat}-NOTAG'
+            possible = [tag for tag, feat in trg if feat == srcFeat]
+            if len(possible) == 1:
+                return possible[0]
+            elif not possible:
+                if fallback is not None:
+                    return fallback
+                return f'{srcFeat}-NOTAG'
+            else:
+                possible.sort() # alphabetize
+                # The shortest one will probably have the fewest other
+                # features, and sort() is stable, so ones of the same length
+                # will stay in order.
+                possible.sort(key=len)
+                return possible
+
+        def MakeLetValue(let, value):
+            if not value:
+                ET.SubElement(let, 'lit', v='')
+            elif isinstance(value, str):
+                ET.SubElement(let, 'lit-tag', v=value)
+            else:
+                let.append(ET.Comment(f"Other possible values: {', '.join(value[1:])}"))
+                ET.SubElement(let, 'lit-tag', v=value[0])
 
         def MakeWhenClause(element, varid, value):
             when = ET.SubElement(element, 'when')
@@ -443,7 +460,7 @@ class RuleGenerator:
             eq = ET.SubElement(test, 'equal')
             let = ET.SubElement(when, 'let')
             ET.SubElement(let, 'var', n=varid)
-            ET.SubElement(let, ('lit-tag' if value else 'lit'), v=value)
+            MakeLetValue(let, value)
             return eq
 
         if not bantu and src == trg:
@@ -520,8 +537,7 @@ class RuleGenerator:
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
         if srcSpec.default:
-            val = FindTag(srcSpec.default, fallback='')
-            ET.SubElement(olet, ('lit-tag' if val else 'lit'), v=val)
+            MakeLetValue(olet, FindTag(srcSpec.default, fallback=''))
         else:
             ET.SubElement(olet, 'lit-tag', v=f'{trgSpec.label}-UNK')
 
