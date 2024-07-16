@@ -498,20 +498,25 @@ class RuleGenerator:
             callmac = ET.SubElement(macro, 'call-macro', n=self.BantuMacro)
             ET.SubElement(callmac, 'with-param', pos='1')
 
-        choose = ET.SubElement(macro, 'choose')
-        for srcTag, srcFeat in src:
-            if srcFeat == srcSpec.default:
-                continue
+        if all(s[1] == srcSpec.default for s in src):
+            macro.append(ET.Comment("All relevant target affixes have the default value"))
+            otherwise = macro
+        else:
+            choose = ET.SubElement(macro, 'choose')
+            for srcTag, srcFeat in src:
+                if srcFeat == srcSpec.default:
+                    continue
 
-            eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
-            if bantu:
-                ET.SubElement(eq, 'var', n=self.BantuVariable)
-            else:
-                ET.SubElement(eq, 'clip', pos='1', side='tl',
-                              part=self.EnsureAttribute(srcSpec))
-            ET.SubElement(eq, 'lit-tag', v=srcTag)
+                eq = MakeWhenClause(choose, varid, FindTag(srcFeat))
+                if bantu:
+                    ET.SubElement(eq, 'var', n=self.BantuVariable)
+                else:
+                    ET.SubElement(eq, 'clip', pos='1', side='tl',
+                                  part=self.EnsureAttribute(srcSpec))
+                ET.SubElement(eq, 'lit-tag', v=srcTag)
 
-        otherwise = ET.SubElement(choose, 'otherwise')
+            otherwise = ET.SubElement(choose, 'otherwise')
+
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
         if srcSpec.default:
