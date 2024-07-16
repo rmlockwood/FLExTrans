@@ -724,11 +724,11 @@ class RuleGenerator:
                 if path:
                     specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
                     given = f' given {", ".join(specs)}'
-                elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(set(t[1] for t in tags)))}){given}.'))
                 if len(tagsByValue) == 1 and source.default in tagsByValue:
                     otherwise = elem
-                    elem.append(ET.Comment(f'There is only one possible feature value here: {source.default}.'))
+                    elem.append(ET.Comment(f'There is only one possible value for {source.label} here: {source.default}.'))
                 else:
+                    elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(set(t[1] for t in tags)))}){given}.'))
                     choose = ET.SubElement(elem, 'choose')
                     for feature, tagSet in sorted(tagsByValue.items()):
                         if feature == source.default:
