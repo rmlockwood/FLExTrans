@@ -724,33 +724,38 @@ class RuleGenerator:
                 if path:
                     specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
                     given = f' given {", ".join(specs)}'
-                elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(t[1] for t in tags))}){given}.'))
-                choose = ET.SubElement(elem, 'choose')
-                for feature, tagSet in sorted(tagsByValue.items()):
-                    if feature == source.default:
-                        # Handle this in the <otherwise> block
-                        continue
+                elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(set(t[1] for t in tags)))}){given}.'))
+                if len(tagsByValue) == 1 and source.default in tagsByValue:
+                    otherwise = elem
+                    elem.append(ET.Comment(f'There is only one possible feature value here: {source.default}.'))
+                else:
+                    choose = ET.SubElement(elem, 'choose')
+                    for feature, tagSet in sorted(tagsByValue.items()):
+                        if feature == source.default:
+                            # Handle this in the <otherwise> block
+                            continue
 
-                    choose.append(ET.Comment(f'Set {varid} based on {source.label} = {feature}.'))
-                    when = ET.SubElement(choose, 'when')
-                    test = ET.SubElement(when, 'test')
-                    side = 'tl'
-                    if source.isSource and not source.isAffix:
-                        side = 'sl'
-                    parent = test
-                    if len(tagSet) > 1:
-                        parent = ET.SubElement(test, 'or')
-                    for tag in sorted(tagSet):
-                        eq = ET.SubElement(parent, 'equal')
-                        ET.SubElement(
-                            eq, 'clip', pos=clipPos, side=side,
-                            part=self.EnsureAttribute(source))
-                        ET.SubElement(eq, 'lit-tag', v=tag)
-                    newLocations.append(
-                        (when, possibleLemmas & valueDict[feature],
-                         path+[feature]))
+                        choose.append(ET.Comment(f'Set {varid} based on {source.label} = {feature}.'))
+                        when = ET.SubElement(choose, 'when')
+                        test = ET.SubElement(when, 'test')
+                        side = 'tl'
+                        if source.isSource and not source.isAffix:
+                            side = 'sl'
+                        parent = test
+                        if len(tagSet) > 1:
+                            parent = ET.SubElement(test, 'or')
+                        for tag in sorted(tagSet):
+                            eq = ET.SubElement(parent, 'equal')
+                            ET.SubElement(
+                                eq, 'clip', pos=clipPos, side=side,
+                                part=self.EnsureAttribute(source))
+                            ET.SubElement(eq, 'lit-tag', v=tag)
+                        newLocations.append(
+                            (when, possibleLemmas & valueDict[feature],
+                             path+[feature]))
 
-                otherwise = ET.SubElement(choose, 'otherwise')
+                    otherwise = ET.SubElement(choose, 'otherwise')
+
                 if source.default:
                     newLocations.append((otherwise, possibleLemmas & valueDict[source.default], path+[source.default]))
                 else:
