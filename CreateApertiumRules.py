@@ -671,6 +671,7 @@ class RuleGenerator:
 
         affixesByFeatureValue = []
         allAffixes = set()
+        blank = ranked and not isLemma
         for source in sourceList:
             affixesByFeatureValue.append(defaultdict(set))
             if isLemma:
@@ -683,9 +684,11 @@ class RuleGenerator:
             for affix, value in affixes:
                 affixesByFeatureValue[-1][value].add(affix)
                 allAffixes.add(affix)
-
-        if not isLemma and all(source.default for source in sources):
-            allAffixes.add('')
+            if source.default:
+                affixesByFeatureValue[-1][source.default].add('')
+                allAffixes.add('')
+            else:
+                blank = False
 
         # Fill in default values
         for index, source in enumerate(sourceList):

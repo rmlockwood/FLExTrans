@@ -785,5 +785,114 @@ class EnglishGermanTripleRanking(BaseTest, unittest.TestCase):
          '^der1.4<def>$ ^Nn<n><GEN_PL>$'),
     ]
 
+class EnglishGermanTripleRankingPartialDefault(BaseTest, unittest.TestCase):
+    RuleFile = 'EnglishGermanTripleRankingPartialDefault.xml'
+    Data = {
+        'def': {
+            'case': {
+                'target_lemma': [('den1.1', 'acc'), ('die1.4', 'dat'),
+                                 ('der1.4', 'gen'),
+                                 ('die1.3', 'acc'), ('den1.2', 'acc'),
+                                 ('das1.2', 'acc'), ('der1.2', 'dat'),
+                                 ('dem1.1', 'dat'), ('dem1.2', 'dat'),
+                                 ('der1.3', 'gen'), ('des1.2', 'gen'),
+                                 ('des1.1', 'gen')],
+            },
+            'gender': {
+                'target_lemma': [('die1.3', 'f'), ('den1.2', 'm'),
+                                 ('das1.2', 'nt'), ('der1.2', 'f'),
+                                 ('dem1.1', 'm'), ('dem1.2', 'nt'),
+                                 ('der1.3', 'f'), ('des1.2', 'm'),
+                                 ('des1.1', 'nt'), ('die1.2', 'f'),
+                                 ('der1.1', 'm'), ('das1.1', 'nt')],
+            },
+            'number': {
+                'target_lemma': [('den1.1', 'pl'), ('die1.4', 'pl'),
+                                 ('der1.4', 'pl'), ('die1.1', 'pl'),
+                                 ('die1.3', 'sg'), ('den1.2', 'sg'),
+                                 ('das1.2', 'sg'), ('der1.2', 'sg'),
+                                 ('dem1.1', 'sg'), ('dem1.2', 'sg'),
+                                 ('der1.3', 'sg'), ('des1.2', 'sg'),
+                                 ('des1.1', 'sg'), ('die1.2', 'sg'),
+                                 ('der1.1', 'sg'), ('das1.1', 'sg')],
+            },
+        },
+        'n': {
+            'case': {
+                'source_affix': [('ACC', 'acc'), ('DAT', 'dat'), ('GEN', 'gen'),
+                                 ('ACC_PL', 'acc'), ('DAT_PL', 'dat'),
+                                 ('GEN_PL', 'gen')],
+                'target_affix': [('ACC_SG', 'acc'), ('DAT_SG', 'dat'),
+                                 ('GEN_F_SG', 'gen'), ('GEN_M_SG', 'gen'),
+                                 ('GEN_N_SG', 'gen')],
+            },
+            'gender': {
+                'target_lemma': [('Nm', 'm'), ('Nf', 'f'), ('Nn', 'nt')],
+                'target_affix': [('GEN_F_SG', 'f'), ('GEN_M_SG', 'm'),
+                                 ('GEN_N_SG', 'nt')],
+            },
+            'number': {
+                'source_affix': [('ACC_PL', 'pl'), ('DAT_PL', 'pl'),
+                                 ('GEN_PL', 'pl'), ('PL', 'pl')],
+                'target_affix': [('ACC_SG', 'sg'), ('DAT_SG', 'sg'),
+                                 ('GEN_F_SG', 'sg'), ('GEN_M_SG', 'sg'),
+                                 ('GEN_N_SG', 'sg'), ('PL', 'pl')],
+            },
+        },
+    }
+    TestPairs = [
+        ('^the<def>/the<def>$ ^thing1<n><m>/Nm<n><m>$',
+         '^der1.1<def>$ ^Nm<n>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f>/Nf<n><f>$',
+         '^die1.2<def>$ ^Nf<n>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt>/Nn<n><nt>$',
+         '^das1.1<def>$ ^Nn<n>$'),
+        ('^the<def>/the<def>$ ^thing1<n><m><PL>/Nm<n><m><PL>$',
+         '^die1.1<def>$ ^Nm<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f><PL>/Nf<n><f><PL>$',
+         '^die1.1<def>$ ^Nf<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><PL>/Nn<n><nt><PL>$',
+         '^die1.1<def>$ ^Nn<n><PL>$'),
+
+        ('^the<def>/the<def>$ ^thing1<n><m><ACC>/Nm<n><m><ACC>$',
+         '^den1.2<def>$ ^Nm<n><ACC_SG>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f>/Nf<n><f><ACC>$',
+         '^die1.3<def>$ ^Nf<n><ACC_SG>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><ACC>/Nn<n><nt><ACC>$',
+         '^das1.2<def>$ ^Nn<n><ACC_SG>$'),
+        ('^the<def>/the<def>$ ^thing1<n><m><ACC_PL>/Nm<n><m><ACC_PL>$',
+         '^den1.1<def>$ ^Nm<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f><ACC_PL>/Nf<n><f><ACC_PL>$',
+         '^den1.1<def>$ ^Nf<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><ACC_PL>/Nn<n><nt><ACC_PL>$',
+         '^den1.1<def>$ ^Nn<n><PL>$'),
+
+        ('^the<def>/the<def>$ ^thing1<n><m><DAT>/Nm<n><m><DAT>$',
+         '^dem1.1<def>$ ^Nm<n><DAT_SG>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f>/Nf<n><f><DAT>$',
+         '^der1.2<def>$ ^Nf<n><DAT_SG>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><DAT>/Nn<n><nt><DAT>$',
+         '^dem1.2<def>$ ^Nn<n><DAT_SG>$'),
+        ('^the<def>/the<def>$ ^thing1<n><m><DAT_PL>/Nm<n><m><DAT_PL>$',
+         '^die1.4<def>$ ^Nm<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f><DAT_PL>/Nf<n><f><DAT_PL>$',
+         '^die1.4<def>$ ^Nf<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><DAT_PL>/Nn<n><nt><DAT_PL>$',
+         '^die1.4<def>$ ^Nn<n><PL>$'),
+
+        ('^the<def>/the<def>$ ^thing1<n><m><GEN>/Nm<n><m><GEN>$',
+         '^des1.2<def>$ ^Nm<n><GEN_M_SG>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f>/Nf<n><f><GEN>$',
+         '^der1.3<def>$ ^Nf<n><GEN_F_SG>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><GEN>/Nn<n><nt><GEN>$',
+         '^des1.1<def>$ ^Nn<n><GEN_N_SG>$'),
+        ('^the<def>/the<def>$ ^thing1<n><m><GEN_PL>/Nm<n><m><GEN_PL>$',
+         '^der1.4<def>$ ^Nm<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing2<n><f><GEN_PL>/Nf<n><f><GEN_PL>$',
+         '^der1.4<def>$ ^Nf<n><PL>$'),
+        ('^the<def>/the<def>$ ^thing3<n><nt><GEN_PL>/Nn<n><nt><GEN_PL>$',
+         '^der1.4<def>$ ^Nn<n><PL>$'),
+    ]
+
 if __name__ == '__main__':
     unittest.main()
