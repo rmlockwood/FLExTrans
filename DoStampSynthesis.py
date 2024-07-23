@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11 - 7/23/24 - Ron Lockwood
+#    Fixes #671. Handle outputting the default inflection class for categories that have them.
+#
 #   Version 3.10.4 - 5/8/24 - Ron Lockwood
 #    Fixes crash where sense's MorphoSyntaxAnalysis RA object is None. Check for that now.
 #
@@ -278,7 +281,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10.4",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -406,7 +409,12 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
             if msa.InflectionClassRA:
                 
                 inflClassStr = ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
-                
+                f_handle.write(f'\\mp {inflClassStr}\n')
+            
+            # If there is not infl. class assigned, but there is a default inflection class for this POS, write it.
+            elif msa.PartOfSpeechRA.DefaultInflectionClassRA:
+
+                inflClassStr = ITsString(msa.PartOfSpeechRA.DefaultInflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
 def gather_allomorph_data(morph, masterAlloList, morphCategory):
