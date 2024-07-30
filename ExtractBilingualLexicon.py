@@ -267,6 +267,8 @@ import os
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
+import unicodedata
+import io
 
 from System import Guid
 from System import String
@@ -312,15 +314,6 @@ document for more details.
 
 #----------------------------------------------------------------
 
-# Constants for building the output lines in the dictionary file.
-ENTRY_PAIR_LEFT_BEG =           '    <e><p><l>'
-ENTRY_IDENTITY_BEG =            '    <e><i>'
-SYMBOL_BEG =                    '<s n="'
-ENTRY_PAIR_LEFT_END_RIGHT_BEG = '</l><r>'
-SYMBOL_END =                    '"/>'
-ENTRY_PAIR_RIGHT_END=           '</r></p></e>'
-ENTRY_IDENTITY_END =            '</i></e>'
-
 def getFileTime(path):
     try:
         mtime = os.path.getmtime(path)
@@ -348,311 +341,27 @@ def replFileOutOfDate(bilingFile, replFile):
 
     return getFileTime(replFile) > getFileTime(bilingFile)
 
-def getReplEntryKey(left, newDocType):
-
-    if newDocType == True:
-
-        key = ''
-
-        # Build a key from leftdata text and possible space (<b />) elements (symbol <s> elements get skipped)
-        for myElement in left:
-
-            if myElement.tag == 'leftdata':
-
-                key += myElement.text
-
-            elif myElement.tag == 'b':
-
-                key += ET.tostring(myElement, encoding='unicode')
-    else:
-
-        # Get just the text part of the left entry. Note: it's not as easy as left.text
-        key = Utils.getXMLEntryText(left)
-
-    return key
-
-def doWeHaveNewDocType(tmpReplFile, report, replFile):
-
-    newDocType = True
-
-    f = open(tmpReplFile, encoding='utf-8')
-
-    # Read two lines
-    f.readline()
-    line = f.readline()
-    f.close()
-
-    # Remove the temp file
-    os.remove(tmpReplFile)
-
-    toks = line.split()
-
-    if len(toks) < 1:
-        if report:
-            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-        return True, newDocType
-
-    if toks[1] == REPLDICTIONARY:
-
-        newDocType = True
-
-    elif toks[1] == DICTIONARY:
-
-        newDocType = False
-
-    else:
-        if report:
-
-            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. No DOCTYPE found.')
-
-        return True, newDocType
-
-    return False, newDocType
-
-def createReplMap(replSec, newDocType):
-
-    replMap = {}
-
-    # Loop through the entries in this section
-    for entry in replSec:
-
-        # Get the <l> text which is under the <p> which is under the <e>
-        left = entry.find('p/l')
-
-        key = getReplEntryKey(left, newDocType)
-
-        replMap[key] = entry
-
-    return replMap
-
-def addNewSymbols(bilingRoot, replRoot):
-
-    # Get symbol definitions element (sdefs)
-    bilingSdefs = bilingRoot.find('sdefs')
-    replSdefs = replRoot.find('sdefs')
-
-    # Create a map of all the symbol abbreviations in the bilingual dictionary
-    sdfMap={}
-
-    for mySdef in bilingSdefs:
-
-        sdfMap[mySdef.attrib['n']] = 1
-
-    # Add a comment before the new sdefs get added
-    comment = ET.Comment('Inserted symbol definitions from replacement file')
-    bilingSdefs.append(comment)
-
-    # Loop through the replacement sdefs
-    for symbolDef in replSdefs:
-
-        # if the symbol abbreviation doesn't already exist, add it
-        if symbolDef.attrib['n'] not in sdfMap:
-
-            # add the sdef element from repl file to the end of the biling sdefs list
-            bilingSdefs.append(symbolDef)
-
-def processReplacementEntries(bilingSection, replMap, newDocType, replFile, report):
-
-    # Create a new section element to replace the old
-    newBilingSection = ET.Element('section')
-    newBilingSection.attrib = bilingSection.attrib
-
-    foundKeys = []
-
-    # Loop through all the bilingual entries
-    for entry in bilingSection:
-
-        # Get the left lemma text
-        left = entry.find('p/l')
-
-        # If we can't find it, use the identity text <e> should either have <p><l></l><r></r></p>) or <i>
-        if left == None:
-
-            left = entry.find('i')
-
-        # Create string with the old contents of the entry.
-        oldEntryStr = ET.tostring(entry, encoding='unicode')
-
-        # Get just the text part of the left entry. Note: it's not as easy as left.text
-        key = Utils.getXMLEntryText(left)
-
-        # See if we have a match for replacing the entry
-        if key in replMap:
-
-            # Create a comment containing the old entry and a note and insert them into the entry list
-            comment1 = ET.Comment('This entry was replaced with the one below it from the file: ' + os.path.basename(replFile) + '.\n')
-
-            comment2 = ET.Comment(oldEntryStr+'\n')
-
-            newBilingSection.append(comment1)
-            newBilingSection.append(comment2)
-
-            if newDocType:
-                replEntry = convertToBilingStyleEntry(replMap[key])
+def convertOldEntries(tree):
+    for node in tree.findall('.//leftdata/..') + tree.findall('.//rightdata/..'):
+        i = 0
+        while i < len(node):
+            if node[i].tag in ['leftdata', 'rightdata']:
+                content = (node[i].text or '') + (node[i].tail or '')
+                node.remove(node[i])
+                pieces = content.split()
+                if not pieces:
+                    continue
+                if i == 0:
+                    node.text = (node.text or '') + pieces[0]
+                else:
+                    node[i-1].tail = (node[i-1].tail or '') + pieces[0]
+                for j in range(1, len(pieces)):
+                    b = ET.Element('b')
+                    b.tail = pieces[j]
+                    node.insert(i, b)
+                    i += 1
             else:
-                replEntry = replMap[key]
-
-            # Insert the new entry from the replacement file map
-            newBilingSection.append(replEntry)
-
-            # Keep a list of the ones we found in the replacement file map so we can give warnings for replacement file keys that weren't found
-            foundKeys.append(key)
-
-        else: # copy the old entry to the new
-            newBilingSection.append(entry)
-
-    # Give a warning for keys in the replacement file that weren't found
-    for key in list(set(replMap.keys()) - set(foundKeys)):
-
-        # Ignore the default entry that gets installed
-        if key != 'SourceWord1.1':
-
-            if report: # could be None
-
-                report.Warning(f'The replacement file entry {key} was not found in the bilingual lexicon.')
-
-    return newBilingSection
-
-def processAppendEntries(newBilingSection, replFile, replRoot, newDocType):
-
-    # Make a comment and adds it
-    comment = ET.Comment('Custom entries appended below from the file ' + os.path.basename(replFile) + '.\n')
-    newBilingSection.append(comment)
-
-    # Get the append entries section
-    appendSec = replRoot.find(".//*[@id='append']")
-
-    if appendSec == None:
-
-        return True
-
-    # Loop through append entries
-    for entry in appendSec:
-
-        # add them to the list of bilingual entries
-        if newDocType:
-            newBilingSection.append(convertToBilingStyleEntry(entry))
-        else:
-            newBilingSection.append(entry)
-
-def insertDocType(fullPathBilingFile):
-
-    f = open(fullPathBilingFile, "r", encoding="utf-8")
-    contents = f.readlines()
-    f.close()
-
-    contents.insert(1, '<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-
-    f = open(fullPathBilingFile, 'w', encoding="utf-8")
-    contents = "".join(contents)
-    f.write(contents)
-    f.close()
-
-# Use the replacement file specified by BilingualDictReplacmentFile in the
-# configuration file to replace or add entries in or to the bilingual dictionary.
-# Two types of entries are in the replacement file, replacement entries and append entries.
-# These are found in two different section elements. For the replacement entries, the
-# matching lemma in the bilingual file is found and replaced. The old lemma is shown in
-# a comment along with an info. comment that says there was a replacement made there.
-# For append entries, they are just added at the end of the section element of the bilingual
-# dictionary. For the replacement file to be valid, it has to have all the symbols defined
-# in its symbol definition section <sdefs>. This function takes all those symbol definitions
-# and adds them to the <sdefs> of the bilingual dictionary. A comment is also added to
-# indicate where the new <sdef> elements start.
-def doReplacements(configMap, report, fullPathBilingFile, replFile):
-
-    # See if we need to do replacements
-    # See if the config setting is there or if it has valid info.
-    if 'BilingualDictOutputFile' not in configMap or configMap['BilingualDictOutputFile'] == '':
-
-        return True
-
-    # Save a copy of the bilingual dictionary
-    shutil.copy2(fullPathBilingFile, fullPathBilingFile+'.old')
-
-    # Make a temporary copy of the replacement file so we can decompose it
-    tmpReplFile = replFile+'.tmp'
-    shutil.copy2(replFile, tmpReplFile)
-
-    # Convert the replacement file to decomposed (NFD)
-    Utils.decompose(tmpReplFile)
-
-    # Parse the replacement file as XML
-    try:
-        replEtree = ET.parse(tmpReplFile)
-
-    except IOError:
-
-        if report:
-
-            report.Error('There is a problem with the Bilingual Dictionary Replacement File: '+replFile+'. Please check the configuration file setting.')
-
-        return True
-
-    # Determine the Doctype. The old type was dictionary the new is repldictionary
-    haveErr, newDocType = doWeHaveNewDocType(tmpReplFile, report, replFile)
-
-    if haveErr:
-        return
-
-    # Get the replacement entries section
-    replRoot = replEtree.getroot()
-    replacementSection = replRoot.find(".//*[@id='replacement']")
-
-    if replacementSection == None:
-
-        report.Error(f'Could not find the id "replacement" in the Replacement File: {replFile}')
-        return True
-
-    # Put the replacement entries into a map
-    replMap = createReplMap(replacementSection, newDocType)
-
-    # Read in the bilingual xml file
-    try:
-        bilingEtree = ET.parse(fullPathBilingFile)
-
-    except IOError:
-
-        if report:
-
-            report.Error('There is a problem reading the Bilingual Dictionary File: '+fullPathBilingFile+'.')
-
-        return True
-
-    # Add in new symbol definitions from the replacement file
-    bilingRoot = bilingEtree.getroot()
-    addNewSymbols(bilingRoot, replRoot)
-
-    # Get the section element
-    bilingSection = bilingRoot.find('section')
-
-    # Find entries that match replacement entries, comment out the old and insert the new
-    newBilingSection = processReplacementEntries(bilingSection, replMap, newDocType, replFile, report)
-
-    # Add the entries from the replacement file marked as 'append'
-    processAppendEntries(newBilingSection, replFile, replRoot, newDocType)
-
-    # Remove the old entries list and add the new
-    bilingRoot.remove(bilingSection)
-    bilingRoot.append(newBilingSection)
-
-    # Give whitespace indent TODO: this will only work in python 3.9+
-#    ET.indent(bilingEtree)
-
-    try:
-        bilingEtree.write(fullPathBilingFile, encoding='utf-8', xml_declaration=True)
-    except:
-
-        if report:
-
-            report.Error('There is a problem writing the Bilingual Dictionary File: '+fullPathBilingFile+'.')
-
-        return True
-
-    # Insert the DOCTYPE as the 2nd line of the file.
-    insertDocType(fullPathBilingFile)
-
-    return False
+                i += 1
 
 # convert from a <e> element that has <leftdata> and <rightdata> under <l> and <r> to one that doesn't have these
 # <b /> elements could be between multiple <leftdata> or <rightdata> elements and should come out something like
@@ -691,32 +400,21 @@ def convertToBilingStyleEntry(replStyleEntry):
                         bEl = ET.Element('b')
                         newSide[i].append(bEl)
 
-                    elif re.search('data', myElem.tag):
+                    elif 'data' in myElem.tag:
 
                         if firstData:
 
-                            # See if there's a space in the data
-                            if myElem.text and re.search(r'\s+', myElem.text):
-
-                                # Get the tokens on each side of the spaces
-                                tokens = re.split(r'\s+', myElem.text)
-
-                                # Loop through the tokens
-                                for j, token in enumerate(tokens):
-
-                                    # First token, set the l or r text attribute
-                                    if j == 0:
-                                        newSide[i].text = token
-
-                                    # Subsequent tokens, create a <b> element and set its tail to the token
-                                    else:
-                                        bEl2 = ET.Element('b')
-                                        newSide[i].append(bEl2)
-                                        bEl2.tail = token
-                            else:
-                                newSide[i].text = myElem.text
-
                             firstData = False
+
+                            if not myElem.text:
+                                continue
+
+                            tokens = myElem.text.split()
+                            newSide[i].text = tokens[0]
+                            for token in tokens[1:]:
+                                b = ET.SubElement(newSide[i])
+                                b.tail = token
+
                         else:
                             bEl.tail = myElem.text
 
@@ -725,21 +423,15 @@ def convertToBilingStyleEntry(replStyleEntry):
                         newSide[i].append(myElem)
     return newEntry
 
-def processSpaces(headWord, DB, sourceEntry, errorList):
+def insertWord(elem, headWord, tags):
 
-    # Check for preceding or ending spaces
-    strippedHeadword = headWord.strip()
-
-    if strippedHeadword != headWord.strip():
-
-        # Give a warning if there were spaces, but use the stripped version
-        errorList.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
-                           + ITsString(sourceEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(sourceEntry)))
-
-    # Substitute any medial spaces with <b/> (blank space element)
-    headWord = re.sub(r' ', r'<b/>', strippedHeadword)
-
-    return headWord
+    pieces = headWord.split()
+    elem.text = pieces[0]
+    for i in range(1, len(pieces)):
+        b = ET.SubElement(elem, 'b')
+        b.tail = pieces[i]
+    for tag in tags:
+        ET.SubElement(elem, 's', n=tag)
 
 # Convert the headword to lower case, tag on the POS and see if that already is in the map
 def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap):
@@ -755,13 +447,15 @@ def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap)
 
     return False
 
-def getInflectionInfoAsSymbolElementStrings(MSAobject):
+def getInflectionInfoSymbols(MSAobject):
 
-    myInflStr = ''
+    POS = ITsString(MSAobject.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+    POS = Utils.convertProblemChars(POS, Utils.catProbData)
+
+    symbols = []
+
     if MSAobject.InflectionClassRA:
-
-        abb = ITsString(MSAobject.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
-        myInflStr = SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
+        symbols.append(ITsString(MSAobject.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text)
 
     if MSAobject.MsFeaturesOA:
 
@@ -770,12 +464,9 @@ def getInflectionInfoAsSymbolElementStrings(MSAobject):
         # The features might be complex, make a recursive function call to find all leaf features
         Utils.get_feat_abbr_list(MSAobject.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
 
-        # This sort will keep the groups in order e.g. 'gender' features will come before 'number' features
-        for grpName, abb in sorted(featureAbbrList, key=lambda x: x[0]):
+        symbols += [abb for grpName, abb in sorted(featureAbbrList)]
 
-            myInflStr += SYMBOL_BEG + Utils.underscores(abb) + SYMBOL_END
-
-    return myInflStr
+    return [POS] + [Utils.underscores(abb) for abb in symbols]
 
 def addFeatureStringsToMap(myDB, myMap):
 
@@ -802,14 +493,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         return errorList
 
     # Transform the straight list of category abbreviations to a list of tuples
-    catSubList = []
+    catSubDict = []
     if catSub:
-        try:
-            for i in range(0,len(catSub),2):
-                catSubList.append((catSub[i],catSub[i+1]))
-        except:
+        if len(catSub) % 2 != 0:
             errorList.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))
             return errorList
+        for i in range(0,len(catSub),2):
+            catSubDict[catSub[i]] = catSub[i+1]
 
     # Set objects for the two custom fields. Report errors if they don't exist in the source project.
     custSenseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
@@ -852,22 +542,15 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
     else: # build the file
 
-        posMap = {}
+        posMap = {
+            'sent': 'Sentence marker',
+            'UNK': 'Unknown',
+        }
 
-        try:
-            fOut = open(fullPathBilingFile, 'w', encoding="utf-8")
-        except IOError as err:
-            errorList.append(('There was a problem creating the Bilingual Dictionary Output File: '+fullPathBilingFile+'. Please check the configuration file setting.', 2))
-            return errorList
-
-        errorList.append(("Outputing category information...", 0))
-
-        fOut.write('<?xml version="1.0" encoding="utf-8"?>\n')
-        fOut.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
-        fOut.write('<dictionary>\n')
-        fOut.write('  <alphabet/>\n')
-        fOut.write('  <sdefs>\n')
-        fOut.write('    <sdef n="sent" c="Sentence marker"/>\n')
+        outputTree = ET.Element('dictionary')
+        ET.SubElement(outputTree, 'alphabet')
+        sdefs = ET.SubElement('sdefs')
+        mainSection = ET.SubElement(tree, 'section', id='main', type='standard')
 
         # Get all source and target categories along with inflection classes
         if Utils.get_categories(DB, report, posMap, TargetDB, numCatErrorsToShow=1, addInflectionClasses=True) == True:
@@ -879,19 +562,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         # save features so they can go in the symbol definition section. Source and Target DBs.
         addFeatureStringsToMap(DB, posMap)
         addFeatureStringsToMap(TargetDB, posMap)
-
-        # build string for the xml pos section
-        for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):
-
-            # output abbreviation and full category name
-            categoryStr = f'    <sdef n="{POSabbr}" c="{POSname}"/>\n'
-            fOut.write(categoryStr)
-
-        # write symbol for UNK
-        categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
-        fOut.write(categoryStr)
-        fOut.write('  </sdefs>\n\n')
-        fOut.write('  <section id="main" type="standard">\n')
 
         errorList.append(("Building the bilingual dictionary...", 0))
         recordsDumpedCount = 0
@@ -906,27 +576,31 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             if report:
                 report.ProgressUpdate(entryCount)
 
+            # Simplify error reporting
+            rawHeadWord = ITsString(sourceEntry.HeadWord).Text
+            sourceURL = DB.BuildGotoURL(sourceEntry)
+
             # Don't process affixes, clitics
             if sourceEntry.LexemeFormOA and sourceEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
                sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
 
-                # Get the headword string
-                headWord = ITsString(sourceEntry.HeadWord).Text
+               # Get the headword string
+               # If there is not a homograph # at the end, make it 1
+               headWord = Utils.add_one(rawHeadWord)
 
-                # Deal with spaces in the headword
-                headWord = processSpaces(headWord, DB, sourceEntry, errorList)
+               # Convert problem chars in the headWord
+               headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
 
-                # If there is not a homograph # at the end, make it 1
-                headWord = Utils.add_one(headWord)
-
-                # Convert problem chars in the headWord
-                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+               if headWord != headWord.strip():
+                   errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
 
                     targetFound = False
                     sourcePOSabbrev = 'UNK'
+                    sourceTags = []
+                    senseHeadWord = headWord + '.' + str(i+1)
 
                     # Make sure we have a valid analysis object
                     if sourceSense.MorphoSyntaxAnalysisRA:
@@ -937,23 +611,24 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             sourceMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
                             if sourceMsa.PartOfSpeechRA:
 
-                                sourcePOSabbrev = ITsString(sourceMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-                                sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
-
                                 # Get source inflection strings (containing class and feature abbreviations)
-                                sourceInflStrings = getInflectionInfoAsSymbolElementStrings(sourceMsa)
+                                sourceTags = getInflectionInfoSymbols(sourceMsa)
+                                sourcePOSabbrev = sourceTags[0]
 
                             else:
                                 errorList.append(('Encountered a sense that has unknown POS'+\
-                                                  ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                                  ' while processing source headword: '+rawHeadWord, 1, sourceURL))
+                                sourceTags = ['UNK']
                                 sourcePOSabbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
                             if checkForDuplicateHeadword(headWord, sourcePOSabbrev, sourceEntry.Hvo, duplicateHeadwordPOSmap):
 
                                 errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense.'+\
-                                               'Source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                                  'Source headword: '+rawHeadWord, 1, sourceURL))
                                 continue
+
+                            entryElem = ET.SubElement(mainSection, 'e', w='1')
 
                             # If we have a link to a target entry, process it
                             equivStr = Utils.getTargetEquivalentUrl(DB, sourceSense, custSenseEquivField)
@@ -961,11 +636,13 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             # handle a sense mapped intentionally to nothing. Skip it.
                             if equivStr == Utils.NONE_HEADWORD:
 
-                                # output the bilingual dictionary line with a blank target (<r>) side
-                                outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+ENTRY_PAIR_RIGHT_END+'\n'
+                                pairElem = ET.SubElement(entryElem, 'p')
+                                leftElem = ET.SubElement(pairElem, 'l')
+                                rightElem = ET.SubElement(pairElem, 'r')
+                                insertWord(leftElem, senseHeadWord, sourceTags)
+                                # the output is blank, so don't fill in the <r>
                                 targetFound = True
 
-                                fOut.write(outputStr)
                                 recordsDumpedCount += 1
 
                             elif equivStr:
@@ -974,8 +651,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                                                     custSenseNumField, report, remove1dot1Bool=False)
                                 if targetSense:
 
-                                    # If there's a space, replace it with <b/>
-                                    targetLemma = re.sub(r' ', r'<b/>', targetLemma)
+                                    targetTags = []
 
                                     if targetSense.MorphoSyntaxAnalysisRA and targetSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
 
@@ -984,30 +660,26 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                                             targetFound = True
 
-                                            # Get target pos abbreviation
-                                            targetAbbrev = ITsString(targetMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-
-                                            # Deal with problem characters like spaces, periods, and slashes
-                                            targetAbbrev = Utils.convertProblemChars(targetAbbrev, Utils.catProbData)
-
                                             # Get target inflection strings (containing class and feature abbreviations)
-                                            targetInflStrings = getInflectionInfoAsSymbolElementStrings(targetMsa)
+                                            targetTags = getInflectionInfoSymbols(targetMsa)
 
-                                            # output the bilingual dictionary line
-                                            outputStr = ENTRY_PAIR_LEFT_BEG+headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+\
-                                                        targetLemma+SYMBOL_BEG+targetAbbrev+SYMBOL_END+targetInflStrings+ENTRY_PAIR_RIGHT_END+'\n'
+                                            pairElem = ET.SubElement(entryElem, 'p')
+                                            leftElem = ET.SubElement(pairElem, 'l')
+                                            rightElem = ET.SubElement(pairElem, 'r')
+                                            insertWord(leftElem, headWord, sourceTags)
+                                            insertWord(rightElem, targetLemma, targetTags)
 
-                                            fOut.write(outputStr)
+
                                             recordsDumpedCount += 1
 
                                         else:
                                             errorList.append(('Skipping sense because the target POS is undefined '+\
                                                             ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                            ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                                            ' while processing source headword: '+rawHeadWord, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                     else:
                                         errorList.append(('Skipping sense because it is of this class: '+targetMsa.ClassName+\
                                                         ' for target headword: '+ITsString(ILexEntry(targetSense.Entry).HeadWord).Text+\
-                                                        ' while processing source headword: '+ITsString(sourceEntry.HeadWord).Text, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
+                                                        ' while processing source headword: '+rawHeadWord, 1, TargetDB.BuildGotoURL(ILexEntry(targetSense.Entry))))
                                 else:
                                     # Error already reported
                                     pass
@@ -1016,37 +688,33 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 pass
                         else:
                             errorList.append(('Skipping sense that is of class: '+sourceSense.MorphoSyntaxAnalysisRA.ClassName+\
-                                           ' for headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                              ' for headword: '+rawHeadWord, 1, sourceURL))
                     else:
                         errorList.append(('Skipping sense, no analysis object'\
-                                           ' for headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                                           ' for headword: '+rawHeadWord, 1, sourceURL))
                     if not targetFound:
                         # output the bilingual dictionary line -- source and target are the same
 
                         # do substitutions of categories. This is for standard substitutions where
                         # the target category name is different even though essentially the categories are equivalent.
-                        outputStr = ''
-                        for tup in catSubList:
 
-                            if tup[0] == sourcePOSabbrev:
+                        if sourcePOSabbrev in catSubDict:
+                            pairElem = ET.SubElement(entryElem, 'p')
+                            leftElem = ET.SubElement(pairElem, 'l')
+                            rightElem = ET.SubElement(pairElem, 'r')
+                            insertWord(leftElem, senseHeadWord, sourceTags)
+                            insertWord(rightElem, senseHeadWord, [catSubDict[sourcePOSabbrev]] + sourceTags[1:])
 
-                                tempStr = headWord + '.'+str(i+1)
-                                outputStr = ENTRY_PAIR_LEFT_BEG+tempStr+SYMBOL_BEG+tup[0]+SYMBOL_END+sourceInflStrings+ENTRY_PAIR_LEFT_END_RIGHT_BEG+\
-                                            tempStr+SYMBOL_BEG+tup[1]+SYMBOL_END+ENTRY_PAIR_RIGHT_END+'\n'
-                                break
+                        else:
+                            identityElem = ET.SubElement(entryElem, 'i')
+                            insertWord(leftElem, senseHeadWord, sourceTags)
 
-                        if outputStr == '':
-
-                            outputStr = headWord+'.'+str(i+1)+SYMBOL_BEG+sourcePOSabbrev+SYMBOL_END+sourceInflStrings
-                            outputStr = ENTRY_IDENTITY_BEG+outputStr+ENTRY_IDENTITY_END+'\n'
-
-                        fOut.write(outputStr)
                         recordsDumpedCount += 1
 
             else:
                 if sourceEntry.LexemeFormOA == None:
 
-                    errorList.append(('No lexeme form. Skipping. Headword: '+ITsString(sourceEntry.HeadWord).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                    errorList.append(('No lexeme form. Skipping. Headword: '+rawHeadWord, 1, sourceURL))
 
                 elif sourceEntry.LexemeFormOA.ClassName != 'MoStemAllomorph':
 
@@ -1055,9 +723,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                 elif sourceEntry.LexemeFormOA.MorphTypeRA == None:
 
-                    errorList.append(('No Morph Type. Skipping.'+ITsString(sourceEntry.HeadWord).Text+' Best Vern: '+ITsString(sourceEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, DB.BuildGotoURL(sourceEntry)))
+                    errorList.append(('No Morph Type. Skipping.'+rawHeadWord+' Best Vern: '+ITsString(sourceEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, sourceURL))
 
-        fOut.write('    <!-- SECTION: Punctuation -->\n')
+        mainSection.append(ET.Comment(' SECTION: Punctuation '))
 
         # Create a regular expression string for the punctuation characters
         # Note that we have to escape ? + * | if they are found in the sentence-final punctuation
@@ -1066,20 +734,53 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
         # This notation in Apertium basically means that any combination of the given punctuation characters
         # with the tag <sent> will be substituted with the same thing plus the <sent> tag.
-        fOut.write('   <e><re>' + reStr + '</re><p><l><s n="sent"/></l><r><s n="sent"/></r></p></e>\n')
-        fOut.write('  </section>\n')
-        fOut.write('</dictionary>\n')
-        fOut.close()
 
-        errorList.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
-        errorList.append((str(recordsDumpedCount)+' records created in the bilingual dictionary.', 0))
+        punctEntry = ET.SubElement(mainSection, 'e', w='1')
+        reElem = ET.SubElement(punctEntry, 're')
+        reElem.text = reStr
+        posElem = ET.SubElement(punctEntry, 'i')
+        ET.SubElement(posElem, 's', n='sent')
 
-        # As a last step, replace certain parts of the bilingual dictionary
-        if doReplacements(configMap, report, fullPathBilingFile, replFile) == True:
+        replTree = None
 
-            errorList.append(('Error processing the replacement file.', 2))
+        try:
+            with open(replFile) as fin:
+                text = fin.read()
+                text = unicodedata.normalize('NFD', text)
+                replTree = ET.parse(io.StringIO(text)).getroot()
+        except:
+            errorList.append((f'There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.', 2))
+
+        if replTree:
+            convertOldEntries(replTree)
+            for sdef in replTree.findall('.//sdef'):
+                if 'c' in sdef.attrib:
+                    posMap[sdef.attrib['n']] = posMap.attrib['c']
+            for symbol in replTree.findall('.//s'):
+                posMap.setdefault(symbol.attrib['n'], '')
+            for section in replTree.findall('.//section'):
+                outputTree.append(section)
+
+        for abbr, name in sorted(posMap.items(), key=lambda x: (x[0].lower(), x[1])):
+            if name:
+                ET.SubElement(sdefs, 'sdef', n=abbr, c=name)
+            else:
+                ET.SubElement(sdefs, 'sdef', n=abbr)
+
+        ET.indent(outputTree)
+
+        try:
+            with open(fullPathBilingFile, 'w', encoding='utf-8') as fout:
+                fout.write('<?xml version="1.0" encoding="utf-8"?>\n')
+                fout.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+                fout.write(ET.tostring(outputTree, encoding='utf-8'))
+        except IOError as err:
+            errorList.append((f'There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.', 2))
             TargetDB.CloseProject()
             return errorList
+
+        errorList.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
+        errorList.append((f'{recordsDumpedCount} records created in the bilingual dictionary.', 0))
 
     TargetDB.CloseProject()
     return errorList
