@@ -140,6 +140,7 @@ replacementsMap = {
 
 def applySearchReplaceRules(inputStr, tree):
     
+    errorMsg = ""
     newStr = inputStr
 
     # Get the parent element where the rules are listed.
