@@ -5,7 +5,7 @@
 #   SIL International
 #   7/6/24
 #
-#   Version 3.11 - 7/6/24 - Ron Lockwood
+#   Version 3.10.5 - 7/6/24 - Ron Lockwood
 #    Initial version.
 #
 #   Define and test a set of search and replace operations to be used to fix up the text that comes out of 
@@ -34,7 +34,7 @@ from TextInOut import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of Paratext-import search and replace operations.' ,
         FTM_Help   : "",

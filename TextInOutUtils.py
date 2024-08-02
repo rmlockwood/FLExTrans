@@ -5,16 +5,16 @@
 #   SIL International
 #   7/1/24
 #
-#   Version 3.11.3 - 7/12/24 - Ron Lockwood
+#   Version 3.10.5 - 7/12/24 - Ron Lockwood
 #    Added Wildebeest support.
 #
-#   Version 3.11.2 - 7/9/24 - Ron Lockwood
+#   Version 3.10.4 - 7/9/24 - Ron Lockwood
 #    Added comment and inactive properties to rules.
 #
-#   Version 3.11.1 - 7/8/24 - Ron Lockwood
+#   Version 3.10.3 - 7/8/24 - Ron Lockwood
 #    Added Text In module putting common window code in InOutUtils.
 #
-#   Version 3.11 - 7/1/24 - Ron Lockwood
+#   Version 3.10.2 - 7/1/24 - Ron Lockwood
 #    Initial version.
 #
 #   Shared functions, classes and constants for text in and out processing.

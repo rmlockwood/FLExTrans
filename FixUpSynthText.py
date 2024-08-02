@@ -5,10 +5,10 @@
 #   SIL International
 #   7/1/24
 #
-#   Version 3.11.1 - 7/8/24 - Ron Lockwood
+#   Version 3.10.5 - 7/8/24 - Ron Lockwood
 #    Use common code in InOutUtils for replacing text.
 #
-#   Version 3.11 - 7/1/24 - Ron Lockwood
+#   Version 3.10.2 - 7/1/24 - Ron Lockwood
 #    Initial version.
 #
 #   Run a set of search and replace operations to fix up the text that comes out of 
@@ -28,7 +28,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Run a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
