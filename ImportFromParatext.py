@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10.7 - 8/2/24 - Ron Lockwood
+#    Use new function num Rules to get the number of rules.
+#
 #   Version 3.10.6 - 8/2/24 - Ron Lockwood
 #    Don't need to add paragraph marks anymore.
 #
@@ -107,7 +110,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10.6",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -289,6 +292,8 @@ def do_import(DB, report, chapSelectObj, tree):
 
             report.Error(errMsg)
             return
+        else:
+            report.Info(f"{str(TextInOutUtils.numRules(tree))} 'Text In' rules applied.")
             
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
