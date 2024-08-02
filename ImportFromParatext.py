@@ -5,8 +5,11 @@
 #   SIL International
 #   10/30/21
 #
-#   Version 3.10.6 - 8/2/24 - Ron Lockwood
+#   Version 3.10.7 - 8/2/24 - Ron Lockwood
 #    Use new function num Rules to get the number of rules.
+#
+#   Version 3.10.6 - 8/2/24 - Ron Lockwood
+#    Don't need to add paragraph marks anymore.
 #
 #   Version 3.10.5 - 7/8/24 - Ron Lockwood
 #    Use new Text In search/replace rules.
@@ -107,7 +110,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10.6",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -387,16 +390,6 @@ def do_import(DB, report, chapSelectObj, tree):
             
             # Either an sfm marker or a verse ref should get marked as Analysis WS
             elif re.search(r'\\|\d+[.:]\d+', seg):
-                
-                # add a space before the marker if we have content before it.
-                # if bldr.Length > 0:
-                #     seg = ' ' + seg
-                
-                # add a section mark if this is a verse or a quote and this is a script that has upper case.
-                # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
-                if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
-                    
-                    seg += '§'
                 
                 # make this in the Analysis WS
                 tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
