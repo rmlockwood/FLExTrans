@@ -6,7 +6,7 @@
 #   7/24/23
 #
 #
-#   Version 3.11.0 - 8/1/24 - Ron Lockwood
+#   Version 3.10.5 - 8/1/24 - Ron Lockwood
 #    Add TargetDB to the list of parameters to write SenseHyperLink function
 #
 #   Version 1.0 - 7/24/23 - Ron Lockwood
@@ -29,7 +29,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link all senses to the same guid in the target.",
         FTM_Help       : "",
