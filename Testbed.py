@@ -5,7 +5,7 @@
 #   SIL International
 #   12/24/2022
 #
-#   Version 3.11 - 7/13/24 - Ron Lockwood
+#   Version 3.10.5 - 7/13/24 - Ron Lockwood
 #    Fixes #668. The N.N wasn't being shown in the tooltip. Show it always.
 #
 #   Version 3.9 - 7/19/23 - Ron Lockwood
