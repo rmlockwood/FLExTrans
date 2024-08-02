@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.10.6 - 8/2/24 - Ron Lockwood
+#    Use new function num Rules to get the number of rules.
+#
 #   Version 3.10.5 - 7/8/24 - Ron Lockwood
 #    Use common code in InOutUtils for replacing text.
 #
@@ -28,7 +31,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.10.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Run a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
@@ -95,7 +98,8 @@ def MainFunction(DB, report, modify=True):
     f.writelines(newLines)
     f.close()
     
-    report.Info(f'The synthesis file was fixed using {str(len(searchReplaceRulesElement))} Text Out rules.')
+    if newStr:
+        report.Info(f"The synthesis file was fixed using {str(TextInOutUtils.numRules(tree))} 'Text Out' rules.")
 
 #----------------------------------------------------------------
 # define the FlexToolsModule

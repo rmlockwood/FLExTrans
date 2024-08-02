@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.10.6 - 8/2/24 - Ron Lockwood
+#    Use new function num Rules to get the number of rules.
+#
 #   Version 3.10.5 - 7/12/24 - Ron Lockwood
 #    Added Wildebeest support.
 #
@@ -137,6 +140,18 @@ replacementsMap = {
 '\u200D': '[ZWJ]','\u200E': '[LRM]','\u200F': '[RLM]','\u202A': '[LRE]','\u202B': '[RLE]','\u202C': '[PDF]','\u202D': '[LRO]','\u202E': '[RLO]','\u202F': '[NNBSP]',
 '\u205F': '[MMSP]','\u2060':'[WJ]', '\u2066': '[LRI]','\u2067': '[RLI]','\u2068': '[FSI]','\u2069': '[PDI]'
 }
+
+def numRules(tree):
+    
+    # Get the parent element where the rules are listed.
+    root = tree.getroot()
+    searchReplaceRulesElement = root.find(SEARCH_REPLACE_RULES_ELEM)
+
+    if searchReplaceRulesElement:
+
+        return sum(1 for i, ruleEl in enumerate(searchReplaceRulesElement) if getRuleFromElement(ruleEl).isInactive == False)
+    else:
+        return 0
 
 def applySearchReplaceRules(inputStr, tree):
     
