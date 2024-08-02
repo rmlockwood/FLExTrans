@@ -125,13 +125,13 @@
 import os
 import sys
 
-from System.Windows.Forms import (MessageBox, MessageBoxButtons)
+from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 
-from SIL.LCModel import IMoMorphType
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
+from SIL.LCModel import IMoMorphType # type: ignore
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -1283,8 +1283,14 @@ widgetList = [
    ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
     "The path and name of the file holding\nthe intermediary synthesized file.", GIVE_ERROR, DONT_HIDE],\
 
-   ["Target Affix Gloss List File", "taget_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
+   ["Target Affix Gloss List File", "target_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
     "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+
+   ["Fix Up Synthesis Text Rules File", "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
+    "The file that holds the search/replace rules to fix up the synthesis result text.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+   ["Fix Up Paratext Text Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
+    "The file that holds the search/replace rules to fix up the Paratext inport text.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 

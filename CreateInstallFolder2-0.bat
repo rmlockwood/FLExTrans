@@ -33,11 +33,13 @@ rem Settings tool
 copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\lib
 copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 
-rem flextools files
+rem Add python dependencies
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+echo wildebeest-nlp >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
+
 
 rem core models
 copy CatalogTargetAffixes.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
