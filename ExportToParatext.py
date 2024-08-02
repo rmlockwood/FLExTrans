@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.10.5 - 8/2/24 - Ron Lockwood
+#    Don't need to remove paragraph marks anymore.
+#
 #   Version 3.10.1 - 3/19/24 - Ron Lockwood
 #    Fixes #566. Allow the user to create one text per chapter when importing.
 #
@@ -86,7 +89,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.10.1",
+        FTM_Version    : "3.10.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -298,9 +301,6 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
         
         bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
-        
-        # Remove any section marks
-        bookContents = re.sub('§', '', bookContents)
         
     # Write the ptx file
     f = open(chapSelectObj.bookPath, 'w', encoding='utf-8')
