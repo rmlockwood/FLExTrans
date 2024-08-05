@@ -1226,12 +1226,20 @@ class RuleGenerator:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
                 self.definedAttributes[self.categoryAttribute].add(tag)
 
-        classAttrs = ['SingularClass', 'PluralClass', 'MergedClass']
-        if all(ca in root.attrib for ca in classAttrs):
-            vals = [root.get(ca) for ca in classAttrs]
-            self.MakeBantuMacro(vals[0], vals[1])
-            self.BantuFeature = vals[2]
-            self.BantuParts = (vals[0], vals[1])
+        bantuPair = root.find(".//DisjointFeatureSet[@co_feature_name='number']")
+        if bantuPair:
+            merged = bantuPair.get('disjoint_name')
+            sg, pl = None, None
+            for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
+                val = node.get('co_feature_value')
+                if val == 'sg':
+                    sg = node.get('flex_feature_name')
+                elif val == 'pl':
+                    pl = node.get('flex_feature_name')
+            if merged and sg and pl:
+                self.BantuFeature = merged
+                self.BantuParts = (sg, pl)
+                self.MakeBantuMacro(sg, pl)
 
         ruleCount = 0
         for index, rule in enumerate(root.findall('.//FLExTransRule')):

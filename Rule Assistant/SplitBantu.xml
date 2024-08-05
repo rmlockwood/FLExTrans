@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
 "FLExTransRuleGenerator.dtd">
-<FLExTransRuleGenerator SingularClass="BantuSG" PluralClass="BantuPL" MergedClass="BantuNounClass">
+<FLExTransRuleGenerator>
+	<DisjointFeatureSets>
+		<DisjointFeatureSet co_feature_name="number" language="target" disjoint_name="BantuNounClass">
+			<DisjointFeatureValuePairings>
+				<DisjointFeatureValuePairing co_feature_value="sg" flex_feature_name="BantuSG"/>
+				<DisjointFeatureValuePairing co_feature_value="pl" flex_feature_name="BantuPL"/>
+			</DisjointFeatureValuePairings>
+		</DisjointFeatureSet>
+	</DisjointFeatureSets>
 	<FLExTransRules>
 		<FLExTransRule name="Noun" create_permutations="no" bantu="yes">
 			<Source>
