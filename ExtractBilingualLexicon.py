@@ -317,9 +317,9 @@ document for more details.
 def getFileTime(path):
     try:
         mtime = os.path.getmtime(path)
-        return datetime.fromtimestamp(mtime)
     except OSError:
-        return 0
+        mtime = 0
+    return datetime.fromtimestamp(mtime)
 
 def getDBTime(DB):
     flexDate = DB.GetDateLastModified()
@@ -549,8 +549,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
         outputTree = ET.Element('dictionary')
         ET.SubElement(outputTree, 'alphabet')
-        sdefs = ET.SubElement('sdefs')
-        mainSection = ET.SubElement(tree, 'section', id='main', type='standard')
+        sdefs = ET.SubElement(outputTree, 'sdefs')
+        mainSection = ET.SubElement(outputTree, 'section', id='main', type='standard')
 
         # Get all source and target categories along with inflection classes
         if Utils.get_categories(DB, report, posMap, TargetDB, numCatErrorsToShow=1, addInflectionClasses=True) == True:
@@ -584,15 +584,15 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             if sourceEntry.LexemeFormOA and sourceEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
                sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
 
-               # Get the headword string
-               # If there is not a homograph # at the end, make it 1
-               headWord = Utils.add_one(rawHeadWord)
+                # Get the headword string
+                # If there is not a homograph # at the end, make it 1
+                headWord = Utils.add_one(rawHeadWord)
 
-               # Convert problem chars in the headWord
-               headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+                # Convert problem chars in the headWord
+                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
 
-               if headWord != headWord.strip():
-                   errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
+                if headWord != headWord.strip():
+                    errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
@@ -707,7 +707,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                         else:
                             identityElem = ET.SubElement(entryElem, 'i')
-                            insertWord(leftElem, senseHeadWord, sourceTags)
+                            insertWord(identityElem, senseHeadWord, sourceTags)
 
                         recordsDumpedCount += 1
 
@@ -755,7 +755,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             convertOldEntries(replTree)
             for sdef in replTree.findall('.//sdef'):
                 if 'c' in sdef.attrib:
-                    posMap[sdef.attrib['n']] = posMap.attrib['c']
+                    posMap[sdef.attrib['n']] = sdef.attrib['c']
             for symbol in replTree.findall('.//s'):
                 posMap.setdefault(symbol.attrib['n'], '')
             for section in replTree.findall('.//section'):
@@ -770,9 +770,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         ET.indent(outputTree)
 
         try:
-            with open(fullPathBilingFile, 'w', encoding='utf-8') as fout:
-                fout.write('<?xml version="1.0" encoding="utf-8"?>\n')
-                fout.write('<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
+            with open(fullPathBilingFile, 'wb') as fout:
+                fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
+                fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
                 fout.write(ET.tostring(outputTree, encoding='utf-8'))
         except IOError as err:
             errorList.append((f'There was a problem creating the Bilingual Dictionary Output File: {fullPathBilingFile}. Please check the configuration file setting.', 2))
