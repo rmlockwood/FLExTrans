@@ -787,7 +787,29 @@ class EnglishGermanTripleRanking(BaseTest, unittest.TestCase):
 
 class EnglishGermanTripleRankingPartialDefault(BaseTest, unittest.TestCase):
     RuleFile = 'EnglishGermanTripleRankingPartialDefault.xml'
+    RuleCount = 3
     Data = {
+        'adj': {
+            'case': {
+                'target_affix': [('ADJ_AGR_F_ACC', 'acc'),
+                                 ('ADJ_AGR_M_ACC', 'acc'),
+                                 ('ADJ_AGR_N_ACC', 'acc'),
+                                 ('ADJ_AGR_DAT', 'dat'), ('ADJ_AGR_GEN', 'gen'),
+                                 ('ADJ_AGR', 'nom')],
+            },
+            'gender': {
+                'target_affix': [('ADJ_AGR_F_ACC', 'f'),
+                                 ('ADJ_AGR_M_ACC', 'm'),
+                                 ('ADJ_AGR_N_ACC', 'nt')],
+            },
+            'number': {
+                'target_affix': [('ADJ_AGR_PL', 'pl'), ('ADJ_AGR_F_ACC', 'sg'),
+                                 ('ADJ_AGR_M_ACC', 'sg'),
+                                 ('ADJ_AGR_N_ACC', 'sg'),
+                                 ('ADJ_AGR_DAT', 'sg'), ('ADJ_AGR_GEN', 'sg'),
+                                 ('ADJ_AGR', 'sg')],
+            },
+        },
         'def': {
             'case': {
                 'target_lemma': [('den1.1', 'acc'), ('die1.4', 'dat'),
@@ -892,6 +914,32 @@ class EnglishGermanTripleRankingPartialDefault(BaseTest, unittest.TestCase):
          '^der1.4<def>$ ^Nf<n><PL>$'),
         ('^the<def>/the<def>$ ^thing3<n><nt><GEN_PL>/Nn<n><nt><GEN_PL>$',
          '^der1.4<def>$ ^Nn<n><PL>$'),
+
+        ('^big<adj>/big<adj>$ ^thing1<n><m>/Nm<n><m>$',
+         '^big<adj><ADJ_AGR>$ ^Nm<n>$'),
+        ('^big<adj>/big<adj>$ ^thing2<n><f>/Nf<n><f>$',
+         '^big<adj><ADJ_AGR>$ ^Nf<n>$'),
+        ('^big<adj>/big<adj>$ ^thing3<n><nt>/Nn<n><nt>$',
+         '^big<adj><ADJ_AGR>$ ^Nn<n>$'),
+        ('^big<adj>/big<adj>$ ^thing1<n><m><PL>/Nm<n><m><PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nm<n><PL>$'),
+        ('^big<adj>/big<adj>$ ^thing2<n><f><PL>/Nf<n><f><PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nf<n><PL>$'),
+        ('^big<adj>/big<adj>$ ^thing3<n><nt><PL>/Nn<n><nt><PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nn<n><PL>$'),
+
+        ('^big<adj>/big<adj>$ ^thing1<n><m><ACC>/Nm<n><m><ACC>$',
+         '^big<adj><ADJ_AGR_M_ACC>$ ^Nm<n><ACC_SG>$'),
+        ('^big<adj>/big<adj>$ ^thing2<n><f>/Nf<n><f><ACC>$',
+         '^big<adj><ADJ_AGR_F_ACC>$ ^Nf<n><ACC_SG>$'),
+        ('^big<adj>/big<adj>$ ^thing3<n><nt><ACC>/Nn<n><nt><ACC>$',
+         '^big<adj><ADJ_AGR_N_ACC>$ ^Nn<n><ACC_SG>$'),
+        ('^big<adj>/big<adj>$ ^thing1<n><m><ACC_PL>/Nm<n><m><ACC_PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nm<n><PL>$'),
+        ('^big<adj>/big<adj>$ ^thing2<n><f><ACC_PL>/Nf<n><f><ACC_PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nf<n><PL>$'),
+        ('^big<adj>/big<adj>$ ^thing3<n><nt><ACC_PL>/Nn<n><nt><ACC_PL>$',
+         '^big<adj><ADJ_AGR_PL>$ ^Nn<n><PL>$'),
     ]
 
 if __name__ == '__main__':

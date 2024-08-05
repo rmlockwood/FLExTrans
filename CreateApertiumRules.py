@@ -753,7 +753,6 @@ class RuleGenerator:
 
         affixesByFeatureValue = []
         allAffixes = set()
-        blank = ranked and not isLemma
         for source in sourceList:
             affixesByFeatureValue.append(defaultdict(set))
             if isLemma:
@@ -769,8 +768,6 @@ class RuleGenerator:
             if source.default:
                 affixesByFeatureValue[-1][source.default].add('')
                 allAffixes.add('')
-            else:
-                blank = False
 
         # Fill in default values
         for index, source in enumerate(sourceList):
@@ -807,9 +804,18 @@ class RuleGenerator:
 
             for elem, possibleLemmas, path in locations:
 
-                if ranked and len(possibleLemmas) == 1:
-                    SetVar(elem, list(possibleLemmas)[0])
-                    continue
+                if ranked:
+                    # If there's only one option, output it.
+                    if len(possibleLemmas) == 1:
+                        SetVar(elem, list(possibleLemmas)[0])
+                        continue
+
+                    # If there's 2 options and one is the empty string,
+                    # then assume we want the overt affix and output it.
+                    nonEmpty = [lem for lem in possibleLemmas if lem]
+                    if len(nonEmpty) == 1:
+                        SetVar(elem, nonEmpty[0])
+                        continue
 
                 if not possibleLemmas or not tags:
                     error = macType+'-for-'+'-'.join(path)
