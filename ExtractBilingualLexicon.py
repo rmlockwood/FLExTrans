@@ -363,66 +363,6 @@ def convertOldEntries(tree):
             else:
                 i += 1
 
-# convert from a <e> element that has <leftdata> and <rightdata> under <l> and <r> to one that doesn't have these
-# <b /> elements could be between multiple <leftdata> or <rightdata> elements and should come out something like
-# <l>source<b />word1.1<s n="v"></s></l> same kind of thing for <r>
-def convertToBilingStyleEntry(replStyleEntry):
-
-    newEntry = ET.Element('e')
-    pEl = ET.Element('p')
-    lEl = ET.Element('l')
-    rEl = ET.Element('r')
-
-    newEntry.append(pEl)
-    pEl.append(lEl)
-    pEl.append(rEl)
-
-    newSide = [lEl, rEl]
-
-    replP = replStyleEntry.find('p')
-
-    if replP:
-
-        replL = replP.find('l')
-        replR = replP.find('r')
-
-        if replL and replR:
-
-            # put both <l> and <r> in a list so we can process them the same
-            for i, side in enumerate([replL, replR]):
-
-                firstData = True
-
-                for myElem in side:
-
-                    if myElem.tag == 'b':
-
-                        bEl = ET.Element('b')
-                        newSide[i].append(bEl)
-
-                    elif 'data' in myElem.tag:
-
-                        if firstData:
-
-                            firstData = False
-
-                            if not myElem.text:
-                                continue
-
-                            tokens = myElem.text.split()
-                            newSide[i].text = tokens[0]
-                            for token in tokens[1:]:
-                                b = ET.SubElement(newSide[i])
-                                b.tail = token
-
-                        else:
-                            bEl.tail = myElem.text
-
-                    # other elements (like <s>)
-                    else:
-                        newSide[i].append(myElem)
-    return newEntry
-
 def insertWord(elem, headWord, tags):
 
     pieces = headWord.split()

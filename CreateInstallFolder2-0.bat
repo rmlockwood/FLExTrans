@@ -8,7 +8,7 @@ rd /s /q Install%INSTALL_FOLDER_VERSION%
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
-rem Now do steps to create a zip that has FLExTools and FLExTrans 
+rem Now do steps to create a zip that has FLExTools and FLExTrans
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Tools
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Build
@@ -18,7 +18,7 @@ mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Bui
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\Collections
 mkdir Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Output
 
-rem copy the FlexTrans.config file and force it to be overwritten. 
+rem copy the FlexTrans.config file and force it to be overwritten.
 
 copy FlexTrans-Swedish.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\German-Swedish\Config\FlexTrans.config
 copy FlexTrans.config Install%INSTALL_FOLDER_VERSION%\FLExTrans\WorkProjects\TemplateProject\Config\FlexTrans.config
@@ -34,7 +34,7 @@ copy ComboBox.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLE
 copy SettingsGUI.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools
 
 rem flextools files
-xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans 
+xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt Install%INSTALL_FOLDER_VERSION%\FLExTrans
 echo fuzzywuzzy >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo Levenshtein >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
 echo PyQt5==5.15.9 >> Install%INSTALL_FOLDER_VERSION%\FLExTrans\requirements.txt
@@ -120,7 +120,7 @@ copy OverWriteTestDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Mod
 copy TestbedLogViewer.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 copy TestbedLog.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy Light_green_check.png Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
-copy Red_x.png             Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools       
+copy Red_x.png             Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
 copy Yellow_triangle.png   Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Tools
 
 rem Paratext Import/Export Tools
@@ -128,6 +128,10 @@ copy ImportFromParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\M
 copy ExportToParatext.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
 copy ParatextChapSelectionDlg.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
 copy ChapterSelection.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FLExTools\Modules\FLExTrans\Lib
+
+rem Replacement Editor
+copy ReplacementEditor.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
+copy ReplacementEditorWindow.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans\Lib
 
 rem Other Tools
 copy CleanFiles.py Install%INSTALL_FOLDER_VERSION%\FLExTrans\FlexTools\Modules\FLExTrans
@@ -149,10 +153,10 @@ SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
 7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
 7z a %ADD_ON_ZIP_FILE% ApertiumInterchunkXMLmind
-7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
-7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
-7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
-7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
+7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind
+7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind
+7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind
+7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind
 
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
@@ -187,4 +191,3 @@ if %COMPUTERNAME% == RONS-XPS (
   "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
-
