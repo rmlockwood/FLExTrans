@@ -429,7 +429,11 @@ import FTPaths
 
 CIRCUMFIX_TAG_A = '_cfx_part_a'
 CIRCUMFIX_TAG_B = '_cfx_part_b'
-APERT_RESERVED = r'([\[\]@/\\^$><{}*#+~])'
+# reserved characters listed at here:
+# https://wiki.apertium.org/wiki/Apertium_stream_format
+# But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
+# { and } need to be escaped if we're using apertium-interchunk
+APERT_RESERVED = r'([\[\]@/\\^$><{}])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
