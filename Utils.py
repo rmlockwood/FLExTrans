@@ -464,12 +464,8 @@ reObjAddOne = re.compile('\d$', flags=re.RegexFlag.A) # ASCII-only match
 reTestID = re.compile('test id=".+?"')
 reSpace = re.compile(r'\s')
 rePeriod = re.compile(r'\.')
-reForwardSlash = re.compile(r'/')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
-# the key is to find non-left or right angle brackets for the alphanumeric parts of the symbol
-reSlashInSymbol = re.compile(r'(="[^<>=]+?)(/)([^<>=]+?")')
-reSLASHInSymbol = re.compile(r'(<[^<>]+?)SLASH([^<>]+?>)')
 reDoubleNewline = re.compile(r'\n\n')
 
 NGRAM_SIZE = 5
@@ -496,19 +492,17 @@ morphTypeMap = {
 # Invalid category characters & descriptions & messages & replacements
 catProbData = [['space', 'converted to an underscore', '_', reSpace],
            ['period', 'removed', '', rePeriod],
-           ['slash', 'converted to a vertical bar', '|', reForwardSlash]
 #          ['x char', 'fatal', '']
           ]
 
 lemmaProbData = [['asterisk', 'converted to an underscore', '_', reAsterisk]
             ]
 
-bilingFixSymbProbData = [['slash', 'converted to SLASH', r'\1SLASH\3', reSlashInSymbol]
-                        ]
+bilingFixSymbProbData = []
 
-bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSymbol],
-                           ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
-                          ]
+bilingUnFixSymbProbData = [
+    ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
+]
 
 def convertProblemChars(convertStr, problemDataList):
 
