@@ -433,7 +433,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         return errorList
 
     # Transform the straight list of category abbreviations to a list of tuples
-    catSubDict = []
+    catSubDict = {}
     if catSub:
         if len(catSub) % 2 != 0:
             errorList.append(('Ill-formed property: "CategoryAbbrevSubstitutionList". Expected pairs of categories.', 2))

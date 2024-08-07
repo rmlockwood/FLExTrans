@@ -2082,9 +2082,15 @@ def getHyperLinkStyle(DB):
             Style = None
     else:
         Style = globalStyle
-    
+
     return Style
 
 def unescapeReservedApertChars(inStr):
-    
+
     return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)
+
+def as_string(obj):
+    return ITsString(obj.BestAnalysisAlternative).Text
+
+def as_tag(obj):
+    return underscores(as_string(obj.Abbreviation))
