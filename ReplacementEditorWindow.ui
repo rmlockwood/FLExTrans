@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Replacement Dictinoary Editor</string>
+   <string>Replacement Dictionary Editor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTableWidget" name="tableWidget">
@@ -30,12 +30,22 @@
     </column>
     <column>
      <property name="text">
-      <string>Source POS</string>
+      <string>Part-of-Speech</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Source Tags</string>
+      <string>Classes</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Affixes</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
      </property>
     </column>
     <column>
@@ -45,12 +55,17 @@
     </column>
     <column>
      <property name="text">
-      <string>Target POS</string>
+      <string>Part-of-Speech</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Target Tags</string>
+      <string>Classes</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Affixes</string>
      </property>
     </column>
    </widget>
@@ -83,7 +98,7 @@
    <widget class="QPushButton" name="saveButton">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>330</x>
       <y>360</y>
       <width>80</width>
       <height>24</height>
@@ -91,6 +106,32 @@
     </property>
     <property name="text">
      <string>Save</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="closeButton">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>360</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Close</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="saveLabel">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>360</y>
+      <width>58</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Saved</string>
     </property>
    </widget>
   </widget>

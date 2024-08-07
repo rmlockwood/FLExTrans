@@ -389,24 +389,10 @@ def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap)
 
 def getInflectionInfoSymbols(MSAobject):
 
-    POS = ITsString(MSAobject.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+    POS = Utils.as_string(MSAobject.PartOfSpeechRA.Abbreviation)
     POS = Utils.convertProblemChars(POS, Utils.catProbData)
 
-    symbols = []
-
-    if MSAobject.InflectionClassRA:
-        symbols.append(ITsString(MSAobject.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text)
-
-    if MSAobject.MsFeaturesOA:
-
-        featureAbbrList = []
-
-        # The features might be complex, make a recursive function call to find all leaf features
-        Utils.get_feat_abbr_list(MSAobject.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
-
-        symbols += [abb for grpName, abb in sorted(featureAbbrList)]
-
-    return [POS] + [Utils.underscores(abb) for abb in symbols]
+    return [POS] + Utils.getInflectionTags(MSAobject)
 
 def addFeatureStringsToMap(myDB, myMap):
 

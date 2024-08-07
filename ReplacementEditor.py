@@ -39,17 +39,25 @@ class TableRow:
 
         self.sourceLemma = QTableWidgetItem()
         self.sourcePOS = QTableWidgetItem()
-        self.sourceTags = QTableWidgetItem()
+        self.sourceInfl = QTableWidgetItem()
+        self.sourceAffixes = QTableWidgetItem()
+        self.arrow = QTableWidgetItem()
         self.targetLemma = QTableWidgetItem()
         self.targetPOS = QTableWidgetItem()
-        self.targetTags = QTableWidgetItem()
+        self.targetInfl = QTableWidgetItem()
+        self.targetAffixes = QTableWidgetItem()
 
         self.table.setItem(self.rowNumber, 0, self.sourceLemma)
         self.table.setItem(self.rowNumber, 1, self.sourcePOS)
-        self.table.setItem(self.rowNumber, 2, self.sourceTags)
-        self.table.setItem(self.rowNumber, 3, self.targetLemma)
-        self.table.setItem(self.rowNumber, 4, self.targetPOS)
-        self.table.setItem(self.rowNumber, 5, self.targetTags)
+        self.table.setItem(self.rowNumber, 2, self.sourceInfl)
+        self.table.setItem(self.rowNumber, 3, self.sourceAffixes)
+        self.table.setItem(self.rowNumber, 4, self.arrow)
+        self.table.setItem(self.rowNumber, 5, self.targetLemma)
+        self.table.setItem(self.rowNumber, 6, self.targetPOS)
+        self.table.setItem(self.rowNumber, 7, self.targetInfl)
+        self.table.setItem(self.rowNumber, 8, self.targetAffixes)
+
+        self.arrow.setText('⇒')
 
     def loadData(self, entry):
         llem = ''
@@ -98,26 +106,44 @@ class TableRow:
         self.sourceLemma.setText(llem)
         if len(ltags) > 0:
             self.sourcePOS.setText(ltags[0])
-            self.sourceTags.setText('.'.join(ltags[1:]))
+            infl, aff = self.splitTagList(ltags[1:], self.window.sourceTags)
+            self.sourceInfl.setText(infl)
+            self.sourceAffixes.setText(aff)
         self.targetLemma.setText(rlem)
         if len(rtags) > 0:
             self.targetPOS.setText(rtags[0])
-            self.targetTags.setText('.'.join(rtags[1:]))
+            infl, aff = self.splitTagList(ltags[1:], self.window.targetTags)
+            self.targetInfl.setText(infl)
+            self.targetAffixes.setText(aff)
 
-    def tagList(self, widget):
+    def splitTagList(self, tags, features):
+        infl, aff = [], []
+        for tag in tags:
+            if tag in features:
+                infl.append(tag)
+            else:
+                aff.append(tag)
+        return '.'.join(infl), '.'.join(aff)
+
+    def getSource(self):
+        return (self.sourceLemma.text(), self.sourcePOS.text(),
+                self.sourceInfl.text(), self.sourceAffixes.text())
+
+    def tagList(self, *widgets):
         ret = []
-        if value := widget.text():
-            for piece in value.split('.'):
-                if tag := piece.strip():
-                    ret.append(tag)
+        for widget in widgets:
+            if value := widget.text():
+                for piece in value.split('.'):
+                    if tag := piece.strip():
+                        ret.append(tag)
         return ret
 
     def toXML(self):
         import xml.etree.ElementTree as ET
         llem = self.sourceLemma.text().split() or ['']
-        ltags = self.tagList(self.sourcePOS) + self.tagList(self.sourceTags)
+        ltags = self.tagList(self.sourcePOS, self.sourceInfl, self.sourceAffixes)
         rlem = self.targetLemma.text().split() or ['']
-        rtags = self.tagList(self.targetPOS) + self.tagList(self.targetTags)
+        rtags = self.tagList(self.targetPOS, self.targetInfl, self.targetAffixes)
         entry = ET.Element('e')
         p = ET.SubElement(entry, 'p')
         l = ET.SubElement(p, 'l')
@@ -142,14 +168,18 @@ class TableRow:
     def checkCellUpdate(self, column):
         if column == 0:
             lemma = self.sourceLemma.text()
-            val = self.window.sourceCompletionData.get(lemma)
-            if val is not None:
-                self.sourcePOS.setText(val)
-        elif column == 3:
+            pos, infl = self.window.sourceLemmas.get(lemma, (None, None))
+            if pos is not None:
+                self.sourcePOS.setText(pos)
+            if infl is not None:
+                self.sourceInfl.setText(infl)
+        elif column == 5:
             lemma = self.targetLemma.text()
-            val = self.window.targetCompletionData.get(lemma)
-            if val is not None:
-                self.targetPOS.setText(val)
+            pos, infl = self.window.targetLemmas.get(lemma, (None, None))
+            if pos is not None:
+                self.targetPOS.setText(pos)
+            if infl is not None:
+                self.targetInfl.setText(infl)
 
 class SegmentedCompleter(QCompleter):
     def splitPath(self, path):
@@ -218,22 +248,26 @@ class Main(QMainWindow):
         self.unsaved = False
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowIcon()
         self.rows = []
 
-        self.sourceCompletionData = self.gatherCompletionData(sourceDB)
-        self.targetCompletionData = self.gatherCompletionData(targetDB)
+        self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB)
+        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB)
         self.sourcePOS = self.gatherPOSTags(sourceDB)
         self.targetPOS = self.gatherPOSTags(targetDB)
         self.sourceTags = self.gatherTags(sourceDB)
         self.targetTags = self.gatherTags(targetDB)
 
         delegate_data = [
-            (sorted(self.sourceCompletionData.keys()), False),
+            (sorted(self.sourceLemmas.keys()), False),
             (self.sourcePOS, False),
-            (self.sourceTags, True),
-            (sorted(self.targetCompletionData.keys()), False),
+            (sorted(self.sourceTags), True),
+            (sorted(self.sourceAffixes), True),
+            ([], False),
+            (sorted(self.targetLemmas.keys()), False),
             (self.targetPOS, False),
-            (self.targetTags, True),
+            (sorted(self.targetTags), True),
+            (sorted(self.targetAffixes), True),
         ]
         self.delegates = [CompleterDelegate(*args) for args in delegate_data]
         for index, delegate in enumerate(self.delegates):
@@ -245,6 +279,13 @@ class Main(QMainWindow):
         self.ui.addButton.clicked.connect(self.addRow)
         self.ui.deleteButton.clicked.connect(self.deleteSelectedRows)
         self.ui.saveButton.clicked.connect(self.save)
+        self.ui.closeButton.clicked.connect(self.close)
+
+    def setWindowIcon(self):
+        import QtGui
+        import os
+        import FTPaths
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
     def loadEntries(self):
         from xml.etree import ElementTree as ET
@@ -270,9 +311,10 @@ class Main(QMainWindow):
             self.deleteRow(lastRow)
 
     def gatherCompletionData(self, DB):
-        from SIL.LCModel import IMoStemMsa
+        from SIL.LCModel import IMoStemMsa, IMoInflAffMsa
         from SIL.LCModel.Core.KernelInterfaces import ITsString
-        dct = {}
+        lemmas = {}
+        affixes = set()
         for entry in DB.LexiconAllEntries():
             headWord = ITsString(entry.HeadWord).Text
             headWord = Utils.add_one(headWord)
@@ -280,15 +322,17 @@ class Main(QMainWindow):
             for i, sense in enumerate(entry.SensesOS, 1):
                 if not sense.MorphoSyntaxAnalysisRA:
                     continue
-                if sense.MorphoSyntaxAnalysisRA.ClassName != 'MoStemMsa':
-                    continue
-                msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
-                if not msa.PartOfSpeechRA:
-                    continue
-                pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-                pos = Utils.convertProblemChars(pos, Utils.catProbData)
-                dct[f'{headWord}.{i}'] = pos
-        return dct
+                if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                    msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
+                    if not msa.PartOfSpeechRA:
+                        continue
+                    pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                    pos = Utils.convertProblemChars(pos, Utils.catProbData)
+                    tags = Utils.getInflectionTags(msa)
+                    lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
+                elif sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
+        return lemmas, affixes
 
     def gatherPOSTags(self, DB):
         from Utils import get_categories
@@ -299,10 +343,9 @@ class Main(QMainWindow):
 
     def gatherTags(self, DB):
         from SIL.LCModel import IFsClosedFeatureRepository
-        tags = []
+        tags = set()
         for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
-            tags += [Utils.as_tag(val) for val in feature.ValuesOC]
-        tags.sort()
+            tags.update(Utils.as_tag(val) for val in feature.ValuesOC)
         return tags
 
     def addRow(self):
@@ -327,9 +370,32 @@ class Main(QMainWindow):
         if row >= len(self.rows):
             return
         self.unsaved = True
+        self.saveLabel.text('There are unsaved changes')
         self.rows[row].checkCellUpdate(column)
 
+    def checkTable(self):
+        from collections import defaultdict
+        duplicateSource = defaultdict(list)
+        noAffixes = []
+        for rowNumber, row in enumerate(self.rows, 1):
+            src = row.getSource()
+            duplicateSource[src] = rowNumber
+            if not src[3]:
+                noAffixes.append(rowNumber)
+
+        dupPairs = [val for val in duplicateSource.values() if len(val) > 1]
+        message = []
+        if dupPairs:
+            message.append(f'The following sets of rows are identical on the source side and only the first one will have any effect:\n' + '\n'.join(f'- ' + ', '.join(map(str(pair)) for pair in dupPairs)))
+        if noAffixes:
+            message.append(f'The following rows have no affixes and thus are redundant with the links created by Link Senses: ' + ', '.join(map(str(noAffixes))))
+
+        if message:
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.warning(self, 'Useless Lines', '\n\n'.join(message))
+
     def save(self):
+        self.checkTable()
         from xml.etree import ElementTree as ET
         dix = ET.Element('repldictionary')
         section = ET.SubElement(dix, 'section', id='append', type='standard')
@@ -340,6 +406,7 @@ class Main(QMainWindow):
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "repldix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
+        self.ui.saveLabel.text('Replacement file saved')
         self.unsaved = False
 
     def closeEvent(self, event):
