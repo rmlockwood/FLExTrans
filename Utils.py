@@ -429,7 +429,7 @@ import FTPaths
 
 CIRCUMFIX_TAG_A = '_cfx_part_a'
 CIRCUMFIX_TAG_B = '_cfx_part_b'
-APERT_RESERVED = r'([\[\]@/\\^$><])'
+APERT_RESERVED = r'([\[\]@/\\^$><{}*#+~])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
