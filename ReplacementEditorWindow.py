@@ -53,7 +53,7 @@ class Ui_MainWindow(object):
         self.closeButton.setGeometry(QtCore.QRect(430, 360, 80, 24))
         self.closeButton.setObjectName("closeButton")
         self.saveLabel = QtWidgets.QLabel(self.centralwidget)
-        self.saveLabel.setGeometry(QtCore.QRect(540, 360, 58, 16))
+        self.saveLabel.setGeometry(QtCore.QRect(540, 360, 231, 16))
         self.saveLabel.setObjectName("saveLabel")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
