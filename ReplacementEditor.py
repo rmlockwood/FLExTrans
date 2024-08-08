@@ -218,9 +218,12 @@ class SegmentedCompleter(QCompleter):
         return left + middle + right
 
 class CompleterDelegate(QItemDelegate):
-    def __init__(self, values, use_segmented):
+    def __init__(self, values, use_segmented, composed):
         super().__init__()
         self.values = values
+        if composed:
+            from unicodedata import normalize
+            self.values = [normalize('NFC', val) for val in self.values]
         self.use_segmented = use_segmented
 
     def createEditor(self, *args, **kwargs):
@@ -235,7 +238,7 @@ class CompleterDelegate(QItemDelegate):
         return ret
 
 class Main(QMainWindow):
-    def __init__(self, replaceFile, sourceDB, targetDB, report):
+    def __init__(self, replaceFile, sourceDB, targetDB, report, composed):
         super().__init__()
         self.replaceFile = replaceFile
         self.sourceDB = sourceDB
@@ -266,7 +269,7 @@ class Main(QMainWindow):
             (sorted(self.targetTags), True),
             (sorted(self.targetAffixes), True),
         ]
-        self.delegates = [CompleterDelegate(*args) for args in delegate_data]
+        self.delegates = [CompleterDelegate(*args, composed) for args in delegate_data]
         for index, delegate in enumerate(self.delegates):
             self.ui.tableWidget.setItemDelegateForColumn(index, delegate)
 
@@ -428,15 +431,20 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
-    replaceFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
+    replaceFile = ReadConfig.getConfigVal(
+        configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replaceFile:
         report.Error(f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.')
         return
 
     targetDB = Utils.openTargetProject(configMap, report)
 
+    composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS,
+                                       report)
+    composed = (composed == 'y')
+
     app = QApplication(sys.argv)
-    window = Main(replaceFile, DB, targetDB, report)
+    window = Main(replaceFile, DB, targetDB, report, composed)
     window.show()
     app.exec_()
 
