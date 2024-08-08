@@ -2109,6 +2109,6 @@ def getInflectionTags(MSAobject):
         # The features might be complex, make a recursive function call to find all leaf features
         get_feat_abbr_list(MSAobject.MsFeaturesOA.FeatureSpecsOC, featureAbbrList)
 
-        symbols += [Utils.underscores(abb) for grpName, abb in sorted(featureAbbrList)]
+        symbols += [underscores(abb) for grpName, abb in sorted(featureAbbrList)]
 
     return symbols

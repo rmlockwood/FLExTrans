@@ -201,7 +201,6 @@ class SegmentedCompleter(QCompleter):
             oldMiddle += left
             left = ''
         right = text[pos:]
-        print(right)
         if '.' in right:
             splitPos = right.find('.')
             oldMiddle += right[:splitPos]
@@ -218,10 +217,6 @@ class SegmentedCompleter(QCompleter):
         self.posShouldBe = len(left + middle)
         return left + middle + right
 
-    def complete(self, *args, **kwargs):
-        print('complete!')
-        super().complete(*args, **kwargs)
-
 class CompleterDelegate(QItemDelegate):
     def __init__(self, values, use_segmented):
         super().__init__()
@@ -234,6 +229,8 @@ class CompleterDelegate(QItemDelegate):
             comp = SegmentedCompleter(self.values, ret)
         else:
             comp = QCompleter(self.values)
+        from PyQt5.QtCore import Qt
+        comp.setCaseSensitivity(Qt.CaseInsensitive)
         ret.setCompleter(comp)
         return ret
 
@@ -282,10 +279,10 @@ class Main(QMainWindow):
         self.ui.closeButton.clicked.connect(self.close)
 
     def setWindowIcon(self):
-        import QtGui
+        from PyQt5 import QtGui
         import os
         import FTPaths
-        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+        super().setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
     def loadEntries(self):
         from xml.etree import ElementTree as ET
@@ -370,7 +367,7 @@ class Main(QMainWindow):
         if row >= len(self.rows):
             return
         self.unsaved = True
-        self.saveLabel.text('There are unsaved changes')
+        self.ui.saveLabel.setText('There are unsaved changes')
         self.rows[row].checkCellUpdate(column)
 
     def checkTable(self):
@@ -379,16 +376,16 @@ class Main(QMainWindow):
         noAffixes = []
         for rowNumber, row in enumerate(self.rows, 1):
             src = row.getSource()
-            duplicateSource[src] = rowNumber
+            duplicateSource[src].append(rowNumber)
             if not src[3]:
                 noAffixes.append(rowNumber)
 
         dupPairs = [val for val in duplicateSource.values() if len(val) > 1]
         message = []
         if dupPairs:
-            message.append(f'The following sets of rows are identical on the source side and only the first one will have any effect:\n' + '\n'.join(f'- ' + ', '.join(map(str(pair)) for pair in dupPairs)))
+            message.append(f'The following sets of rows are identical on the source side and only the first one will have any effect:\n' + '\n'.join(f'- ' + ', '.join(map(str, pair)) for pair in dupPairs))
         if noAffixes:
-            message.append(f'The following rows have no affixes and thus are redundant with the links created by Link Senses: ' + ', '.join(map(str(noAffixes))))
+            message.append(f'The following rows have no affixes and thus are redundant with the links created by Link Senses: ' + ', '.join(map(str, noAffixes)))
 
         if message:
             from PyQt5.QtWidgets import QMessageBox
@@ -406,7 +403,7 @@ class Main(QMainWindow):
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "repldix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
-        self.ui.saveLabel.text('Replacement file saved')
+        self.ui.saveLabel.setText('Replacement file saved')
         self.unsaved = False
 
     def closeEvent(self, event):
