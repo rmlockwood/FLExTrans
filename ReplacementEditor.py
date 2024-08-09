@@ -459,14 +459,14 @@ class Main(QMainWindow):
 
     def save(self):
         self.checkTable()
-        dix = ET.Element('repldictionary')
+        dix = ET.Element('dictionary')
         section = ET.SubElement(dix, 'section', id='append', type='standard')
         for row in self.rows:
             section.append(row.toXML())
         ET.indent(dix)
         with open(self.replaceFile, 'wb') as fout:
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
-            fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "repldix.dtd">\n')
+            fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
         self.ui.saveLabel.setText('Replacement file saved')
         self.unsaved = False
