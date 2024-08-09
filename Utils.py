@@ -2313,7 +2313,7 @@ def getAllInflectableFeatures(DB):
                 for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
                     ret[abbr].add(as_string(feat.Name))
             elif infl.ClassName == 'FsClosedFeature':
-                ret[abbr].add(as_string(feat.Name))
+                ret[abbr].add(as_string(infl.Name))
     return ret
 
 def getPossibleFeatureValues(DB, featureName):
