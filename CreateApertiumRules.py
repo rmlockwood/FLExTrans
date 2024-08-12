@@ -160,6 +160,7 @@ class RuleGenerator:
                     target: bool = True) -> set[str]:
         '''Convert POS label `category` to a set containing `category`
         and all parent POS labels.'''
+
         ls = [category]
         if source:
             ls += self.sourceHierarchy.get(category, [])
@@ -500,8 +501,11 @@ class RuleGenerator:
         self.attributeMacros[(srcSpec, trgSpec)] = ret
         return ret
 
-    def CreateAttributeMacro(self, srcSpec: FeatureSpec, trgSpec: FeatureSpec) -> bool:
+    def CreateAttributeMacro(self, srcSpec: FeatureSpec, trgSpec: FeatureSpec) -> Optional[MacroSpec]:
+        '''Create a macro for converting a single feature or affix to another
+        single feature or affix.'''
 
+        # Check if we're dealing with Bantu noun class
         if srcSpec.category == 'n' and srcSpec.label == self.BantuFeature:
             bantu = True
             src = set([(x, x) for x in self.BantuValues])
@@ -511,6 +515,8 @@ class RuleGenerator:
         trg = self.GetTags(trgSpec, source=False)
 
         def FindTag(srcFeat, fallback=None):
+            '''Find the appropriate target tag for the source feature.'''
+
             nonlocal trg
             possible = [tag for tag, feat in trg if feat == srcFeat]
             if len(possible) == 1:
@@ -528,6 +534,9 @@ class RuleGenerator:
                 return possible
 
         def MakeLetValue(let, value):
+            '''Create a <lit> or <lit-tag> element containing `value` and
+            append it to `let`.'''
+
             if not value:
                 ET.SubElement(let, 'lit', v='')
             elif isinstance(value, str):
@@ -537,6 +546,10 @@ class RuleGenerator:
                 ET.SubElement(let, 'lit-tag', v=value[0])
 
         def MakeWhenClause(element, varid, value):
+            '''Create a <when> block which sets variable `varid` to `value`
+            and return the <equal> element so the caller can create the
+            appropriate test.'''
+
             when = ET.SubElement(element, 'when')
             test = ET.SubElement(when, 'test')
             eq = ET.SubElement(test, 'equal')
@@ -546,6 +559,14 @@ class RuleGenerator:
             return eq
 
         if not bantu and src == trg:
+            # If the source and target affixes are all identical, then we
+            # can just copy the affix from one word to the other.
+            # Unless we're dealing with Bantu noun class, in which case
+            # we need to actually call the Bantu macro, which is handled
+            # below.
+            # Thus, in this branch, the only thing we might need to do is
+            # check if the default value is relevant and act on it.
+
             if not srcSpec.default:
                 return None
 
@@ -576,6 +597,7 @@ class RuleGenerator:
 
             return MacroSpec(macid, varid, [srcSpec.category])
 
+        # Create the macro
         macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
         varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
         self.AddVariable(varid, f'Used by macro {macid}')
@@ -603,6 +625,7 @@ class RuleGenerator:
         else:
             choose = ET.SubElement(macro, 'choose')
             for srcTag, srcFeat in src:
+                # Default values are handled in the <otherwise> block.
                 if srcFeat == srcSpec.default:
                     continue
 
@@ -616,6 +639,7 @@ class RuleGenerator:
 
             otherwise = ET.SubElement(choose, 'otherwise')
 
+        # Fill the <otherwise> block, which handles the default value.
         olet = ET.SubElement(otherwise, 'let')
         ET.SubElement(olet, 'var', n=varid)
         if srcSpec.default:
@@ -626,6 +650,9 @@ class RuleGenerator:
         return MacroSpec(macid, varid, [srcSpec.category])
 
     def MakeBantuMacro(self, singularFeature: str, pluralFeature: str) -> None:
+        '''Create the macro which extracts the Bantu noun class from an
+        input noun.'''
+
         self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
         self.BantuVariable = self.GetAvailableID('v_Bantu_noun_class_from_n')
 
@@ -650,6 +677,7 @@ class RuleGenerator:
         plStem = self.AddSingleAttribute('a_n_plural_class_feature',
                                          plStemValues, reject=sgStemValues)
 
+        # Create the macro.
         self.AddVariable(self.BantuVariable)
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=self.BantuMacro, npar='1')
@@ -736,6 +764,9 @@ class RuleGenerator:
             macro.append(ET.Comment(f'Item {n} is part-of-speech {cat}.'))
 
         def SetVar(parent, value):
+            '''Create a <let> statement under `parent` that sets the return
+            variable to `value`.'''
+
             nonlocal varid, isLemma
             let = ET.SubElement(parent, 'let')
             ET.SubElement(let, 'var', n=varid)
@@ -745,12 +776,14 @@ class RuleGenerator:
         macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
         SetVar(macro, '')
 
+        # If all sources have a ranking, then we should go through them in order.
         ranked = False
         sourceList = sources
         if all(s.ranking for s in sources):
             ranked = True
             sourceList = sorted(sources, key=lambda s: s.ranking)
 
+        # Get a list of all possible affixes for each value of each feature.
         affixesByFeatureValue = []
         allAffixes = set()
         for source in sourceList:
@@ -769,13 +802,21 @@ class RuleGenerator:
                 affixesByFeatureValue[-1][source.default].add('')
                 allAffixes.add('')
 
-        # Fill in default values
+        # Fill in default values. Any affix which does not have a value
+        # for a particular feature is treated as having the default value
+        # for that feature (if there is one).
         for index, source in enumerate(sourceList):
             if source.default:
                 missing = allAffixes
                 for s in affixesByFeatureValue[index].values():
                     missing = missing - s
                 affixesByFeatureValue[index][source.default].update(missing)
+
+        # At each step through the loop, we maintain a list of all the edges
+        # of the conditional statement we're building, where each item in
+        # the list is a tuple of an XML element, the set of affixes/lemmas
+        # which are still possible on this branch, and the sequence of values
+        # that got us here (for generating comments).
 
         labelSeq = [s.label for s in sourceList]
         locations = [(macro, allAffixes, [])]
@@ -794,6 +835,8 @@ class RuleGenerator:
 
             newLocations = []
 
+            # If there's a non-empty value, we don't need to build a
+            # conditional and can just skip to the next feature.
             if source.value:
                 for elem, possibleLemmas, path in locations:
                     newLocations.append(
@@ -802,8 +845,11 @@ class RuleGenerator:
                 locations = newLocations
                 continue
 
+            # For each branch of the conditional...
             for elem, possibleLemmas, path in locations:
 
+                # If the features are ranked, check whether we're on a branch
+                # that finishes early.
                 if ranked:
                     # If there's only one option, output it.
                     if len(possibleLemmas) == 1:
@@ -817,6 +863,9 @@ class RuleGenerator:
                         SetVar(elem, nonEmpty[0])
                         continue
 
+                # If the set of possible values below this point would be
+                # empty or if the next step of the conditional would have no
+                # branches, then output an error value.
                 if not possibleLemmas or not tags:
                     error = macType+'-for-'+'-'.join(path)
                     if not ranked or not possibleLemmas:
@@ -827,10 +876,14 @@ class RuleGenerator:
                         SetVar(elem, list(possibleLemmas)[0])
                     continue
 
+                # Generate the label for the comments.
                 given = ''
                 if path:
                     specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
                     given = f' given {", ".join(specs)}'
+
+                # If the default value is the only possible value, then
+                # don't generate a conditional for this step.
                 if len(tagsByValue) == 1 and source.default in tagsByValue:
                     otherwise = elem
                     elem.append(ET.Comment(f'There is only one possible value for {source.label} here: {source.default}.'))
@@ -870,6 +923,8 @@ class RuleGenerator:
 
             locations = newLocations
 
+        # After we've gone through all the features, assign the final values
+        # to the ends of the branches.
         for elem, possibleLemmas, path in locations:
             error = f'{macType}-for-' + '-'.join(path)
             if possibleLemmas is None:
@@ -1021,15 +1076,21 @@ class RuleGenerator:
             wid = word.get('id')
             if skip and wid in skip:
                 continue
+
+            # Don't append the <out> yet, because we want any <call-macro>s
+            # to come before it.
             outEl = ET.Element('out')
             index += 1
             if index > 0:
+                # Insert a space if this isn't the first word we're outputting.
                 ET.SubElement(outEl, 'b')
             lu = ET.SubElement(outEl, 'lu')
             pos = wordLocation.get(wid)
             if pos is None:
                 cat = word.get('category')
                 if not cat:
+                    # We don't have enough information to generate this word,
+                    # so report an error and give up.
                     self.report.Error(f'Missing category for inserted word {wid} in rule {ruleName}.')
                     self.GetSection('section-rules').remove(ruleEl)
                     return False
@@ -1076,6 +1137,7 @@ class RuleGenerator:
                 self.GetSection('section-rules').reomve(ruleEl)
                 return False
 
+            # Capitalize the word based on its position in the rule.
             # TODO: check that it's not a proper noun
             if index == 0 and (pos != '1' or shouldUseLemmaMacro):
                 lemCase = ET.SubElement(lu, 'get-case-from', pos='1')
@@ -1088,6 +1150,7 @@ class RuleGenerator:
             else:
                 lemCase = lu
 
+            # Insert the lemma.
             if shouldUseLemmaMacro:
                 spec = self.GetMultiFeatureMacro(cat, True, lemmaTags)
                 actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.'))
@@ -1099,6 +1162,7 @@ class RuleGenerator:
             else:
                 ET.SubElement(lemCase, 'clip', pos=pos, side='tl', part='lem')
 
+            # Insert the part-of-speech tag.
             if pos is None:
                 ET.SubElement(lu, 'lit-tag', v=cat)
             else:
@@ -1106,7 +1170,8 @@ class RuleGenerator:
                     lu, 'clip', pos=pos, side='tl', part=self.categoryAttribute,
                 )
 
-            # Force prefixes to be before suffixes
+            # Collect the affixes, splitting them into prefixes and suffixes
+            # to ensure they come out in the right order.
             prefixFeatures = []
             suffixFeatures = []
             prefixes = []
@@ -1130,9 +1195,14 @@ class RuleGenerator:
                 else:
                     suffixes.append(features)
 
+            # For each affix...
             for affix in prefixes + suffixes:
 
+                # If it has multiple features in it, then we need to use
+                # `GetMultiFeatureMacro()`.
                 if len(affix) > 1:
+                    # Gather the relevant information about each feature,
+                    # such as what position to clip it from.
                     specList = []
                     catLoc = {}
                     for label, match, value, tgtDefault, ranking in affix:
@@ -1153,6 +1223,8 @@ class RuleGenerator:
                                                     isSource=isSource,
                                                     ranking=ranking))
                         catLoc[srcCat] = apos
+
+                    # Get the macro and variable name and call the macro.
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
                     actionEl.append(ET.Comment(f'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.'))
                     callmac = ET.SubElement(actionEl, 'call-macro',
@@ -1163,8 +1235,10 @@ class RuleGenerator:
                     ET.SubElement(lu, 'var', n=spec.varid)
                     continue
 
+                # There's only one feature, so we can use `GetAttributeMacro()`.
                 label, match, value, tgtDefault, ranking = affix[0]
 
+                # If the value has been set, then just insert that tag.
                 if value:
                     tags = self.GetTags(FeatureSpec(wordCats[pos], label, True,
                                                     value=value))
@@ -1176,6 +1250,7 @@ class RuleGenerator:
                         return False
                     continue
 
+                # Gather the information about this feature.
                 apos, isAffix, srcDefault, isSource = featureSources.get(
                     (label, match), (pos, True, None, False))
                 if apos is None:
@@ -1183,6 +1258,8 @@ class RuleGenerator:
                     self.GetSection('section-rules').reomve(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
+
+                # Check whether we actually need a macro at all.
                 samePos = (apos == pos)
                 sameTags = self.SameAffixTags(wordCats[apos], label)
                 isBantu = (label == self.BantuFeature)
@@ -1191,6 +1268,8 @@ class RuleGenerator:
                         FeatureSpec(wordCats[apos], label, isAffix,
                                     default=default, isSource=isSource),
                         FeatureSpec(cat, label, True))
+
+                    # We have a macro spec, so we should insert a <call-macro>.
                     if spec is not None:
                         actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {spec.varid}.'))
                         callmac = ET.SubElement(actionEl, 'call-macro',
@@ -1198,11 +1277,17 @@ class RuleGenerator:
                         ET.SubElement(callmac, 'with-param', pos=apos)
                         ET.SubElement(lu, 'var', n=spec.varid)
                         continue
+
+                # We didn't insert a macro, which means it should be safe
+                # to just copy the affix from whichever source word.
                 attr = self.EnsureAttribute(FeatureSpec(cat, label, True))
                 ET.SubElement(lu, 'clip', pos=apos, side='tl', part=attr)
 
+            # We're done adding macro calls, so now we can append the <out>
+            # for this word to the rule.
             actionEl.append(outEl)
 
+        # Nothing went wrong, so we have actually added a rule.
         return True
 
     def ProcessAssistantFile(self, fileName: str,
@@ -1211,9 +1296,11 @@ class RuleGenerator:
         transfer rules. If `ruleNumber` is specified, only generate the rule
         at that index.'''
 
+        # Read the input file.
         tree = ET.parse(fileName)
         root = tree.getroot()
 
+        # Set up the output file.
         if self.root is None:
             self.CreateTree()
 
@@ -1232,6 +1319,10 @@ class RuleGenerator:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
                 self.definedAttributes[self.categoryAttribute].add(tag)
 
+        # Check if we need a Bantu macro.
+        # Perhaps in future we can generalize this to work with whatever
+        # disjoint features the UI gives us, but for now we're special-casing
+        # the logic.
         bantuPair = root.find(".//DisjointFeatureSet[@co_feature_name='number']")
         if bantuPair:
             merged = bantuPair.get('disjoint_name')
@@ -1247,11 +1338,17 @@ class RuleGenerator:
                 self.BantuParts = (sg, pl)
                 self.MakeBantuMacro(sg, pl)
 
+        # Iterate over the rules in the file.
         ruleCount = 0
         for index, rule in enumerate(root.findall('.//FLExTransRule')):
+            # If we were passed a particular rule number, skip all others.
             if ruleNumber is not None and index != ruleNumber:
                 continue
+
             if rule.get('create_permutations', 'no') == 'yes':
+                # To create permutations, get a list of all the IDs of words
+                # that aren't the head word and iterate over all possible
+                # subsets of them.
                 deletable = []
                 for word in rule.findall('.//Source//Word'):
                     wid = word.get('id')
@@ -1295,12 +1392,6 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
     except:
         report.Error("No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool")
         return -1
-
-    # Check to make sure the attributes and features listed in the files match
-    # TODO: Change this to a better check function - currently does not do anything
-    # if CheckAssistantFile(report, apertiumTree, assistantTree):
-    #     report.Error("Please run the Set Up Transfer Rule Categories and Attributes tool")
-    #     return -1
 
     generator = RuleGenerator(sourceDB, targetDB, report, configMap)
 
