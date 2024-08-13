@@ -23,7 +23,7 @@ import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from typing import Optional
-from itertools import chain, combinations, permutations
+from itertools import combinations, permutations
 import dataclasses
 
 @dataclasses.dataclass(frozen=True)
@@ -1087,6 +1087,8 @@ class RuleGenerator:
             lu = ET.SubElement(outEl, 'lu')
             pos = wordLocation.get(wid)
             if pos is None:
+                # This word does not correspond to any of the input words,
+                # so we're generating it from scratch.
                 cat = word.get('category')
                 if not cat:
                     # We don't have enough information to generate this word,
@@ -1320,6 +1322,8 @@ class RuleGenerator:
                 self.definedAttributes[self.categoryAttribute].add(tag)
 
         # Check if we need a Bantu macro.
+        # This will only use a feature which is split by number and has
+        # both singular and plural values.
         # Perhaps in future we can generalize this to work with whatever
         # disjoint features the UI gives us, but for now we're special-casing
         # the logic.
@@ -1357,9 +1361,10 @@ class RuleGenerator:
                     elif rule.find(f".//Target//Word[@id='{wid}'][@head='yes']"):
                         continue
                     deletable.append(wid)
-                for skip in chain.from_iterable(combinations(deletable, length) for length in range(len(deletable))):
-                    if self.ProcessRule(rule, skip=set(skip)):
-                        ruleCount += 1
+                for length in range(len(deletable)):
+                    for skip in combinations(deletable, length):
+                        if self.ProcessRule(rule, skip=set(skip)):
+                            ruleCount += 1
             else:
                 if self.ProcessRule(rule):
                     ruleCount += 1
