@@ -745,6 +745,8 @@ class RuleGenerator:
         # TODO: most of the variable names in this function are from when
         # it was solely for lemmas. They should probably be updated.
 
+        # Our lookup key is the set of categories of all the words that
+        # we're taking features from.
         catSequence = sorted(set([s.category for s in sources if not s.value]))
         lookupKey = (destCategory, tuple(catSequence))
         if lookupKey in self.lemmaMacros:
@@ -783,11 +785,11 @@ class RuleGenerator:
             ranked = True
             sourceList = sorted(sources, key=lambda s: s.ranking)
 
-        # Get a list of all possible affixes for each value of each feature.
+        # Get a list of all possible output affixes or lemma for each value
+        # of each feature.
         affixesByFeatureValue = []
         allAffixes = set()
         for source in sourceList:
-            affixesByFeatureValue.append(defaultdict(set))
             if isLemma:
                 affixes = Utils.getLemmasForFeature(
                     self.targetDB, self.report, self.configMap,
@@ -795,16 +797,24 @@ class RuleGenerator:
             else:
                 affixes = self.GetTags(FeatureSpec(destCategory, source.label,
                                                    isAffix=True))
+
+            featureValues = defaultdict(set)
             for affix, value in affixes:
-                affixesByFeatureValue[-1][value].add(affix)
+                featureValues[value].add(affix)
                 allAffixes.add(affix)
-            if source.default:
-                affixesByFeatureValue[-1][source.default].add('')
+            if source.default and not isLemma:
+                # If we're generating an affix, then the default can
+                # correspond to outputting now tag at all.
+                featureValues[source.default].add('')
                 allAffixes.add('')
+            affixesByFeatureValue.append(featureValues)
 
         # Fill in default values. Any affix which does not have a value
         # for a particular feature is treated as having the default value
         # for that feature (if there is one).
+        # For example, if we have affixes PL, Masc, Fem, Neut, and only
+        # the first one is marked for number, then we want to add the other
+        # 3 to the set of singular affixes.
         for index, source in enumerate(sourceList):
             if source.default:
                 missing = allAffixes
@@ -817,9 +827,9 @@ class RuleGenerator:
         # the list is a tuple of an XML element, the set of affixes/lemmas
         # which are still possible on this branch, and the sequence of values
         # that got us here (for generating comments).
+        locations = [(macro, allAffixes, [])]
 
         labelSeq = [s.label for s in sourceList]
-        locations = [(macro, allAffixes, [])]
         for index, source in enumerate(sourceList):
             if source.category in catSequence:
                 clipPos = str(catSequence.index(source.category)+1)
@@ -827,6 +837,9 @@ class RuleGenerator:
                 # anything not in catSequence should have non-empty value,
                 # so we shouldn't ever insert clipPos anywhere
                 clipPos = 'ERROR'
+
+            # Get the possible input tags (which may be on the source
+            # side of the target side).
             tags = self.GetTags(source, source=(source.isAffix))
             tagsByValue = defaultdict(set)
             for tag, value in tags:
@@ -835,7 +848,7 @@ class RuleGenerator:
 
             newLocations = []
 
-            # If there's a non-empty value, we don't need to build a
+            # If there's a non-empty (XML) value, we don't need to build a
             # conditional and can just skip to the next feature.
             if source.value:
                 for elem, possibleLemmas, path in locations:
@@ -917,10 +930,12 @@ class RuleGenerator:
                     otherwise = ET.SubElement(choose, 'otherwise')
 
                 if source.default:
+                    otherwise.append(ET.Comment(f'Set {varid} based on {source.label} = {source.default}.'))
                     newLocations.append((otherwise, possibleLemmas & valueDict[source.default], path+[source.default]))
                 else:
                     SetVar(otherwise, f'no-{macType}-for-'+'-'.join(path))
 
+            # Swap locations to be the next level of nesting.
             locations = newLocations
 
         # After we've gone through all the features, assign the final values
@@ -1174,8 +1189,6 @@ class RuleGenerator:
 
             # Collect the affixes, splitting them into prefixes and suffixes
             # to ensure they come out in the right order.
-            prefixFeatures = []
-            suffixFeatures = []
             prefixes = []
             suffixes = []
             for affix in word.findall('.//Affix'):
@@ -1237,7 +1250,12 @@ class RuleGenerator:
                     ET.SubElement(lu, 'var', n=spec.varid)
                     continue
 
-                # There's only one feature, so we can use `GetAttributeMacro()`.
+                # There's only one feature, so we can use `GetAttributeMacro()`,
+                # which will handle Bantu noun class (since we currently assume
+                # that an affix marking that will only mark that), and will
+                # also check whether this is a case that is simple enough
+                # that we don't actually need a macro at all but can instead
+                # just copy the affix directly from the input word.
                 label, match, value, tgtDefault, ranking = affix[0]
 
                 # If the value has been set, then just insert that tag.
