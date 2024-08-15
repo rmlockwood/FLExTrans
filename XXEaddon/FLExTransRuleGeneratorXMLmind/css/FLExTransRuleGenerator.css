@@ -1,0 +1,212 @@
+/* CSS for formating FLExTransRuleGenerator in XXE */ 
+
+@property-value category-color() #F5DEB3; /* wheat */
+@property-value feature-color() #F09FF0; /* violet */
+@property-value id-color() #BFD0FF; /* paleblue */
+@property-value name-color() #AEC6CF; /* pastel blue */
+@property-value ranking-color() #AFEEEE; /* paleturquoise */
+@property-value name-color() #AEC6BF; /* pastel blue */
+@property-value description-color() #CCFFCC; /* lightgreen */
+@property-value match-color() #98FB98; /* pale green */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+DisjointFeatureSets:before
+{
+    content: "Disjoint Feature Sets: ";
+    color:Black;
+}
+DisjointFeatureSets
+{
+    display:block;
+}
+
+DisjointFeatureSet:before
+{
+    content: " Disjoint Feature Set: " text-field(attribute,disjoint_name,background-color,name-color(),columns,14) " co-feature: " text-field(attribute,co_feature_name,background-color,feature-color(),columns,12) " language " combo-box(attribute, language, 
+                           color, #ce901b,
+                           labels, "source\A target", 
+                           values, "source\A target");    
+	color:Black;
+}
+DisjointFeatureSet
+{
+    display:block;
+    margin-left:.1in;
+}
+
+DisjointFeatureValuePairings:before
+{
+    content: " Disjoint Feature Value Pairings: ";
+    color:Black;
+}
+DisjointFeatureValuePairings
+{
+    display:block;
+    margin-left:.1in;
+}
+
+DisjointFeatureValuePairing:before
+{
+	color:Black;
+}
+DisjointFeatureValuePairing
+{
+    display:block;
+    content: " FLEx feature name: "text-field(attribute,flex_feature_name,background-color,feature-color(),columns,12) " co-feature value: " text-field(attribute,co_feature_value,background-color,feature-color(),columns,6);    
+    margin-left:.1in;
+}
+
+FLExTransRules:before
+{
+    content: "FLExTrans Rules: ";
+    color:Black;
+}
+FLExTransRules
+{
+    display:block;
+}
+
+FLExTransRule:before
+{
+    content: " FLExTrans Rule: "text-field(attribute,name,background-color,name-color(),columns,30)
+    " create permutations? " combo-box(attribute, create_permutations, 
+                           color, #ce901b,
+                           labels, "yes\A no", 
+                           values, "yes\A no");
+    color:Black;
+}
+FLExTransRule
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Description:before
+{
+    display:block;
+	content: "  Description: ";
+    color:Black;
+}
+Description
+{
+    display:block;
+    margin-left:.2in;
+    background-color:description-color()
+}
+
+Source:before
+{
+    content: "  Source: ";
+    color:Black;
+}
+Source
+{
+    display:block;
+}
+
+Phrase:before
+{
+    content: " Phrase: ";
+    color:Black;
+}
+Phrase
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Words:before
+{
+    content: " Words: ";
+    color:Black;
+}
+Words
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Word:before
+{
+    content: " Word: "
+    " id: " text-field(attribute,id,background-color,id-color(),columns,1)
+    " category: " text-field(attribute,category,background-color,category-color(),columns,6)
+    " head? " combo-box(attribute, head, 
+                           color, #ce901b,
+                           labels, "yes\A no", 
+                           values, "yes\A no");
+    color:Black;
+}
+Word
+{
+    display:block;
+    padding-left:.1in;
+}
+
+Target:before
+{
+    content: " Target: ";
+    color:Black;
+}
+Target
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Features:before
+{
+    content: " Features: ";
+    color:Black;
+}
+Features
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Feature:before
+{
+    content: " Feature: ";
+    color:Black;
+}
+Feature
+{
+    display:block;
+    content: 
+    text-field(attribute,label,background-color,feature-color(),columns,12)" match: " text-field(attribute,match,background-color,match-color(),columns,1)" ranking: " text-field(attribute,ranking,background-color,ranking-color(),columns,1) " unmarked default value: " text-field(attribute,unmarked_default,background-color,feature-color(),columns,4) " fixed value: " text-field(attribute,value,background-color,feature-color(),columns,4);
+    margin-left:.1in;
+}
+
+Affixes:before
+{
+    content: " Affixes: ";
+    color:Black;
+}
+Affixes
+{
+    display:block;
+    margin-left:.1in;
+}
+
+Affix:before
+{
+    content: " Affix: "
+    " type: " combo-box(attribute, type, 
+                           color, #ce901b,
+                           labels, "prefix\A suffix", 
+                           values, "prefix\A suffix");
+    color:Black;
+}
+Affix
+{
+    display:block;
+    margin-left:.1in;
+}
+

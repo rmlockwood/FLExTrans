@@ -5,8 +5,17 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.11 - 8/15/24 - Ron Lockwood
+#   Version 3.11.3 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
+#   Version 3.11.2 - 8/15/24 - Ron Lockwood
+#    Various changes from DS for the Rule Assistant
+#
+#   Version 3.11.1 - 5/13/24 - Ron Lockwood
+#    Fixed mistake in not matching feature category abbreviation.
+#
+#   Version 3.11 - 5/13/24 - Ron Lockwood
+#    Fixed get affix glosses for feature function to only match for the given category.
 #
 #   Version 3.10.13 - 4/27/24 - Ron Lockwood
 #    Fixed bug when using TreeTran where guid of the root of an inflected word didn't match
@@ -57,6 +66,9 @@
 #
 #   Version 3.9.9 - 12/9/23 - Ron Lockwood
 #    Fixes #522. Put out ERR for feature name and value if the corresponding objects are None.
+#
+#   Version 3.9.9 - 9/11/23 - Ron Lockwood
+#    Two functions added to support creating apertium rules.
 #
 #   Version 3.9.8 - 8/18/23 - Ron Lockwood
 #    More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
@@ -400,6 +412,8 @@ import shutil
 import xml.etree.ElementTree as ET
 import subprocess
 import unicodedata
+import itertools
+from collections import defaultdict
 
 from System import Guid
 from System import String
@@ -412,12 +426,15 @@ from SIL.LCModel import (
     IPunctuationForm,
     IMoStemMsa,
     IFsFeatStruc,
+    IFsComplexFeature,
     IFsComplexValue,
     IFsClosedValue,
+    IFsClosedFeatureRepository,
     IStStyleRepository,
     IWfiAnalysis,
     ILexEntryInflType,
     IWfiWordform,
+    IMoInflAffMsa,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString  
 from SIL.LCModel.Core.Text import TsStringUtils
@@ -457,6 +474,8 @@ ID = 'id'
 # File and folder names
 OUTPUT_FOLDER = 'Output'
 BUILD_FOLDER = 'Build'
+
+RA_GUI_INPUT_FILE = 'ruleAssistantGUIinput.xml'
 
 # Style used for hyperlink style
 globalStyle = 'NotSet'
@@ -989,6 +1008,12 @@ def do_capitalization(wordToChange, modelWord):
             return wordToChange[0].upper()+wordToChange[1:]
     return wordToChange
 
+def as_string(obj):
+    return ITsString(obj.BestAnalysisAlternative).Text
+
+def as_tag(obj):
+    return underscores(as_string(obj.Abbreviation))
+
 def get_feat_abbr_list(SpecsOC, feat_abbr_list):
     
     for spec in SpecsOC:
@@ -1000,12 +1025,11 @@ def get_feat_abbr_list(SpecsOC, feat_abbr_list):
             spec = IFsClosedValue(spec)
 
             if spec.FeatureRA:
-                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
+                featGrpName = as_string(spec.FeatureRA.Name)
             else:
                 featGrpName = "ERR"
             if spec.ValueRA:
-                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
-                abbValue = re.sub('\.', '_', abbValue) # convert dots to underscore
+                abbValue = as_tag(spec.ValueRA)
             else:
                 abbValue = "ERR"
             feat_abbr_list.append((featGrpName, abbValue))
@@ -1650,8 +1674,8 @@ def get_sub_inflection_classes(mySubClasses):
     
     for ic in mySubClasses:
         
-        icAbbr = ITsString(ic.Abbreviation.BestAnalysisAlternative).Text
-        icName = ITsString(ic.Name.BestAnalysisAlternative).Text
+        icAbbr = as_string(ic.Abbreviation)
+        icName = as_string(ic.Name)
         
         ic_list.append((icAbbr,icName))
         
@@ -1684,7 +1708,7 @@ def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addI
         for pos in dbObj.lp.AllPartsOfSpeech:
     
             # save abbreviation and full name
-            posAbbrStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posAbbrStr = as_string(pos.Abbreviation)
             posFullNameStr = pos.ToString()
             
             # check for errors or warnings, pass in the error counter list which may have been incremented
@@ -1806,9 +1830,9 @@ def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
         
         strippedLine = line.strip()
         
-        if strippedLine == '<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"' or \
-               strippedLine == '<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"' or \
-               strippedLine == '<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"' or \
+        if strippedLine.startswith('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"') or \
+               strippedLine.startswith('<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"') or \
+               strippedLine.startswith('<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"') or \
                strippedLine == '"transfer.dtd">' or \
                strippedLine == '"interchunk.dtd">' or \
                strippedLine == '"postchunk.dtd">':
@@ -1825,7 +1849,7 @@ def getSourceTextList(DB, matchingContentsObjList=None):
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
 
-        sourceList.append(ITsString(interlinText.Name.BestAnalysisAlternative).Text.strip())
+        sourceList.append(as_string(interlinText.Name).strip())
 
         # if the caller wants to get a list of contents objects, add to the provided list
         if matchingContentsObjList != None:
@@ -2048,7 +2072,7 @@ def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, sen
 
     # Add a fake .1 so we can remove any 1.Xs
     headWordStr = removeLemmaOnePointSomething(headWordStr + '.1')
-    glossStr = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
+    glossStr = as_string(targetSense.Gloss)
 
     # Put the string we want for the link name into a tsString
     linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
@@ -2087,6 +2111,230 @@ def getHyperLinkStyle(DB):
         Style = globalStyle
     
     return Style
+
+def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCategoryAbbrev):
+
+    myList = [] # [('el1.1','m'),('la1.1','f')]
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
+
+    # Loop through all entries/senses and collect lemmas that match get given grammatical category and feature
+    for entry_cnt, srcEntry in enumerate(DB.LexiconAllEntries()):
+    
+        # Don't process affixes, clitics
+        if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+            srcEntry.LexemeFormOA.MorphTypeRA and morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+
+            if srcEntry.LexemeFormOA.IsAbstract:
+                continue
+        
+            # Loop through senses
+            for i, mySense in enumerate(srcEntry.SensesOS):
+                
+                # Make sure we have a valid analysis object
+                if mySense.MorphoSyntaxAnalysisRA:
+                
+                    # Get the POS abbreviation for the current sense, assuming we have a stem
+                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+
+                        msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                        if msa.PartOfSpeechRA:            
+
+                            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
+
+                            if abbrev != gramCategoryAbbrev:
+                                break
+                            else:
+                                # Check for a match on the feature
+                                if msa.MsFeaturesOA:
+                                    
+                                    feat_abbr_list = []
+                                    
+                                    # The features might be complex, make a recursive function call to find all leaf features
+                                    get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, feat_abbr_list)
+                                    
+                                    # loop through feature groups and abbreviations
+                                    for grpName, abb in feat_abbr_list:
+                                        
+                                        if featureCategoryAbbrev == grpName:
+
+                                            # Get the headword string
+                                            headWord = ITsString(srcEntry.HeadWord).Text
+                                            
+                                            # If there is not a homograph # at the end, make it 1
+                                            headWord = add_one(headWord)
+                                            
+                                            # Convert problem chars in the headWord
+                                            headWord = convertProblemChars(headWord, lemmaProbData)
+
+                                            headWord += '.'+str(i+1)
+                                            
+                                            myList.append((headWord, abb))
+                                            break
+    return myList
+
+def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, featureCategoryAbbrev):
+
+    myList = [] #[('MASC_a','m'),('FEM_a','f')]
+
+    # Loop through all the entries
+    for entry in DB.LexiconAllEntries():
+    
+        # Check that the objects we need are valid
+        if not entry.LexemeFormOA:
+            continue
+
+        if entry.LexemeFormOA.IsAbstract:
+            continue
+            
+        if not entry.LexemeFormOA.MorphTypeRA or not entry.LexemeFormOA.MorphTypeRA.Name:
+            continue
+            
+        if entry.SensesOS.Count > 0: # Entry with senses
+            
+            # Loop through senses
+            for _, mySense in enumerate(entry.SensesOS):
+                
+                # Process only affixes
+                if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+                    
+                    senseMsa = IMoInflAffMsa(mySense.MorphoSyntaxAnalysisRA)
+
+                    # Check if this affix matches the desired grammatical category
+                    if senseMsa.PartOfSpeechRA:            
+
+                        abbrev = as_string(senseMsa.PartOfSpeechRA.Abbreviation)
+
+                        ok = False
+                        if isinstance(gramCategoryAbbrev, str):
+                            ok = (abbrev == gramCategoryAbbrev)
+                        elif isinstance(gramCategoryAbbrev, set):
+                            ok = (abbrev in gramCategoryAbbrev)
+
+                        if not ok:
+                            continue
+                        else:
+                            # Check for a match on the feature
+                            if senseMsa.InflFeatsOA:
+                                
+                                feat_abbr_list = []
+                                
+                                # The features might be complex, make a recursive function call to find all leaf features
+                                get_feat_abbr_list(senseMsa.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
+                                
+                                # loop through feature groups and abbreviations
+                                for grpName, abb in feat_abbr_list:
+                                    
+                                    if featureCategoryAbbrev == grpName:
+
+                                        gloss = as_string(mySense.Gloss)
+                                        myList.append((gloss, abb))
+                                        break
+    return myList
+
+def getAffixSlotCategories(slot, gramCategoryAbbrev):
+    feat_abbr_list = []
+    for affix in slot.Affixes:
+        abbrev = as_string(affix.PartOfSpeechRA.Abbreviation)
+        if abbrev != gramCategoryAbbrev or not affix.InflFeatsOA:
+            continue
+        get_feat_abbr_list(affix.InflFeatsOA.FeatureSpecsOC, feat_abbr_list)
+    return tuple(sorted(set([feat[0] for feat in feat_abbr_list])))
+
+def getAffixTemplates(DB, gramCategoryAbbrev):
+    templates = set()
+    for pos in DB.lp.AllPartsOfSpeech:
+        if gramCategoryAbbrev != as_string(pos.Abbreviation):
+            continue
+        for template in pos.AffixTemplatesOS:
+            slots = []
+            for slot in template.PrefixSlotsRS:
+                slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'prefix'))
+            for slot in template.SuffixSlotsRS:
+                slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'suffix'))
+            cats, types = list(zip(*slots))
+            for prod in itertools.product(*cats):
+                templates.add(tuple(zip(prod, types)))
+    return sorted(templates)
+
+def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
+    features = set()
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
+
+    for entry in DB.LexiconAllEntries():
+        LF = entry.LexemeFormOA
+        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
+            continue
+        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+            continue
+
+        for sense in entry.SensesOS:
+            msara = sense.MorphoSyntaxAnalysisRA
+            if not msara or msara.ClassName != 'MoStemMsa':
+                continue
+            msa = IMoStemMsa(msara)
+            if not msa.PartOfSpeechRA:
+                continue
+            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
+            if abbrev != gramCategoryAbbrev:
+                continue
+            if msa.MsFeaturesOA:
+                abbr_list = []
+                get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, abbr_list)
+                features.update([name for name, abb in abbr_list])
+    return sorted(features)
+
+def getAllStemFeatures(DB, report, configMap):
+    features = defaultdict(set)
+    sourceMorphNames = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_MORPHNAMES, report)
+
+    for entry in DB.LexiconAllEntries():
+        LF = entry.LexemeFormOA
+        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
+            continue
+        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+            continue
+
+        for sense in entry.SensesOS:
+            msara = sense.MorphoSyntaxAnalysisRA
+            if not msara or msara.ClassName != 'MoStemMsa':
+                continue
+            msa = IMoStemMsa(msara)
+            if not msa.PartOfSpeechRA:
+                continue
+            abbrev = as_string(msa.PartOfSpeechRA.Abbreviation)
+            if msa.MsFeaturesOA:
+                abbr_list = []
+                get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, abbr_list)
+                features[abbrev].update([name for name, abb in abbr_list])
+    return features
+
+def getAllInflectableFeatures(DB):
+    ret = defaultdict(set)
+    for pos in DB.lp.AllPartsOfSpeech:
+        abbr = as_string(pos.Abbreviation)
+        for infl in pos.InflectableFeatsRC:
+            # TODO: are there other possibilities?
+            if infl.ClassName == 'FsComplexFeature':
+                for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
+                    ret[abbr].add(as_string(feat.Name))
+            elif infl.ClassName == 'FsClosedFeature':
+                ret[abbr].add(as_string(infl.Name))
+    return ret
+
+def getPossibleFeatureValues(DB, featureName):
+    for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
+        if as_string(feature.Name) == featureName:
+            return sorted(as_tag(val) for val in feature.ValuesOC)
+    return []
+
+def getCategoryHierarchy(DB):
+    SEP = '\ufffc' # Object Replacement Character
+    ret = {}
+    for pos in DB.lp.AllPartsOfSpeech:
+        abbr = as_string(pos.Abbreviation)
+        ret[abbr] = pos.AbbrevHierarchyString.split(SEP)
+    return ret
 
 def unescapeReservedApertChars(inStr):
     
