@@ -719,7 +719,7 @@ class TextWord():
     def initialize(self, bundleGuid, DB):
         
         # get the repository that holds bundle guids
-        repo = DB.project.ServiceLocator.GetInstance(IWfiMorphBundleRepository)
+        repo = DB.project.ServiceLocator.GetService(IWfiMorphBundleRepository)
         
         # look up the guid
         try:
