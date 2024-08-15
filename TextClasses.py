@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.11 - 8/15/24 - Ron Lockwood
+#    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
 #   Version 3.10.3 - 5/1/24 - Ron Lockwood
 #    More checking for None fixes when comparing to a guid.
 #
