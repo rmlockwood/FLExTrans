@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11 - 8/15/24 - Ron Lockwood
+#    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
 #   Version 3.10.13 - 4/27/24 - Ron Lockwood
 #    Fixed bug when using TreeTran where guid of the root of an inflected word didn't match
 #    the TreeTran guid. Fixed the logic in get interlinear to not use the guid of a clitic.
@@ -1927,7 +1930,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         guidSubStr = tgtEquivUrl[u+7:u+7+36]
 
         # Look up the entry in the trgt project by guid
-        repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+        repo = TargetDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
         guid = Guid(String(guidSubStr))
         targetObj = repo.GetObject(guid)

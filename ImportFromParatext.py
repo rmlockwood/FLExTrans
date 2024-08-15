@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11 - 8/15/24 - Ron Lockwood
+#    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
 #   Version 3.10.7 - 8/2/24 - Ron Lockwood
 #    Use new function num Rules to get the number of rules.
 #
@@ -110,7 +113,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10.7",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -252,9 +255,9 @@ def do_import(DB, report, chapSelectObj, tree):
         bibleBook = chapSelectObj.bookAbbrev
 
     # Create the text object factories
-    m_textFactory = DB.project.ServiceLocator.GetInstance(ITextFactory)
-    m_stTextFactory = DB.project.ServiceLocator.GetInstance(IStTextFactory)
-    m_stTxtParaFactory = DB.project.ServiceLocator.GetInstance(IStTxtParaFactory)
+    m_textFactory = DB.project.ServiceLocator.GetService(ITextFactory)
+    m_stTextFactory = DB.project.ServiceLocator.GetService(IStTextFactory)
+    m_stTxtParaFactory = DB.project.ServiceLocator.GetService(IStTxtParaFactory)
 
     # Check if the toChapter is there. If not set the end chapter and set a flag.
     if str(chapSelectObj.toChap+1) not in chapList:

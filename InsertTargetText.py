@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11 - 8/15/24 - Ron Lockwood
+#    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -84,7 +87,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -146,9 +149,9 @@ def MainFunction(DB, report, modify=True):
     sourceTextName = Utils.createUniqueTitle(TargetDB, sourceTextName)
  
     # Create the text objects
-    m_textFactory = TargetDB.project.ServiceLocator.GetInstance(ITextFactory)
-    m_stTextFactory = TargetDB.project.ServiceLocator.GetInstance(IStTextFactory)
-    m_stTxtParaFactory = TargetDB.project.ServiceLocator.GetInstance(IStTxtParaFactory)
+    m_textFactory = TargetDB.project.ServiceLocator.GetService(ITextFactory)
+    m_stTextFactory = TargetDB.project.ServiceLocator.GetService(IStTextFactory)
+    m_stTxtParaFactory = TargetDB.project.ServiceLocator.GetService(IStTxtParaFactory)
 
     # Start an Undo Task
 #    TargetDB.db.MainCacheAccessor.BeginNonUndoableTask()  
