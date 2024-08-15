@@ -5,7 +5,10 @@
 #   SIL International
 #   9/11/23
 #
-#   Version 3.9.x - 11/06/23 - Matthew Fort
+#   Version 3.11 - 8/15/24 - Daniel Swanson
+#    Working with Rule Assistant UI to create rules in various scenarios
+#
+#   Version 3.9.1 - 11/06/23 - Matthew Fort
 #    First draft version of reading in, checking, writing
 #
 #   Version 3.9 - 9/11/23 - Ron Lockwood
