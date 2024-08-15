@@ -5,6 +5,12 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.3 - 8/15/24 - Ron Lockwood
+#    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
+#
+#   Version 3.11.2 - 8/15/24 - Ron Lockwood
+#    Various changes from DS for the Rule Assistant
+#
 #   Version 3.11.1 - 5/13/24 - Ron Lockwood
 #    Fixed mistake in not matching feature category abbreviation.
 #
@@ -1948,7 +1954,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         guidSubStr = tgtEquivUrl[u+7:u+7+36]
 
         # Look up the entry in the trgt project by guid
-        repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+        repo = TargetDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
         guid = Guid(String(guidSubStr))
         targetObj = repo.GetObject(guid)
