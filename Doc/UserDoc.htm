@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans.help@gmail.com</i></center><br><center><small>19 April 2024</small></center>
+      <center><i>flextrans.help@gmail.com</i></center><br><center><small>23 April 2024</small></center>
       <center><small>Version: 3.10.1</small></center>
       <hr>
       <div>
@@ -175,7 +175,7 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract0">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section<a href="#sReferenceDocs">8</a> for other documentation.
+         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">8</a> for other documentation.
          </p>
          <p></p>
          <p></p>
@@ -628,7 +628,7 @@
          part and the grammatical category -- anything that matches a tag specified by in the &#8220;a_gram_cat&#8221; attribute. No other tags
          (affixes) are explicitly outputted. The <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">target lang.</span> attribute of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> elements in <a href="#xRulesSampleNounRule">(10)</a> above is selected so the target word that corresponds to the input source word is outputted.
       </p>
-      <p>See sections&#8220;<a href="#sTransferTutorial">A Tutorial on Writing Transfer Rules</a>&#8221; and &#8220;<a href="#sTransferRuleHowTos">Transfer Rule How To&#8217;s</a>&#8221; for more information on transfer rules. The authoritative reference document for transfer rules is found in section 3.5 and
+      <p>See sections&nbsp;&#8220;<a href="#sTransferTutorial">A Tutorial on Writing Transfer Rules</a>&#8221; and &#8220;<a href="#sTransferRuleHowTos">Transfer Rule How To&#8217;s</a>&#8221; for more information on transfer rules. The authoritative reference document for transfer rules is found in section 3.5 and
          appendix 3 of <a href="#rApertium">Forcada et al. (2010)</a>. 
       </p>
       <p></p>
@@ -1160,7 +1160,7 @@
          <li>Select the Part of Speech you want to test. The test currently requires at least one POS value to be selected.</li>
          <li>You can further restrict how much is generated, either by limiting the number of stems to use for generation, or limiting
             it to a specific Citation Form. (When limiting the number of stems, the logic it uses for choosing stems is not obvious, and
-            it uses the same criteria each time.) Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.PNG"> button.
+            it uses the same criteria each time.) Click the <img style="Width:10%" src="Images/ApplyAndCloseButton.png"> button.
          </li>
          <li>Back in the FLExTrans window, click the <span style="font-style:normal; font-weight:bold; ">Run All</span> button to run all the modules. It will choose which synthesis module to use based on the value for the <span style="font-weight:bold; color:#964B00; ">Use HermitCrab synthesis</span> setting (see section <a href="#sHermitCrabSetup">2.1.2</a>).
          </li>
@@ -1616,7 +1616,7 @@
       </div>
       <h3 style=""><a name="sImplementation"></a>5.2.4&nbsp;Implementation
       </h3>
-      <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section<a href="#sRuleTester">4.2</a>.
+      <p>Let&#8217;s see what data stream output we get for the first two words right now. To do this we will use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> which is a great tool for applying a single rule to one or more words and checking the result. See section&nbsp;<a href="#sRuleTester">4.2</a>.
       </p>
       <ol style="list-style-type:decimal; ">
          <li>Close the <span style="font-weight:bold; ">English-FLExTrans-Sample</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project.
@@ -1858,7 +1858,7 @@
                      </td>
                   </tr>
                </table>
-            </div>(Note: the statement in <a href="#xLet1">(49)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section<a href="#sCondLogic">7.2.7</a>.<br><br></li>
+            </div>(Note: the statement in <a href="#xLet1">(49)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">7.2.7</a>.<br><br></li>
          <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)<br><p>The result is:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>

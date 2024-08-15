@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.10.5 - 7/13/24 - Ron Lockwood
+#    Fixes #668. The N.N wasn't being shown in the tooltip. Show it always.
+#
 #   Version 3.9 - 7/19/23 - Ron Lockwood
 #    Fixes #476. Remove the EOL stuff we get from HermitCrab.
 #
@@ -1329,8 +1332,14 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
         textPart = re.sub('-', '&#8209;', textPart)
         
         retStr += textPart
-        retStr += f'</{spanEl.tag}>'
+
+        # If we have a sub-element which will be the 1.1 numeric thing
+        if len(spanEl) > 0:
+
+            retStr += ET.tostring(spanEl[0], encoding='unicode')
         
+        retStr += f'</{spanEl.tag}>'
+
     retStr += '</p>'
     
     return retStr

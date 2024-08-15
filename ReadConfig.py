@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.1 - 6/29/24 - Ron Lockwood
+#    Support text in/out.
+#
 #   Version 3.11 - 6/21/24 - Ron Lockwood
 #    Use Setting for location and name of the Rule Assistant rules file.
 #
@@ -142,6 +145,8 @@ TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
 TESTBED_FILE = 'TestbedFile'
 TESTBED_RESULTS_FILE = 'TestbedResultsFile'
+TEXT_OUT_RULES_FILE = 'TextOutRulesFile'
+TEXT_IN_RULES_FILE = 'TextInRulesFile'
 TRANSFER_RESULTS_FILE = 'TargetTranferResultsFile'
 TRANSFER_RULES_FILE = 'TransferRulesFile'
 TRANSFER_RULES_FILE2 = 'TransferRulesFile2'

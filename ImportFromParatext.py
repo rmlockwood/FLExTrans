@@ -5,6 +5,15 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.10.7 - 8/2/24 - Ron Lockwood
+#    Use new function num Rules to get the number of rules.
+#
+#   Version 3.10.6 - 8/2/24 - Ron Lockwood
+#    Don't need to add paragraph marks anymore.
+#
+#   Version 3.10.5 - 7/8/24 - Ron Lockwood
+#    Use new Text In search/replace rules.
+#
 #   Version 3.10.2 - 3/19/24 - Ron Lockwood
 #    Fixes #566. Allow the user to create one text per chapter when importing.
 #
@@ -74,6 +83,7 @@ import os
 import re
 import sys
 from shutil import copyfile
+import xml.etree.ElementTree as ET
 
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
@@ -89,6 +99,7 @@ import FTPaths
 import ReadConfig
 import Utils
 import ChapterSelection
+import TextInOutUtils
 from ParatextChapSelectionDlg import Ui_MainWindow
 
 #----------------------------------------------------------------
@@ -99,7 +110,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.10.2",
+        FTM_Version    : "3.10.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -214,7 +225,7 @@ def setSourceNameInConfigFile(report, title):
     f.writelines(configLines)
     f.close()
 
-def do_import(DB, report, chapSelectObj):
+def do_import(DB, report, chapSelectObj, tree):
     
     copyUntilEnd = False
     firstTitle = None
@@ -272,11 +283,18 @@ def do_import(DB, report, chapSelectObj):
     # Remove newlines
     importText = re.sub(r'\n', '', importText)
         
-    # Do some user defined replacements
-    for _, findStr, replStr in replaceList:
-        
-        importText = re.sub(findStr, replStr, importText)
-        
+    # Do user-defined search/replace rules if needed
+    if tree:
+
+        importText, errMsg = TextInOutUtils.applySearchReplaceRules(importText, tree)
+
+        if importText is None:
+
+            report.Error(errMsg)
+            return
+        else:
+            report.Info(f"{str(TextInOutUtils.numRules(tree))} 'Text In' rules applied.")
+            
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
         
@@ -373,16 +391,6 @@ def do_import(DB, report, chapSelectObj):
             # Either an sfm marker or a verse ref should get marked as Analysis WS
             elif re.search(r'\\|\d+[.:]\d+', seg):
                 
-                # add a space before the marker if we have content before it.
-                # if bldr.Length > 0:
-                #     seg = ' ' + seg
-                
-                # add a section mark if this is a verse or a quote and this is a script that has upper case.
-                # We are doing this so that we get the start of a sentence at the beg. of the segment which FLEx handles better when the first word is upper case.
-                if re.search(r'\\s\d*|\\v|\\q\d*', seg) and upperCase:
-                    
-                    seg += '§'
-                
                 # make this in the Analysis WS
                 tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
                 bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
@@ -434,19 +442,39 @@ def MainFunction(DB, report, modify=True):
     if not modify:
         report.Error('You need to run this module in "modify mode."')
         return
+
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
     
+    # Get the path to the search-replace rules file
+    textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=True)
+
+    if not textInRulesFile:
+        return
+    
+    # Check if the file exists.
+    if os.path.exists(textInRulesFile) == True:
+
+        # Verify we have a valid transfer file.
+        try:
+            tree = ET.parse(textInRulesFile)
+        except:
+            report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
+            return
+    else:
+        tree = None
+
     # Show the window
     app = QApplication(sys.argv)
-
     window = Main()
-    
     window.show()
-    
     app.exec_()
     
     if window.retVal == True:
         
-        do_import(DB, report, window.chapSel)
+        do_import(DB, report, window.chapSel, tree)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
