@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC "-//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator>
+	<FLExTransRules>
+		<FLExTransRule name="test rule">
+			<Source>
+				<Phrase>
+					<Words>
+						<Word id="1" category="det">
+						</Word>
+						<Word id="2" category="n">
+						</Word>
+					</Words>
+				</Phrase>
+			</Source>
+			<Target>
+				<Phrase>
+					<Words>
+						<Word id="2" head="yes">
+		  				<Features>
+		  				  <Feature match="α" label="gender">
+		  				   </Feature>
+		  				</Features>
+						</Word>
+						<Word id="1" head="no">
+		  				<Affixes>
+		  				  <Affix type="suffix">
+		      				<Features>
+		      				  <Feature match="α" label="gender">
+		      				   </Feature>
+		      				</Features>
+		  				  </Affix>
+		  				</Affixes>
+						</Word>
+					</Words>
+				</Phrase>
+			</Target>
+		</FLExTransRule>
+	</FLExTransRules>
+</FLExTransRuleGenerator>

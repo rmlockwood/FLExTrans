@@ -268,6 +268,12 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
 
+    # GUI input file for Rule Assistant
+    try:
+        os.remove(buildFolder+Utils.RA_GUI_INPUT_FILE)
+    except:
+        pass # ignore errors
+
 
 
 #----------------------------------------------------------------

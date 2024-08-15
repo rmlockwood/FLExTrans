@@ -1,7 +1,19 @@
 #
 #   FTPaths.py
 #
-#   Define all the paths used by FlexTrans in one place.
+#   Define all the paths used by FlexTrans in one place. 
+#
+#   Version 3.11.2 - 6/3/24 - Ron Lockwood
+#    RA folder and exe names now have no spaces.
+#
+#   Version 3.11.1 - 5/16/24 - Ron Lockwood
+#    Change the folder name too.
+#
+#   Version 3.11 - 5/15/24 - Ron Lockwood
+#    Changed the value of RULE ASSISTANT.
+#
+#   Version 3.9 - 12/19/23 - Ron Lockwood
+#    Addded constants for the Rule Assistant program.
 #
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Use Status Bar callback function
@@ -35,3 +47,5 @@ TREETRAN_EXE= os.path.join(TOOLS_DIR, 'TreeTran.exe')
 HC_DIR             = os.path.join(TOOLS_DIR, 'HermitCrabSynthesis')
 GENERATE_HC_CONFIG = 'GenerateHCConfigForFLExTrans.exe'
 HC_SYNTHESIZE      = 'HCSynthByGloss.exe'
+RULE_ASSISTANT_DIR = 'FLExTransRuleAssistant'
+RULE_ASSISTANT     = 'FLExTransRuleAssistant.exe'
