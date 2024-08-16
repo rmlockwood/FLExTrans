@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11.1 - 8/16/24 - Ron Lockwood
+#    Fix silently closing when TextIn/Out settings are missing.
+#
 #   Version 3.11 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -113,7 +116,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -442,6 +445,8 @@ def do_import(DB, report, chapSelectObj, tree):
     
 def MainFunction(DB, report, modify=True):
     
+    tree = None
+
     if not modify:
         report.Error('You need to run this module in "modify mode."')
         return
@@ -452,22 +457,19 @@ def MainFunction(DB, report, modify=True):
         return
     
     # Get the path to the search-replace rules file
-    textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=True)
+    textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=False)
 
-    if not textInRulesFile:
-        return
+    if textInRulesFile is not None:
     
-    # Check if the file exists.
-    if os.path.exists(textInRulesFile) == True:
+        # Check if the file exists.
+        if os.path.exists(textInRulesFile) == True:
 
-        # Verify we have a valid transfer file.
-        try:
-            tree = ET.parse(textInRulesFile)
-        except:
-            report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
-            return
-    else:
-        tree = None
+            # Verify we have a valid transfer file.
+            try:
+                tree = ET.parse(textInRulesFile)
+            except:
+                report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
+                return
 
     # Show the window
     app = QApplication(sys.argv)
