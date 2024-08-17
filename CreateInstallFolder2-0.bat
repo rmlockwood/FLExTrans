@@ -48,6 +48,7 @@ xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %fle
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
+echo regex >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy FLExTrans.py %flextoolsfolder%
