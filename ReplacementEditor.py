@@ -1,3 +1,16 @@
+#
+#   ReplacementEditor
+#
+#   Daniel Swanson
+#   SIL International
+#   8/7/24
+#
+#   Version 3.11.1 - 8/17/24 - Ron Lockwood
+#    UI improvements.
+#
+#   Version 3.11 - 8/7/24 - Daniel Swanson
+#    First version
+
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter
 
 from ReplacementEditorWindow import Ui_MainWindow
@@ -13,7 +26,7 @@ import Utils
 
 docs = {
     FTM_Name: "Edit Replacement Dictionary",
-    FTM_Version: "3.12",
+    FTM_Version: "3.11.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -345,6 +358,41 @@ class Main(QMainWindow):
         self.ui.saveButton.clicked.connect(self.save)
         self.ui.closeButton.clicked.connect(self.close)
 
+    def positionControl(self, myControl, x, y):
+        
+        myControl.setGeometry(x, y, myControl.width(), myControl.height())
+        
+    def resizeEvent(self, event):
+        QMainWindow.resizeEvent(self, event)
+        
+        # Stretch the table view to fit
+        self.ui.tableWidget.setGeometry(10, 10, self.width() - 20, self.height() - self.ui.addButton.height() - 70)
+        
+        y = self.ui.tableWidget.height() + 20
+
+        self.positionControl(self.ui.infoLabel, 10, y)
+
+        # Move the buttons up and down as the window gets resized
+        x = 10
+        y = y + 35
+        
+        self.positionControl(self.ui.addButton, x, y)
+        self.positionControl(self.ui.deleteButton, x + self.ui.addButton.width() + 10, y)
+        x = x + self.ui.addButton.width() + 10
+        self.positionControl(self.ui.saveButton, x + self.ui.deleteButton.width() + 10, y)
+        x = x + self.ui.deleteButton.width() + 10
+        self.positionControl(self.ui.closeButton, x + self.ui.saveButton.width() + 10, y)
+        x = x + self.ui.saveButton.width() + 10
+        self.positionControl(self.ui.saveLabel, x + self.ui.closeButton.width() + 10, y)
+        
+        widthAffix = 50
+        widthGramCat = 80
+        self.ui.tableWidget.setColumnWidth(4, 1) # the column with the arrow
+        self.ui.tableWidget.setColumnWidth(3, widthAffix) # first affix column
+        self.ui.tableWidget.setColumnWidth(8, widthAffix) # 2nd affix column
+        self.ui.tableWidget.setColumnWidth(1, widthGramCat) # 1st gram cat column
+        self.ui.tableWidget.setColumnWidth(6, widthGramCat) # 2nd gram cat column
+
     def setWindowIcon(self):
         from PyQt5 import QtGui
         import os
@@ -433,7 +481,7 @@ class Main(QMainWindow):
         if row >= len(self.rows):
             return
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes')
+        self.ui.saveLabel.setText('There are unsaved changes.')
         self.rows[row].checkCellUpdate(column)
 
     def checkTable(self):
@@ -451,7 +499,7 @@ class Main(QMainWindow):
         if dupPairs:
             message.append(f'The following sets of rows are identical on the source side and only the first one will have any effect:\n' + '\n'.join(f'- ' + ', '.join(map(str, pair)) for pair in dupPairs))
         if noAffixes:
-            message.append(f'The following rows have no affixes and thus are redundant with the links created by Link Senses: ' + ', '.join(map(str, noAffixes)))
+            message.append(f'The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: ' + ', '.join(map(str, noAffixes)))
 
         if message:
             from PyQt5.QtWidgets import QMessageBox
@@ -468,7 +516,7 @@ class Main(QMainWindow):
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
-        self.ui.saveLabel.setText('Replacement file saved')
+        self.ui.saveLabel.setText('Replacement file saved.')
         self.unsaved = False
 
     def closeEvent(self, event):

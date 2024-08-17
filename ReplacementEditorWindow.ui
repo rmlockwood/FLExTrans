@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>916</width>
     <height>451</height>
    </rect>
   </property>
@@ -17,9 +17,9 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>25</x>
-      <y>21</y>
-      <width>741</width>
+      <x>10</x>
+      <y>10</y>
+      <width>891</width>
       <height>311</height>
      </rect>
     </property>
@@ -30,12 +30,12 @@
     </column>
     <column>
      <property name="text">
-      <string>Part-of-Speech</string>
+      <string>Gramm. Cat.</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Classes</string>
+      <string>Features/Classes</string>
      </property>
     </column>
     <column>
@@ -55,12 +55,12 @@
     </column>
     <column>
      <property name="text">
-      <string>Part-of-Speech</string>
+      <string>Gramm. Cat.</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Classes</string>
+      <string>Features/Classes</string>
      </property>
     </column>
     <column>
@@ -74,8 +74,8 @@
      <rect>
       <x>70</x>
       <y>360</y>
-      <width>80</width>
-      <height>24</height>
+      <width>90</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -87,8 +87,8 @@
      <rect>
       <x>170</x>
       <y>360</y>
-      <width>141</width>
-      <height>24</height>
+      <width>140</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -100,8 +100,8 @@
      <rect>
       <x>330</x>
       <y>360</y>
-      <width>80</width>
-      <height>24</height>
+      <width>90</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -113,8 +113,8 @@
      <rect>
       <x>430</x>
       <y>360</y>
-      <width>80</width>
-      <height>24</height>
+      <width>90</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
@@ -126,12 +126,25 @@
      <rect>
       <x>540</x>
       <y>360</y>
-      <width>231</width>
-      <height>16</height>
+      <width>161</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
      <string>Saved</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="infoLabel">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>330</y>
+      <width>511</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</string>
     </property>
    </widget>
   </widget>
@@ -140,12 +153,11 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>916</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
