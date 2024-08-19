@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.11 - 8/15/24 - Ron Lockwood
+#    Fixes #200. Don't cache the result object. For some reason it causes gaps in the tree view for duplicate results.
+#
 #   Version 3.10.1 - 2/15/24 - Ron Lockwood
 #    Fixes #563. Give a path to the check mark and other icons so they can be found in the Tools folder.
 #
@@ -489,7 +492,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                     testNodeStr = ET.tostring(test.getTestNode(), encoding='unicode')
 
                     # But remove the unique id in the string
-                    myHash = hash(Utils.removeTestID(testNodeStr))
+                    myHash = 1 # hash(Utils.removeTestID(testNodeStr))
                     
                     # Check if we have cached this test object and use it if we have
                     if myHash in self.__cache:
@@ -500,7 +503,7 @@ class TestbedLogModel(QtCore.QAbstractItemModel):
                         resultItem = TestResultItem(statsItem,  self.getRTL(), test.getLUString(), test.getFormattedLUString(self.getRTL()), test.getExpectedResult(), \
                                   test.getActualResult(), test.isValid(), test.getOrigin(), test.getInvalidReason(), self.greenCheck, self.redX, self.yellowTriangle)
                         
-                        self.__cache[myHash] = resultItem
+                        #self.__cache[myHash] = resultItem
                                      
                     # Add the result item to the current stats item
                     statsItem.AddChild(resultItem)

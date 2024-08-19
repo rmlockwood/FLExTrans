@@ -2,6 +2,12 @@
 #   The version name and number to display in the title bar of the 
 #   FlexTools window.
 #
+#   Version 3.11 - 9/15/24 - Ron Lockwood
+#    Bumped  FLExTrans to 3.11
+#
+#   Version 3.10.4 - 8/2/24 - Ron Lockwood
+#    Bumped FLExTrans to 3.10.5
+#
 #   Version 3.10.3 - 4/24/24 - Ron Lockwood
 #    Bumped  FLExTrans to 3.10.2
 #
@@ -32,6 +38,6 @@ FTVersion = "2.3.1"
 
 Name = "FLExTrans"
 
-Version = "3.10.2"
+Version = "3.11"
 
 Title = f"{FTName} {FTVersion} ({Name} {Version})"
