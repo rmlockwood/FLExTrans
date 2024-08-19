@@ -2337,5 +2337,17 @@ def getCategoryHierarchy(DB):
     return ret
 
 def unescapeReservedApertChars(inStr):
-    
+
     return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)
+
+def localizeUI():
+    '''Call this function immediately before creating the main UI window
+    to ensure that all its labels get translated.'''
+
+    from QtCore import QTranslator, QLocale, QCoreApplication
+    trans = QTranslator()
+    # this imagines we're storing translations in
+    # i18n/flextrans.en_US.qm
+    # or similar. TODO: probably need an absolute path
+    if trans.load(QLocale(), 'flextrans', '.', 'i18n', '.qm'):
+        QCoreApplication.installTranslator(trans)
