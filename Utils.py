@@ -1959,7 +1959,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
         guid = Guid(String(guidSubStr))
         targetObj = repo.GetObject(guid)
     except:
-        headWord = ITsString(entry.HeadWord).Text
+        headWord = getHeadwordStr(entry)
         if report:
             report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
                         DB.BuildGotoURL(entry))
@@ -2016,7 +2016,7 @@ def remove1dot1(lem):
 
 def fixupLemma(entry, senseNum, remove1dot1Bool=False):
 
-    lem = ITsString(entry.HeadWord).Text
+    lem = getHeadwordStr(entry)
     lem = add_one(lem)
     lem = lem + '.' + str(senseNum) # add sense number
 
@@ -2068,7 +2068,7 @@ def getTargetEquivalentUrl(DB, senseObj, senseEquivField):
 def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, senseEquivField, urlStr, myStyle):
 
     # This headword should have a number if there is more than one of them
-    headWordStr = ITsString(targetEntry.HeadWord).Text
+    headWordStr = getHeadwordStr(targetEntry)
 
     # Add a fake .1 so we can remove any 1.Xs
     headWordStr = removeLemmaOnePointSomething(headWordStr + '.1')
@@ -2159,7 +2159,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
                                         if featureCategoryAbbrev == grpName:
 
                                             # Get the headword string
-                                            headWord = ITsString(srcEntry.HeadWord).Text
+                                            headWord = getHeadwordStr(srcEntry)
 
                                             # If there is not a homograph # at the end, make it 1
                                             headWord = add_one(headWord)
@@ -2339,12 +2339,6 @@ def getCategoryHierarchy(DB):
 def unescapeReservedApertChars(inStr):
 
     return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)
-
-def as_string(obj):
-    return ITsString(obj.BestAnalysisAlternative).Text
-
-def as_tag(obj):
-    return underscores(as_string(obj.Abbreviation))
 
 def getInflectionTags(MSAobject):
     '''Take a IMoStemMsa object and return a list of tags'''
