@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.5 - 7/8/24 - Ron Lockwood
 #    Added Text In module putting common window code in InOutUtils.
 #
@@ -30,7 +33,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",

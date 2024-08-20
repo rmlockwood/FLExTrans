@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.1 - 2/23/24 - Ron Lockwood
 #    Fixes #567 Fixes crash in Catalog Target Affixes when a lexeme form is null.
 #
@@ -127,7 +130,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.10.1",
+        FTM_Version    : "3.11",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",

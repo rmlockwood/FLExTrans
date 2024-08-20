@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10 - 1/18/24 - Ron Lockwood
 #    Bumped to 3.10.
 #
@@ -94,7 +97,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
