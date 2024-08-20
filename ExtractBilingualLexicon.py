@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.1 - 2/26/24 - Ron Lockwood
 #    Fixes #565. Add inflection features/classes to the source side of the bilingual lexicon.
 #    To do this, make the building of the element string for features and classes a separate function.
@@ -295,7 +298,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",

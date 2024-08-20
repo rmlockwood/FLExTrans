@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.5 - 8/2/24 - Ron Lockwood
 #    Don't need to remove paragraph marks anymore.
 #
@@ -89,7 +92,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",

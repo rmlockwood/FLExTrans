@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.5 - 7/23/24 - Ron Lockwood
 #    Fixes #671. Handle outputting the default inflection class for categories that have them.
 #
@@ -281,7 +284,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
