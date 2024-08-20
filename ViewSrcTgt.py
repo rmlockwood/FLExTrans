@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10 - 12/28/23 - Ron Lockwood
 #    Fixes #513. Use text edit control instead of web view to prevent crashing.
 #
@@ -99,7 +102,7 @@ from Testbed import *
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.10",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",
