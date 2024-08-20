@@ -276,7 +276,7 @@ class SegmentedCompleter(QCompleter):
         # If we we're completing a tag in the middle and we select an option,
         # then we sometimes apply the completion twice and also replace the
         # last tag in the input, hence this check.
-        if not middle.startswith(oldMiddle):
+        if not middle.lower().startswith(oldMiddle.lower()):
             return text
 
         # I'm not quite sure where in the process to use this value,
@@ -359,15 +359,15 @@ class Main(QMainWindow):
         self.ui.closeButton.clicked.connect(self.close)
 
     def positionControl(self, myControl, x, y):
-        
+
         myControl.setGeometry(x, y, myControl.width(), myControl.height())
-        
+
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
-        
+
         # Stretch the table view to fit
         self.ui.tableWidget.setGeometry(10, 10, self.width() - 20, self.height() - self.ui.addButton.height() - 70)
-        
+
         y = self.ui.tableWidget.height() + 20
 
         self.positionControl(self.ui.infoLabel, 10, y)
@@ -375,7 +375,7 @@ class Main(QMainWindow):
         # Move the buttons up and down as the window gets resized
         x = 10
         y = y + 35
-        
+
         self.positionControl(self.ui.addButton, x, y)
         self.positionControl(self.ui.deleteButton, x + self.ui.addButton.width() + 10, y)
         x = x + self.ui.addButton.width() + 10
@@ -384,7 +384,7 @@ class Main(QMainWindow):
         self.positionControl(self.ui.closeButton, x + self.ui.saveButton.width() + 10, y)
         x = x + self.ui.saveButton.width() + 10
         self.positionControl(self.ui.saveLabel, x + self.ui.closeButton.width() + 10, y)
-        
+
         widthAffix = 50
         widthGramCat = 80
         self.ui.tableWidget.setColumnWidth(4, 1) # the column with the arrow
