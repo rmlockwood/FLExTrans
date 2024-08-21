@@ -49,7 +49,7 @@ echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
 echo regex >> %flextransfolder%\requirements.txt
-echo wildebeest >> %flextransfolder%\requirements.txt
+echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy FLExTrans.py %flextoolsfolder%
