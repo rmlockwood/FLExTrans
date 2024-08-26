@@ -551,13 +551,16 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                 sourcePOSabbrev = 'UNK'
 
                             # Check if we have a duplicate headword-POS which can happen if the POS is the same and the headwords differ only in case.
-                            if checkForDuplicateHeadword(headWord, sourcePOSabbrev, sourceEntry.Hvo, duplicateHeadwordPOSmap):
+                            if checkForDuplicateHeadword(senseHeadWord, sourcePOSabbrev, sourceEntry.Hvo, duplicateHeadwordPOSmap):
 
                                 errorList.append((f'Encountered a headword that only differs in case from another headword with the same POS ({sourcePOSabbrev}). Skipping this sense.'+\
                                                   'Source headword: '+rawHeadWord, 1, sourceURL))
                                 continue
 
                             entryElem = ET.SubElement(mainSection, 'e', w='1')
+                            # we can't use indent() because that would end up
+                            # inserting spaces between tags
+                            entryElem.tail = '\n    '
 
                             # If we have a link to a target entry, process it
                             equivStr = Utils.getTargetEquivalentUrl(DB, sourceSense, custSenseEquivField)
@@ -595,7 +598,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                                             pairElem = ET.SubElement(entryElem, 'p')
                                             leftElem = ET.SubElement(pairElem, 'l')
                                             rightElem = ET.SubElement(pairElem, 'r')
-                                            insertWord(leftElem, headWord, sourceTags)
+                                            insertWord(leftElem, senseHeadWord, sourceTags)
                                             insertWord(rightElem, targetLemma, targetTags)
 
 
@@ -695,8 +698,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 ET.SubElement(sdefs, 'sdef', n=abbr, c=name)
             else:
                 ET.SubElement(sdefs, 'sdef', n=abbr)
-
-        ET.indent(outputTree)
 
         try:
             with open(fullPathBilingFile, 'wb') as fout:

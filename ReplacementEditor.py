@@ -185,6 +185,9 @@ class TableRow:
 
         # build the structure
         entry = ET.Element('e')
+        # we can't use indent() because that would end up
+        # inserting spaces between tags
+        entry.tail = '\n    '
         p = ET.SubElement(entry, 'p')
         l = ET.SubElement(p, 'l')
         r = ET.SubElement(p, 'r')
@@ -511,7 +514,6 @@ class Main(QMainWindow):
         section = ET.SubElement(dix, 'section', id='append', type='standard')
         for row in self.rows:
             section.append(row.toXML())
-        ET.indent(dix)
         with open(self.replaceFile, 'wb') as fout:
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
