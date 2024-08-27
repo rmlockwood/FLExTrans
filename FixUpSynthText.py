@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11 - 8/20/24 - Ron Lockwood
+#    Bumped to 3.11.
+#
 #   Version 3.10.6 - 8/2/24 - Ron Lockwood
 #    Use new function num Rules to get the number of rules.
 #
@@ -31,7 +34,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.10.6",
+        FTM_Version    : "3.11",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Run a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",

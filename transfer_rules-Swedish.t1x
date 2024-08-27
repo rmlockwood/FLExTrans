@@ -54,10 +54,13 @@ tags="samp.*.pst.*"
 ><!--   If you would like additional attributes based on your FLEx project, run the FLExTrans module: Set Up Transfer Rule Categories and Attributes--><def-attr
 n="a_gender_feature"
 ><attr-item
-tags="m"
+tags="com"
 ></attr-item
 ><attr-item
 tags="f"
+></attr-item
+><attr-item
+tags="m"
 ></attr-item
 ><attr-item
 tags="neut"
