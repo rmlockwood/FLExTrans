@@ -296,12 +296,9 @@ class CompleterDelegate(QItemDelegate):
     '''Intermediary between the table and the fields to ensure that when the
     fields turn into input boxes they have autocompleters attached'''
 
-    def __init__(self, values, use_segmented, composed):
+    def __init__(self, values, use_segmented):
         super().__init__()
         self.values = values
-        if composed:
-            from unicodedata import normalize
-            self.values = [normalize('NFC', val) for val in self.values]
         self.use_segmented = use_segmented
 
     def createEditor(self, *args, **kwargs):
@@ -331,8 +328,8 @@ class Main(QMainWindow):
         self.setWindowIcon()
         self.rows = []
 
-        self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB)
-        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB)
+        self.sourceLemmas, self.sourceAffixes = self.gatherCompletionData(sourceDB, composed)
+        self.targetLemmas, self.targetAffixes = self.gatherCompletionData(targetDB, composed)
         self.sourcePOS = self.gatherPOSTags(sourceDB)
         self.targetPOS = self.gatherPOSTags(targetDB)
         self.sourceTags = self.gatherTags(sourceDB)
@@ -349,7 +346,7 @@ class Main(QMainWindow):
             (sorted(self.targetTags), True),
             (sorted(self.targetAffixes), True),
         ]
-        self.delegates = [CompleterDelegate(*args, composed) for args in delegate_data]
+        self.delegates = [CompleterDelegate(*args) for args in delegate_data]
         for index, delegate in enumerate(self.delegates):
             self.ui.tableWidget.setItemDelegateForColumn(index, delegate)
 
@@ -424,15 +421,21 @@ class Main(QMainWindow):
         if lastRow != -1:
             self.deleteRow(lastRow)
 
-    def gatherCompletionData(self, DB):
+    def gatherCompletionData(self, DB, composed):
         from SIL.LCModel import IMoStemMsa, IMoInflAffMsa
         from SIL.LCModel.Core.KernelInterfaces import ITsString
+        if composed:
+            from unicodedata import normalize
+            def norm(s): return normalize('NFC', s)
+        else:
+            def norm(s): return s
         lemmas = {}
         affixes = set()
         for entry in DB.LexiconAllEntries():
             headWord = ITsString(entry.HeadWord).Text
             headWord = Utils.add_one(headWord)
             headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+            headWord = norm(headWord)
             for i, sense in enumerate(entry.SensesOS, 1):
                 if not sense.MorphoSyntaxAnalysisRA:
                     continue
