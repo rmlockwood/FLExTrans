@@ -676,7 +676,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         replTree = None
 
         try:
-            with open(replFile) as fin:
+            with open(replFile, encoding='utf-8') as fin:
                 text = fin.read()
                 text = unicodedata.normalize('NFD', text)
                 replTree = ET.parse(io.StringIO(text)).getroot()
