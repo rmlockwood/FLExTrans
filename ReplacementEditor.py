@@ -141,7 +141,7 @@ class TableRow:
         self.targetLemma.setText(rlem)
         if len(rtags) > 0:
             self.targetPOS.setText(rtags[0])
-            infl, aff = self.splitTagList(ltags[1:], self.window.targetTags)
+            infl, aff = self.splitTagList(rtags[1:], self.window.targetTags)
             self.targetInfl.setText(infl)
             self.targetAffixes.setText(aff)
 
