@@ -910,7 +910,9 @@ class Main(QMainWindow):
                 self.__bilingMap[key] = [(left, right)]
             else:
                 if tagSequence(left) == tagSequence(self.__bilingMap[key][0][0]):
-                    # same tags, so this is a replacement entry
+                    # The current entry has the same source language tags
+                    # as the first entry with this lemma in the file,
+                    # so it's a replacement, and we should use the later one.
                     self.__bilingMa[key][0] = (left, right)
                 else:
                     self.__bilingMap[key].append((left, right))

@@ -684,12 +684,15 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             errorList.append((f'There is a problem with the Bilingual Dictionary Replacement File: {replFile}. Please check the configuration file setting.', 2))
 
         if replTree:
+            # get rid of <leftdata> and <rightdata> (if present)
             convertOldEntries(replTree)
+            # add any missing <sdef>s
             for sdef in replTree.findall('.//sdef'):
                 if 'c' in sdef.attrib:
                     posMap[sdef.attrib['n']] = sdef.attrib['c']
             for symbol in replTree.findall('.//s'):
                 posMap.setdefault(symbol.attrib['n'], '')
+            # add the entries
             for section in replTree.findall('.//section'):
                 outputTree.append(section)
 
