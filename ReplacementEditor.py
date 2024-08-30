@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 import Utils
 
 docs = {
-    FTM_Name: "Edit Replacement Dictionary",
+    FTM_Name: "Replacement Dictionary Editor",
     FTM_Version: "3.11.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",

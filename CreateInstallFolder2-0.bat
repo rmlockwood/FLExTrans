@@ -87,6 +87,7 @@ copy TextInRules.py %modulesflextrans%
 copy TextOutRules.py %modulesflextrans%
 copy FixUpSynthText.py %modulesflextrans%
 copy LinkAllSensesAsDup.py %modulesflextrans%
+copy ReplacementEditor.py %modulesflextrans%
 
 rem testbed-specific modules to Modules\FLExTrans
 copy StartTestbed.py %modulesflextrans%
@@ -103,6 +104,7 @@ copy TestbedValidator.py %flextranslib%
 copy CreateApertiumRules.py %flextranslib%
 copy TextInOutUtils.py %flextranslib%
 copy TextInOut.py %flextranslib%
+copy ReplacementEditorWindow.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
 copy MyTableView.py %flextranslib%
