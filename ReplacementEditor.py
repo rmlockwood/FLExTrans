@@ -431,7 +431,9 @@ class Main(QMainWindow):
             def norm(s): return s
         lemmas = {}
         affixes = set()
-        for entry in DB.LexiconAllEntries():
+        self.report.ProgressStart(DB.LexiconNumberOfEntries())
+        for index, entry in enumerate(DB.LexiconAllEntries()):
+            self.report.ProgressUpdate(index)
             headWord = ITsString(entry.HeadWord).Text
             headWord = Utils.add_one(headWord)
             headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
