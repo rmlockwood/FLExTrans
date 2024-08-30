@@ -162,6 +162,12 @@ class TableRow:
         return (self.sourceLemma.text(), self.sourcePOS.text(),
                 self.sourceInfl.text(), self.sourceAffixes.text())
 
+    def getTarget(self) -> tuple[str, str, str, str]:
+        '''Return the target fields as a tuple'''
+
+        return (self.targetLemma.text(), self.targetPOS.text(),
+                self.targetInfl.text(), self.targetAffixes.text())
+
     def tagList(self, *widgets) -> list[str]:
         '''Given a collection of widgets, extract their values and return
         the tags in them as a list'''
@@ -499,7 +505,7 @@ class Main(QMainWindow):
         for rowNumber, row in enumerate(self.rows, 1):
             src = row.getSource()
             duplicateSource[src].append(rowNumber)
-            if not src[3]:
+            if not src[3] and not row.getTarget()[3]:
                 noAffixes.append(rowNumber)
 
         dupPairs = [val for val in duplicateSource.values() if len(val) > 1]
