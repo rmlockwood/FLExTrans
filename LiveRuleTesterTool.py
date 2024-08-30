@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.1 - 8/30/24 - Ron Lockwood
+#    apertium_transfer now gives additional info. in the trace -- namely the target lexical
+#    unit. Remove this when outputting to the Rule Execution Information yellow box.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -407,7 +411,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2399,6 +2403,9 @@ class Main(QMainWindow):
                 
                 # Split into lexical units
                 lexUnitList = lexUnitsStr.split('\t')
+
+                # Each lexical unit also has / plus the target lexical unit. Remove these.
+                lexUnitList = [myLU.split('/')[0] for myLU in lexUnitList]
                 
                 # Create a <p> html element
                 paragraphEl = ET.Element('p')
