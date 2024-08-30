@@ -405,6 +405,7 @@ class Main(QMainWindow):
         self.ui.tableWidget.setColumnWidth(8, widthAffix) # 2nd affix column
         self.ui.tableWidget.setColumnWidth(1, widthGramCat) # 1st gram cat column
         self.ui.tableWidget.setColumnWidth(6, widthGramCat) # 2nd gram cat column
+        self.ui.tableWidget.setColumnWidth(9, 160) # comment column
 
     def setWindowIcon(self):
         from PyQt5 import QtGui
