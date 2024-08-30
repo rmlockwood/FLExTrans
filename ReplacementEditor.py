@@ -57,6 +57,7 @@ class TableRow:
         self.targetPOS = QTableWidgetItem()
         self.targetInfl = QTableWidgetItem()
         self.targetAffixes = QTableWidgetItem()
+        self.comment = QTableWidgetItem()
 
         self.table.setItem(self.rowNumber, 0, self.sourceLemma)
         self.table.setItem(self.rowNumber, 1, self.sourcePOS)
@@ -67,6 +68,7 @@ class TableRow:
         self.table.setItem(self.rowNumber, 6, self.targetPOS)
         self.table.setItem(self.rowNumber, 7, self.targetInfl)
         self.table.setItem(self.rowNumber, 8, self.targetAffixes)
+        self.table.setItem(self.rowNumber, 9, self.comment)
 
         self.arrow.setText('⇒')
 
@@ -144,6 +146,7 @@ class TableRow:
             infl, aff = self.splitTagList(rtags[1:], self.window.targetTags)
             self.targetInfl.setText(infl)
             self.targetAffixes.setText(aff)
+        self.comment.setText(entry.attrib.get('c', ''))
 
     def splitTagList(self, tags: list[str], features) -> tuple[str, str]:
         '''Attempt to distinguish inflectional features from affixes'''
@@ -194,6 +197,9 @@ class TableRow:
         # we can't use indent() because that would end up
         # inserting spaces between tags
         entry.tail = '\n    '
+        c = self.comment.text().strip()
+        if c:
+            entry.attrib['c'] = c
         p = ET.SubElement(entry, 'p')
         l = ET.SubElement(p, 'l')
         r = ET.SubElement(p, 'r')
@@ -351,6 +357,7 @@ class Main(QMainWindow):
             (self.targetPOS, False),
             (sorted(self.targetTags), True),
             (sorted(self.targetAffixes), True),
+            ([], False),
         ]
         self.delegates = [CompleterDelegate(*args) for args in delegate_data]
         for index, delegate in enumerate(self.delegates):
