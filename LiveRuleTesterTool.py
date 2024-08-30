@@ -913,7 +913,7 @@ class Main(QMainWindow):
                     # The current entry has the same source language tags
                     # as the first entry with this lemma in the file,
                     # so it's a replacement, and we should use the later one.
-                    self.__bilingMa[key][0] = (left, right)
+                    self.__bilingMap[key][0] = (left, right)
                 else:
                     self.__bilingMap[key].append((left, right))
 
