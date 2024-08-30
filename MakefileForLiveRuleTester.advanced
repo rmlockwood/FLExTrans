@@ -3,7 +3,7 @@ target_text.txt: transfer_rules.t3x.bin target_text2.txt
 target_text2.txt: transfer_rules.t2x.bin target_text1.txt
 	${FLEXTOOLS_PATH}\apertium-interchunk -t transfer_rules.t2x transfer_rules.t2x.bin target_text1.txt > target_text2.txt 2>apertium_log2.txt
 target_text1.txt: transfer_rules.t1x.bin target_text0.txt
-	${FLEXTOOLS_PATH}\apertium-transfer -b transfer_rules.t1x transfer_rules.t1x.bin target_text0.txt > target_text1.txt 2>apertium_log.txt
+	${FLEXTOOLS_PATH}\apertium-transfer -b -t transfer_rules.t1x transfer_rules.t1x.bin target_text0.txt > target_text1.txt 2>apertium_log.txt
 target_text0.txt: bilingual.bin source_text.txt
 	${FLEXTOOLS_PATH}\lt-prob -b -N1 -L1 bilingual.bin source_text.txt > target_text0.txt
 bilingual.bin: bilingual.dix
