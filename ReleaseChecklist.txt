@@ -1,9 +1,9 @@
 Do these things when making a new release
 -Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
 -Finish code changes and commit
--Edit createInstallFolder2.0.bat and set the version # at the top.
--Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Change VIProductVersion in the .nsi file.
+-Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
+-Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
+-Also change VIProductVersion in the .nsi file  to the new version #.
 -Change Copyright date if necessary in the .nsi file. 
 -Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
 -Build and test the install locally
