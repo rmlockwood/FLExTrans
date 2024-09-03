@@ -2169,7 +2169,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
                                             headWord = add_one(headWord)
 
                                             # Convert problem chars in the headWord
-                                            headWord = convertProblemChars(headWord, lemmaProbData)
+                                            #headWord = convertProblemChars(headWord, lemmaProbData)
 
                                             headWord += '.'+str(i+1)
 

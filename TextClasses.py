@@ -664,7 +664,7 @@ class TextWord():
     def getLemma(self, i):
         if i < len(self.__lemmaList):
             if not self.isSentPunctutationWord():
-                return Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
+                return self.__lemmaList[i] #Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
             else:
                 return self.__lemmaList[i]
         return ''
