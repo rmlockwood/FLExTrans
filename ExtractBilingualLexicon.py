@@ -945,7 +945,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = Utils.add_one(headWord)
                 
                 # Convert problem chars in the headWord
-                #headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
                 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
