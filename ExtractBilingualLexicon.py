@@ -904,63 +904,60 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         # save features so they can go in the symbol definition section. Source and Target DBs.
         addFeatureStringsToMap(DB, posMap)
         addFeatureStringsToMap(TargetDB, posMap)
-                
+
         # build string for the xml pos section
         for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):
-            
+
             # output abbreviation and full category name
             categoryStr = f'    <sdef n="{POSabbr}" c="{POSname}"/>\n'
             fOut.write(categoryStr)
-        
+
         # write symbol for UNK
         categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
         fOut.write(categoryStr)
         fOut.write('  </sdefs>\n\n')
         fOut.write('  <section id="main" type="standard">\n')
-        
+
         errorList.append(("Building the bilingual dictionary...", 0))
         recordsDumpedCount = 0
         if report:
             report.ProgressStart(DB.LexiconNumberOfEntries())
-      
+
         duplicateHeadwordPOSmap = {}
 
         # Loop through all the entries
         for entryCount, sourceEntry in enumerate(DB.LexiconAllEntries()):
-        
+
             if report:
                 report.ProgressUpdate(entryCount)
-            
+
             # Don't process affixes, clitics
             if sourceEntry.LexemeFormOA and sourceEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
                sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
-            
+
                 # Get the headword string
                 headWord = ITsString(sourceEntry.HeadWord).Text
-                
+
                 # Deal with spaces in the headword
                 headWord = processSpaces(headWord, DB, sourceEntry, errorList)
-                
+
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
-                
-                # Convert problem chars in the headWord
-                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
-                
+
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
-                    
+
                     targetFound = False
                     sourcePOSabbrev = 'UNK'
-                    
+
                     # Make sure we have a valid analysis object
                     if sourceSense.MorphoSyntaxAnalysisRA:
-                    
+
                         # Get the POS abbreviation for the current sense, assuming we have a stem
                         if sourceSense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
 
                             sourceMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
-                            if sourceMsa.PartOfSpeechRA:   
+                            if sourceMsa.PartOfSpeechRA:
 
                                 sourcePOSabbrev = ITsString(sourceMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                                 sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
