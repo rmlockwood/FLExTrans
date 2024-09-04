@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.4 - 9/4/24 - Ron Lockwood
+#    Add * to APERT_RESERVED and remove unneeded lemmaProbData stuff. Escape reserved characters
+#    when getting the lemma.
+#
 #   Version 3.11.3 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -520,9 +524,6 @@ catProbData = [['space', 'converted to an underscore', '_', reSpace],
            ['period', 'removed', '', rePeriod],
 #          ['x char', 'fatal', '']
           ]
-
-lemmaProbData = [['asterisk', 'escaped asterisk', '\*', reAsterisk]
-            ]
 
 bilingFixSymbProbData = []
 
@@ -2167,10 +2168,6 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
 
                                             # If there is not a homograph # at the end, make it 1
                                             headWord = add_one(headWord)
-
-                                            # Convert problem chars in the headWord
-                                            #headWord = convertProblemChars(headWord, lemmaProbData)
-
                                             headWord += '.'+str(i+1)
 
                                             myList.append((headWord, abb))

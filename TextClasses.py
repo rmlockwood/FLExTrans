@@ -5,6 +5,10 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.11.1 - 9/4/24 - Ron Lockwood
+#    Add * to APERT_RESERVED and remove unneeded lemmaProbData stuff. Escape reserved characters
+#    when getting the lemma.
+#
 #   Version 3.11 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -664,7 +668,8 @@ class TextWord():
     def getLemma(self, i):
         if i < len(self.__lemmaList):
             if not self.isSentPunctutationWord():
-                return Utils.lemmaProbData #Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
+                # Escape reserved characters.
+                return re.sub(Utils.APERT_RESERVED, r'\\\1', self.__lemmaList[i])
             else:
                 return self.__lemmaList[i]
         return ''
