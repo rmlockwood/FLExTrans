@@ -1350,6 +1350,12 @@ widgetList = [
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
 
+    ["Analyitics Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+     "", GIVE_ERROR, DONT_HIDE],\
+
+    ["Log Statistics", "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
+     "Indicates if the system should send anonymous usage statistics to the developers.", GIVE_ERROR, DONT_HIDE],\
+
 
 # Hidden settings
    ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
@@ -1359,7 +1365,10 @@ widgetList = [
     "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
 
    ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
-    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER]
+    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],
+
+    ["Mixpanel User ID", "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
+     "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, HIDE_FROM_USER],
 
               ]
 
