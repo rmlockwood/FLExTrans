@@ -1368,7 +1368,7 @@ widgetList = [
     "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],
 
     ["Mixpanel User ID", "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
-     "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, HIDE_FROM_USER],
+     "The (probably) unique ID for this project which gets logged to Mixpanel.", DONT_GIVE_ERROR, HIDE_FROM_USER],
 
               ]
 
