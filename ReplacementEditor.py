@@ -137,27 +137,31 @@ class TableRow:
         self.sourceLemma.setText(llem)
         if len(ltags) > 0:
             self.sourcePOS.setText(ltags[0])
-            infl, aff = self.splitTagList(ltags[1:], self.window.sourceTags)
+            infl, aff = self.splitTagList(ltags[1:], self.window.sourceTags,
+                                          self.window.sourceAffixes)
             self.sourceInfl.setText(infl)
             self.sourceAffixes.setText(aff)
         self.targetLemma.setText(rlem)
         if len(rtags) > 0:
             self.targetPOS.setText(rtags[0])
-            infl, aff = self.splitTagList(rtags[1:], self.window.targetTags)
+            infl, aff = self.splitTagList(rtags[1:], self.window.targetTags,
+                                          self.window.targetAffixes)
             self.targetInfl.setText(infl)
             self.targetAffixes.setText(aff)
         self.comment.setText(entry.attrib.get('c', ''))
 
-    def splitTagList(self, tags: list[str], features) -> tuple[str, str]:
+    def splitTagList(self, tags: list[str], features, affixes) -> tuple[str, str]:
         '''Attempt to distinguish inflectional features from affixes'''
 
-        infl, aff = [], []
-        for tag in tags:
-            if tag in features:
-                infl.append(tag)
-            else:
-                aff.append(tag)
-        return '.'.join(infl), '.'.join(aff)
+        # default to making everything a feature
+        split = len(tags)
+        # iterate backwards
+        for i in range(len(tags)-1, -1, -1):
+            # find the rightmost tag that can't be an affix
+            if tags[i] in features and tags[i] not in affixes:
+                split = i
+                break
+        return '.'.join(tags[:split]), '.'.join(tags[split:])
 
     def getSource(self) -> tuple[str, str, str, str]:
         '''Return the source fields as a tuple'''
