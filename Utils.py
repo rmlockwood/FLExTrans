@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.2 - 9/5/24 - Ron Lockwood
+#    Escape Apertium lemmas when writing the data stream to a file.
+#    Unescape Apertium lemmas when coming from a file for user display.
+#
 #   Version 3.11.4 - 9/4/24 - Ron Lockwood
 #    Add * to APERT_RESERVED and remove unneeded lemmaProbData stuff. Escape reserved characters
 #    when getting the lemma.
@@ -497,6 +501,9 @@ rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
 reDoubleNewline = re.compile(r'\n\n')
+reApertReserved = re.compile(APERT_RESERVED)
+reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
+reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
 
 NGRAM_SIZE = 5
 
@@ -2339,4 +2346,4 @@ def getCategoryHierarchy(DB):
 
 def unescapeReservedApertChars(inStr):
 
-    return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)
+    return reApertReservedEscaped.sub(r'\1', inStr)
