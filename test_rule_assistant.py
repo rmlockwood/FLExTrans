@@ -83,8 +83,9 @@ class BaseTest:
             [comp_cmd, t1xFile, binFile],
             text=True, check=False, capture_output=True,
         )
-        print(preproc.stdout)
-        print(preproc.stderr)
+        if preproc.returncode != 0:
+            print(preproc.stdout)
+            print(preproc.stderr)
         self.assertEqual(0, preproc.returncode)
 
         # Apply rules
