@@ -10,6 +10,13 @@
 #   Usage statistics logging with the online service Mixpanel
 #
 import ReadConfig
+import functools
+
+# Only retrieve the IP address once per session
+@functools.cache
+def GetIPAddress():
+    import urllib
+    return urllib.request.urlopen('http://ifconfig.me/ip').read().decode('utf-8')
 
 def GetUserID(configMap, report):
 
@@ -49,7 +56,7 @@ def GetUserID(configMap, report):
         import uuid
         userid = str(uuid.uuid1())
         ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_USER_ID, userid)
-        
+
     return userid
 
 def LogModuleStarted(configMap, report, module_name, module_version):
@@ -66,7 +73,9 @@ def LogModuleStarted(configMap, report, module_name, module_version):
         import Version
         mp.people_set(userid, {'FLExTrans Version': Version.Version})
 
-        mp.track(userid, 'Started Module', {'Module': module_name, 'Module Version': module_version})
+        mp.track(userid, 'Started Module',
+                 {'Module': module_name, 'Module Version': module_version,
+                  'ip': GetIPAddress()})
     except:
         # fail silently
         pass
