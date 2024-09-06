@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.11.1 - 9/6/24 - Ron Lockwood
+#    Test using mixpanel usage statistics.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -225,12 +228,17 @@ and class1 to classN are inflection classes that may be present on the stem.
 #----------------------------------------------------------------
 # The main processing function
 
+import Mixpanel
+
 def MainFunction(DB, report, modifyAllowed):
     
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)

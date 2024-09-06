@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.2 - 9/6/24 - Ron Lockwood
+#    Support mixpanel usage statistics.
+#
 #   Version 3.11.1 - 6/29/24 - Ron Lockwood
 #    Support text in/out.
 #
@@ -119,6 +122,7 @@ HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
 LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
 LOG_STATISTICS = 'LogStatistics'
 LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
+LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
@@ -201,7 +205,7 @@ def writeConfigValue(report, settingName, settingValue):
     for line in myLines:
 
         # If we find a match at the beg. of the line, change the setting
-        if re.match(settingName, line):
+        if re.match(settingName+'=', line):
             
             f_outHandle.write(f'{settingName}={settingValue}\n')
             found = True

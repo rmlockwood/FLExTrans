@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.11.1 - 9/6/24 - Ron Lockwood
+#    Support mixpanel usage statistics.
+#
 #   Version 3.11 - 6/21/24 - Ron Lockwood
 #    Use Setting for location and name of the Rule Assistant rules file.
 #
@@ -741,6 +744,12 @@ class Ui_MainWindow(object):
                 self.gridLayout_2.addWidget(newObj, i+j, 3, 1, 1)
                 widgInfo[WIDGET2_OBJ] = newObj
                 self.hideWidgetIfNeeded(widgInfo, newObj)
+
+        # Add a link widget at the bottom
+        newObj = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        newObj.setText('<html><head/><body><p><a href="https://software.sil.org/language-software-privacy-policy"><span style=" text-decoration: underline; color:#0000ff;">software.sil.org/language-software-privacy-policy</span></a></p></body></html>')
+        newObj.setOpenExternalLinks(True)
+        self.gridLayout_2.addWidget(newObj, i+j+1, 0, 1, 1)
                     
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -1350,11 +1359,13 @@ widgetList = [
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-    ["Analyitics Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+
+
+    ["Privacy", "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
      "", GIVE_ERROR, DONT_HIDE],\
 
-    ["Log Statistics", "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
-     "Indicates if the system should send anonymous usage statistics to the developers.", GIVE_ERROR, DONT_HIDE],\
+    ["Send usage statistics to FLExTrans developers", "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
+     "No personally identifiable information is sent. These anonymous statistics will help with future development.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 # Hidden settings
@@ -1369,6 +1380,9 @@ widgetList = [
 
     ["Mixpanel User ID", "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
      "The (probably) unique ID for this project which gets logged to Mixpanel.", DONT_GIVE_ERROR, HIDE_FROM_USER],
+
+    ["Usage Statistics Opt Out Question Asked", "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
+     "Opt out of sending usage statistics.", DONT_GIVE_ERROR, HIDE_FROM_USER],
 
               ]
 
