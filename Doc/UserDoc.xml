@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->23 April 2024</date
+>9 September 2024</date
 ><version
->3.10.1</version
+>3.11</version
 ><contents
 showLevel="4"
 ></contents
@@ -2275,6 +2275,56 @@ ref="rBlack"
 ></citation
 > for more details about setting up parsing effectively for either parser.</p
 ></section3
+></section2
+><section2
+id="sRuleAssist"
+><secTitle
+>The <object
+type="tTool"
+>Rule Assistant</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Rule Assistant</object
+> helps you write Apertium rules for common situations such as agreement in a phrase. It can help for the following situations:</p
+><ol
+><li
+>Agreement in the phrase such as gender and number agreement between adjective and noun.</li
+><li
+>Bantu gender agreement.</li
+><li
+>Reordering constituents in a phrase.</li
+><li
+>Turning a source word into a target affix.</li
+><li
+>Turning a source affix into a target word.</li
+><li
+>Rearranging affix order – including deleting affixes or adding affixes.</li
+></ol
+><example
+num="xRAimage"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/RuleAssistant.png"
+></img
+></chart
+></example
+><p
+>For enforcing agreement between phrase constituents you must assign the appropriate feature in FLEx to the affixes or stems involved.</p
+><p
+>For detailed help on using the <object
+type="tTool"
+>Rule Assistant</object
+>, consult the help file the comes with the  <object
+type="tTool"
+>Rule Assistant</object
+>. You can get to this help file by clicking on the <object
+type="tButton"
+>Help</object
+> button.</p
 ></section2
 ></section1
 ><section1
@@ -5451,7 +5501,14 @@ src="Images/VideoIcon.PNG"
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://vimeo.com/934390874"
 >video</link
-> for an explanation. Also see examples of conditional logic in the sample rule called: <object
+> for an explanation. Some conditional logic can be automatically created for you using the <object
+type="tTool"
+>Rule Assistant</object
+>. See <sectionRef
+sec="sRuleAssist"
+textBefore="capitalizedSingular"
+></sectionRef
+>. Also see examples of conditional logic in the sample rule called: <object
 type="tBold"
 >Sample logic to copy and paste</object
 > or in the file <object
@@ -5480,9 +5537,19 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
+>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are. You can use the <object
+type="tTool"
+>Rule Assistant</object
+> to do this. See <sectionRef
+sec="sRuleAssist"
+textBefore="capitalizedSingular"
+></sectionRef
+>.</p
 ><p
->To see how to do this in a sample language pair, please watch this <link
+>If you can't use the <object
+type="tTool"
+>Rule Assistant</object
+> for some reason and you want to see how to do this ‘manually’ in a sample language pair, please watch this <link
 href="https://vimeo.com/934391317"
 >video</link
 >.</p
@@ -5501,7 +5568,7 @@ type="tFilename"
 ><section3
 id="sSampleLogic"
 ><secTitle
->How do I use the Sample logic that's in the transfer rules file?</secTitle
+>How do I use the Sample logic that’s in the transfer rules file?</secTitle
 ><p
 >Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule. There's also a file called <object
 type="tFilename"
