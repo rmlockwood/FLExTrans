@@ -40,7 +40,7 @@ docs = {FTM_Name       : "Text Out Rules",
         FTM_Description: 
 """
 This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-synthesis. Regular expression can be used if desired.
+synthesis. Regular expressions can be used if desired.
 """}
         
 #----------------------------------------------------------------
