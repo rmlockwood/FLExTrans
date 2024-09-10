@@ -17,7 +17,7 @@ Do these things when making a new release
 -Create the release in Git with the new version string. 
  -Go to tags, switch to Releases
  -Click draft new release
- -Choose tags and give new vx.x.x and click Create new tag xxx on publish
+ -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
  -Fill out Title (e.g. 3.7 - Sense Linker and Live Rule Tester Improvements)
  -Auto-generate release notes.
  -Publish
