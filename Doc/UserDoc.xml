@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->9 September 2024</date
+>10 September 2024</date
 ><version
 >3.11</version
 ><contents
@@ -1184,7 +1184,10 @@ type="tButton"
 >The <object
 type="tButton"
 >Run</object
-> button runs the currently selected module.</li
+> button runs the currently selected module. Note: you can multi-select modules (using ctrl-click or shift-click) and use the <object
+type="tButton"
+>Run</object
+> button to run all the modules that you have selected.</li
 ><li
 >The <object
 type="tButton"
