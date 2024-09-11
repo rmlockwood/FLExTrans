@@ -161,28 +161,6 @@ InitPluginsDir
       File "${GIT_FOLDER}\flextools.ini"
     ${EndIf}
     
-	# If we aren't in TemplateProject update the flextrans.config file to have the log statistics SETTINGS
-	StrCmp $1 "German-Swedish" 0 +8
-	  ${ReadFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" $R2
-	  # Check if LogStatisticsUserID is in the file
-	  StrStr $R2 "LogStatisticsUserID" $R3
-	  # If the word is not found, append the line
-      StrCmp $R3 "" 0 +3
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatisticsUserID="
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatisticsOptOutQuestionAsked=n"
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatistics=y"
-	  
-	# If we aren't in TemplateProject update the flextrans.config file to have the log statistics SETTINGS
-	StrCmp $1 "TemplateProject" 0 +8
-	  ${ReadFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" $R2
-	  # Check if LogStatisticsUserID is in the file
-	  StrStr $R2 "LogStatisticsUserID" $R3
-	  # If the word is not found, append the line
-      StrCmp $R3 "" 0 +3
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatisticsUserID="
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatisticsOptOutQuestionAsked=n"
-      ${AppendFile} "${WORKPROJECTSDIR}\$1\Config\FLExTrans.config" "LogStatistics=y"
-	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
