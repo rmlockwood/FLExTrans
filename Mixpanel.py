@@ -4,6 +4,9 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.11.1 - 9/11/24 - Ron Lockwood
+#    Use new write config parameter to create setting if missing.
+#
 #   Version 3.11 - 9/6/24 - Ron Lockwood
 #    Enhanced the functions to check for an opt out question. Use the Write Config Value function
 #
@@ -24,7 +27,7 @@ def GetUserID(configMap, report):
 
     opt_out_asked = ReadConfig.getConfigVal(configMap, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION,
                                           None, giveError=False)
-    if opt_out_asked == 'n':
+    if opt_out_asked == 'n' or opt_out_asked is None:
 
         from System.Windows.Forms import (MessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult)
 
@@ -35,12 +38,12 @@ def GetUserID(configMap, report):
 
         if result == DialogResult.Yes:
 
-            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n')
-            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y')
+            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n', createIfMissing=True)
+            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y', createIfMissing=True)
             return None
         else:
-            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y')
-            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'y')
+            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y', createIfMissing=True)
+            ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'y', createIfMissing=True)
             got_answer = True
 
     if not got_answer:
@@ -55,7 +58,7 @@ def GetUserID(configMap, report):
     if not userid:
         import uuid
         userid = str(uuid.uuid1())
-        ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_USER_ID, userid)
+        ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_USER_ID, userid, createIfMissing=True)
 
     return userid
 

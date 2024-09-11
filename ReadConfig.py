@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.3 - 9/11/24 - Ron Lockwood
+#    Use new write config parameter to create setting if missing.
+#
 #   Version 3.11.2 - 9/6/24 - Ron Lockwood
 #    Support mixpanel usage statistics.
 #
@@ -188,7 +191,7 @@ def openConfigFile(report, info):
             
         return None
 
-def writeConfigValue(report, settingName, settingValue):
+def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     
     f_handle = openConfigFile(report, 'r')
     
@@ -212,16 +215,21 @@ def writeConfigValue(report, settingName, settingValue):
         else:
             f_outHandle.write(line)
     
-    f_outHandle.close()
-    
     if not found:
         
-        if report is not None:
+        if createIfMissing:
+ 
+            f_outHandle.write(f'{settingName}={settingValue}\n') 
+
+        else:
+            if report is not None:
+                
+                report.Error(f'Setting: {settingName} not found in the configuration file.')
             
-            report.Error(f'Setting: {settingName} not found in the configuration file.')
-        
-        return False
+            f_outHandle.close()
+            return False
             
+    f_outHandle.close()
     return True
     
 def readConfig(report):
