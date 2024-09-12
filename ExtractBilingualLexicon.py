@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.1 - 9/12/24 - Ron Lockwood
+#    Better error checking when critical settings not set.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -296,7 +299,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -823,7 +826,16 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
     
-    if not (linkField and sourceMorphNames and sentPunct):
+    if not linkField:
+        errorList.append((f"Custom field for linking doesn't exist. Please read the instructions.", 2))
+
+    if not sourceMorphNames:
+        errorList.append((f"No Source Morphnames to count as root found. Review your Settings.", 2))
+
+    if not sentPunct:
+        errorList.append((f"No Sentence Punctuation found. Review your Settings.", 2))
+
+    if len(errorList) > 0:
         return errorList
     
     # Transform the straight list of category abbreviations to a list of tuples
