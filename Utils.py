@@ -5,6 +5,14 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.2 - 9/5/24 - Ron Lockwood
+#    Escape Apertium lemmas when writing the data stream to a file.
+#    Unescape Apertium lemmas when coming from a file for user display.
+#
+#   Version 3.11.4 - 9/4/24 - Ron Lockwood
+#    Add * to APERT_RESERVED and remove unneeded lemmaProbData stuff. Escape reserved characters
+#    when getting the lemma.
+#
 #   Version 3.11.3 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -449,7 +457,11 @@ import FTPaths
 
 CIRCUMFIX_TAG_A = '_cfx_part_a'
 CIRCUMFIX_TAG_B = '_cfx_part_b'
-APERT_RESERVED = r'([\[\]@/\\^$><])'
+# reserved characters listed at here:
+# https://wiki.apertium.org/wiki/Apertium_stream_format
+# But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
+# { and } need to be escaped if we're using apertium-interchunk
+APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -486,13 +498,12 @@ reObjAddOne = re.compile('\d$', flags=re.RegexFlag.A) # ASCII-only match
 reTestID = re.compile('test id=".+?"')
 reSpace = re.compile(r'\s')
 rePeriod = re.compile(r'\.')
-reForwardSlash = re.compile(r'/')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
-# the key is to find non-left or right angle brackets for the alphanumeric parts of the symbol
-reSlashInSymbol = re.compile(r'(="[^<>=]+?)(/)([^<>=]+?")')
-reSLASHInSymbol = re.compile(r'(<[^<>]+?)SLASH([^<>]+?>)')
 reDoubleNewline = re.compile(r'\n\n')
+reApertReserved = re.compile(APERT_RESERVED)
+reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
+reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
 
 NGRAM_SIZE = 5
 
@@ -518,18 +529,12 @@ morphTypeMap = {
 # Invalid category characters & descriptions & messages & replacements
 catProbData = [['space', 'converted to an underscore', '_', reSpace],
            ['period', 'removed', '', rePeriod],
-           ['slash', 'converted to a vertical bar', '|', reForwardSlash]
 #          ['x char', 'fatal', '']
           ]
 
-lemmaProbData = [['asterisk', 'converted to an underscore', '_', reAsterisk]
-            ]
+bilingFixSymbProbData = []
 
-bilingFixSymbProbData = [['slash', 'converted to SLASH', r'\1SLASH\3', reSlashInSymbol]
-                        ]
-
-bilingUnFixSymbProbData = [['SLASH', 'converted to slash', r'\1/\2', reSLASHInSymbol],
-                           ['double newline', 'converted to single newline', r'\n', reDoubleNewline]
+bilingUnFixSymbProbData = [['double newline', 'converted to single newline', r'\n', reDoubleNewline]
                           ]
 
 def convertProblemChars(convertStr, problemDataList):
@@ -1810,37 +1815,44 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
     return countList, posAbbrStr
 
-def stripRulesFile(report, buildFolder, tranferRulePath, strippedRulesFileName):
+def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName):
 
-    # Open the existing rule file and read all the lines
+    # Open the existing rule file
     try:
-        f = open(tranferRulePath ,"r", encoding='utf-8')
+        # Note that by default this will strip comments and headers
+        # (even though that is no longer necessary on newer versions
+        # of apertium-transfer)
+        tree = ET.parse(transferRulePath).getroot()
     except:
         report.Error(f'Error in opening the file: "{tranferRulePath}", check that it exists.')
         return True
 
-    lines = f.readlines()
-    f.close()
+    # Lemmas in <cat-item> are not compared for string equality,
+    # so we don't need to escape the other special characters,
+    # but * will be treated as a glob matching any sequence of characters,
+    # so we escape it here.
+    # If any users do want the glob behavior, we'll have a problem, but
+    # that strikes me as less likely.
+    for cat in tree.findall('.//cat-item'):
+        if 'lemma' in cat.attrib:
+            cat.attrib['lemma'] = cat.attrib['lemma'].replace('*', '\\*')
 
-    # Create a new file tr.t1x to be used by Apertium
-    f = open(os.path.join(buildFolder, strippedRulesFileName) ,"w", encoding='utf-8')
+    # If we're only doing one-stage transfer, then really we only need to
+    # escape things when we're comparing against input (so .//test//lit),
+    # but we might be doing multi-stage transfer and it doesn't hurt
+    # anything to also escape the output (and it's less complicated).
+    for tag in ['lit', 'list-item']:
+        for node in tree.findall('.//'+tag):
+            if 'v' in node.attrib:
+                node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
+                                          node.attrib['v'])
 
-    # Go through the existing rule file and write everything to the new file except Doctype stuff.
-    for line in lines:
-
-        strippedLine = line.strip()
-
-        if strippedLine.startswith('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN"') or \
-               strippedLine.startswith('<!DOCTYPE interchunk PUBLIC "-//XMLmind//DTD interchunk//EN"') or \
-               strippedLine.startswith('<!DOCTYPE postchunk PUBLIC "-//XMLmind//DTD postchunk//EN"') or \
-               strippedLine == '"transfer.dtd">' or \
-               strippedLine == '"interchunk.dtd">' or \
-               strippedLine == '"postchunk.dtd">':
-            continue
-
+    outPath = os.path.join(buildFolder, strippedRulesFileName)
+    with open(outPath, 'w', encoding='utf-8') as fout:
+        text = ET.tostring(tree, encoding='unicode')
         # Always write transfer rule data as decomposed
-        f.write(unicodedata.normalize('NFD', line))
-    f.close()
+        text = unicodedata.normalize('NFD', text)
+        fout.write(text)
 
     return False
 
@@ -2163,10 +2175,6 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
 
                                             # If there is not a homograph # at the end, make it 1
                                             headWord = add_one(headWord)
-
-                                            # Convert problem chars in the headWord
-                                            headWord = convertProblemChars(headWord, lemmaProbData)
-
                                             headWord += '.'+str(i+1)
 
                                             myList.append((headWord, abb))
@@ -2338,4 +2346,4 @@ def getCategoryHierarchy(DB):
 
 def unescapeReservedApertChars(inStr):
 
-    return re.sub(r'\\'+APERT_RESERVED, r'\1', inStr)
+    return reApertReservedEscaped.sub(r'\1', inStr)
