@@ -5,8 +5,16 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#   Version 3.11.3 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
+#
+#   Version 3.11.2 - 9/5/24 - Ron Lockwood
+#    Escape Apertium lemmas when writing the data stream to a file.
+#    Unescape Apertium lemmas when coming from a file for user display.
+#
+#   Version 3.11.1 - 8/30/24 - Ron Lockwood
+#    apertium_transfer now gives additional info. in the trace -- namely the target lexical
+#    unit. Remove this when outputting to the Rule Execution Information yellow box.
 #
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
@@ -410,7 +418,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.1",
+        FTM_Version    : "3.11.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2121,6 +2129,21 @@ class Main(QMainWindow):
             item.setCheckable(True)
             item.setCheckState(False)
             ruleModel.appendRow(item)
+
+    def escapeDataStreamsLemmas(self, inputString):
+
+        # Define the substitution function
+        def escapeMatch(match):
+
+            initialCaret = match.group(1)
+            toEscape = match.group(2)
+            escaped = Utils.reApertReserved.sub(lambda x: '\\' + x.group(), toEscape)
+            return initialCaret + escaped + match.group(3)
+        
+        # Perform the substitution using the compiled pattern. The pattern looks like this: r'(\^)(.*?)(<)'
+        escapedString = Utils.reBetweenCaretAndFirstAngleBracket.sub(escapeMatch, inputString)
+        
+        return escapedString
             
     def TransferClicked(self):
         
@@ -2183,7 +2206,8 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
             
-        sf.write(myStr)
+        # When writing to the source text file, insert slashes before reserved Apertium characters
+        sf.write(self.escapeDataStreamsLemmas(myStr))
         sf.close()
         
         # Only rewrite the transfer rules file if there was a change
@@ -2402,6 +2426,9 @@ class Main(QMainWindow):
                 
                 # Split into lexical units
                 lexUnitList = lexUnitsStr.split('\t')
+
+                # Each lexical unit also has / plus the target lexical unit. Remove these.
+                lexUnitList = [myLU.split('/')[0] for myLU in lexUnitList]
                 
                 # Create a <p> html element
                 paragraphEl = ET.Element('p')

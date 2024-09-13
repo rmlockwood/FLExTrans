@@ -62,23 +62,35 @@ class BaseTest:
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
 
-        # Validate rules
-        validate = subprocess.run(
-            ['apertium-validate-transfer', t1xFile],
-            text=True, check=False, capture_output=True,
-        )
-        self.assertEqual(0, validate.returncode)
+        if os.name == 'posix':
+            # Validate rules
+            validate = subprocess.run(
+                ['apertium-validate-transfer', t1xFile],
+                text=True, check=False, capture_output=True,
+            )
+            self.assertEqual(0, validate.returncode)
+            # We don't install apertium-validate-transfer with FLExTrans,
+            # so don't run this check on Windows.
+
+        comp_cmd = 'apertium-preprocess-transfer'
+        run_cmd = 'apertium-transfer'
+        if os.name == 'nt':
+            comp_cmd = f'Apertium4Windows\\{comp_cmd}.exe'
+            run_cmd = f'Apertium4Windows\\{run_cmd}.exe'
 
         # Compile rules
         preproc = subprocess.run(
-            ['apertium-preprocess-transfer', t1xFile, binFile],
+            [comp_cmd, t1xFile, binFile],
             text=True, check=False, capture_output=True,
         )
+        if preproc.returncode != 0:
+            print(preproc.stdout)
+            print(preproc.stderr)
         self.assertEqual(0, preproc.returncode)
 
         # Apply rules
         proc = subprocess.Popen(
-            ['apertium-transfer', '-b', '-z', t1xFile, binFile],
+            [run_cmd, '-b', '-z', t1xFile, binFile],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )

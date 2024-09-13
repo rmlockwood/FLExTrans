@@ -5,6 +5,14 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.11.2 - 9/5/24 - Ron Lockwood
+#    Escape Apertium lemmas when writing the data stream to a file.
+#    Unescape Apertium lemmas when coming from a file for user display.
+#
+#   Version 3.11.1 - 9/4/24 - Ron Lockwood
+#    Add * to APERT_RESERVED and remove unneeded lemmaProbData stuff. Escape reserved characters
+#    when getting the lemma.
+#
 #   Version 3.11 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -585,7 +593,7 @@ class TextWord():
         lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
     def escapeReservedApertChars(self, inStr):
-        return re.sub(Utils.APERT_RESERVED, r'\\\1', inStr)
+        return Utils.reApertReserved.sub(r'\\\1', inStr)
     def getAffixSymbols(self):
         # assume no compound roots for this word
         return self.__affixLists[0]
@@ -635,11 +643,6 @@ class TextWord():
         # I believe there's one sense for each entry
     def getGuid(self):
         return self.__guid
-    def hasPunctuation(self):
-        # check for punctuation that is not spaces
-        if re.search(r'\S', self.__initPunc) or re.search(r'\S', self.__finalPunc):
-            return True
-        return False
     def getID(self):
         return self.getGuid()
     def getEntryIndex(self, e):
@@ -663,10 +666,7 @@ class TextWord():
         return self.__initPunc
     def getLemma(self, i):
         if i < len(self.__lemmaList):
-            if not self.isSentPunctutationWord():
-                return Utils.convertProblemChars(self.__lemmaList[i], Utils.lemmaProbData)
-            else:
-                return self.__lemmaList[i]
+            return self.__lemmaList[i]
         return ''
     def getPOS(self, i):
         if self.hasSenses() and i < len(self.__senseList):
@@ -712,6 +712,11 @@ class TextWord():
         return False
     def hasEntries(self):
         if len(self.__eList) > 0:
+            return True
+        return False
+    def hasPunctuation(self):
+        # check for punctuation that is not spaces
+        if re.search(r'\S', self.__initPunc) or re.search(r'\S', self.__finalPunc):
             return True
         return False
     def hasSenses(self):
@@ -817,20 +822,20 @@ class TextWord():
         if len(self.__eList) > 1:
             return False # we have a compound of 2 or more entries
         return True
-    def outputDataForAllRoots(self):
+    def __outputDataForAllRoots(self, escapeLemma):
         retStr = ''
         if self.isSentPunctutationWord():
             return self.getLemma(0) + self.getDataStreamSymbols(0)
         else:
             for i, _ in enumerate(self.__lemmaList):
-                retStr += self.getLemma(i)
+                retStr += self.escapeReservedApertChars(self.getLemma(i)) if escapeLemma else self.getLemma(i)
                 retStr += self.getDataStreamSymbols(i)
         return retStr
-    def outputDataStream(self):
-        retStr = self.__initPunc+self.outputWordDataStream()+self.__finalPunc
+    def outputDataStream(self, escapeLemma=False):
+        retStr = self.__initPunc+self.__outputWordDataStream(escapeLemma)+self.__finalPunc
         return retStr
-    def outputWordDataStream(self):
-        retStr = '^'+self.outputDataForAllRoots()+'$'
+    def __outputWordDataStream(self, escapeLemma):
+        retStr = '^'+self.__outputDataForAllRoots(escapeLemma)+'$'
         return retStr
     def posMatchForMiddleItemInDiscontigousList(self, discontigPOSList):
         if self.getPOS(0) in discontigPOSList:
@@ -843,11 +848,11 @@ class TextWord():
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
-        fOut.write(Utils.split_compounds(self.outputDataStream()))
+        fOut.write(Utils.split_compounds(self.outputDataStream(escapeLemma=True)))
     def writePrePunc(self, fOut):
         fOut.write(self.__initPunc)
     def writePostPunc(self, fOut):
         fOut.write(self.__finalPunc)
     def writeWordData(self, fOut):
-        fOut.write(Utils.split_compounds(self.outputWordDataStream()))
+        fOut.write(Utils.split_compounds(self.__outputWordDataStream(escapeLemma=True)))
         

@@ -47,7 +47,7 @@ docs = {FTM_Name       : "Text In Rules",
         FTM_Description: 
 """
 This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-Paratext. Regular expression can be used if desired.
+Paratext. Regular expressions and Wildebeest normalization can be used if desired.
 """}
         
 #----------------------------------------------------------------
