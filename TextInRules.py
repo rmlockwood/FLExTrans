@@ -5,6 +5,9 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -37,7 +40,7 @@ from TextInOut import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.10.5",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of Paratext-import search and replace operations.' ,
         FTM_Help   : "",
@@ -56,6 +59,10 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
     # Get the path to the search-replace rules file
     textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=True)
 

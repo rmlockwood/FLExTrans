@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.11.2 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11.1 - 9/6/24 - Ron Lockwood
 #    Test using mixpanel usage statistics.
 #
@@ -207,7 +210,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -228,8 +231,6 @@ and class1 to classN are inflection classes that may be present on the stem.
 #----------------------------------------------------------------
 # The main processing function
 
-import Mixpanel
-
 def MainFunction(DB, report, modifyAllowed):
     
     # Read the configuration file which we assume is in the current directory.
@@ -238,6 +239,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.

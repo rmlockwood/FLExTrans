@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -33,7 +36,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
@@ -52,6 +55,10 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
     # Get the path to the search-replace rules file
     textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=True)
 

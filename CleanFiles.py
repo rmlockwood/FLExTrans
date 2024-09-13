@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -66,7 +69,7 @@ import FTPaths
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
         FTM_Help  : "",  
@@ -85,6 +88,10 @@ def MainFunction(DB, report, modify=True):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report, giveError=False)
     try:

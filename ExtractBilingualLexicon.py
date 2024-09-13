@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -296,7 +299,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",               
         FTM_Help   : "",
@@ -1115,6 +1118,10 @@ def MainFunction(DB, report, modifyAllowed):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Call the main function
     errorList = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)

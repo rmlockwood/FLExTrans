@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/15/24 - Ron Lockwood
 #    Support FLEx Alpha 9.2.2 which no longer supports Get Instance, use Get Service instead.
 #
@@ -87,7 +90,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -115,6 +118,10 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
     TargetDB = FLExProject()
 
     try:
