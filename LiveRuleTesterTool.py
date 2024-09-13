@@ -745,6 +745,8 @@ class Main(QMainWindow):
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
+            self.ret_val = False
+            self.close()
             return
         
         # Set the source and target widget font sizes
