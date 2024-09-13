@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -97,7 +100,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -117,6 +120,10 @@ def MainFunction(DB, report, modify=True):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return True
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the dictionary file
     dictionaryPath = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)

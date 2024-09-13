@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/15/24 - Ron Lockwood
 #    Fixes #200. Don't cache the result object. For some reason it causes gaps in the tree view for duplicate results.
 #
@@ -116,7 +119,7 @@ from TestbedLog import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View testbed run results.",
         FTM_Help   : "", 
@@ -661,6 +664,10 @@ def RunTestbedLogViewer(report):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     testbedPath = ReadConfig.getConfigVal(configMap, ReadConfig.TESTBED_FILE, report)
 

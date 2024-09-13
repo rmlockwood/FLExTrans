@@ -14,6 +14,9 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   20 Aug 2024 rl v3.11  Bumped to 3.11
 #   18 Jan 2023 rl v3.10  Bumped to 3.10
 #   17 Aug 2023 rl v3.9.4 More changes to support FLEx 9.1.22 and FlexTools 2.2.3 for Pythonnet 3.0.
@@ -59,7 +62,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate All Parses",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
@@ -383,6 +386,10 @@ def MainFunction(DB, report, modifyAllowed):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Open the target project
     DB = Utils.openTargetProject(configMap, report)

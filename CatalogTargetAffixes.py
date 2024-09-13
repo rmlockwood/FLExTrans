@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -130,7 +133,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.11",        
+        FTM_Version    : "3.11.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -307,6 +310,10 @@ def MainFunction(DB, report, modifyAllowed):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
