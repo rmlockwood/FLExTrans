@@ -456,7 +456,10 @@ class Main(QMainWindow):
             headWord = Utils.add_one(headWord)
             headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
             headWord = norm(headWord)
+            clitic = Utils.isClitic(entry)
             for i, sense in enumerate(entry.SensesOS, 1):
+                if clitic:
+                    affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
                 if not sense.MorphoSyntaxAnalysisRA:
                     continue
                 if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
