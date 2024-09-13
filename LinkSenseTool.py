@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.11.1 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -282,7 +285,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1758,7 +1761,8 @@ def MainFunction(DB, report, modify=False):
         return
     
     retVal = RESTART_MODULE
-    
+    loggedStart = False
+
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
@@ -1767,6 +1771,13 @@ def MainFunction(DB, report, modify=False):
         if not configMap:
             return
     
+        if not loggedStart:
+
+            # Log the start of this module on the analytics server if the user allows logging.
+            import Mixpanel
+            Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+            loggedStart = True
+
         retVal = RunModule(DB, report, configMap)
         
     if retVal == REBUILD_BILING:

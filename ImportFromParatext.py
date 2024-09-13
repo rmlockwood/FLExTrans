@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11.2 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11.1 - 8/16/24 - Ron Lockwood
 #    Fix silently closing when TextIn/Out settings are missing.
 #
@@ -456,7 +459,11 @@ def MainFunction(DB, report, modify=True):
     if not configMap:
         return
     
-    # Get the path to the search-replace rules file
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+   # Get the path to the search-replace rules file
     textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=False)
 
     if textInRulesFile is not None:

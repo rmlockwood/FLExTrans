@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.3 - 9/11/24 - Ron Lockwood
+#    Use new write config parameter to create setting if missing.
+#
+#   Version 3.11.2 - 9/6/24 - Ron Lockwood
+#    Support mixpanel usage statistics.
+#
 #   Version 3.11.1 - 6/29/24 - Ron Lockwood
 #    Support text in/out.
 #
@@ -117,6 +123,9 @@ HERMIT_CRAB_MASTER_FILE = 'HermitCrabMasterFile'
 HERMIT_CRAB_SURFACE_FORMS_FILE = 'HermitCrabSurfaceFormsFile'
 HERMIT_CRAB_SYNTHESIS = 'HermitCrabSynthesis'
 LINKER_SEARCH_ANYTHING_BY_DEFAULT = 'LinkerSearchAnythingByDefault'
+LOG_STATISTICS = 'LogStatistics'
+LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
+LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
@@ -182,7 +191,7 @@ def openConfigFile(report, info):
             
         return None
 
-def writeConfigValue(report, settingName, settingValue):
+def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     
     f_handle = openConfigFile(report, 'r')
     
@@ -199,23 +208,28 @@ def writeConfigValue(report, settingName, settingValue):
     for line in myLines:
 
         # If we find a match at the beg. of the line, change the setting
-        if re.match(settingName, line):
+        if re.match(settingName+'=', line):
             
             f_outHandle.write(f'{settingName}={settingValue}\n')
             found = True
         else:
             f_outHandle.write(line)
     
-    f_outHandle.close()
-    
     if not found:
         
-        if report is not None:
+        if createIfMissing:
+ 
+            f_outHandle.write(f'{settingName}={settingValue}\n') 
+
+        else:
+            if report is not None:
+                
+                report.Error(f'Setting: {settingName} not found in the configuration file.')
             
-            report.Error(f'Setting: {settingName} not found in the configuration file.')
-        
-        return False
+            f_outHandle.close()
+            return False
             
+    f_outHandle.close()
     return True
     
 def readConfig(report):

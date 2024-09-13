@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.3 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
 #   Version 3.11.2 - 9/5/24 - Ron Lockwood
 #    Escape Apertium lemmas when writing the data stream to a file.
 #    Unescape Apertium lemmas when coming from a file for user display.
@@ -415,7 +418,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.2",
+        FTM_Version    : "3.11.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2706,10 +2709,18 @@ def RunModule(DB, report):
 def MainFunction(DB, report, modify=False):
 
     retVal = RESTART_MODULE
+    loggedStart = False
     
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
+        if not loggedStart:
+
+            # Log the start of this module on the analytics server if the user allows logging.
+            import Mixpanel
+            Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+            loggedStart = True
+
         retVal = RunModule(DB, report)
     
     # Start the log viewer

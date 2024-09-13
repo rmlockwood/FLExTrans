@@ -39,14 +39,15 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy MakefileForLiveRuleTester.advanced %workprojects%\%%d\Build\LiveRuleTester\Makefile.advanced
 )
 
-rem copy the FlexTrans.config file and force it to be overwritten. 
+rem copy the FlexTrans.config file and force it to be overwritten.
 copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
 copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
 
 rem build Python requirements file
-xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder% 
+xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
+echo mixpanel >> %flextransfolder%\requirements.txt
 echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
 echo regex >> %flextransfolder%\requirements.txt
 echo wildebeest-nlp >> %flextransfolder%\requirements.txt
@@ -103,6 +104,7 @@ copy TestbedValidator.py %flextranslib%
 copy CreateApertiumRules.py %flextranslib%
 copy TextInOutUtils.py %flextranslib%
 copy TextInOut.py %flextranslib%
+copy Mixpanel.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
 copy MyTableView.py %flextranslib%
