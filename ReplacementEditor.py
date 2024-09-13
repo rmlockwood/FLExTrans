@@ -153,6 +153,9 @@ class TableRow:
     def splitTagList(self, tags: list[str], features, affixes) -> tuple[str, str]:
         '''Attempt to distinguish inflectional features from affixes'''
 
+        # if everything can be an affix, then everything is an affix
+        if set(tags) <= affixes:
+            return '', '.'.join(tags)
         # default to making everything a feature
         split = len(tags)
         # iterate backwards
