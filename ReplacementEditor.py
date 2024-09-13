@@ -159,7 +159,7 @@ class TableRow:
         for i in range(len(tags)-1, -1, -1):
             # find the rightmost tag that can't be an affix
             if tags[i] in features and tags[i] not in affixes:
-                split = i
+                split = i + 1
                 break
         return '.'.join(tags[:split]), '.'.join(tags[split:])
 
