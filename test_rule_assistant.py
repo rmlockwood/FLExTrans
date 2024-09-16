@@ -6,22 +6,15 @@ import shutil
 import importlib
 import subprocess
 
-from RuleAssistantTests import Utils
-
-CreateApertiumRules = None
-
 ParentFolder = os.path.dirname(__file__)
 DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
+script = 'CreateApertiumRules.py'
+with open(os.path.join(ParentFolder, script)) as fin:
+    with open(os.path.join(TestFolder, script), 'w') as fout:
+        fout.write(fin.read().replace('import Utils', 'from . import Utils'))
 
-def setUpModule():
-    global CreateApertiumRules
-    script = 'CreateApertiumRules.py'
-    with open(os.path.join(ParentFolder, script)) as fin:
-        with open(os.path.join(TestFolder, script), 'w') as fout:
-            fout.write(fin.read().replace('import Utils', 'from . import Utils'))
-    CreateApertiumRules = importlib.import_module(
-        'RuleAssistantTests.CreateApertiumRules')
+from RuleAssistantTests import CreateApertiumRules
 
 class Reporter:
     def __init__(self):
@@ -41,7 +34,6 @@ class BaseTest:
     TestPairs = []
 
     def runTest(self):
-        global Utils
         prefix = os.path.join(TestFolder, self.__class__.__name__)
         t1xFile = prefix + '.t1x'
         binFile = prefix + '.bin'
@@ -50,7 +42,7 @@ class BaseTest:
             os.remove(t1xFile)
         if self.TransferFile is not None:
             shutil.copy(os.path.join(DataFolder, self.TransferFile), t1xFile)
-        Utils.DATA = self.Data
+        CreateApertiumRules.Utils.DATA = self.Data
 
         # Create rules
         report = Reporter()
@@ -109,7 +101,7 @@ class BaseTest:
         proc.stderr.close()
         self.assertEqual(proc.poll(), 0)
 
-        Utils.DATA = {}
+        CreateApertiumRules.Utils.DATA = {}
 
 class FrenchSpanishAdjNoun(BaseTest, unittest.TestCase):
     Data = {
