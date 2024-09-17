@@ -452,6 +452,7 @@ class Main(QMainWindow):
             def norm(s): return s
         lemmas = {}
         affixes = set()
+        affixClasses = ['MoInflAffMsa', 'MoDerivAffMsa', 'MoUnclassifiedAffixMsa']
         self.report.ProgressStart(DB.LexiconNumberOfEntries())
         for index, entry in enumerate(DB.LexiconAllEntries()):
             self.report.ProgressUpdate(index)
@@ -473,7 +474,7 @@ class Main(QMainWindow):
                     pos = Utils.convertProblemChars(pos, Utils.catProbData)
                     tags = Utils.getInflectionTags(msa)
                     lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
-                elif sense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+                elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
                     affixes.add(Utils.underscores(Utils.as_string(sense.Gloss)))
         return lemmas, affixes
 
