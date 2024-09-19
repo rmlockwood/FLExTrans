@@ -43,7 +43,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
 from SIL.LCModel import (
-    IFsClosedFeatureRepository,
+    IFsClosedFeatureRepository, ITextRepository,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString
 
@@ -331,19 +331,20 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         result = subprocess.run(params, capture_output=True)
 
         output = result.stdout.decode('utf-8').strip().split()
+        lrt = (not fromLRT) and ('LRT' in output)
         if not output or output[0] not in ['1', '2']:
-            return (False, None)
+            return (False, None, False)
         elif output[0] == '1':
-            return (True, int(output[1])) # create single rule
+            return (True, int(output[1]), lrt) # create single rule
         else:
-            return (True, None) # create all rules
+            return (True, None, lrt) # create all rules
 
     except Exception as e:
 
         report.Error(f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}')
-        return (False, None)
+        return (False, None, False)
 
-    return (False, None)
+    return (False, None, False)
 
 #----------------------------------------------------------------
 # The main processing function
@@ -385,12 +386,17 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     testData = GetTestDataFile(report, DB, configMap)
 
     # Start the Rule Assistant GUI
-    saved, rule = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testData, fromLRT=fromLRT)
+    saved, rule, lrt = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testData, fromLRT=fromLRT)
 
     if saved:
         CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
         report.Info('No rules created.')
+
+    if lrt:
+        # TODO: pass list of generated rules
+        from LiveRuleTesterTool import MainFunction as LRT
+        LRT(DB, report, modify)
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
