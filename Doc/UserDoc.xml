@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans.help@gmail.com</emailAddress
 ><date
->23 April 2024</date
+>10 September 2024</date
 ><version
->3.10.1</version
+>3.11</version
 ><contents
 showLevel="4"
 ></contents
@@ -1184,7 +1184,10 @@ type="tButton"
 >The <object
 type="tButton"
 >Run</object
-> button runs the currently selected module.</li
+> button runs the currently selected module. Note: you can multi-select modules (using ctrl-click or shift-click) and use the <object
+type="tButton"
+>Run</object
+> button to run all the modules that you have selected.</li
 ><li
 >The <object
 type="tButton"
@@ -2275,6 +2278,207 @@ ref="rBlack"
 ></citation
 > for more details about setting up parsing effectively for either parser.</p
 ></section3
+></section2
+><section2
+id="sRuleAssist"
+><secTitle
+>The <object
+type="tTool"
+>Rule Assistant</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Rule Assistant</object
+> helps you write Apertium transfer rules for common situations such as agreement in a phrase. It can help for the following situations:</p
+><ol
+><li
+>Agreement in the phrase such as gender and number agreement between adjective and noun.</li
+><li
+>Bantu gender agreement.</li
+><li
+>Reordering constituents in a phrase.</li
+><li
+>Turning a source word into a target affix.</li
+><li
+>Turning a source affix into a target word.</li
+><li
+>Rearranging affix order – including deleting affixes or adding affixes.</li
+></ol
+><example
+num="xRAimage"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/RuleAssistant.png"
+></img
+></chart
+></example
+><p
+>For enforcing agreement between phrase constituents you must assign the appropriate feature in <object
+type="tFlexx"
+></object
+> to the affixes or stems involved.</p
+><p
+>For detailed help on using the <object
+type="tTool"
+>Rule Assistant</object
+>, consult the help file the comes with the  <object
+type="tTool"
+>Rule Assistant</object
+>. You can get to this help file by clicking on the <object
+type="tButton"
+>Help</object
+> button.</p
+></section2
+><section2
+id="sTextIn"
+><secTitle
+>The <object
+type="tTool"
+>Text In Rules Tool</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Text In Rules Tool</object
+> helps you test a set of search and replace operations to be used to fix up the text that comes out of <object
+type="tTool"
+>Paratext</object
+>. Regular expressions can be used if desired. </p
+><p
+>All the active rules defined in this tool are used in the <object
+type="tTool"
+>Import Text From Paratext</object
+> module. The newly imported text in <object
+type="tFlexx"
+></object
+> will have the changes applied. This is very helpful for those situations where you may not have editing permission of the <object
+type="tTool"
+>Paratext</object
+> text, but some cleanup of the text is needed.</p
+><example
+num="xTextInimage"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/TextInRules.png"
+></img
+></chart
+></example
+><p
+>The rules defined in this tool are run sequentially with the output of one rule being the input for the next one. Use the up and down arrow buttons to change the order of the rules. The two buttons next to the arrow buttons will select or unselect all the rules for testing.</p
+><p
+>The interface is pretty self explanatory. To edit a rule first click on it in the list, make your changes and then click the <object
+type="tButton"
+>Update</object
+> button. You will see the edited form now in the list. </p
+><p
+>If the search and replace lines are Regular Expressions, check the <object
+type="tButton"
+>Regular Expression</object
+> checkbox. See the <object
+type="tFlexx"
+></object
+> help on how to use Regular Expressions or various websites that explain the Regular Expression language.</p
+><p
+>The <object
+type="tTool"
+>Wildebeest cleanup tool</object
+> is something that can fix or normalize many character problems. For example, it can repair characters that have encoding errors. Click the link to find out more about what can be normalized with it. You can use the default cleanup steps that come with the <object
+type="tTool"
+>Wildebeest cleanup tool</object
+>, all of the steps or mix and match steps using the <object
+type="tButton"
+>Add</object
+> and <object
+type="tButton"
+>Skip</object
+> boxes. For example, put the step <object
+type="tBoldItalic"
+>look-alike</object
+> into the <object
+type="tButton"
+>Add</object
+> box to add this normalization step. For multiple <object
+type="tButton"
+>Add</object
+> or <object
+type="tButton"
+>Skip</object
+> steps, separate the steps with spaces. Some steps require an ISO 639-3 language code. Note: <object
+type="tTool"
+>Wildebeest cleanup tool</object
+> steps are run <object
+type="tItalic"
+>before</object
+> the rules you define.</p
+><p
+>Use the <object
+type="tButton"
+>Test</object
+> button to check that your rules are doing what you expect.</p
+></section2
+><section2
+id="sTextOut"
+><secTitle
+>The <object
+type="tTool"
+>Text Out Rules Tool</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Text Out Rules Tool</object
+> helps you test a set of search and replace operations to be used to fix up the text that comes out of the <object
+type="tModule"
+>Synthesize Text</object
+> module. It basically is identical to the <object
+type="tTool"
+>Text In Rules Tool</object
+>, except it is used in a different part of the <object
+type="tFlextrans"
+></object
+> process, namely the end of the process. The rules created here are distinct from the other rules. Use this tool to make any changes to the translated text before you bring it into another tool like <object
+type="tFlexx"
+></object
+> or <object
+type="tTool"
+>Paratext</object
+>. This tool does not have the <object
+type="tTool"
+>Wildebeest cleanup tool</object
+>, since it is assumed the text has been normalized previously.</p
+><p
+>There is a separate module that must be added to the <object
+type="tCollection"
+>Drafting</object
+> collection of modules (typically after <object
+type="tModule"
+>Synthesize Text</object
+>) to make use of the rules defined in the <object
+type="tTool"
+>Text Out Rules Tool</object
+>. This module is called <object
+type="tModule"
+>Fix Up Synthesis Text</object
+>. This module will run all the rules you have defined. See <sectionRef
+sec="sCollections"
+textBefore="capitalizedSingular"
+></sectionRef
+> for help on adding a module to a collection.</p
+><example
+num="xTextOutimage"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/TextOutRules.png"
+></img
+></chart
+></example
 ></section2
 ></section1
 ><section1
@@ -5451,7 +5655,14 @@ src="Images/VideoIcon.PNG"
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://vimeo.com/934390874"
 >video</link
-> for an explanation. Also see examples of conditional logic in the sample rule called: <object
+> for an explanation. Some conditional logic can be automatically created for you using the <object
+type="tTool"
+>Rule Assistant</object
+>. See <sectionRef
+sec="sRuleAssist"
+textBefore="capitalizedSingular"
+></sectionRef
+>. Also see examples of conditional logic in the sample rule called: <object
 type="tBold"
 >Sample logic to copy and paste</object
 > or in the file <object
@@ -5480,9 +5691,19 @@ src="Images/VideoIcon.PNG"
 ></img
 ></secTitle
 ><p
->One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.</p
+>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are. You can use the <object
+type="tTool"
+>Rule Assistant</object
+> to do this. See <sectionRef
+sec="sRuleAssist"
+textBefore="capitalizedSingular"
+></sectionRef
+>.</p
 ><p
->To see how to do this in a sample language pair, please watch this <link
+>If you can't use the <object
+type="tTool"
+>Rule Assistant</object
+> for some reason and you want to see how to do this ‘manually’ in a sample language pair, please watch this <link
 href="https://vimeo.com/934391317"
 >video</link
 >.</p
@@ -5501,7 +5722,7 @@ type="tFilename"
 ><section3
 id="sSampleLogic"
 ><secTitle
->How do I use the Sample logic that's in the transfer rules file?</secTitle
+>How do I use the Sample logic that’s in the transfer rules file?</secTitle
 ><p
 >Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the block (outlined in red). Now you can copy that block and put it into your own rule. There's also a file called <object
 type="tFilename"
@@ -6040,6 +6261,38 @@ sec="sPVTgtIsPhrasal"
 ></sectionRef
 >, link the verbs and the source phrasal verb will now translate to the target phrasal verb.</p
 ></section4
+></section3
+><section3
+id="sLinkDup"
+><secTitle
+>I just copied my source <object
+type="tFlexx"
+></object
+> project to become my target <object
+type="tFlexx"
+></object
+> project. Is there a way to link all the senses?</secTitle
+><p
+>There is a <object
+type="tFlexx"
+></object
+> module called <object
+type="tModule"
+>Link All Senses As Duplicate</object
+>. This module is ideal when you duplicate one <object
+type="tFlexx"
+></object
+> project to be another one. In such a situation all the sense ids are exactly the same so it can be a big head start to link all source senses to their matches in the target project. The end result is that you will have a link for every source sense to every corresponding target sense. To add this module to your <object
+type="tCollection"
+>Tools</object
+> collection in the <object
+type="tFlexxTools"
+></object
+> app, see <sectionRef
+sec="sCollections"
+textBefore="capitalizedSingular"
+></sectionRef
+>.</p
 ></section3
 ></section2
 ></section1

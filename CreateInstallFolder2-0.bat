@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.11
+SET FLEXTRANS_VERSION=3.11.1
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
@@ -47,9 +47,10 @@ rem build Python requirements file
 xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
+echo mixpanel >> %flextransfolder%\requirements.txt
 echo PyQt5==5.15.9 >> %flextransfolder%\requirements.txt
 echo regex >> %flextransfolder%\requirements.txt
-echo wildebeest >> %flextransfolder%\requirements.txt
+echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
 copy FLExTrans.py %flextoolsfolder%
@@ -105,6 +106,7 @@ copy CreateApertiumRules.py %flextranslib%
 copy TextInOutUtils.py %flextranslib%
 copy TextInOut.py %flextranslib%
 copy ReplacementEditorWindow.py %flextranslib%
+copy Mixpanel.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
 copy MyTableView.py %flextranslib%

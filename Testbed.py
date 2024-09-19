@@ -5,6 +5,10 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.11 - 9/5/24 - Ron Lockwood
+#    Escape Apertium lemmas when writing the data stream to a file.
+#    Unescape Apertium lemmas when coming from a file for user display.
+#
 #   Version 3.10.5 - 7/13/24 - Ron Lockwood
 #    Fixes #668. The N.N wasn't being shown in the tooltip. Show it always.
 #
@@ -207,13 +211,22 @@ class LexicalUnit():
         return self.__formatedString
     
     def toApertiumString(self):
-        ret_str = '^' + self.__headWord
+        
+        # Escape reserved characters with a backslash
+        ret_str = '^' + Utils.reApertReserved.sub(r'\\\1', self.__headWord)
+
         if self.__gramCat != SENT:
             ret_str += '.' + self.__senseNum
+
+        # Add grammatical category as a tag
         ret_str += '<' + self.__gramCat + '>'
+
+        # Add the rest of the tags
         for tag in self.__otherTags:
             ret_str += '<' + tag + '>'
+
         ret_str += '$'
+
         return ret_str
     
     def __parse(self):
@@ -1151,6 +1164,10 @@ def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     
     # Lemma is the first one
     lemma = symbols.pop(0)
+
+    # Remove the slash in front of reserved characters. We really only need this for displaying the
+    # Execution log, but I think it doesn't hurt for other contexts.
+    lemma = Utils.unescapeReservedApertChars(lemma)
     
     colorInnerLU(lemma, symbols, parent_element, rtl, show_unk)
     

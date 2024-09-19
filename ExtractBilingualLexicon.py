@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.2 - 9/13/24 - Ron Lockwood
+#    Added mixpanel logging.
+#
+#   Version 3.11.1 - 9/12/24 - Ron Lockwood
+#    Better error checking when critical settings not set.
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    Bumped to 3.11.
 #
@@ -298,7 +304,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.11",
+        FTM_Version    : "3.11.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",
@@ -417,8 +423,17 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     senseNumField    = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_CUSTOM_FIELD_SENSE_NUM, report, giveError=False)
     sourceMorphNames = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_MORPHNAMES, report)
     sentPunct        = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
+    
+    if not linkField:
+        errorList.append((f"Custom field for linking doesn't exist. Please read the instructions.", 2))
 
-    if not (linkField and sourceMorphNames and sentPunct):
+    if not sourceMorphNames:
+        errorList.append((f"No Source Morphnames to count as root found. Review your Settings.", 2))
+
+    if not sentPunct:
+        errorList.append((f"No Sentence Punctuation found. Review your Settings.", 2))
+
+    if len(errorList) > 0:
         return errorList
 
     # Transform the straight list of category abbreviations to a list of tuples
@@ -492,6 +507,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         addFeatureStringsToMap(DB, posMap)
         addFeatureStringsToMap(TargetDB, posMap)
 
+        # build string for the xml pos section
+        for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):
+
+            # output abbreviation and full category name
+            categoryStr = f'    <sdef n="{POSabbr}" c="{POSname}"/>\n'
+            fOut.write(categoryStr)
+
+        # write symbol for UNK
+        categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
+        fOut.write(categoryStr)
+        fOut.write('  </sdefs>\n\n')
+        fOut.write('  <section id="main" type="standard">\n')
+
         errorList.append(("Building the bilingual dictionary...", 0))
         recordsDumpedCount = 0
         if report:
@@ -514,22 +542,19 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
 
                 # Get the headword string
+                headWord = ITsString(sourceEntry.HeadWord).Text
+
+                # Deal with spaces in the headword
+                headWord = processSpaces(headWord, DB, sourceEntry, errorList)
+
                 # If there is not a homograph # at the end, make it 1
-                headWord = Utils.add_one(rawHeadWord)
-
-                # Convert problem chars in the headWord
-                headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
-
-                if headWord != headWord.strip():
-                    errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
+                headWord = Utils.add_one(headWord)
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
 
                     targetFound = False
                     sourcePOSabbrev = 'UNK'
-                    sourceTags = []
-                    senseHeadWord = headWord + '.' + str(i+1)
 
                     # Make sure we have a valid analysis object
                     if sourceSense.MorphoSyntaxAnalysisRA:
@@ -539,6 +564,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                             sourceMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
                             if sourceMsa.PartOfSpeechRA:
+
+                                sourcePOSabbrev = ITsString(sourceMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
 
                                 # Get source inflection strings (containing class and feature abbreviations)
                                 sourceTags = getInflectionInfoSymbols(sourceMsa)
@@ -724,6 +752,10 @@ def MainFunction(DB, report, modifyAllowed):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Call the main function
     errorList = extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)

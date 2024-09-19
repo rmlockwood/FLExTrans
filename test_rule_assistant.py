@@ -6,22 +6,15 @@ import shutil
 import importlib
 import subprocess
 
-from RuleAssistantTests import Utils
-
-CreateApertiumRules = None
-
 ParentFolder = os.path.dirname(__file__)
 DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
+script = 'CreateApertiumRules.py'
+with open(os.path.join(ParentFolder, script)) as fin:
+    with open(os.path.join(TestFolder, script), 'w') as fout:
+        fout.write(fin.read().replace('import Utils', 'from . import Utils'))
 
-def setUpModule():
-    global CreateApertiumRules
-    script = 'CreateApertiumRules.py'
-    with open(os.path.join(ParentFolder, script)) as fin:
-        with open(os.path.join(TestFolder, script), 'w') as fout:
-            fout.write(fin.read().replace('import Utils', 'from . import Utils'))
-    CreateApertiumRules = importlib.import_module(
-        'RuleAssistantTests.CreateApertiumRules')
+from RuleAssistantTests import CreateApertiumRules
 
 class Reporter:
     def __init__(self):
@@ -41,7 +34,6 @@ class BaseTest:
     TestPairs = []
 
     def runTest(self):
-        global Utils
         prefix = os.path.join(TestFolder, self.__class__.__name__)
         t1xFile = prefix + '.t1x'
         binFile = prefix + '.bin'
@@ -50,7 +42,7 @@ class BaseTest:
             os.remove(t1xFile)
         if self.TransferFile is not None:
             shutil.copy(os.path.join(DataFolder, self.TransferFile), t1xFile)
-        Utils.DATA = self.Data
+        CreateApertiumRules.Utils.DATA = self.Data
 
         # Create rules
         report = Reporter()
@@ -62,23 +54,35 @@ class BaseTest:
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
                       report.infos)
 
-        # Validate rules
-        validate = subprocess.run(
-            ['apertium-validate-transfer', t1xFile],
-            text=True, check=False, capture_output=True,
-        )
-        self.assertEqual(0, validate.returncode)
+        if os.name == 'posix':
+            # Validate rules
+            validate = subprocess.run(
+                ['apertium-validate-transfer', t1xFile],
+                text=True, check=False, capture_output=True,
+            )
+            self.assertEqual(0, validate.returncode)
+            # We don't install apertium-validate-transfer with FLExTrans,
+            # so don't run this check on Windows.
+
+        comp_cmd = 'apertium-preprocess-transfer'
+        run_cmd = 'apertium-transfer'
+        if os.name == 'nt':
+            comp_cmd = f'Apertium4Windows\\{comp_cmd}.exe'
+            run_cmd = f'Apertium4Windows\\{run_cmd}.exe'
 
         # Compile rules
         preproc = subprocess.run(
-            ['apertium-preprocess-transfer', t1xFile, binFile],
+            [comp_cmd, t1xFile, binFile],
             text=True, check=False, capture_output=True,
         )
+        if preproc.returncode != 0:
+            print(preproc.stdout)
+            print(preproc.stderr)
         self.assertEqual(0, preproc.returncode)
 
         # Apply rules
         proc = subprocess.Popen(
-            ['apertium-transfer', '-b', '-z', t1xFile, binFile],
+            [run_cmd, '-b', '-z', t1xFile, binFile],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -97,7 +101,7 @@ class BaseTest:
         proc.stderr.close()
         self.assertEqual(proc.poll(), 0)
 
-        Utils.DATA = {}
+        CreateApertiumRules.Utils.DATA = {}
 
 class FrenchSpanishAdjNoun(BaseTest, unittest.TestCase):
     Data = {
