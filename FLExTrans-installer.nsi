@@ -93,17 +93,23 @@ InitPluginsDir
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
   
-  # Copy files users may change only if they don't already exist
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
-  
   SetOverwrite off
 
+  # Copy files users may change only if they don't already exist
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
+
   File "${GIT_FOLDER}\replace.dix"
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+  
+  SetOutPath "${TEMPLATEDIR}\Output"
+
+  File "${GIT_FOLDER}\replace.dix"
   
   SetOutPath "${TEMPLATEDIR}"
 
-  File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
   
   # Copy and rename the file in the Template folder to not have -Swedish

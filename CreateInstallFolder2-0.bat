@@ -18,7 +18,7 @@ set flextransfolder=Install%INSTALL_FOLDER_VERSION%\FLExTrans
    set modulesflextrans=%flextoolsmodules%\FLExTrans
     set flextranslib=    %modulesflextrans%\Lib
 
-rem Create the folder structure 
+rem Create the folder structure
 mkdir %toolsflextools%
 mkdir %flextransdoc%
 mkdir %sampleproject%
@@ -31,7 +31,7 @@ for %%d in (German-Swedish TemplateProject) do (
     mkdir %workprojects%\%%d\Build\LiveRuleTester
     mkdir %workprojects%\%%d\Config\Collections
     mkdir %workprojects%\%%d\Output
-	
+
 	rem copy makefiles
 	copy Makefile %workprojects%\%%d\Build
 	copy Makefile.advanced %workprojects%\%%d\Build
@@ -88,6 +88,7 @@ copy TextInRules.py %modulesflextrans%
 copy TextOutRules.py %modulesflextrans%
 copy FixUpSynthText.py %modulesflextrans%
 copy LinkAllSensesAsDup.py %modulesflextrans%
+copy ReplacementEditor.py %modulesflextrans%
 
 rem testbed-specific modules to Modules\FLExTrans
 copy StartTestbed.py %modulesflextrans%
@@ -104,6 +105,7 @@ copy TestbedValidator.py %flextranslib%
 copy CreateApertiumRules.py %flextranslib%
 copy TextInOutUtils.py %flextranslib%
 copy TextInOut.py %flextranslib%
+copy ReplacementEditorWindow.py %flextranslib%
 copy Mixpanel.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
@@ -123,7 +125,7 @@ copy FLExTransWindowIcon.ico %toolsflextools%
 copy UpArrow.png %toolsflextools%
 copy DownArrow.png %toolsflextools%
 copy Light_green_check.png %toolsflextools%
-copy Red_x.png             %toolsflextools%       
+copy Red_x.png             %toolsflextools%
 copy Yellow_triangle.png   %toolsflextools%
 
 rem support programs to Tools
@@ -148,11 +150,11 @@ SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
 7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
 7z a %ADD_ON_ZIP_FILE% ApertiumInterchunkXMLmind
-7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind 
-7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind  
-7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind  
-7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind  
-7z a %ADD_ON_ZIP_FILE% FLExTransRuleGeneratorXMLmind  
+7z a %ADD_ON_ZIP_FILE% ApertiumPostchunkXMLmind
+7z a %ADD_ON_ZIP_FILE% ApertiumTransferXMLmind
+7z a %ADD_ON_ZIP_FILE% FLExTransTestbedXMLmind
+7z a %ADD_ON_ZIP_FILE% FLExTransReplDictionaryXMLmind
+7z a %ADD_ON_ZIP_FILE% FLExTransRuleGeneratorXMLmind
 
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
@@ -187,4 +189,3 @@ if %COMPUTERNAME% == RONS-XPS (
   "C:\Program Files (x86)\NSIS\Bin\makensis" -V4 -DGIT_FOLDER=. -DBUILD_NUM=%BUILD_NUMBER% -DRESOURCE_FOLDER=c:\FLExTrans FLExTrans-installer.nsi
   sign FLExTrans%FLEXTRANS_VERSION%.exe
 )
-
