@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11.1 - 9/19/24 - Ron Lockwood
+#    Display the comment in the list
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    See the beginning of the comment text.
 #
@@ -119,7 +122,13 @@ def buildRuleString(searchRplObj):
     searchStr = getPrintableString(searchRplObj.searchStr)
     replStr = getPrintableString(searchRplObj.replStr)
 
-    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}'
+    # Comment string
+    commentStr = ''
+    if searchRplObj.comment:
+
+        commentStr = ' - ' + searchRplObj.comment
+
+    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}{commentStr}'
 
 def buildRuleStringFromElement(element):
 
