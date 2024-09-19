@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.11.2 - 9/19/24 - Ron Lockwood
+#    Don't need to convert problem characters on the headword anymore.
+#
 #   Version 3.11.1 - 8/17/24 - Ron Lockwood
 #    UI improvements.
 #
@@ -26,7 +29,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version: "3.11.1",
+    FTM_Version: "3.11.2",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -458,7 +461,7 @@ class Main(QMainWindow):
             self.report.ProgressUpdate(index)
             headWord = ITsString(entry.HeadWord).Text
             headWord = Utils.add_one(headWord)
-            headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
+            #headWord = Utils.convertProblemChars(headWord, Utils.lemmaProbData)
             headWord = norm(headWord)
             clitic = Utils.isClitic(entry)
             for i, sense in enumerate(entry.SensesOS, 1):
@@ -471,7 +474,7 @@ class Main(QMainWindow):
                     if not msa.PartOfSpeechRA:
                         continue
                     pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-                    pos = Utils.convertProblemChars(pos, Utils.catProbData)
+                    #pos = Utils.convertProblemChars(pos, Utils.catProbData)
                     tags = Utils.getInflectionTags(msa)
                     lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
                 elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
