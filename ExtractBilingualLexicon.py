@@ -382,6 +382,22 @@ def insertWord(elem, headWord, tags):
     for tag in tags:
         ET.SubElement(elem, 's', n=tag)
 
+def processSpaces(headWord, DB, sourceEntry, errorList):
+    
+    # Check for preceding or ending spaces
+    strippedHeadword = headWord.strip()
+    
+    if strippedHeadword != headWord.strip():
+        
+        # Give a warning if there were spaces, but use the stripped version
+        errorList.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
+                           + ITsString(sourceEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(sourceEntry)))
+    
+    # Substitute any medial spaces with <b/> (blank space element)    
+    headWord = re.sub(r' ', r'<b/>', strippedHeadword)
+    
+    return headWord
+
 # Convert the headword to lower case, tag on the POS and see if that already is in the map
 def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap):
 
@@ -507,19 +523,6 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         addFeatureStringsToMap(DB, posMap)
         addFeatureStringsToMap(TargetDB, posMap)
 
-        # build string for the xml pos section
-        for POSabbr, POSname in sorted(list(posMap.items()), key=lambda valStr: (valStr[0].lower(),valStr[1])):
-
-            # output abbreviation and full category name
-            categoryStr = f'    <sdef n="{POSabbr}" c="{POSname}"/>\n'
-            fOut.write(categoryStr)
-
-        # write symbol for UNK
-        categoryStr = '    <sdef n="UNK" c="Unknown"/>\n'
-        fOut.write(categoryStr)
-        fOut.write('  </sdefs>\n\n')
-        fOut.write('  <section id="main" type="standard">\n')
-
         errorList.append(("Building the bilingual dictionary...", 0))
         recordsDumpedCount = 0
         if report:
@@ -555,6 +558,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                     targetFound = False
                     sourcePOSabbrev = 'UNK'
+                    sourceTags = []
+                    senseHeadWord = headWord + '.' + str(i+1)
 
                     # Make sure we have a valid analysis object
                     if sourceSense.MorphoSyntaxAnalysisRA:
