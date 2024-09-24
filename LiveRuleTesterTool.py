@@ -544,7 +544,7 @@ class OverWriteDlg(QDialog):
 
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -595,6 +595,7 @@ class Main(QMainWindow):
         self.restartTester = False
         self.lastSentNum = -1
         self.startTestbedLogViewer = False
+        self.startRuleAssistant = False
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -633,6 +634,7 @@ class Main(QMainWindow):
         self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
+        self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -721,6 +723,10 @@ class Main(QMainWindow):
             self.ret_val = False
             self.close()
             return
+
+        if ruleCount is not None:
+            totalRules = len(self.__transferRulesElement)
+            self.rulesCheckedList = list(range(totalRules-ruleCount-1, totalRules))
 
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
@@ -1081,6 +1087,11 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = True
 
         # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
+
+    def OpenRuleAssistantClicked(self):
+        self.startRuleAssistant = True
         self.closeEvent(None)
         self.close()
 
@@ -2513,8 +2524,9 @@ RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
 START_LOG_VIEWER = 3
+START_RULE_ASSISTANT = 4
 
-def RunModule(DB, report):
+def RunModule(DB, report, ruleCount=None):
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -2685,7 +2697,7 @@ def RunModule(DB, report):
             bilingFile = os.path.join(pwd, bilingFile)
 
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount)
 
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')
@@ -2702,13 +2714,17 @@ def RunModule(DB, report):
         elif window.startTestbedLogViewer:
 
             return START_LOG_VIEWER
+
+        elif window.startRuleAssistant:
+
+            return START_RULE_ASSISTANT
     else:
         report.Error('This text has no data.')
         return ERROR_HAPPENED
 
     return NO_ERRORS
 
-def MainFunction(DB, report, modify=False):
+def MainFunction(DB, report, modify=False, ruleCount=None):
 
     retVal = RESTART_MODULE
     loggedStart = False
@@ -2727,7 +2743,12 @@ def MainFunction(DB, report, modify=False):
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report)
+        retVal = RunModule(DB, report, ruleCount)
+
+        if retVal == START_RULE_ASSISTANT:
+            from RuleAssistant import MainFunction as RA
+            ruleCount = RA(DB, report, modify, fromLRT=True)
+            retVal = RESTART_MODULE
 
     # Start the log viewer
     if retVal == START_LOG_VIEWER:

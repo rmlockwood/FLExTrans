@@ -1392,6 +1392,8 @@ class RuleGenerator:
 
         self.report.Info(f'Added {ruleCount} rule(s) from {fileName}.')
 
+        return ruleCount
+
     def WriteTransferFile(self, fileName: str) -> None:
         '''Write the generated transfer rules XML to `fileName`.'''
 
@@ -1429,8 +1431,8 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
 
-    generator.ProcessAssistantFile(ruleAssistantFile, ruleNumber)
+    ruleCount = generator.ProcessAssistantFile(ruleAssistantFile, ruleNumber)
 
     generator.WriteTransferFile(transferRulePath)
 
-    return True
+    return ruleCount

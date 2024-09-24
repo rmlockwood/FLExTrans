@@ -297,6 +297,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
+        line_count = 0
         for line in fin:
             if not line.strip():
                 continue
@@ -307,6 +308,9 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
                     srcLine += ReadingToHTML(src)
                     tgtLine += ReadingToHTML(tgt)
             fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
+            line_count += 1
+            if line_count >= 30:
+                break
         fout.write('</body></html>\n')
 
     return True
@@ -388,15 +392,19 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
     # Start the Rule Assistant GUI
     saved, rule, lrt = StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile, testData, fromLRT=fromLRT)
 
+    ruleCount = None
+
     if saved:
-        CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
+        ruleCount = CreateApertiumRules.CreateRules(DB, TargetDB, report, configMap, ruleAssistantFile, tranferRulePath, rule)
     else:
         report.Info('No rules created.')
 
     if lrt:
         # TODO: pass list of generated rules
         from LiveRuleTesterTool import MainFunction as LRT
-        LRT(DB, report, modify)
+        LRT(DB, report, modify, ruleCount=ruleCount)
+
+    return ruleCount
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
