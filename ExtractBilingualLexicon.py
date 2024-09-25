@@ -382,22 +382,6 @@ def insertWord(elem, headWord, tags):
     for tag in tags:
         ET.SubElement(elem, 's', n=tag)
 
-def processSpaces(headWord, DB, sourceEntry, errorList):
-    
-    # Check for preceding or ending spaces
-    strippedHeadword = headWord.strip()
-    
-    if strippedHeadword != headWord.strip():
-        
-        # Give a warning if there were spaces, but use the stripped version
-        errorList.append(('Found an entry with preceding or trailing spaces while processing source headword: '\
-                           + ITsString(sourceEntry.HeadWord).Text +'. The spaces were removed, but please correct this in the lexicon', 1, DB.BuildGotoURL(sourceEntry)))
-    
-    # Substitute any medial spaces with <b/> (blank space element)    
-    headWord = re.sub(r' ', r'<b/>', strippedHeadword)
-    
-    return headWord
-
 # Convert the headword to lower case, tag on the POS and see if that already is in the map
 def checkForDuplicateHeadword(headWord, POSabbrev, hvo, duplicateHeadwordPOSmap):
 
@@ -547,11 +531,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 # Get the headword string
                 headWord = ITsString(sourceEntry.HeadWord).Text
 
-                # Deal with spaces in the headword
-                headWord = processSpaces(headWord, DB, sourceEntry, errorList)
-
                 # If there is not a homograph # at the end, make it 1
                 headWord = Utils.add_one(headWord)
+
+                if headWord != headWord.strip():
+                    errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):
