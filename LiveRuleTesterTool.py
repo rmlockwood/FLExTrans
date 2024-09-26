@@ -726,7 +726,8 @@ class Main(QMainWindow):
 
         if ruleCount is not None:
             totalRules = len(self.__transferRulesElement)
-            self.rulesCheckedList = list(range(totalRules-ruleCount-1, totalRules))
+            self.rulesCheckedList = [QtCore.Qt.Unchecked for i in range(totalRules - ruleCount)]
+            self.rulesCheckedList += [QtCore.Qt.Checked for i in range(ruleCount)]
 
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
@@ -2749,6 +2750,8 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
             from RuleAssistant import MainFunction as RA
             ruleCount = RA(DB, report, modify, fromLRT=True)
             retVal = RESTART_MODULE
+        else:
+            ruleCount = None
 
     # Start the log viewer
     if retVal == START_LOG_VIEWER:
