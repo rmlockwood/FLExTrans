@@ -5,6 +5,13 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11.4 - 9/23/24 - Ron Lockwood
+#    Fix to previous linefeed change to not delete trailing spaces.
+#    Book names before references need to retain their spaces.
+#
+#   Version 3.11.3 - 9/23/24 - Ron Lockwood
+#    Make segments for every linefeed instead for certain sfms.
+#
 #   Version 3.11.2 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -119,7 +126,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.11.1",
+        FTM_Version    : "3.11.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -290,7 +297,7 @@ def do_import(DB, report, chapSelectObj, tree):
     importText = matchObj.group(1)
     
     # Remove newlines
-    importText = re.sub(r'\n', '', importText)
+    #importText = re.sub(r'\n', '', importText)
         
     # Do user-defined search/replace rules if needed
     if tree:
@@ -377,9 +384,24 @@ def do_import(DB, report, chapSelectObj, tree):
                     break
         
         # SFMs to start a new paragraph in FLEx
-        newPar = r'\\[cpsqm]'
+        #newPar = r'\\[cpsqm]'
+        newPar = r'\n' # just start a new paragraph at every line feed
         
         for _, seg in enumerate(segs):
+            
+            if not (seg is None or len(seg) == 0 or seg == '\n'):
+                
+                # Either an sfm marker or a verse ref should get marked as Analysis WS
+                if re.search(r'\\|\d+[.:]\d+', seg):
+                    
+                    # make this in the Analysis WS
+                    tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
+                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+                    
+                else:
+                    # make this in the Vernacular WS
+                    tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
+                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
             
             if seg and re.search(newPar, seg): # or first segment if not blank
             
@@ -394,21 +416,6 @@ def do_import(DB, report, chapSelectObj, tree):
             
                 bldr = TsStringUtils.MakeStrBldr()
             
-            if seg is None or len(seg) == 0:
-                continue
-            
-            # Either an sfm marker or a verse ref should get marked as Analysis WS
-            elif re.search(r'\\|\d+[.:]\d+', seg):
-                
-                # make this in the Analysis WS
-                tss = TsStringUtils.MakeString(seg, DB.project.DefaultAnalWs)
-                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-                
-            else:
-                # make this in the Vernacular WS
-                tss = TsStringUtils.MakeString(seg, DB.project.DefaultVernWs)
-                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-            
         stTxtPara.Contents = bldr.GetString()
 
         # Build the title string from book abbreviation and chapter.
@@ -422,13 +429,13 @@ def do_import(DB, report, chapSelectObj, tree):
                 #  E.g. EXO 03-04
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
+        # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
+        title = Utils.createUniqueTitle(DB, title)
+        
         if firstTitle == None:
 
             firstTitle = title
             
-        # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
-        title = Utils.createUniqueTitle(DB, title)
-        
         # Set the title of the text
         tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
         text.Name.AnalysisDefaultWritingSystem = tss
