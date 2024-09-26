@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11.4 - 9/23/24 - Ron Lockwood
+#    Fix to previous linefeed change to not delete trailing spaces.
+#    Book names before references need to retain their spaces.
+#
 #   Version 3.11.3 - 9/23/24 - Ron Lockwood
 #    Make segments for every linefeed instead for certain sfms.
 #
@@ -122,7 +126,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.11.3",
+        FTM_Version    : "3.11.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -396,7 +400,7 @@ def do_import(DB, report, chapSelectObj, tree):
                     
                 else:
                     # make this in the Vernacular WS
-                    tss = TsStringUtils.MakeString(seg.rstrip(), DB.project.DefaultVernWs)
+                    tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
                     bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
             
             if seg and re.search(newPar, seg): # or first segment if not blank
