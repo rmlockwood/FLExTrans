@@ -265,8 +265,11 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not sourceText or not os.path.isfile(bidix):
+    if not sourceText:
         return False
+
+    if not os.path.isfile(bidix):
+        report.Warning('Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.')
 
     content = None
     for text in DB.ObjectsIn(ITextRepository):
