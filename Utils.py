@@ -2260,6 +2260,8 @@ def getAffixTemplates(DB, gramCategoryAbbrev):
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'prefix'))
             for slot in template.SuffixSlotsRS:
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'suffix'))
+            if not slots:
+                continue
             cats, types = list(zip(*slots))
             for prod in itertools.product(*cats):
                 templates.add(tuple(zip(prod, types)))
