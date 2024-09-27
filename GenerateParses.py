@@ -181,38 +181,20 @@ def add_clitics(wordPair, cliticPairList, masterList):
 # Add all possible affixes for the given slots
 def add_affixes(stemList, slotList):
 
-    # if we don't have any slots we don't do anything
-    if len(slotList) > 0:
-        # remove the first slot
-        curSlot = slotList.pop(0)
+    # for each slot in the template...
+    for isPrefix, affixes in slotList:
 
-        # make spare copies of the slots and stems
-        newSlotList = copy.deepcopy(slotList)
-        newStemList = copy.deepcopy(stemList)
+        nextStemList = []
 
-        # now that we have a copy of the stems, set it back to no stems
-        # this is because we keep building on stems without keeping the first set
-        # E.g. for stem+slot1+slot2, we want all combos where slot1 and slot2 are present
-        # process_slots takes care of slots missing in other iterations
-        # if slot1=a,b and slot2=x,y we would expect stemax,stemay,stembx,stemby to result
-        stemList = []
+        # iterate over the affixes in order
+        for affix in sorted(affixes):
+            if isPrefix:
+                nextStemList += [affix+stem for stem in stemList]
+            else:
+                nextStemList += [stem+affix for stem in stemList]
 
-        # Loop through all stems in the list
-        for stem in newStemList: # stem is a tuple of two stems
-            # Loop through all affixes for the current slot we are adding
-            (prefix, mySlot) = curSlot
-            for afx in mySlot: # afx is the Gloss of an affix, wrapped in < >
-                # Put prefixes before the stem+pos and suffixes after
-                if prefix:
-                    stemList.append(afx+stem)
-                else:
-                    stemList.append(stem+afx)
+        stemList = nextStemList
 
-        # Recursively call this routine to get the affixes for the next slot
-        # The list of slots is one less because we removed the first one
-        stemList = add_affixes(stemList, newSlotList)
-
-    # return the inflections we just built. We can't pass by reference because we set stemList to [] above
     return stemList
 
 # Find all possible slot combinations
