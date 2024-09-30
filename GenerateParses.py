@@ -48,6 +48,7 @@ import re
 import copy
 import itertools
 from collections import defaultdict
+import random
 
 from SIL.LCModel import (
     IMoStemMsa,
@@ -449,11 +450,6 @@ def MainFunction(DB, report, modifyAllowed):
 
             # This number can be adjusted in the config file, if you want to stop after a greater number of stems
             ## (There could be better logic here!!  Maybe a while loop would be better.)
-            if stemCount >= maxStems:
-                # After the first n stems (of the focus POS type), don't process stem type entries,
-                # but continue the loop, looking for more entries
-                # (We want to traverse all the affixes.)
-               continue
 
             ##
             # Get the Citation Form of this entry (or Lexeme Form, if Citation Form is empty)
@@ -661,6 +657,11 @@ def MainFunction(DB, report, modifyAllowed):
 
     if len(badSlots) > 0:
         return
+
+    if len(standardSpellList) > maxStems:
+        random.shuffle(standardSpellList)
+        standardSpellList = standardSpellList[:maxStems]
+        standardSpellList.sort()
 
     report.Info('Finished collecting templates.  Now generating words.')
     ## Open output files, before constructing parses
