@@ -283,6 +283,44 @@ class FrenchSpanishDefAdjNoun(BaseTest, unittest.TestCase):
          '^las1.1<def>$ ^bicicleta1.1<n><PL>$ ^largo1.1<adj><FEM_a><PL>$'),
     ]
 
+class SpanishFrenchRev2(BaseTest, unittest.TestCase):
+    RuleCount = 5
+    Data = {
+        None: {
+            'number': {
+                'source_features': ['pl', 'sg']}, 
+            'gender': {
+                'source_features': ['?', 'f', 'm']}}, 
+        'indf': {
+            'number': {
+                'target_lemma': [('des1.1', 'pl'), ('un1.1', 'sg'), ('une1.1', 'sg')]}, 
+            'gender': {
+                'target_lemma': [('un1.1', 'm'), ('une1.1', 'f')]}}, 
+        'def': {
+            'number': {
+                'target_lemma': [('la1.1', 'sg'), ('le1.1', 'sg'), ('les1.1', 'pl')]}, 
+            'gender': {
+                'target_lemma': [('la1.1', 'f'), ('le1.1', 'm')]}}, 
+        'adj': {
+            'number': {
+                'target_affix': [('PL3', 'pl')]}, 
+            'gender': {
+                'target_affix': [('FEM.a', 'f')]}}, 
+        'n': {
+            'number': {
+                'source_affix': [('PL', 'pl')], 'target_affix': [('PL', 'pl')]}, 
+            'gender': {
+                'target_lemma': [('voiture1.1', 'f'), ('train1.1', 'm'), ('garçon1.1', 'm'), ('pomme1.1', 'f'), ('poisson1.1', 'm'), ('œuf1.1', 'm'), ('fille1.1', 'f'), ('chose1.1', 'f'), ('vélo1.1', 'm'), ('bonbon1.1', 'm'), ('route1.1', 'f')]}}}
+    RuleFile = 'SpanishFrenchRev2.xml'
+    TestPairs = [
+        ('^un1.1<indf><MASC><PL>/un1.1<indf><m><sg><MASC><PL>$ ^coche1.1<n><m><PL>/voiture1.1<n><f><PL>$ ^pequeño1.1<adj><MASC_a><PL>/petit1.1<adj><MASC_a><PL>$',
+         '^des1.1<indf>$ ^petit1.1<adj><FEM_a><PL3>$ ^voiture1.1<n><PL>$'),
+        ('^Los1.1<def><m><pl>/Les1.1<def><pl>$ ^niño1.1<n><m><PL>/garçon1.1<n><m><PL>$ ^pequeño1.1<adj><MASC_a><PL>/petit1.1<adj><MASC_a><PL>$',
+         '^Les1.1<def>$ ^petit1.1<adj><PL3>$ ^garçon1.1<n><PL>$'),
+        ('^Las1.1<def><f><pl>/Les1.1<def><pl>$ ^niña1.1<n><f><PL>/fille1.1<n><f><PL>$ ^pequeño1.1<adj><FEM_a><PL>/petit1.1<adj><FEM_a><PL3>$',
+         '^Les1.1<def>$ ^petit1.1<adj><FEM_a><PL3>$ ^fille1.1<n><PL>$'),
+    ]
+
 class PatternFeature(BaseTest, unittest.TestCase):
     RuleFile = 'PatternFeature.xml'
     Data = {
