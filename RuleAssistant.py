@@ -258,7 +258,7 @@ def ReadingToHTML(reading):
     pieces = [
         readingNumberRegex.sub(r'<span class="num">\1</span>', reading[0]),
         '<span class="pos">'+reading[1]+'</span>',
-    ] + ['<span class="tag">'+tag+'</span>' for tag in reading[1:]]
+    ] + ['<span class="tag">'+tag+'</span>' for tag in reading[2:]]
     return '<span class="lu">'+''.join(pieces)+'</span>'
 
 def GenerateTestDataFile(report, DB, configMap, fhtml):
