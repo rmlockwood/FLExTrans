@@ -2520,16 +2520,7 @@ ERROR_HAPPENED = 1
 NO_ERRORS = 2
 START_LOG_VIEWER = 3
 
-def RunModule(DB, report):
-
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return ERROR_HAPPENED
-
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+def RunModule(DB, report, configMap):
 
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -2721,11 +2712,24 @@ def RunModule(DB, report):
 def MainFunction(DB, report, modify=False):
 
     retVal = RESTART_MODULE
+    loggedStart = False
     
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
         
-        retVal = RunModule(DB, report)
+        # Read the configuration file which we assume is in the current directory.
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            return
+    
+        if not loggedStart:
+
+            # Log the start of this module on the analytics server if the user allows logging.
+            import Mixpanel
+            Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+            loggedStart = True
+
+        retVal = RunModule(DB, report, configMap)
 
     # Start the log viewer
     if retVal == START_LOG_VIEWER:
