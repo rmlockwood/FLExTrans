@@ -47,6 +47,7 @@
 import re
 import copy
 import itertools
+from collections import defaultdict
 
 from SIL.LCModel import (
     IMoStemMsa,
@@ -97,22 +98,28 @@ def verifySlots(slot2AffixList, slot2IsPrefix):
 
 def catalog_subcats(myDB):
     cat2subCat = {}
+    cat2SubcatNames = {}
     for gcat in myDB.lp.AllPartsOfSpeech:
         # Build the category name
-        catAndGuid= Utils.as_string(gcat.Abbreviation) + gcat.Guid.ToString()
+        cat = Utils.as_string(gcat.Abbreviation)
+        catAndGuid = cat + gcat.Guid.ToString()
 
         subCatList = []
+        names = []
         # Loop through all templates for this category
         for subcat in gcat.SubPossibilitiesOS:
             # Build the template name
-            subCatAndGuid= Utils.as_string(subcat.Abbreviation) + subcat.Guid.ToString()
+            subcatName = Utils.as_string(subcat.Abbreviation)
+            subCatAndGuid = subcatName + subcat.Guid.ToString()
 
             subCatList.append(subCatAndGuid)
+            names.append(subcatName)
 
         if len(subCatList) > 0:
             cat2subCat[catAndGuid] = subCatList
+            cat2SubcatNames[cat] = names
 
-    return cat2subCat
+    return cat2subCat, cat2SubcatNames
 
 def push_templates_down(posList, templs2Assign, cat2Templ, cat2subCat):
     # Loop through categories
@@ -356,7 +363,7 @@ def create_words_from_templates(wordPair, templList, tmpl2Slots, slot2AffixList,
 def MainFunction(DB, report, modifyAllowed):
     cat2Templ = {}
     templ2Slots = {}
-    slot2AffixList = {}
+    slot2AffixList = defaultdict(list)
     cat2CliticList = {}
     slot2IsPrefix = {}
     standardSpellList = []
@@ -405,7 +412,7 @@ def MainFunction(DB, report, modifyAllowed):
     get_templ_list(DB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPOS, f_log, report)
 
     # Get a map of categories to subcategories
-    cat2Subcats = catalog_subcats(DB)
+    cat2Subcats, cat2SubcatNames = catalog_subcats(DB)
 
     # Copy templates down to any child categories
     push_templates_down(catList, [], cat2Templ, cat2Subcats)
@@ -635,19 +642,12 @@ def MainFunction(DB, report, modifyAllowed):
                         for slot in msa.Slots:
                             # Build the slot name
                             slotFriendlyName = Utils.as_string(slot.Name)
-                            slotName = msaPOS + ":" + slotFriendlyName + ":" + slot.Guid.ToString()
-
-                            # Add affix glosses to the map showing which affixes are in this slot
-                            # If the slotname is not in the map yet, initialize it
-                            if slotName not in slot2AffixList:
-                                slot2AffixList[slotName] = [lex]
+                            labelSuffix = f':{slotFriendlyName}:{slot.Guid.ToString()}'
+                            posList = [msaPOS] + cat2SubcatNames.get(msaPOS, [])
+                            for pos in posList:
+                                slot2AffixList[pos+labelSuffix].append(lex)
                                 # BB: For debugging, log each time we add an affix to a slot
-                                f_log.write('\n      Adding affix '+lexForm+' '+lex+' to ['+msaPOS+'] slot ['+slotFriendlyName+']')
-
-                            else:
-                                # Otherwise find the list of affixes associated with this slot and add to it.
-                                existingAffixList = slot2AffixList[slotName]
-                                existingAffixList.append(lex)
+                                f_log.write('\n      Adding affix '+lexForm+' '+lex+' to ['+pos+'] slot ['+slotFriendlyName+']')
 
             # Report if it's a morph type we don't handle
             else:
