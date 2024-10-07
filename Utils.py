@@ -1107,6 +1107,10 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
+
+    # Substitute out any escaped right angle brackets
+    outStr = re.sub(r'([^\\])(\\>)', r'\1ESC-BRK', outStr) # and avoid replacing \\>
+
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
     toks = reDataStream.split(outStr)
@@ -1123,6 +1127,9 @@ def split_compounds(outStr):
             if i&1:
                 tok = tok[0]+"$^"+tok[1]
             outStr+=tok
+
+    # Restore any escaped angle brackets
+    outStr = re.sub('ESC-BRK', '\\>', outStr)
     return outStr
 
 # Convert . (dot) to _ (underscore)
