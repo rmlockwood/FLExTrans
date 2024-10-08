@@ -341,7 +341,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         output = result.stdout.decode('utf-8').strip().split()
         lrt = (not fromLRT) and ('LRT' in output)
         if not output or output[0] not in ['1', '2']:
-            return (False, None, False)
+            return (False, None, lrt)
         elif output[0] == '1':
             return (True, int(output[1]), lrt) # create single rule
         else:
@@ -404,7 +404,6 @@ def MainFunction(DB, report, modify=True, fromLRT=False):
         report.Info('No rules created.')
 
     if lrt:
-        # TODO: pass list of generated rules
         from LiveRuleTesterTool import MainFunction as LRT
         LRT(DB, report, modify, ruleCount=ruleCount)
 
