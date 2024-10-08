@@ -5,6 +5,12 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.11.2 - 10/7/24 - Ron Lockwood
+#    Convert search and to be searched strings to decomposed.
+#
+#   Version 3.11.1 - 9/19/24 - Ron Lockwood
+#    Display the comment in the list
+#
 #   Version 3.11 - 8/20/24 - Ron Lockwood
 #    See the beginning of the comment text.
 #
@@ -26,6 +32,7 @@
 #   Shared functions, classes and constants for text in and out processing.
 #
 
+import unicodedata
 import FTPaths
 import regex
 import os
@@ -119,7 +126,13 @@ def buildRuleString(searchRplObj):
     searchStr = getPrintableString(searchRplObj.searchStr)
     replStr = getPrintableString(searchRplObj.replStr)
 
-    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}'
+    # Comment string
+    commentStr = ''
+    if searchRplObj.comment:
+
+        commentStr = ' - ' + searchRplObj.comment
+
+    return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}{commentStr}'
 
 def buildRuleStringFromElement(element):
 
@@ -180,12 +193,17 @@ def applySearchReplaceRules(inputStr, tree):
         # Skip a rule if it is marked inactive
         if searchReplObj.isInactive == False:
 
+            # Convert the search string and the string to replace to decomposed unicode. 
+            # FLEx stores things as decomposed, but the user may not be inputting decomposed unicode.
+            newStr = unicodedata.normalize('NFD', newStr)
+            newSearch = unicodedata.normalize('NFD', searchReplObj.searchStr)
+
             try:
                 if searchReplObj.isRegEx:
 
-                    newStr = regex.sub(searchReplObj.searchStr, searchReplObj.replStr, newStr)
+                    newStr = regex.sub(newSearch, searchReplObj.replStr, newStr)
                 else:
-                    newStr = newStr.replace(searchReplObj.searchStr, searchReplObj.replStr)
+                    newStr = newStr.replace(newSearch, searchReplObj.replStr)
             except:
                 newStr = None
                 errorMsg = f'Test stopped on failure of rule: ' + buildRuleStringFromElement(ruleEl)

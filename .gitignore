@@ -30,3 +30,4 @@ RuleAssistantTests/CreateApertiumRules.py
 RuleAssistantTests/*.t1x
 RuleAssistantTests/*.bin
 __pycache__
+.vscode/launch.json

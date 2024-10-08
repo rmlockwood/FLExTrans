@@ -724,11 +724,6 @@ class Main(QMainWindow):
             self.close()
             return
 
-        if ruleCount is not None:
-            totalRules = len(self.__transferRulesElement)
-            self.rulesCheckedList = [QtCore.Qt.Unchecked for i in range(totalRules - ruleCount)]
-            self.rulesCheckedList += [QtCore.Qt.Checked for i in range(ruleCount)]
-
         # Set the models
         self.__sent_model = SentenceList(sentence_list)
 
@@ -903,11 +898,11 @@ class Main(QMainWindow):
         # Get the root node
         bilingRoot = bilingEtree.getroot()
 
-        # Get the section element
-        biling_section = bilingRoot.find('section')
+        def tagSequence(node):
+            return [s.attrib['n'] for s in node.iter('s')]
 
         # Loop through all the bilingual entries
-        for entry in biling_section:
+        for entry in bilingRoot.iter('e'):
 
             ## <e> (entry) should either have <p><l>abc</l><r>xyz</r></p>) or <i> (p = pair, l = left, r = right)
 
@@ -929,7 +924,13 @@ class Main(QMainWindow):
 
                 self.__bilingMap[key] = [(left, right)]
             else:
-                self.__bilingMap[key].append((left, right))
+                if tagSequence(left) == tagSequence(self.__bilingMap[key][0][0]):
+                    # The current entry has the same source language tags
+                    # as the first entry with this lemma in the file,
+                    # so it's a replacement, and we should use the later one.
+                    self.__bilingMap[key][0] = (left, right)
+                else:
+                    self.__bilingMap[key].append((left, right))
 
         return True
 
@@ -2527,12 +2528,7 @@ NO_ERRORS = 2
 START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
 
-def RunModule(DB, report, ruleCount=None):
-
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return ERROR_HAPPENED
+def RunModule(DB, report, configMap, ruleCount=None):
 
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -2736,7 +2732,6 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
-
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
@@ -2744,7 +2739,7 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report, ruleCount)
+        retVal = RunModule(DB, report, configMap, ruleCount)
 
         if retVal == START_RULE_ASSISTANT:
             from RuleAssistant import MainFunction as RA
