@@ -637,7 +637,7 @@ class TextWord():
 
             symbStr = Utils.underscores(symbStr)
 
-            if escapeLemma:
+            if False: #escapeLemma:
 
                 newList.append(self.escapeReservedApertChars(symbStr))
             else:

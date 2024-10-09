@@ -1109,7 +1109,8 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 def split_compounds(outStr):
 
     # Substitute out any escaped right angle brackets
-    outStr = re.sub(r'([^\\])(\\>)', r'\1ESC-BRK', outStr) # and avoid replacing \\>
+    outStr = re.sub(r'\\>', r'ESC-BRK', outStr) # and avoid replacing \\>
+    #outStr = re.sub(r'([^\\])(\\>)', r'\1ESC-BRK', outStr) # and avoid replacing \\>
 
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
