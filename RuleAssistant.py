@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.11.3 - 10/9/24 - Ron Lockwood
+#    Handle fixed up category names.
+#
 #   Version 3.11.2 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -52,7 +55,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.11.2",
+        FTM_Version    : "3.11.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",  
@@ -122,38 +125,6 @@ class StartData:
         ET.indent(tree)
         tree.write(fileName, encoding='utf-8', xml_declaration=True)
 
-# Trying to get something like this:
-#
-# <?xml version="1.0" encoding="UTF-8"?>
-# <FLExData>
-#  <SourceData name="Spanish-FLExTrans-Exp4">
-#   <Categories>
-#    <FLExCategory abbr="adj"/>
-#    <FLExCategory abbr="adv"/>
-#    ...
-#   </Categories>
-#   <Features>
-#    <FLExFeature name="number">
-#     <Values>
-#      <FLExFeatureValue abbr="pl"/>
-#      <FLExFeatureValue abbr="sg"/>
-#     </Values>
-#    </FLExFeature>
-#    <FLExFeature name="person">
-#     <Values>
-#      <FLExFeatureValue abbr="1"/>
-#      <FLExFeatureValue abbr="2"/>
-#      <FLExFeatureValue abbr="3"/>
-#     </Values>
-#    </FLExFeature>
-#    ...
-#   </Features>
-#  </SourceData>
-#  <TargetData name="French-FLExTrans-Exp4">
-#   similar to above ...
-#  </TargetData>
-# </FLExData>
-
 def getFeatureData(DB):
 
     myFeatureList = []
@@ -186,16 +157,22 @@ def GetStartData(report, DB, configMap):
     stemFeatures = Utils.getAllStemFeatures(DB, report, configMap)
 
     catFeatures = {}
-    for cat in catList:
-        catFeatures[cat] = {feat: {'stem'} for feat in stemFeatures[cat]}
-        templates = Utils.getAffixTemplates(DB, cat)
+
+    # Don't use the above catList since it will have been modified for invalid characters
+    for pos in DB.lp.AllPartsOfSpeech:
+        flexCat = Utils.as_string(pos.Abbreviation)
+
+        # For the catFeatures dictionary use the modified category string
+        cat = Utils.convertProblemChars(flexCat, Utils.catProbData)
+        catFeatures[cat] = {feat: {'stem'} for feat in stemFeatures[flexCat]}
+        templates = Utils.getAffixTemplates(DB, flexCat)
         for tmpl in templates:
             for feat, side in tmpl:
                 if feat not in catFeatures[cat]:
                     catFeatures[cat][feat] = set()
                 catFeatures[cat][feat].add(side)
 
-        for feat in inflFeatures[cat]:
+        for feat in inflFeatures[flexCat]:
             if feat not in catFeatures[cat]:
                 catFeatures[cat][feat] = set()
             catFeatures[cat][feat].add('prefix')
