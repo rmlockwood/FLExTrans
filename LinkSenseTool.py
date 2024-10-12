@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.11.2 - 10/12/24 - Ron Lockwood
+#    Fixes #762. Allow target words with no gloss or blank POS to be in the target word
+#    drop-down list.
+#
 #   Version 3.11.1 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -285,7 +289,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.11.1",
+        FTM_Version    : "3.11.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1121,6 +1125,9 @@ class Main(QMainWindow):
             self.exportUnlinked = False
         self.filter()
         
+    def closeEvent(self, event):
+        self.CancelClicked()
+
     def CancelClicked(self):
         self.retVal = 0
 
@@ -1237,11 +1244,13 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                                     Abbreviation.BestAnalysisAlternative).Text
                 else:
                     POS = 'UNK'
+                    report.Warning('Empty grammatical category found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
                     
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
-                # If we have a valid gloss, add it to the map
-                if gloss and len(gloss) > 0 and gloss != '***':
+                # If we have a non-empty gloss, add it to the map (we will allow ***)
+                if gloss and len(gloss) > 0:
+
                     # Create an HPG object
                     myHPG = HPG(mySense, headword, POS, gloss, senseNum+1)
                     
@@ -1253,6 +1262,10 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                         glossMap[gloss] = [myHPG]
                     else: # multiple senses for this gloss
                         glossMap[gloss].append(myHPG)
+
+                    if gloss == '***':
+                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+
                         
     return True
 
