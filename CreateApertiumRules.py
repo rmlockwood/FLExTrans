@@ -1349,7 +1349,7 @@ class RuleGenerator:
         # disjoint features the UI gives us, but for now we're special-casing
         # the logic.
         bantuPair = root.find(".//DisjointFeatureSet[@co_feature_name='number']")
-        if bantuPair:
+        if bantuPair is not None:
             merged = bantuPair.get('disjoint_name')
             sg, pl = None, None
             for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
@@ -1379,7 +1379,7 @@ class RuleGenerator:
                     wid = word.get('id')
                     if word.get('head') == 'yes':
                         continue
-                    elif rule.find(f".//Target//Word[@id='{wid}'][@head='yes']"):
+                    elif rule.find(f".//Target//Word[@id='{wid}'][@head='yes']") is not None:
                         continue
                     deletable.append(wid)
                 for length in range(len(deletable)):
