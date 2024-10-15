@@ -35,20 +35,20 @@ class BaseTest:
 
     def runTest(self):
         prefix = os.path.join(TestFolder, self.__class__.__name__)
-        t1xFile = prefix + '.t1x'
+        self.t1xFile = prefix + '.t1x'
         binFile = prefix + '.bin'
 
-        if os.path.exists(t1xFile):
-            os.remove(t1xFile)
+        if os.path.exists(self.t1xFile):
+            os.remove(self.t1xFile)
         if self.TransferFile is not None:
-            shutil.copy(os.path.join(DataFolder, self.TransferFile), t1xFile)
+            shutil.copy(os.path.join(DataFolder, self.TransferFile), self.t1xFile)
         CreateApertiumRules.Utils.DATA = self.Data
 
         # Create rules
         report = Reporter()
         path = os.path.join(DataFolder, self.RuleFile)
         self.assertTrue(CreateApertiumRules.CreateRules(
-            'source', 'target', report, None, path, t1xFile, self.RuleNumber,
+            'source', 'target', report, None, path, self.t1xFile, self.RuleNumber,
         ))
         self.assertListEqual([], report.errors)
         self.assertIn((f'Added {self.RuleCount} rule(s) from {path}.',),
@@ -57,7 +57,7 @@ class BaseTest:
         if os.name == 'posix':
             # Validate rules
             validate = subprocess.run(
-                ['apertium-validate-transfer', t1xFile],
+                ['apertium-validate-transfer', self.t1xFile],
                 text=True, check=False, capture_output=True,
             )
             self.assertEqual(0, validate.returncode)
@@ -72,7 +72,7 @@ class BaseTest:
 
         # Compile rules
         preproc = subprocess.run(
-            [comp_cmd, t1xFile, binFile],
+            [comp_cmd, self.t1xFile, binFile],
             text=True, check=False, capture_output=True,
         )
         if preproc.returncode != 0:
@@ -82,7 +82,7 @@ class BaseTest:
 
         # Apply rules
         proc = subprocess.Popen(
-            [run_cmd, '-b', '-z', t1xFile, binFile],
+            [run_cmd, '-b', '-z', self.t1xFile, binFile],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
@@ -288,27 +288,27 @@ class SpanishFrenchRev2(BaseTest, unittest.TestCase):
     Data = {
         None: {
             'number': {
-                'source_features': ['pl', 'sg']}, 
+                'source_features': ['pl', 'sg']},
             'gender': {
-                'source_features': ['?', 'f', 'm']}}, 
+                'source_features': ['?', 'f', 'm']}},
         'indf': {
             'number': {
-                'target_lemma': [('des1.1', 'pl'), ('un1.1', 'sg'), ('une1.1', 'sg')]}, 
+                'target_lemma': [('des1.1', 'pl'), ('un1.1', 'sg'), ('une1.1', 'sg')]},
             'gender': {
-                'target_lemma': [('un1.1', 'm'), ('une1.1', 'f')]}}, 
+                'target_lemma': [('un1.1', 'm'), ('une1.1', 'f')]}},
         'def': {
             'number': {
-                'target_lemma': [('la1.1', 'sg'), ('le1.1', 'sg'), ('les1.1', 'pl')]}, 
+                'target_lemma': [('la1.1', 'sg'), ('le1.1', 'sg'), ('les1.1', 'pl')]},
             'gender': {
-                'target_lemma': [('la1.1', 'f'), ('le1.1', 'm')]}}, 
+                'target_lemma': [('la1.1', 'f'), ('le1.1', 'm')]}},
         'adj': {
             'number': {
-                'target_affix': [('PL3', 'pl')]}, 
+                'target_affix': [('PL3', 'pl')]},
             'gender': {
-                'target_affix': [('FEM.a', 'f')]}}, 
+                'target_affix': [('FEM.a', 'f')]}},
         'n': {
             'number': {
-                'source_affix': [('PL', 'pl')], 'target_affix': [('PL', 'pl')]}, 
+                'source_affix': [('PL', 'pl')], 'target_affix': [('PL', 'pl')]},
             'gender': {
                 'target_lemma': [('voiture1.1', 'f'), ('train1.1', 'm'), ('garçon1.1', 'm'), ('pomme1.1', 'f'), ('poisson1.1', 'm'), ('œuf1.1', 'm'), ('fille1.1', 'f'), ('chose1.1', 'f'), ('vélo1.1', 'm'), ('bonbon1.1', 'm'), ('route1.1', 'f')]}}}
     RuleFile = 'SpanishFrenchRev2.xml'
@@ -983,6 +983,32 @@ class EnglishGermanTripleRankingPartialDefault(BaseTest, unittest.TestCase):
         ('^big<adj>/big<adj>$ ^thing3<n><nt><ACC_PL>/Nn<n><nt><ACC_PL>$',
          '^big<adj><ADJ_AGR_PL>$ ^Nn<n><PL>$'),
     ]
+
+def Rule2Index(t1xFile: str):
+    from xml.etree import ElementTree as ET
+    root = ET.parse(t1xFile).getroot()
+    dct = {}
+    for i, rule in enumerate(root.iter('rule')):
+        dct[rule.get('comment')] = i
+    return dct
+
+class InsertBeforeOldRules(GermanEnglishDoubleDefault):
+    TransferFile = 'OldRules.t1x'
+
+    def runTest(self):
+        super().runTest()
+        rules = Rule2Index(self.t1xFile)
+        self.assertIn('def n simple (123)', rules)
+        self.assertLess(rules['def n simple'], rules['def n simple (123)'])
+
+class DeleteOldRules(GermanEnglishDoubleDefault):
+    RuleFile = 'GermanEnglishDoubleDefaultOverwrite.xml'
+    TransferFile = 'OldRules.t1x'
+
+    def runTest(self):
+        super().runTest()
+        rules = Rule2Index(self.t1xFile)
+        self.assertNotIn('def n simple (123)', rules)
 
 if __name__ == '__main__':
     unittest.main()

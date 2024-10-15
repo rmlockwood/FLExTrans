@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE FLExTransRuleGenerator PUBLIC " -//XMLmind//DTD FLExTransRuleGenerator//EN"
+"FLExTransRuleGenerator.dtd">
+<FLExTransRuleGenerator overwrite_rules="yes">
+    <FLExTransRules>
+        <FLExTransRule name="def n simple" create_permutations="no">
+            <Source>
+                <Phrase>
+                    <Words>
+                        <Word category="n" head="no" id="1">
+                            <Features/>
+                            <Affixes/>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Source>
+            <Target>
+                <Phrase>
+                    <Words>
+                        <Word category="" head="yes" id="1">
+                            <Features/>
+                            <Affixes>
+								<Affix type="suffix">
+									<Features>
+        <Feature label="number" match="β" ranking="0" unmarked_default="sg" value=""/>
+        <Feature label="case" match="γ" ranking="0" unmarked_default="nom" value=""/>
+									</Features>
+								</Affix>
+                            </Affixes>
+                        </Word>
+                    </Words>
+                </Phrase>
+            </Target>
+        </FLExTransRule>
+    </FLExTransRules>
+</FLExTransRuleGenerator>
