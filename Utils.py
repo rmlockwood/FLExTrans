@@ -1112,19 +1112,15 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 def split_compounds(outStr):
 
     # Get the lexical unit and before and after punctuation
-    match = re.match(r'(.*?)\^(.*?)\$(.*)', outStr, re.DOTALL)
+    match = re.match(r'(.*?\^)(.*?)(\$.*)', outStr, re.DOTALL)
 
     if match:
 
-        before = match.group(1)
+        beforePunc = match.group(1)
         middle = match.group(2)
-        after = match.group(3)
+        afterPunc = match.group(3)
     else:
         return outStr
-
-    # Substitute out any escaped right angle brackets
-    #middle = re.sub(r'\\>', r'ESC-BRK', middle) # and avoid replacing \\>
-    #middle = re.sub(r'([^\\])(\\>)', r'\1ESC-BRK', middle) # and avoid replacing \\>
 
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
@@ -1143,9 +1139,7 @@ def split_compounds(outStr):
                 tok = tok[0]+"$^"+tok[1]
             middle+=tok
 
-    # Restore any escaped angle brackets
-    #middle = re.sub('ESC-BRK', '\\>', middle)
-    return f'{before}{middle}{after}'
+    return f'{beforePunc}{middle}{afterPunc}'
 
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
