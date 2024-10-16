@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.4 - 10/16/24 - Ron Lockwood
+#    When splitting compounds, separate out the lexical unit from punctuation.
+#
 #   Version 3.11.3 - 10/12/24 - Ron Lockwood
 #    Change some warnings to reference source words.
 #
@@ -1110,14 +1113,26 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
+
+    # Get the lexical unit and before and after punctuation
+    match = re.match(r'(.*?\^)(.*?)(\$.*)', outStr, re.DOTALL)
+
+    if match:
+
+        beforePunc = match.group(1)
+        middle = match.group(2)
+        afterPunc = match.group(3)
+    else:
+        return outStr
+
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
-    toks = reDataStream.split(outStr)
+    toks = reDataStream.split(middle)
 
     # If there is only one token returned from the split, we don't have multiple words just
     # return the input string
     if len(toks) > 1:
-        outStr = ''
+        middle = ''
 
         # Every odd token will be the delimeter that was matched in the split operation
         # Insert $^ between the > and letter of the 2-char delimeter.
@@ -1125,8 +1140,9 @@ def split_compounds(outStr):
             # if we have an odd numbered index
             if i&1:
                 tok = tok[0]+"$^"+tok[1]
-            outStr+=tok
-    return outStr
+            middle+=tok
+
+    return f'{beforePunc}{middle}{afterPunc}'
 
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):

@@ -92,6 +92,8 @@ def MainFunction(DB, report, modify=True):
     
     newLines = []
 
+    newStr = ""
+    
     for line in lines:
 
         # Do user-defined search/replace rules
