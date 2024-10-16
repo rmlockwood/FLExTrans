@@ -5,8 +5,11 @@
 #   SIL International
 #   7/23/2014
 #
-#   Version 3.11.3 - 10/16/24 - Ron Lockwood
+#   Version 3.11.4 - 10/16/24 - Ron Lockwood
 #    When splitting compounds, separate out the lexical unit from punctuation.
+#
+#   Version 3.11.3 - 10/12/24 - Ron Lockwood
+#    Change some warnings to reference source words.
 #
 #   Version 3.11.2 - 9/5/24 - Ron Lockwood
 #    Escape Apertium lemmas when writing the data stream to a file.
@@ -1450,7 +1453,7 @@ def getInterlinData(DB, report, params):
                         if not msa.PartOfSpeechRA:
 
                             #myWord.addLemmaFromObj(wfiAnalysis.Owner)
-                            report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                            report.Warning('No grammatical category found for the source word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
 
                         if bundle.MorphRA:
@@ -1482,7 +1485,7 @@ def getInterlinData(DB, report, params):
                                     myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                                 else:
                                     myWord.addSense(None)
-                                    report.Warning("Couldn't find the sense for headword: "+getHeadwordStr(tempEntry))
+                                    report.Warning("Couldn't find the sense for source headword: "+getHeadwordStr(tempEntry))
                         else:
                             report.Warning("Morph object is null.")
 
@@ -1492,7 +1495,7 @@ def getInterlinData(DB, report, params):
                             # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
                             myWord.addAffix(bundle.SenseRA.Gloss)
                         else:
-                            report.Warning("Sense object for affix is null.")
+                            report.Warning("Sense object for a source affix is null.")
                 else:
                     if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
                         myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
@@ -1500,7 +1503,7 @@ def getInterlinData(DB, report, params):
                         # Give a clue that a part is missing by adding a bogus affix
                         myWord.addPlainTextAffix('PartMissing')
 
-                    report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getSurfaceForm())
+                    report.Warning('No morphosyntactic analysis found for some part of the source word: '+ myWord.getSurfaceForm())
                     break # go on to the next word
             else:
                 # Part of the word has not been tied to a lexical entry-sense
@@ -1510,7 +1513,7 @@ def getInterlinData(DB, report, params):
                     # Give a clue that a part is missing by adding a bogus affix
                     myWord.addPlainTextAffix('PART_MISSING')
 
-                report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
+                report.Warning('No sense found for some part of the source word: '+ myWord.getSurfaceForm())
                 break # go on to the next word
 
         # if we don't have a root or stem and we have something else like an affix, give a warning
@@ -1524,7 +1527,7 @@ def getInterlinData(DB, report, params):
             else:
                 myWord.addPlainTextAffix('ROOT_MISSING')
 
-            report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
+            report.Warning('No root or stem found for source word: '+ myWord.getSurfaceForm())
 
     # Handle any final punctuation text at the end of the text in its own paragraph
     if len(savedPrePunc) > 0:
@@ -2276,6 +2279,8 @@ def getAffixTemplates(DB, gramCategoryAbbrev):
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'prefix'))
             for slot in template.SuffixSlotsRS:
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'suffix'))
+            if not slots:
+                continue
             cats, types = list(zip(*slots))
             for prod in itertools.product(*cats):
                 templates.add(tuple(zip(prod, types)))
