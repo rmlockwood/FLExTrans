@@ -13,9 +13,9 @@ type="tFlextrans"
 ><author
 ></author
 ><emailAddress
->flextrans.help@gmail.com</emailAddress
+>flextrans_help@sil.org</emailAddress
 ><date
->10 September 2024</date
+>17 October 2024</date
 ><version
 >3.11</version
 ><contents
@@ -2324,7 +2324,7 @@ type="tFlexx"
 >For detailed help on using the <object
 type="tTool"
 >Rule Assistant</object
->, consult the help file the comes with the  <object
+>, consult the help file the comes with the <object
 type="tTool"
 >Rule Assistant</object
 >. You can get to this help file by clicking on the <object
@@ -2346,7 +2346,7 @@ type="tTool"
 > helps you test a set of search and replace operations to be used to fix up the text that comes out of <object
 type="tTool"
 >Paratext</object
->. Regular expressions can be used if desired. </p
+>. Regular expressions can be used if desired.</p
 ><p
 >All the active rules defined in this tool are used in the <object
 type="tTool"
@@ -2374,7 +2374,7 @@ src="Images/TextInRules.png"
 >The interface is pretty self explanatory. To edit a rule first click on it in the list, make your changes and then click the <object
 type="tButton"
 >Update</object
-> button. You will see the edited form now in the list. </p
+> button. You will see the edited form now in the list.</p
 ><p
 >If the search and replace lines are Regular Expressions, check the <object
 type="tButton"
