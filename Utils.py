@@ -468,6 +468,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
 APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
+INVALID_LEMMA_CHARS = r'([\^$><{}])'
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -1470,6 +1471,12 @@ def getInterlinData(DB, report, params):
 
                             # Otherwise we have a root or stem or phrase
                             else:
+
+                                # See if there are any invalid chars in the headword
+                                if containsInvalidChars():
+                                    
+                                    return myText
+
                                 myWord.addEntry(tempEntry)
                                 myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
 
