@@ -387,6 +387,7 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
@@ -850,6 +851,22 @@ class Main(QMainWindow):
             self.ui.traceHermitCrabSynthesisCheckBox.hide()
 
             self.doHermitCrabSynthesisBool = False
+
+        self.textOutElemTree = None
+
+        # See if we have a Text Out Rules file. 
+        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+        if textOutRulesFile:
+            
+            # Check if the file exists.
+            if os.path.exists(textOutRulesFile):
+
+                try:
+                    self.textOutElemTree = ET.parse(textOutRulesFile)
+                    self.ui.applyTextOutRulesCheckbox.setEnabled(True) # The checkbox starts out disabled.
+                except:
+                    pass 
 
         self.ret_val = True
 
@@ -1404,25 +1421,34 @@ class Main(QMainWindow):
                 return
 
         # Load the synthesized result into the text box
-        lf = open(self.synthesisFilePath, encoding='utf-8')
-        synthText = lf.read()
+        synf = open(self.synthesisFilePath, encoding='utf-8')
+        synthText = synf.read()
+
+        # Apply Text Out Rules if desired
+        if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
+
+            newStr, errMsg = TextInOutUtils.applySearchReplaceRules(synthText, self.textOutElemTree)
+
+            if newStr is None:
+
+                synthText = errMsg
 
         # if RTL text, prepend the RTL mark
         if self.hasRTLdata(synthText[:len(synthText)//2]): # just check the 1st half of the string.
+            
             synthText = '\u200F' + synthText
-
-        # If we got no output, give a string to the user to indicate it.
-        if len(synthText) == 0:
-            synthText = 'Synthesis produced no output.'
-
-        self.ui.SynthTextEdit.setPlainText(synthText)
-
-        if self.hasRTLdata(synthText[:len(synthText)//2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
 
-        lf.close()
+        # If we got no output, give a string to the user to indicate it.
+        if len(synthText) == 0:
+            
+            synthText = 'Synthesis produced no output.'
+
+        self.ui.SynthTextEdit.setPlainText(synthText)
+
+        synf.close()
 
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
