@@ -614,7 +614,7 @@ class TextWord():
         if self.hasEntries():
             return self.__eList[0]
         return None
-    def getDataStreamSymbols(self, i, escapeLemma=False):
+    def getDataStreamSymbols(self, i):
         symbols = []
         
         # Start with POS. <sent> words are special, no POS
@@ -630,20 +630,8 @@ class TextWord():
         if i < len(self.__affixLists):
             symbols += self.__affixLists[i]
         
-        newList = []
-
         # Put each symbol in angle brackets e.g. <sbjv>. Also _ for .
-        for symbStr in symbols:
-
-            symbStr = Utils.underscores(symbStr)
-
-            if False: #escapeLemma:
-
-                newList.append(self.escapeReservedApertChars(symbStr))
-            else:
-                newList.append(symbStr)
-        
-        return '<'+'><'.join(Utils.underscores(x) for x in newList)+'>'
+        return '<'+'><'.join(Utils.underscores(x) for x in symbols)+'>'
     
     def getEntries(self):
         return self.__eList
@@ -841,7 +829,7 @@ class TextWord():
         else:
             for i, _ in enumerate(self.__lemmaList):
                 retStr += self.escapeReservedApertChars(self.getLemma(i)) if escapeLemma else self.getLemma(i)
-                retStr += self.getDataStreamSymbols(i, escapeLemma)
+                retStr += self.getDataStreamSymbols(i)
         return retStr
     def outputDataStream(self, escapeLemma=False):
         retStr = self.__initPunc+self.__outputWordDataStream(escapeLemma)+self.__finalPunc
