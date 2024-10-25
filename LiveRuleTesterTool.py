@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.4 - 10/25/24 - Ron Lockwood
+#    Fixes #737. Allow user to apply text out rules.
+#    Fix bug where change to source text in top drop-down not being recognized.
+#
 #   Version 3.11.3 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -419,7 +423,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.3",
+        FTM_Version    : "3.11.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1221,8 +1225,6 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            # TODO: This leaves out the punctuation that may be between lexical units. The synthesis result will have punctuation in it.
-            # so this creates a mismatch.
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
@@ -2249,6 +2251,7 @@ class Main(QMainWindow):
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
         sf.write(self.escapeDataStreamsLemmas(myStr))
+
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
@@ -2752,12 +2755,14 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
     retVal = RESTART_MODULE
     loggedStart = False
 
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        retVal = ERROR_HAPPENED
-
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
+
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            retVal = ERROR_HAPPENED
+            break
+
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
