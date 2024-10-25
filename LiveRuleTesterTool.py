@@ -1427,9 +1427,9 @@ class Main(QMainWindow):
         # Apply Text Out Rules if desired
         if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
 
-            newStr, errMsg = TextInOutUtils.applySearchReplaceRules(synthText, self.textOutElemTree)
+            synthText, errMsg = TextInOutUtils.applySearchReplaceRules(synthText, self.textOutElemTree)
 
-            if newStr is None:
+            if synthText is None:
 
                 synthText = errMsg
 
