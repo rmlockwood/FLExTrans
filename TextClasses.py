@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.11.3 - 10/26/24 - Ron Lockwood
+#    Fixes #775. Give an error for invalid characters.
+#
 #   Version 3.11.2 - 9/5/24 - Ron Lockwood
 #    Escape Apertium lemmas when writing the data stream to a file.
 #    Unescape Apertium lemmas when coming from a file for user display.
@@ -662,6 +665,11 @@ class TextWord():
             if myE == e:
                 return i
         return None
+    def getHeadword(self):
+        if len(self.__eList) > 0:
+            if not self.isSentPunctutationWord():
+                return Utils.getHeadwordStr(self.__eList[-1])
+        return ""
     def getInflClass(self, i):
         if self.hasSenses() and i < len(self.__senseList):
             if mySense := self.__senseList[i]:

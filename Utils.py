@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.5 - 10/26/24 - Ron Lockwood
+#    Fixes #775. Give an error for invalid characters.
+#
 #   Version 3.11.4 - 10/16/24 - Ron Lockwood
 #    When splitting compounds, separate out the lexical unit from punctuation.
 #
@@ -469,6 +472,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # { and } need to be escaped if we're using apertium-interchunk
 APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
+RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -511,6 +515,7 @@ reDoubleNewline = re.compile(r'\n\n')
 reApertReserved = re.compile(APERT_RESERVED)
 reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
+reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 
 NGRAM_SIZE = 5
 
@@ -1115,6 +1120,9 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
 
+    # TODO: this function sometimes get called with multiple LUs. Right now it doesn't remove punctuation from all places between punctuation.
+    # TODO: This needs to be done because punctuation could have > chars in it.
+    # TODO: In fact, this probably won't handle ^ or $ in the punctuation. Probably need to look for unescaped ^ and $. Maybe ([^\\]*?^)([^\\]*?)(\$.*) would work.
     # Get the lexical unit and before and after punctuation
     match = re.match(r'(.*?\^)(.*?)(\$.*)', outStr, re.DOTALL)
 
@@ -1473,7 +1481,7 @@ def getInterlinData(DB, report, params):
                             else:
 
                                 # See if there are any invalid chars in the headword
-                                if containsInvalidChars():
+                                if containsInvalidLemmaChars(myWord.getHeadword()):
                                     
                                     return myText
 
@@ -2393,3 +2401,7 @@ def getInflectionTags(MSAobject):
         symbols += [underscores(abb) for grpName, abb in sorted(featureAbbrList)]
 
     return symbols
+
+def containsInvalidLemmaChars(myStr):
+
+    return True if reInvalidLemmaChars.search(myStr) else False
