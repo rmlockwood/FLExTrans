@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.5 - 10/26/24 - Ron Lockwood
+#    Fixes #92. Run Apertium only on lexical units -- no punctuation.
+
 #   Version 3.11.4 - 10/25/24 - Ron Lockwood
 #    Fixes #737. Allow user to apply text out rules.
 #    Fix bug where change to source text in top drop-down not being recognized.
@@ -423,7 +426,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.4",
+        FTM_Version    : "3.11.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2249,9 +2252,21 @@ class Main(QMainWindow):
             self.unsetCursor()
             return
 
-        # When writing to the source text file, insert slashes before reserved Apertium characters
-        sf.write(self.escapeDataStreamsLemmas(myStr))
+        # Break into punctuation and LUs
+        tokens = re.split(r'\^(.+?)\$', myStr)
+        myStr = ""
 
+        # Loop through just the lexical units. We will ignore writing punctuation (stuff between LUs). Sentence punctuation is still put out.
+        for tok in tokens[1::2]:
+
+            if re.search(SENT_TAG, tok):
+
+                myStr += f'^{tok}$'
+            else:
+                myStr += f' ^{tok}$'
+
+        # When writing to the source text file, insert slashes before reserved Apertium characters
+        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
