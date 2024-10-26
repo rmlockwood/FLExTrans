@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.4 - 10/25/24 - Ron Lockwood
+#    Fixes #737. Allow user to apply text out rules.
+#    Fix bug where change to source text in top drop-down not being recognized.
+#
 #   Version 3.11.3 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -387,6 +391,7 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
@@ -418,7 +423,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.3",
+        FTM_Version    : "3.11.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -851,6 +856,22 @@ class Main(QMainWindow):
 
             self.doHermitCrabSynthesisBool = False
 
+        self.textOutElemTree = None
+
+        # See if we have a Text Out Rules file. 
+        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+        if textOutRulesFile:
+            
+            # Check if the file exists.
+            if os.path.exists(textOutRulesFile):
+
+                try:
+                    self.textOutElemTree = ET.parse(textOutRulesFile)
+                    self.ui.applyTextOutRulesCheckbox.setEnabled(True) # The checkbox starts out disabled.
+                except:
+                    pass 
+
         self.ret_val = True
 
     def sourceTextComboChanged(self):
@@ -1204,8 +1225,6 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            # TODO: This leaves out the punctuation that may be between lexical units. The synthesis result will have punctuation in it.
-            # so this creates a mismatch.
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
@@ -1404,25 +1423,34 @@ class Main(QMainWindow):
                 return
 
         # Load the synthesized result into the text box
-        lf = open(self.synthesisFilePath, encoding='utf-8')
-        synthText = lf.read()
+        synf = open(self.synthesisFilePath, encoding='utf-8')
+        synthText = synf.read()
+
+        # Apply Text Out Rules if desired
+        if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
+
+            synthText, errMsg = TextInOutUtils.applySearchReplaceRules(synthText, self.textOutElemTree)
+
+            if synthText is None:
+
+                synthText = errMsg
 
         # if RTL text, prepend the RTL mark
         if self.hasRTLdata(synthText[:len(synthText)//2]): # just check the 1st half of the string.
+            
             synthText = '\u200F' + synthText
-
-        # If we got no output, give a string to the user to indicate it.
-        if len(synthText) == 0:
-            synthText = 'Synthesis produced no output.'
-
-        self.ui.SynthTextEdit.setPlainText(synthText)
-
-        if self.hasRTLdata(synthText[:len(synthText)//2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
 
-        lf.close()
+        # If we got no output, give a string to the user to indicate it.
+        if len(synthText) == 0:
+            
+            synthText = 'Synthesis produced no output.'
+
+        self.ui.SynthTextEdit.setPlainText(synthText)
+
+        synf.close()
 
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
@@ -2223,6 +2251,7 @@ class Main(QMainWindow):
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
         sf.write(self.escapeDataStreamsLemmas(myStr))
+
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
@@ -2726,12 +2755,14 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
     retVal = RESTART_MODULE
     loggedStart = False
 
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        retVal = ERROR_HAPPENED
-
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
+
+        configMap = ReadConfig.readConfig(report)
+        if not configMap:
+            retVal = ERROR_HAPPENED
+            break
+
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.

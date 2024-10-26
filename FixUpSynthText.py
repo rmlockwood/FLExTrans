@@ -79,7 +79,7 @@ def MainFunction(DB, report, modify=True):
     if not synthFile:
         return 
 
-    # Verify we have a valid transfer file.
+    # Verify we have a valid text out rules file.
     try:
         tree = ET.parse(textOutRulesFile)
     except:
