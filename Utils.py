@@ -5,6 +5,12 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.5 - 10/26/24 - Ron Lockwood
+#    Fixes #775. Give an error for invalid characters.
+#
+#   Version 3.11.4 - 10/16/24 - Ron Lockwood
+#    When splitting compounds, separate out the lexical unit from punctuation.
+#
 #   Version 3.11.3 - 10/12/24 - Ron Lockwood
 #    Change some warnings to reference source words.
 #
@@ -465,6 +471,8 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
 APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
+INVALID_LEMMA_CHARS = r'([\^$><{}])'
+RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -507,6 +515,7 @@ reDoubleNewline = re.compile(r'\n\n')
 reApertReserved = re.compile(APERT_RESERVED)
 reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
+reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 
 NGRAM_SIZE = 5
 
@@ -1110,14 +1119,29 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
+
+    # TODO: this function sometimes get called with multiple LUs. Right now it doesn't remove punctuation from all places between punctuation.
+    # TODO: This needs to be done because punctuation could have > chars in it.
+    # TODO: In fact, this probably won't handle ^ or $ in the punctuation. Probably need to look for unescaped ^ and $. Maybe ([^\\]*?^)([^\\]*?)(\$.*) would work.
+    # Get the lexical unit and before and after punctuation
+    match = re.match(r'(.*?\^)(.*?)(\$.*)', outStr, re.DOTALL)
+
+    if match:
+
+        beforePunc = match.group(1)
+        middle = match.group(2)
+        afterPunc = match.group(3)
+    else:
+        return outStr
+
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
-    toks = reDataStream.split(outStr)
+    toks = reDataStream.split(middle)
 
     # If there is only one token returned from the split, we don't have multiple words just
     # return the input string
     if len(toks) > 1:
-        outStr = ''
+        middle = ''
 
         # Every odd token will be the delimeter that was matched in the split operation
         # Insert $^ between the > and letter of the 2-char delimeter.
@@ -1125,8 +1149,9 @@ def split_compounds(outStr):
             # if we have an odd numbered index
             if i&1:
                 tok = tok[0]+"$^"+tok[1]
-            outStr+=tok
-    return outStr
+            middle+=tok
+
+    return f'{beforePunc}{middle}{afterPunc}'
 
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
@@ -1454,6 +1479,12 @@ def getInterlinData(DB, report, params):
 
                             # Otherwise we have a root or stem or phrase
                             else:
+
+                                # See if there are any invalid chars in the headword
+                                if containsInvalidLemmaChars(myWord.getHeadword()):
+                                    
+                                    return myText
+
                                 myWord.addEntry(tempEntry)
                                 myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
 
@@ -2370,3 +2401,7 @@ def getInflectionTags(MSAobject):
         symbols += [underscores(abb) for grpName, abb in sorted(featureAbbrList)]
 
     return symbols
+
+def containsInvalidLemmaChars(myStr):
+
+    return True if reInvalidLemmaChars.search(myStr) else False

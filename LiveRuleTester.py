@@ -263,6 +263,10 @@ class Ui_MainWindow(object):
         self.startRuleAssistant = QtWidgets.QPushButton(self.centralwidget)
         self.startRuleAssistant.setGeometry(QtCore.QRect(540, 440, 141, 31))
         self.startRuleAssistant.setObjectName("startRuleAssistant")
+        self.applyTextOutRulesCheckbox = QtWidgets.QCheckBox(self.centralwidget)
+        self.applyTextOutRulesCheckbox.setEnabled(False)
+        self.applyTextOutRulesCheckbox.setGeometry(QtCore.QRect(820, 563, 171, 30))
+        self.applyTextOutRulesCheckbox.setObjectName("applyTextOutRulesCheckbox")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -310,3 +314,5 @@ class Ui_MainWindow(object):
         self.ZoomLabel_2.setText(_translate("MainWindow", "Zoom:"))
         self.ZoomDecreaseSource.setText(_translate("MainWindow", "–"))
         self.startRuleAssistant.setText(_translate("MainWindow", "Open Rule Assistant"))
+        self.applyTextOutRulesCheckbox.setToolTip(_translate("MainWindow", "Apply the search/replace rules defined in the Text Out Rules module."))
+        self.applyTextOutRulesCheckbox.setText(_translate("MainWindow", "Apply Text Out rules"))
