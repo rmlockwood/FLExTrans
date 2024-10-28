@@ -13,11 +13,11 @@ type="tFlextrans"
 ><author
 ></author
 ><emailAddress
->flextrans.help@gmail.com</emailAddress
+>flextrans_help@sil.org</emailAddress
 ><date
->10 September 2024</date
+>28 October 2024</date
 ><version
->3.11</version
+>3.11.1</version
 ><contents
 showLevel="4"
 ></contents
@@ -1675,9 +1675,9 @@ id="sHover"
 >When you are in the <object
 type="tTab"
 >Select Words</object
-> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you are using the <genericRef
-gref="sRepl"
->replacement file</genericRef
+> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you have used the <sectionRef
+sec="sReplEditTool"
+></sectionRef
 >, you may see multiple mappings in the pop-up image.</p
 ></section3
 ><section3
@@ -1729,13 +1729,16 @@ type="tButton"
 >The <object
 type="tButton"
 >View Bilingual Lexicon</object
-> and <object
-type="tButton"
->Edit Replacement File</object
-> buttons will start the <object
+> will start the <object
 type="tXMLmindXMLEditor"
 ></object
-> for viewing and editing the respective files.</p
+> for viewing the bilingual lexicon. The <object
+type="tButton"
+>Edit Replacement Dictionary</object
+>  button will start the <object
+type="tTool"
+>Replacement Dictionary Editor</object
+>.</p
 ><p
 >If you change the target lexicon, click the <object
 type="tButton"
@@ -2324,13 +2327,16 @@ type="tFlexx"
 >For detailed help on using the <object
 type="tTool"
 >Rule Assistant</object
->, consult the help file the comes with the  <object
+>, consult the help file the comes with the <object
 type="tTool"
 >Rule Assistant</object
 >. You can get to this help file by clicking on the <object
 type="tButton"
 >Help</object
-> button.</p
+> button, then on <object
+type="tButton"
+>User Documentation</object
+>.</p
 ></section2
 ><section2
 id="sTextIn"
@@ -2346,7 +2352,7 @@ type="tTool"
 > helps you test a set of search and replace operations to be used to fix up the text that comes out of <object
 type="tTool"
 >Paratext</object
->. Regular expressions can be used if desired. </p
+>. Regular expressions can be used if desired.</p
 ><p
 >All the active rules defined in this tool are used in the <object
 type="tTool"
@@ -2374,7 +2380,7 @@ src="Images/TextInRules.png"
 >The interface is pretty self explanatory. To edit a rule first click on it in the list, make your changes and then click the <object
 type="tButton"
 >Update</object
-> button. You will see the edited form now in the list. </p
+> button. You will see the edited form now in the list.</p
 ><p
 >If the search and replace lines are Regular Expressions, check the <object
 type="tButton"
@@ -2476,6 +2482,42 @@ num="xTextOutimage"
 XeLaTeXSpecial="scaled='500'"
 cssSpecial=" height:50%"
 src="Images/TextOutRules.png"
+></img
+></chart
+></example
+></section2
+><section2
+id="sReplEditTool"
+><secTitle
+>The <object
+type="tTool"
+>Replacement Dictionary Editor</object
+></secTitle
+><p
+>The <object
+type="tTool"
+>Replacement Dictionary Editor</object
+> allows you to link source senses in certain inflections to target senses that are different than the normal link for the sense. Likewise you can link certain uninflected source senses to inflected target senses that are different than the normal link. For example, in the last line of <exampleRef
+letter="xReplEdit"
+num="xReplEdit"
+></exampleRef
+> you can see that quëda1.1 with the affixes CAUS and REF is linked to chari1.1 with affixes REF and UP. Whereas normally, quëda1.1 (uninflected or in other inflections) links to kïda1.1. In line 1 you can see an OBJ affix is added to the target word rimëru1.1 is linked to. In line 6 you can see an affix is removed from the target word that sinö1.1 is linked to. (These last two examples could be done with a very specific transfer rule, but making the change at the lexical transfer level makes good sense.)</p
+><p
+>The rows that are listed in this tool augment the bilingual lexicon. If the source information in a row is exactly the same as the default bilingual lexicon entry, this replacement dictionary entry will override the default entry.</p
+><p
+>The buttons for the tool are pretty self-explanatory. When editing or adding information, start typing in the Lemma cell and a list will appear as you type. Tab or click elsewhere to have the tool automatically fill in the grammatical category and/or features and classes.</p
+><p
+>The information displayed in this tool is stored in a replacement dictionary file typically called <object
+type="tFilename"
+>replace.dix</object
+>.</p
+><example
+num="xReplEdit"
+><chart
+><img
+XeLaTeXSpecial="scaled='500'"
+cssSpecial=" height:50%"
+src="Images/ReplacementEditor.png"
 ></img
 ></chart
 ></example
@@ -5869,9 +5911,9 @@ id="sRepl"
 >I have a source word that maps to two different target words depending on the inflection of the source word. How do I handle that?</secTitle
 ><p
 >You can handle this by using the <object
-type="tFilename"
->replace.dix</object
-> file to add additional mappings to the bilingual lexicon. This file is your project folder.</p
+type="tTool"
+>Replacement Dictionary Editor</object
+> to add additional mappings to the bilingual lexicon.</p
 ><p
 >The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present in the bilingual lexicon. That's the way <object
 type="tFlextrans"
@@ -5892,15 +5934,6 @@ type="tButton"
 > button in the <object
 type="tLiveRuleTester"
 ></object
->. Both the <object
-type="tFilename"
->replace.dix</object
-> and <object
-type="tFilename"
->bilingual.dix</object
-> files are XML files and will load automatically in <object
-type="tXMLmindXMLEditor"
-></object
 >.</p
 ><example
 num="xBilingEntries"
@@ -5911,86 +5944,11 @@ src="Images/BilingalEntries2.PNG"
 ></chart
 ></example
 ><p
->In order to have a word map differently than what is in the bilingual lexicon, you need to add a line to the replacement file. If you double-click on <object
-type="tFilename"
->replace.dix</object
-> in the project folder, you will see something like <exampleRef
-letter="xReplacement"
-num="xReplacement"
-></exampleRef
+>In order to have a word map differently than what is in the bilingual lexicon, you need to add a new line to the replacement dictionary. See <sectionRef
+sec="sReplEditTool"
+showTitle="full"
+></sectionRef
 >.</p
-><example
-num="xReplacement"
-><chart
-><img
-src="Images/Replacement_In_XXE2.PNG"
-></img
-></chart
-></example
-><p
->The replacement file has two main sections, one for replacing default bilingual entries with ones of your choice and one section for appending new entries to the bilingual lexicon. We are interested in doing the latter. Note, we can’t edit the bilingual dictionary file directly because it gets generated automatically by <object
-type="tFlextrans"
-> </object
->. After <object
-type="tFlextrans"
-></object
-> generates it, <object
-type="tFlextrans"
-></object
-> replaces and appends entries from the replacement file.</p
-><p
->Let’s say that we want to map the past tense of the entry for <langData
-lang="lVernacular"
->lieben</langData
-> shown in <exampleRef
-letter="xBilingEntries"
-num="xBilingEntries"
-></exampleRef
-> to a different Swedish word, we change the replacement file to something like <exampleRef
-letter="xRepChanged"
-num="xRepChanged"
-></exampleRef
->.</p
-><example
-num="xRepChanged"
-><chart
-><img
-src="Images/ReplacementFileChanged2.PNG"
-></img
-></chart
-></example
-><p
->Let’s look closer at the last line. The <object
-type="tRuleElemInXXE"
->left</object
-> element has <langData
-lang="lVernacular"
->lieben1.1</langData
-> and the “symbol” <langData
-lang="lVernacular"
->v</langData
-> just like the bilingual file, but it also has a new symbol <langData
-lang="lVernacular"
->pst</langData
->. This is the gloss for the past suffix in German. By adding this suffix, we are telling <object
-type="tFlextrans"
-></object
-> that we are mapping the past inflection of <langData
-lang="lVernacular"
->lieben1.1</langData
-> to something else. The new Swedish word is listed for the <object
-type="tRuleElemInXXE"
->right</object
-> element. Note that we also had to add a new symbol definition, <langData
-lang="lVernacular"
->pst</langData
-> so that <object
-type="tFlextrans"
-></object
-> knows the symbol is. Any symbols you use in a section of the replacement file, have to be defined under the <object
-type="tRuleElemInXXE"
->Symbols</object
-> element.</p
 ></section3
 ><section3
 id="sInflVariantTgt"

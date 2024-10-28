@@ -3,6 +3,10 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.11.2 - 10/22/24 - Ron Lockwood
+#    Fixes #730. Always default to a list of target morphtypes when they
+#    are unavailable.
+#
 #   Version 3.11.1 - 9/6/24 - Ron Lockwood
 #    Support mixpanel usage statistics.
 #
@@ -192,6 +196,16 @@ targetComplexTypes = []
 sourceComplexTypes = []
 categoryList = []
 
+defaultMorphNames = [
+"bound root",
+"bound stem",
+"discontiguous phrase",
+"particle",
+"phrase",
+"root",
+"stem"
+]
+
 def getSourceCategoryList(wind):
     
     if len(categoryList) == 0:
@@ -371,13 +385,23 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
         
         morphNames = wind.read(settingName)
         
-        if morphNames:
+        # Use a default list if we have nothing set
+        if not morphNames:
+
+            morphNames = defaultMorphNames
     
-            for morphName in morphNames:
-    
-                if morphName in typesList:
-                    
-                    widget.check(morphName)
+        for morphName in morphNames:
+
+            if morphName in typesList:
+                
+                widget.check(morphName)
+    else:
+        # Use a default list if the targetDB doesn't exist
+        widget.addItems(defaultMorphNames)
+
+        for morphName in defaultMorphNames:
+
+            widget.check(morphName)
 
 def loadSourceCategories(widget, wind, settingName):
 

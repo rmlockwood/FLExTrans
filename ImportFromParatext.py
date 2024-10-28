@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.11.6 - 10/8/24 - Ron Lockwood
+#    Treat attribute stuff from | to \xx* as analysis WS.
+#
 #   Version 3.11.5 - 10/4/24 - Ron Lockwood
 #    Handle \+zz style markers, i.e. they start with a +.
 #
@@ -129,7 +132,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.11.5",
+        FTM_Version    : "3.11.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -356,10 +359,11 @@ def do_import(DB, report, chapSelectObj, tree):
         # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
         # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
         # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+        # Attributes are of the form |x=123 ... \s*
         # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
         #                                                                                                                                                                                                  eg \+xt
-        #                  end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref        marker+ any marker
-        segs = re.split(r'(\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', chapterContent) 
+        #                  attribs end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref        marker+ any marker
+        segs = re.split(r'(\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', chapterContent) 
 
         # Create 1st paragraph object
         stTxtPara = m_stTxtParaFactory.Create()

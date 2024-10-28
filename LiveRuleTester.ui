@@ -311,8 +311,8 @@
    <widget class="QPushButton" name="TestButton">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>448</y>
+      <x>420</x>
+      <y>440</y>
       <width>101</width>
       <height>31</height>
      </rect>
@@ -643,8 +643,8 @@
    <widget class="QLabel" name="warningLabel">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>441</y>
+      <x>690</x>
+      <y>440</y>
       <width>640</width>
       <height>42</height>
      </rect>
@@ -815,6 +815,38 @@
     </property>
     <property name="text">
      <string>–</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="startRuleAssistant">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>440</y>
+      <width>141</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open Rule Assistant</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="applyTextOutRulesCheckbox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>563</y>
+      <width>171</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Apply the search/replace rules defined in the Text Out Rules module.</string>
+    </property>
+    <property name="text">
+     <string>Apply Text Out rules</string>
     </property>
    </widget>
   </widget>

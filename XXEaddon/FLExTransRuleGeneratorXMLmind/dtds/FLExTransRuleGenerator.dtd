@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!ELEMENT FLExTransRuleGenerator (DisjointFeatureSets, FLExTransRules) >
-
+<!ATTLIST FLExTransRuleGenerator
+    overwrite_rules (yes | no) "yes"
+>
 <!ELEMENT  FLExTransRules (FLExTransRule+)>
 
 <!ELEMENT DisjointFeatureSets (DisjointFeatureSet*) >

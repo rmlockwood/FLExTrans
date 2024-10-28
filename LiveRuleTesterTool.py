@@ -5,6 +5,13 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.5 - 10/26/24 - Ron Lockwood
+#    Fixes #92. Run Apertium only on lexical units -- no punctuation.
+#
+#   Version 3.11.4 - 10/25/24 - Ron Lockwood
+#    Fixes #737. Allow user to apply text out rules.
+#    Fix bug where change to source text in top drop-down not being recognized.
+#
 #   Version 3.11.3 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -387,6 +394,7 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import *
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
@@ -418,7 +426,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.3",
+        FTM_Version    : "3.11.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -544,7 +552,7 @@ class OverWriteDlg(QDialog):
 
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -595,6 +603,7 @@ class Main(QMainWindow):
         self.restartTester = False
         self.lastSentNum = -1
         self.startTestbedLogViewer = False
+        self.startRuleAssistant = False
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -633,6 +642,7 @@ class Main(QMainWindow):
         self.ui.ZoomDecreaseSource.clicked.connect(self.ZoomDecreaseSourceClicked)
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
+        self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -848,6 +858,22 @@ class Main(QMainWindow):
             self.ui.traceHermitCrabSynthesisCheckBox.hide()
 
             self.doHermitCrabSynthesisBool = False
+
+        self.textOutElemTree = None
+
+        # See if we have a Text Out Rules file. 
+        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+        if textOutRulesFile:
+            
+            # Check if the file exists.
+            if os.path.exists(textOutRulesFile):
+
+                try:
+                    self.textOutElemTree = ET.parse(textOutRulesFile)
+                    self.ui.applyTextOutRulesCheckbox.setEnabled(True) # The checkbox starts out disabled.
+                except:
+                    pass 
 
         self.ret_val = True
 
@@ -1090,6 +1116,11 @@ class Main(QMainWindow):
         self.closeEvent(None)
         self.close()
 
+    def OpenRuleAssistantClicked(self):
+        self.startRuleAssistant = True
+        self.closeEvent(None)
+        self.close()
+
     def EditTestbedLogButtonClicked(self):
 
         if os.path.exists(self.__testbedPath) == False:
@@ -1197,8 +1228,6 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            # TODO: This leaves out the punctuation that may be between lexical units. The synthesis result will have punctuation in it.
-            # so this creates a mismatch.
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
             if luObjList == None:
                 return
@@ -1397,25 +1426,34 @@ class Main(QMainWindow):
                 return
 
         # Load the synthesized result into the text box
-        lf = open(self.synthesisFilePath, encoding='utf-8')
-        synthText = lf.read()
+        synf = open(self.synthesisFilePath, encoding='utf-8')
+        synthText = synf.read()
+
+        # Apply Text Out Rules if desired
+        if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and len(synthText) > 0:
+
+            synthText, errMsg = TextInOutUtils.applySearchReplaceRules(synthText, self.textOutElemTree)
+
+            if synthText is None:
+
+                synthText = errMsg
 
         # if RTL text, prepend the RTL mark
         if self.hasRTLdata(synthText[:len(synthText)//2]): # just check the 1st half of the string.
+            
             synthText = '\u200F' + synthText
-
-        # If we got no output, give a string to the user to indicate it.
-        if len(synthText) == 0:
-            synthText = 'Synthesis produced no output.'
-
-        self.ui.SynthTextEdit.setPlainText(synthText)
-
-        if self.hasRTLdata(synthText[:len(synthText)//2]):
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.RightToLeft)
         else:
             self.ui.SynthTextEdit.setLayoutDirection(QtCore.Qt.LeftToRight)
 
-        lf.close()
+        # If we got no output, give a string to the user to indicate it.
+        if len(synthText) == 0:
+            
+            synthText = 'Synthesis produced no output.'
+
+        self.ui.SynthTextEdit.setPlainText(synthText)
+
+        synf.close()
 
         # Set a flag so that we don't extract the dictionary next time
         self.__extractIt = False
@@ -2147,12 +2185,12 @@ class Main(QMainWindow):
             toEscape = match.group(2)
             escaped = Utils.reApertReserved.sub(lambda x: '\\' + x.group(), toEscape)
             return initialCaret + escaped + match.group(3)
-        
+
         # Perform the substitution using the compiled pattern. The pattern looks like this: r'(\^)(.*?)(<)'
         escapedString = Utils.reBetweenCaretAndFirstAngleBracket.sub(escapeMatch, inputString)
-        
+
         return escapedString
-            
+
     def TransferClicked(self):
 
         self.setCursor(QtCore.Qt.WaitCursor)
@@ -2213,9 +2251,22 @@ class Main(QMainWindow):
             self.ui.TargetTextEdit.setPlainText('Nothing selected. Select at least one word or sentence.')
             self.unsetCursor()
             return
-            
+
+        # Break into punctuation and LUs
+        tokens = re.split(r'\^(.+?)\$', myStr)
+        myStr = ""
+
+        # Loop through just the lexical units. We will ignore writing punctuation (stuff between LUs). Sentence punctuation is still put out.
+        for tok in tokens[1::2]:
+
+            if re.search(SENT_TAG, tok):
+
+                myStr += f'^{tok}$'
+            else:
+                myStr += f' ^{tok}$'
+
         # When writing to the source text file, insert slashes before reserved Apertium characters
-        sf.write(self.escapeDataStreamsLemmas(myStr))
+        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
@@ -2437,7 +2488,7 @@ class Main(QMainWindow):
 
                 # Each lexical unit also has / plus the target lexical unit. Remove these.
                 lexUnitList = [myLU.split('/')[0] for myLU in lexUnitList]
-                
+
                 # Create a <p> html element
                 paragraphEl = ET.Element('p')
 
@@ -2519,8 +2570,9 @@ RESTART_MODULE = 0
 ERROR_HAPPENED = 1
 NO_ERRORS = 2
 START_LOG_VIEWER = 3
+START_RULE_ASSISTANT = 4
 
-def RunModule(DB, report, configMap):
+def RunModule(DB, report, configMap, ruleCount=None):
 
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -2686,7 +2738,7 @@ def RunModule(DB, report, configMap):
             bilingFile = os.path.join(pwd, bilingFile)
 
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount)
 
         if window.ret_val == False:
             report.Error('An error occurred getting things initialized.')
@@ -2703,25 +2755,29 @@ def RunModule(DB, report, configMap):
         elif window.startTestbedLogViewer:
 
             return START_LOG_VIEWER
+
+        elif window.startRuleAssistant:
+
+            return START_RULE_ASSISTANT
     else:
         report.Error('This text has no data.')
         return ERROR_HAPPENED
 
     return NO_ERRORS
 
-def MainFunction(DB, report, modify=False):
+def MainFunction(DB, report, modify=False, ruleCount=None):
 
     retVal = RESTART_MODULE
     loggedStart = False
-    
+
     # Have a loop of re-running this module so that when the user changes to a different text, the window restarts with the new info. loaded
     while retVal == RESTART_MODULE:
-        
-        # Read the configuration file which we assume is in the current directory.
+
         configMap = ReadConfig.readConfig(report)
         if not configMap:
-            return
-    
+            retVal = ERROR_HAPPENED
+            break
+
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
@@ -2729,7 +2785,14 @@ def MainFunction(DB, report, modify=False):
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report, configMap)
+        retVal = RunModule(DB, report, configMap, ruleCount)
+
+        if retVal == START_RULE_ASSISTANT:
+            from RuleAssistant import MainFunction as RA
+            ruleCount = RA(DB, report, modify, fromLRT=True)
+            retVal = RESTART_MODULE
+        else:
+            ruleCount = None
 
     # Start the log viewer
     if retVal == START_LOG_VIEWER:

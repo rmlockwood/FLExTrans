@@ -5,6 +5,15 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.11.5 - 10/26/24 - Ron Lockwood
+#    Fixes #775. Give an error for invalid characters.
+#
+#   Version 3.11.4 - 10/16/24 - Ron Lockwood
+#    When splitting compounds, separate out the lexical unit from punctuation.
+#
+#   Version 3.11.3 - 10/12/24 - Ron Lockwood
+#    Change some warnings to reference source words.
+#
 #   Version 3.11.2 - 9/5/24 - Ron Lockwood
 #    Escape Apertium lemmas when writing the data stream to a file.
 #    Unescape Apertium lemmas when coming from a file for user display.
@@ -462,6 +471,8 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
 APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
+INVALID_LEMMA_CHARS = r'([\^$><{}])'
+RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
 
 GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
@@ -504,6 +515,7 @@ reDoubleNewline = re.compile(r'\n\n')
 reApertReserved = re.compile(APERT_RESERVED)
 reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
+reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 
 NGRAM_SIZE = 5
 
@@ -1107,14 +1119,29 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
+
+    # TODO: this function sometimes get called with multiple LUs. Right now it doesn't remove punctuation from all places between punctuation.
+    # TODO: This needs to be done because punctuation could have > chars in it.
+    # TODO: In fact, this probably won't handle ^ or $ in the punctuation. Probably need to look for unescaped ^ and $. Maybe ([^\\]*?^)([^\\]*?)(\$.*) would work.
+    # Get the lexical unit and before and after punctuation
+    match = re.match(r'(.*?\^)(.*?)(\$.*)', outStr, re.DOTALL)
+
+    if match:
+
+        beforePunc = match.group(1)
+        middle = match.group(2)
+        afterPunc = match.group(3)
+    else:
+        return outStr
+
     # Split into tokens where we have a > followed by a character other than $ or < (basically a lexeme)
     # this makes ^room1.1<n>service1.1<n>number1.1<n>$ into ['^room1.1<n', '>s', 'ervice1.1<n', '>n', 'umber1.1<n>$']
-    toks = reDataStream.split(outStr)
+    toks = reDataStream.split(middle)
 
     # If there is only one token returned from the split, we don't have multiple words just
     # return the input string
     if len(toks) > 1:
-        outStr = ''
+        middle = ''
 
         # Every odd token will be the delimeter that was matched in the split operation
         # Insert $^ between the > and letter of the 2-char delimeter.
@@ -1122,8 +1149,9 @@ def split_compounds(outStr):
             # if we have an odd numbered index
             if i&1:
                 tok = tok[0]+"$^"+tok[1]
-            outStr+=tok
-    return outStr
+            middle+=tok
+
+    return f'{beforePunc}{middle}{afterPunc}'
 
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
@@ -1434,7 +1462,7 @@ def getInterlinData(DB, report, params):
                         if not msa.PartOfSpeechRA:
 
                             #myWord.addLemmaFromObj(wfiAnalysis.Owner)
-                            report.Warning('No POS found for the word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                            report.Warning('No grammatical category found for the source word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
 
                         if bundle.MorphRA:
@@ -1451,6 +1479,12 @@ def getInterlinData(DB, report, params):
 
                             # Otherwise we have a root or stem or phrase
                             else:
+
+                                # See if there are any invalid chars in the headword
+                                if containsInvalidLemmaChars(myWord.getHeadword()):
+                                    
+                                    return myText
+
                                 myWord.addEntry(tempEntry)
                                 myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
 
@@ -1466,7 +1500,7 @@ def getInterlinData(DB, report, params):
                                     myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                                 else:
                                     myWord.addSense(None)
-                                    report.Warning("Couldn't find the sense for headword: "+getHeadwordStr(tempEntry))
+                                    report.Warning("Couldn't find the sense for source headword: "+getHeadwordStr(tempEntry))
                         else:
                             report.Warning("Morph object is null.")
 
@@ -1476,7 +1510,7 @@ def getInterlinData(DB, report, params):
                             # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
                             myWord.addAffix(bundle.SenseRA.Gloss)
                         else:
-                            report.Warning("Sense object for affix is null.")
+                            report.Warning("Sense object for a source affix is null.")
                 else:
                     if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
                         myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
@@ -1484,7 +1518,7 @@ def getInterlinData(DB, report, params):
                         # Give a clue that a part is missing by adding a bogus affix
                         myWord.addPlainTextAffix('PartMissing')
 
-                    report.Warning('No morphosyntactic analysis found for some part of the word: '+ myWord.getSurfaceForm())
+                    report.Warning('No morphosyntactic analysis found for some part of the source word: '+ myWord.getSurfaceForm())
                     break # go on to the next word
             else:
                 # Part of the word has not been tied to a lexical entry-sense
@@ -1494,7 +1528,7 @@ def getInterlinData(DB, report, params):
                     # Give a clue that a part is missing by adding a bogus affix
                     myWord.addPlainTextAffix('PART_MISSING')
 
-                report.Warning('No sense found for some part of the word: '+ myWord.getSurfaceForm())
+                report.Warning('No sense found for some part of the source word: '+ myWord.getSurfaceForm())
                 break # go on to the next word
 
         # if we don't have a root or stem and we have something else like an affix, give a warning
@@ -1508,7 +1542,7 @@ def getInterlinData(DB, report, params):
             else:
                 myWord.addPlainTextAffix('ROOT_MISSING')
 
-            report.Warning('No root or stem found for: '+ myWord.getSurfaceForm())
+            report.Warning('No root or stem found for source word: '+ myWord.getSurfaceForm())
 
     # Handle any final punctuation text at the end of the text in its own paragraph
     if len(savedPrePunc) > 0:
@@ -2260,6 +2294,8 @@ def getAffixTemplates(DB, gramCategoryAbbrev):
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'prefix'))
             for slot in template.SuffixSlotsRS:
                 slots.append((getAffixSlotCategories(slot, gramCategoryAbbrev), 'suffix'))
+            if not slots:
+                continue
             cats, types = list(zip(*slots))
             for prod in itertools.product(*cats):
                 templates.add(tuple(zip(prod, types)))
@@ -2365,3 +2401,7 @@ def getInflectionTags(MSAobject):
         symbols += [underscores(abb) for grpName, abb in sorted(featureAbbrList)]
 
     return symbols
+
+def containsInvalidLemmaChars(myStr):
+
+    return True if reInvalidLemmaChars.search(myStr) else False
