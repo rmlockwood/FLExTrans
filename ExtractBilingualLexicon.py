@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.11.3 - 10/26/24 - Ron Lockwood
+#    Fixes #775. Give an error for invalid characters.
+#
 #   Version 3.11.2 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -304,7 +307,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.11.2",
+        FTM_Version    : "3.11.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",
@@ -535,7 +538,10 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                 headWord = Utils.add_one(headWord)
 
                 if headWord != headWord.strip():
-                    errorList.append((f'Found an entry with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
+                    errorList.append((f'Found a headword with preceding or trailing spaces while processing source headword: {rawHeadWord}. The spaces were removed, but please correct this in the lexicon', 1, sourceURL))
+
+                if Utils.containsInvalidLemmaChars(headWord):
+                    errorList.append((f'Found a headword with one of the following invalid characters: {Utils.RAW_INVALID_LEMMA_CHARS} in {rawHeadWord}. Please correct this in the lexicon before continuing.', 1, sourceURL))
 
                 # Loop through senses
                 for i, sourceSense in enumerate(sourceEntry.SensesOS):

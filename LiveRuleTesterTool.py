@@ -7,7 +7,7 @@
 #
 #   Version 3.11.5 - 10/26/24 - Ron Lockwood
 #    Fixes #92. Run Apertium only on lexical units -- no punctuation.
-
+#
 #   Version 3.11.4 - 10/25/24 - Ron Lockwood
 #    Fixes #737. Allow user to apply text out rules.
 #    Fix bug where change to source text in top drop-down not being recognized.
