@@ -1341,6 +1341,24 @@ class RuleGenerator:
         # Nothing went wrong, so we have actually added a rule.
         return True
 
+    def TrimUnused(self) -> None:
+        '''Delete macros and variables which have become unused as a result of
+        deleting old rules.'''
+
+        names = [('section-def-macros', 'def-macro', 'call-macro'),
+                 ('section-def-vars', 'def-var', 'var')]
+        for sectionName, defTag, callTag in names:
+            used = set(c.attrib.get('n') for c in self.root.iter(callTag))
+            drop = []
+            section = self.GetSection(sectionName)
+            for node in section:
+                if node.tag != defTag or node.attrib.get('n') in used:
+                    continue
+                drop.append(node)
+            for node in drop:
+                self.usedIDs.remove(node.attrib.get('n'))
+                section.remove(node)
+
     def ProcessAssistantFile(self, fileName: str,
                              ruleNumber: Optional[int] = None) -> None:
         '''Process the Rule Assistant file `fileName` and generate Apertium
@@ -1407,6 +1425,7 @@ class RuleGenerator:
                 for r in remove:
                     self.ruleNames.remove(r.get('comment'))
                     section.remove(r)
+                self.TrimUnused()
 
             if rule.get('create_permutations', 'no') == 'yes':
                 # To create permutations, get a list of all the IDs of words
