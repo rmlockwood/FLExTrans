@@ -55,6 +55,7 @@ import logging
 from SIL.LCModel import (
     IMoStemMsa,
     IMoInflAffMsa,
+    IMoDerivAffMsa,
     )
 from flextoolslib import *
 
@@ -145,6 +146,18 @@ class Template:
         for tag_list in itertools.product(*self.slot_tags):
             yield ''.join(tag_list[:split]), ''.join(tag_list[split:])
 
+    def inflect(self, morphemes, aStem, gStem, clitics):
+        for prefixes, suffixes in self.generate(morphemes):
+            aForm = aStem + prefixes + suffixes
+            gForm = prefixes + gStem + suffixes
+            yield aForm, gForm
+            for isProclitic, tag in clitics:
+                t = f'<{tag}>'
+                if isProclitic:
+                    yield aForm + t, t + gForm
+                else:
+                    yield aForm + t, gForm + t
+
 def get_cat2focus(DB, focusPOS):
     keep = set()
 
@@ -209,6 +222,7 @@ def get_templ_list(myDB, cat2focus, report):
 def MainFunction(DB, report, modifyAllowed):
     slot2AffixList = defaultdict(list)
     cat2CliticList = defaultdict(set)
+    derivAffixList = defaultdict(list)
     standardSpellList = []
 
     # Read the configuration file which we assume is in the current directory.
@@ -394,6 +408,17 @@ def MainFunction(DB, report, modifyAllowed):
                     lex = '<'+Utils.underscores(DB.LexiconGetSenseGloss(s))+'>'
                     break
 
+                for sense in e.SensesOS:
+                    if sense.MorphoSyntaxAnalysisRA.ClassName != 'MoDerivAffMsa':
+                        continue
+                    msa = IMoDerivAffMsa(sense.MorphoSyntaxAnalysisRA)
+                    if not msa.FromPartOfSpeechRA or not msa.ToPartOfSpeechRA:
+                        continue
+                    fPos = abbr2str(msa.FromPartOfSpeechRA)
+                    tPos = abbr2str(msa.ToPartOfSpeechRA)
+                    for mappedPos in cat2focus[tPos]:
+                        derivAffixList[fPos].append((lex, mappedPos, morphType == 'prefix'))
+
                 if e.MorphoSyntaxAnalysesOC:
 
                     # Get the slots associated with this affix
@@ -408,16 +433,13 @@ def MainFunction(DB, report, modifyAllowed):
 
                             msa = IMoInflAffMsa(msa)
                         else:
-                            logger.info("Skipping deriv MSA for "+lexForm+'  '+lex)
                             continue
 
                         # First get the POS for this MSA, just for debug output
                         if msa.PartOfSpeechRA == None:
                             report.Error('MSA missing POS in '+lexForm+' '+lex)
                             continue
-                        msaPOS = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                        if msaPOS == "":
-                            msaPOS = Utils.as_string(msa.PartOfSpeechRA.Name)
+                        if not Utils.as_string(msa.PartOfSpeechRA.Abbreviation):
                             report.Error('POS msaPOS missing Abbreviation label')
                         for slot in msa.Slots:
                             name = name2str(slot)
@@ -469,28 +491,38 @@ def MainFunction(DB, report, modifyAllowed):
             clitics.update(cat2CliticList[f])
         cat2clitic[cat] = sorted(clitics)
 
+    for key in derivAffixList:
+        derivAffixList[key].sort()
+
     # Process each word and add affixes and clitics
     # Then output the full set of inflections for each word
     wrdCount = 0
     for lemma, gloss, pos_tag, pos_key in standardSpellList:
 
+        aStem = f'{lemma}<{pos_tag}>'
+        gStem = f'{gloss}<{pos_tag}>'
+
         for templName in cat2templ[pos_key]:
             templ = templates[templName]
 
-            for prefixes, suffixes in templ.generate(slot2AffixList):
-
+            for aForm, gForm in templ.inflect(slot2AffixList, aStem, gStem,
+                                              cat2clitic[pos_key]):
                 wrdCount += 1
-                f_aper.write(f'^{lemma}<{pos_tag}>{prefixes}{suffixes}$\n')
-                f_out.write(f'{prefixes}{gloss}<{pos_tag}>{suffixes}\n')
+                f_aper.write(f'^{aForm}$\n')
+                f_out.write(gForm + '\n')
 
-                for isProclitic, tag in cat2clitic[pos_key]:
+        for tag, toPos, isPrefix in derivAffixList[pos_key]:
+            aStemDeriv = aStem + tag
+            gStemDeriv = (tag + gStem) if isPrefix else (gStem + tag)
+
+            for templName in cat2templ[toPos]:
+                templ = templates[templName]
+
+                for aForm, gForm in templ.inflect(slot2AffixList, aStemDeriv,
+                                                  gStemDeriv, cat2clitic[toPos]):
                     wrdCount += 1
-                    f_aper.write(f'^{lemma}<{pos_tag}>{prefixes}{suffixes}<{tag}>$\n')
-                    if isProclitic:
-                        f_out.write(f'<{tag}>{prefixes}{gloss}<{pos_tag}>{suffixes}\n')
-                    else:
-                        f_out.write(f'{prefixes}{gloss}<{pos_tag}>{suffixes}<{tag}>\n')
-
+                    f_apr.write(f'^{aForm}$\n')
+                    f_out.write(gForm + '\n')
 
     ## Output final counts to the log file.
     logger.info('\n\n'+str(wrdCount)+' words generated.'+'\n')
