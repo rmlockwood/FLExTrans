@@ -1351,12 +1351,22 @@ class RuleGenerator:
             used = set(c.attrib.get('n') for c in self.root.iter(callTag))
             drop = []
             section = self.GetSection(sectionName)
+            comments = []
             for node in section:
-                if node.tag != defTag or node.attrib.get('n') in used:
+                if node.tag is ET.Comment:
+                    comments.append(node)
                     continue
+                if node.tag != defTag or node.attrib.get('n') in used:
+                    comments = []
+                    continue
+                drop += comments
                 drop.append(node)
+                comments = []
             for node in drop:
-                self.usedIDs.remove(node.attrib.get('n'))
+                try:
+                    self.usedIDs.remove(node.attrib.get('n'))
+                except KeyError:
+                    pass
                 section.remove(node)
 
     def ProcessAssistantFile(self, fileName: str,
