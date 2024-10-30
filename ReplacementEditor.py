@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.11.3 - 10/30/24 - Ron Lockwood
+#    Add Mixpanel logging.
+#
 #   Version 3.11.2 - 9/19/24 - Ron Lockwood
 #    Don't need to convert problem characters on the headword anymore.
 #
@@ -29,7 +32,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version: "3.11.2",
+    FTM_Version: "3.11.3",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -575,6 +578,10 @@ def MainFunction(DB, report, modifyAllowed):
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     replaceFile = ReadConfig.getConfigVal(
         configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
