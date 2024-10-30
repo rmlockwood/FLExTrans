@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.11.6 - 10/26/24 - Ron Lockwood
+#    Fixes #782. Change the Edit Replacement File button to launch the Replacement 
+#    Dictionary Editor.
+#
 #   Version 3.11.5 - 10/26/24 - Ron Lockwood
 #    Fixes #92. Run Apertium only on lexical units -- no punctuation.
 #
@@ -426,7 +430,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.11.5",
+        FTM_Version    : "3.11.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -604,6 +608,7 @@ class Main(QMainWindow):
         self.lastSentNum = -1
         self.startTestbedLogViewer = False
         self.startRuleAssistant = False
+        self.startReplacementEditor = False
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -986,16 +991,11 @@ class Main(QMainWindow):
 
     def EditReplacementButton(self):
 
-        if os.path.exists(self.__replFile) == False:
+        self.startReplacementEditor = True
 
-            QMessageBox.warning(self, 'Not Found Error', f'Transfer rule file: {self.__replFile} does not exist.')
-            return
-
-        progFilesFolder = os.environ['ProgramFiles(x86)']
-
-        xxe = progFilesFolder + '\\XMLmind_XML_Editor\\bin\\xxe.exe'
-
-        call([xxe, self.__replFile])
+        # Close the tool and it will restart
+        self.closeEvent(None)
+        self.close()
 
     def checkThemAll(self):
 
@@ -2571,6 +2571,7 @@ ERROR_HAPPENED = 1
 NO_ERRORS = 2
 START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
+START_REPLACEMENT_EDITOR = 5
 
 def RunModule(DB, report, configMap, ruleCount=None):
 
@@ -2759,6 +2760,10 @@ def RunModule(DB, report, configMap, ruleCount=None):
         elif window.startRuleAssistant:
 
             return START_RULE_ASSISTANT
+        
+        elif window.startReplacementEditor:
+
+            return START_REPLACEMENT_EDITOR
     else:
         report.Error('This text has no data.')
         return ERROR_HAPPENED
@@ -2798,6 +2803,12 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
     if retVal == START_LOG_VIEWER:
 
         TestbedLogViewer.RunTestbedLogViewer(report)
+
+    # Start the replacement dictionary editor
+    elif retVal == START_REPLACEMENT_EDITOR:
+
+        from ReplacementEditor import MainFunction as RE
+        RE(DB, report, modify)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
