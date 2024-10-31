@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->28 October 2024</date
+>31 October 2024</date
 ><version
 >3.11.1</version
 ><contents
@@ -1735,7 +1735,7 @@ type="tXMLmindXMLEditor"
 > for viewing the bilingual lexicon. The <object
 type="tButton"
 >Edit Replacement Dictionary</object
->  button will start the <object
+> button will start the <object
 type="tTool"
 >Replacement Dictionary Editor</object
 >.</p
