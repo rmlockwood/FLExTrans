@@ -46,13 +46,16 @@
 
 import re
 import copy
+from dataclasses import dataclass
 import itertools
 from collections import defaultdict
 import random
+import logging
 
 from SIL.LCModel import (
     IMoStemMsa,
     IMoInflAffMsa,
+    IMoDerivAffMsa,
     )
 from flextoolslib import *
 
@@ -90,286 +93,137 @@ STEM_MORPH_NAMES = ['stem','bound stem','root','bound root','phrase']
 
 #----------------------------------------------------------------
 
-def verifySlots(slot2AffixList, slot2IsPrefix):
-    badSlots = []
-    for slotName in slot2IsPrefix:
-        if slotName not in slot2AffixList:
-            badSlots.append(slotName)
-    return badSlots
+logger = logging.getLogger(__name__)
 
-def catalog_subcats(myDB):
-    cat2subCat = {}
-    cat2SubcatNames = {}
-    for gcat in myDB.lp.AllPartsOfSpeech:
-        # Build the category name
-        cat = Utils.as_string(gcat.Abbreviation)
-        catAndGuid = cat + gcat.Guid.ToString()
+def name2str(obj):
+    return f'{Utils.as_string(obj.Name)}:{obj.Guid.ToString()}'
 
-        subCatList = []
-        names = []
-        # Loop through all templates for this category
-        for subcat in gcat.SubPossibilitiesOS:
-            # Build the template name
-            subcatName = Utils.as_string(subcat.Abbreviation)
-            subCatAndGuid = subcatName + subcat.Guid.ToString()
+def abbr2str(cat):
+    return Utils.as_string(cat.Abbreviation) + cat.Guid.ToString()
 
-            subCatList.append(subCatAndGuid)
-            names.append(subcatName)
+@dataclass
+class Slot:
+    name: str
+    required: bool
 
-        if len(subCatList) > 0:
-            cat2subCat[catAndGuid] = subCatList
-            cat2SubcatNames[cat] = names
+    @staticmethod
+    def fromDB(slot):
+        return Slot(name2str(slot), not slot.Optional)
 
-    return cat2subCat, cat2SubcatNames
+@dataclass
+class Template:
+    name: str
+    prefixes: list[Slot]
+    suffixes: list[Slot]
+    valid: bool = True
+    slot_tags = None
 
-def push_templates_down(posList, templs2Assign, cat2Templ, cat2subCat):
-    # Loop through categories
-    for cat in posList:
+    @staticmethod
+    def fromDB(templ):
+        prefixes = [Slot.fromDB(s) for s in reversed(templ.PrefixSlotsRS)]
+        suffixes = [Slot.fromDB(s) for s in templ.SuffixSlotsRS]
+        return Template(name2str(templ), prefixes, suffixes)
 
-        # If we already have templates for this category, add to the list
-        if cat in cat2Templ:
-            templList = cat2Templ[cat]
+    def get_slot_tags(self, morphemes):
+        if self.slot_tags is None:
+            self.slot_tags = []
+            for slot in (self.prefixes + self.suffixes):
+                tags = list(morphemes[slot.name])
+                if not slot.required:
+                    tags.append('')
+                if not tags:
+                    logger.info(f'No tags found for slot {slot.name} of template {self.name}. Skipping.')
+                    self.valid = False
+                    return
+                self.slot_tags.append(sorted(tags))
 
-            # Add the new templates if they are not already present
-            for t2A in templs2Assign:
-                if t2A not in templList:
-                    templList.append(t2A)
-        else:
-            # Initialize it
-            if len(templs2Assign) > 0:
-                cat2Templ[cat] = templs2Assign
-            templList = templs2Assign
+    def generate(self, morphemes):
+        self.get_slot_tags(morphemes)
+        if not self.valid:
+            return
 
-        newT2A = templList
+        split = len(self.prefixes)
+        for tag_list in itertools.product(*self.slot_tags):
+            yield ''.join(tag_list[:split]), ''.join(tag_list[split:])
 
-        # if this category has sub-categories call this function recursively
-        if cat in cat2subCat and len(newT2A) > 0:
-            push_templates_down(cat2subCat[cat], newT2A, cat2Templ, cat2subCat)
-
-def push_clitics_down(posList, clitics2Assign, cat2CliticList, cat2subCat):
-    # Loop through categories
-    for cat in posList:
-
-        # If we already have clitics for this category, add to the list
-        if cat in cat2CliticList:
-            cliticList = cat2CliticList[cat]
-
-            # Add the new clitics if they are not already present
-            for c2A in clitics2Assign:
-                if c2A not in cliticList:
-                    cliticList.append(c2A)
-        else:
-            # Initialize it
-            if len(clitics2Assign) > 0:
-                cat2CliticList[cat] = clitics2Assign
-            cliticList = clitics2Assign
-
-        newT2A = cliticList
-
-        # if this category has sub-categories call this function recursively
-        if cat in cat2subCat and len(newT2A) > 0:
-            push_templates_down(cat2subCat[cat], newT2A, cat2CliticList, cat2subCat)
-
-MAX_CLITICS = 2
-# recursive word creation
-def add_clitics(wordPair, cliticPairList, masterList):
-
-    masterList.append(wordPair)
-    #print wordPair[0].encode('utf-8')
-    for i in range(1,MAX_CLITICS+1):
-        for iterList in itertools.permutations(cliticPairList,i):
-            newWord = wordPair
-            for cliticPair in iterList:
-                if cliticPair[0]: # True if it's a proclitic
-                    newWord = cliticPair[1]+newWord
+    def inflect(self, morphemes, aStem, gStem, clitics):
+        for prefixes, suffixes in self.generate(morphemes):
+            aForm = aStem + prefixes + suffixes
+            gForm = prefixes + gStem + suffixes
+            yield aForm, gForm
+            for isProclitic, tag in clitics:
+                t = f'<{tag}>'
+                if isProclitic:
+                    yield aForm + t, t + gForm
                 else:
-                    newWord = newWord+cliticPair[1]
-            masterList.append(newWord)
+                    yield aForm + t, gForm + t
 
-# Add all possible affixes for the given slots
-def add_affixes(stemList, slotList):
+def get_cat2focus(DB, focusPOS):
+    keep = set()
 
-    # for each slot in the template...
-    for isPrefix, affixes in slotList:
+    children = {}
+    for cat in DB.lp.AllPartsOfSpeech:
+        label = abbr2str(cat)
+        children[label] = set()
+        for subcat in cat.SubPossibilitiesOS:
+            children[label].add(abbr2str(subcat))
+        if Utils.as_string(cat.Abbreviation) in focusPOS:
+            keep.add(label)
 
-        nextStemList = []
+    cat2focus = defaultdict(set)
+    for pos in children:
+        if pos in keep:
+            cat2focus[pos].add(pos)
+        todo = list(children[pos])
+        while todo:
+            c = todo.pop()
+            if c in keep:
+                cat2focus[pos].add(c)
+            todo += list(children[c])
 
-        # iterate over the affixes in order
-        for affix in sorted(affixes):
-            if isPrefix:
-                nextStemList += [affix+stem for stem in stemList]
-            else:
-                nextStemList += [stem+affix for stem in stemList]
-
-        stemList = nextStemList
-
-    return stemList
-
-# Find all possible slot combinations
-# infSlots and masterList start out as empty
-# infSlots being empty means no slots applied (just the stem) which is valid. The first one in the masterList will be this empty list.
-# infSlots are the ones that we have done so far and grows each time.
-def process_slots(infSlots, slotList, masterList):
-    # The first append, this saves a combination to the master list.
-    masterList.append(infSlots)
-
-    # Always make a copy of the slot list, so that the callers list coming in doesn't get destroyed by a pop()
-    newSlotList = copy.deepcopy(slotList)
-
-    # Loop through all our slots
-    # The deeper in recursion we are, the fewer slots are in this list because they keep getting popped()
-    for slot in slotList:
-        newInflSlots = copy.deepcopy(infSlots)
-
-        # add the current slot combination we are processing to the list
-        newInflSlots.append(slot)
-
-        # remove the first slot in the list for the next recursion
-        newSlotList.pop(0)
-
-        process_slots(newInflSlots, newSlotList, masterList)
+    return cat2focus
 
 # Build a map from categories to templates and maps from templates to slots
-def get_templ_list(myDB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPOS, f_log, report):
-    f_log.write('\nProcessing templates')
+def get_templ_list(myDB, cat2focus, report):
+    logger.info('Processing templates')
+
+    cat2templ = defaultdict(list)
+    templates = {}
 
     for gcat in myDB.lp.AllPartsOfSpeech:
 
-        # I could screen for POS right here. I could choose to only add
-        # templates to the templList if they match the designated POS.
-        # But I need to not circumvent the part that pushes templates down to
-        # child categories, if the focus POS inherits its templates from a parent.
-
-        # Build the category name
         catAbbrev = Utils.as_string(gcat.Abbreviation)
-        if catAbbrev == "***":
-            catFullName = Utils.as_string(gcat.Name)
-            report.Error('Error: category '+catFullName+' missing Abbreviation')
-            # Even if this Error occurs, we can go on, because *** will get added to the GUID
-
-        catAndGuid=catAbbrev + gcat.Guid.ToString()
-
-        # I don't think this is doing anything right here.
-        if focusPOS != "":
-            if catAbbrev not in focusPOS:
-                continue
-
-        # Add to the list of categories
-        # This list is used in the Main function to push templates down.  What else?
-        catList.append(catAndGuid)
+        catLabel = abbr2str(gcat)
+        cats = cat2focus[catLabel]
+        if len(cats) == 0:
+            # This POS is not an ancestor of any of the ones we care about,
+            # so skip it.
+            continue
 
         templList = []
         # Loop through all templates for this category
         for templ in gcat.AffixTemplatesOS:
-            # Build the template name
-            templName = Utils.as_string(templ.Name)
-            templAndGuid = templName + templ.Guid.ToString()
 
             # If it is marked as not Active in FLEx, then don't add it to the list
             # that will be processed later
             if templ.Disabled == True:
                 #report.Info("Not adding template "+templName+' for Category '+catAbbrev)
-                f_log.write("\n  Not adding Inactive template "+templName+' for Category '+catAbbrev)
+                logger.info("  Not adding Inactive template "+Utils.as_string(templ.Name)+' for Category '+catAbbrev)
                 continue
-            else:
-                #report.Info("Adding template "+templName+' for Category '+catAbbrev)
-                f_log.write("\n  Adding template "+templName+' for Category '+catAbbrev)
-                templList.append(templAndGuid)
 
-            slotList = []
-            oblSlotList = []
-            # Get the prefix slots for this template
-            for slot in templ.PrefixSlotsRS:
-                # Build slot name
-                slotName = catAbbrev + ":" + Utils.as_string(slot.Name)  + ":" + slot.Guid.ToString()
+            templObj = Template.fromDB(templ)
+            logger.info("  Adding template "+templObj.name+' for Category '+catAbbrev)
+            for c in cats:
+                cat2templ[c].append(templObj.name)
+            templates[templObj.name] = templObj
 
-                # For prefixes put things in reverse order. i.e. don't append from the end of the list
-                # like for suffixes, prepend to the beginning of the list
-                slotList.insert(0,slotName)
-                f_log.write("\n      Adding prefix slot "+slotName+" to template "+templName)
-
-                slot2IsPrefix[slotName] = True # prefix=True
-
-                # Add to the obligatory slot list if needed
-                if not slot.Optional:
-                    oblSlotList.append(slotName)
-
-            # Get the suffix slots for this template
-            for slot in templ.SuffixSlotsRS:
-                # Build slot name
-                slotName = catAbbrev + ":" + Utils.as_string(slot.Name)  + ":" + slot.Guid.ToString()
-                #f_log.write("\n      Checking slot "+slotName+" in template "+templName)
-
-                slotList.append(slotName)
-                f_log.write("\n      Adding suffix slot "+slotName+" to template "+templName)
-
-                slot2IsPrefix[slotName] = False # prefix=True
-
-                # Add to the obligatory slot list
-                if not slot.Optional and slotName not in oblSlotList:
-                    oblSlotList.append(slotName)
-
-            # Add to the map
-            templ2Slots[templAndGuid] = (slotList, oblSlotList)
-
-        # Add to the map
-        if len(templList) > 0:
-            cat2Templ[catAndGuid] = templList
-            f_log.write('\n    Added cat '+catAndGuid+ 'to templList '+str(templList))
-
-    f_log.write('\n')
-
-# Add all possible inflectional affixes using all applicable templates
-def create_words_from_templates(wordPair, templList, tmpl2Slots, slot2AffixList, slot2IsPrefix):
-
-    # List of all the inflected forms for this stem (collect to be the return value of this function)
-    wordParadigmList = []
-
-    # Loop through each template in the templList which is for one category
-    for templAndGuid in templList:
-        # Get the slots and obligatory slots for this template
-        (slotList, oblSlotList) = tmpl2Slots[templAndGuid]
-
-        slotCombos = []
-        prelimSlotCombos = []
-        # Create all slot combinations
-        process_slots([], slotList, prelimSlotCombos)
-
-        oblSlotSet = set(oblSlotList)
-        # Create slot combinations where obligatory slots are represented
-        for prelimCombo in prelimSlotCombos:
-            prelimComboSet = set(prelimCombo)
-
-            # All the obligatory slots have to be in the current slot combination
-            if oblSlotSet.issubset(prelimComboSet):
-                slotCombos.append(prelimCombo)
-
-        # Loop through each combination
-        for combo in slotCombos:
-            affixList = []
-
-            # Loop through each slot in the slot combination
-            for slotAndGuid in combo:
-                # Add to the list of  affixes. This creates a list of lists of affixes. The outer list corresponds to each slot in the combo. I.e. a list of affixes for each slot.
-                affixList.append((slot2IsPrefix[slotAndGuid], slot2AffixList[slotAndGuid]))
-
-            # Cycle through all affixes in the slots, attach to the word portion of the word/cat pair that was passed in
-            comboWords = add_affixes([wordPair[0]], affixList)
-
-            # Add to a list that will be further formatted before printing as intermediate files for the user
-            wordParadigmList.extend(comboWords)
-
-    return wordParadigmList
+    return cat2templ, templates
 
 def MainFunction(DB, report, modifyAllowed):
-    cat2Templ = {}
-    templ2Slots = {}
     slot2AffixList = defaultdict(list)
-    cat2CliticList = {}
-    slot2IsPrefix = {}
+    cat2CliticList = defaultdict(set)
+    derivAffixList = defaultdict(list)
     standardSpellList = []
-    catList = []
-    wrdCount = 0
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -390,50 +244,45 @@ def MainFunction(DB, report, modifyAllowed):
 
     logFile = Utils.build_path_default_to_temp(targetLOG)
     try:
-        f_log = open(logFile, 'w', encoding='utf-8')
-    except IOError as e:
+        logger.addHandler(logging.FileHandler(logFile, mode='w', encoding='utf-8'))
+        report.Info('Logging to '+logFile)
+    except:
         report.Error('There was a problem creating the log file: '+logFile+'.')
 
     ## Generate for only a specified POS  (This needs work)
     focusPOS = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_POS, report)
     if focusPOS == "":
         report.Error('  No focus POS. Please select at least one POS with a template.')
+        return
     else:
         # last POS is likely empty
         if focusPOS[-1] == '':
             focusPOS.pop()
         report.Info('  Only collecting templates for these POS: '+str(focusPOS))
 
+    cat2focus = get_cat2focus(DB, focusPOS)
+
     report.Info("Collecting templates from FLEx project...")
-    report.ProgressStart(DB.LexiconNumberOfEntries())
 
     # Get maps related to templates
-    # cat2Templ will come back with a list of the Active templates that were added
+    # cat2templ will come back with a list of the Active templates that were added
     # It will only add Templates for focusPOS, if set
-    get_templ_list(DB, cat2Templ, templ2Slots, slot2IsPrefix, catList, focusPOS, f_log, report)
-
-    # Get a map of categories to subcategories
-    cat2Subcats, cat2SubcatNames = catalog_subcats(DB)
-
-    # Copy templates down to any child categories
-    push_templates_down(catList, [], cat2Templ, cat2Subcats)
-
+    cat2templ, templates = get_templ_list(DB, cat2focus, report)
 
     ## To make it easier to check the output when starting up, only take a specified number of stem entries
     maxStems = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, report)
     if maxStems == "":
-        # Set a high value if nothing was defined in the settings
-        maxStems = 9999
+        maxStems = DB.LexiconNumberOfEntries()
         report.Info('  Not limiting number of stems')
     else:
         maxStems = int(maxStems)
         report.Info('  Only generating on the first '+str(maxStems)+' stems')
-    stemCount = 0
 
     ## Generate for only a specified Lexeme Form  (This needs work)
     focusLex = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, report)
 
-    f_log.write('\nProcessing entries')
+    logger.info('Processing entries')
+    report.ProgressStart(DB.LexiconNumberOfEntries())
 
     # Loop through all the entries
     for entryCount,e in enumerate(DB.LexiconAllEntries()):
@@ -453,10 +302,9 @@ def MainFunction(DB, report, modifyAllowed):
 
             ##
             # Get the Citation Form of this entry (or Lexeme Form, if Citation Form is empty)
-            if DB.LexiconGetCitationForm(e):
-                lex = DB.LexiconGetCitationForm(e)
-            else:
-                lex = DB.LexiconGetLexemeForm(e)
+            lex = DB.LexiconGetCitationForm(e) or DB.LexiconGetLexemeForm(e)
+            if not lex:
+                continue
 
             ## This is where we would limit to a specific Citation Form
             if focusLex != "":
@@ -465,85 +313,56 @@ def MainFunction(DB, report, modifyAllowed):
                 else:
                     report.Info('  Only generating on stem ['+lex+']\n')
 
-            # Also store the Gloss of the root (first sense only, so far)
-            for mySense in e.SensesOS:
-                thisGloss = DB.LexiconGetSenseGloss(mySense)
-                break
-            if thisGloss == '':
-                thisGloss = 'NoGloss'
-                ## Don't need to report this for every word this applies to; only the ones we're using, later
-                #report.Info('  Using '+thisGloss+' for '+lex+'\n')
-
             # Add Homograph.SenseNum to use it as an underlying form for STAMP
             ## (Really need to get the actual HM and SN from FLEx, and use all of them.)
-            # Also attach the Gloss on the front, so we can use it later for a different output.
-            if lex is None or len(lex) == 0:
-                continue
-            else:
-                # Format for parses output file
-                lex = '['+thisGloss+']'+lex+'1.1'
-            # Reset
-            thisGloss = ""
+            lex += '1.1'
 
             # if there are no senses, skip to the next (because this must be a variant)
             # The "continue" makes it skip; the "GetEntryWithSense(e) tries to find the appropriate
             # sense for this variant.  But it wasn't working right.
             if e.SensesOS.Count < 1:
-                f_log.write('\n  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
+                logger.info('  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
                 continue
-#                e = GetEntryWithSense(e)
+
+            # Also store the Gloss of the root (first sense only, so far)
+            thisGloss = ''
 
             # reset variable
             catAndGuid = ''
+            # BB: Set the POS to UNK, so it will have some value even if the sense doesn't.
+            # (Had to add this after the upgrade to FlexTools 2.1.)
+            pos = 'UNK'
             # Loop through senses (once). Entries without senses get skipped
-            for mySense in e.SensesOS:
-                # BB: Set the POS to UNK, so it will have some value even if the sense doesn't.
-                # (Had to add this after the upgrade to FlexTools 2.1.)
-                pos = "UNK"
+            for s in e.SensesOS:
+                if not thisGloss:
+                    thisGloss = DB.LexiconGetSenseGloss(s) or 'NoGloss'
 
                 # Make sure we have a valid analysis object
-                if mySense.MorphoSyntaxAnalysisRA:
+                if not s.MorphoSyntaxAnalysisRA:
+                    continue
 
-                    # Get the POS abbreviation for the current sense, assuming we have a stem
-                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                        msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                        if msa.PartOfSpeechRA:
-                            # get grammatical category ID
-                            catAndGuid = Utils.as_string(msa.PartOfSpeechRA.\
-                                                  Abbreviation) + \
-                                                  msa.PartOfSpeechRA.Guid.ToString()
-                            # get grammatical category for underlying form
-                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
+                # Skip non-stems
+                if s.MorphoSyntaxAnalysisRA.ClassName != 'MoStemMsa':
+                    continue
 
-                # Add Category to Lexeme Form, to use it as an underlying form for STAMP
-                ## (If none specified, call it UNK)
-                if pos is None or len(pos) == 0:
-                    pos = 'UNK'
-                # Format for parses file
-                lex = lex+'<'+pos+'>'
-
-                # Just get the grammatical info. for the 1st sense and stop
-                # BB: The word may have multiple senses, but we really only
-                # care about the POS of the template we generated from.
-                break
+                if msa_pos := IMoStemMsa(s.MorphoSyntaxAnalysisRA).PartOfSpeechRA:
+                    catAndGuid = abbr2str(msa_pos)
+                    pos = Utils.as_string(msa_pos.Abbreviation) or 'UNK'
+                    # Just get the grammatical info. for the 1st sense and stop
+                    # BB: The word may have multiple senses, but we really only
+                    # care about the POS of the template we generated from.
+                    break
 
             # Only add words of the desired POS to the list to be inflected
-            if focusPOS != "" and pos in focusPOS:
-                if lex and catAndGuid:
-                    stemCount+=1
-                    f_log.write('\n  Adding '+lex+' to roots list')
-                    standardSpellList.append((lex,catAndGuid))
-                    # If one of these words is missing a gloss, report it to the Messages window
-                    m = re.match( '^\[(NoGloss)\](.+)1.1', lex)
-                    if m:
-                        temp_gloss = m.group(1)
-                        temp_citform = m.group(2)
-                        report.Info('  Using ' + temp_gloss + ' as the gloss for ' + temp_citform +'\n')
-                        temp_gloss = temp_citform = ''
+            if pos not in focusPOS:
+                continue
 
-
-            #else:
-            #    f_log.write('\nSkipping '+lex+' '+catAndGuid)
+            if lex and catAndGuid:
+                logger.info(f'  Adding [{thisGloss}]{lex}<{pos}> to roots list')
+                standardSpellList.append((lex, thisGloss, pos, catAndGuid))
+                # If one of these words is missing a gloss, report it to the Messages window
+                if thisGloss == 'NoGloss':
+                    report.Info('  Using NoGloss as the gloss for ' + lex +'\n')
 
         else: # non-stems
 
@@ -562,27 +381,20 @@ def MainFunction(DB, report, modifyAllowed):
 
                     if msa.ClassName == 'MoStemMsa':
 
-                            msa = IMoStemMsa(msa)
+                        msa = IMoStemMsa(msa)
                     else:
-                        f_log.write("Skipping deriv MSA for "+lex)
+                        logger.info("Skipping deriv MSA for "+lex)
                         continue
+
+                    for s in e.SensesOS:
+                        lex = '<'+Utils.underscores(DB.LexiconGetSenseGloss(s))+'>'
+                        break
 
                     # Get categories that this clitic can attach to
                     for gcat in msa.FromPartsOfSpeechRC:
 
-                        # Build the cat name
-                        catAndGuid = Utils.as_string(gcat.Abbreviation) + gcat.Guid.ToString()
-
-                        # If the category is not yet in the map, initialize it
-                        if catAndGuid not in cat2CliticList:
-                            cat2CliticList[catAndGuid] = []
-
-                        existingCliticList = cat2CliticList[catAndGuid]
-
-                        if morphType == 'proclitic':
-                            existingCliticList.append((True, lex)) # Use True for proclitics
-                        else: # enclitic
-                            existingCliticList.append((False, lex))
+                        cat2CliticList[abbr2str(gcat)].add(
+                            (morphType == 'proclitic', lex))
 
             # Get Glosses for affixes.  (just the first gloss for now)
             elif morphType in ['suffix', 'prefix']:
@@ -592,23 +404,20 @@ def MainFunction(DB, report, modifyAllowed):
                 lexForm = lex
 
                 # Find the first Sense, get the Gloss, and wrap in < > for the parses output
-                if e.SensesOS.Count > 0:
-                    #f_log.write('\n      Sense count: '+lexForm+'\t'+str(e.SensesOS.Count))
-                    #f_log.write('\n       Affix: '+lexForm)
-                    for mySense in e.SensesOS:
-                        lex = DB.LexiconGetSenseGloss(mySense)
-                        # Change dot to underscore, in affix glosses
-                        lex = re.sub(r'\.', '_', lex)
-                        ## Also wrap affix glosses in { } to prevent possible conflicts with root glosses
-                        # Not doing this now.  Instead, check the FLEx project for duplicate glosses.
-                        # TODO: Do these scripts already check for that?
-                        #lex = '{'+lex+'}'
-#                      #  report.Info("lex = "+lex)
-                        # Format for parses file
-                        lex = '<'+lex+'>'
-                        #f_log.write('  Gloss: '+lex)
-                        # We only need to do the first sense.  When it looks for all the MSAs of this entry, it will find them for all senses.
-                        break
+                for s in e.SensesOS:
+                    lex = '<'+Utils.underscores(DB.LexiconGetSenseGloss(s))+'>'
+                    break
+
+                for sense in e.SensesOS:
+                    if sense.MorphoSyntaxAnalysisRA.ClassName != 'MoDerivAffMsa':
+                        continue
+                    msa = IMoDerivAffMsa(sense.MorphoSyntaxAnalysisRA)
+                    if not msa.FromPartOfSpeechRA or not msa.ToPartOfSpeechRA:
+                        continue
+                    fPos = abbr2str(msa.FromPartOfSpeechRA)
+                    tPos = abbr2str(msa.ToPartOfSpeechRA)
+                    for mappedPos in cat2focus[tPos]:
+                        derivAffixList[fPos].append((lex, mappedPos, morphType == 'prefix'))
 
                 if e.MorphoSyntaxAnalysesOC:
 
@@ -624,39 +433,23 @@ def MainFunction(DB, report, modifyAllowed):
 
                             msa = IMoInflAffMsa(msa)
                         else:
-                            f_log.write("Skipping deriv MSA for "+lexForm+'  '+lex)
                             continue
 
                         # First get the POS for this MSA, just for debug output
                         if msa.PartOfSpeechRA == None:
                             report.Error('MSA missing POS in '+lexForm+' '+lex)
                             continue
-                        msaPOS = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                        if msaPOS == "":
-                            msaPOS = Utils.as_string(msa.PartOfSpeechRA.Name)
+                        if not Utils.as_string(msa.PartOfSpeechRA.Abbreviation):
                             report.Error('POS msaPOS missing Abbreviation label')
                         for slot in msa.Slots:
-                            # Build the slot name
-                            slotFriendlyName = Utils.as_string(slot.Name)
-                            labelSuffix = f':{slotFriendlyName}:{slot.Guid.ToString()}'
-                            posList = [msaPOS] + cat2SubcatNames.get(msaPOS, [])
-                            for pos in posList:
-                                slot2AffixList[pos+labelSuffix].append(lex)
-                                # BB: For debugging, log each time we add an affix to a slot
-                                f_log.write('\n      Adding affix '+lexForm+' '+lex+' to ['+pos+'] slot ['+slotFriendlyName+']')
+                            name = name2str(slot)
+                            slot2AffixList[name].append(lex)
+                            # BB: For debugging, log each time we add an affix to a slot
+                            logger.info('\n      Adding affix '+lexForm+' '+lex+' to slot ['+Utils.as_string(slot.Name)+']')
 
             # Report if it's a morph type we don't handle
             else:
-                f_log.write('\nMorph type ' + morphType + ' ignored')
-
-    # Verify that we have affixes in each slot. If not give an error
-    badSlots = verifySlots(slot2AffixList, slot2IsPrefix)
-    for bSlot in badSlots:
-        report.Error('Found slot with no affixes: ' + bSlot)
-        f_log.write('\nFound slot with no affixes: ' + bSlot)
-
-    if len(badSlots) > 0:
-        return
+                logger.info('\nMorph type ' + morphType + ' ignored')
 
     if len(standardSpellList) > maxStems:
         random.shuffle(standardSpellList)
@@ -668,11 +461,9 @@ def MainFunction(DB, report, modifyAllowed):
 
     ## First get the filenames from the config file
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
-    targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetUF = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE, report)
-    targetSIG = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE, report)
 
-    if not (targetANA and targetUF): # if targetSIG is missing, don't exit.
+    if not targetUF:
         return
 
     # Open one file to write results directly in Apertium format, to be converted into whichever format
@@ -682,13 +473,6 @@ def MainFunction(DB, report, modifyAllowed):
         f_aper = open(aperFile, 'w', encoding='utf-8')
     except IOError as e:
         report.Error('There was a problem creating the Apertium file: '+aperFile+'.')
-
-    # Open another file to write results directly in .ana format, for input to STAMP
-    anaFile = Utils.build_path_default_to_temp(targetANA)
-    try:
-        f_ana = open(anaFile, 'w', encoding='utf-8')
-    except IOError as e:
-        report.Error('There was a problem creating the ana file: '+anaFile+'.')
 
     # Open another file where the results can be formatted as an end product itself (showing the parses
     # in human readable form)
@@ -700,159 +484,48 @@ def MainFunction(DB, report, modifyAllowed):
     # We need a blank line at the beginning of the file, to match the synthesized file.
     f_out.write('\n')
 
-#    # Open another file for SIGMORPHON style results
-#    sigFile = Utils.build_path_default_to_temp(targetSIG)
-#    try:
-#        f_sig = open(sigFile, 'w', encoding='utf-8')
-#    except IOError as e:
-#        report.Error('There was a problem creating the SIG file: '+sigFile+'.')
-#    # We need a blank line at the beginning of the file, to match the synthesized file.
-#    f_sig.write('\n')
+    cat2clitic = {}
+    for cat, focusCats in cat2focus.items():
+        clitics = set()
+        for f in focusCats:
+            clitics.update(cat2CliticList[f])
+        cat2clitic[cat] = sorted(clitics)
 
-    #allWrdPairs = []
+    for key in derivAffixList:
+        derivAffixList[key].sort()
 
-    ## Clitics assigned at a higher level of the category hierarchy should get pushed down to sub-categories
-    #push_clitics_down(catList, [], cat2CliticList, cat2Subcats)
-
-    # Process each word and add affixes   # Disabled for now: and/or clitics
+    # Process each word and add affixes and clitics
     # Then output the full set of inflections for each word
-    for wordPair in standardSpellList:
+    wrdCount = 0
+    for lemma, gloss, pos_tag, pos_key in standardSpellList:
 
-        catAndGuid = wordPair[1] # 2nd part of the tuple
+        aStem = f'{lemma}<{pos_tag}>'
+        gStem = f'{gloss}<{pos_tag}>'
 
-        #report.Info('  Inflecting '+wordPair[0])
-        # Inflect the words if there are templates for this category
-        if catAndGuid in cat2Templ:
-            inflWords = create_words_from_templates(wordPair, cat2Templ[catAndGuid], templ2Slots, slot2AffixList, slot2IsPrefix)
-        else:
-            continue
-        #    If we wanted words without affixes, we would do the following as well
-        #    inflWords = [wordPair[0]] # add this word; no need to add affixes
+        for templName in cat2templ[pos_key]:
+            templ = templates[templName]
 
-        # Temporarily, don't include clitics at all
-        ## Add all clitics possible
-        #if catAndGuid in cat2CliticList:
-        #    cliticList = cat2CliticList[catAndGuid]
-        #
-        #    for myWordPr in inflWords:
-        #        newPairs = []
-        #        add_clitics(myWordPr, cliticList, newPairs)
-        #        allWrdPairs.extend(newPairs)
-        #else:
-        #    allWrdPairs.extend(inflWords)
+            for aForm, gForm in templ.inflect(slot2AffixList, aStem, gStem,
+                                              cat2clitic[pos_key]):
+                wrdCount += 1
+                f_aper.write(f'^{aForm}$\n')
+                f_out.write(gForm + '\n')
 
-    # Iterate through the list of constructed words (for this stem) and output to all files
+        for tag, toPos, isPrefix in derivAffixList[pos_key]:
+            aStemDeriv = aStem + tag
+            gStemDeriv = (tag + gStem) if isPrefix else (gStem + tag)
 
-        # (It's not really a pair now.  When it was in allWrdPairs, it was a pair of word + POS info.)
-        for inflectedWord in inflWords:
-        #for inflectedWord in allWrdPairs:
-            wrdCount += 1
-            # Reset the variables
-            sigPfxs = ufPfxs = pfxs = sigSfxs = ufSfxs = sfxs = rootString = rootGloss = rootForm = posLabel = ''
+            for templName in cat2templ[toPos]:
+                templ = templates[templName]
 
-            #report.Info('Testing '+inflectedWord)
-
-            ##  Need to pick out the prefixes, gloss, root, POS, and suffixes from the string
-            # First check for prefixes
-            m = re.match('(<.+>)([^<][^<>]+<[^<>]+>.*)', inflectedWord)
-            if m:
-                # This string has prefixes, so store them and remove from inflectedWord
-                pfxs = m.group(1)
-                rest = m.group(2)
-                #report.Info('pfxs = ['+pfxs+']  rest = ['+rest+']')
-            else:
-                pfxs = ''
-                rest = inflectedWord
-
-            # Now check for suffixes
-            m = re.match('([^<][^<>]+<[^<>]+>)(<.+>)', rest)
-            if m:
-                # This string has suffixes, so store them and remove from rest
-                rootString = m.group(1)
-                sfxs = m.group(2)
-            else:
-                sfxs = ''
-                rootString = rest
-
-            # Still need to validate the Root part is valid, and get parts
-            m = re.match('(\[[^\]]+\])([^<][^<>]+)<([^<>]+)>', rootString)
-            if m:
-                # Match the gloss part
-                rootGloss = m.group(1)
-                # Match the root part
-                rootForm = m.group(2)
-                ## Remove the homograph number
-                ## (Not doing this now: the Morphname in the dictionary includes it.)
-                #rootForm = re.sub(r'\d+\.\d+','', rootForm)
-                # Match the POS part
-                posLabel = m.group(3)
-            else:
-                report.Error('Malformed root string: '+rootString)
-            ## (Do we need to verify that there are no <> in any Glosses??)
-
-            # Set values for the parses output file
-            ufPfxs = pfxs
-            ufSfxs = sfxs
-
-            # Output to the Apertium format first
-            thisWord = '^'+rootForm+'<'+posLabel+'>'+pfxs+sfxs+'$'
-            #report.Info("thisWord is "+thisWord)
-            f_aper.write(thisWord+'\n')
-            thisWord = ''
-
-## Uncomment this section if we want to write the .ana file directly, and SIGMORPHON format
-#            # For the ANA file, reformat the root to be in angle brackets with the POS before it
-#            rootString = '< '+posLabel+' '+rootForm+' >'
-#
-#            # Reformat the affixes to not have angle brackets around them,
-#            # for the ANA output, as well as others.
-#
-#            if pfxs:
-#                # Save the prefixes for the SIGMORPHON format
-#                sigPfxs = pfxs
-#                # Save the prefixes for the parses (uf) format
-#                ufPfxs = pfxs
-#                # Format for ANA
-#                pfxs = re.sub('>', ' ', pfxs)
-#                pfxs = re.sub('<', '', pfxs)
-#            if sfxs:
-#                # Save the suffixes for the SIGMORPHON format
-#                sigSfxs = sfxs
-#                # Save the suffixes for the parses (uf) format
-#                ufSfxs = sfxs
-#                # Format for ANA
-#                sfxs = re.sub('<', ' ', sfxs)
-#                sfxs = re.sub('>', '', sfxs)
-#
-#           # Write the SF codes and the output strings
-#            # The \f marker is for "following punctuation".  (or is it "preceding"?)
-#            # We want each word
-#            # to be followed by a newline in the synthesized output.
-#            f_ana.write('\\a '+pfxs+rootString+sfxs+'\n\\f \\n\n\n')
-
-#          # Uncomment this section if we are doing SIGMORPHON format
-#            # Format for SIG
-#            if sigPfxs:
-#                sigPfxs = re.sub(r'[>{}]', '', sigPfxs)
-#                sigPfxs = re.sub('<', ';', sigPfxs)
-#            if sigSfxs:
-#                sigSfxs = re.sub(r'[>{}]', '', sigSfxs)
-#                sigSfxs = re.sub('<', ';', sigSfxs)
-#
-#            # Write the SIGMORPHON style output
-#            f_sig.write(posLabel.upper()+sigPfxs.upper()+sigSfxs.upper()+'\n')
-
-            ## Format the Glosses (parses) output string and write it
-            # Remove the Citation Form of the root and the homograph/sense number,
-            # leaving the Gloss of the root, with the affixes
-            # Using the affixes with < > around them currently.
-            #glosses = re.sub(r'\][^1-9]+1\.1', ']', inflectedWord)
-            #f_out.write(glosses + '\n')
-            f_out.write(ufPfxs+rootGloss+'<'+posLabel+'>'+ufSfxs+'\n')
-
+                for aForm, gForm in templ.inflect(slot2AffixList, aStemDeriv,
+                                                  gStemDeriv, cat2clitic[toPos]):
+                    wrdCount += 1
+                    f_apr.write(f'^{aForm}$\n')
+                    f_out.write(gForm + '\n')
 
     ## Output final counts to the log file.
-    f_log.write('\n\n'+str(wrdCount)+' words generated.'+'\n')
+    logger.info('\n\n'+str(wrdCount)+' words generated.'+'\n')
 
 #    report.Info('Creation complete to the file: '+sigFile+'.')
     report.Info('Creation complete to the file: '+outFile+'.')
