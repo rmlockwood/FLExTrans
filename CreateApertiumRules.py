@@ -1451,7 +1451,7 @@ class RuleGenerator:
                         continue
                     deletable.append(wid)
                 count = len(deletable)
-                if perm == 'with-head':
+                if perm == 'with_head':
                     count += 1
                 for length in range(count):
                     for skip in combinations(deletable, length):
