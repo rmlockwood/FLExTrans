@@ -1437,7 +1437,8 @@ class RuleGenerator:
                     section.remove(r)
                 self.TrimUnused()
 
-            if rule.get('create_permutations', 'no') == 'yes':
+            perm = rule.get('create_permutations', 'no')
+            if perm != 'no':
                 # To create permutations, get a list of all the IDs of words
                 # that aren't the head word and iterate over all possible
                 # subsets of them.
@@ -1449,7 +1450,10 @@ class RuleGenerator:
                     elif rule.find(f".//Target//Word[@id='{wid}'][@head='yes']") is not None:
                         continue
                     deletable.append(wid)
-                for length in range(len(deletable)):
+                count = len(deletable)
+                if perm == 'with-head':
+                    count += 1
+                for length in range(count):
                     for skip in combinations(deletable, length):
                         if self.ProcessRule(rule, skip=set(skip)):
                             ruleCount += 1
