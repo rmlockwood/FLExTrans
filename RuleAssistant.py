@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.3 - 10/9/24 - Ron Lockwood
 #    Handle fixed up category names.
 #
@@ -55,7 +58,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.11.3",
+        FTM_Version    : "3.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",

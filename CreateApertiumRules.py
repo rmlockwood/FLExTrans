@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11 - 8/15/24 - Daniel Swanson
 #    Working with Rule Assistant UI to create rules in various scenarios
 #

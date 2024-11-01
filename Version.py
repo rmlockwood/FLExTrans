@@ -2,6 +2,9 @@
 #   The version name and number to display in the title bar of the 
 #   FlexTools window.
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.1 - 8/29/24 - Ron Lockwood
 #    Bumped  FLExTrans to 3.11.1
 #
