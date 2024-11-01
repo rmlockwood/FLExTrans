@@ -2078,7 +2078,7 @@ class Main(QMainWindow):
                 'The interchunk transfer file has no transfer element or no section-rules element')
                 return False
 
-            # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+            # Escape some characters and write as NFD unicode.
             if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
                 return True
 
@@ -2108,7 +2108,7 @@ class Main(QMainWindow):
                     'The postchunk transfer file has no transfer element or no section-rules element')
                     return False
 
-                # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+                # Escape some characters and write as NFD unicode.
                 if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
                     return True
 

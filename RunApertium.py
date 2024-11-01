@@ -143,7 +143,7 @@ def MainFunction(DB, report, modify=True):
     # Get the modification date of the transfer rule file.
     statResult = os.stat(tranferRulePath)
 
-    # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+    # Escape some characters and write as NFD unicode.
     if Utils.stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
         return True
     
@@ -153,7 +153,7 @@ def MainFunction(DB, report, modify=True):
     tranferRulePath2 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE2, report, giveError=False)
     if tranferRulePath2:
 
-        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath2, STRIPPED_RULES2) == True:
             return True
 
@@ -161,7 +161,7 @@ def MainFunction(DB, report, modify=True):
     tranferRulePath3 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report, giveError=False)
     if tranferRulePath3:
 
-        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath3, STRIPPED_RULES3) == True:
             return True
 
