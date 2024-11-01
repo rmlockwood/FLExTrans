@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.2 - 10/22/24 - Ron Lockwood
 #    Fixes #730. Always default to a list of target morphtypes when they
 #    are unavailable.

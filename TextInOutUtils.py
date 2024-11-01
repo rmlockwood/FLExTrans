@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.2 - 10/7/24 - Ron Lockwood
 #    Convert search and to be searched strings to decomposed.
 #

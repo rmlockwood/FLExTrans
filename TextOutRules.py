@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.1 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -36,7 +39,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.11.1",
+        FTM_Version    : "3.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
