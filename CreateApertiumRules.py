@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12.1 - 11/5/24 - Ron Lockwood
+#    When searching for unused macros & variables to delete, skip the 
+#    Bantu_noun_class_from_n ones.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -23,7 +27,6 @@ import Utils
 
 import re
 import os
-import unicodedata
 import shutil
 import datetime
 import xml.etree.ElementTree as ET
@@ -31,6 +34,8 @@ from collections import defaultdict
 from typing import Optional
 from itertools import combinations, permutations
 import dataclasses
+
+BANTU_NOUN_CLASS_FROM_N = 'Bantu_noun_class_from_n'
 
 @dataclasses.dataclass(frozen=True)
 class FeatureSpec:
@@ -659,8 +664,8 @@ class RuleGenerator:
         '''Create the macro which extracts the Bantu noun class from an
         input noun.'''
 
-        self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
-        self.BantuVariable = self.GetAvailableID('v_Bantu_noun_class_from_n')
+        self.BantuMacro = self.GetAvailableID('m_'+BANTU_NOUN_CLASS_FROM_N)
+        self.BantuVariable = self.GetAvailableID('v_'+BANTU_NOUN_CLASS_FROM_N)
 
         # Manually create separate attributes so we don't accidentaly reuse
         # some existing attribute that contains both.
@@ -1358,8 +1363,8 @@ class RuleGenerator:
             for node in section:
                 if node.tag is ET.Comment:
                     comments.append(node)
-                    continue
-                if node.tag != defTag or node.attrib.get('n') in used:
+                    continue                                             # We may have a Bantu macro or variable already added 
+                if node.tag != defTag or node.attrib.get('n') in used or node.attrib.get('n').find(BANTU_NOUN_CLASS_FROM_N):
                     comments = []
                     continue
                 drop += comments
