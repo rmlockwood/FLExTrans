@@ -1771,7 +1771,7 @@ type="tTool"
 > and the test data shown in it will be from the source text that is currently shown in the <object
 type="tLiveRuleTester"
 ></object
->.  </p
+>.</p
 ></section3
 ></section2
 ><section2
@@ -6266,6 +6266,130 @@ textBefore="capitalizedSingular"
 ></section2
 ></section1
 ><section1
+id="sTroubleshooting"
+><secTitle
+>Troubleshooting</secTitle
+><p
+></p
+><section2
+id="sErrorCond"
+><secTitle
+>Error Conditions</secTitle
+><p
+></p
+><example
+num="xErrorCond"
+><table
+border="1"
+><tr
+><th
+>Live Rule Tester Display</th
+><th
+>Drafted Text Display</th
+><th
+>Meaning</th
+><th
+>Possible Solution</th
+></tr
+><tr
+><td
+><object
+type="tRed"
+>Zug<object
+type="tSubscript"
+>1.1</object
+></object
+></td
+><td
+>@zug1.1</td
+><td
+>The lemma could not be found in the bilingual lexicon.</td
+><td
+>Rebuild the Bilingual Lexicon.</td
+></tr
+><tr
+><td
+>älska1.1</td
+><td
+>älska1.1 i.e. a <object
+type="tBold"
+>target</object
+> lemma with numbers instead of a correctly formed target word.</td
+><td
+>The target word could not be found in the target lexicon.</td
+><td
+>First ensure the word is in the target lexicon. In the LRT, Refresh Target Lexicon. For a text, ensure FLEx has saved everything.</td
+></tr
+><tr
+><td
+>lieben1.1</td
+><td
+>lieben1.1 i.e. a <object
+type="tBold"
+>source</object
+> lemma with numbers instead of a correctly formed target word.</td
+><td
+>There was no link made to a</td
+><td
+>Check the target lexicon to see if the sense exists. Run the SL to check the link exists. </td
+></tr
+><tr
+><td
+><object
+type="tRed"
+>Zug</object
+> <object
+type="tPink"
+>UNK</object
+></td
+><td
+>@Zug</td
+><td
+>The word was left unanalyzed in the source interlinear text.</td
+><td
+>Analyze and approve the word in the source text. Ensure FLEx has saved everything. If you intentionally don't want to analyze the word and want to keep its form, check <object
+type="tSettingsValue"
+>Yes</object
+> for the option <object
+type="tSettingsProperty"
+>Clean Up Unknown Target Words?</object
+></td
+></tr
+><tr
+><td
+>bilPL</td
+><td
+>bilPL i.e. an affix that didn't get turned into its surface form.</td
+><td
+>The affix could not be found in the target lexicon.</td
+><td
+>Check the target lexicon for the affix with this gloss.</td
+></tr
+><tr
+><td
+>%0%bilar% </td
+><td
+>%0%bilar% </td
+><td
+>The given morphemes could not be synthesized into a word because of an incompatibility. </td
+><td
+>Check that the word analyzes properly in target FLEx project.</td
+></tr
+><tr
+><td
+></td
+><td
+></td
+><td
+></td
+><td
+></td
+></tr
+></table
+></example
+></section2
+></section1
+><section1
 id="sReferenceDocs"
 ><secTitle
 >Reference documents</secTitle
@@ -6659,6 +6783,13 @@ font-style="normal"
 font-variant="normal"
 font-weight="normal"
 id="tRed"
+></type
+><type
+color="#cc0066"
+font-style="normal"
+font-variant="normal"
+font-weight="normal"
+id="tPink"
 ></type
 ><type
 font-family="Charis SIL Small Caps"
