@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>31 October 2024</small></center>
-      <center><small>Version: 3.11.1</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>7 November 2024</small></center>
+      <center><small>Version: 3.12</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -952,12 +952,14 @@
       <p>You can&#8217;t edit the transfer rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> and even when you change the order of the rules in the tool that doesn&#8217;t change your transfer rules file. Make your changes
          in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>. You can launch the editor by clicking on the <span style="font-style:normal; font-weight:bold; ">Edit Transfer Rules</span> button. To reload the transfer rules after you have changed them, click on the <span style="font-style:normal; font-weight:bold; ">Refresh Rules</span> button.
       </p>
-      <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing the bilingual lexicon. The <span style="font-style:normal; font-weight:bold; ">Edit Replacement Dictionary</span> button will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span>.
+      <p>The <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> for viewing the bilingual lexicon. The <span style="font-style:normal; font-weight:bold; ">Replacement Dictionary Editor</span> button will start the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Replacement Dictionary Editor</span>.
       </p>
       <p>If you change the target lexicon, click the <span style="font-style:normal; font-weight:bold; ">Refresh Target Lexicon</span> button to reload it so that upon synthesis, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> uses the changed target lexicon.
       </p>
       <p>There is a check box that says <span style="font-style:normal; font-weight:bold; ">Add multiple words to the testbed word by word</span>. Use this when you want to add multiple one-word translations to the testbed in batch. This is useful, for example, if you
          have a "sentence" that runs through a paradigm. When you click <span style="font-style:normal; font-weight:bold; ">Add to Testbed</span>, <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> will add each individual word and its corresponding synthesis to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> in one go. Each pair will be its own test.
+      </p>
+      <p>The <span style="font-style:normal; font-weight:bold; ">Open Rule Assistant</span> button will launch the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> and the test data shown in it will be from the source text that is currently shown in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
       </p>
       <h2 style=""><a name="sViewSrcTgt"></a>4.3&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span></h2>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Source/Target Viewer Tool</span> is a tool that allows you to view the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> source or target files in an easy-to-read manner. You may not need to examine the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> files <span style="font-style:italic; ">source_text.txt</span> or <span style="font-style:italic; ">target_text.txt</span> very often, but sometimes you may find it useful to see what got extracted from the source <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project into <span style="font-style:italic; ">source_text.txt</span> or to see what the transfer rules produced after running the <span style="font-family:Courier New; font-weight:bold; color:#660066; ">RunApertium</span> module in the form of <span style="font-style:italic; ">target_text.txt</span>. Run this tool to see the contents of these files. <a href="#xViewSrcTgt">(20)</a> shows what the tool looks like. The actual file contents look like <a href="#xDataStream">(21)</a>.

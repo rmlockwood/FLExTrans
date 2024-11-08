@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->31 October 2024</date
+>7 November 2024</date
 ><version
->3.11.1</version
+>3.12</version
 ><contents
 showLevel="4"
 ></contents
@@ -1734,7 +1734,7 @@ type="tXMLmindXMLEditor"
 ></object
 > for viewing the bilingual lexicon. The <object
 type="tButton"
->Edit Replacement Dictionary</object
+>Replacement Dictionary Editor</object
 > button will start the <object
 type="tTool"
 >Replacement Dictionary Editor</object
@@ -1761,6 +1761,17 @@ type="tFlextrans"
 type="tTestbed"
 ></object
 > in one go. Each pair will be its own test.</p
+><p
+>The <object
+type="tButton"
+>Open Rule Assistant</object
+> button will launch the <object
+type="tTool"
+>Rule Assistant</object
+> and the test data shown in it will be from the source text that is currently shown in the <object
+type="tLiveRuleTester"
+></object
+>.  </p
 ></section3
 ></section2
 ><section2
