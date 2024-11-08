@@ -5,6 +5,12 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12.1 - 11/7/24 - Ron Lockwood
+#    When searching for unused macros & variables to delete, skip the 
+#    Bantu_noun_class_from_n ones. Also before creating the special hand-crafted
+#    Bantu macro, delete old versions of it if the user asked to overwrite rules.
+#    Also clarified the comments in that Bantu macro.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -23,7 +29,6 @@ import Utils
 
 import re
 import os
-import unicodedata
 import shutil
 import datetime
 import xml.etree.ElementTree as ET
@@ -31,6 +36,8 @@ from collections import defaultdict
 from typing import Optional
 from itertools import combinations, permutations
 import dataclasses
+
+BANTU_NOUN_CLASS_FROM_N = 'Bantu_noun_class_from_n'
 
 @dataclasses.dataclass(frozen=True)
 class FeatureSpec:
@@ -655,12 +662,43 @@ class RuleGenerator:
 
         return MacroSpec(macid, varid, [srcSpec.category])
 
-    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str) -> None:
+    def RemoveOldBantuMacrosVars(self):
+
+        names = [('section-def-macros', 'def-macro', 'call-macro'),
+                 ('section-def-vars', 'def-var', 'var')]
+        
+        for sectionName, defTag, _ in names:
+
+            section = self.GetSection(sectionName)
+            drop = []
+
+            for node in section:
+
+                if node.tag == defTag and re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
+                    
+                    drop.append(node)
+
+            for node in drop:
+
+                try:
+                    self.usedIDs.remove(node.attrib.get('n'))
+
+                except KeyError:
+                    pass
+
+                section.remove(node)
+
+    def MakeBantuMacro(self, singularFeature: str, pluralFeature: str, delete_old: bool) -> None:
         '''Create the macro which extracts the Bantu noun class from an
         input noun.'''
 
-        self.BantuMacro = self.GetAvailableID('m_Bantu_noun_class_from_n')
-        self.BantuVariable = self.GetAvailableID('v_Bantu_noun_class_from_n')
+        if delete_old:
+
+            # Remove the old hand-crafted Bantu macros and associated variables
+            self.RemoveOldBantuMacrosVars()
+
+        self.BantuMacro = self.GetAvailableID('m_'+BANTU_NOUN_CLASS_FROM_N)
+        self.BantuVariable = self.GetAvailableID('v_'+BANTU_NOUN_CLASS_FROM_N)
 
         # Manually create separate attributes so we don't accidentaly reuse
         # some existing attribute that contains both.
@@ -696,24 +734,25 @@ class RuleGenerator:
         chooseNumber = ET.SubElement(macro, 'choose')
         whenSg = ET.SubElement(chooseNumber, 'when')
         testSg = ET.SubElement(whenSg, 'test')
-        testSg.append(ET.Comment('We should use a singular noun class if one of the following is true:'))
         andSg = ET.SubElement(testSg, 'and')
+        andSg.append(ET.Comment('We should check for the appropriate singular noun class if one of the following is true:'))
         orSg = ET.SubElement(andSg, 'or')
-        orSg.append(ET.Comment("The noun doesn't have a plural affix"))
+        orSg.append(ET.Comment("The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)"))
         equalSg = ET.SubElement(orSg, 'equal')
         ET.SubElement(equalSg, 'clip', pos='1', part=plAffix, side='tl')
         ET.SubElement(equalSg, 'lit', v='')
-        orSg.append(ET.Comment("The noun doesn't take plural agreement"))
+        orSg.append(ET.Comment("The target noun doesn't take plural agreement (marked as such)."))
         equalSg2 = ET.SubElement(orSg, 'equal')
         ET.SubElement(equalSg2, 'clip', pos='1', part=plStem, side='tl')
         ET.SubElement(equalSg2, 'lit-tag', v='NApl')
-        andSg.append(ET.Comment("But if the noun doesn't take singular agreement, then go to the plural branch"))
+        andSg.append(ET.Comment("But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class."))
         notSg = ET.SubElement(andSg, 'not')
         equalSg3 = ET.SubElement(notSg, 'equal')
         ET.SubElement(equalSg3, 'clip', pos='1', part=sgStem, side='tl')
         ET.SubElement(equalSg3, 'lit-tag', v='NAsg')
 
         otherwisePl = ET.SubElement(chooseNumber, 'otherwise')
+        otherwisePl.append(ET.Comment('Check for the appropriate plural noun class.'))
 
         sgTags = self.GetTags(FeatureSpec('n', singularFeature, isAffix=False))
         plTags = self.GetTags(FeatureSpec('n', pluralFeature, isAffix=False))
@@ -1358,8 +1397,9 @@ class RuleGenerator:
             for node in section:
                 if node.tag is ET.Comment:
                     comments.append(node)
-                    continue
-                if node.tag != defTag or node.attrib.get('n') in used:
+                    continue                                             
+                # We may have a Bantu macro or variable already added, leave it 
+                if node.tag != defTag or node.attrib.get('n') in used or re.search(BANTU_NOUN_CLASS_FROM_N, node.attrib.get('n')):
                     comments = []
                     continue
                 drop += comments
@@ -1401,6 +1441,9 @@ class RuleGenerator:
                 ET.SubElement(catElem, 'attr-item', tags=tag)
                 self.definedAttributes[self.categoryAttribute].add(tag)
 
+        # See if we need to delete old stuff
+        delete_old = (root.get('overwrite_rules', 'no') == 'yes')
+
         # Check if we need a Bantu macro.
         # This will only use a feature which is split by number and has
         # both singular and plural values.
@@ -1420,9 +1463,7 @@ class RuleGenerator:
             if merged and sg and pl:
                 self.BantuFeature = merged
                 self.BantuParts = (sg, pl)
-                self.MakeBantuMacro(sg, pl)
-
-        delete_old = (root.get('overwrite_rules', 'no') == 'yes')
+                self.MakeBantuMacro(sg, pl, delete_old)
 
         # Iterate over the rules in the file.
         ruleCount = 0
