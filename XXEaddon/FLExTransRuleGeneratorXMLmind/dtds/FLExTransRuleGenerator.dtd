@@ -22,7 +22,7 @@
 <!ELEMENT FLExTransRule (Description, Source, Target)>
 <!ATTLIST FLExTransRule
   name CDATA #REQUIRED
-  create_permutations (yes | no) "no"
+  create_permutations (no | with_head | not_head) "no"
 >
 
 <!ELEMENT Description (#PCDATA) >

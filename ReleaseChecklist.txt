@@ -3,9 +3,10 @@ Do these things when making a new release
 -Finish code changes and commit
 -Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
 -Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
--Also change VIProductVersion in the .nsi file  to the new version #.
+-Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
 -Change Copyright date if necessary in the .nsi file. 
 -Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
+-Change TeamCity by editing the FLExTrans project, Build FLExTrans Installer configuration, Artifact paths to use the new version #
 -Build and test the install locally
 -Do another commit that has the install changes
 -Finish merging all pull requests
