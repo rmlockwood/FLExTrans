@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.6 - 10/8/24 - Ron Lockwood
 #    Treat attribute stuff from | to \xx* as analysis WS.
 #
@@ -132,7 +135,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.11.6",
+        FTM_Version    : "3.12",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",

@@ -4,6 +4,9 @@
 #   SIL International
 #   9/6/2024
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.1 - 9/11/24 - Ron Lockwood
 #    Use new write config parameter to create setting if missing.
 #

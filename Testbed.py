@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11 - 9/5/24 - Ron Lockwood
 #    Escape Apertium lemmas when writing the data stream to a file.
 #    Unescape Apertium lemmas when coming from a file for user display.

@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.1 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -100,7 +103,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.11.1",
+        FTM_Version    : "3.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -143,7 +146,7 @@ def MainFunction(DB, report, modify=True):
     # Get the modification date of the transfer rule file.
     statResult = os.stat(tranferRulePath)
 
-    # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+    # Escape some characters and write as NFD unicode.
     if Utils.stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
         return True
     
@@ -153,7 +156,7 @@ def MainFunction(DB, report, modify=True):
     tranferRulePath2 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE2, report, giveError=False)
     if tranferRulePath2:
 
-        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath2, STRIPPED_RULES2) == True:
             return True
 
@@ -161,7 +164,7 @@ def MainFunction(DB, report, modify=True):
     tranferRulePath3 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report, giveError=False)
     if tranferRulePath3:
 
-        # Create stripped down transfer rules file that doesn't have the DOCTYPE stuff
+        # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath3, STRIPPED_RULES3) == True:
             return True
 

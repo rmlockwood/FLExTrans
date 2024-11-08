@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.5 - 10/26/24 - Ron Lockwood
 #    Fixes #775. Give an error for invalid characters.
 #

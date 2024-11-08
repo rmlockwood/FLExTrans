@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.2 - 9/13/24 - Ron Lockwood
 #    Added mixpanel logging.
 #
@@ -210,7 +213,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.11.2",
+        FTM_Version    : "3.12",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.12 - 11/2/24 - Ron Lockwood
+#    Bumped to 3.12.
+#
 #   Version 3.11.3 - 9/11/24 - Ron Lockwood
 #    Use new write config parameter to create setting if missing.
 #

@@ -62,6 +62,20 @@ DisjointFeatureValuePairing
     margin-left:.1in;
 }
 
+FLExTransRuleGenerator:before 
+{
+    content: "Overwrite Rules? " combo-box(attribute, overwrite_rules, 
+                           color, #ce901b,
+                           labels, "yes\A no", 
+                           values, "yes\A no");
+    color:Black;
+}
+FLExTransRuleGenerator
+{
+    display:block;
+    margin-left:0.0in;
+}
+
 FLExTransRules:before
 {
     content: "FLExTrans Rules: ";
@@ -77,8 +91,8 @@ FLExTransRule:before
     content: " FLExTrans Rule: "text-field(attribute,name,background-color,name-color(),columns,30)
     " create permutations? " combo-box(attribute, create_permutations, 
                            color, #ce901b,
-                           labels, "yes\A no", 
-                           values, "yes\A no");
+                           labels, "with head\Awithout head\A no", 
+                           values, "with_head\Anot_head\A no");
     color:Black;
 }
 FLExTransRule
