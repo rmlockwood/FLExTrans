@@ -35,7 +35,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version: "3.11.3",
+    FTM_Version: "3.12",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
