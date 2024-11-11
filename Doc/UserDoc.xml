@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->7 November 2024</date
+>11 November 2024</date
 ><version
 >3.12</version
 ><contents
@@ -6269,14 +6269,12 @@ textBefore="capitalizedSingular"
 id="sTroubleshooting"
 ><secTitle
 >Troubleshooting</secTitle
-><p
-></p
 ><section2
 id="sErrorCond"
 ><secTitle
 >Error Conditions</secTitle
 ><p
-></p
+>The following is a list of various errors you may see in the Live Rule Tester tool or in the final synthesized text.</p
 ><example
 num="xErrorCond"
 ><table
@@ -6331,7 +6329,7 @@ type="tBold"
 ><td
 >There was no link made to a</td
 ><td
->Check the target lexicon to see if the sense exists. Run the SL to check the link exists. </td
+>Check the target lexicon to see if the sense exists. Run the SL to check the link exists.</td
 ></tr
 ><tr
 ><td
@@ -6367,23 +6365,23 @@ type="tSettingsProperty"
 ></tr
 ><tr
 ><td
->%0%bilar% </td
+>%0%bilar%</td
 ><td
->%0%bilar% </td
+>%0%bilar%</td
 ><td
->The given morphemes could not be synthesized into a word because of an incompatibility. </td
+>The given morphemes could not be synthesized into a word because of an incompatibility.</td
 ><td
 >Check that the word analyzes properly in target FLEx project.</td
 ></tr
 ><tr
 ><td
-></td
+>%0%^kon1.1&lt;v&gt;$%</td
 ><td
-></td
+>%0%^kon1.1&lt;v&gt;$%</td
 ><td
-></td
+>When using HermitCarb, this output could indicate that the root was not found in the target lexicon.</td
 ><td
-></td
+>Check the target lexicon.</td
 ></tr
 ></table
 ></example
