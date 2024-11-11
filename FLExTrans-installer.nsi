@@ -189,17 +189,19 @@ InitPluginsDir
 			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
 			
 			# If we have no value, set disablerunall to True
-			StrCmp $5 "" 0 skip2
+			StrCmp $5 "" 0 skip3
 		
 				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
 
-			skip2:
-		
+			skip3:
+			
 			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
 
+			skip2:
+		
         # Rename modules in the all the .ini files (for old installs)
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
