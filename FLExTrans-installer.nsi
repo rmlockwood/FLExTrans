@@ -242,6 +242,8 @@ InitPluginsDir
   endXXeSync:
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
+  SetOutPath "$APPDATA\XMLmind\XMLEditor8"
+  File "${GIT_FOLDER}\preferences.properties"
   SetOutPath "$INSTDIR"
 
   # Remove the install_files folder
