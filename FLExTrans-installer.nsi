@@ -170,6 +170,19 @@ InitPluginsDir
       File "${GIT_FOLDER}\flextools.ini"
     ${EndIf}
     
+	# Overwrite Makefiles
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Build"
+      File "${GIT_FOLDER}\Makefile"
+      File "${GIT_FOLDER}\Makefile.advanced"
+    ${EndIf}
+	
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${GIT_FOLDER}\MakefileForLiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${GIT_FOLDER}\MakefileForLiveRuleTester.advanced"
+    ${EndIf}
+	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
