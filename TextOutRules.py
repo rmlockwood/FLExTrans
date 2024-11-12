@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.12.1 - 11/12/24 - Ron Lockwood
+#    Use default path if settings has no path to the xml file.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -39,7 +42,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
@@ -48,7 +51,9 @@ docs = {FTM_Name       : "Text Out Rules",
 This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired.
 """}
-        
+
+DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
+
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -63,11 +68,7 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the search-replace rules file
-    textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=True)
-
-    if not textOutRulesFile:
-        report.Error('No Fix Up Synthesis Text Rules File is defined. Check the Settings.')
-        return
+    textOutRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_OUT_RULES_FILE, DEFAULT_PATH_TEXT_OUT)
     
     try:
         # Check if the file exists, if not, create it.

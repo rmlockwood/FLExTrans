@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.12.1 - 11/12/24 - Ron Lockwood
+#    Use default path if settings has no path to the xml file.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -37,6 +40,7 @@
 
 import unicodedata
 import FTPaths
+import ReadConfig
 import regex
 import os
 import xml.etree.ElementTree as ET
@@ -79,6 +83,17 @@ class SearchReplaceRuleData():
         self.isRegEx = isRegEx
         self.isInactive = isInactive
         self.comment = "" if comment is None else comment
+
+def getPath(report, configMap, settingName, defaultRelPath):
+
+    rulesFile = ReadConfig.getConfigVal(configMap, settingName, report, giveError=False)
+
+    if not rulesFile:
+
+        rulesFile = os.path.join(FTPaths.WORK_DIR, defaultRelPath)
+        ReadConfig.writeConfigValue(report, settingName, defaultRelPath, createIfMissing=True)
+
+    return rulesFile
 
 def getRuleFromElement(element):
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.12.1 - 11/12/24 - Ron Lockwood
+#    Use default path if settings has no path to the xml file.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -23,7 +26,6 @@
 
 import os
 import shutil
-import regex
 import sys
 import xml.etree.ElementTree as ET
 
@@ -43,7 +45,7 @@ from TextInOut import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of Paratext-import search and replace operations.' ,
         FTM_Help   : "",
@@ -52,7 +54,9 @@ docs = {FTM_Name       : "Text In Rules",
 This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 Paratext. Regular expressions and Wildebeest normalization can be used if desired.
 """}
-        
+
+DEFAULT_PATH_TEXT_IN = 'Output\\fixup_paratext_rules.xml'
+
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -67,12 +71,8 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the search-replace rules file
-    textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=True)
+    textInRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_IN_RULES_FILE, DEFAULT_PATH_TEXT_IN)
 
-    if not textInRulesFile:
-        report.Error('No Fix Up Synthesis Text Rules File is defined. Check the Settings.')
-        return
-    
     try:
         # Check if the file exists, if not, create it.
         if os.path.exists(textInRulesFile) == False:
