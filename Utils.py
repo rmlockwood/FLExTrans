@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.1 - 11/2/24 - Ron Lockwood
+#    Fixes #802. Only escape reserved chars in a literal string that's a child of test.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -1879,7 +1882,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
     # but we might be doing multi-stage transfer and it doesn't hurt
     # anything to also escape the output (and it's less complicated).
     for tag in ['lit', 'list-item']:
-        for node in tree.findall('.//'+tag):
+        for node in tree.findall('.//test//'+tag):
             if 'v' in node.attrib:
                 node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
                                           node.attrib['v'])
