@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->11 November 2024</date
+>13 November 2024</date
 ><version
 >3.12</version
 ><contents
@@ -6269,6 +6269,53 @@ textBefore="capitalizedSingular"
 id="sTroubleshooting"
 ><secTitle
 >Troubleshooting</secTitle
+><p
+></p
+><section2
+id="sSynFail"
+><secTitle
+>Synthesis Troubleshooting</secTitle
+><p
+>One of the first things to do if you are getting synthesis errors is to put a word that is failing into the <object
+type="tBold"
+>Try A Word</object
+> window in the target <object
+type="tFlexx"
+></object
+> project and see if it parses. If it doesn’t parse in <object
+type="tFlexx"
+></object
+>, then don’t expect it to synthesize in <object
+type="tFlextrans"
+></object
+>. Figure out why it is not parsing in <object
+type="tFlexx"
+></object
+> and then try synthesis again in <object
+type="tFlextrans"
+></object
+>.</p
+><p
+>There’s a checkbox in the <object
+type="tLiveRuleTester"
+></object
+> labelled <object
+type="tButton"
+>Trace HermitCrab synthesis</object
+>. When this is checked and you click the <object
+type="tButton"
+>Synthesize</object
+> button, the <object
+type="tLiveRuleTester"
+></object
+> will open a browser window showing a trace of what happened in the synthesis. This is similar to the output you see when tracing with <object
+type="tBold"
+>Try A Word</object
+> in <object
+type="tFlexx"
+></object
+>.</p
+></section2
 ><section2
 id="sErrorCond"
 ><secTitle
@@ -6377,7 +6424,9 @@ type="tSettingsProperty"
 ><td
 >%0%^kon1.1&lt;v&gt;$%</td
 ><td
->%0%^kon1.1&lt;v&gt;$%</td
+>%0%^kon1.1&lt;v&gt;$%<br
+></br
+>(you should see a warning in the FLExTools output saying: One or more glosses not found: 'kon1.1';)</td
 ><td
 >When using HermitCarb, this output could indicate that the root was not found in the target lexicon.</td
 ><td

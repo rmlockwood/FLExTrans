@@ -170,7 +170,8 @@
             </ul>
             <li><a href="#sTroubleshooting">8&nbsp;Troubleshooting</a></li>
             <ul>
-               <li><a href="#sErrorCond">8.1&nbsp;Error Conditions</a></li>
+               <li><a href="#sSynFail">8.1&nbsp;Synthesis Troubleshooting</a></li>
+               <li><a href="#sErrorCond">8.2&nbsp;Error Conditions</a></li>
             </ul>
             <li><a href="#sReferenceDocs">9&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
@@ -2918,7 +2919,15 @@
       </p>
       <h1 style=""><a name="sTroubleshooting"></a>8&nbsp;Troubleshooting
       </h1>
-      <h2 style=""><a name="sErrorCond"></a>8.1&nbsp;Error Conditions
+      <p></p>
+      <h2 style=""><a name="sSynFail"></a>8.1&nbsp;Synthesis Troubleshooting
+      </h2>
+      <p>One of the first things to do if you are getting synthesis errors is to put a word that is failing into the <span style="font-weight:bold; ">Try A Word</span> window in the target <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> project and see if it parses. If it doesn&#8217;t parse in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>, then don&#8217;t expect it to synthesize in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. Figure out why it is not parsing in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> and then try synthesis again in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>.
+      </p>
+      <p>There&#8217;s a checkbox in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> labelled <span style="font-style:normal; font-weight:bold; ">Trace HermitCrab synthesis</span>. When this is checked and you click the <span style="font-style:normal; font-weight:bold; ">Synthesize</span> button, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> will open a browser window showing a trace of what happened in the synthesis. This is similar to the output you see when
+         tracing with <span style="font-weight:bold; ">Try A Word</span> in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>.
+      </p>
+      <h2 style=""><a name="sErrorCond"></a>8.2&nbsp;Error Conditions
       </h2>
       <p>The following is a list of various errors you may see in the Live Rule Tester tool or in the final synthesized text.</p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
@@ -2975,7 +2984,8 @@
                         </tr>
                         <tr style="">
                            <td align="left" valign="top" style="padding-left:.2em">%0%^kon1.1&lt;v&gt;$%</td>
-                           <td align="left" valign="top" style="padding-left:.2em">%0%^kon1.1&lt;v&gt;$%</td>
+                           <td align="left" valign="top" style="padding-left:.2em">%0%^kon1.1&lt;v&gt;$%<br>(you should see a warning in the FLExTools output saying: One or more glosses not found: 'kon1.1';)
+                           </td>
                            <td align="left" valign="top" style="padding-left:.2em">When using HermitCarb, this output could indicate that the root was not found in the target lexicon.</td>
                            <td align="left" valign="top" style="padding-left:.2em">Check the target lexicon.</td>
                         </tr>
