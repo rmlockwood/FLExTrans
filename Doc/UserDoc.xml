@@ -6363,7 +6363,10 @@ type="tBold"
 ><td
 >The target word could not be found in the target lexicon.</td
 ><td
->First ensure the word is in the target lexicon. In the LRT, Refresh Target Lexicon. For a text, ensure FLEx has saved everything.</td
+>First ensure the word is in the target lexicon. In the LRT, Refresh Target Lexicon. For a text, ensure <object
+type="tFlexx"
+>FLEx</object
+> has saved everything.</td
 ></tr
 ><tr
 ><td
@@ -6392,7 +6395,10 @@ type="tPink"
 ><td
 >The word was left unanalyzed in the source interlinear text.</td
 ><td
->Analyze and approve the word in the source text. Ensure FLEx has saved everything. If you intentionally don't want to analyze the word and want to keep its form, check <object
+>Analyze and approve the word in the source text. Ensure <object
+type="tFlexx"
+>FLEx</object
+> has saved everything. If you intentionally don't want to analyze the word and want to keep its form, check <object
 type="tSettingsValue"
 >Yes</object
 > for the option <object
@@ -6418,7 +6424,10 @@ type="tSettingsProperty"
 ><td
 >The given morphemes could not be synthesized into a word because of an incompatibility.</td
 ><td
->Check that the word analyzes properly in target FLEx project.</td
+>Check that the word analyzes properly in target <object
+type="tFlexx"
+>FLEx</object
+> project.</td
 ></tr
 ><tr
 ><td
@@ -6426,9 +6435,15 @@ type="tSettingsProperty"
 ><td
 >%0%^kon1.1&lt;v&gt;$%<br
 ></br
->(you should see a warning in the FLExTools output saying: One or more glosses not found: 'kon1.1';)</td
+>(you should see a warning in the <object
+type="tTool"
+>FLExTools</object
+> output saying: One or more glosses not found: 'kon1.1';)</td
 ><td
->When using HermitCarb, this output could indicate that the root was not found in the target lexicon.</td
+>When using <object
+type="tTool"
+>HermitCrab</object
+>, this output could indicate that the root was not found in the target lexicon.</td
 ><td
 >Check the target lexicon.</td
 ></tr
