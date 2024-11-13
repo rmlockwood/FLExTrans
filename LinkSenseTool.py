@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.1 - 11/13/24 - Ron Lockwood
+#    Fixes #806. Use proper placeholder text for the search box.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -292,7 +295,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -829,14 +832,11 @@ class Main(QMainWindow):
         self.InitRebuildBilingCheckBox()
         self.InitSearchAllCheckBox()
         
-        self.ui.searchTargetEdit.setText(SEARCH_HERE)
-        
         self.ui.targetLexCombo.currentIndexChanged.connect(self.ComboClicked)
         self.ui.ShowOnlyUnlinkedCheckBox.clicked.connect(self.ShowOnlyUnlinkedClicked)
         self.ui.HideProperNounsCheckBox.clicked.connect(self.HideProperNounsClicked)
         self.ui.exportUnlinkedCheckBox.clicked.connect(self.exportUnlinkedClicked)
         self.ui.searchTargetEdit.textChanged.connect(self.SearchTargetChanged)
-        self.ui.searchTargetEdit.cursorPositionChanged.connect(self.SearchTargetClicked)
         self.ui.SourceTextCombo.activated.connect(self.sourceTextComboChanged)
         self.ui.FontButton.clicked.connect(self.FontClicked)
         self.ui.ZoomIncrease.clicked.connect(self.ZoomIncreaseClicked)
@@ -1041,13 +1041,6 @@ class Main(QMainWindow):
             if foundRow > 0:
                 self.ui.targetLexCombo.setCurrentIndex(foundRow)
             
-    def SearchTargetClicked(self):
-        
-        # Blank out the search text box if the user hasn't typed anything yet
-        if self.ui.searchTargetEdit.text() == SEARCH_HERE:
-            
-            self.ui.searchTargetEdit.setText('')
-    
     def positionControl(self, myControl, x, y):
         
         myControl.setGeometry(x, y, myControl.width(), myControl.height())
