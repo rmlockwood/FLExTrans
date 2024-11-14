@@ -316,7 +316,7 @@
     </equal>
   </cfg:elementTemplate>
 
-  <cfg:elementTemplate name="in">
+  <cfg:elementTemplate name="in_list">
     <in>
       <clip pos="1" side="tl" part="a_"/>
       <list n="l_"/>
