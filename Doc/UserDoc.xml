@@ -580,14 +580,12 @@ type="tFlexx"
 >Add a "phoneme" with a grapheme of #.</li
 ><li
 >Make sure that the phonological features for this phoneme are unique.</li
-><li
->Replace each space with a # symbol in your lexeme form field for all entries.</li
 ></ol
 ><p
 >The <object
 type="tTool"
 >HermitCrab</object
-> synthesis tool will replace any #s in the input with spaces in the output.</p
+> synthesis tool will use #s internally for spaces.</p
 ></li
 ></ol
 ></section3
@@ -611,17 +609,6 @@ type="tFlexx"
 >Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc. The glosses of different senses within an entry can be the same, but across separate entries they should be different.</li
 ><li
 >Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
-><li
->If any <object
-type="tFieldInFLEx"
->Lexeme Forms</object
-> have a space in them and you are using the <object
-type="tTool"
->HermitCrab</object
-> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <sectionRef
-sec="sHermitCrabSetup"
-></sectionRef
-> for more details.</li
 ><li
 >Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
 ><li

@@ -381,9 +381,8 @@
             <ol style="list-style-type:lower-alpha; ">
                <li>Add a "phoneme" with a grapheme of #.</li>
                <li>Make sure that the phonological features for this phoneme are unique.</li>
-               <li>Replace each space with a # symbol in your lexeme form field for all entries.</li>
             </ol>
-            <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> synthesis tool will replace any #s in the input with spaces in the output.
+            <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> synthesis tool will use #s internally for spaces.
             </p>
          </li>
       </ol>
@@ -397,8 +396,6 @@
             should be different.
          </li>
          <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li>
-         <li>If any <span style="color:#cc9900; ">Lexeme Forms</span> have a space in them and you are using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span> parser, replace each space with a # symbol and add that symbol to the Phonemes list. See section <a href="#sHermitCrabSetup">2.1.2</a> for more details.
-         </li>
          <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
          <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
             least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
