@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>13 November 2024</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>20 November 2024</small></center>
       <center><small>Version: 3.12</small></center>
       <hr>
       <div>
@@ -140,16 +140,17 @@
                <li><a href="#sOneVerse">7.1&nbsp;Complete Process for Translating One Verse (video)</a></li>
                <li><a href="#sTransferRuleHowTos">7.2&nbsp;Transfer Rule How To&#8217;s</a></li>
                <ul>
-                  <li><a href="#sCategory">7.2.1&nbsp;How do I use the category element in the transfer rules?</a></li>
-                  <li><a href="#sAttribute">7.2.2&nbsp;How do I use the attribute element in the transfer rules?</a></li>
-                  <li><a href="#sPatternMatch">7.2.3&nbsp;How does pattern matching work?</a></li>
-                  <li><a href="#sDeleteWord">7.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
-                  <li><a href="#sInsertWord">7.2.5&nbsp;How do I insert a word into the target output?</a></li>
-                  <li><a href="#sDeleteAffix">7.2.6&nbsp;How do I delete an affix?</a></li>
-                  <li><a href="#sCondLogic">7.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)</a></li>
-                  <li><a href="#sMacro">7.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
-                  <li><a href="#sAgreement">7.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
-                  <li><a href="#sSampleLogic">7.2.10&nbsp;How do I use the Sample logic that&#8217;s in the transfer rules file?</a></li>
+                  <li><a href="#sAffixRef">7.2.1&nbsp;How do I refer to affix glosses in transfer rules?</a></li>
+                  <li><a href="#sCategory">7.2.2&nbsp;How do I use the category element in the transfer rules?</a></li>
+                  <li><a href="#sAttribute">7.2.3&nbsp;How do I use the attribute element in the transfer rules?</a></li>
+                  <li><a href="#sPatternMatch">7.2.4&nbsp;How does pattern matching work?</a></li>
+                  <li><a href="#sDeleteWord">7.2.5&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)</a></li>
+                  <li><a href="#sInsertWord">7.2.6&nbsp;How do I insert a word into the target output?</a></li>
+                  <li><a href="#sDeleteAffix">7.2.7&nbsp;How do I delete an affix?</a></li>
+                  <li><a href="#sCondLogic">7.2.8&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)</a></li>
+                  <li><a href="#sMacro">7.2.9&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
+                  <li><a href="#sAgreement">7.2.10&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
+                  <li><a href="#sSampleLogic">7.2.11&nbsp;How do I use the Sample logic that&#8217;s in the transfer rules file?</a></li>
                </ul>
                <li><a href="#sOther">7.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
@@ -395,7 +396,9 @@
             have unique glosses, etc. The glosses of different senses within an entry can be the same, but across separate entries they
             should be different.
          </li>
-         <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li>
+         <li>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead. Note that if you use periods in
+            your affix glosses, you will have to write them with underscores when referencing them in rules.
+         </li>
          <li>Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li>
          <li>Ensure that all templates have a name in the primary analysis writing system, all slots have a name, and all slots have at
             least one affix in them. If any template doesn't meet these criteria, temporarily deactivate it by unticking the "Active"
@@ -1985,7 +1988,7 @@
                      </td>
                   </tr>
                </table>
-            </div>(Note: the statement in <a href="#xLet1">(53)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">7.2.7</a>.<br><br></li>
+            </div>(Note: the statement in <a href="#xLet1">(53)</a> will always change the target language tag to <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">pst</span></span>, even if the input is not <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; "><span style="font-family:Courier New; font-size:90%; color:#00B050; ">ptcp_f_sg</span></span>. This is good enough for our current example, but for a description of how conditional logic works, see Section&nbsp;<a href="#sCondLogic">7.2.8</a>.<br><br></li>
          <li>Now test it in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. (Don&#8217;t forget to refresh the rules first!)<br><p>The result is:</p>
             <div style="margin-left: 0.25in; margin-right: 0.25in">
                <table>
@@ -2557,7 +2560,16 @@
       <h2 style=""><a name="sTransferRuleHowTos"></a>7.2&nbsp;Transfer Rule How To&#8217;s
       </h2>
       <p></p>
-      <h3 style=""><a name="sCategory"></a>7.2.1&nbsp;How do I use the category element in the transfer rules?
+      <h3 style=""><a name="sAffixRef"></a>7.2.1&nbsp;How do I refer to affix glosses in transfer rules?
+      </h3>
+      <p>Important: if any of your affixes have a period in them, you refer to them replacing the period with an underscore. For example,
+         <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3s.S</span> becomes <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3s_S</span>.
+      </p>
+      <p>You generally refer to an affix using the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element in your transfer rules. The <span style="font-family:Arial; font-size:80%; color:#ff9966; font-weight:bold; ">part</span> attribute of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element references an attribute usually and this attribute consists of potential tags which can be features or affix glosses.
+      </p>
+      <p>If you are comparing a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> element to see if it matches an affix, you should use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal tag</span> element and write the gloss there. Remember the period-underscore substitution above.
+      </p>
+      <h3 style=""><a name="sCategory"></a>7.2.2&nbsp;How do I use the category element in the transfer rules?
       </h3>
       <p>Lexical categories are used to group words together. The grouping can be very broad such as verbs or very specific such as
          pronouns with feminine suffixes. The categories are used in the pattern matching system of transfer rules.
@@ -2578,7 +2590,9 @@
       </div>
       <p><a href="#xCat">(83)</a> is an example of a lexical category for indefinite nominals. The period indicates where a new tag begins. The asterisk is
          a wildcard indicator. It means that anything can fill that position. An asterisk at the end of the item matches one or more
-         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(83)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes..
+         final tags. For example, if I have the lexical unit <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">sg</span>, it could be precisely matched by a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.sg</span>. More generally we could match <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">book</span> with the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element containing <span style="font-family:Courier New; font-size:100%; ">n.f.*</span>. This would refer to all words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> followed by the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f</span> followed by anything else, i.e. feminine nouns. <a href="#xCat">(83)</a> defines the set of all indefinite nouns &#8212; words that have the grammatical category <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> or <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n-irreg</span> followed by <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and optionally something else afterward. Note that <span style="font-family:Courier New; font-size:100%; ">n.ind</span> and <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> are both necessary because <span style="font-family:Courier New; font-size:100%; ">n.ind.*</span> would require some affix after <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> and not match an indefinite noun like <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">car</span><span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind</span> that has no additional suffixes.
+      </p>
+      <p>If you use <span style="font-family:Courier New; font-size:100%; ">*</span> in the middle of the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> definition, it means one or more tags occur in that position. For example, <span style="font-family:Courier New; font-size:100%; ">n.*.pl</span> would match both <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">f pl</span> and <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">ind f pl</span>. Important: unlike the meaning of <span style="font-family:Courier New; font-size:100%; ">*</span> in regular expressions, it never means zero occurrences. So, <span style="font-family:Courier New; font-size:100%; ">n.*.pl</span> would not match <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">n</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span>. To match this you would need an additional <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">tags</span> element <span style="font-family:Courier New; font-size:100%; ">n.pl</span> to cover this case.
       </p>
       <p>You can use the lemma element to identify a specific word-sense. <a href="#xCatLem">(84)</a> shows how the category <span style="font-family:Courier New; font-size:100%; ">dem_this</span> can be defined as a word that has a grammatical category of <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">dem</span> and lemma <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1.1</span> (in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>: headword <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">this</span><span style="font-size:65%; vertical-align:sub;">1</span> , sense 1). This might be useful when you want to match phrases containing the word <span style="font-family:Courier New; font-size:100%; ">this</span>.
       </p>
@@ -2596,7 +2610,7 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sAttribute"></a>7.2.2&nbsp;How do I use the attribute element in the transfer rules?
+      <h3 style=""><a name="sAttribute"></a>7.2.3&nbsp;How do I use the attribute element in the transfer rules?
       </h3>
       <p>Attributes are defined in the rule file in order to identify possible values for word characteristics. An example is shown
          in <a href="#xAttrib">(85)</a>.
@@ -2618,7 +2632,7 @@
       <p>Certain words may have affixes that indicate grammatical number. <a href="#xAttrib">(85)</a> defines the possible values for the number attribute as being sg (singular) or pl (plural). Like lexical categories, these
          refer to tags in the data stream. Attributes are used within rules to get or set values.
       </p>
-      <h3 style=""><a name="sPatternMatch"></a>7.2.3&nbsp;How does pattern matching work?
+      <h3 style=""><a name="sPatternMatch"></a>7.2.4&nbsp;How does pattern matching work?
       </h3>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine searches for patterns in your source text. The patterns it searches for are those defined for each rule you
          have. Some patterns may be one word, some patterns may be multiple words. The transfer engine tries to match the longest patterns
@@ -2637,12 +2651,12 @@
       <p>If the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine finds a match, it runs the action part of your rule. If the engine finds no match for a word, it does default
          translation of it according to what is in the bilingual dictionary. Cf. &#8220;<a href="#sRulesApplied">How Rules are Applied</a>&#8221;.
       </p>
-      <h3 style=""><a name="sDeleteWord"></a>7.2.4&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)
+      <h3 style=""><a name="sDeleteWord"></a>7.2.5&nbsp;How do I delete a word from the target output? (How do I prevent a source word from being transferred to the target text?)
       </h3>
       <p>The short answer is don&#8217;t output it. In other words, don&#8217;t declare that it should be outputted into the target data stream.</p>
       <p>When you match two or more words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">pattern</span> section of a transfer rule, you can choose to only list some of the words in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> section. This is exactly what we did in &#8220;<a href="#step1">Step 1</a>&#8221; of the tutorial. In <a href="#xOutput1">(50)</a> we only declared that the word in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">position</span> 1 should be outputted.
       </p>
-      <h3 style=""><a name="sInsertWord"></a>7.2.5&nbsp;How do I insert a word into the target output?
+      <h3 style=""><a name="sInsertWord"></a>7.2.6&nbsp;How do I insert a word into the target output?
       </h3>
       <p>Naturally to add something to the target output, we need to add something to the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part of our transfer rule. And what goes in <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> part the of our transfer rule? Lexical units. We need to insert a lexical unit block under the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">output</span> element of our transfer rule. <span style="text-decoration:underline; ">The bare minimum we need for a lexical unit is the word-sense and the grammatical category.</span> If we are manually outputting a word-sense, we need to use a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal string</span> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn&#8217;t one in FLEx,
          use 1) and 2 would be the sense number. In this case the second sense of the word. <a href="#xInsertWord">(86)</a> shows how it might look.
@@ -2666,7 +2680,7 @@
       </p>
       <p>If you have other lexical units that you will be outputting, remember to put a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">blank space</span> element so that you get a space between your words. This is shown in <a href="#xLexUnitPron">(65)</a>. &#8220;<a href="#step4">Step 4</a>&#8221; of the transfer rules tutorial shows an example of inserting a word into the target output.
       </p>
-      <h3 style=""><a name="sDeleteAffix"></a>7.2.6&nbsp;How do I delete an affix?
+      <h3 style=""><a name="sDeleteAffix"></a>7.2.7&nbsp;How do I delete an affix?
       </h3>
       <p>There are two methods for deleting an affix. You can either set the value for that affix (attribute) to blank or you can not
          declare that the affix (attribute) gets outputted.
@@ -2722,14 +2736,14 @@
             method is that you have to explicitly declare every possible attribute that could occur. Where as in <a href="#xOutputWhole">(88)</a> in Method 1, you just have to output the whole word.
          </li>
       </ol>
-      <h3 style=""><a name="sCondLogic"></a>7.2.7&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sCondLogic"></a>7.2.8&nbsp;How do I use conditional logic in a transfer rule? (How do I say if this ... then that?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to use conditional logic. Please watch this <a href="https://vimeo.com/934390874">video</a> for an explanation. Some conditional logic can be automatically created for you using the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span>. See Section&nbsp;<a href="#sRuleAssist">4.7</a>. Also see examples of conditional logic in the sample rule called: <span style="font-weight:bold; ">Sample logic to copy and paste</span> or in the file <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span>.
       </p>
-      <h3 style=""><a name="sMacro"></a>7.2.8&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sMacro"></a>7.2.9&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this
          <a href="https://vimeo.com/934391130">video</a> for an explanation.
       </p>
-      <h3 style=""><a name="sAgreement"></a>7.2.9&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)<img src="Images/VideoIcon.PNG"></h3>
+      <h3 style=""><a name="sAgreement"></a>7.2.10&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)<img src="Images/VideoIcon.PNG"></h3>
       <p>One main strategy for getting words to agree with a noun, is to make sure features are assigned to the noun and then in the
          transfer rules make the needed adjustment to the words you output depending on what the feature values (or class values) are.
          You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Rule Assistant</span> to do this. See Section&nbsp;<a href="#sRuleAssist">4.7</a>.
@@ -2738,7 +2752,7 @@
       </p>
       <p>If you would like to try creating the rules along with the video, please follow the instructions in the file: <span style="font-style:italic; ">Readme.txt</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">FLExTrans\FLExTrans Documentation\Agreement</span> folder. See the file <span style="font-style:italic; ">transfer_rules - solution.t1x</span> which shows the form of the rules shown in the video.
       </p>
-      <h3 style=""><a name="sSampleLogic"></a>7.2.10&nbsp;How do I use the Sample logic that&#8217;s in the transfer rules file?
+      <h3 style=""><a name="sSampleLogic"></a>7.2.11&nbsp;How do I use the Sample logic that&#8217;s in the transfer rules file?
       </h3>
       <p>Each sample logic block starts with a comment shown in yellow. Read through each of the most outdented comments to see what
          kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the
@@ -2987,6 +3001,14 @@
                            <td align="left" valign="top" style="padding-left:.2em">When using <span style="font-family:Courier New; font-weight:bold; color:navy; ">HermitCrab</span>, this output could indicate that the root was not found in the target lexicon.
                            </td>
                            <td align="left" valign="top" style="padding-left:.2em">Check the target lexicon.</td>
+                        </tr>
+                        <tr style="">
+                           <td align="left" valign="top" style="padding-left:.2em">siata<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">prep</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">mana1.1 prep</span></td>
+                           <td align="left" valign="top" style="padding-left:.2em">%0%^siata1.1&lt;prep&gt;&lt;mana1.1&gt;&lt;prep&gt;$%</td>
+                           <td align="left" valign="top" style="padding-left:.2em"><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> is interpreting mana1.1 and the 2nd prep as affixes, likely because they were outputted in the same lexical unit as the first
+                              word.
+                           </td>
+                           <td align="left" valign="top" style="padding-left:.2em">Correct the transfer rule that produced this to give a lexical unit block for each word.</td>
                         </tr>
                      </table>
                   </td>

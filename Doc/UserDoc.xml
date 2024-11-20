@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->13 November 2024</date
+>20 November 2024</date
 ><version
 >3.12</version
 ><contents
@@ -608,7 +608,7 @@ type="tFlexx"
 ><li
 >Ensure that the glosses of affixes are unique, within each morpheme type. That is, all suffixes have unique glosses, all prefixes have unique glosses, etc. The glosses of different senses within an entry can be the same, but across separate entries they should be different.</li
 ><li
->Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead.</li
+>Ensure that glosses of affixes don't have spaces in them. Use period or underscore instead. Note that if you use periods in your affix glosses, you will have to write them with underscores when referencing them in rules.</li
 ><li
 >Ensure that every Part of Speech (category) has both a Name and an Abbreviation in the primary analysis writing system.</li
 ><li
@@ -5348,6 +5348,38 @@ id="sTransferRuleHowTos"
 >How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
+id="sAffixRef"
+><secTitle
+>How do I refer to affix glosses in transfer rules?</secTitle
+><p
+>Important: if any of your affixes have a period in them, you refer to them replacing the period with an underscore. For example, <object
+type="tluAffix"
+>3s.S</object
+> becomes <object
+type="tluAffix"
+>3s_S</object
+>.</p
+><p
+>You generally refer to an affix using the <object
+type="tRuleElemInXXE"
+>clip</object
+> element in your transfer rules. The <object
+type="tRuleAttribInXXE"
+>part</object
+> attribute of the <object
+type="tRuleElemInXXE"
+>clip</object
+> element references an attribute usually and this attribute consists of potential tags which can be features or affix glosses.</p
+><p
+>If you are comparing a <object
+type="tRuleElemInXXE"
+>clip</object
+> element to see if it matches an affix, you should use the <object
+type="tRuleElemInXXE"
+>literal tag</object
+> element and write the gloss there. Remember the period-underscore substitution above.</p
+></section3
+><section3
 id="sCategory"
 ><secTitle
 >How do I use the category element in the transfer rules?</secTitle
@@ -5440,7 +5472,48 @@ type="tluGrammCat"
 > <object
 type="tluAffix"
 >ind</object
-> that has no additional suffixes..</p
+> that has no additional suffixes.</p
+><p
+>If you use <object
+type="tCourier"
+>*</object
+> in the middle of the <object
+type="tRuleElemInXXE"
+>tags</object
+> definition, it means one or more tags occur in that position. For example, <object
+type="tCourier"
+>n.*.pl</object
+> would match both <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>f pl</object
+> and <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>ind f pl</object
+>. Important: unlike the meaning of <object
+type="tCourier"
+>*</object
+> in regular expressions, it never means zero occurrences. So, <object
+type="tCourier"
+>n.*.pl</object
+> would not match <object
+type="tluGrammCat"
+>n</object
+> <object
+type="tluAffix"
+>pl</object
+>. To match this you would need an additional <object
+type="tRuleElemInXXE"
+>tags</object
+> element <object
+type="tCourier"
+>n.pl</object
+> to cover this case.</p
 ><p
 >You can use the lemma element to identify a specific word-sense. <exampleRef
 letter="xCatLem"
@@ -6434,6 +6507,28 @@ type="tTool"
 ><td
 >Check the target lexicon.</td
 ></tr
+><tr
+><td
+>siata<object
+type="tSubscript"
+>1.1</object
+> <object
+type="tluGrammCat"
+>prep</object
+> <object
+type="tluAffix"
+>mana1.1 prep</object
+></td
+><td
+>%0%^siata1.1&lt;prep&gt;&lt;mana1.1&gt;&lt;prep&gt;$%</td
+><td
+><object
+type="tFlextrans"
+></object
+> is interpreting mana1.1 and the 2nd prep as affixes, likely because they were outputted in the same lexical unit as the first word.</td
+><td
+>Correct the transfer rule that produced this to give a lexical unit block for each word.</td
+></tr
 ></table
 ></example
 ></section2
@@ -6972,6 +7067,12 @@ font-weight="normal"
 id="tNoItalic"
 ></type
 ><type
+color="#a349a4"
+font-style="italic"
+font-weight="bold"
+id="tPane"
+></type
+><type
 color="#006633"
 font-family="Arial"
 font-size="80%"
@@ -6979,10 +7080,11 @@ id="tRuleElemInXXE"
 types="tBold"
 ></type
 ><type
-color="#a349a4"
-font-style="italic"
-font-weight="bold"
-id="tPane"
+color="#ff9966"
+font-family="Arial"
+font-size="80%"
+id="tRuleAttribInXXE"
+types="tBold"
 ></type
 ><type
 after="Sense Linker Tool"
