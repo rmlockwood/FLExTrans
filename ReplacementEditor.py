@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.12.1 - 11/21/24 - Ron Lockwood
+#    We do need to convert problem characters for the POS. Partially undid the 3.11.2 change.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -35,7 +38,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version: "3.12",
+    FTM_Version: "3.12.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -480,7 +483,7 @@ class Main(QMainWindow):
                     if not msa.PartOfSpeechRA:
                         continue
                     pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
-                    #pos = Utils.convertProblemChars(pos, Utils.catProbData)
+                    pos = Utils.convertProblemChars(pos, Utils.catProbData)
                     tags = Utils.getInflectionTags(msa)
                     lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
                 elif sense.MorphoSyntaxAnalysisRA.ClassName in affixClasses:
