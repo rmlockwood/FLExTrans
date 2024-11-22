@@ -5,7 +5,10 @@
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
 #
-#   15 Feb 2024 bb  Changes
+#   21 Nov 2024 bb  v3.10.12  Update use of GetInterlinData for changes in Utils.py at version 3.10.11
+#                                               on 3/20/24.  Add analytics.
+#
+#   15 Feb 2024 bb  v3.8.6  Incorporate parts of ExtractSourceText.py to read from FLEx text
 #
 #   30 Jun 2023 bb  Get it working as a module in FLExTrans
 #
@@ -30,7 +33,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate sentences from model",
-        FTM_Version    : "3.8.6",
+        FTM_Version    : "3.10.12",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Iterate over certain POS in a model sentence to produce variations.",
         FTM_Help  : "", 
@@ -61,7 +64,7 @@ def MainFunction(DB, report, modifyAllowed):
     match_2_lem = ""
     match_2_pos = ""
 
-## For Test 3/4 text
+## For Test 3/4 text in TKW database
 #    match_n_lem = "_nddo1.1"
 #    match_n_pos = "n"
 #    match_1_lem = "_jinji1.1"
@@ -108,6 +111,10 @@ def MainFunction(DB, report, modifyAllowed):
     if not configMap:
         return
 
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
     # Open the output file
     # Build an output path using the system temp directory.
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
@@ -124,7 +131,9 @@ def MainFunction(DB, report, modifyAllowed):
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceTextName:
         return    
+        
     matchingContentsObjList = []
+    
     # Create a list of source text names
     sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
     if sourceTextName not in sourceTextList:        
@@ -133,34 +142,18 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
-    # Get punctuation string
-    sent_punct = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
-    if not sent_punct:
-        return 
- 
     # Process the text
     report.Info("Exporting analyses...")
 
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return
+    # Get various bits of data for the get interlinear function
+    interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
-    discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return
-
-    discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
+    # Check for an error
+    if interlinParams == None:
         return
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, sent_punct, contents, typesList, discontigTypesList, discontigPOSList)
+    myText = Utils.getInterlinData(DB, report, interlinParams)
         
 #------------------End of from ExtractText.py--------------------------------        
         
