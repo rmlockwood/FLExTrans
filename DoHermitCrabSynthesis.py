@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.1 - 11/22/24 - Ron Lockwood
+#    Fixes #812. Capitalize a word before sending it to synthesis if it is capitalized in the target
+#    lexicon. We can quickly read the target lexicon by loading the HCconfig file.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -83,7 +87,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -284,7 +288,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
     fResults.close()
     return errorList
 
-def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList):
+def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap):
 
     errorList = []
 
@@ -325,25 +329,39 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList):
 
         # Get the parses
         HCparsesList = re.split('\|', HCparseStr)
-
         capCodeList = []
 
         # Get the parse and capitalization code pair
         for hcparseCombo in HCparsesList:
 
             hcParse, capCode = re.split(';', hcparseCombo)
-
             capCodeList.append(capCode)
 
+            # Capitalize if necessary
+            hcParse = capitalize(hcParse, capCode, HCcapitalLemmasMap)
             fParses.write('^' + hcParse + '$')
         
         fParses.write('\n')
-
         luInfoList.append((luStr, capCodeList))
 
     fMaster.close()
     fParses.close()
     return errorList
+
+def capitalize(hcParse, capCode, HCcapitalLemmasMap):
+
+    # Get the root - non > characters before a <
+    match = re.search(r'(.*?)([^>]+?)(<.*)', hcParse)
+    before = match.group(1)
+    root   = match.group(2)
+    after  = match.group(3)
+
+    # Make the root capitalized if the capitalization flag is set and if the lemma is capitalized in the target lexicon (it's in the capitalized lemmas map)
+    if capCode and root.capitalize() in HCcapitalLemmasMap:
+
+        root = Utils.capitalizeString(root, capCode)
+
+    return before+root+after
 
 # Remove @ signs at the beginning of words and N.N at the end of words if so desired in the settings.
 # Also symbols and ^%0%...%$
@@ -377,12 +395,45 @@ def fix_up_text(synFile, cleanUpText):
     f_s.write(synFileContents)
     f_s.close()
 
+def getCapitalLemmas(HCconfigPath):
+
+    # Create a dictionary to store the extracted lemmas
+    HCcapitalLemmasMap = {}
+
+    # Read the contents of the file
+    try:
+        with open(HCconfigPath, 'r', encoding='utf-8') as file:
+
+            contents = file.read()
+    except:
+        return None
+
+    # Use regex to find all strings between <Gloss> tags
+    lemmas = re.findall(r'<Gloss>(.*?)</Gloss>', contents)
+
+    # Iterate through the extracted lemmas
+    for lemStr in lemmas:
+
+        # Check if the first letter is capitalized
+        if lemStr[0].isupper():
+
+            HCcapitalLemmasMap[lemStr] = 1
+
+    return HCcapitalLemmasMap
+
 def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False):
     
     errorList = []
     luInfoList = []
 
-    errorList = createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList)
+    HCcapitalLemmasMap = getCapitalLemmas(HCconfigPath)
+
+    if HCcapitalLemmasMap is None:
+
+        errorList.append(('Unable to open the HC master file.', 2))
+        return errorList
+
+    errorList = createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
 
     for triplet in errorList:
 
