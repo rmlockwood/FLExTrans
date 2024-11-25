@@ -65,7 +65,7 @@
    <widget class="QComboBox" name="targetLexCombo">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>526</x>
       <y>10</y>
       <width>271</width>
       <height>29</height>
@@ -99,9 +99,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>430</x>
       <y>16</y>
-      <width>151</width>
+      <width>91</width>
       <height>20</height>
      </rect>
     </property>
@@ -125,9 +125,9 @@
    <widget class="QLineEdit" name="searchTargetEdit">
     <property name="geometry">
      <rect>
-      <x>814</x>
+      <x>810</x>
       <y>10</y>
-      <width>191</width>
+      <width>101</width>
       <height>29</height>
      </rect>
     </property>
@@ -149,7 +149,7 @@ then double-click in the Target Head Word column for the desired row to link to 
      <rect>
       <x>80</x>
       <y>10</y>
-      <width>341</width>
+      <width>331</width>
       <height>29</height>
      </rect>
     </property>
@@ -178,7 +178,7 @@ then double-click in the Target Head Word column for the desired row to link to 
    <widget class="QCheckBox" name="SearchAnythingCheckBox">
     <property name="geometry">
      <rect>
-      <x>1030</x>
+      <x>930</x>
       <y>13</y>
       <width>121</width>
       <height>27</height>
@@ -321,6 +321,19 @@ is checked, Proper Nouns will not be exported.</string>
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="AddEntryButton">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>15</y>
+      <width>90</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add Entry</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -328,7 +341,7 @@ is checked, Proper Nouns will not be exported.</string>
      <x>0</x>
      <y>0</y>
      <width>1156</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

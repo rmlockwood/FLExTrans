@@ -290,12 +290,13 @@ import Utils
 import ExtractBilingualLexicon
 
 from Linker import Ui_MainWindow
+from NewEntry import Ui_Dialog
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -793,6 +794,16 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
         return True
             
+class NewEntryDlg(QDialog):
+
+    def __init__(self):
+        QDialog.__init__(self)
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
+
+        self.ui.OKButton.clicked.connect(self.OKClicked)
+        self.ui.CancelButton.clicked.connect(self.CancelClicked)
+
 class Main(QMainWindow):
 
     def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList):
@@ -843,6 +854,7 @@ class Main(QMainWindow):
         self.ui.ZoomDecrease.clicked.connect(self.ZoomDecreaseClicked)
         self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
         self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
+        self.ui.AddEntryButton.clicked.connect(self.AddTargetEntry)
         self.ComboClicked()
         
         myHPG = self.__comboModel.getCurrentHPG()
@@ -859,6 +871,10 @@ class Main(QMainWindow):
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def AddTargetEntry(self):
+
+
+
     def InitSearchAllCheckBox(self):
         
         self.ui.SearchAnythingCheckBox.setCheckState(QtCore.Qt.Unchecked)
