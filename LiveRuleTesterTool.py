@@ -461,6 +461,7 @@ WINDOWS_SETTINGS_FILE = 'window.settings.txt'
 HC_PARSES_FILE = 'HermitCrabParses.txt'
 HC_MASTER_FILE = 'HermitCrabMaster.txt'
 HC_SURFACE_FORMS_FILE = 'HermitCrabSurfaceForms.txt'
+ENVIR_VAR_FIELDWORKSDIR = 'FIELDWORKSDIR'
 
 # These strings need to be identical with the Makefile in the LiveRuleTester folder
 SOURCE_APERT = 'source_text.txt'
@@ -1318,6 +1319,26 @@ class Main(QMainWindow):
 
                 QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
                 return
+            
+            useHCsynthDll = True
+            if useHCsynthDll:
+
+                # Save current directory
+                currentDir = os.getcwd()
+
+                # Change to the Fieldworks folder for doing the dll operations
+                fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
+                os.chdir(fieldworksDir)
+
+                # Import the clr module from pythonnet
+                import clr 
+
+                # Load the DLL 
+                clr.AddReference('HCSynthByGlossDll')
+                from SIL.HCSynthByGloss2 import HCSynthByGlossDll
+
+                # Initialize the object with the output file name
+                HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
 
         ## CATALOG
         # Catalog all the target affixes
