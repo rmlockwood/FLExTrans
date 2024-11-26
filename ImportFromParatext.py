@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.1 - 11/26/24 - Ron Lockwood
+#    Allow intro. to be imported with chapter 1.
+#    Fixed bug with excluding \r by using DOTALL
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -135,7 +139,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -163,7 +167,8 @@ class Main(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.toChap = self.fromChap = 0
+        self.toChap = 0
+        self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
@@ -175,11 +180,22 @@ class Main(QMainWindow):
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
 
+        self.fromChap = self.ui.fromChapterSpinBox.value()
+        self.toChap = self.ui.toChapterSpinBox.value()
         self.enableOneTextPerChapter()
+        self.enableIncludeIntro()
 
     def CancelClicked(self):
         self.retVal = False
         self.close()
+
+    def enableIncludeIntro(self):
+
+        if self.fromChap == 1:
+            self.ui.includeIntroCheckBox.setEnabled(True)
+        else:
+            self.ui.includeIntroCheckBox.setEnabled(False)
+            self.ui.includeIntroCheckBox.setChecked(False)
 
     # If more than 1 chapter, enable the one text per chapter checkbox
     def enableOneTextPerChapter(self):
@@ -202,6 +218,7 @@ class Main(QMainWindow):
             self.toChap = self.fromChap
 
         self.enableOneTextPerChapter()
+        self.enableIncludeIntro()
 
     def ToSpinChanged(self):
         
@@ -289,8 +306,14 @@ def do_import(DB, report, chapSelectObj, tree):
         if len(chapList) > 0:
             chapSelectObj.toChap = int(chapList[-1])
     
-    # Build the search regex. It starts the search at the fromChapter
-    reStr = fr'(\\c {str(chapSelectObj.fromChap)}\s.+?)'
+    # See if we should include intro material
+    if chapSelectObj.includeIntro:
+
+        # Build the search regex. It starts the search at \mt. This will work if the first title is \mt2 or \mt1, etc.
+        reStr = fr'(\\mt.+?)'
+    else:
+        # Build the search regex. It starts the search at the fromChapter
+        reStr = fr'(\\c {str(chapSelectObj.fromChap)}\s.+?)'
     
     # The expression ends with the end of the book contents if we need to
     if copyUntilEnd:
@@ -329,7 +352,7 @@ def do_import(DB, report, chapSelectObj, tree):
     if chapSelectObj.includeCrossRefs == False:
         
         importText = re.sub(r'\\x.+?\\x\*', '', importText)
-        importText = re.sub(r'\\r.+?\\p', r'\\p', importText) # assume a \p directly follows a \r
+        importText = re.sub(r'\\r.+?\\p', r'\\p', importText, flags=re.DOTALL) # assume a \p directly follows a \r
 
     # If the user wants one text per chapter, split the text on chapters
     if chapSelectObj.oneTextPerChapter == True:
@@ -340,7 +363,12 @@ def do_import(DB, report, chapSelectObj, tree):
         # Put the \\c list elements back together with their respective contents
         for i in range(1, len(tempChapterList), 2):
 
-            byChapterList.append(tempChapterList[i] + tempChapterList[i+1])
+            # If including intro and we have chapter 1, add intro portion before chapter 1 marker and text
+            if chapSelectObj.includeIntro and i == 1 and tempChapterList[i] == '\\c 1':
+
+                byChapterList.append(tempChapterList[0] + tempChapterList[i] + tempChapterList[i+1])
+            else:
+                byChapterList.append(tempChapterList[i] + tempChapterList[i+1])
 
     # Otherwise treat as one chapter (going to one text)
     else:
