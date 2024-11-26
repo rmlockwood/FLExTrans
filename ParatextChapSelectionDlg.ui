@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
+    <width>438</width>
     <height>259</height>
    </rect>
   </property>
@@ -23,9 +23,9 @@
    <widget class="QCheckBox" name="makeActiveTextCheckBox">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>170</y>
-      <width>181</width>
+      <x>10</x>
+      <y>130</y>
+      <width>191</width>
       <height>17</height>
      </rect>
     </property>
@@ -42,9 +42,9 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>70</x>
       <y>37</y>
-      <width>151</width>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
@@ -58,7 +58,7 @@
    <widget class="QSpinBox" name="fromChapterSpinBox">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>180</x>
       <y>70</y>
       <width>42</width>
       <height>22</height>
@@ -74,9 +74,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>70</x>
       <y>7</y>
-      <width>151</width>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
@@ -90,21 +90,24 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>225</x>
       <y>70</y>
-      <width>21</width>
+      <width>26</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>to</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
    </widget>
    <widget class="QCheckBox" name="useFullBookNameForTitleCheckBox">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>193</y>
+      <x>10</x>
+      <y>150</y>
       <width>191</width>
       <height>17</height>
      </rect>
@@ -122,9 +125,9 @@
    <widget class="QCheckBox" name="footnotesCheckBox">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>124</y>
-      <width>111</width>
+      <x>220</x>
+      <y>110</y>
+      <width>211</width>
       <height>17</height>
      </rect>
     </property>
@@ -135,7 +138,7 @@
    <widget class="QLineEdit" name="ptxProjAbbrevLineEdit">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>270</x>
       <y>7</y>
       <width>51</width>
       <height>20</height>
@@ -145,7 +148,7 @@
    <widget class="QLineEdit" name="bookAbbrevLineEdit">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>270</x>
       <y>37</y>
       <width>51</width>
       <height>20</height>
@@ -157,18 +160,21 @@
      <rect>
       <x>70</x>
       <y>70</y>
-      <width>51</width>
+      <width>101</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>Chapter</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
    </widget>
    <widget class="QSpinBox" name="toChapterSpinBox">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>260</x>
       <y>70</y>
       <width>42</width>
       <height>22</height>
@@ -184,7 +190,7 @@
    <widget class="QPushButton" name="OKButton">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>130</x>
       <y>223</y>
       <width>81</width>
       <height>23</height>
@@ -197,7 +203,7 @@
    <widget class="QPushButton" name="CancelButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>220</x>
       <y>223</y>
       <width>81</width>
       <height>23</height>
@@ -210,9 +216,9 @@
    <widget class="QCheckBox" name="crossrefsCheckBox">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>147</y>
-      <width>201</width>
+      <x>220</x>
+      <y>130</y>
+      <width>211</width>
       <height>17</height>
      </rect>
     </property>
@@ -226,14 +232,30 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>100</y>
-      <width>161</width>
+      <x>10</x>
+      <y>110</y>
+      <width>191</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string>Create one text per chapter</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="includeIntroCheckBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>150</y>
+      <width>211</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Include introduction (for chapter 1)</string>
     </property>
    </widget>
   </widget>

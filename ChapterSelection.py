@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.1 - 11/26/24 - Ron Lockwood
+#    Allow intro. to be imported with chapter 1.
+#
 #   Version 3.10.1 - 3/19/24 - Ron Lockwood
 #    Fixes #566. Allow the user to create one text per chapter when importing.
 #
@@ -151,7 +154,7 @@ bookMap = {\
 class ChapterSelection(object):
         
     def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                 makeActive, useFullBookName, oneTextPerChapter=False):
+                 makeActive, useFullBookName, oneTextPerChapter=False, includeIntro=False):
     
         if export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -169,6 +172,7 @@ class ChapterSelection(object):
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName     
         self.oneTextPerChapter  = oneTextPerChapter
+        self.includeIntro       = includeIntro
         
     def dump(self):
         
@@ -182,7 +186,8 @@ class ChapterSelection(object):
             'includeCrossRefs'       : self.includeCrossRefs   ,\
             'makeActive'             : self.makeActive         ,\
             'useFullBookName'        : self.useFullBookName    ,\
-            'oneTextPerChapter'      : self.oneTextPerChapter   \
+            'oneTextPerChapter'      : self.oneTextPerChapter  ,\
+            'includeIntro'           : self.includeIntro        \
             }
         return ret
 
@@ -208,20 +213,21 @@ def InitControls(self, export=True):
         # Set the project edit box to either the export or import project.
         # Save the other one as otherProj so we can write it out again to the settings file.
         if export:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap['exportProjectAbbrev'])
-            self.otherProj = myMap['importProjectAbbrev']
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('exportProjectAbbrev',''))
+            self.otherProj = myMap.get('importProjectAbbrev','')
         else:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap['importProjectAbbrev'])
-            self.otherProj = myMap['exportProjectAbbrev']
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('importProjectAbbrev',''))
+            self.otherProj = myMap.get('exportProjectAbbrev','')
             
-        self.ui.bookAbbrevLineEdit.setText(myMap['bookAbbrev'])
-        self.ui.fromChapterSpinBox.setValue(myMap['fromChap'])
-        self.ui.toChapterSpinBox.setValue(myMap['toChap'])
-        self.ui.footnotesCheckBox.setChecked(myMap['includeFootnotes'])
-        self.ui.crossrefsCheckBox.setChecked(myMap['includeCrossRefs'])
-        self.ui.makeActiveTextCheckBox.setChecked(myMap['makeActive'])
-        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap['useFullBookName'])
-        self.ui.oneTextPerChapterCheckBox.setChecked(myMap['oneTextPerChapter'])
+        self.ui.bookAbbrevLineEdit.setText(myMap.get('bookAbbrev',''))
+        self.ui.fromChapterSpinBox.setValue(myMap.get('fromChap',1))
+        self.ui.toChapterSpinBox.setValue(myMap.get('toChap',1))
+        self.ui.footnotesCheckBox.setChecked(myMap.get('includeFootnotes',False))
+        self.ui.crossrefsCheckBox.setChecked(myMap.get('includeCrossRefs',False))
+        self.ui.makeActiveTextCheckBox.setChecked(myMap.get('makeActive',False))
+        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',False))
+        self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
+        self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
         f.close()
     except:
         pass
@@ -238,6 +244,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     makeActive = self.ui.makeActiveTextCheckBox.isChecked()
     useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
     oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
+    includeIntro = self.ui.includeIntroCheckBox.isChecked()
     
     ## Validate some stuff
     
@@ -274,7 +281,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     bookPath = parts[0]
     
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, oneTextPerChapter)
+                                    makeActive, useFullBookName, oneTextPerChapter, includeIntro)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')
