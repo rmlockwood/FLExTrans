@@ -90,7 +90,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
