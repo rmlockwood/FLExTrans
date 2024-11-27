@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.1 - 11/27/24 - Ron Lockwood
+#    Fixes #815. If an intro section exists above chapter 1, include it in the export.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -95,7 +98,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -262,16 +265,28 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
     
     # Split the synthesis contents into chapter chunks
     synContentsList = re.split(r'(\\c \d+)', synFileContents, flags=re.RegexFlag.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
-    
+    haveIntro = False
+
     # Loop through each synthesis chapter and splice it into the paratext chapter contents
     for n in range(1, len(synContentsList), 2): # the zeroth one will be whatever is before the first \c, possibly the empty string
         
-        wholeChStr = synContentsList[n] + synContentsList[n+1]
+        # If we have chapter 1, and before chapter 1 is some intro stuff, add intro portion before chapter 1 marker and text
+        if n == 1 and synContentsList[n] == '\\c 1' and re.search(r'\\ip', synContentsList[0]):
+
+            haveIntro = True
+            wholeChStr = synContentsList[0] + synContentsList[n] + synContentsList[n+1]
+        else:
+            wholeChStr = synContentsList[n] + synContentsList[n+1]
         
         # Check the corresponding chapter in the synthesis chapter list
         if synChapList[n//2] in ptxChapList:
             
-            begRE = r'\\c ' + synChapList[n//2]
+            # If we have intro stuff to put in chapter 1, start the regex at \mt if it exists.
+            if n == 1 and haveIntro:
+
+                begRE = r'(\\mt.+\\c 1|\\c 1)'
+            else:
+                begRE = r'\\c ' + synChapList[n//2]
             
             # See if this is the last paratext chapter
             if synChapList[n//2] == ptxChapList[-1]:
