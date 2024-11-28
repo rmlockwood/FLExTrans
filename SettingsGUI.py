@@ -143,7 +143,7 @@ from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 
-from SIL.LCModel import IMoMorphType # type: ignore
+from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from PyQt5.QtCore import Qt
@@ -368,7 +368,8 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
-    
+    repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
+
     if wind.targetDB:
         
         for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
@@ -379,8 +380,9 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
             if item.IsStemType == True:
                 
                 # convert this item's id to a string
-                myGuid = item.Guid.ToString()
-                morphTypeStr = Utils.morphTypeMap[myGuid]
+                morphType = repo.GetObject(item.Guid)
+                morphType = ICmPossibility(morphType)
+                morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
                 
                 typesList.append(morphTypeStr)
         
