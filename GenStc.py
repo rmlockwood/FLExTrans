@@ -157,31 +157,30 @@ def MainFunction(DB, report, modifyAllowed):
         
 #------------------End of from ExtractText.py--------------------------------        
         
-    # Practice using TextClasses
-    # (I just wanted to see how these functions worked, and prove that I could call them on the FLEx project.)
-    stcCount = myText.getSentCount()
-    report.Info("Found " + str(stcCount) + " sentences in text")
-    
     ## Generate the lists of words that will be cycled through for each of the "words to be replaced"
     ## in the frame sentence.
     # These will be eventually be calculated (found in the lexicon based on criteria), 
     # but for now they are hard coded for testing.
-    # The words we matched will also be in this list, when it gets calculated from the Lexicon,
+    # When we are getting these from the lexicon, we need to bring in not only the lemma, but also
+    # the POS and any features that are in that lexical entry.
+    # An example of fetching features is in the funtion getInflectionInfoSymbols in ExtractBilingualLexicon.py
+    # The words we matched could also be in this list, when it gets calculated from the Lexicon,
     # but I'm excluding them from these lists for now.
-    # For the substitution words, can the user specify more than one POS to include?
-    # e.g., adj, AdjMF?  
-    # No, if they want more than one POS, they need to make another sentence for it.
+    # For the substitution words, eventually it would be nice if the user could specify more than one POS to 
+    # include, e.g., adj, AdjMF?  
+    # But for now, if they want more than one POS, they need to make another sentence for it.
  ## Temporarily hardcoding these lists
 
     ## For Spanish-GenerateSentences project
     # Noun list
     subListN = ["caramelo1.1", "pescado1.1", "cosa1.1", "perro1.1"]
-    # It doesn't do agreement; the model sentence needs to include all the features.  
-    # Need to select nouns that match the features.
-    # TODO: Can we change that in the future?
+    # In order to apply the rules correctly to do agreement; we need to include all the features from 
+    # these lexical entries.  In the hard-coded version, I haven't included those, so anything masculine
+    # in a sentence that expects feminine, comes out as "not found" (@caramelo1.1) currently.
     # Adjective list
     subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
-    # Haven't set up the paradigm for "verde" yet?  It's not working right, but that's okay for now--it's not this module's problem.
+    # verde doesn't working right because in the lexicon it is AdjMF instead of adj.  I'm keeping it here
+    # for now just to show what it looks like when a word doesn't match.
 
 #################################################################################
 ### I was testing with a Takwane database, but that isn't available at the moment.
@@ -201,6 +200,12 @@ def MainFunction(DB, report, modifyAllowed):
 #    subList2 = ["aga1.1","aye1.1","ihu1.1"]
 #################################################################################
     
+    # Practice using TextClasses
+    # (I just wanted to see how these functions worked, and prove that I could call them on the FLEx project.)
+    stcCount = myText.getSentCount()
+    report.Info("Found " + str(stcCount) + " sentences in text")
+    # End of practice
+    
     # Get the sentence  
     # For now we are getting the first sentence in the specified text.
     # TODO: allow multiple sentences, and cycle through them.
@@ -211,9 +216,9 @@ def MainFunction(DB, report, modifyAllowed):
     # Build a list from the words in the sentence
     wrdList = stc.getWords()
     
-    # Now find the index for each of the words to substitute
+    # Now set the index for each of the words to substitute
     idx = 0
-    # Set these to an unlikely number, so we can test if they have been set
+    # Initialize to an unlikely number, so we can test if they have been set
     idxN = idx1 = idx2 = idx3 = idx4 = 99
     # Flag to indicate if the sentence has been written yet
     did_write = 0
@@ -244,15 +249,9 @@ def MainFunction(DB, report, modifyAllowed):
 
         # Eventually we want to do this for however many substitutable words were specified.
         # How to figure out which ones to do it for or not?
-        # I think my plan was to set idx3 (or whatever) to 99 if it was the first one that wasn't part of the frame.
-        # There is code below to stop when it gets to that point.
-        # But we could also set the number in the Settings file.
-
-  #      # Did we find matches?
-  #      if :
-  #          #report.Info("  N: "  + match_n_lem + " " + match_n_pos + " doesn't match " + thisLemma + thisPOS)
-  #          # Make it something else?  99?
-  #          idxN = 99
+        # The current approach is to initialize idx3 (etc) to 99, so that value will indicate the first one that wasn't 
+        # part of the frame. There is code below to stop when it gets to that point.
+        # But there are surely other ways.
 
         # Increment for next loop through the words in the sentence
         idx += 1
@@ -295,8 +294,8 @@ def MainFunction(DB, report, modifyAllowed):
 ## But I wanted to get it working for this much first.
 
 ### This was more code from ExtractText.py, from after the text was processed.
-###  We do want to write the output to a file, but we don't want to do it exactly as 
-###  the code below is doing it.  I hadn't figured this part out yet.
+###  But I'm writing out one sentence at a time, not the whole text at a time, so I don't think I need this.
+###  It would probably be nice to do some reporting though.
 ###  I'm just using the close part for now.        
 #------------------From ExtractText.py--------------------------------
 
