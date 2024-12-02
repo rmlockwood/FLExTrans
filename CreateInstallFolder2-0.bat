@@ -119,6 +119,7 @@ copy SrcTgtViewer.py %flextranslib%
 copy ChapterSelection.py %flextranslib%
 copy ComboBox.py %flextranslib%
 copy OverWriteTestDlg.py %flextranslib%
+copy NewEntry.py %flextranslib%
 
 rem UI resources to Tools
 copy FLExTransWindowIcon.ico %toolsflextools%
