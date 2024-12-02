@@ -138,4 +138,5 @@ class Ui_MainWindow(object):
         self.exportUnlinkedCheckBox.setToolTip(_translate("MainWindow", "Export a list of unlinked senses to a file. If Hide Proper Nouns \n"
 "is checked, Proper Nouns will not be exported."))
         self.exportUnlinkedCheckBox.setText(_translate("MainWindow", "Export Unlinked Senses"))
+        self.AddEntryButton.setToolTip(_translate("MainWindow", "Add a new entry to the target lexicon."))
         self.AddEntryButton.setText(_translate("MainWindow", "Add Entry"))

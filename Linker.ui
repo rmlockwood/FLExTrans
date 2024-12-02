@@ -330,6 +330,9 @@ is checked, Proper Nouns will not be exported.</string>
       <height>25</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Add a new entry to the target lexicon.</string>
+    </property>
     <property name="text">
      <string>Add Entry</string>
     </property>
