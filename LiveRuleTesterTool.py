@@ -2031,13 +2031,11 @@ class Main(QMainWindow):
 
     def loadTransferRules(self):
 
-        # Verify we have a valid transfer file.
-        try:
-            test_tree = ET.parse(self.__transfer_rules_file)
-        except:
-            QMessageBox.warning(self, 'Invalid File', 'The transfer file you selected is invalid.')
-            return False
-
+        # Escape some characters and write as NFD unicode.
+        if Utils.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
+            return True
+        
+        test_tree = ET.parse(self.__transfer_rules_file)
         test_rt = test_tree.getroot()
         self.__transferRulesElement = test_rt.find('section-rules')
 
@@ -2063,13 +2061,11 @@ class Main(QMainWindow):
 
         if interchunk_rules_file and os.path.isfile(interchunk_rules_file):
 
-            # Verify we have a valid transfer file.
-            try:
-                interchunk_tree = ET.parse(interchunk_rules_file)
-            except:
-                QMessageBox.warning(self, 'Invalid File', 'The interchunk transfer file you selected is invalid.')
-                return False
+            # Escape some characters and write as NFD unicode.
+            if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+                return True
 
+            interchunk_tree = ET.parse(interchunk_rules_file)
             interchunk_rt = interchunk_tree.getroot()
             self.__interchunkRulesElement = interchunk_rt.find('section-rules')
 
@@ -2084,22 +2080,16 @@ class Main(QMainWindow):
                 'The interchunk transfer file has no transfer element or no section-rules element')
                 return False
 
-            # Escape some characters and write as NFD unicode.
-            if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
-                return True
-
             postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
 
             # Check if the file exists. If it does, we assume we have advanced transfer going on
             if postchunk_rules_file and os.path.isfile(postchunk_rules_file):
 
-                # Verify we have a valid transfer file.
-                try:
-                    postchunk_tree = ET.parse(postchunk_rules_file)
-                except:
-                    QMessageBox.warning(self, 'Invalid File', 'The postchunk transfer file you selected is invalid.')
-                    return False
+                # Escape some characters and write as NFD unicode.
+                if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
+                    return True
 
+                postchunk_tree = ET.parse(postchunk_rules_file)
                 postchunk_rt = postchunk_tree.getroot()
                 self.__postchunkRulesElement = postchunk_rt.find('section-rules')
 
@@ -2113,10 +2103,6 @@ class Main(QMainWindow):
                     QMessageBox.warning(self, 'Invalid postchunk Rules File', \
                     'The postchunk transfer file has no transfer element or no section-rules element')
                     return False
-
-                # Escape some characters and write as NFD unicode.
-                if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
-                    return True
 
                 # if we have interchunk and postchunk transfer rules files we are in advanced mode
                 self.advancedTransfer = True
@@ -2314,9 +2300,6 @@ class Main(QMainWindow):
                 defCatElement.attrib['n'] = 'c_dummy'
                 catItemElement = ET.SubElement(defCatElement, 'cat-item')
                 catItemElement.attrib['tags'] = 'dummy'
-
-            # Escape certain characters in certain places
-            Utils.escapeReservedCharsInRulesFile(myTree)
 
             # Write out the file
             myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)
