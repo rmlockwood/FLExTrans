@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.2 - 12/3/24 - Ron Lockwood
+#    Fixes #821. Don't escape < and > in literal strings. Right now we don't allow them in lemmas anyway
+#    and this messes up rules that are looking for literal strings starting with <xyz, i.e. a tag.
+#
 #   Version 3.12.1 - 11/2/24 - Ron Lockwood
 #    Fixes #802. Only escape reserved chars in a literal string that's a child of test.
 #
@@ -476,7 +480,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # https://wiki.apertium.org/wiki/Apertium_stream_format
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
-APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
+APERT_RESERVED = r'([\[\]@/\\^${}\*])'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
