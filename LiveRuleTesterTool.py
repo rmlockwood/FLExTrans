@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.1 - 12/4/24 - Ron Lockwood
+#    Fixes #821. Escape reserved characters in the transfer rules generated for the LRT.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -433,7 +436,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -2311,6 +2314,9 @@ class Main(QMainWindow):
                 defCatElement.attrib['n'] = 'c_dummy'
                 catItemElement = ET.SubElement(defCatElement, 'cat-item')
                 catItemElement.attrib['tags'] = 'dummy'
+
+            # Escape certain characters in certain places
+            Utils.escapeReservedCharsInRulesFile(myTree)
 
             # Write out the file
             myTree.write(tr_file, encoding='UTF-8', xml_declaration=True) #, pretty_print=True)

@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.2 - 12/3/24 - Ron Lockwood
+#    Fixes #821. Don't escape < and > in literal strings. Right now we don't allow them in lemmas anyway
+#    and this messes up rules that are looking for literal strings starting with <xyz, i.e. a tag.
+#
 #   Version 3.12.1 - 11/2/24 - Ron Lockwood
 #    Fixes #802. Only escape reserved chars in a literal string that's a child of test.
 #
@@ -476,7 +480,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # https://wiki.apertium.org/wiki/Apertium_stream_format
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
-APERT_RESERVED = r'([\[\]@/\\^$><{}\*])'
+APERT_RESERVED = r'([\[\]@/\\^${}\*])'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -1877,15 +1881,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         if 'lemma' in cat.attrib:
             cat.attrib['lemma'] = cat.attrib['lemma'].replace('*', '\\*')
 
-    # If we're only doing one-stage transfer, then really we only need to
-    # escape things when we're comparing against input (so .//test//lit),
-    # but we might be doing multi-stage transfer and it doesn't hurt
-    # anything to also escape the output (and it's less complicated).
-    for tag in ['lit', 'list-item']:
-        for node in tree.findall('.//test//'+tag):
-            if 'v' in node.attrib:
-                node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
-                                          node.attrib['v'])
+    escapeReservedCharsInRulesFile(tree)
 
     outPath = os.path.join(buildFolder, strippedRulesFileName)
     with open(outPath, 'w', encoding='utf-8') as fout:
@@ -1895,6 +1891,18 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         fout.write(text)
 
     return False
+
+def escapeReservedCharsInRulesFile(tree):
+
+    # If we're only doing one-stage transfer, then really we only need to
+    # escape things when we're comparing against input (so .//test//lit),
+    # but we might be doing multi-stage transfer and it doesn't hurt
+    # anything to also escape the output (and it's less complicated).
+    for tag in ['lit', 'list-item']:
+        for node in tree.findall('.//test//'+tag):
+            if 'v' in node.attrib:
+                node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
+                                          node.attrib['v'])
 
 def getSourceTextList(DB, matchingContentsObjList=None):
 
