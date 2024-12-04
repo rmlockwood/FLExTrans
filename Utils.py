@@ -1881,19 +1881,6 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         if 'lemma' in cat.attrib:
             cat.attrib['lemma'] = cat.attrib['lemma'].replace('*', '\\*')
 
-    escapeReservedCharsInRulesFile(tree)
-
-    outPath = os.path.join(buildFolder, strippedRulesFileName)
-    with open(outPath, 'w', encoding='utf-8') as fout:
-        text = ET.tostring(tree, encoding='unicode')
-        # Always write transfer rule data as decomposed
-        text = unicodedata.normalize('NFD', text)
-        fout.write(text)
-
-    return False
-
-def escapeReservedCharsInRulesFile(tree):
-
     # If we're only doing one-stage transfer, then really we only need to
     # escape things when we're comparing against input (so .//test//lit),
     # but we might be doing multi-stage transfer and it doesn't hurt
@@ -1903,6 +1890,15 @@ def escapeReservedCharsInRulesFile(tree):
             if 'v' in node.attrib:
                 node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
                                           node.attrib['v'])
+
+    outPath = os.path.join(buildFolder, strippedRulesFileName)
+    with open(outPath, 'w', encoding='utf-8') as fout:
+        text = ET.tostring(tree, encoding='unicode')
+        # Always write transfer rule data as decomposed
+        text = unicodedata.normalize('NFD', text)
+        fout.write(text)
+
+    return False
 
 def getSourceTextList(DB, matchingContentsObjList=None):
 
