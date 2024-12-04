@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.3 - 12/4/24 - Ron Lockwood
+#    Fixes #823. Use the same logic that's in the Import from Ptx module to mark sfms as analysis writing system.
+#
 #   Version 3.12.2 - 12/3/24 - Ron Lockwood
 #    Fixes #821. Don't escape < and > in literal strings. Right now we don't allow them in lemmas anyway
 #    and this messes up rules that are looking for literal strings starting with <xyz, i.e. a tag.
@@ -2415,3 +2418,55 @@ def getInflectionTags(MSAobject):
 def containsInvalidLemmaChars(myStr):
 
     return True if reInvalidLemmaChars.search(myStr) else False
+
+def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
+
+    # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
+    # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
+    # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+    # Attributes are of the form |x=123 ... \s*
+    # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
+    #                                                                                                                                                                                                  eg \+xt
+    #                  attribs end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref        marker+ any marker
+    segs = re.split(r'(\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', inputStr) 
+
+    # Create 1st paragraph object
+    stTxtPara = m_stTxtParaFactory.Create()
+    
+    # Add it to the stText object
+    stText.ParagraphsOS.Add(stTxtPara)    
+    bldr = TsStringUtils.MakeStrBldr()
+
+    # Start a new paragraph at every line feed
+    newPar = r'\n' 
+    
+    for _, seg in enumerate(segs):
+        
+        if not (seg is None or len(seg) == 0 or seg == '\n'):
+            
+            # Either an sfm marker or a verse ref should get marked as Analysis WS
+            if re.search(r'\\|\d+[.:]\d+', seg):
+                
+                # make this in the Analysis WS
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+                
+            else:
+                # make this in the Vernacular WS
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+        
+        if seg and re.search(newPar, seg): # or first segment if not blank
+        
+            # Save the built up string to the Contents member
+            stTxtPara.Contents = bldr.GetString()
+            
+            # Create paragraph object
+            stTxtPara = m_stTxtParaFactory.Create()
+            
+            # Add it to the stText object
+            stText.ParagraphsOS.Add(stTxtPara)  
+        
+            bldr = TsStringUtils.MakeStrBldr()
+        
+    stTxtPara.Contents = bldr.GetString()
