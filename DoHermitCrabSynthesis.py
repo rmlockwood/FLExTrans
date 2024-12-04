@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.2 - 12/4/24 - Ron Lockwood
+#    Filter out the GenerateHC message 'Checking for duplicates', so the user doesn't see a warning.
+#
 #   Version 3.12.1 - 11/22/24 - Ron Lockwood
 #    Fixes #812. Capitalize a word before sending it to synthesis if it is capitalized in the target
 #    lexicon. We can quickly read the target lexicon by loading the HCconfig file.
@@ -87,7 +90,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -189,7 +192,7 @@ def gatherWarnings(result, errorList):
     for outputLine in outputLines:
 
         # if an output line isn't about loading or writing, show it to the user as a warning (1)
-        if outputLine and not re.search('Loading|Writing', outputLine):
+        if outputLine and not re.search('Loading|Writing|Checking', outputLine):
 
             errorList.append((outputLine.strip(), 1))
 
