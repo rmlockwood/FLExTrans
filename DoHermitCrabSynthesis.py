@@ -341,8 +341,9 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
             capCodeList.append(capCode)
 
             # Capitalize if necessary
-            hcParse = capitalize(hcParse, capCode, HCcapitalLemmasMap)
-            fParses.write('^' + hcParse + '$')
+            if capCode:
+                hcParse = capitalize(hcParse, HCcapitalLemmasMap)
+                fParses.write('^' + hcParse + '$')
         
         fParses.write('\n')
         luInfoList.append((luStr, capCodeList))
@@ -351,7 +352,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
     fParses.close()
     return errorList
 
-def capitalize(hcParse, capCode, HCcapitalLemmasMap):
+def capitalize(hcParse, HCcapitalLemmasMap):
 
     # Get the root - non > characters before a <
     match = re.search(r'(.*?)([^>]+?)(<.*)', hcParse)
@@ -359,10 +360,10 @@ def capitalize(hcParse, capCode, HCcapitalLemmasMap):
     root   = match.group(2)
     after  = match.group(3)
 
-    # Make the root capitalized if the capitalization flag is set and if the lemma is capitalized in the target lexicon (it's in the capitalized lemmas map)
-    if capCode and root.capitalize() in HCcapitalLemmasMap:
-
-        root = Utils.capitalizeString(root, capCode)
+    # Get the capitalized form if the lemma is capitalized in the target lexicon (it's in the capitalized lemmas map)
+    # This is a map of lowercase forms to the original capitalized form.
+    # The root could be a phrase with multiple words capitalized such as 'Arangga Nanuno'
+    root = HCcapitalLemmasMap.get(root, root)
 
     return before+root+after
 
@@ -417,10 +418,10 @@ def getCapitalLemmas(HCconfigPath):
     # Iterate through the extracted lemmas
     for lemStr in lemmas:
 
-        # Check if the first letter is capitalized
-        if lemStr[0].isupper():
+        # Check any letter is capitalized
+        if any(char.isupper() for char in lemStr):
 
-            HCcapitalLemmasMap[lemStr] = 1
+            HCcapitalLemmasMap[lemStr.lower()] = lemStr
 
     return HCcapitalLemmasMap
 
