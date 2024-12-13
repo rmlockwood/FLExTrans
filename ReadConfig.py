@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.12.1 - 12/13/24 - Ron Lockwood
+#    Added projects to treat in a cluster.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -119,6 +122,7 @@ BILINGUAL_DICT_REPLACEMENT_FILE = 'BilingualDictReplacementFile'
 CATEGORY_ABBREV_SUB_LIST = 'CategoryAbbrevSubstitutionList'
 CACHE_DATA = 'CacheData'
 CLEANUP_UNKNOWN_WORDS = 'CleanUpUnknownTargetWords'
+CLUSTER_PROJECTS = 'ClusterProjects'
 COMPOSED_CHARACTERS = 'UseComposedCharacters'
 HERMIT_CRAB_CONFIG_FILE = 'HermitCrabConfigFile'
 HERMIT_CRAB_PARSES_FILE = 'HermitCrabParsesFile'
@@ -176,7 +180,9 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_FORMS_INFLECTION_1ST,
                              TARGET_FORMS_INFLECTION_2ND,
                              SYNTHESIS_TEST_LIMIT_POS,
-                             CATEGORY_ABBREV_SUB_LIST]
+                             CATEGORY_ABBREV_SUB_LIST,
+                             CLUSTER_PROJECTS,
+                             ]
 
 def openConfigFile(report, info):
     

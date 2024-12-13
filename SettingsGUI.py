@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.12.1 - 12/13/24 - Ron Lockwood
+#    Added projects to treat in a cluster.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -291,11 +294,22 @@ def loadCustomEntry(widget, wind, settingName):
                 
                 widget.setCurrentIndex(i)
 
+def loadAllProjects(widget, wind, settingName):
+
+    widget.addItems(AllProjectNames())
+
+    projNames = wind.read(settingName)
+    
+    if projNames:
+
+        for proj in projNames:
+
+            widget.check(proj)
+
 def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
     
-    # TODO: Make this disable the other stuff that uses target??
     for i, item in enumerate(AllProjectNames()):
         
         widget.addItem(item)
@@ -1385,6 +1399,14 @@ widgetList = [
 
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+
+    ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+     "", GIVE_ERROR, DONT_HIDE],\
+
+    ["Projects to treat together as a cluster", "log_stats_yes", "log_stats_no", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
+     "Indicate the cluster projects you would like to run some modules on together.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 
