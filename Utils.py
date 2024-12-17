@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.3 - 12/17/24 - Ron Lockwood
+#    New function to open any project.
+#
 #   Version 3.12.2 - 12/3/24 - Ron Lockwood
 #    Fixes #821. Don't escape < and > in literal strings. Right now we don't allow them in lemmas anyway
 #    and this messes up rules that are looking for literal strings starting with <xyz, i.e. a tag.
@@ -1688,6 +1691,19 @@ def getInsertedWordsList(inputFilename, report, DB):
         obj_list.append(currWord)
 
     return obj_list
+
+def openProject(report, DBname):
+
+    myDB = FLExProject()
+
+    try:
+        myDB.OpenProject(DBname, True)
+    except: #FDA_DatabaseError, e:
+        if report:
+            report.Error('There was an error opening database: '+DBname+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
+        raise
+
+    return myDB
 
 def openTargetProject(configMap, report):
 
