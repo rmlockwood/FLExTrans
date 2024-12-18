@@ -315,7 +315,18 @@
   </widget>
  </widget>
  <tabstops>
+  <tabstop>sourceProjectComboBox</tabstop>
+  <tabstop>adHocGroupComboBox</tabstop>
+  <tabstop>newGroupButton</tabstop>
+  <tabstop>adHocTypeComboBox</tabstop>
   <tabstop>KeyMorphAllomorphLineEdit</tabstop>
+  <tabstop>cannotOccurComboBox</tabstop>
+  <tabstop>otherMorphsAllomorphsLineEdit1</tabstop>
+  <tabstop>otherMorphsAllomorphsLineEdit2</tabstop>
+  <tabstop>otherMorphsAllomorphsLineEdit3</tabstop>
+  <tabstop>otherMorphsAllomorphsLineEdit4</tabstop>
+  <tabstop>otherMorphsAllomorphsLineEdit5</tabstop>
+  <tabstop>clusterProjectsComboBox</tabstop>
   <tabstop>addButton</tabstop>
   <tabstop>closeButton</tabstop>
  </tabstops>
