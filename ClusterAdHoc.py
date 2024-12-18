@@ -102,7 +102,18 @@ class Ui_AdHocMainWindow(object):
 
         self.retranslateUi(AdHocMainWindow)
         QtCore.QMetaObject.connectSlotsByName(AdHocMainWindow)
-        AdHocMainWindow.setTabOrder(self.KeyMorphAllomorphLineEdit, self.addButton)
+        AdHocMainWindow.setTabOrder(self.sourceProjectComboBox, self.adHocGroupComboBox)
+        AdHocMainWindow.setTabOrder(self.adHocGroupComboBox, self.newGroupButton)
+        AdHocMainWindow.setTabOrder(self.newGroupButton, self.adHocTypeComboBox)
+        AdHocMainWindow.setTabOrder(self.adHocTypeComboBox, self.KeyMorphAllomorphLineEdit)
+        AdHocMainWindow.setTabOrder(self.KeyMorphAllomorphLineEdit, self.cannotOccurComboBox)
+        AdHocMainWindow.setTabOrder(self.cannotOccurComboBox, self.otherMorphsAllomorphsLineEdit1)
+        AdHocMainWindow.setTabOrder(self.otherMorphsAllomorphsLineEdit1, self.otherMorphsAllomorphsLineEdit2)
+        AdHocMainWindow.setTabOrder(self.otherMorphsAllomorphsLineEdit2, self.otherMorphsAllomorphsLineEdit3)
+        AdHocMainWindow.setTabOrder(self.otherMorphsAllomorphsLineEdit3, self.otherMorphsAllomorphsLineEdit4)
+        AdHocMainWindow.setTabOrder(self.otherMorphsAllomorphsLineEdit4, self.otherMorphsAllomorphsLineEdit5)
+        AdHocMainWindow.setTabOrder(self.otherMorphsAllomorphsLineEdit5, self.clusterProjectsComboBox)
+        AdHocMainWindow.setTabOrder(self.clusterProjectsComboBox, self.addButton)
         AdHocMainWindow.setTabOrder(self.addButton, self.closeButton)
 
     def retranslateUi(self, AdHocMainWindow):
