@@ -36,6 +36,7 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox
+from ComboBox import CheckableComboBox
 
 import FTPaths
 
@@ -229,6 +230,21 @@ def InitControls(self, export=True):
         self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
         self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
         f.close()
+ 
+        # Initialize cluster projects
+        if len(self.clusterProjects) > 0:
+
+            initClusterProjects(self)
+        else:
+            # Hide cluster project widgets
+            widgetsToHide = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+            ]
+            for wid in widgetsToHide:
+
+                wid.setVisible(False)
+
     except:
         pass
 
@@ -293,3 +309,19 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     
     self.retVal = True
     self.close()
+
+def initClusterProjects(self):
+
+    # Setup the checkable combo box for cluster projects. Replace the one from the designer tool.
+    geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
+    self.ui.clusterProjectsComboBox.hide()
+    self.ui.clusterProjectsComboBox = CheckableComboBox(self.ui.centralwidget)
+    self.ui.clusterProjectsComboBox.setGeometry(geom)
+    self.ui.clusterProjectsComboBox.setObjectName("clusterProjectsComboBox")
+    self.ui.clusterProjectsComboBox.addItems([pj for pj in self.clusterProjects if pj])
+
+    # Check all of them at the start
+    for projectName in self.clusterProjects:
+
+        self.ui.clusterProjectsComboBox.check(projectName)
+

@@ -162,10 +162,11 @@ replaceList = [\
 
 class Main(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, clusterProjects):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         self.toChap = 0
         self.fromChap = 0
@@ -523,9 +524,14 @@ def MainFunction(DB, report, modify=True):
                 report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
                 return
 
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+        
     # Show the window
     app = QApplication(sys.argv)
-    window = Main()
+    window = Main(clusterProjects)
     window.show()
     app.exec_()
     

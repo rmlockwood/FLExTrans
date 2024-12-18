@@ -110,12 +110,15 @@ into Paratext to the project specified.""" }
 #----------------------------------------------------------------
 # The main processing function
 
+SHRINK_WINDOW_PIXELS = 80
+
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap):
+    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -142,11 +145,21 @@ class Main(QMainWindow):
         self.ui.makeActiveTextCheckBox.setVisible(False)
         self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
         self.ui.oneTextPerChapterCheckBox.setVisible(False)
+        self.ui.includeIntroCheckBox.setVisible(False)
         
-        # Resize the main window
-        self.resize(self.width(), 148)
-        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), 110, self.ui.OKButton.width(), self.ui.OKButton.height())
-        self.ui.CancelButton.setGeometry(self.ui.CancelButton.x(), 110, self.ui.CancelButton.width(), self.ui.CancelButton.height())
+        # Resize the main window 
+        self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
+
+        # Move controls up by SHRINK_WINDOW_PIXELS
+        widgetsToMove = [
+            self.ui.clusterProjectsLabel,
+            self.ui.clusterProjectsComboBox,
+            self.ui.OKButton,
+            self.ui.CancelButton,
+        ]
+        for wid in widgetsToMove:
+
+            wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
 
     def CancelClicked(self):
         self.retVal = False
@@ -357,10 +370,15 @@ def MainFunction(DB, report, modify):
     if parseSourceTextName(report, sourceText, infoMap) == False: # error occurred
         return 
     
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+        
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'])
+    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
     

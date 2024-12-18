@@ -79,6 +79,13 @@ class Ui_MainWindow(object):
         self.includeIntroCheckBox.setEnabled(False)
         self.includeIntroCheckBox.setGeometry(QtCore.QRect(220, 150, 211, 17))
         self.includeIntroCheckBox.setObjectName("includeIntroCheckBox")
+        self.clusterProjectsComboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.clusterProjectsComboBox.setGeometry(QtCore.QRect(210, 190, 221, 22))
+        self.clusterProjectsComboBox.setObjectName("clusterProjectsComboBox")
+        self.clusterProjectsLabel = QtWidgets.QLabel(self.centralwidget)
+        self.clusterProjectsLabel.setGeometry(QtCore.QRect(0, 190, 191, 21))
+        self.clusterProjectsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.clusterProjectsLabel.setObjectName("clusterProjectsLabel")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -111,3 +118,4 @@ class Ui_MainWindow(object):
         self.crossrefsCheckBox.setText(_translate("MainWindow", "Include cross references (\\x and \\r)"))
         self.oneTextPerChapterCheckBox.setText(_translate("MainWindow", "Create one text per chapter"))
         self.includeIntroCheckBox.setText(_translate("MainWindow", "Include introduction (for chapter 1)"))
+        self.clusterProjectsLabel.setText(_translate("MainWindow", "Cluster Projects to Apply to"))
