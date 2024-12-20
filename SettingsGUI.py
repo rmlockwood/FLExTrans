@@ -1387,6 +1387,16 @@ widgetList = [
     "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
+    # DM: testing a GenStc settings module (limit POS, limit stem count)
+    ["GenSentences", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, DONT_HIDE],\
+
+    ["Limit to specific POS values", "genstc_limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS,\
+    "One or more grammatical categories. GenStc word replacement will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
+    
+    ["Limit number of stems", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
+    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, DONT_HIDE],\
+    #################
 
     ["Privacy", "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
      "", GIVE_ERROR, DONT_HIDE],\

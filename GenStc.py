@@ -56,13 +56,15 @@ def MainFunction(DB, report, modifyAllowed):
     # Currently this is hard-coded to work with project Spanish-GenerateSentences, for the Text "Model Text".
     # I was experimenting with different values.
 #    match_n_lem = "coche1.1"
-    match_n_lem = "manzana1.1"
-    match_n_pos = "n"
+
+    # DM: making the lemma(s) a list instead of individual values
+    match_n_lem = ["jugar1.1"]
+    match_n_pos = ["v"]
 #    match_1_lem = "amarillo1.1"
-    match_1_lem = "rojo1.1"
-    match_1_pos = "adj"
-    match_2_lem = ""
-    match_2_pos = ""
+    match_1_lem = ["rojo1.1"]
+    match_1_pos = ["adj"]
+    match_2_lem = [""]
+    match_2_pos = [""]
 
 ## For Test 3/4 text in TKW database
 #    match_n_lem = "_nddo1.1"
@@ -127,6 +129,27 @@ def MainFunction(DB, report, modifyAllowed):
         report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
         return
     
+    # DM: inserting data gathered from settings (POS filter, Stem Limit)
+    posFocus = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS, report)
+    stemLimit= ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report)
+    # validation
+    if posFocus:
+        # last POS is likely empty (from GenerateParses)
+        if posFocus[-1] == '':
+            posFocus.pop()
+        report.Info('  Only collecting templates for these POS: '+str(posFocus))
+    else:
+        posFocus = []  # Default to an empty list if not provided
+
+    if stemLimit:
+        try:
+            stemLimit = int(stemLimit)
+        except ValueError:
+            stemLimit = 10  # Default value if invalid
+    else:
+        stemLimit = 10  # Default to 10 if not specified
+    ##########################################################################
+
     # Find the desired text in the FLEx project
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceTextName:
@@ -173,14 +196,22 @@ def MainFunction(DB, report, modifyAllowed):
 
     ## For Spanish-GenerateSentences project
     # Noun list
-    subListN = ["caramelo1.1", "pescado1.1", "cosa1.1", "perro1.1"]
+    subListN = ["hablar1.1", "comer1.1", "existir1.1", "venir1.1"]
     # In order to apply the rules correctly to do agreement; we need to include all the features from 
     # these lexical entries.  In the hard-coded version, I haven't included those, so anything masculine
     # in a sentence that expects feminine, comes out as "not found" (@caramelo1.1) currently.
     # Adjective list
     subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
+
+    # DM: adding sublist2 for the future 
+    subList2 = []
     # verde doesn't working right because in the lexicon it is AdjMF instead of adj.  I'm keeping it here
     # for now just to show what it looks like when a word doesn't match.
+
+    # DM: limiting lists to the limit specified in settings
+    subListN = subListN[:stemLimit]
+    subList1 = subList1[:stemLimit]
+    subList2 = subList2[:stemLimit]
 
 #################################################################################
 ### I was testing with a Takwane database, but that isn't available at the moment.
@@ -215,80 +246,180 @@ def MainFunction(DB, report, modifyAllowed):
     report.Info("Found " + str(wrdCount) + " words in sentence 1")
     # Build a list from the words in the sentence
     wrdList = stc.getWords()
-    
-    # Now set the index for each of the words to substitute
-    idx = 0
-    # Initialize to an unlikely number, so we can test if they have been set
-    idxN = idx1 = idx2 = idx3 = idx4 = 99
-    # Flag to indicate if the sentence has been written yet
-    did_write = 0
-    
-    for w in wrdList:
+
+    # DM: trying a solution to allow for multiple verbs in one sentence 
+    #   (this is not robust yet)
+    # Initialize empty lists to store indices for each part of speech
+    idxN_list = []  # List for head words (n/v)
+    idx1_list = []  # List for dependents 1
+    idx2_list = []  # List for dependents 2
+
+    # Iterate over words in the sentence
+    for idx, w in enumerate(wrdList):
         thisLemma = w.getLemma(0)
         thisPOS = w.getPOS(0)
-        # Writing output for debugging purposes
-        report.Info("This word is " + w._TextWord__lemmaList[0] + " " + thisPOS)
-        # Get the info for the Noun (head) word
-        if thisLemma == match_n_lem and thisPOS == match_n_pos:
-            idxN = idx
-            #report.Info("Matched N: "  + thisLemma + " " + thisPOS)
-            report.Info("Matched N: "  + wrdList[idxN]._TextWord__lemmaList[0] + " " + thisPOS + " at idxN " + str(idxN))
-            # Debug output to see what the features on this word are
-            
-            report.Info("")
-        # Get the info for the First substitutable word
-        if thisLemma == match_1_lem and thisPOS == match_1_pos:
-            idx1 = idx
-            report.Info("Matched 1: "  + thisLemma + " " + thisPOS + " at idx1 " + str(idx1))
 
-            report.Info("")
-        # Get the info for the Second substitutable word
-        if thisLemma == match_2_lem and thisPOS == match_2_pos:
-            idx2 = idx
-            report.Info("Matched 2: "  + thisLemma + " " + thisPOS + " at idx2 " + str(idx2))
+        # Only process the word if its POS is in the posFocus list
+        if thisPOS in posFocus:
+            report.Info(f"Checking word: {thisLemma} {thisPOS} at index {idx}")
 
-        # Eventually we want to do this for however many substitutable words were specified.
-        # How to figure out which ones to do it for or not?
-        # The current approach is to initialize idx3 (etc) to 99, so that value will indicate the first one that wasn't 
-        # part of the frame. There is code below to stop when it gets to that point.
-        # But there are surely other ways.
+            # Add indices to the respective lists, ensuring no overwriting
+            if thisLemma in match_n_lem and thisPOS in match_n_pos:
+                idxN_list.append(idx)  # Store all matched noun indices
+                report.Info(f"Matched Noun (hacer or others): {thisLemma} {thisPOS} at idxN {str(idx)}")
+
+            if thisLemma in match_1_lem and thisPOS in match_1_pos:
+                idx1_list.append(idx)  # Store all matched adjective indices
+                report.Info(f"Matched Adjective: {thisLemma} {thisPOS} at idx1 {str(idx)}")
+
+            if thisLemma in match_2_lem and thisPOS in match_2_pos:
+                idx2_list.append(idx)  # Store all matched second word indices
+                report.Info(f"Matched Second word: {thisLemma} {thisPOS} at idx2 {str(idx)}")
+
+    # Now perform the substitutions for each of the matched indices
+
+    # Now, perform the substitutions with the limited lists
+    for wordNoun in subListN:
+        for idxN in idxN_list:
+            report.Info(f"  Testing idxN {str(idxN)}")
+            report.Info(f"  Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordNoun}")
+            wrdList[idxN]._TextWord__lemmaList[0] = wordNoun
+
+            # Write sentence for cases with only the Noun substituted
+            if not idx1_list:
+                stc.write(f_out)
+                f_out.write('\n')
+            else:
+                # Loop for the first substitutable word
+                for idx1 in idx1_list:
+                    for word1 in subList1:
+                        report.Info(f"  Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
+                        wrdList[idx1]._TextWord__lemmaList[0] = word1
+
+                        if not idx2_list:
+                            # Write sentence at Level 1
+                            stc.write(f_out)
+                            f_out.write('\n')
+                        else:
+                            # Loop for the second substitutable word
+                            for idx2 in idx2_list:
+                                for word2 in subList2:
+                                    report.Info(f"  Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
+                                    wrdList[idx2]._TextWord__lemmaList[0] = word2
+                                    # Write out the sentence with the current substitutions
+                                    stc.write(f_out)
+                                    f_out.write('\n')
+
+
+    # COMMENTED OUT OLD CODE: 
+
+    # Now set the index for each of the words to substitute
+    #idx = 0
+    # Initialize to an unlikely number, so we can test if they have been set
+    #idxN = idx1 = idx2 = idx3 = idx4 = 99
+    # Flag to indicate if the sentence has been written yet
+    #did_write = 0
+
+    # Iterate over words in the sentence
+    #for w in wrdList:
+        #thisLemma = w.getLemma(0)
+        #thisPOS = w.getPOS(0)
+
+        # Only process the word if its POS is in the posFocus list
+         # Writing output for debugging purposes
+        #if thisPOS in posFocus:
+            #report.Info(f"This word is {thisLemma} {thisPOS}")
+
+            # Get the info for the Noun (head) word
+            #if thisLemma in match_n_lem and thisPOS in match_n_pos:
+                #report.Info("Matched N: "  + thisLemma + " " + thisPOS)
+                #idxN = idx
+                #report.Info(f"Matched N: {wrdList[idxN]._TextWord__lemmaList[0]} {thisPOS} at idxN {str(idxN)}")
+                # Debug output to see what the features on this word are
+                
+                #report.Info("")
+
+            #if thisLemma in match_1_lem and thisPOS in match_1_pos:
+                #idx1 = idx
+                #report.Info(f"Matched 1: {thisLemma} {thisPOS} at idx1 {str(idx1)}")
+
+                #report.Info("")
+            # Get the info for the Second substitutable word
+            #if thisLemma in match_2_lem and thisPOS in match_2_pos:
+                #idx2 = idx
+                #report.Info(f"Matched 2: {thisLemma} {thisPOS} at idx2 {str(idx2)}")
+            # Eventually we want to do this for however many substitutable words were specified.
+            # How to figure out which ones to do it for or not?
+            # The current approach is to initialize idx3 (etc) to 99, so that value will indicate the first one that wasn't 
+            # part of the frame. There is code below to stop when it gets to that point.
+            # But there are surely other ways.
 
         # Increment for next loop through the words in the sentence
-        idx += 1
-        
+        #idx += 1
+
+    # Now, perform the substitutions with the limited lists
+    #for wordNoun in subListN:
+        #report.Info(f"  Testing idxN {str(idxN)}")
+        #if idxN != 99:
+            #report.Info(f"  Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordNoun}")
+            #wrdList[idxN]._TextWord__lemmaList[0] = wordNoun
+
+            # Write sentence for cases with only the Noun substituted
+            #if idx1 == 99:
+                #stc.write(f_out)
+                #f_out.write('\n')
+            #else:
+                # Loop for the first substitutable word
+                #for word1 in subList1:
+                    #report.Info(f"  Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
+                    #wrdList[idx1]._TextWord__lemmaList[0] = word1
+
+                    #if idx2 == 99:
+                        # Write sentence at Level 1
+                        #stc.write(f_out)
+                        #f_out.write('\n')
+                    #else:
+                        # Loop for the second substitutable word
+                        #for word2 in subList2:
+                            #report.Info(f"  Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
+                            #wrdList[idx2]._TextWord__lemmaList[0] = word2
+                            # Write out the sentence with the current substitutions
+                            #stc.write(f_out)
+                            #f_out.write('\n')
+
     # Iterate through the words to substitute, and put them in the sentence
     # (This is a bit of an abuse, because each word has a GUID.  But the GUID
     # is not being used or output anywhere, so we're just "borrowing" the structure.)
     # Outer loop is for the Noun (head) word
-    for wordNoun in subListN:
-        report.Info("  Testing idxN " + str(idxN))
-        if idxN != 99:
-            report.Info("  Testing idxN " + str(idxN) + " Match " + wrdList[idxN]._TextWord__lemmaList[0] + " Replace " + wordNoun)
-            wrdList[idxN]._TextWord__lemmaList[0] = wordNoun
+    #for wordNoun in subListN:
+        #report.Info("  Testing idxN " + str(idxN))
+        #if idxN != 99:
+            #report.Info("  Testing idxN " + str(idxN) + " Match " + wrdList[idxN]._TextWord__lemmaList[0] + " Replace " + wordNoun)
+            #wrdList[idxN]._TextWord__lemmaList[0] = wordNoun
 
             # Write sentence for cases with only the Noun substituted
-            if idx1 == 99:
-                stc.write(f_out)
-                f_out.write('\n')
+            #if idx1 == 99:
+                #stc.write(f_out)
+                #f_out.write('\n')
 
             # Otherwise loop for the First substitutable word
-            else:
-                for word1 in subList1:
-                    report.Info("  Testing idx1 " + str(idx1) + "  Match " + wrdList[idx1]._TextWord__lemmaList[0] + " Replace " + word1)
-                    wrdList[idx1]._TextWord__lemmaList[0] = word1
+            #else:
+                #for word1 in subList1:
+                    #report.Info("  Testing idx1 " + str(idx1) + "  Match " + wrdList[idx1]._TextWord__lemmaList[0] + " Replace " + word1)
+                    #wrdList[idx1]._TextWord__lemmaList[0] = word1
 
-                    if idx2 == 99:
+                    #if idx2 == 99:
                         # Write sentence at Level 1
-                        stc.write(f_out)
-                        f_out.write('\n')
+                        #stc.write(f_out)
+                        #f_out.write('\n')
                     # Otherwise loop for the Second substitutable word
-                    else:
-                        for word2 in subList2:
-                            report.Info("  Testing idx2 " + str(idx2) + "   Match " + wrdList[idx2]._TextWord__lemmaList[0] + " Replace " + word2)
-                            wrdList[idx2]._TextWord__lemmaList[0] = word2
+                    #else:
+                        #for word2 in subList2:
+                            #report.Info("  Testing idx2 " + str(idx2) + "   Match " + wrdList[idx2]._TextWord__lemmaList[0] + " Replace " + word2)
+                            #wrdList[idx2]._TextWord__lemmaList[0] = word2
                             # Write out the sentence with the current substitutions
-                            stc.write(f_out)
-                            f_out.write('\n')
+                            #stc.write(f_out)
+                            #f_out.write('\n')
                     
 ## The loop above goes as deep as the second substitutable word.  Eventually we want to allow three or four.
 ## But I wanted to get it working for this much first.

@@ -166,6 +166,10 @@ TRANSFER_RULES_FILE3 = 'TransferRulesFile3'
 TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
+# DM: ADDING NEW CONFIGS FOR POS SETTING (GENSTC)
+GEN_STC_LIMIT_POS = 'GenStcLimitPos'
+GEN_STC_LIMIT_STEM_COUNT = 'GenStcLimitStemCount'
+
 ##### IMPORTANT #####
 # If you are adding a new property that will have multiple values, add it to this list variable
 PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
@@ -176,7 +180,8 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_FORMS_INFLECTION_1ST,
                              TARGET_FORMS_INFLECTION_2ND,
                              SYNTHESIS_TEST_LIMIT_POS,
-                             CATEGORY_ABBREV_SUB_LIST]
+                             CATEGORY_ABBREV_SUB_LIST, 
+                             GEN_STC_LIMIT_POS] #DM 
 
 def openConfigFile(report, info):
     
