@@ -1405,7 +1405,7 @@ widgetList = [
     ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
      "", GIVE_ERROR, DONT_HIDE],\
 
-    ["Projects to treat together as a cluster", "log_stats_yes", "log_stats_no", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
+    ["Projects to treat together as a cluster", "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
      "Indicate the cluster projects you would like to run some modules on together.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
