@@ -126,7 +126,7 @@ def InitControls(self, export=True):
         self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
 
         # Initialize cluster projects
-        if len(self.clusterProjects) > 0:
+        if len(self.clusterProjects) > 0 and not export:
 
             initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []))
 
@@ -233,6 +233,9 @@ def initClusterProjects(self, allClusterProjects, savedClusterProjects):
     self.ui.clusterProjectsComboBox.setGeometry(geom)
     self.ui.clusterProjectsComboBox.setObjectName("clusterProjectsComboBox")
     self.ui.clusterProjectsComboBox.addItems([proj for proj in allClusterProjects if proj])
+
+    # Connect a custom signal a function
+    self.ui.clusterProjectsComboBox.itemCheckedStateChanged.connect(self.clusterSelectionChanged)
 
     # Check all of them at the start
     for projectName in allClusterProjects:

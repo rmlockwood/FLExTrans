@@ -209,32 +209,31 @@ class Main(QMainWindow):
 
             self.widgetList.append((labelWidget, comboWidget))
 
-        # TODO: change widgetList to just have two things in the tuple
+        if len(clusterProjects) > 0:
 
-        # Create header widgets
-        font = QtGui.QFont()
-        font.setUnderline(True)
-        self.headWidg1 = QLabel(self.ui.centralwidget)
-        self.headWidg1.setGeometry(QtCore.QRect(0, 190, 191, 22))
-        self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.headWidg1.setObjectName("headerLabel1")
-        self.headWidg1.setText("FLEx project name")
-        self.headWidg1.setVisible(False)
-        self.headWidg1.setFont(font)
+            # Create header widgets
+            font = QtGui.QFont()
+            font.setUnderline(True)
+            self.headWidg1 = QLabel(self.ui.centralwidget)
+            self.headWidg1.setGeometry(QtCore.QRect(0, 190, 191, 22))
+            self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+            self.headWidg1.setObjectName("headerLabel1")
+            self.headWidg1.setText("FLEx project name")
+            self.headWidg1.setVisible(False)
+            self.headWidg1.setFont(font)
 
-        self.headWidg2 = QLabel(self.ui.centralwidget)
-        self.headWidg2.setGeometry(QtCore.QRect(210, 190, 221, 22))
-        self.headWidg2.setObjectName("headerLabel2")
-        self.headWidg2.setText("Paratext project abbrev.")
-        self.headWidg2.setVisible(False)
-        self.headWidg2.setFont(font)
+            self.headWidg2 = QLabel(self.ui.centralwidget)
+            self.headWidg2.setGeometry(QtCore.QRect(210, 190, 221, 22))
+            self.headWidg2.setObjectName("headerLabel2")
+            self.headWidg2.setText("Paratext project abbrev.")
+            self.headWidg2.setVisible(False)
+            self.headWidg2.setFont(font)
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
 
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
-        self.ui.clusterProjectsComboBox.itemCheckedStateChanged.connect(self.clusterSelectionChanged)
         
     def clusterSelectionChanged(self):
 
@@ -252,9 +251,15 @@ class Main(QMainWindow):
             self.headWidg1.setVisible(True)
             self.headWidg2.setGeometry(comboStartXpos, startYpos+10, self.headWidg2.width(), self.headWidg2.height())
             self.headWidg2.setVisible(True)
+
+            # Show the user the normal Paratext abbreviation won't be used
+            self.ui.ptxProjAbbrevLineEdit.setEnabled(False)
+            self.ui.label.setEnabled(False)
         else:
             self.headWidg1.setVisible(False)
             self.headWidg2.setVisible(False)
+            self.ui.ptxProjAbbrevLineEdit.setEnabled(True)
+            self.ui.label.setEnabled(True)
             
         # See which new widgets need to be added
         for i, proj in enumerate(self.clusterProjects):
