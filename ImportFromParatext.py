@@ -396,6 +396,7 @@ def do_import(DB, report, chapSelectObj, tree):
     # Open the Paratext file and read the contents
     f = open(chapSelectObj.bookPath, encoding='utf-8')
     bookContents = f.read()
+    f.close()
     
     # Find all the chapter #s
     chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
@@ -598,7 +599,7 @@ def do_import(DB, report, chapSelectObj, tree):
         tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
         text.Name.AnalysisDefaultWritingSystem = tss
         
-        report.Info('Text: "'+title+'" created.')
+        report.Info(f'Text: "{title}" created in the {DB.ProjectName()} project.')
 
         titleChapNum += 1
         
@@ -659,7 +660,30 @@ def MainFunction(DB, report, modify=True):
     
     if window.retVal == True:
         
-        do_import(DB, report, window.chapSel, tree)
+        if len(window.chapSel.clusterProjects) > 0:
+
+            for i, proj in enumerate(window.chapSel.clusterProjects):
+
+                if window.chapSel.ptxProjList[i] == '...':
+                    continue
+
+                # Open the project (if it's not the main proj)
+                if proj == DB.ProjectName():
+
+                    myDB = DB
+                else:
+                    myDB = Utils.openProject(report, proj)
+
+                # Set the import project member to the right ptx project and import it
+                os.path.join(os.path.dirname(window.chapSel.bookPath), window.chapSel.ptxProjList[i])
+                do_import(myDB, report, window.chapSel, tree)
+
+                # Close the project (if not the main)
+                if proj != DB.ProjectName():
+
+                    myDB.CloseProject()
+        else:
+            do_import(DB, report, window.chapSel, tree)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
