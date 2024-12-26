@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.2 - 12/26/24 - Ron Lockwood
+#    Move some widget initiation into Chap Selection file.
+#
 #   Version 3.12.1 - 11/27/24 - Ron Lockwood
 #    Fixes #815. If an intro section exists above chapter 1, include it in the export.
 #
@@ -98,7 +101,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -109,8 +112,6 @@ into Paratext to the project specified.""" }
                  
 #----------------------------------------------------------------
 # The main processing function
-
-SHRINK_WINDOW_PIXELS = 80
 
 class Main(QMainWindow):
 
@@ -139,28 +140,6 @@ class Main(QMainWindow):
         self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
         self.ui.bookAbbrevLineEdit.setEnabled(False)
         
-        # Hide the checkboxes
-        self.ui.footnotesCheckBox.setVisible(False)
-        self.ui.crossrefsCheckBox.setVisible(False)
-        self.ui.makeActiveTextCheckBox.setVisible(False)
-        self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
-        self.ui.oneTextPerChapterCheckBox.setVisible(False)
-        self.ui.includeIntroCheckBox.setVisible(False)
-        
-        # Resize the main window 
-        self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
-
-        # Move controls up by SHRINK_WINDOW_PIXELS
-        widgetsToMove = [
-            self.ui.clusterProjectsLabel,
-            self.ui.clusterProjectsComboBox,
-            self.ui.OKButton,
-            self.ui.CancelButton,
-        ]
-        for wid in widgetsToMove:
-
-            wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
-
     def CancelClicked(self):
         self.retVal = False
         self.close()
