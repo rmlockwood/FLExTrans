@@ -41,11 +41,12 @@ from ComboBox import CheckableComboBox
 import FTPaths
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
+SHRINK_WINDOW_PIXELS = 120
 
 class ChapterSelection(object):
         
     def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                 makeActive, useFullBookName, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
+                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
     
         if export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -62,10 +63,11 @@ class ChapterSelection(object):
         self.includeCrossRefs   = includeCrossRefs
         self.makeActive         = makeActive      
         self.useFullBookName    = useFullBookName  
+        self.overwriteText      = overwriteText
         self.clusterProjects    = clusterProjects   
+        self.ptxProjList        = ptxProjList
         self.oneTextPerChapter  = oneTextPerChapter
         self.includeIntro       = includeIntro
-        self.ptxProjList        = ptxProjList
         
     def dump(self):
         
@@ -81,6 +83,7 @@ class ChapterSelection(object):
             'useFullBookName'        : self.useFullBookName,
             'oneTextPerChapter'      : self.oneTextPerChapter,
             'includeIntro'           : self.includeIntro,
+            'overwriteText'          : self.overwriteText,
             'clusterProjects'        : self.clusterProjects,
             'ptxProjList'            : self.ptxProjList,
             }
@@ -124,6 +127,33 @@ def InitControls(self, export=True):
         self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',False))
         self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
         self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
+        self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False))
+
+        # Change widgets if we are doing export
+        if export:
+
+            # Hide the checkboxes
+            self.ui.footnotesCheckBox.setVisible(False)
+            self.ui.crossrefsCheckBox.setVisible(False)
+            self.ui.makeActiveTextCheckBox.setVisible(False)
+            self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
+            self.ui.oneTextPerChapterCheckBox.setVisible(False)
+            self.ui.includeIntroCheckBox.setVisible(False)
+            self.ui.overwriteExistingTextCheckBox.setVisible(False)
+            
+            # Resize the main window 
+            self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
+
+            # Move controls up by SHRINK_WINDOW_PIXELS
+            widgetsToMove = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+                self.ui.OKButton,
+                self.ui.CancelButton,
+            ]
+            for wid in widgetsToMove:
+
+                wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
 
         # Initialize cluster projects
         if len(self.clusterProjects) > 0 and not export:
@@ -172,7 +202,8 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
     oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
     includeIntro = self.ui.includeIntroCheckBox.isChecked()
-    
+    overwriteText = self.ui.overwriteExistingTextCheckBox.isChecked()
+   
     ptxProjList = []
 
     # Go through each visible Paratext combobox and get the value
@@ -211,7 +242,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     bookPath = parts[0]
     
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
+                                    makeActive, useFullBookName, overwriteText, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')

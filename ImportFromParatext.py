@@ -117,8 +117,12 @@ import sys
 from shutil import copyfile
 import xml.etree.ElementTree as ET
 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel import (
+    ITextFactory,
+    IStTextFactory,
+    IStTxtParaFactory,
+    ITextRepository,
+)
 from SIL.LCModel.Core.Text import TsStringUtils
 
 from flextoolslib import *                                                 
@@ -150,7 +154,9 @@ imported. The book name should be given as a three-letter abbreviation just like
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
 new text. If you want to include the footnotes in the import, click the check box. 
 If you want to use the English full name of the book in the text name, click the check box. 
-If you want to make the newly imported text, the active text in FLExTrans click the check box.""" }
+If you want to make the newly imported text, the active text in FLExTrans click the check box.
+Importing into multiple FLEx projects from multiple Paratext projects is possible. First select
+cluster projects in the main FLExTrans Settings, then come back to this module.""" }
                  
 #----------------------------------------------------------------
 # The main processing function
@@ -177,11 +183,6 @@ class Main(QMainWindow):
 
         self.originalOKyPos = self.ui.OKButton.y()
         self.originalMainWinHeight = self.height()
-
-        self.fromChap = self.ui.fromChapterSpinBox.value()
-        self.toChap = self.ui.toChapterSpinBox.value()
-        self.enableOneTextPerChapter()
-        self.enableIncludeIntro()
 
         self.widgetList = []
         self.ptxComboList = []
@@ -231,6 +232,11 @@ class Main(QMainWindow):
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
+
+        self.fromChap = self.ui.fromChapterSpinBox.value()
+        self.toChap = self.ui.toChapterSpinBox.value()
+        self.enableOneTextPerChapter()
+        self.enableIncludeIntro()
 
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
@@ -588,8 +594,20 @@ def do_import(DB, report, chapSelectObj, tree):
                 #  E.g. EXO 03-04
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
-        # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
-        title = Utils.createUniqueTitle(DB, title)
+        # If the user wants to overwrite the existing text, delete it.
+        if chapSelectObj.overwriteText:
+
+            # Find the text
+            for interlinText in DB.ObjectsIn(ITextRepository):
+
+                if title == Utils.as_string(interlinText.Name).strip():
+                    
+                    # Delete it
+                    interlinText.Delete()
+                    break
+        else:
+            # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
+            title = Utils.createUniqueTitle(DB, title)
         
         if firstTitle == None:
 
@@ -629,7 +647,7 @@ def MainFunction(DB, report, modify=True):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-   # Get the path to the search-replace rules file
+    # Get the path to the search-replace rules file
     textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=False)
 
     if textInRulesFile is not None:
