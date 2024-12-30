@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.4 - 12/30/24 - Ron Lockwood
+#    Move dynamic widget creation and display to Cluster Utils.
+#
 #   Version 3.12.3 - 12/24/24 - Ron Lockwood
 #    Support cluster project importing.
 #
@@ -120,13 +123,13 @@ import sys
 from shutil import copyfile
 import xml.etree.ElementTree as ET
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     ITextFactory,
     IStTextFactory,
     IStTxtParaFactory,
     ITextRepository,
 )
-from SIL.LCModel.Core.Text import TsStringUtils
+from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
 from PyQt5 import QtCore, QtGui
@@ -134,6 +137,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox
 
 import FTPaths
 import ReadConfig
+import ClusterUtils
 import Utils
 import ChapterSelection
 import TextInOutUtils
@@ -146,7 +150,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.3",
+        FTM_Version    : "3.12.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -181,57 +185,18 @@ class Main(QMainWindow):
         self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        
         self.setWindowTitle("Import Paratext Chapters")
 
-        self.originalOKyPos = self.ui.OKButton.y()
-        self.originalMainWinHeight = self.height()
+        header1TextStr = "FLEx project name"
+        header2TextStr = "Paratext project abbrev."
+        self.ptxProjs = ChapterSelection.getParatextProjects()
 
-        self.widgetList = []
-        self.ptxComboList = []
-        ptxProjs = ChapterSelection.getParatextProjects()
+        # Set the top two widgets that need to be disabled
+        self.topWidget1 = self.ui.ptxProjAbbrevLineEdit
+        self.topWidget2 = self.ui.label
 
-        # Initialize label and ptx combo boxes for all cluster projects
-        for x in range(len(clusterProjects)):
-
-            # Create the label
-            labelWidget = QLabel(self.ui.centralwidget)
-            labelWidget.setGeometry(QtCore.QRect(0, 190, 191, 21))
-            labelWidget.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-            labelWidget.setObjectName(f"label{x}")
-            labelWidget.setText(clusterProjects[x])
-            labelWidget.setVisible(False)
-            
-            # Create the combo box
-            comboWidget = QComboBox(self.ui.centralwidget)
-            comboWidget.setGeometry(QtCore.QRect(210, 190, 100, 22))
-            comboWidget.setObjectName(f"combo{x}")
-            comboWidget.setVisible(False)
-
-            # Fill the combo box
-            comboWidget.addItems(['...'] + ptxProjs)
-
-            self.widgetList.append((labelWidget, comboWidget))
-
-        if len(clusterProjects) > 0:
-
-            # Create header widgets
-            font = QtGui.QFont()
-            font.setUnderline(True)
-            self.headWidg1 = QLabel(self.ui.centralwidget)
-            self.headWidg1.setGeometry(QtCore.QRect(0, 190, 191, 22))
-            self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-            self.headWidg1.setObjectName("headerLabel1")
-            self.headWidg1.setText("FLEx project name")
-            self.headWidg1.setVisible(False)
-            self.headWidg1.setFont(font)
-
-            self.headWidg2 = QLabel(self.ui.centralwidget)
-            self.headWidg2.setGeometry(QtCore.QRect(210, 190, 221, 22))
-            self.headWidg2.setObjectName("headerLabel2")
-            self.headWidg2.setText("Paratext project abbrev.")
-            self.headWidg2.setVisible(False)
-            self.headWidg2.setFont(font)
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.centralwidget, header1TextStr, header2TextStr, 100, self.fillPtxCombo)
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
@@ -243,76 +208,15 @@ class Main(QMainWindow):
 
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
-        
+
+    def fillPtxCombo(self, comboWidget):
+
+        # Fill the combo box
+        comboWidget.addItems(['...'] + self.ptxProjs)
+    
     def clusterSelectionChanged(self):
 
-        WIDGET_SIZE_PLUS_SPACE = 33
-        addY = 0
-        self.ptxComboList = []
-        startYpos = self.ui.clusterProjectsComboBox.y() + WIDGET_SIZE_PLUS_SPACE - 10
-        comboStartXpos = self.ui.clusterProjectsComboBox.x()
-        labelStartXpos = self.ui.clusterProjectsLabel.x()
-
-        # Show the header labels if we have cluster projects selected
-        if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
-
-            self.headWidg1.setGeometry(labelStartXpos, startYpos+10, self.headWidg1.width(), self.headWidg1.height())
-            self.headWidg1.setVisible(True)
-            self.headWidg2.setGeometry(comboStartXpos, startYpos+10, self.headWidg2.width(), self.headWidg2.height())
-            self.headWidg2.setVisible(True)
-
-            # Show the user the normal Paratext abbreviation won't be used
-            self.ui.ptxProjAbbrevLineEdit.setEnabled(False)
-            self.ui.label.setEnabled(False)
-        else:
-            self.headWidg1.setVisible(False)
-            self.headWidg2.setVisible(False)
-            self.ui.ptxProjAbbrevLineEdit.setEnabled(True)
-            self.ui.label.setEnabled(True)
-            
-        # See which new widgets need to be added
-        for i, proj in enumerate(self.clusterProjects):
-
-            currentList = self.ui.clusterProjectsComboBox.currentData()
-
-            if proj in currentList:
-
-                addY += WIDGET_SIZE_PLUS_SPACE
-    
-                ## Position the widgets and unhide them
-                # First the label
-                wid = self.widgetList[i][0]
-                wid.setGeometry(labelStartXpos, startYpos+addY, wid.width(), wid.height())
-                wid.setVisible(True)
-                
-                # Now the combobox
-                wid = self.widgetList[i][1]
-                wid.setGeometry(comboStartXpos, startYpos+addY, wid.width(), wid.height())
-                wid.setVisible(True)
-                self.ptxComboList.append(wid)
-                    
-            else:
-                # Hide the widgets
-                self.widgetList[i][0].setVisible(False)
-                self.widgetList[i][1].setVisible(False)
-            
-        # Calculate how many pixels to move things
-        pixels = len(self.ui.clusterProjectsComboBox.currentData()) * WIDGET_SIZE_PLUS_SPACE
-
-        if pixels > 0:
-            pixels += WIDGET_SIZE_PLUS_SPACE
-
-        # Move some widgets down
-        widgetsToMove = [
-            self.ui.OKButton,
-            self.ui.CancelButton,
-        ]
-        for wid in widgetsToMove:
-
-            wid.setGeometry(wid.x(), self.originalOKyPos+pixels, wid.width(), wid.height())
-
-        # Increase the height of the main window
-        self.resize(self.width(), self.originalMainWinHeight+pixels)
+        ClusterUtils.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.2 - 12/30/24 - Ron Lockwood
+#    Support for importing cluster projects.
+#
 #   Version 3.12.1 - 11/26/24 - Ron Lockwood
 #    Allow intro. to be imported with chapter 1.
 #
@@ -36,8 +39,7 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox
-from ComboBox import CheckableComboBox
-
+import ClusterUtils
 import FTPaths
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
@@ -158,15 +160,15 @@ def InitControls(self, export=True):
         # Initialize cluster projects
         if len(self.clusterProjects) > 0 and not export:
 
-            initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []))
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
 
             # Make ptx project selections in all visible combo boxes
             ptxProjList = myMap.get('ptxProjList', [])
 
             for i, ptxProj in enumerate(ptxProjList):
 
-                if i < len(self.ptxComboList):
-                    self.ptxComboList[i].setCurrentText(ptxProj)
+                if i < len(self.keyWidgetList):
+                    self.keyWidgetList[i].setCurrentText(ptxProj)
         else:
             # Hide cluster project widgets
             widgetsToHide = [
@@ -207,7 +209,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     ptxProjList = []
 
     # Go through each visible Paratext combobox and get the value
-    for myCombo in self.ptxComboList:
+    for myCombo in self.keyWidgetList:
 
         ptxProjList.append(myCombo.currentText())
 
@@ -248,36 +250,12 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     f = open(self.settingsPath, 'w')
     
     dumpMap = self.chapSel.dump()
-    json.dump(dumpMap, f)
+    json.dump(dumpMap, f, indent=4)
     
     f.close()
     
     self.retVal = True
     self.close()
-
-def initClusterProjects(self, allClusterProjects, savedClusterProjects):
-
-    # Setup the checkable combo box for cluster projects. ***Replace*** the one from the designer tool.
-    geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
-    self.ui.clusterProjectsComboBox.hide()
-    self.ui.clusterProjectsComboBox = CheckableComboBox(self.ui.centralwidget)
-    self.ui.clusterProjectsComboBox.setGeometry(geom)
-    self.ui.clusterProjectsComboBox.setObjectName("clusterProjectsComboBox")
-    self.ui.clusterProjectsComboBox.addItems([proj for proj in allClusterProjects if proj])
-
-    # Connect a custom signal a function
-    self.ui.clusterProjectsComboBox.itemCheckedStateChanged.connect(self.clusterSelectionChanged)
-
-    # Check all of them at the start
-    for projectName in allClusterProjects:
-
-        # Check the ones that were saved.
-        if projectName in savedClusterProjects:
-        
-            self.ui.clusterProjectsComboBox.check(projectName)
-
-    # Set up the display the first time
-    self.clusterSelectionChanged()
 
 def getFilteredSubdirectories(rootDir, excludeList):
     """
