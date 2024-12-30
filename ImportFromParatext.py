@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.5 - 12/30/24 - Ron Lockwood
+#    Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
+#
 #   Version 3.12.4 - 12/30/24 - Ron Lockwood
 #    Move dynamic widget creation and display to Cluster Utils.
 #
@@ -150,7 +153,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -456,7 +459,10 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set the title of the text
         tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
         text.Name.AnalysisDefaultWritingSystem = tss
-        
+
+        # Set metadata for the text
+        Utils.setTextMetaData(DB, text)
+
         report.Info(f'Text: "{title}" created in the {DB.ProjectName()} project.')
 
         titleChapNum += 1
