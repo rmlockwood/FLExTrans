@@ -405,8 +405,8 @@ import shutil
 from subprocess import call
 
 from Modules.FLExTrans.Lib import TextInOutUtils
-from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
+from SIL.LCModel import * # type: ignore
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from flextoolslib import *
 from flexlibs import FLExProject

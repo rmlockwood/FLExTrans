@@ -448,10 +448,10 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
-from System import Guid
-from System import String
+from System import Guid   # type: ignore
+from System import String # type: ignore
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     ICmObjectRepository,
     ILexEntry,
     ILexSense,
@@ -469,10 +469,10 @@ from SIL.LCModel import (
     IWfiWordform,
     IMoInflAffMsa,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
-from SIL.LCModel.Core.Text import TsStringUtils
-from SIL.LCModel.DomainServices import StringServices
-from SIL.LCModel.DomainServices import SegmentServices
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
+from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
+from SIL.LCModel.DomainServices import StringServices   # type: ignore
+from SIL.LCModel.DomainServices import SegmentServices  # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
 
@@ -1887,7 +1887,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         # of apertium-transfer)
         tree = ET.parse(transferRulePath).getroot()
     except:
-        report.Error(f'Error in opening the file: "{tranferRulePath}", check that it exists.')
+        report.Error(f'Error in opening the file: "{transferRulePath}", check that it exists.')
         return True
 
     # Lemmas in <cat-item> are not compared for string equality,
