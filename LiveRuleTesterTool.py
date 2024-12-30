@@ -5,8 +5,11 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.12.1 - 12/4/24 - Ron Lockwood
+#   Version 3.12.2 - 12/4/24 - Ron Lockwood
 #    Fixes #821. Escape reserved characters in the transfer rules generated for the LRT.
+#
+#   Version 3.12.1 - 11/27/24 - Ron Lockwood
+#    Fixes #818. Call a dll for HC synthesis to speed up the process.
 #
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
@@ -436,7 +439,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -464,6 +467,7 @@ WINDOWS_SETTINGS_FILE = 'window.settings.txt'
 HC_PARSES_FILE = 'HermitCrabParses.txt'
 HC_MASTER_FILE = 'HermitCrabMaster.txt'
 HC_SURFACE_FORMS_FILE = 'HermitCrabSurfaceForms.txt'
+ENVIR_VAR_FIELDWORKSDIR = 'FIELDWORKSDIR'
 
 # These strings need to be identical with the Makefile in the LiveRuleTester folder
 SOURCE_APERT = 'source_text.txt'
@@ -477,7 +481,6 @@ RULE_FILE3 = 'transfer_rules.t3x'
 TARGET_FILE = 'target_text.txt'
 LOG_FILE3 = 'apertium_log3.txt'
 BILING_FILE_IN_TESTER_FOLDER = 'bilingual.dix'
-
 SENT_TAG = '<sent>'
 
 def firstLower(myStr):
@@ -615,6 +618,8 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = False
         self.startRuleAssistant = False
         self.startReplacementEditor = False
+        self.HCdllObj = None
+
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -1321,6 +1326,23 @@ class Main(QMainWindow):
 
                 QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
                 return
+            
+            useHCsynthDll = True
+            if useHCsynthDll and self.HCdllObj is None:
+
+                # Change to the Fieldworks folder for doing the dll operations
+                fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
+                os.chdir(fieldworksDir)
+
+                # Import the clr module from pythonnet
+                import clr 
+
+                # Load the DLL 
+                clr.AddReference('HCSynthByGlossDll')
+                from SIL.HCSynthByGloss2 import HCSynthByGlossDll
+
+                # Initialize the object with the output file name
+                self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
 
         ## CATALOG
         # Catalog all the target affixes
@@ -1370,7 +1392,7 @@ class Main(QMainWindow):
             if self.doHermitCrabSynthesisBool:
 
                 # Extract the lexicon, HermitCrab style. (The whole HC configuration file, actually)
-                errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True)
+                errorList = DoHermitCrabSynthesis.extractHermitCrabConfig(self.__DB, self.__configMap, HCconfigPath, self.__report, useCacheIfAvailable=True, DLLobj=self.HCdllObj)
 
                 # check for fatal errors
                 fatal, msg = Utils.checkForFatalError(errorList, None)
@@ -1411,13 +1433,13 @@ class Main(QMainWindow):
             # Check if the user wants to do a trace which will bring up a web page.
             traceIt = self.ui.traceHermitCrabSynthesisCheckBox.isChecked()
 
-            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath, report=None, trace=traceIt)
+            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath, report=None, trace=traceIt, DLLobj=self.HCdllObj)
 
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}')
                 self.unsetCursor()
                 return
         else:
@@ -2019,6 +2041,11 @@ class Main(QMainWindow):
         f.write(f'{checkedWordsState}\n')
         f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
         f.close()
+
+        if self.HCdllObj:
+
+            # Return back to the directory we were in orginally before doing the dll operations
+            os.chdir(os.path.dirname(FTPaths.CONFIG_PATH))
 
     def removeSampleLogicRule(self, rulesElement):
 
