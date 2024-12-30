@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.3 - 12/13/24 - Ron Lockwood
+#    Suppress empty gloss warnings after a certain number. 
+#
 #   Version 3.12.2 - 11/28/24 - Ron Lockwood
 #    New feature - Add a target entry from the Linker. 
 #    Click a button to get an Add Entry dialog, fill out the info., the entry gets added to the db
@@ -308,7 +311,7 @@ from NewEntry import Ui_Dialog
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -337,6 +340,8 @@ Set which custom field is used for linking in the settings.
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
+
+MAX_GLOSS_WARNINGS = 10
 
 # The minimum length a word should have before doing a fuzzy compare
 # otherwise an exact comparision is used
@@ -1334,6 +1339,7 @@ class Main(QMainWindow):
 def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
 
     report.ProgressStart(entriesTotal)
+    glossWarnings = 0
 
     # Loop through all the target entries
     for entryIndex, entryObj in enumerate(TargetDB.LexiconAllEntries()):
@@ -1387,10 +1393,15 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                     else: # multiple senses for this gloss
                         glossMap[gloss].append(myHPG)
 
-                    if gloss == '***':
-                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                    if gloss == '***' and glossWarnings < MAX_GLOSS_WARNINGS:
 
-                        
+                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                        glossWarnings += 1
+
+                    if glossWarnings == MAX_GLOSS_WARNINGS:
+
+                        report.Warning(f'More than {MAX_GLOSS_WARNINGS} empty glosses found. Suppressing further warnings for empty target glosses.')
+                        glossWarnings += 1
     return True
 
 # Given an entry guid and a sense #, look up the the sense info. Also convert an entry guid to a sense guid and re-write it.
