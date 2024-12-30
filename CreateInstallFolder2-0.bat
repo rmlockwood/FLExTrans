@@ -1,4 +1,4 @@
-SET FLEXTRANS_VERSION=3.12
+SET FLEXTRANS_VERSION=3.12.1
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
@@ -119,6 +119,7 @@ copy SrcTgtViewer.py %flextranslib%
 copy ChapterSelection.py %flextranslib%
 copy ComboBox.py %flextranslib%
 copy OverWriteTestDlg.py %flextranslib%
+copy NewEntry.py %flextranslib%
 
 rem UI resources to Tools
 copy FLExTransWindowIcon.ico %toolsflextools%

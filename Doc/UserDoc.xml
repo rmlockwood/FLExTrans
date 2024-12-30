@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->20 November 2024</date
+>2 December 2024</date
 ><version
 >3.12</version
 ><contents
@@ -1485,6 +1485,39 @@ src="Images/SenseLinkerNoLinks-Filter.png"
 ></img
 ></chart
 ></example
+></section3
+><section3
+id="sAddEntry "
+><secTitle
+>Add Entry</secTitle
+><example
+num="xNewEntry"
+><chart
+><img
+XeLaTeXSpecial="scaled='600'"
+cssSpecial=" height:60%"
+src="Images/AddEntry.png"
+></img
+></chart
+></example
+><p
+>At times you may realize the target sense that you want to link to is not yet in the target lexicon. You can click on the <object
+type="tButton"
+>Add Entry </object
+> button to bring up the dialog shown in <exampleRef
+letter="xNewEntry"
+num="xNewEntry"
+></exampleRef
+> to add the basic information about the new entry and sense. Once you click <object
+type="tButton"
+>OK</object
+>, the new entry/sense gets added to the Target Sense List and gets selected and now you can use it for linking. Note that the new sense will always be sense number one. If you need to merge the sense into another entry, use the merge capability in <object
+type="tFlexx"
+></object
+>. If you do such a merge, the link you have established remains valid since <object
+type="tFlextrans"
+></object
+> links directly to the sense regardless of where it is.</p
 ></section3
 ><section3
 id="sShowUnlinked"

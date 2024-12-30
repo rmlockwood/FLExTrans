@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#
+#   Version 3.12.3 - 12/4/24 - Ron Lockwood
+#    Filter out the GenerateHC message 'Checking for duplicates', so the user doesn't see a warning.
+#
 #   Version 3.12.2 - 11/27/24 - Ron Lockwood
 #    Fixes #818. Call a dll for HC synthesis to speed up the process.
 #
@@ -207,7 +211,7 @@ def gatherWarnings(result, errorList):
     for outputLine in outputLines:
 
         # if an output line isn't about loading or writing, show it to the user as a warning (1)
-        if outputLine and not re.search('Loading|Writing', outputLine):
+        if outputLine and not re.search('Loading|Writing|Checking', outputLine):
 
             errorList.append((outputLine.strip(), 1))
 

@@ -1325,11 +1325,11 @@ widgetList = [
    ["Target Affix Gloss List File", "target_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
     "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
 
-   ["Fix Up Synthesis Text Rules File", "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
+   ["Text Out Rules File", "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
     "The file that holds the search/replace rules to fix up the synthesis result text.", DONT_GIVE_ERROR, DONT_HIDE],\
 
-   ["Fix Up Paratext Text Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
-    "The file that holds the search/replace rules to fix up the Paratext inport text.", DONT_GIVE_ERROR, DONT_HIDE],\
+   ["Text In Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
+    "The file that holds the search/replace rules to fix up the Paratext import text.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 
