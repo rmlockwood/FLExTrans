@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.2 - 12/26/24 - Ron Lockwood
+#    Move some widget initiation into Chap Selection file.
+#
 #   Version 3.12.1 - 11/27/24 - Ron Lockwood
 #    Fixes #815. If an intro section exists above chapter 1, include it in the export.
 #
@@ -98,7 +101,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -112,10 +115,11 @@ into Paratext to the project specified.""" }
 
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap):
+    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -136,18 +140,6 @@ class Main(QMainWindow):
         self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
         self.ui.bookAbbrevLineEdit.setEnabled(False)
         
-        # Hide the checkboxes
-        self.ui.footnotesCheckBox.setVisible(False)
-        self.ui.crossrefsCheckBox.setVisible(False)
-        self.ui.makeActiveTextCheckBox.setVisible(False)
-        self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
-        self.ui.oneTextPerChapterCheckBox.setVisible(False)
-        
-        # Resize the main window
-        self.resize(self.width(), 148)
-        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), 110, self.ui.OKButton.width(), self.ui.OKButton.height())
-        self.ui.CancelButton.setGeometry(self.ui.CancelButton.x(), 110, self.ui.CancelButton.width(), self.ui.CancelButton.height())
-
     def CancelClicked(self):
         self.retVal = False
         self.close()
@@ -357,10 +349,15 @@ def MainFunction(DB, report, modify):
     if parseSourceTextName(report, sourceText, infoMap) == False: # error occurred
         return 
     
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+        
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'])
+    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
     

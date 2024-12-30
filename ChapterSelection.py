@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.2 - 12/30/24 - Ron Lockwood
+#    Support for importing cluster projects.
+#
 #   Version 3.12.1 - 11/26/24 - Ron Lockwood
 #    Allow intro. to be imported with chapter 1.
 #
@@ -36,10 +39,253 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox
-
+import ClusterUtils
 import FTPaths
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
+SHRINK_WINDOW_PIXELS = 120
+
+class ChapterSelection(object):
+        
+    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                 makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
+    
+        if export:
+            self.exportProjectAbbrev = projectAbbrev  
+            self.importProjectAbbrev = otherProj   
+        else:
+            self.importProjectAbbrev = projectAbbrev  
+            self.exportProjectAbbrev = otherProj   
+
+        self.bookAbbrev         = bookAbbrev  
+        self.bookPath           = bookPath     
+        self.fromChap           = fromChap        
+        self.toChap             = toChap          
+        self.includeFootnotes   = includeFootnotes
+        self.includeCrossRefs   = includeCrossRefs
+        self.makeActive         = makeActive      
+        self.useFullBookName    = useFullBookName  
+        self.overwriteText      = overwriteText
+        self.clusterProjects    = clusterProjects   
+        self.ptxProjList        = ptxProjList
+        self.oneTextPerChapter  = oneTextPerChapter
+        self.includeIntro       = includeIntro
+        
+    def dump(self):
+        
+        ret = {\
+            'exportProjectAbbrev'    : self.exportProjectAbbrev,
+            'importProjectAbbrev'    : self.importProjectAbbrev,
+            'bookAbbrev'             : self.bookAbbrev,
+            'fromChap'               : self.fromChap,
+            'toChap'                 : self.toChap,
+            'includeFootnotes'       : self.includeFootnotes,
+            'includeCrossRefs'       : self.includeCrossRefs,
+            'makeActive'             : self.makeActive,
+            'useFullBookName'        : self.useFullBookName,
+            'oneTextPerChapter'      : self.oneTextPerChapter,
+            'includeIntro'           : self.includeIntro,
+            'overwriteText'          : self.overwriteText,
+            'clusterProjects'        : self.clusterProjects,
+            'ptxProjList'            : self.ptxProjList,
+            }
+        return ret
+
+def InitControls(self, export=True):
+    
+    self.chapSel = None
+    self.retVal = False
+    
+    self.ui.OKButton.clicked.connect(self.OKClicked)
+    self.ui.CancelButton.clicked.connect(self.CancelClicked)
+
+    self.otherProj = ''
+    
+    # Load settings if available
+    try:
+        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
+        # Get the parent folder of flextools.ini, i.e. Config and add the settings file
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
+        
+        f = open(self.settingsPath, 'r')
+        myMap = json.load(f)
+        f.close()
+        
+        # Set the project edit box to either the export or import project.
+        # Save the other one as otherProj so we can write it out again to the settings file.
+        if export:
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('exportProjectAbbrev',''))
+            self.otherProj = myMap.get('importProjectAbbrev','')
+        else:
+            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('importProjectAbbrev',''))
+            self.otherProj = myMap.get('exportProjectAbbrev','')
+            
+        self.ui.bookAbbrevLineEdit.setText(myMap.get('bookAbbrev',''))
+        self.ui.fromChapterSpinBox.setValue(myMap.get('fromChap',1))
+        self.ui.toChapterSpinBox.setValue(myMap.get('toChap',1))
+        self.ui.footnotesCheckBox.setChecked(myMap.get('includeFootnotes',False))
+        self.ui.crossrefsCheckBox.setChecked(myMap.get('includeCrossRefs',False))
+        self.ui.makeActiveTextCheckBox.setChecked(myMap.get('makeActive',False))
+        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',False))
+        self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
+        self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
+        self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False))
+
+        # Change widgets if we are doing export
+        if export:
+
+            # Hide the checkboxes
+            self.ui.footnotesCheckBox.setVisible(False)
+            self.ui.crossrefsCheckBox.setVisible(False)
+            self.ui.makeActiveTextCheckBox.setVisible(False)
+            self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
+            self.ui.oneTextPerChapterCheckBox.setVisible(False)
+            self.ui.includeIntroCheckBox.setVisible(False)
+            self.ui.overwriteExistingTextCheckBox.setVisible(False)
+            
+            # Resize the main window 
+            self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
+
+            # Move controls up by SHRINK_WINDOW_PIXELS
+            widgetsToMove = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+                self.ui.OKButton,
+                self.ui.CancelButton,
+            ]
+            for wid in widgetsToMove:
+
+                wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
+
+        # Initialize cluster projects
+        if len(self.clusterProjects) > 0 and not export:
+
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
+
+            # Make ptx project selections in all visible combo boxes
+            ptxProjList = myMap.get('ptxProjList', [])
+
+            for i, ptxProj in enumerate(ptxProjList):
+
+                if i < len(self.keyWidgetList):
+                    self.keyWidgetList[i].setCurrentText(ptxProj)
+        else:
+            # Hide cluster project widgets
+            widgetsToHide = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+            ]
+            for wid in widgetsToHide:
+
+                wid.setVisible(False)
+    except:
+        pass
+
+def getParatextPath():
+
+    # Get the Paratext path from the registry
+    aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
+    aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+    aKey = winreg.OpenKey(aReg, aKey)
+    paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
+    return paratextPathTuple[0]
+    
+    
+def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True):
+    
+    # Get values from the 'dialog' window
+    projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
+    bookAbbrev = self.ui.bookAbbrevLineEdit.text().upper()
+    fromChap = self.ui.fromChapterSpinBox.value()        
+    toChap = self.ui.toChapterSpinBox.value()
+    includeFootnotes = self.ui.footnotesCheckBox.isChecked()
+    includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
+    makeActive = self.ui.makeActiveTextCheckBox.isChecked()
+    useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
+    oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
+    includeIntro = self.ui.includeIntroCheckBox.isChecked()
+    overwriteText = self.ui.overwriteExistingTextCheckBox.isChecked()
+   
+    ptxProjList = []
+
+    # Go through each visible Paratext combobox and get the value
+    for myCombo in self.keyWidgetList:
+
+        ptxProjList.append(myCombo.currentText())
+
+    ## Validate some stuff
+    
+    # Get the Paratext path
+    paratextPath = getParatextPath()
+
+    # Check if project path exists under Paratext
+    projPath = os.path.join(paratextPath, projectAbbrev)
+    if not os.path.exists(projPath):
+        
+        QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
+        return
+
+    # Check if the book is valid
+    if checkBookAbbrev and bookAbbrev not in bookMap:
+        
+        QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
+        return
+    
+    # Check if the book exists
+    bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
+    
+    parts = glob.glob(bookPath)
+    
+    if checkBookPath and len(parts) < 1:
+        
+        QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+        return
+
+    bookPath = parts[0]
+    
+    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+                                    makeActive, useFullBookName, overwriteText, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
+    
+    # Save the settings to a file so the same settings can be shown next time
+    f = open(self.settingsPath, 'w')
+    
+    dumpMap = self.chapSel.dump()
+    json.dump(dumpMap, f, indent=4)
+    
+    f.close()
+    
+    self.retVal = True
+    self.close()
+
+def getFilteredSubdirectories(rootDir, excludeList):
+    """
+    Get a list of first-level subdirectories in rootDir, excluding those in excludeList or
+    those that start with '_' or 'UserSettings'.
+    """
+    subdirectories = []
+    
+    for dirname in os.listdir(rootDir):
+
+        dirpath = os.path.join(rootDir, dirname)
+
+        if os.path.isdir(dirpath):
+
+            if (dirname not in excludeList and not dirname.startswith('_') and not dirname.startswith('UserSettings')):
+                
+                subdirectories.append(dirname)
+
+    return subdirectories
+
+def getParatextProjects():
+
+
+    excludeList = [
+        'cms',
+        'Temp Files',
+    ]
+    ptxProjs = getFilteredSubdirectories(getParatextPath(), excludeList)
+
+    return ptxProjs
 
 bookMap = {\
 'GEN':'Genesis',\
@@ -150,146 +396,3 @@ bookMap = {\
 'XXG':'Extra G',\
 'INT':'Introduction',\
 }
-
-class ChapterSelection(object):
-        
-    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                 makeActive, useFullBookName, oneTextPerChapter=False, includeIntro=False):
-    
-        if export:
-            self.exportProjectAbbrev = projectAbbrev  
-            self.importProjectAbbrev = otherProj   
-        else:
-            self.importProjectAbbrev = projectAbbrev  
-            self.exportProjectAbbrev = otherProj   
-
-        self.bookAbbrev         = bookAbbrev  
-        self.bookPath           = bookPath     
-        self.fromChap           = fromChap        
-        self.toChap             = toChap          
-        self.includeFootnotes   = includeFootnotes
-        self.includeCrossRefs   = includeCrossRefs
-        self.makeActive         = makeActive      
-        self.useFullBookName    = useFullBookName     
-        self.oneTextPerChapter  = oneTextPerChapter
-        self.includeIntro       = includeIntro
-        
-    def dump(self):
-        
-        ret = {\
-            'exportProjectAbbrev'    : self.exportProjectAbbrev,\
-            'importProjectAbbrev'    : self.importProjectAbbrev,\
-            'bookAbbrev'             : self.bookAbbrev         ,\
-            'fromChap'               : self.fromChap           ,\
-            'toChap'                 : self.toChap             ,\
-            'includeFootnotes'       : self.includeFootnotes   ,\
-            'includeCrossRefs'       : self.includeCrossRefs   ,\
-            'makeActive'             : self.makeActive         ,\
-            'useFullBookName'        : self.useFullBookName    ,\
-            'oneTextPerChapter'      : self.oneTextPerChapter  ,\
-            'includeIntro'           : self.includeIntro        \
-            }
-        return ret
-
-def InitControls(self, export=True):
-    
-    self.chapSel = None
-    self.retVal = False
-    
-    self.ui.OKButton.clicked.connect(self.OKClicked)
-    self.ui.CancelButton.clicked.connect(self.CancelClicked)
-
-    self.otherProj = ''
-    
-    # Load settings if available
-    try:
-        # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
-        # Get the parent folder of flextools.ini, i.e. Config and add the settings file
-        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), PTXIMPORT_SETTINGS_FILE)
-        
-        f = open(self.settingsPath, 'r')
-        myMap = json.load(f)
-        
-        # Set the project edit box to either the export or import project.
-        # Save the other one as otherProj so we can write it out again to the settings file.
-        if export:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('exportProjectAbbrev',''))
-            self.otherProj = myMap.get('importProjectAbbrev','')
-        else:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('importProjectAbbrev',''))
-            self.otherProj = myMap.get('exportProjectAbbrev','')
-            
-        self.ui.bookAbbrevLineEdit.setText(myMap.get('bookAbbrev',''))
-        self.ui.fromChapterSpinBox.setValue(myMap.get('fromChap',1))
-        self.ui.toChapterSpinBox.setValue(myMap.get('toChap',1))
-        self.ui.footnotesCheckBox.setChecked(myMap.get('includeFootnotes',False))
-        self.ui.crossrefsCheckBox.setChecked(myMap.get('includeCrossRefs',False))
-        self.ui.makeActiveTextCheckBox.setChecked(myMap.get('makeActive',False))
-        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',False))
-        self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
-        self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
-        f.close()
-    except:
-        pass
-
-def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True):
-    
-    # Get values from the 'dialog' window
-    projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
-    bookAbbrev = self.ui.bookAbbrevLineEdit.text().upper()
-    fromChap = self.ui.fromChapterSpinBox.value()        
-    toChap = self.ui.toChapterSpinBox.value()
-    includeFootnotes = self.ui.footnotesCheckBox.isChecked()
-    includeCrossRefs = self.ui.crossrefsCheckBox.isChecked()
-    makeActive = self.ui.makeActiveTextCheckBox.isChecked()
-    useFullBookName = self.ui.useFullBookNameForTitleCheckBox.isChecked()
-    oneTextPerChapter = self.ui.oneTextPerChapterCheckBox.isChecked()
-    includeIntro = self.ui.includeIntroCheckBox.isChecked()
-    
-    ## Validate some stuff
-    
-    # Get the Paratext path from the registry
-    aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
-    aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-    aKey = winreg.OpenKey(aReg, aKey)
-    paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
-    paratextPath = paratextPathTuple[0]
-    
-    # Check if project path exists under Paratext
-    projPath = os.path.join(paratextPath, projectAbbrev)
-    if not os.path.exists(projPath):
-        
-        QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
-        return
-
-    # Check if the book is valid
-    if checkBookAbbrev and bookAbbrev not in bookMap:
-        
-        QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
-        return
-    
-    # Check if the book exists
-    bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-    
-    parts = glob.glob(bookPath)
-    
-    if checkBookPath and len(parts) < 1:
-        
-        QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
-        return
-
-    bookPath = parts[0]
-    
-    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, oneTextPerChapter, includeIntro)
-    
-    # Save the settings to a file so the same settings can be shown next time
-    f = open(self.settingsPath, 'w')
-    
-    dumpMap = self.chapSel.dump()
-    json.dump(dumpMap, f)
-    
-    f.close()
-    
-    self.retVal = True
-    self.close()

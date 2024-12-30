@@ -89,6 +89,7 @@ copy TextOutRules.py %modulesflextrans%
 copy FixUpSynthText.py %modulesflextrans%
 copy LinkAllSensesAsDup.py %modulesflextrans%
 copy ReplacementEditor.py %modulesflextrans%
+copy AdHocConstrForCluster.py %modulesflextrans%
 
 rem testbed-specific modules to Modules\FLExTrans
 copy StartTestbed.py %modulesflextrans%
@@ -107,6 +108,8 @@ copy TextInOutUtils.py %flextranslib%
 copy TextInOut.py %flextranslib%
 copy ReplacementEditorWindow.py %flextranslib%
 copy Mixpanel.py %flextranslib%
+copy ClusterUtils.py %flextranslib%
+copy NewEntryDlg.py %flextranslib%
 
 rem dialog code (generated from .ui files) to Lib
 copy MyTableView.py %flextranslib%
@@ -120,6 +123,7 @@ copy ChapterSelection.py %flextranslib%
 copy ComboBox.py %flextranslib%
 copy OverWriteTestDlg.py %flextranslib%
 copy NewEntry.py %flextranslib%
+copy ClusterAdHoc.py %flextranslib%
 
 rem UI resources to Tools
 copy FLExTransWindowIcon.ico %toolsflextools%

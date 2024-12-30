@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
-    <height>225</height>
+    <width>438</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,8 +29,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
-     <width>131</width>
+     <y>10</y>
+     <width>191</width>
      <height>21</height>
     </rect>
    </property>
@@ -45,8 +45,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>70</y>
-     <width>131</width>
+     <y>40</y>
+     <width>191</width>
      <height>21</height>
     </rect>
    </property>
@@ -61,8 +61,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
-     <width>131</width>
+     <y>70</y>
+     <width>191</width>
      <height>21</height>
     </rect>
    </property>
@@ -76,8 +76,8 @@
   <widget class="QLineEdit" name="glossEdit">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>130</y>
+     <x>210</x>
+     <y>100</y>
      <width>130</width>
      <height>20</height>
     </rect>
@@ -89,8 +89,8 @@
   <widget class="QLineEdit" name="lexemeFormEdit">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>40</y>
+     <x>210</x>
+     <y>10</y>
      <width>130</width>
      <height>20</height>
     </rect>
@@ -102,8 +102,8 @@
   <widget class="QPushButton" name="OKButton">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>190</y>
+     <x>130</x>
+     <y>163</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -115,15 +115,15 @@
   <widget class="QComboBox" name="morphemeTypeCombo">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>70</y>
+     <x>210</x>
+     <y>40</y>
      <width>130</width>
      <height>20</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <pointsize>8</pointsize>
     </font>
    </property>
    <property name="toolTip">
@@ -136,8 +136,8 @@
   <widget class="QPushButton" name="CancelButton">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>190</y>
+     <x>220</x>
+     <y>163</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -150,8 +150,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
-     <width>131</width>
+     <y>100</y>
+     <width>191</width>
      <height>21</height>
     </rect>
    </property>
@@ -165,15 +165,15 @@
   <widget class="QComboBox" name="gramCatCombo">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>100</y>
+     <x>210</x>
+     <y>70</y>
      <width>130</width>
      <height>20</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>10</pointsize>
+     <pointsize>8</pointsize>
     </font>
    </property>
    <property name="toolTip">
@@ -181,6 +181,32 @@
    </property>
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="clusterProjectsLabel">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>130</y>
+     <width>191</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cluster Projects to Apply to</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="clusterProjectsComboBox">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>130</y>
+     <width>221</width>
+     <height>22</height>
+    </rect>
    </property>
   </widget>
  </widget>
