@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.12.3 - 12/30/24 - Ron Lockwood
+#    Handle missing project.
+#
 #   Version 3.12.2 - 12/30/24 - Ron Lockwood
 #    Support for cluster projects. Moved from LinkSenseTool.py
 #
@@ -221,6 +224,13 @@ class NewEntryDlg(QDialog):
                     save = True
                 else:
                     myTargetDB = Utils.openProject(self.report, proj)
+
+                    if not myTargetDB:
+
+                        QMessageBox.warning(self, 'Not Found Error', "Failed to open the project: " + proj)
+                        self.unsetCursor()
+                        self.retVal = False
+                        return
                     save = False
 
                 self.createEntry(myTargetDB, self.keyWidgetList[i].text(), save)

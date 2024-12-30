@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.5 - 12/30/24 - Ron Lockwood
+#    Handle missing project.
+#
 #   Version 3.12.4 - 12/17/24 - Ron Lockwood
 #    New function to open any project.
 #
@@ -1704,7 +1707,7 @@ def openProject(report, DBname):
     except: #FDA_DatabaseError, e:
         if report:
             report.Error('There was an error opening database: '+DBname+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
-        raise
+        return None
 
     return myDB
 
