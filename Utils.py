@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.6 - 12/30/24 - Ron Lockwood
+#   Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
+#
 #   Version 3.12.5 - 12/30/24 - Ron Lockwood
 #    Handle missing project.
 #
@@ -2489,3 +2492,12 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
             bldr = TsStringUtils.MakeStrBldr()
         
     stTxtPara.Contents = bldr.GetString()
+
+def setTextMetaData(DB, text):
+
+    # Set the Source field
+    tss = TsStringUtils.MakeString('FLExTrans', DB.project.DefaultAnalWs)
+    text.Source.AnalysisDefaultWritingSystem = tss
+
+    # Set the IsTranslated field
+    text.IsTranslated = True

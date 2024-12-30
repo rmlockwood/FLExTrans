@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.2 - 12/30/24 - Ron Lockwood
+#   Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
+#
 #   Version 3.12.1 - 12/4/24 - Ron Lockwood
 #    Fixes #823. Use the same logic that's in the Import from Ptx module to mark sfms as analysis writing system.
 #
@@ -96,7 +99,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -181,6 +184,9 @@ def MainFunction(DB, report, modify=True):
     tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
     
+    # Set metadata for the text
+    Utils.setTextMetaData(DB, text)
+
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
     TargetDB.CloseProject()
     f.close()
