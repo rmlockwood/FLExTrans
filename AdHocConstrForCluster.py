@@ -18,9 +18,10 @@ import re
 import sys
 from unicodedata import normalize
 
+from System import Int32 # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import AllProjectNames
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IMoAdhocProhibGrRepository, 
     IMoStemMsa, 
     IMoUnclassifiedAffixMsa, 
@@ -31,7 +32,7 @@ from SIL.LCModel import (
     IMoAdhocProhibGrFactory,
     IMoMorphSynAnalysis,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString   
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QStringListModel
@@ -252,9 +253,10 @@ class AdHocMain(QMainWindow):
             
                 # Set the properties
                 val = self.ui.cannotOccurComboBox.currentData()
-                #adHocObj.Adjacency = int(val)
+                adHocObj.Adjacency = Int32(val)
                 key = self.ui.KeyMorphAllomorphLineEdit.text()
-                msa = IMoMorphSynAnalysis(self.morphMap[key])
+                msa = self.morphMap[key]
+                msa = IMoMorphSynAnalysis(msa)
                 adHocObj.FirstMorphemeRA = msa
 
                 # Loop through all the other values
@@ -270,7 +272,8 @@ class AdHocMain(QMainWindow):
                 adHocObj = myDB.project.ServiceLocator.GetService(IMoAlloAdhocProhibFactory).Create()
                 
                 # Set the properties
-                adHocObj.Adjacency = self.ui.cannotOccurComboBox.currentData()
+                val = self.ui.cannotOccurComboBox.currentData()
+                adHocObj.Adjacency = Int32(val)
                 adHocObj.FirstAllomorphRA = self.allomorphMap[self.ui.KeyMorphAllomorphLineEdit.text()]
 
                 # Loop through all the other values
