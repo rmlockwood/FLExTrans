@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.6 - 12/31/24 - Ron Lockwood
+#    Fixes #830. Validate project abbreviation only if we are not using cluster projects.
+#    Revamp what we do before calling do_import and have do_import build the full path to the book.
+#
 #   Version 3.12.5 - 12/30/24 - Ron Lockwood
 #    Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
 #
@@ -136,7 +140,7 @@ from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox
 
 import FTPaths
 import ReadConfig
@@ -153,7 +157,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -309,10 +313,17 @@ def do_import(DB, report, chapSelectObj, tree):
     firstTitle = None
     byChapterList = []
 
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Open the Paratext file and read the contents
-    f = open(chapSelectObj.bookPath, encoding='utf-8')
-    bookContents = f.read()
-    f.close()
+    with open(bookPath, encoding='utf-8') as f:
+
+        bookContents = f.read()
     
     # Find all the chapter #s
     chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
@@ -539,7 +550,7 @@ def MainFunction(DB, report, modify=True):
                     myDB = Utils.openProject(report, proj)
 
                 # Set the import project member to the right ptx project and import it
-                os.path.join(os.path.dirname(window.chapSel.bookPath), window.chapSel.ptxProjList[i])
+                window.chapSel.importProjectAbbrev = window.chapSel.ptxProjList[i]
                 do_import(myDB, report, window.chapSel, tree)
 
                 # Close the project (if not the main)

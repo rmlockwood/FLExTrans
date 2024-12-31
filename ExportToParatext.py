@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.3 - 12/31/24 - Ron Lockwood
+#    Fixes #830. Have do_export build the full path to the book.
+#
 #   Version 3.12.2 - 12/26/24 - Ron Lockwood
 #    Move some widget initiation into Chap Selection file.
 #
@@ -101,7 +104,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -243,14 +246,20 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         report.Info('Export cancelled.')
         return 
     
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Create a backup of the paratext file
-    copyfile(chapSelectObj.bookPath, chapSelectObj.bookPath+'.bak')
+    copyfile(bookPath, bookPath+'.bak')
     
     # Read the Paratext file
-    f = open(chapSelectObj.bookPath, encoding='utf-8')
+    with open(bookPath, encoding='utf-8') as f:
     
-    bookContents = f.read()
-    f.close()
+        bookContents = f.read()
     
     # Find all the chapter #s
     ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
@@ -316,7 +325,7 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
         
     # Write the ptx file
-    f = open(chapSelectObj.bookPath, 'w', encoding='utf-8')
+    f = open(bookPath, 'w', encoding='utf-8')
     f.write(bookContents)
     
     # Close files
