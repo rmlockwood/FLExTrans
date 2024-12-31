@@ -188,7 +188,8 @@ def runApertium(DB, configMap, report):
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     Utils.unfixProblemCharsRuleFile(transferResultsPath)
     Utils.unfixProblemCharsDict(dictionaryPath)
-
+    report.Info('Apertium transfer complete.')
+    
     return 1
 #----------------------------------------------------------------
 # The main processing function

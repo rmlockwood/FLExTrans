@@ -18,7 +18,7 @@ import sys
 from unicodedata import normalize
 
 import ExtractBilingualLexicon
-from Modules.FLExTrans import DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText
+from Modules.FLExTrans import ConvertTextToSTAMPformat, DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText
 import RunApertium
 import CatalogTargetAffixes
 from System import Int32 # type: ignore
@@ -98,6 +98,8 @@ def extractSourcText(DB, configMap, report):
 
     report.Info("Export of " + sourceTextName + " complete.")
 
+    return 1
+
 def convertToSynthesizerFormat(DB, configMap, report):
 
     targetANAFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
@@ -125,7 +127,7 @@ def convertToSynthesizerFormat(DB, configMap, report):
             report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
             return  None
     
-    errorList = convertToSynthesizerFormat.convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
+    errorList = ConvertTextToSTAMPformat.convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
 
     # output info, warnings, errors and url links
     if not Utils.processErrorList(errorList, report):
