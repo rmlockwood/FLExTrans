@@ -313,8 +313,15 @@ def do_import(DB, report, chapSelectObj, tree):
     firstTitle = None
     byChapterList = []
 
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Open the Paratext file and read the contents
-    with open(os.path.join(chapSelectObj.paratextPath, chapSelectObj.projectAbbrev, chapSelectObj.bookAbbrev), encoding='utf-8') as f:
+    with open(bookPath, encoding='utf-8') as f:
 
         bookContents = f.read()
     
@@ -543,7 +550,7 @@ def MainFunction(DB, report, modify=True):
                     myDB = Utils.openProject(report, proj)
 
                 # Set the import project member to the right ptx project and import it
-                window.chapSel.projectAbbrev = window.chapSel.ptxProjList[i]
+                window.chapSel.importProjectAbbrev = window.chapSel.ptxProjList[i]
                 do_import(myDB, report, window.chapSel, tree)
 
                 # Close the project (if not the main)

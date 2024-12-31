@@ -53,7 +53,9 @@ class ChapterSelection(object):
     def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
                  makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
     
-        if export:
+        self.export = export
+
+        if self.export:
             self.exportProjectAbbrev = projectAbbrev  
             self.importProjectAbbrev = otherProj   
         else:
@@ -93,6 +95,21 @@ class ChapterSelection(object):
             'ptxProjList'            : self.ptxProjList,
             }
         return ret
+    
+    def getBookPath(self):
+        
+        if self.export:
+            projectAbbrev = self.exportProjectAbbrev
+        else:
+            projectAbbrev = self.importProjectAbbrev  
+
+        path = os.path.join(self.paratextPath, projectAbbrev, '*' + self.bookAbbrev + projectAbbrev + '.SFM')
+        fileList = glob.glob(path)
+
+        if len(fileList) < 1:
+            return ''
+        else:
+            return fileList[0]
 
 def InitControls(self, export=True):
     
@@ -211,10 +228,12 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
    
     ptxProjList = []
 
-    # Go through each visible Paratext combobox and get the value
-    for myCombo in self.keyWidgetList:
+    if not export:
 
-        ptxProjList.append(myCombo.currentText())
+        # Go through each visible Paratext combobox and get the value
+        for myCombo in self.keyWidgetList:
+
+            ptxProjList.append(myCombo.currentText())
 
     ## Validate some stuff
     
@@ -234,7 +253,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
-    if len(self.ui.clusterProjectsComboBox.currentData()) == 0:
+    if export or len(self.ui.clusterProjectsComboBox.currentData()) == 0:
 
         # Check if project path exists under Paratext
         projPath = os.path.join(paratextPath, projectAbbrev)
@@ -246,9 +265,9 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         # Check if the book exists
         bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
         
-        parts = glob.glob(bookPath)
+        fileList = glob.glob(bookPath)
         
-        if checkBookPath and len(parts) < 1:
+        if checkBookPath and len(fileList) < 1:
             
             QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
             return

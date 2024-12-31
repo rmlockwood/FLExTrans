@@ -246,8 +246,14 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         report.Info('Export cancelled.')
         return 
     
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Create a backup of the paratext file
-    bookPath = os.path.join(chapSelectObj.paratextPath, chapSelectObj.projectAbbrev, chapSelectObj.bookAbbrev)
     copyfile(bookPath, bookPath+'.bak')
     
     # Read the Paratext file
