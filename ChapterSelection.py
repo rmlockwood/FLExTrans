@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.3 - 12/31/24 - Ron Lockwood
+#    Fixes #830. Track the Paratext path instead of book path.
+#
 #   Version 3.12.2 - 12/30/24 - Ron Lockwood
 #    Support for importing cluster projects.
 #
@@ -47,7 +50,7 @@ SHRINK_WINDOW_PIXELS = 120
 
 class ChapterSelection(object):
         
-    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+    def __init__(self, export, otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
                  makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
     
         if export:
@@ -58,7 +61,7 @@ class ChapterSelection(object):
             self.exportProjectAbbrev = otherProj   
 
         self.bookAbbrev         = bookAbbrev  
-        self.bookPath           = bookPath     
+        self.paratextPath       = paratextPath     
         self.fromChap           = fromChap        
         self.toChap             = toChap          
         self.includeFootnotes   = includeFootnotes
@@ -110,76 +113,76 @@ def InitControls(self, export=True):
         f = open(self.settingsPath, 'r')
         myMap = json.load(f)
         f.close()
-        
-        # Set the project edit box to either the export or import project.
-        # Save the other one as otherProj so we can write it out again to the settings file.
-        if export:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('exportProjectAbbrev',''))
-            self.otherProj = myMap.get('importProjectAbbrev','')
-        else:
-            self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('importProjectAbbrev',''))
-            self.otherProj = myMap.get('exportProjectAbbrev','')
-            
-        self.ui.bookAbbrevLineEdit.setText(myMap.get('bookAbbrev',''))
-        self.ui.fromChapterSpinBox.setValue(myMap.get('fromChap',1))
-        self.ui.toChapterSpinBox.setValue(myMap.get('toChap',1))
-        self.ui.footnotesCheckBox.setChecked(myMap.get('includeFootnotes',False))
-        self.ui.crossrefsCheckBox.setChecked(myMap.get('includeCrossRefs',False))
-        self.ui.makeActiveTextCheckBox.setChecked(myMap.get('makeActive',False))
-        self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',False))
-        self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
-        self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
-        self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False))
-
-        # Change widgets if we are doing export
-        if export:
-
-            # Hide the checkboxes
-            self.ui.footnotesCheckBox.setVisible(False)
-            self.ui.crossrefsCheckBox.setVisible(False)
-            self.ui.makeActiveTextCheckBox.setVisible(False)
-            self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
-            self.ui.oneTextPerChapterCheckBox.setVisible(False)
-            self.ui.includeIntroCheckBox.setVisible(False)
-            self.ui.overwriteExistingTextCheckBox.setVisible(False)
-            
-            # Resize the main window 
-            self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
-
-            # Move controls up by SHRINK_WINDOW_PIXELS
-            widgetsToMove = [
-                self.ui.clusterProjectsLabel,
-                self.ui.clusterProjectsComboBox,
-                self.ui.OKButton,
-                self.ui.CancelButton,
-            ]
-            for wid in widgetsToMove:
-
-                wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
-
-        # Initialize cluster projects
-        if len(self.clusterProjects) > 0 and not export:
-
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
-
-            # Make ptx project selections in all visible combo boxes
-            ptxProjList = myMap.get('ptxProjList', [])
-
-            for i, ptxProj in enumerate(ptxProjList):
-
-                if i < len(self.keyWidgetList):
-                    self.keyWidgetList[i].setCurrentText(ptxProj)
-        else:
-            # Hide cluster project widgets
-            widgetsToHide = [
-                self.ui.clusterProjectsLabel,
-                self.ui.clusterProjectsComboBox,
-            ]
-            for wid in widgetsToHide:
-
-                wid.setVisible(False)
     except:
-        pass
+        myMap = {}
+        
+    # Set the project edit box to either the export or import project.
+    # Save the other one as otherProj so we can write it out again to the settings file.
+    if export:
+        self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('exportProjectAbbrev',''))
+        self.otherProj = myMap.get('importProjectAbbrev','')
+    else:
+        self.ui.ptxProjAbbrevLineEdit.setText(myMap.get('importProjectAbbrev',''))
+        self.otherProj = myMap.get('exportProjectAbbrev','')
+        
+    self.ui.bookAbbrevLineEdit.setText(myMap.get('bookAbbrev',''))
+    self.ui.fromChapterSpinBox.setValue(myMap.get('fromChap',1))
+    self.ui.toChapterSpinBox.setValue(myMap.get('toChap',1))
+    self.ui.footnotesCheckBox.setChecked(myMap.get('includeFootnotes',False))
+    self.ui.crossrefsCheckBox.setChecked(myMap.get('includeCrossRefs',False))
+    self.ui.makeActiveTextCheckBox.setChecked(myMap.get('makeActive',True))
+    self.ui.useFullBookNameForTitleCheckBox.setChecked(myMap.get('useFullBookName',True))
+    self.ui.oneTextPerChapterCheckBox.setChecked(myMap.get('oneTextPerChapter',False))
+    self.ui.includeIntroCheckBox.setChecked(myMap.get('includeIntro',False))
+    self.ui.overwriteExistingTextCheckBox.setChecked(myMap.get('overwriteText',False)) 
+
+    # Change widgets if we are doing export
+    if export:
+
+        # Hide the checkboxes
+        self.ui.footnotesCheckBox.setVisible(False)
+        self.ui.crossrefsCheckBox.setVisible(False)
+        self.ui.makeActiveTextCheckBox.setVisible(False)
+        self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
+        self.ui.oneTextPerChapterCheckBox.setVisible(False)
+        self.ui.includeIntroCheckBox.setVisible(False)
+        self.ui.overwriteExistingTextCheckBox.setVisible(False)
+        
+        # Resize the main window 
+        self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
+
+        # Move controls up by SHRINK_WINDOW_PIXELS
+        widgetsToMove = [
+            self.ui.clusterProjectsLabel,
+            self.ui.clusterProjectsComboBox,
+            self.ui.OKButton,
+            self.ui.CancelButton,
+        ]
+        for wid in widgetsToMove:
+
+            wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
+
+    # Initialize cluster projects
+    if len(self.clusterProjects) > 0 and not export:
+
+        ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
+
+        # Make ptx project selections in all visible combo boxes
+        ptxProjList = myMap.get('ptxProjList', [])
+
+        for i, ptxProj in enumerate(ptxProjList):
+
+            if i < len(self.keyWidgetList):
+                self.keyWidgetList[i].setCurrentText(ptxProj)
+    else:
+        # Hide cluster project widgets
+        widgetsToHide = [
+            self.ui.clusterProjectsLabel,
+            self.ui.clusterProjectsComboBox,
+        ]
+        for wid in widgetsToHide:
+
+            wid.setVisible(False)
 
 def getParatextPath():
 
@@ -215,35 +218,42 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
     ## Validate some stuff
     
-    # Get the Paratext path
-    paratextPath = getParatextPath()
-
-    # Check if project path exists under Paratext
-    projPath = os.path.join(paratextPath, projectAbbrev)
-    if not os.path.exists(projPath):
-        
-        QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
-        return
-
     # Check if the book is valid
     if checkBookAbbrev and bookAbbrev not in bookMap:
         
         QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
         return
     
-    # Check if the book exists
-    bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-    
-    parts = glob.glob(bookPath)
-    
-    if checkBookPath and len(parts) < 1:
+    # Get the Paratext path
+    paratextPath = getParatextPath()
+
+    # Check if Paratext path exists
+    if not os.path.exists(paratextPath):
         
-        QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+        QMessageBox.warning(self, 'Not Found Error', f'Could not find the Paratext path: {paratextPath}.')
         return
 
-    bookPath = parts[0]
-    
-    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, bookPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
+    # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
+    if len(self.ui.clusterProjectsComboBox.currentData()) == 0:
+
+        # Check if project path exists under Paratext
+        projPath = os.path.join(paratextPath, projectAbbrev)
+        if not os.path.exists(projPath):
+            
+            QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
+            return
+
+        # Check if the book exists
+        bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
+        
+        parts = glob.glob(bookPath)
+        
+        if checkBookPath and len(parts) < 1:
+            
+            QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+            return
+
+    self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
                                     makeActive, useFullBookName, overwriteText, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
     
     # Save the settings to a file so the same settings can be shown next time
