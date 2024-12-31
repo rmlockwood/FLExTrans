@@ -116,20 +116,7 @@ will only change the target database as specified in the configuration file.
 #----------------------------------------------------------------
 # The main processing function
 
-def MainFunction(DB, report, modify=True):
-    
-    if not modify:
-        report.Error('You need to run this module in "modify mode."')
-        return
-    
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-    
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+def insertTargetText(DB, configMap, report):
 
     TargetDB = FLExProject()
 
@@ -137,7 +124,7 @@ def MainFunction(DB, report, modify=True):
         # Open the target database
         targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
         if not targetProj:
-            return
+            return None
         TargetDB.OpenProject(targetProj, True)
     except: 
         report.Error('Failed to open the target database.')
@@ -147,9 +134,10 @@ def MainFunction(DB, report, modify=True):
 
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
+
     if not (sourceTextName and targetSynthesis):
         TargetDB.CloseProject()
-        return
+        return None
     
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
@@ -160,6 +148,7 @@ def MainFunction(DB, report, modify=True):
     except:
         TargetDB.CloseProject()
         report.Error('Could not open the file: "'+synFile+'".')
+        return None
 
     # Figure out the naming of the text file. Use the source text name by default,
     # but if it exists create a different name. E.g. War & Peace, War & Peace - Copy, War & Peace - Copy (2)
@@ -190,7 +179,25 @@ def MainFunction(DB, report, modify=True):
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
     TargetDB.CloseProject()
     f.close()
- 
+
+    return 1
+
+def MainFunction(DB, report, modify=True):
+    
+    if not modify:
+        report.Error('You need to run this module in "modify mode."')
+        return
+    
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    insertTargetText(DB, configMap, report)
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

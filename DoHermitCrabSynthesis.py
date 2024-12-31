@@ -554,7 +554,7 @@ def doHermitCrab(DB, report, configMap=None):
         # Read the configuration file.
         configMap = ReadConfig.readConfig(report)
         if not configMap:
-            return
+            return None
 
     # Log the start of this module on the analytics server if the user allows logging.
     import Mixpanel
@@ -565,7 +565,7 @@ def doHermitCrab(DB, report, configMap=None):
     HCconfigPath = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report)
 
     if not (HCconfigPath and targetSynthesis):
-        return 
+        return None 
 
     # Extract the target lexicon
     errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
@@ -574,7 +574,7 @@ def doHermitCrab(DB, report, configMap=None):
     fatal, _ = Utils.checkForFatalError(errorList, report)
    
     if fatal:
-        return
+        return None
 
     # Get HermitCrab file names
     parsesFile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_PARSES_FILE, report)
@@ -586,14 +586,19 @@ def doHermitCrab(DB, report, configMap=None):
 
         errorList.append((f'{ReadConfig.HERMIT_CRAB_MASTER_FILE} or {ReadConfig.HERMIT_CRAB_PARSES_FILE} \
                          or {ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE} or {ReadConfig.TRANSFER_RESULTS_FILE} not found in the configuration file.', 2))
-        return errorList
+        return None
 
     # Synthesize the new target text
     errList = synthesizeWithHermitCrab(configMap, HCconfigPath, targetSynthesis, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report)
     errorList.extend(errList)
     
     # output info, warnings, errors and url links
-    Utils.processErrorList(errorList, report)
+    if not Utils.processErrorList(errorList, report):
+        return None   
+    
+    return 1
+    
+
     
 def MainFunction(DB, report, modifyAllowed):
 

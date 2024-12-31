@@ -17,31 +17,17 @@ import re
 import sys
 from unicodedata import normalize
 
+import ExtractBilingualLexicon
+from Modules.FLExTrans import DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText
+import RunApertium
+import CatalogTargetAffixes
 from System import Int32 # type: ignore
 from flextoolslib import *                                                 
-from flexlibs import AllProjectNames
-from SIL.LCModel import ( # type: ignore
-    IMoAdhocProhibGrRepository, 
-    IMoStemMsa, 
-    IMoUnclassifiedAffixMsa, 
-    IMoDerivAffMsa, 
-    IMoInflAffMsa,
-    IMoAlloAdhocProhibFactory,
-    IMoMorphAdhocProhibFactory,
-    IMoAdhocProhibGrFactory,
-    IMoMorphSynAnalysis,
-    )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
-from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QStringListModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCompleter
-
-from ClusterAdHoc import Ui_AdHocMainWindow
-from ComboBox import CheckableComboBox
-import FTPaths
 import ReadConfig
 import Utils
+import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -60,8 +46,9 @@ def extractSourcText(DB, configMap, report):
 
     # Build an output path using the system temp directory.
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
+
     if not outFileVal:
-        return
+        return None
     
     fullPathTextOutputFile = outFileVal
     
@@ -69,12 +56,13 @@ def extractSourcText(DB, configMap, report):
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
-        return
+        return None
     
     # Find the desired text
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
+
     if not sourceTextName:
-        return
+        return None
     
     matchingContentsObjList = []
 
@@ -84,49 +72,10 @@ def extractSourcText(DB, configMap, report):
     if sourceTextName not in sourceTextList:
         
         report.Error('The text named: '+sourceTextName+' not found.')
-        return
+        return None
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
-    # Check if we are using TreeTran for sorting the text output
-    treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
-    
-    if not treeTranResultFile:
-        TreeTranSort = False
-    else:
-        TreeTranSort = True
-    
-        # Check if we are using an Insert Words File for TreeTran 
-        treeTranInsertWordsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_INSERT_WORDS_FILE, report)
-        
-        if not treeTranInsertWordsFile:
-            insertWordsFile = False
-        else:
-            insertWordsFile = True
-            
-            insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
-    
-            if insertWordsList == None: 
-                return # error already reported
-        
-    # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
-    if TreeTranSort:
-        try:
-            f_treeTranResultFile = open(treeTranResultFile)
-            f_treeTranResultFile.close()
-        except:
-            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
-            return
-        
-        # get the list of guids from the TreeTran results file
-        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
-        
-        if treeSentList == None: 
-            return # error already reported
-        
-        # get log info. that tells us which sentences have a syntax parse and # words per sent
-        logInfo = Utils.importGoodParsesLog()
-            
     # Process the text
     report.Info("Exporting analyses...")
 
@@ -135,7 +84,7 @@ def extractSourcText(DB, configMap, report):
 
     # Check for an error
     if interlinParams == None:
-        return
+        return None
 
     # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, interlinParams)
@@ -149,10 +98,42 @@ def extractSourcText(DB, configMap, report):
 
     report.Info("Export of " + sourceTextName + " complete.")
 
+def convertToSynthesizerFormat(DB, configMap, report):
 
-#----------------------------------------------------------------
+    targetANAFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
+    affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
+    
+    # Verify that the affix file exist.
+    if not os.path.exists(affixFile):
+        
+        report.Error(f'The Catalog Target Affixes module must be run before this module. The {ReadConfig.TARGET_AFFIX_GLOSS_FILE}: {affixFile} does not exist.')
+        return None
+    
+    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
+    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=False)
+
+    doHermitCrabSynthesis = True if hermitCrabSynthesisYesNo == 'y' else False
+    HCmasterFile = None
+    
+    # Get the master file name
+    if doHermitCrabSynthesis:
+
+        HCmasterFile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_MASTER_FILE, report)
+
+        if not HCmasterFile:
+
+            report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
+            return  None
+    
+    errorList = convertToSynthesizerFormat.convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
+
+    # output info, warnings, errors and url links
+    if not Utils.processErrorList(errorList, report):
+        return None
+    
+    return 1
+
 # The main processing function
-
 def MainFunction(DB, report, modify=True):
     
     # Read the configuration file which we assume is in the current directory.
@@ -164,19 +145,56 @@ def MainFunction(DB, report, modify=True):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-
-
-
-
-    # Get the cluster projects
-    projects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report)
-    if not projects:
+    ## Extract the source text
+    if not extractSourcText(DB, configMap, report):
         return
-        
-    composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS, report)
-    composed = (composed == 'y')
 
+    ## Build the bilingual lexicon
+    errorList = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
+
+    # output info, warnings, errors and url links
+    if not Utils.processErrorList(errorList, report):
+        return
+
+    ## Run Apertium
+    if not RunApertium.runApertium(DB, configMap, report):
+        return
     
+    ## Catalog Target Affixes
+
+    # Build an output path using the system temp directory.
+    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
+
+    if not outFileVal:
+        return
+    
+    errorList = CatalogTargetAffixes.catalog_affixes(DB, configMap, outFileVal, report, useCacheIfAvailable=True)
+    
+    # output info, warnings, errors and url links
+    if not Utils.processErrorList(errorList, report):
+        return
+    
+    ## Convert to Synthesizer Format
+    if not convertToSynthesizerFormat(DB, configMap, report):
+        return
+    
+    ## Synthesize Text
+    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=True)
+
+    if hermitCrabSynthesisYesNo == 'y':
+
+        report.Info('Using HermitCrab for synthesis.')
+        if not DoHermitCrabSynthesis.doHermitCrab(DB, report, configMap):
+            return
+    else:
+        report.Info('Using STAMP for synthesis.')
+        if not DoStampSynthesis.doStamp(DB, report, configMap):
+            return
+    
+    ## Insert Target Text
+    if not InsertTargetText.insertTargetText(DB, configMap, report):
+        return
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

@@ -1300,7 +1300,7 @@ def doStamp(DB, report, configMap=None):
         # Read the configuration file.
         configMap = ReadConfig.readConfig(report)
         if not configMap:
-            return
+            return None
 
     # Log the start of this module on the analytics server if the user allows logging.
     import Mixpanel
@@ -1310,12 +1310,12 @@ def doStamp(DB, report, configMap=None):
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (targetANA and targetSynthesis):
-        return 
+        return None 
     
     # Verify that the ana file exists.
     if os.path.exists(targetANA) == False:
         report.Error(f'The Convert Text to STAMP Format module must be run before this module. The {ReadConfig.TARGET_ANA_FILE}: {targetANA} does not exist.')
-        return
+        return None
     
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
@@ -1328,7 +1328,10 @@ def doStamp(DB, report, configMap=None):
     error_list.extend(err_list)
     
     # output info, warnings, errors and url links
-    Utils.processErrorList(error_list, report)
+    if not Utils.processErrorList(error_list, report):
+        return None   
+    
+    return 1
 
 def MainFunction(DB, report, modifyAllowed):
 

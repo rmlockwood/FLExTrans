@@ -1975,6 +1975,8 @@ def capitalizeString(inStr, capitalizeCode, useCurrentLocaleRules=False):
 
 def processErrorList(error_list, report):
 
+    fatal = False
+
     for msg in error_list:
 
         # See if there is extra info to pass to the error reporter
@@ -1990,6 +1992,9 @@ def processErrorList(error_list, report):
             report.Warning(msg[0], infoStr)
         else: # error=2
             report.Error(msg[0], infoStr)
+            fatal = True
+
+    return None if fatal else 1
 
 def checkForFatalError(errorList, report):
 
