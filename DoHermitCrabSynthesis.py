@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.5 - 1/2/25 - Ron Lockwood
+#    Fix decode error when outputting Synthesis errors.
+#
 #   Version 3.12.4 - 1/2/25 - Ron Lockwood
 #    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
 #
@@ -120,7 +123,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -232,7 +235,10 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
 def gatherWarnings(result, errorList):
 
     # Convert the byte stdout to a list of output lines. We expect Carriage return & Line feeds
-    outputLines = re.split(r'\r*\n', result.stdout.decode())
+    try:
+        outputLines = re.split(r'\r*\n', result.stdout.decode('utf-8'))
+    except UnicodeDecodeError:
+        outputLines = re.split(r'\r*\n', result.stdout.decode('latin-1'))
 
     for outputLine in outputLines:
 
