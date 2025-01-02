@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.7 - 1/2/25 - Ron Lockwood
+#    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
+#
 #   Version 3.12.6 - 12/30/24 - Ron Lockwood
 #   Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
 #
@@ -1970,6 +1973,10 @@ def capitalizeString(inStr, capitalizeCode, useCurrentLocaleRules=False):
     elif capitalizeCode == '1':
 
         return inStr.capitalize()
+
+    elif capitalizeCode == '3':
+
+        return inStr.title()
 
     return inStr
 
