@@ -5,6 +5,12 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.4 - 12/30/24 - Ron Lockwood
+#    Move New Entry Dialog to its own file. Support cluster projects.
+#
+#   Version 3.12.3 - 12/13/24 - Ron Lockwood
+#    Suppress empty gloss warnings after a certain number. 
+#
 #   Version 3.12.2 - 11/28/24 - Ron Lockwood
 #    New feature - Add a target entry from the Linker. 
 #    Click a button to get an Add Entry dialog, fill out the info., the entry gets added to the db
@@ -273,24 +279,15 @@ import time
 
 from fuzzywuzzy import fuzz
 
-from System import Guid
-from System import String
-
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog, QDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     ILexEntry,
-    ILexEntryFactory,
-    IMoStemAllomorphFactory,
-    IMoStemMsaFactory,
-    ILexSenseFactory,
-    ICmObjectRepository,
-    ICmPossibility
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString         
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore     
 
 from flextoolslib import *                                                 
 
@@ -300,15 +297,15 @@ import FTPaths
 import ReadConfig
 import Utils
 import ExtractBilingualLexicon
+import NewEntryDlg
 
 from Linker import Ui_MainWindow
-from NewEntry import Ui_Dialog
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -337,6 +334,8 @@ Set which custom field is used for linking in the settings.
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
+
+MAX_GLOSS_WARNINGS = 10
 
 # The minimum length a word should have before doing a fuzzy compare
 # otherwise an exact comparision is used
@@ -808,89 +807,6 @@ class LinkerTable(QtCore.QAbstractTableModel):
             
         return True
 
-STEM_MORPH_GUID = 'd7f713e8-e8cf-11d3-9764-00c04f186933'
-
-class NewEntryDlg(QDialog):
-
-    def __init__(self, DB, report, targetMorphNames):
-        QDialog.__init__(self)
-        self.ui = Ui_Dialog()
-        self.ui.setupUi(self)
-        self.DB = DB
-        self.sense = None
-        self.lexemeForm = ''
-        self.POS = ''
-        self.gloss = ''
-        
-        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-
-        self.ui.OKButton.clicked.connect(self.OKClicked)
-        self.ui.CancelButton.clicked.connect(self.CancelClicked)
-
-        # Add the list of morpheme types that the user has defined as a kind of root (e.g. root, stem, bound stem, ...)
-        self.ui.morphemeTypeCombo.addItems(list(filter(lambda s: s, targetMorphNames)))
-
-        # Get the analysis lang string for stem. We know stem is hard-coded as guid: d7f713e8-e8cf-11d3-9764-00c04f186933
-        # We are doing this rigamarole in case the analysis writing system language is not English
-        repo = DB.project.ServiceLocator.GetService(ICmObjectRepository)
-        guid = Guid(String(STEM_MORPH_GUID))
-        morphType = repo.GetObject(guid)
-        morphType = ICmPossibility(morphType)
-        nameStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
-        
-        # Default to 'stem' if it exists.
-        index = self.ui.morphemeTypeCombo.findText(nameStr) 
-        if index >= 0:      
-
-            self.ui.morphemeTypeCombo.setCurrentIndex(index)
-
-        # Add the list of grammatical categories
-        posMap = {}
-        Utils.get_categories(DB, report=None, posMap=posMap)
-        self.ui.gramCatCombo.addItems(sorted(posMap.keys()))
-
-    def CancelClicked(self):
-        self.retVal = False
-        self.close()
-
-    def OKClicked(self):
-
-        # Create entry
-        entry = self.DB.project.ServiceLocator.GetService(ILexEntryFactory).Create()
-
-        # Create MoStemAllomorph and add to entry LexemeForm
-        stemAllo = self.DB.project.ServiceLocator.GetService(IMoStemAllomorphFactory).Create()
-        entry.LexemeFormOA = stemAllo
-
-        # Set the lexeme form.
-        self.lexemeForm = self.ui.lexemeFormEdit.text()
-        stemAllo.Form.set_String(self.DB.project.DefaultVernWs, self.lexemeForm)
-
-        # Set the morph type.
-        plist = self.DB.lp.LexDbOA.MorphTypesOA
-        stemAllo.MorphTypeRA = plist.FindPossibilityByName(plist.PossibilitiesOS, self.ui.morphemeTypeCombo.currentText(), self.DB.project.DefaultAnalWs)
-
-        # Create MoStemMsa and add to entry MorphoSyntaxAnalyses
-        stemMsa = self.DB.project.ServiceLocator.GetService(IMoStemMsaFactory).Create()
-        entry.MorphoSyntaxAnalysesOC.Add(stemMsa)
-
-        # Set the gram. cat.
-        self.POS = self.ui.gramCatCombo.currentText()
-        plist = self.DB.lp.PartsOfSpeechOA
-        stemMsa.PartOfSpeechRA = plist.FindPossibilityByName(plist.PossibilitiesOS, self.POS, self.DB.project.DefaultAnalWs)
-
-        # Create sense and add to entry and set the sense msa to the stemMsa above
-        self.sense = self.DB.project.ServiceLocator.GetService(ILexSenseFactory).Create()
-        entry.SensesOS.Add(self.sense)
-        self.sense.MorphoSyntaxAnalysisRA = stemMsa
-
-        # Set the gloss
-        self.gloss = self.ui.glossEdit.text()
-        self.sense.Gloss.set_String(self.DB.project.DefaultAnalWs, self.gloss)
-
-        self.retVal = True
-        self.close()
-
 class Main(QMainWindow):
 
     def __init__(self, myData, headerData, comboData, sourceTextName, DB, report, configMap, properNounAbbr, sourceTextList, targetMorphNames, TargetDB):
@@ -963,7 +879,15 @@ class Main(QMainWindow):
         
     def AddTargetEntry(self):
 
-        dlg = NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames)
+        # Get cluster projects from settings;
+        clusterProjects = ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLUSTER_PROJECTS, self.__report, giveError=False)
+        if not clusterProjects:
+            clusterProjects = []
+        else:
+            # Remove blank ones
+            clusterProjects = [x for x in clusterProjects if x]
+
+        dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects)
         dlg.exec_()
 
         if dlg.retVal == True:
@@ -976,7 +900,6 @@ class Main(QMainWindow):
 
             # Make the new sense the current item in the combo box.
             self.ui.targetLexCombo.setCurrentIndex(self.ui.targetLexCombo.count()-1)
-
             self.ui.targetLexCombo.setStyleSheet("QComboBox { background-color: yellow; }")
 
             # Set a timer to change the background color back after 2 seconds 
@@ -1334,6 +1257,7 @@ class Main(QMainWindow):
 def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLexList, entriesTotal):
 
     report.ProgressStart(entriesTotal)
+    glossWarnings = 0
 
     # Loop through all the target entries
     for entryIndex, entryObj in enumerate(TargetDB.LexiconAllEntries()):
@@ -1387,10 +1311,15 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                     else: # multiple senses for this gloss
                         glossMap[gloss].append(myHPG)
 
-                    if gloss == '***':
-                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                    if gloss == '***' and glossWarnings < MAX_GLOSS_WARNINGS:
 
-                        
+                        report.Warning('Empty gloss found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
+                        glossWarnings += 1
+
+                    if glossWarnings == MAX_GLOSS_WARNINGS:
+
+                        report.Warning(f'More than {MAX_GLOSS_WARNINGS} empty glosses found. Suppressing further warnings for empty target glosses.')
+                        glossWarnings += 1
     return True
 
 # Given an entry guid and a sense #, look up the the sense info. Also convert an entry guid to a sense guid and re-write it.

@@ -5,6 +5,12 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.3 - 12/31/24 - Ron Lockwood
+#    Fixes #830. Have do_export build the full path to the book.
+#
+#   Version 3.12.2 - 12/26/24 - Ron Lockwood
+#    Move some widget initiation into Chap Selection file.
+#
 #   Version 3.12.1 - 11/27/24 - Ron Lockwood
 #    Fixes #815. If an intro section exists above chapter 1, include it in the export.
 #
@@ -98,7 +104,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -112,10 +118,11 @@ into Paratext to the project specified.""" }
 
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap):
+    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -136,18 +143,6 @@ class Main(QMainWindow):
         self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
         self.ui.bookAbbrevLineEdit.setEnabled(False)
         
-        # Hide the checkboxes
-        self.ui.footnotesCheckBox.setVisible(False)
-        self.ui.crossrefsCheckBox.setVisible(False)
-        self.ui.makeActiveTextCheckBox.setVisible(False)
-        self.ui.useFullBookNameForTitleCheckBox.setVisible(False)
-        self.ui.oneTextPerChapterCheckBox.setVisible(False)
-        
-        # Resize the main window
-        self.resize(self.width(), 148)
-        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), 110, self.ui.OKButton.width(), self.ui.OKButton.height())
-        self.ui.CancelButton.setGeometry(self.ui.CancelButton.x(), 110, self.ui.CancelButton.width(), self.ui.CancelButton.height())
-
     def CancelClicked(self):
         self.retVal = False
         self.close()
@@ -251,14 +246,20 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         report.Info('Export cancelled.')
         return 
     
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Create a backup of the paratext file
-    copyfile(chapSelectObj.bookPath, chapSelectObj.bookPath+'.bak')
+    copyfile(bookPath, bookPath+'.bak')
     
     # Read the Paratext file
-    f = open(chapSelectObj.bookPath, encoding='utf-8')
+    with open(bookPath, encoding='utf-8') as f:
     
-    bookContents = f.read()
-    f.close()
+        bookContents = f.read()
     
     # Find all the chapter #s
     ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
@@ -324,7 +325,7 @@ def do_export(DB, report, chapSelectObj, configMap, parent):
         bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
         
     # Write the ptx file
-    f = open(chapSelectObj.bookPath, 'w', encoding='utf-8')
+    f = open(bookPath, 'w', encoding='utf-8')
     f.write(bookContents)
     
     # Close files
@@ -357,10 +358,15 @@ def MainFunction(DB, report, modify):
     if parseSourceTextName(report, sourceText, infoMap) == False: # error occurred
         return 
     
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+        
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'])
+    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
     

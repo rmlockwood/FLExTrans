@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.12 - 12/24/24 - Ron Lockwood
+#    Add signal for when an item is checked.
+#
 #   Version 3.9.1 - 9/4/23 - Ron Lockwood
 #    Fixes #466. Disable wheel scrolling.
 #
@@ -20,9 +23,12 @@
 
 from PyQt5.QtWidgets import QComboBox, QStyledItemDelegate
 from PyQt5.QtGui import QStandardItem, QFontMetrics
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 
 class CheckableComboBox(QComboBox):
+
+    # Define a custom signal
+    itemCheckedStateChanged = pyqtSignal()
 
     # Subclass Delegate to increase item height
     class Delegate(QStyledItemDelegate):
@@ -83,7 +89,11 @@ class CheckableComboBox(QComboBox):
                     item.setCheckState(Qt.Unchecked)
                 else:
                     item.setCheckState(Qt.Checked)
+            
+                # Emit the custom signal when an item is checked/unchecked
+                self.itemCheckedStateChanged.emit()
                 return True
+
         return False
 
     def showPopup(self):

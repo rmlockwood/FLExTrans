@@ -5,6 +5,12 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.2 - 12/30/24 - Ron Lockwood
+#   Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
+#
+#   Version 3.12.1 - 12/4/24 - Ron Lockwood
+#    Fixes #823. Use the same logic that's in the Import from Ptx module to mark sfms as analysis writing system.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -93,7 +99,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -150,6 +156,7 @@ def MainFunction(DB, report, modify=True):
 
     try:
         f = open(synFile, encoding='utf-8')
+        fullText = f.read()
     except:
         TargetDB.CloseProject()
         report.Error('Could not open the file: "'+synFile+'".')
@@ -163,38 +170,26 @@ def MainFunction(DB, report, modify=True):
     m_stTextFactory = TargetDB.project.ServiceLocator.GetService(IStTextFactory)
     m_stTxtParaFactory = TargetDB.project.ServiceLocator.GetService(IStTxtParaFactory)
 
-    # Start an Undo Task
-#    TargetDB.db.MainCacheAccessor.BeginNonUndoableTask()  
-    
     # Create a text and add it to the project      
     text = m_textFactory.Create()           
     stText = m_stTextFactory.Create()
     
     # Set StText object as the Text contents
     text.ContentsOA = stText  
-    
-    # Add paragraphs from the synthesized file
-    for line in f:
-        # Create paragraph object
-        stTxtPara = m_stTxtParaFactory.Create()
-        
-        # Add it to the stText object
-        stText.ParagraphsOS.Add(stTxtPara)       
-        
-        # Create a TS String to hold the line of text. Use the default vern. writing system
-        tss = TsStringUtils.MakeString(line, TargetDB.project.DefaultVernWs)
-        
-        # Set the paragraph contents to the TS String
-        stTxtPara.Contents = tss             
-    
+
+    # Insert text into the target DB while marking sfms as analysis writing system
+    Utils.insertParagraphs(TargetDB, fullText, m_stTxtParaFactory, stText)
+
     # Set the title of the text
     tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
     
-    report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
-    
-    TargetDB.CloseProject()
+    # Set metadata for the text
+    Utils.setTextMetaData(DB, text)
 
+    report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
+    TargetDB.CloseProject()
+    f.close()
  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

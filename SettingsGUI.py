@@ -3,6 +3,13 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#
+#   Version 3.12.2 - 12/13/24 - Ron Lockwood
+#    Added projects to treat in a cluster.
+#
+#   Version 3.12.1 - 11/28/24 - Ron Lockwood
+#    Fixes #819. Allow morphnames and gram. categories in other Analysis WSs.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -138,12 +145,15 @@
 import os
 import sys
 
+from System import Guid
+from System import String
+
 from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 
 from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 
-from SIL.LCModel import IMoMorphType # type: ignore
+from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
 from PyQt5.QtCore import Qt
@@ -198,8 +208,19 @@ HIDE_FROM_USER = True
 targetComplexTypes = []
 sourceComplexTypes = []
 categoryList = []
+tgtCategoryList = []
 
-defaultMorphNames = [
+defaultMorphNamesGuid = [
+"d7f713e4-e8cf-11d3-9764-00c04f186933",# bound root
+"d7f713e7-e8cf-11d3-9764-00c04f186933",# bound stem
+"0cc8c35a-cee9-434d-be58-5d29130fba5b",# discontiguous phrase
+"56db04bf-3d58-44cc-b292-4c8aa68538f4",# particle
+"a23b6faa-1052-4f4d-984b-4b338bdaf95f",# phrase
+"d7f713e5-e8cf-11d3-9764-00c04f186933",# root
+"d7f713e8-e8cf-11d3-9764-00c04f186933",# stem
+]
+
+defaultMorphNamesEnglish = [
 "bound root",
 "bound stem",
 "discontiguous phrase",
@@ -222,14 +243,14 @@ def getSourceCategoryList(wind):
             
 def getTargetCategoryList(wind):
     
-    if len(categoryList) == 0:
+    if len(tgtCategoryList) == 0:
         
         for pos in wind.targetDB.lp.AllPartsOfSpeech:
             
             catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
-            categoryList.append(catStr)
+            tgtCategoryList.append(catStr)
             
-    return categoryList
+    return tgtCategoryList
             
 def getTargetComplexTypes(wind):
     
@@ -291,11 +312,22 @@ def loadCustomEntry(widget, wind, settingName):
                 
                 widget.setCurrentIndex(i)
 
+def loadAllProjects(widget, wind, settingName):
+
+    widget.addItems(AllProjectNames())
+
+    projNames = wind.read(settingName)
+    
+    if projNames:
+
+        for proj in projNames:
+
+            widget.check(proj)
+
 def loadTargetProjects(widget, wind, settingName):
 
     targetProject = wind.read(settingName)
     
-    # TODO: Make this disable the other stuff that uses target??
     for i, item in enumerate(AllProjectNames()):
         
         widget.addItem(item)
@@ -339,6 +371,7 @@ def loadTargetComplexFormTypes(widget, wind, settingName):
 def loadSourceMorphemeTypes(widget, wind, settingName):
 
     typesList = []
+    repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
     
     for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
         
@@ -348,8 +381,9 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
         if item.IsStemType == True:
             
             # convert this item's id to a string
-            myGuid = item.Guid.ToString()
-            morphTypeStr = Utils.morphTypeMap[myGuid]
+            morphType = repo.GetObject(item.Guid)
+            morphType = ICmPossibility(morphType)
+            morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
             
             typesList.append(morphTypeStr)
     
@@ -368,7 +402,8 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
-    
+    repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
+
     if wind.targetDB:
         
         for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
@@ -379,8 +414,9 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
             if item.IsStemType == True:
                 
                 # convert this item's id to a string
-                myGuid = item.Guid.ToString()
-                morphTypeStr = Utils.morphTypeMap[myGuid]
+                morphType = repo.GetObject(item.Guid)
+                morphType = ICmPossibility(morphType)
+                morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
                 
                 typesList.append(morphTypeStr)
         
@@ -391,18 +427,28 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
         # Use a default list if we have nothing set
         if not morphNames:
 
-            morphNames = defaultMorphNames
-    
-        for morphName in morphNames:
+            for guid in defaultMorphNamesGuid:
 
-            if morphName in typesList:
-                
-                widget.check(morphName)
+                # Go from guid to to morphname string in the analysis lang.
+                morphType = repo.GetObject(Guid(String(guid)))
+                morphType = ICmPossibility(morphType)
+                morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+
+                if morphTypeStr in typesList:
+                    
+                    widget.check(morphTypeStr)
+        else:
+    
+            for morphName in morphNames:
+
+                if morphName in typesList:
+                    
+                    widget.check(morphName)
     else:
         # Use a default list if the targetDB doesn't exist
-        widget.addItems(defaultMorphNames)
+        widget.addItems(defaultMorphNamesEnglish)
 
-        for morphName in defaultMorphNames:
+        for morphName in defaultMorphNamesEnglish:
 
             widget.check(morphName)
 
@@ -1385,6 +1431,14 @@ widgetList = [
 
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
     "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+
+
+    ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+     "", GIVE_ERROR, DONT_HIDE],\
+
+    ["Projects to treat together as a cluster", "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
+     "Indicate the cluster projects you would like to run some modules on together.", DONT_GIVE_ERROR, DONT_HIDE],\
 
 
 

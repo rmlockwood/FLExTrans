@@ -5,11 +5,14 @@
 #   SIL International
 #   3/8/23
 #
-#   Version 3.12.3 - 1/2/25 - Ron Lockwood
+#   Version 3.12.4 - 1/2/25 - Ron Lockwood
 #    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
 #
-#   Version 3.12.2 - 12/4/24 - Ron Lockwood
+#   Version 3.12.3 - 12/4/24 - Ron Lockwood
 #    Filter out the GenerateHC message 'Checking for duplicates', so the user doesn't see a warning.
+#
+#   Version 3.12.2 - 11/27/24 - Ron Lockwood
+#    Fixes #818. Call a dll for HC synthesis to speed up the process.
 #
 #   Version 3.12.1 - 11/22/24 - Ron Lockwood
 #    Fixes #812. Capitalize a word before sending it to synthesis if it is capitalized in the target
@@ -117,11 +120,13 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.3",
+        FTM_Version    : "3.12.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
         FTM_Description: description}
+
+SUCCESS = 'Success!'
 
 def configFileOutOfDate(targetDB, HCconfigPath):
 
@@ -147,7 +152,7 @@ def configFileOutOfDate(targetDB, HCconfigPath):
 
         return False
 
-def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIfAvailable=False):
+def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIfAvailable=False, DLLobj=None):
 
     errorList = []
 
@@ -186,6 +191,12 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     else:
         DONT_CACHE = True
     
+    if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
+
+        if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+            errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+            return errorList
+
     # If the target FLEx project hasn't changed and useCache is true than don't run HermitCrab, just return
     if not DONT_CACHE and useCacheIfAvailable and not configFileOutOfDate(TargetDB, HCconfigPath):
 
@@ -203,6 +214,13 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             else:
                 errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
                 errorList.append((result.stderr.decode(), 2))
+
+            # Reload the config file into the dll object.
+            if DLLobj:
+
+                if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                    return errorList
 
         except subprocess.CalledProcessError as e:
 
@@ -454,7 +472,7 @@ def getCapitalLemmas(HCconfigPath):
 
     return HCcapitalLemmasMap
 
-def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False):
+def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False, DLLobj=None):
     
     errorList = []
     luInfoList = []
@@ -476,19 +494,39 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     # Call HCSynthesis to produce surface forms. 
     try:
-        params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
+        # Do the operation with a dll differently than with the normal exe.
+        if DLLobj:
 
-        # We could add a Settings option to allow tracing
-        # If we are to trace the HC synthesis, we need the -t -s parameters
-        if trace:
-            params.extend(['-t', '-s'])
-            
-        result = subprocess.run(params, capture_output=True, check=True)
+            if trace:
+                DLLobj.DoTracing = True
+                DLLobj.ShowTracing = True
+            else:
+                DLLobj.DoTracing = False
+                DLLobj.ShowTracing = False
 
-        if result.returncode != 0:
-            errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
-            errorList.append((result.stderr.decode(), 2))
-            return errorList
+            if (ret := DLLobj.SetGlossFile(parsesFile)) != SUCCESS:
+
+                errorList.append((f'An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                return errorList
+
+            if (ret := DLLobj.Process()) != SUCCESS:
+
+                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                return errorList
+        else:
+            params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
+
+            # We could add a Settings option to allow tracing
+            # If we are to trace the HC synthesis, we need the -t -s parameters
+            if trace:
+                params.extend(['-t', '-s'])
+                
+            result = subprocess.run(params, capture_output=True, check=True)
+
+            if result.returncode != 0:
+                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+                errorList.append((result.stderr.decode(), 2))
+                return errorList
 
     except subprocess.CalledProcessError as e:
 

@@ -5,6 +5,22 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.6 - 12/31/24 - Ron Lockwood
+#    Fixes #830. Validate project abbreviation only if we are not using cluster projects.
+#    Revamp what we do before calling do_import and have do_import build the full path to the book.
+#
+#   Version 3.12.5 - 12/30/24 - Ron Lockwood
+#    Fixes #742. Set the IsTranslated and Source metadata fields for the new text.
+#
+#   Version 3.12.4 - 12/30/24 - Ron Lockwood
+#    Move dynamic widget creation and display to Cluster Utils.
+#
+#   Version 3.12.3 - 12/24/24 - Ron Lockwood
+#    Support cluster project importing.
+#
+#   Version 3.12.2 - 12/4/24 - Ron Lockwood
+#    Fixes #823. Use the same logic that's in the Import from Ptx module to mark sfms as analysis writing system.
+#
 #   Version 3.12.1 - 11/26/24 - Ron Lockwood
 #    Allow intro. to be imported with chapter 1.
 #    Fixed bug with excluding \r by using DOTALL
@@ -114,18 +130,21 @@ import sys
 from shutil import copyfile
 import xml.etree.ElementTree as ET
 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.Core.Text import TsStringUtils
+from SIL.LCModel import ( # type: ignore
+    ITextFactory,
+    IStTextFactory,
+    IStTxtParaFactory,
+    ITextRepository,
+)
+from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
-from flexlibs import FLExProject, AllProjectNames
-
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox
 
 import FTPaths
 import ReadConfig
+import ClusterUtils
 import Utils
 import ChapterSelection
 import TextInOutUtils
@@ -133,13 +152,12 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 
 #----------------------------------------------------------------
 # Configurables:
-PTXPATH = 'C:\\My Paratext 8 Projects'
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -150,7 +168,9 @@ imported. The book name should be given as a three-letter abbreviation just like
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
 new text. If you want to include the footnotes in the import, click the check box. 
 If you want to use the English full name of the book in the text name, click the check box. 
-If you want to make the newly imported text, the active text in FLExTrans click the check box.""" }
+If you want to make the newly imported text, the active text in FLExTrans click the check box.
+Importing into multiple FLEx projects from multiple Paratext projects is possible. First select
+cluster projects in the main FLExTrans Settings, then come back to this module.""" }
                  
 #----------------------------------------------------------------
 # The main processing function
@@ -162,20 +182,28 @@ replaceList = [\
 
 class Main(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, clusterProjects):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         self.toChap = 0
         self.fromChap = 0
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        
-        self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
-        self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
-        
         self.setWindowTitle("Import Paratext Chapters")
+
+        header1TextStr = "FLEx project name"
+        header2TextStr = "Paratext project abbrev."
+        self.ptxProjs = ChapterSelection.getParatextProjects()
+
+        # Set the top two widgets that need to be disabled
+        self.topWidget1 = self.ui.ptxProjAbbrevLineEdit
+        self.topWidget2 = self.ui.label
+
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.centralwidget, header1TextStr, header2TextStr, 100, self.fillPtxCombo)
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=False)
@@ -184,6 +212,18 @@ class Main(QMainWindow):
         self.toChap = self.ui.toChapterSpinBox.value()
         self.enableOneTextPerChapter()
         self.enableIncludeIntro()
+
+        self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
+        self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
+
+    def fillPtxCombo(self, comboWidget):
+
+        # Fill the combo box
+        comboWidget.addItems(['...'] + self.ptxProjs)
+    
+    def clusterSelectionChanged(self):
+
+        ClusterUtils.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False
@@ -273,9 +313,17 @@ def do_import(DB, report, chapSelectObj, tree):
     firstTitle = None
     byChapterList = []
 
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return
+    
     # Open the Paratext file and read the contents
-    f = open(chapSelectObj.bookPath, encoding='utf-8')
-    bookContents = f.read()
+    with open(bookPath, encoding='utf-8') as f:
+
+        bookContents = f.read()
     
     # Find all the chapter #s
     chapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
@@ -387,74 +435,7 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set StText object as the Text contents
         text.ContentsOA = stText  
     
-        # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
-        # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
-        # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
-        # Attributes are of the form |x=123 ... \s*
-        # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
-        #                                                                                                                                                                                                  eg \+xt
-        #                  attribs end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    ref+dash       ref        marker+ any marker
-        segs = re.split(r'(\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', chapterContent) 
-
-        # Create 1st paragraph object
-        stTxtPara = m_stTxtParaFactory.Create()
-        
-        # Add it to the stText object
-        stText.ParagraphsOS.Add(stTxtPara)    
-
-        bldr = TsStringUtils.MakeStrBldr()
-
-        # See if we have a script that has both upper and lower case. 
-        if len(segs) >= 2:
-            
-            # Find a non-zero segment vernacular string (an even numbered index)
-            for i in range(2, len(segs), 2):
-                
-                if len(segs[i]) > 0:
-                
-                    # if the lower case is equal to the upper case, assume this script has no upper case
-                    if segs[i].lower() == segs[i].upper():
-                        
-                        upperCase = False
-                    else:
-                        upperCase = True
-                        
-                    break
-        
-        # SFMs to start a new paragraph in FLEx
-        #newPar = r'\\[cpsqm]'
-        newPar = r'\n' # just start a new paragraph at every line feed
-        
-        for _, seg in enumerate(segs):
-            
-            if not (seg is None or len(seg) == 0 or seg == '\n'):
-                
-                # Either an sfm marker or a verse ref should get marked as Analysis WS
-                if re.search(r'\\|\d+[.:]\d+', seg):
-                    
-                    # make this in the Analysis WS
-                    tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
-                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-                    
-                else:
-                    # make this in the Vernacular WS
-                    tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
-                    bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-            
-            if seg and re.search(newPar, seg): # or first segment if not blank
-            
-                # Save the built up string to the Contents member
-                stTxtPara.Contents = bldr.GetString()
-                
-                # Create paragraph object
-                stTxtPara = m_stTxtParaFactory.Create()
-                
-                # Add it to the stText object
-                stText.ParagraphsOS.Add(stTxtPara)  
-            
-                bldr = TsStringUtils.MakeStrBldr()
-            
-        stTxtPara.Contents = bldr.GetString()
+        Utils.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
 
         # Build the title string from book abbreviation and chapter.
         title = bibleBook + ' ' + str(titleChapNum).zfill(2)
@@ -467,8 +448,20 @@ def do_import(DB, report, chapSelectObj, tree):
                 #  E.g. EXO 03-04
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
-        # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
-        title = Utils.createUniqueTitle(DB, title)
+        # If the user wants to overwrite the existing text, delete it.
+        if chapSelectObj.overwriteText:
+
+            # Find the text
+            for interlinText in DB.ObjectsIn(ITextRepository):
+
+                if title == Utils.as_string(interlinText.Name).strip():
+                    
+                    # Delete it
+                    interlinText.Delete()
+                    break
+        else:
+            # Use new file name if the current one exists. E.g. PSA 01-03, PSA 01-03 - Copy, PSA 01-03 - Copy (2)
+            title = Utils.createUniqueTitle(DB, title)
         
         if firstTitle == None:
 
@@ -477,8 +470,11 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set the title of the text
         tss = TsStringUtils.MakeString(title, DB.project.DefaultAnalWs)
         text.Name.AnalysisDefaultWritingSystem = tss
-        
-        report.Info('Text: "'+title+'" created.')
+
+        # Set metadata for the text
+        Utils.setTextMetaData(DB, text)
+
+        report.Info(f'Text: "{title}" created in the {DB.ProjectName()} project.')
 
         titleChapNum += 1
         
@@ -508,7 +504,7 @@ def MainFunction(DB, report, modify=True):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-   # Get the path to the search-replace rules file
+    # Get the path to the search-replace rules file
     textInRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_IN_RULES_FILE, report, giveError=False)
 
     if textInRulesFile is not None:
@@ -523,15 +519,46 @@ def MainFunction(DB, report, modify=True):
                 report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
                 return
 
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+    else:
+        # Remove blank ones
+        clusterProjects = [x for x in clusterProjects if x]
+        
     # Show the window
     app = QApplication(sys.argv)
-    window = Main()
+    window = Main(clusterProjects)
     window.show()
     app.exec_()
     
     if window.retVal == True:
         
-        do_import(DB, report, window.chapSel, tree)
+        if len(window.chapSel.clusterProjects) > 0:
+
+            for i, proj in enumerate(window.chapSel.clusterProjects):
+
+                if window.chapSel.ptxProjList[i] == '...':
+                    continue
+
+                # Open the project (if it's not the main proj)
+                if proj == DB.ProjectName():
+
+                    myDB = DB
+                else:
+                    myDB = Utils.openProject(report, proj)
+
+                # Set the import project member to the right ptx project and import it
+                window.chapSel.importProjectAbbrev = window.chapSel.ptxProjList[i]
+                do_import(myDB, report, window.chapSel, tree)
+
+                # Close the project (if not the main)
+                if proj != DB.ProjectName():
+
+                    myDB.CloseProject()
+        else:
+            do_import(DB, report, window.chapSel, tree)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
