@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.1 - 1/2/25 - Ron Lockwood
+#    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -238,6 +241,9 @@
 #   complex, we process recursively all the components. The end result is possibly
 #   multiple ANA records. I say possibly because some complex forms may map to
 #   clitics plus their roots without being multiple words.
+#
+#   For the design on how this module works in the HermitCrab synthesis situation,
+#   see Basic Design in the DoHermitCrabSynthesis.py file.
 #   
 import re 
 import os
@@ -264,7 +270,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -309,6 +315,8 @@ class ANAInfo(object):
         
         if word.isupper():
             return '2'
+        elif ' ' in word and word.istitle():
+            return '3'
         elif word[0].isupper():
             return '1'
         else:
@@ -320,6 +328,8 @@ class ANAInfo(object):
             return myStr.upper()
         elif self.getCapitalization() == '1':
             return myStr.capitalize()
+        elif self.getCapitalization() == '3':
+            return myStr.title()
         else:
             return myStr
 
@@ -352,8 +362,12 @@ class ANAInfo(object):
         return re.search(r'>\s*(.*)',self.Analysis).group(1).split()
     def getBeforePunc(self):
         return self.BeforePunc
-    def getCapitalization(self):
-        return self.Capitalization
+    def getCapitalization(self, foldForANA=False):
+        # For ANA format for STAMP, don't use the new '3' (title) case. Fold it to '1'. STAMP only supports 1 or 2.
+        if foldForANA and self.Capitalization == '3':
+            return '1'
+        else:
+            return self.Capitalization
     def getHCparseStr(self):
 
         pfxs = '><'.join(self.getAnalysisPrefixes())
@@ -473,7 +487,7 @@ class ANAInfo(object):
             
         if self.getCapitalization():
             
-            fOutput.write('\\c ' + self.getCapitalization() + '\n')
+            fOutput.write('\\c ' + self.getCapitalization(foldForANA=True) + '\n')
             
         fOutput.write('\n')
         

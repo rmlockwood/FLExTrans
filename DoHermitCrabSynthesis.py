@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.3 - 1/2/25 - Ron Lockwood
+#    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
+#
 #   Version 3.12.2 - 12/4/24 - Ron Lockwood
 #    Filter out the GenerateHC message 'Checking for duplicates', so the user doesn't see a warning.
 #
@@ -58,6 +61,30 @@
 #
 #   Synthesize using Hermit Crab.
 #
+# Basic Design:
+#
+# Create HermitCrabMaster.txt file - this file holds each word parse on a line the parse is in a couple different formats in the form X,Y. 
+#  This file is created in the Convert Text to Synthesizer Format module. It is a file that contains only unique parses. 
+#  X is the Apertium representation of the parse ^...$
+#  Y holds one or more parses in the form the HC needs. Y is in the form A|B...|C
+#  A is in the form Q;N where Q is the parse and N is the capitalization code N can be null
+#  Q is in the form <pfx1>...<pfxN>root<cat><sfx1>...<sfxN> the code goes from X form to Q form by consulting the affix list file
+#
+# The rest happens in the Do HermitCrab Synthesis module
+# Extract the HermitCrab config file - this config file is actually a full target lexicon in an XML format along with all rules and settings needed for HC. This takes a bit of time.
+# Create an internal map of the lowercase version of all lemmas in the HC config file to the original cased version.
+# Create the HC parses file - this is the file that we will send to HC for synthesizing.
+#  The parses are in HC order, like Q above.
+#  The file is created by iterating through the Master file. Lemmas are restored to their
+#   cased forms as in the HC config file using the internal map from above.
+#  Phrases of the form A|B in the master file come out as consecutive LUs, e.g. ^...$^...$
+#  The list of LUs gets saved for use below.
+# Now HC is called to convert the parses file into a surface forms file (using the HC config file info)
+#  In this surface forms file, multiple words are separated by commas (R,T)
+# Next we produce the synthesized text using the previous generated Apertium results file
+#  (which is the output from apply Apertium rules to the source file) and the surface forms and the saved LU list.
+#  The code iterates through the surface forms and using the original LU, substitutes every #   every LU in the Apertium results file with the matched surface form. 
+#   In the loop, the code applies the need capitalization for the word before substitution.
 
 import os
 import sys
@@ -90,7 +117,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -343,7 +370,9 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
             # Capitalize if necessary
             if capCode:
                 hcParse = capitalize(hcParse, HCcapitalLemmasMap)
-                fParses.write('^' + hcParse + '$')
+
+            # Write the parse to the parses file
+            fParses.write('^' + hcParse + '$')
         
         fParses.write('\n')
         luInfoList.append((luStr, capCodeList))

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.7 - 1/2/25 - Ron Lockwood
+#    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
+#
 #   Version 3.12.2 - 12/3/24 - Ron Lockwood
 #    Fixes #821. Don't escape < and > in literal strings. Right now we don't allow them in lemmas anyway
 #    and this messes up rules that are looking for literal strings starting with <xyz, i.e. a tag.
@@ -1945,6 +1948,10 @@ def capitalizeString(inStr, capitalizeCode, useCurrentLocaleRules=False):
     elif capitalizeCode == '1':
 
         return inStr.capitalize()
+
+    elif capitalizeCode == '3':
+
+        return inStr.title()
 
     return inStr
 
