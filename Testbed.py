@@ -1164,10 +1164,6 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
 # Split a compound from one lexical unit containing multiple words to multiple
 def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.info(lu_str)
-            
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
     symbols = [_f for _f in symbols if _f] # filter out the empty strings
