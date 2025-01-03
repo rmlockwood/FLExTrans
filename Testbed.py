@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12.1 - 1/3/25 - Ron Lockwood
+#    Fixes #241. Also fix if the lemma is something like 7.1, we have an empty lemma.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -1116,7 +1119,7 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
     lemma_parts = re.split('(\d+\.\d+)', lemma, flags=re.RegexFlag.A) # last item is empty, re.RegexFlag.A=ASCII only match
     
     # Check for an @
-    if lemma_parts[0][0] == '@':
+    if lemma_parts[0] and lemma_parts[0][0] == '@':
         # color it red for not found
         lexeme_color = NOT_FOUND_COLOR
         
@@ -1161,6 +1164,10 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
 # Split a compound from one lexical unit containing multiple words to multiple
 def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(lu_str)
+            
     # Split off the symbols from the lemma in the lexical unit (which is i+1)
     symbols = re.split('<|>', lu_str)
     symbols = [_f for _f in symbols if _f] # filter out the empty strings
