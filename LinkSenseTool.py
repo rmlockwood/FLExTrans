@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.5 - 1/3/25 - Ron Lockwood
+#    Fixes #696. Scroll to the top of the table after filtering.
+#
 #   Version 3.12.4 - 12/30/24 - Ron Lockwood
 #    Move New Entry Dialog to its own file. Support cluster projects.
 #
@@ -305,7 +308,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1251,6 +1254,8 @@ class Main(QMainWindow):
         
         # Recalculate links since we won't count prop nouns if the Hide prop nouns checkboxe is checked.
         self.calculateRemainingLinks()
+
+        self.ui.tableView.scrollToTop()
         
         return
     
