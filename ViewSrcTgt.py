@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.12.1 - 1/3/25 - Ron Lockwood
+#    Fixes #241. Error message now includes which modules need to be run.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -102,22 +105,25 @@ from SrcTgtViewer import Ui_MainWindow
 import FTPaths
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import ReadConfig
+import ExtractSourceText
+import RunApertium
 from Testbed import *
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "View an easy-to-read source or target text file.",    
         FTM_Help   : "",
         FTM_Description: 
-"""
+f"""
 This module will display a more readable view of the Apertium source or target 
 file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
-dark pink-unknown lemma, pink-unknown category, red-lemma not found. 
+dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
+must run the modules through {RunApertium.docs[FTM_Name]} before running this module.
 """ }
                  
 #----------------------------------------------------------------
@@ -242,12 +248,33 @@ class Main(QMainWindow):
     def RTLClicked(self):
         self.load()
 
+    def getLastFolderAndFile(self, path):
+
+        # Get the base name (file name) from the path
+        fileName = os.path.basename(path)
+        
+        # Get the directory name from the path
+        dirName = os.path.dirname(path)
+        
+        # Get the last folder name from the directory path
+        lastFolder = os.path.basename(dirName)
+        
+        # Join the last folder and the file name
+        result = os.path.join(lastFolder, fileName)
+        
+        return result
+
     def load(self):
         # Open the input file
         try:
             f = open(self.viewFile, encoding='utf-8')
         except IOError:
-            QMessageBox.warning(self, 'File Error', 'There was a problem opening the file: '+self.viewFile+'. ')
+            if self.viewFile == self.src:
+                QMessageBox.warning(self, 'File Error', f'There was a problem opening the Source Apertium Text file: {self.getLastFolderAndFile(self.viewFile)}. '\
+                                    f'Make sure you have run the {ExtractSourceText.docs[FTM_Name]} module first.')
+            else:
+                QMessageBox.warning(self, 'File Error', f'There was a problem opening a Target Apertium Text file: {self.getLastFolderAndFile(self.viewFile)}. '\
+                                    f'Make sure you have run the modules up through {RunApertium.docs[FTM_Name]} first.')
             return
         
         # Remove extra carriage returns apertium is giving us in the target file.
