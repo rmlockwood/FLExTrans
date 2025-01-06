@@ -237,7 +237,7 @@ def getSourceCategoryList(wind):
             
 def getTargetCategoryList(wind):
     
-    if len(tgtCategoryList) == 0:
+    if wind.targetDB and len(tgtCategoryList) == 0:
         
         for pos in wind.targetDB.lp.AllPartsOfSpeech:
             
