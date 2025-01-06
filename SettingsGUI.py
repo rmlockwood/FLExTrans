@@ -4,6 +4,10 @@
 #   3/28/22
 #
 #
+#   Version 3.12.4 - 1/6/25 - Ron Lockwood
+#    Improved detection if a checked combo box changed. Before we were marking the settings as changed
+#    just if the combo box was clicked. Now we only mark the setting as changed if an item gets checked or unchecked.
+#
 #   Version 3.12.3 - 1/6/25 - Ron Lockwood
 #    Fixes #836. Crash when the target project doesn't exist. When fixing #819 below,
 #    I didn't account for the case where the target project doesn't exist. This fixes that.
@@ -547,7 +551,7 @@ def loadFile(widget, wind, settingName):
 
 def reportChange(wind, mySet, myWidgInfo):
     
-    # create a new function that will call doBrowse with the given parameters
+    # create a new function that will call doReport with the given parameters
     def report_it():
         
         doReport(mySet, myWidgInfo)
@@ -557,7 +561,7 @@ def reportChange(wind, mySet, myWidgInfo):
 
 def reportChangeAndDisable(wind, mySet, myWidgInfo):
     
-    # create a new function that will call doBrowse with the given parameters
+    # create a new function that will call doReport with the given parameters
     def report_it():
         
         doReport(mySet, myWidgInfo)
@@ -584,15 +588,13 @@ def makeOpenFile(wind, myWidgInfo):
     
 def makeOpenFolder(wind, myWidgInfo):
     
-    # create a new function that will call doBrowse with the given parameters
+    # create a new function that will call doFolderBrowse with the given parameters
     def open_folder():
         
         doFolderBrowse(wind, myWidgInfo)
         wind.setModifiedFlag()
         
     return open_folder
-    
-    doBrowse(wind, myWidgInfo)
     
 def doBrowse(wind, myWidgInfo):
 
@@ -956,7 +958,7 @@ class Main(QMainWindow):
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 # TODO: this doesn't do anything. Need to figure out what signal we can connect to to see if this widget has changed data
-                widgInfo[WIDGET1_OBJ].currentIndexChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
+                widgInfo[WIDGET1_OBJ].itemCheckedStateChanged.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
@@ -971,12 +973,10 @@ class Main(QMainWindow):
                 
                 widgInfo[WIDGET1_OBJ].toggled.connect(reportChange(self, self.changedSettingsSet, widgInfo))
                 
-        self.clearCheckComboBoxModifiedFlags()
-        
         # Apply button
         self.ui.apply_button.clicked.connect(self.save)
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
-        self.ui.Close_button.clicked.connect(self.closeMyWindow)
+        self.ui.Close_button.clicked.connect(self.closeEvent)
 
     def disableTargetWidgets(self):
         
@@ -1038,45 +1038,7 @@ class Main(QMainWindow):
 
     def closeEvent(self, event):
         
-        self.closeMyWindow()
-        
-    def closeMyWindow(self):
-        
-        if self.giveConfirmation:
-            
-            self.checkIfCheckComboChanged()
-            
         self.close()
-        
-    def clearCheckComboBoxModifiedFlags(self):
-        
-        # If a check combo box was modified, set the modified flag for this main class so 
-        # we can prompt the user to save
-        for i in range(0, len(widgetList)):
-            
-            widgInfo = widgetList[i]
-            
-            if widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
-                
-                widgInfo[WIDGET1_OBJ].modified = False
-        
-    def checkIfCheckComboChanged(self):
-        
-        # If a check combo box was modified, set the modified flag for this main class so 
-        # we can prompt the user to save
-        for i in range(0, len(widgetList)):
-            
-            widgInfo = widgetList[i]
-            
-            if widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
-                
-                if widgInfo[WIDGET1_OBJ].modified:
-                    
-                    self.changedSettingsSet.add(widgInfo[LABEL_TEXT])
-                    self.modified = True
-                    
-                    # Reset them all back to False
-                    widgInfo[WIDGET1_OBJ].modified = False
         
     def saveAndClose(self):
         
@@ -1148,15 +1110,10 @@ class Main(QMainWindow):
             
         f.close()
         
-        self.checkIfCheckComboChanged()
-        
         self.reportChangedSettings()
 
         self.modified = False
         self.changedSettingsSet.clear()
-        
-        # Mark the combo boxes as not having changed
-        self.clearCheckComboBoxModifiedFlags()
         
         if self.giveConfirmation:
             
