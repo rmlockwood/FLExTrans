@@ -4,6 +4,10 @@
 #   3/28/22
 #
 #
+#   Version 3.12.3 - 1/6/25 - Ron Lockwood
+#    Fixes #836. Crash when the target project doesn't exist. When fixing #819 below,
+#    I didn't account for the case where the target project doesn't exist. This fixes that.
+#
 #   Version 3.12.2 - 12/13/24 - Ron Lockwood
 #    Added projects to treat in a cluster.
 #
@@ -145,8 +149,8 @@
 import os
 import sys
 
-from System import Guid
-from System import String
+from System import Guid # type: ignore
+from System import String # type: ignore
 
 from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 
@@ -210,24 +214,14 @@ sourceComplexTypes = []
 categoryList = []
 tgtCategoryList = []
 
-defaultMorphNamesGuid = [
-"d7f713e4-e8cf-11d3-9764-00c04f186933",# bound root
-"d7f713e7-e8cf-11d3-9764-00c04f186933",# bound stem
-"0cc8c35a-cee9-434d-be58-5d29130fba5b",# discontiguous phrase
-"56db04bf-3d58-44cc-b292-4c8aa68538f4",# particle
-"a23b6faa-1052-4f4d-984b-4b338bdaf95f",# phrase
-"d7f713e5-e8cf-11d3-9764-00c04f186933",# root
-"d7f713e8-e8cf-11d3-9764-00c04f186933",# stem
-]
-
-defaultMorphNamesEnglish = [
-"bound root",
-"bound stem",
-"discontiguous phrase",
-"particle",
-"phrase",
-"root",
-"stem"
+defaultMorphNames = [
+("d7f713e4-e8cf-11d3-9764-00c04f186933", "bound root"),
+("d7f713e7-e8cf-11d3-9764-00c04f186933", "bound stem"),
+("0cc8c35a-cee9-434d-be58-5d29130fba5b", "discontiguous phrase"),
+("56db04bf-3d58-44cc-b292-4c8aa68538f4", "particle"),
+("a23b6faa-1052-4f4d-984b-4b338bdaf95f", "phrase"),
+("d7f713e5-e8cf-11d3-9764-00c04f186933", "root"),
+("d7f713e8-e8cf-11d3-9764-00c04f186933", "stem")
 ]
 
 def getSourceCategoryList(wind):
@@ -371,7 +365,7 @@ def loadTargetComplexFormTypes(widget, wind, settingName):
 def loadSourceMorphemeTypes(widget, wind, settingName):
 
     typesList = []
-    repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
+    repo = wind.DB.project.ServiceLocator.GetService(ICmObjectRepository)
     
     for item in wind.DB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
         
@@ -402,9 +396,10 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
     typesList = []
-    repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
     if wind.targetDB:
+        
+        repo = wind.targetDB.project.ServiceLocator.GetService(ICmObjectRepository)
         
         for item in wind.targetDB.lp.LexDbOA.MorphTypesOA.PossibilitiesOS:
 
@@ -427,10 +422,10 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
         # Use a default list if we have nothing set
         if not morphNames:
 
-            for guid in defaultMorphNamesGuid:
+            for guidStr in defaultMorphNames:
 
                 # Go from guid to to morphname string in the analysis lang.
-                morphType = repo.GetObject(Guid(String(guid)))
+                morphType = repo.GetObject(Guid(String(guidStr[0])))
                 morphType = ICmPossibility(morphType)
                 morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
 
@@ -446,9 +441,9 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
                     widget.check(morphName)
     else:
         # Use a default list if the targetDB doesn't exist
-        widget.addItems(defaultMorphNamesEnglish)
+        widget.addItems(engList := [eng[1] for eng in defaultMorphNames])
 
-        for morphName in defaultMorphNamesEnglish:
+        for morphName in engList:
 
             widget.check(morphName)
 
