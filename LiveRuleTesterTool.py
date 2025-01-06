@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.3 - 1/6/25 - Ron Lockwood
+#    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
+#
 #   Version 3.12.2 - 12/4/24 - Ron Lockwood
 #    Fixes #821. Escape reserved characters in the transfer rules generated for the LRT.
 #
@@ -439,7 +442,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1339,7 +1342,7 @@ class Main(QMainWindow):
 
                 # Load the DLL 
                 clr.AddReference('HCSynthByGlossDll')
-                from SIL.HCSynthByGloss2 import HCSynthByGlossDll
+                from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
 
                 # Initialize the object with the output file name
                 self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
@@ -2812,8 +2815,14 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
         retVal = RunModule(DB, report, configMap, ruleCount)
 
         if retVal == START_RULE_ASSISTANT:
+
             from RuleAssistant import MainFunction as RA
+            from RuleAssistant import docs as RA_docs
+            report.Info(f'Running {RA_docs[FTM_Name]} (version {RA_docs[FTM_Version]})...')
             ruleCount = RA(DB, report, modify, fromLRT=True)
+
+            # Show we are re-running the LRT
+            report.Info(f'Running {docs[FTM_Name]} (version {docs[FTM_Version]})...')
             retVal = RESTART_MODULE
         else:
             ruleCount = None

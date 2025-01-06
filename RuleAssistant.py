@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12.1 - 1/6/25 - Ron Lockwood
+#    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -48,17 +51,17 @@ import FTPaths
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",
@@ -88,17 +91,23 @@ class DBStartData:
     categoryFeatures: dict
 
     def toXml(self, root, tag):
+
         parent = ET.SubElement(root, tag, {NAME: self.projectName})
 
         catsEl = ET.SubElement(parent, CATEGORIES)
 
         for cat in self.categoryList:
+
             elem = ET.SubElement(catsEl, FLEXCATEGORY, {ABBREV: cat})
             dct = self.categoryFeatures.get(cat)
+
             if not dct:
                 continue
+
             group = ET.SubElement(elem, 'ValidFeatures')
+
             for feat, types in sorted(dct.items()):
+
                 ET.SubElement(group, 'ValidFeature', name=feat,
                               type='|'.join(sorted(types)))
 
@@ -108,9 +117,12 @@ class DBStartData:
         featsEl = ET.SubElement(parent, FEATURES)
 
         for name, values in self.featureList:
+
             featEl = ET.SubElement(featsEl, FLEXFEATURE, {NAME: name})
             group = ET.SubElement(featEl, VALUES)
+
             for val in values:
+
                 ET.SubElement(group, FLEXFEATUREVALUE, {ABBREV: val})
 
 @dataclass
@@ -120,6 +132,7 @@ class StartData:
     tgt: DBStartData
 
     def write(self, fileName):
+
         root = ET.Element(FLEXDATA)
         self.src.toXml(root, SOURCEDATA)
         self.tgt.toXml(root, TARGETDATA)
@@ -148,7 +161,9 @@ def getFeatureData(DB):
     return myFeatureList
 
 def GetStartData(report, DB, configMap):
+
     posMap = {}
+
     # Put categories in posMap
     Utils.get_categories(DB, report, posMap, TargetDB=None,
                          numCatErrorsToShow=1, addInflectionClasses=False)
@@ -163,21 +178,30 @@ def GetStartData(report, DB, configMap):
 
     # Don't use the above catList since it will have been modified for invalid characters
     for pos in DB.lp.AllPartsOfSpeech:
+
         flexCat = Utils.as_string(pos.Abbreviation)
 
         # For the catFeatures dictionary use the modified category string
         cat = Utils.convertProblemChars(flexCat, Utils.catProbData)
         catFeatures[cat] = {feat: {'stem'} for feat in stemFeatures[flexCat]}
         templates = Utils.getAffixTemplates(DB, flexCat)
+
         for tmpl in templates:
+
             for feat, side in tmpl:
+
                 if feat not in catFeatures[cat]:
+
                     catFeatures[cat][feat] = set()
+
                 catFeatures[cat][feat].add(side)
 
         for feat in inflFeatures[flexCat]:
+
             if feat not in catFeatures[cat]:
+
                 catFeatures[cat][feat] = set()
+
             catFeatures[cat][feat].add('prefix')
             catFeatures[cat][feat].add('suffix')
 
@@ -189,44 +213,66 @@ def GetRuleAssistantStartData(report, DB, TargetDB, configMap):
                      GetStartData(report, TargetDB, configMap))
 
 def ProcessLine(line):
+
     readings = []
     loc = 'blank'
     esc = False
     cur_reading = []
     cur_string = ''
+
     for c in line:
+
         if esc:
+
             esc = False
+
             if loc != 'blank':
+
                 cur_string += c
+
         elif c == '\\':
+
             esc = True
+
         elif loc == 'blank' and c == '^' and not esc:
+
             loc = 'lu'
+
         elif loc == 'lu' and c == '$' and not esc:
+
             loc = 'blank'
             cur_reading.append(cur_string)
             cur_string = ''
             readings.append(cur_reading)
             cur_reading = []
+
             if len(readings) >= 2:
+
                 yield ([p for p in readings[0] if p],
                        [p for p in readings[1] if p])
             readings = []
+
         elif loc == 'lu' and c == '/' and not esc:
+
             cur_reading.append(cur_string)
             cur_string = ''
             readings.append(cur_reading)
             cur_reading = []
+
         elif loc == 'lu':
+
             if c == '<':
+
                 loc = 'tag'
                 cur_reading.append(cur_string)
                 cur_string = ''
             else:
                 cur_string += c
+
         elif loc == 'tag':
+
             if c == '>':
+
                 loc = 'lu'
                 cur_reading.append(cur_string)
                 cur_string = ''
@@ -234,14 +280,18 @@ def ProcessLine(line):
                 cur_string += c
 
 readingNumberRegex = re.compile(r'(\d+\.\d+)$')
+
 def ReadingToHTML(reading):
+
     pieces = [
         readingNumberRegex.sub(r'<span class="num">\1</span>', reading[0]),
         '<span class="pos">'+reading[1]+'</span>',
     ] + ['<span class="tag">'+tag+'</span>' for tag in reading[2:]]
+
     return '<span class="lu">'+''.join(pieces)+'</span>'
 
 def GenerateTestDataFile(report, DB, configMap, fhtml):
+
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
@@ -249,11 +299,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         return False
 
     if not os.path.isfile(bidix):
+
         report.Warning('Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.')
+        return False
 
     content = None
+
     for text in DB.ObjectsIn(ITextRepository):
+
         if Utils.as_string(text.Name).strip() == sourceText:
+
             content = text.ContentsOA
             break
     else:
@@ -261,49 +316,72 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         return False
 
     params = Utils.initInterlinParams(configMap, report, content)
+
     if params is None:
         return False
+    
     text = Utils.getInterlinData(DB, report, params)
 
-    fsrc = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantSourceTestData.txt')
+    fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
+
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
-    ftgt = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantTargetTestData.txt')
+
+    ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
     subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
                     '-b', bidix, fsrc, ftgt], capture_output=True)
 
-    with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
-        fout.write('''<html><head><style>
+    try:
+        with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
+
+            fout.write('''<html><head><style>
 .lu { margin-left: 5px; font-size: 75%; }
 .pos { color: blue; margin-left: 5px; }
 .tag { color: green; margin-left: 5px; }
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
-        fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
-        line_count = 0
-        for line in fin:
-            if not line.strip():
-                continue
-            srcLine = ''
-            tgtLine = ''
-            for src, tgt in ProcessLine(line):
-                if len(src) > 1 and len(tgt) > 1:
-                    srcLine += ReadingToHTML(src)
-                    tgtLine += ReadingToHTML(tgt)
-            fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
-            line_count += 1
-            if line_count >= 30:
-                break
-        fout.write('</body></html>\n')
+            fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
+            line_count = 0
 
+            for line in fin:
+
+                if not line.strip():
+                    continue
+
+                srcLine = ''
+                tgtLine = ''
+
+                for src, tgt in ProcessLine(line):
+
+                    if len(src) > 1 and len(tgt) > 1:
+
+                        srcLine += ReadingToHTML(src)
+                        tgtLine += ReadingToHTML(tgt)
+
+                fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
+                line_count += 1
+
+                if line_count >= 30:
+                    break
+
+            fout.write('</body></html>\n')
+
+    except Exception as e:
+        return False
+    
     return True
 
 def GetTestDataFile(report, DB, configMap):
-    fhtml = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantDisplayData.html')
+
+    fhtml = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_DISPLAY_DATA_FILE)
+
     if not GenerateTestDataFile(report, DB, configMap, fhtml):
+
         with open(fhtml, 'w') as fout:
+
             fout.write('<html><body><p>No test data available.</body></html>\n')
+
     return fhtml
 
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
@@ -320,9 +398,12 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
         output = result.stdout.decode('utf-8').strip().split()
         lrt = (not fromLRT) and ('LRT' in output)
+
         if not output or output[0] not in ['1', '2']:
             return (False, None, lrt)
+        
         elif output[0] == '1':
+            
             return (True, int(output[1]), lrt) # create single rule
         else:
             return (True, None, lrt) # create all rules

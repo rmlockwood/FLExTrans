@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.8 - 1/6/25 - Ron Lockwood
+#    Clean up more Rule Assistant files.
+#
 #   Version 3.12.7 - 1/2/25 - Ron Lockwood
 #    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
 #
@@ -524,6 +527,9 @@ OUTPUT_FOLDER = 'Output'
 BUILD_FOLDER = 'Build'
 
 RA_GUI_INPUT_FILE = 'ruleAssistantGUIinput.xml'
+RULE_ASSISTANT_SOURCE_TEST_DATA_FILE = 'RuleAssistantSourceTestData.txt'
+RULE_ASSISTANT_TARGET_TEST_DATA_FILE = 'RuleAssistantTargetTestData.txt'
+RULE_ASSISTANT_DISPLAY_DATA_FILE = 'RuleAssistantDisplayData.html'
 
 # Style used for hyperlink style
 globalStyle = 'NotSet'
