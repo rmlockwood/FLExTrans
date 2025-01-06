@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.12.1 - 1/6/25 - Ron Lockwood
+#    Clean up more Rule Assistant files.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -283,7 +286,19 @@ def MainFunction(DB, report, modify=True):
 
     # GUI input file for Rule Assistant
     try:
-        os.remove(buildFolder+Utils.RA_GUI_INPUT_FILE)
+        os.remove(os.path.join(buildFolder, Utils.RA_GUI_INPUT_FILE))
+    except:
+        pass # ignore errors
+    try:
+        os.remove(os.path.join(buildFolder, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE))
+    except:
+        pass # ignore errors
+    try:
+        os.remove(os.path.join(buildFolder, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE))
+    except:
+        pass # ignore errors
+    try:
+        os.remove(os.path.join(buildFolder, Utils.RULE_ASSISTANT_DISPLAY_DATA_FILE))
     except:
         pass # ignore errors
 

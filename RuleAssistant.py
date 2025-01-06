@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.12.1 - 1/6/25 - Ron Lockwood
+#    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -48,17 +51,17 @@ import FTPaths
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",
@@ -250,6 +253,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     if not os.path.isfile(bidix):
         report.Warning('Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.')
+        return False
 
     content = None
     for text in DB.ObjectsIn(ITextRepository):
@@ -265,45 +269,53 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         return False
     text = Utils.getInterlinData(DB, report, params)
 
-    fsrc = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantSourceTestData.txt')
+    fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
-    ftgt = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantTargetTestData.txt')
+    ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
     subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
                     '-b', bidix, fsrc, ftgt], capture_output=True)
 
-    with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
-        fout.write('''<html><head><style>
+    try:
+        with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
+            fout.write('''<html><head><style>
 .lu { margin-left: 5px; font-size: 75%; }
 .pos { color: blue; margin-left: 5px; }
 .tag { color: green; margin-left: 5px; }
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
-        fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
-        line_count = 0
-        for line in fin:
-            if not line.strip():
-                continue
-            srcLine = ''
-            tgtLine = ''
-            for src, tgt in ProcessLine(line):
-                if len(src) > 1 and len(tgt) > 1:
-                    srcLine += ReadingToHTML(src)
-                    tgtLine += ReadingToHTML(tgt)
-            fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
-            line_count += 1
-            if line_count >= 30:
-                break
-        fout.write('</body></html>\n')
-
+            fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
+            line_count = 0
+            for line in fin:
+                if not line.strip():
+                    continue
+                srcLine = ''
+                tgtLine = ''
+                for src, tgt in ProcessLine(line):
+                    if len(src) > 1 and len(tgt) > 1:
+                        srcLine += ReadingToHTML(src)
+                        tgtLine += ReadingToHTML(tgt)
+                fout.write(f'<p>{srcLine} → {tgtLine}</p>\n')
+                line_count += 1
+                if line_count >= 30:
+                    break
+            fout.write('</body></html>\n')
+    except Exception as e:
+        return False
+    
     return True
 
 def GetTestDataFile(report, DB, configMap):
-    fhtml = os.path.join(FTPaths.BUILD_DIR, 'RuleAssistantDisplayData.html')
+
+    fhtml = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_DISPLAY_DATA_FILE)
+
     if not GenerateTestDataFile(report, DB, configMap, fhtml):
+
         with open(fhtml, 'w') as fout:
+
             fout.write('<html><body><p>No test data available.</body></html>\n')
+
     return fhtml
 
 def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
