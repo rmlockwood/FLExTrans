@@ -6,7 +6,7 @@
 #   7/23/2014
 #
 #   Version 3.12.8 - 1/6/25 - Ron Lockwood
-#    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
+#    Clean up more Rule Assistant files.
 #
 #   Version 3.12.7 - 1/2/25 - Ron Lockwood
 #    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
