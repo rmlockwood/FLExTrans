@@ -31,6 +31,7 @@ from SIL.LCModel import ( # type: ignore
     IMoMorphAdhocProhibFactory,
     IMoAdhocProhibGrFactory,
     IMoMorphSynAnalysis,
+    ICmObjectRepository,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
@@ -232,15 +233,22 @@ class AdHocMain(QMainWindow):
             self.ui.feedbackLabel.setText('You need to set the key field and at least the 1st other field!')
             return
 
+        feedbackStr = ''
+
         # Loop through all projects
         for proj in self.ui.clusterProjectsComboBox.currentData():
 
+            problemFound = False
+            isDefaultProject = proj == self.DB.ProjectName()
+
             # Open the project (if not the default one)
-            if proj == self.DB.ProjectName():
+            if False: #proj == self.DB.ProjectName():
 
                 myDB = self.DB
             else:
                 myDB = Utils.openProject(self.report, proj)
+
+            repo = myDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
             ## Create the ad hoc rule
 
@@ -249,28 +257,65 @@ class AdHocMain(QMainWindow):
         
             if selectedType == 'Morpheme':
                 
-                adHocObj = myDB.project.ServiceLocator.GetService(IMoMorphAdhocProhibFactory).Create()
-            
-                # Set the properties
-                val = self.ui.cannotOccurComboBox.currentData()
-                adHocObj.Adjacency = Int32(val)
+                msaObj = None
+                otherMsaList = []
+
+                # Lookup the msa for the key morpheme
                 key = self.ui.KeyMorphAllomorphLineEdit.text()
                 msa = self.morphMap[key]
-                msa = IMoMorphSynAnalysis(msa)
-                adHocObj.FirstMorphemeRA = msa
 
-                # Loop through all the other values
                 for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
 
                     # If we have a value, add it to the list
-                    if widget.text():
+                    if otherStr := widget.text():
 
-                        adHocObj.RestOfMorphsRS.Add(self.morphMap[widget.text()])
+                        otherMsaList.append((self.morphMap[otherStr], otherStr))   
+
+                if not isDefaultProject:
+                
+                    # Verify this msa exists in the project
+                    try:
+                        msaObj = repo.GetObject(msa.Guid)
+
+                    except:
+
+                        feedbackStr += f'The morpheme {key} with the same ID does not exist in the project {proj}.\n'
+                        problemFound = True
+
+                    # Loop through all the other values
+                    for myMsa, otherStr in otherMsaList:
+
+                        # Verify this msa exists in the project
+                        try:
+                            msaObj = repo.GetObject(myMsa.Guid)
+
+                        except:
+
+                            feedbackStr += f'The morpheme {otherStr} with the same ID does not exist in the project {proj}.\n'
+                            problemFound = True
+
+                if isDefaultProject or not problemFound:
+
+                    adHocObj = myDB.project.ServiceLocator.GetService(IMoMorphAdhocProhibFactory).Create()
+                    myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
+
+                    # Set the properties
+                    val = self.ui.cannotOccurComboBox.currentData()
+                    adHocObj.Adjacency = val
+                    adHocObj.FirstMorphemeRA = msa
+
+                    # Loop through all the other values
+                    for myMsa, _ in otherMsaList:
+
+                        adHocObj.RestOfMorphsRS.Add(myMsa)
+
+                    feedbackStr += f'Added ad hoc rule to project {proj}.\n'
 
             elif selectedType == 'Allomorph':
                 
                 adHocObj = myDB.project.ServiceLocator.GetService(IMoAlloAdhocProhibFactory).Create()
-                
+                myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
+
                 # Set the properties
                 val = self.ui.cannotOccurComboBox.currentData()
                 adHocObj.Adjacency = Int32(val)
@@ -286,14 +331,19 @@ class AdHocMain(QMainWindow):
 
             # Add the object to the group list
             groupObj = self.ui.adHocGroupComboBox.currentData()
-            groupObj.MembersOC.Add(adHocObj)
+
+            # if groupObj:
+            #     groupObj.MembersOC.Add(adHocObj)
 
             # Close the project (if not the default one)
-            if myDB != self.origSourceDB:
+            if True: #proj != self.DB.ProjectName():
 
                 myDB.CloseProject()
 
-            # TODO: give some feedback
+        # Give some feedback
+        QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
+
+        self.closeIt()
 
     def getMorphs(self, DB, composed=True):
 
