@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.12.1 - 1/9/25 - Ron Lockwood
+#    First working version.
+#
 #   Version 3.12 - 12/17/24 - Ron Lockwood
 #    Initial version.
 #
@@ -14,11 +17,9 @@
 
 
 import os
-import re
 import sys
 from unicodedata import normalize
 
-from System import Int32 # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import AllProjectNames
 from SIL.LCModel import ( # type: ignore
@@ -30,13 +31,15 @@ from SIL.LCModel import ( # type: ignore
     IMoAlloAdhocProhibFactory,
     IMoMorphAdhocProhibFactory,
     IMoAdhocProhibGrFactory,
-    IMoMorphSynAnalysis,
+    ICmObjectRepository,
     )
+from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
+from fuzzywuzzy import fuzz
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt, QStringListModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCompleter
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCompleter, QInputDialog
 
 from ClusterAdHoc import Ui_AdHocMainWindow
 from ComboBox import CheckableComboBox
@@ -48,7 +51,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
@@ -56,6 +59,8 @@ docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
 """
 Add an ad hoc constraint to multiple cluster projects. 
 """ }
+
+SIMILARITY_THRESHOLD = 75
 
 adjacencyMap = {
     'anywhere around':  0,
@@ -65,22 +70,60 @@ adjacencyMap = {
     'adjacent before':  4,
 }
 
-#----------------------------------------------------------------
-# The main processing function
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QApplication, QMessageBox
+from fuzzywuzzy import fuzz
+
+SIMILARITY_THRESHOLD = 75
+
+class GroupInputDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Group Input")
+
+        layout = QVBoxLayout(self)
+
+        self.explanatoryLabel = QLabel("This new group name will be created in all the selected cluster projects.")
+        layout.addWidget(self.explanatoryLabel)
+
+        self.groupNameLabel = QLabel("Group Name:")
+        self.groupNameEdit = QLineEdit(self)
+        layout.addWidget(self.groupNameLabel)
+        layout.addWidget(self.groupNameEdit)
+
+        self.groupDescLabel = QLabel("Group Description:")
+        self.groupDescEdit = QLineEdit(self)
+        layout.addWidget(self.groupDescLabel)
+        layout.addWidget(self.groupDescEdit)
+
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        layout.addWidget(self.buttons)
+
+        self.buttons.accepted.connect(self.accept)
+        self.buttons.rejected.connect(self.reject)
+
+    def getInputs(self):
+        return self.groupNameEdit.text(), self.groupDescEdit.text()
+
 class AdHocMain(QMainWindow):
 
     def __init__(self, report, DB, composed, projects):
+
         QMainWindow.__init__(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
         self.report = report
-        self.DB = DB
+        self.sourceDB = DB
         self.composed = composed
         self.origSourceDB = DB
         self.clusterProjects = projects
+        self.isNewGroup = False
+        self.newGroupName = ''
+        self.newGroupDesc = ''
         self.ui = Ui_AdHocMainWindow()
         self.ui.setupUi(self)
+
+        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
         self.autoCompleteWidgets = [
             self.ui.KeyMorphAllomorphLineEdit,
@@ -92,11 +135,6 @@ class AdHocMain(QMainWindow):
         ]
 
         self.ui.feedbackLabel.setText('')
-
-        self.ui.addButton.clicked.connect(self.AddClicked)
-        self.ui.closeButton.clicked.connect(self.closeIt)
-        self.ui.sourceProjectComboBox.currentIndexChanged.connect(self.projectChanged)
-        self.ui.adHocTypeComboBox.currentIndexChanged.connect(self.typeChanged)
 
         # Setup the checkable combo box for cluster projects. Replace the one from the designer tool.
         geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
@@ -118,26 +156,65 @@ class AdHocMain(QMainWindow):
         self.ui.sourceProjectComboBox.addItems(AllProjectNames())
 
         # Default to current source project if it exists.
-        index = self.ui.sourceProjectComboBox.findText(DB.ProjectName()) 
+        index = self.ui.sourceProjectComboBox.findText(self.sourceDB.ProjectName()) 
         if index >= 0:      
 
             self.ui.sourceProjectComboBox.setCurrentIndex(index)
-
-        # TODO: load a saved json file for defaults
 
         # Initialize adjacency combo
         for desc, value in sorted(adjacencyMap.items(), key=lambda item: item[1]):
 
             self.ui.cannotOccurComboBox.addItem(desc, value)
 
-        # Load maps of all headwords and all allomorphs
-        self.morphMap = self.getMorphs(DB)
-        self.allomorphMap = self.getAllomorphs(DB)
+        # Initialize groups, morphs, and allomorphs
+        self.sourceProjectChanged(0)
 
-        # Load the group combo
-        self.updateGroups(DB)
+        self.ui.sourceProjectComboBox.currentIndexChanged.connect(self.sourceProjectChanged)
+        self.ui.addButton.clicked.connect(self.AddClicked)
+        self.ui.closeButton.clicked.connect(self.closeIt)
+        self.ui.newGroupButton.clicked.connect(self.promptUserForGroupDetails)
+        self.ui.adHocTypeComboBox.currentIndexChanged.connect(self.typeChanged)
 
+    def promptUserForGroupDetails(self):
+
+        dialog = GroupInputDialog()
+        result = dialog.exec_()
+        
+        if result == QDialog.Accepted:
+
+            groupName, groupDesc = dialog.getInputs()
+
+            adHocObj = self.createGroupObject(self.sourceDB, groupName, groupDesc)
+
+            # Add the new group name to the list and select it
+            self.ui.adHocGroupComboBox.addItem(groupName, adHocObj)
+            self.ui.adHocGroupComboBox.setCurrentIndex(self.ui.adHocGroupComboBox.count() - 1)
+
+            self.isNewGroup = True
+            self.newGroupName = groupName
+            self.newGroupDesc = groupDesc
+
+    def createGroupObject(self, DB, groupName, groupDesc):
+
+        # Create group object and add it to the Morphological Data object
+        adHocObj = DB.project.ServiceLocator.GetService(IMoAdhocProhibGrFactory).Create()
+        DB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
+
+        # Set the properties
+        adHocObj.Name.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(groupName, DB.project.DefaultAnalWs)
+
+        if groupDesc and groupDesc != '***':
+            adHocObj.Description.AnalysisDefaultWritingSystem = TsStringUtils.MakeString(groupDesc, DB.project.DefaultAnalWs)
+
+        return adHocObj
+    
     def closeIt(self):
+
+        # Close the source project if necessary
+        if self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
+
+            self.sourceDB.CloseProject()
+
         self.close()
     
     def typeChanged(self):
@@ -159,15 +236,15 @@ class AdHocMain(QMainWindow):
         for widget in self.autoCompleteWidgets:
             
             # Set the completer for the QLineEdit
+            widget.clear()
             widget.setCompleter(completer)
             widget.setReadOnly(False)
 
         self.ui.addButton.setEnabled(True)
 
-    def updateGroups(self, DB):
+    def getGroupList(self, DB):
 
         groupList = []
-        self.ui.adHocGroupComboBox.clear()
 
         # Load the group names
         for groupObj in DB.ObjectsIn(IMoAdhocProhibGrRepository):
@@ -175,125 +252,262 @@ class AdHocMain(QMainWindow):
             groupName = ITsString(groupObj.Name.BestAnalysisAlternative).Text
             groupList.append((groupName, groupObj))
 
-        # Sort on the group name    
-        groupList.sort(key=lambda x: x[0])
+        # Sort on the group name, ignoring '-' and making it case insensitive
+        groupList.sort(key=lambda x: x[0].replace('-', '').lower())
 
+        return groupList
+    
+    def updateGroups(self, DB):
+
+        groupList = []
+        self.ui.adHocGroupComboBox.clear()
+
+        groupList = self.getGroupList(DB)
+
+        # Load the group names
         for name, grpObj in groupList:
 
             self.ui.adHocGroupComboBox.addItem(name, grpObj)
         
-    def projectChanged(self, index):
+    def sourceProjectChanged(self, index):
         
         selectedProject = self.ui.sourceProjectComboBox.currentText()
 
-        if selectedProject != self.DB.ProjectName():
+        # Show hourglass cursor 
+        QApplication.setOverrideCursor(Qt.WaitCursor) 
 
-            # Show hourglass cursor 
-            QApplication.setOverrideCursor(Qt.WaitCursor) 
+        # If we had opened a different project from our main FlexTools project, close it
+        if self.sourceDB.ProjectName() != self.origSourceDB.ProjectName():
 
-            # If we had opened a different project from our main FlexTools project, close it
-            if self.DB != self.origSourceDB:
+            self.sourceDB.CloseProject()
 
-                self.DB.CloseProject()
+        if selectedProject != self.origSourceDB.ProjectName():
 
-            self.DB = Utils.openProject(self.report, selectedProject)
+            self.sourceDB = Utils.openProject(self.report, selectedProject)
+        else:
+            self.sourceDB = self.origSourceDB
 
-            # Reload the groups combo box.
-            self.updateGroups(self.DB)
+        # Reload the groups combo box.
+        self.updateGroups(self.sourceDB)
 
-            # Reset maps
-            self.morphMap = self.getMorphs(self.DB)
-            self.allomorphMap = self.getAllomorphs(self.DB)
+        # Reset maps
+        self.morphMap = self.getMorphs(self.sourceDB)
+        self.allomorphMap = self.getAllomorphs(self.sourceDB)
 
-            # Clear and disable the line edits
-            for widget in self.autoCompleteWidgets:
+        # Clear and disable the line edits
+        for widget in self.autoCompleteWidgets:
 
-                widget.clear()
-                widget.setReadOnly(True)
+            widget.clear()
+            widget.setReadOnly(True)
 
-            self.ui.addButton.setEnabled(False)
+        self.ui.addButton.setEnabled(False)
 
-            # Set the type back to (choose)
-            index = self.ui.adHocTypeComboBox.findText('(Choose Type)') 
-            if index >= 0:      
+        # Set the type back to (choose)
+        index = self.ui.adHocTypeComboBox.findText('(Choose Type)') 
+        if index >= 0:      
 
-                self.ui.adHocTypeComboBox.setCurrentIndex(index)
+            self.ui.adHocTypeComboBox.setCurrentIndex(index)
 
-            self.ui.feedbackLabel.setText('')
+        self.ui.feedbackLabel.setText('')
 
-            # Revert back to the default cursor 
-            QApplication.restoreOverrideCursor()       
+        # Revert back to the default cursor 
+        QApplication.restoreOverrideCursor()       
                    
     def AddClicked(self):
-        
+
         # Don't add anything if the key morph and 1st other morph are blank
         if self.ui.KeyMorphAllomorphLineEdit.text() == '' or self.ui.otherMorphsAllomorphsLineEdit1.text() == '':
 
             self.ui.feedbackLabel.setText('You need to set the key field and at least the 1st other field!')
             return
 
+        feedbackStr = ''
+
+        # Show hourglass cursor 
+        QApplication.setOverrideCursor(Qt.WaitCursor) 
+
+        # Determine the type of ad hoc rule
+        selectedType = self.ui.adHocTypeComboBox.currentText()
+                    
+        objMap = self.morphMap if selectedType == 'Morpheme' else self.allomorphMap
+
+        # Lookup the msa/or allomorph for the key item
+        key = self.ui.KeyMorphAllomorphLineEdit.text()
+        keyObj = objMap[key]
+
+        otherObjList = []
+        
+        # Get the list of msas/allomorphs for the other morpheme/allomorph fields
+        for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
+
+            # If we have a value, add it to the list
+            if otherStr := widget.text():
+
+                otherObjList.append((objMap[otherStr], otherStr))   
+
         # Loop through all projects
         for proj in self.ui.clusterProjectsComboBox.currentData():
 
-            # Open the project (if not the default one)
-            if proj == self.DB.ProjectName():
+            problemFound = False
+            isSourceProject = proj == self.sourceDB.ProjectName()
+            isOrigSourceProject = proj == self.origSourceDB.ProjectName()
 
-                myDB = self.DB
+            # Open the project (if not the current source project or the original source - these are already open)
+            if isOrigSourceProject:
+
+                myDB = self.origSourceDB
+
+            elif isSourceProject:
+
+                myDB = self.sourceDB
             else:
                 myDB = Utils.openProject(self.report, proj)
 
-            ## Create the ad hoc rule
+                if not myDB:
+                    continue
 
-            # Get a factory for the ad hoc rule object and add the object depending on the type
-            selectedType = self.ui.adHocTypeComboBox.currentText()
-        
-            if selectedType == 'Morpheme':
-                
-                adHocObj = myDB.project.ServiceLocator.GetService(IMoMorphAdhocProhibFactory).Create()
+            repo = myDB.project.ServiceLocator.GetService(ICmObjectRepository)
+
+            if not isSourceProject:
             
-                # Set the properties
-                val = self.ui.cannotOccurComboBox.currentData()
-                adHocObj.Adjacency = Int32(val)
-                key = self.ui.KeyMorphAllomorphLineEdit.text()
-                msa = self.morphMap[key]
-                msa = IMoMorphSynAnalysis(msa)
-                adHocObj.FirstMorphemeRA = msa
+                # Verify this key object exists in the project. The assumption is that the cluster projects will have the same GUIDs for the same objects.
+                try:
+                    _ = repo.GetObject(keyObj.Guid)
+                except:
+                    feedbackStr += f'The {selectedType} {key} with the same ID does not exist in the project {proj}.\n'
+                    problemFound = True
 
                 # Loop through all the other values
-                for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
+                for othObj, otherStr in otherObjList:
 
-                    # If we have a value, add it to the list
-                    if widget.text():
+                    # Verify this other object exists in the project
+                    try:
+                        _ = repo.GetObject(othObj.Guid)
+                    except:
+                        feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
+                        problemFound = True
 
-                        adHocObj.RestOfMorphsRS.Add(self.morphMap[widget.text()])
+            if not problemFound:
 
-            elif selectedType == 'Allomorph':
+                if selectedType == 'Morpheme':
+
+                    # Get a factory for the ad hoc rule object and add the object 
+                    adHocObj = myDB.project.ServiceLocator.GetService(IMoMorphAdhocProhibFactory).Create()
+                    myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
+
+                    # Set the properties
+                    adHocObj.FirstMorphemeRA = keyObj
+
+                    # Loop through all the other values
+                    for othObj, _ in otherObjList:
+
+                        adHocObj.RestOfMorphsRS.Add(othObj)
+
+                else: # selectedType == 'Allomorph':
+                    
+                    adHocObj = myDB.project.ServiceLocator.GetService(IMoAlloAdhocProhibFactory).Create()
+                    myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
+
+                    # Set the properties
+                    adHocObj.FirstAllomorphRA = keyObj
+
+                    # Loop through all the other values
+                    for othObj, _ in otherObjList:
+
+                        adHocObj.RestOfAllosRS.Add(othObj)
+
+                adHocObj.Adjacency = self.ui.cannotOccurComboBox.currentData()
+                feedbackStr += f'Added ad hoc rule to project {proj}.\n'
                 
-                adHocObj = myDB.project.ServiceLocator.GetService(IMoAlloAdhocProhibFactory).Create()
-                
-                # Set the properties
-                val = self.ui.cannotOccurComboBox.currentData()
-                adHocObj.Adjacency = Int32(val)
-                adHocObj.FirstAllomorphRA = self.allomorphMap[self.ui.KeyMorphAllomorphLineEdit.text()]
+                validGroup = False
 
-                # Loop through all the other values
-                for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
+                # Add the object to the group list if this is the source project
+                if isSourceProject:
 
-                    # If we have a value, add it to the list
-                    if widget.text():
+                    groupObj = self.ui.adHocGroupComboBox.currentData()
 
-                        adHocObj.RestOfAllosRS.Add(self.allomorphMap[widget.text()])
+                    if groupObj:
+                        validGroup = True
+                else:
 
-            # Add the object to the group list
-            groupObj = self.ui.adHocGroupComboBox.currentData()
-            groupObj.MembersOC.Add(adHocObj)
+                    # If we have a user created new group, add it to the current project and add the rule
+                    if self.isNewGroup:
 
-            # Close the project (if not the default one)
-            if myDB != self.origSourceDB:
+                        groupObj = self.createGroupObject(myDB, self.newGroupName, self.newGroupDesc)
+                        validGroup = True
+
+                    # Otherwise, try and find the group in the project or prompt the user for one
+                    else:
+                        sourceGroupName = self.ui.adHocGroupComboBox.currentText()
+
+                        # Get the group list for this project
+                        groupList = self.getGroupList(myDB)
+
+                        # See if we get an exact match on the group name
+                        for groupName, groupObj in groupList:
+
+                            if groupName == sourceGroupName:
+
+                                validGroup = True
+                                break
+
+                        # If not, filter the list to near matches
+                        if not validGroup:
+
+                            filteredGroupNames = [name for name, _ in groupList if fuzz.ratio(sourceGroupName, name) >= SIMILARITY_THRESHOLD]
+                            filteredGroupNames.append(f'NEW: {sourceGroupName}')
+
+                            # Revert back to the default cursor 
+                            QApplication.restoreOverrideCursor()       
+
+                            # Prompt the user to select one 
+                            selectedGroupName = self.promptUserForGroupName(filteredGroupNames, proj)
+
+                            # Show hourglass cursor 
+                            QApplication.setOverrideCursor(Qt.WaitCursor) 
+
+                            # Create a new group named the same as the source one when the user chooses NEW ...
+                            if selectedGroupName == f'NEW: {sourceGroupName}':
+
+                                desc = Utils.as_string(self.ui.adHocGroupComboBox.currentData().Description)
+                                groupObj = self.createGroupObject(myDB, sourceGroupName, desc)
+                                validGroup = True
+
+                            # Otherwise use the group they selected
+                            else:
+                                for groupName, groupObj in groupList:
+
+                                    if groupName == selectedGroupName:
+
+                                        validGroup = True
+                                        break
+                if validGroup:
+
+                    groupObj.MembersOC.Add(adHocObj)
+                    
+            # Close the project (if not the default one or the current source project)
+            if not isOrigSourceProject and not isSourceProject:
 
                 myDB.CloseProject()
 
-            # TODO: give some feedback
+        # Revert back to the default cursor 
+        QApplication.restoreOverrideCursor()       
+
+        # Give some feedback
+        QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
+
+    def promptUserForGroupName(self, groupNames, projectName):
+
+        # Create an input dialog with a list of group names
+        item, ok = QInputDialog.getItem(None, "Select Group", f"Similar groups in {projectName}:", groupNames, 0, False)
+        
+        # If the user made a selection, return the selected item
+        if ok and item:
+            
+            return item
+        else:
+            # If the user didn't make a selection, return an empty string
+            return ""
 
     def getMorphs(self, DB, composed=True):
 
@@ -339,7 +553,9 @@ class AdHocMain(QMainWindow):
 
         for entry in DB.LexiconAllEntries():
 
-            if not entry.LexemeFormOA.IsAbstract:
+            pos = ''
+
+            if entry.LexemeFormOA and not entry.LexemeFormOA.IsAbstract:
 
                 headWord = ITsString(entry.HeadWord).Text
                 headWord = Utils.add_one(headWord)
@@ -348,12 +564,10 @@ class AdHocMain(QMainWindow):
                 mainAllomorphStr = ITsString(entry.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text
                 mainAllomorphStr = norm(mainAllomorphStr)
 
-                for i, sense in enumerate(entry.SensesOS, 1):
+                for sense in entry.SensesOS:
 
                     if not sense.MorphoSyntaxAnalysisRA:
-                        
-                        # Variants will be here
-                        pos = ''
+                        continue
                     else:                    
                         msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
                         pos = self.setPOS(msa)
@@ -404,6 +618,8 @@ class AdHocMain(QMainWindow):
             
             return IMoStemMsa(msa)
 
+#----------------------------------------------------------------
+# The main processing function
 def MainFunction(DB, report, modify=True):
     
     # Read the configuration file which we assume is in the current directory.
