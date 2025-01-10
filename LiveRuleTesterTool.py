@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.4 - 1/10/25 - Ron Lockwood
+#    Fixes #843. Fix bug of setting the HC dll's config file when it did not exist.
+#
 #   Version 3.12.3 - 1/6/25 - Ron Lockwood
 #    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
 #
@@ -442,7 +445,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.3",
+        FTM_Version    : "3.12.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -1401,7 +1404,10 @@ class Main(QMainWindow):
                 fatal, msg = Utils.checkForFatalError(errorList, None)
 
                 if fatal:
-                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.')
+                    errorStr = msg
+                    if not self.HCdllObj:
+                        errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
+                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
                     self.unsetCursor()
                     return
             else:
@@ -1442,7 +1448,10 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', f'{msg}')
+                errorStr = msg
+                if not self.HCdllObj:
+                    errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
+                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
                 self.unsetCursor()
                 return
         else:
