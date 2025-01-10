@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.6 - 1/10/25 - Ron Lockwood
+#    Fixes #840. Show the waitcursor for 3 seconds before closing the window if 
+#    the users wants to rebuild the bilingual lexicon.
+#
 #   Version 3.12.5 - 1/3/25 - Ron Lockwood
 #    Fixes #696. Scroll to the top of the table after filtering.
 #
@@ -127,130 +131,7 @@
 #    Fixed bug where report was None in the do_replacements function and a warning was
 #    attempted to be outputted. Have LinkSenseTool call extract_bilingual_lex with a report object.
 #
-#   Version 3.7.6 - 12/25/22 - Ron Lockwood
-#    Added RegexFlag before re constants
-#
-#   Version 3.7.5 - 12/24/22 - Ron Lockwood
-#    Removed defined function GetEntryWithSense which was unused.
-#
-#   Version 3.7.4 - 12/14/22 - Ron Lockwood
-#    Don't count proper nouns as still to link if the Hide Proper Noun checkbox is checked.
-#
-#   Version 3.7.3 - 12/12/22 - Ron Lockwood
-#    Re-read the config file before each new launch of the linker to ensure we have
-#    the latest source text name. Also, put none-headword string in Utils.py
-#
-#   Version 3.7.2 - 12/10/22 - Ron Lockwood
-#    Reworked interface to put new controls and some old on the bottom. OK & Cancel stay bottom right.
-#    Fixed #308 - change font size and font family. Fixed #78 - Allow no link (called **none**) to be set.
-#    Fixed #325 - allow searching by any part of the target combo box info. - headword, POS (with parens), gloss.
-#    Fixed #185 - consistently hide linked rows, even those that aren't ticked, but have an identical srcHPG that is linked.
-#    Fixed #335 - allow rebuilding of the bilingual lexicon after the linker closes.
-#    Fixed #333 - show a status of how many senses still need to be linked.
-#
-#   Version 3.7.1 - 12/7/22 - Ron Lockwood
-#    Fixes #91. Only make painting updates when a row's checkbox is changed.
-#
-#   Version 3.7 - 11/5/22 - Ron Lockwood
-#    Fixes #252. The user can choose a different source text which triggers a restart
-#    of the module. Added logic to detect if linking or unlinking was done. If a
-#    change happened, prompt the user to save before restarting.
-#
-#   Version 3.6.2 - 9/3/22 - Ron Lockwood
-#    Fixes #213. Show the source text name at the top of the window. 
-#
-#   Version 3.6.1 - 9/3/22 - Ron Lockwood
-#    Fixes #233. Give errors if config file settings like source morpheme types are null.
-#
-#   Version 3.6 - 8/26/22 - Ron Lockwood
-#    Fixes #215 Check morpheme type against guid in the object instead of
-#    the analysis writing system so we aren't dependent on an English WS.
-#
-#   Version 3.5.4 - 7/13/22 - Ron Lockwood
-#    More CloseProject() calls for FlexTools2.1.1
-#
-#   Version 3.5.3 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5.2 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5.1 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
-#
-#   Version 3.5 - 4/2/22 - Ron Lockwood
-#    Added a search box to select target words from the list box. Fixes #106.
-#
-#   Version 3.4.1 - 3/4/22 - Ron Lockwood
-#    Give a better error than just showing the guid that wasn't found.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3.1 - 3/3/22 - Ron Lockwood
-#    Fixed crash when word was mapped to a target with POS not set. Bug 68.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.1 - 11/30/21 - Ron Lockwood
-#    Rewrite of the MainFunction. Use the Utils.getInterlinData function to get
-#    the words in the interlinear text. The advantage is that the Utils function
-#    puts together the phrasal verbs and the like. Also modularized the MainFunction.
-#    Also added the feature of filtering the list to not show proper nouns. Also
-#    show X.X form of the headword, but only if it isn't 1.1. Also only don't do
-#    the fuzzy compare for proper nouns. Also trimmed down the url link to the 
-#    target DB. It matches what FLEx 9.1 uses. Fixed bug where the 2nd time an
-#    entry with exact or fuzzy match wasn't getting all the matching rows that
-#    were there the first time. Now I save the matching rows and add them again.
-#    
-#   Version 3.0 - 1/29/21 - Ron Lockwood
-#    Changes for python 3 conversion. This included removing the code for a
-#    delegate widget and a custom TableView. Instead the IsCheckable signal is
-#    used.
-#    Also overhauled the TableView user interface to support unlinking of senses
-#    currently linked in the DB. This required changes in the Link object as
-#    well as the code for loading the link list and processing the link list
-#    after the user presses OK.
-#
-#   Version 2.2.2 - 2/27/19 - Ron Lockwood
-#    Skip empty MSAs
-#
-#   Version 2.2.1 - 1/15/18 - Marc Penner
-#    Wrapped calls to resetInternalData with beginResetModel and end.. so that 
-#    blank lines get removed.
-#
-#   Version 2.2 - 1/18/17 - Ron
-#    Use BestAnalysisAlternative instead of AnalysisDefault.
-#    Fixed bug where only one fuzzy match was getting processed.
-#    To improve performance, only find fuzzy matches when the difference in 
-#    the length of the glosses is less than or equal to a constant -- 
-#    currently set at 3.
-#    If no POS found, return unicode string UNK instead of normal string -- 
-#    Fixes bug when checking for RTL text in a cell.
-#    Change the way FlexTools Update status bar gets calculated. Weighted by 
-#    lexicon total now.
-#
-#   Version 2.1 - 10/27/16 - Ron
-#    Converted the Link It column to checkboxes.
-#
-#   Version 2.0.2 - 8/27/16 - Ron
-#    Change scale numbers to 1 if they come out 0 initially.
-#
-#   Version 2.0.1 - 6/21/16 - Ron
-#    Don't allow Link It column to change to 1 if there is no target information.
-#    Force resizing a bit for filter/unfilter to force a refresh of the table.
-#
-#   Version 2.0 - 6/16/16 - Ron
-#    Major overhaul. Use class objects to model the link information.
-#    Allow the user to link any sense in the text not just the unlinked ones
-#    matched a gloss as before. Also use a fuzzy compare logic for near matches 
-#    on gloss to give more suggestions. Now a list of target senses is provided
-#    which can be used as the sense to link to for any source sense.
-#    Also, handle variants of senses.
-#
-#   Version 1.0.1 - 5/7/16 - Ron
-#    Give a more helpful message when the target database is not found.
+#   earlier version history removed on 1/10/25
 #
 #   For a given text, display all the senses and if there is link data present
 #   show it. Otherwise do a fuzzy compare on gloss to suggest a possible link
@@ -308,7 +189,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1177,6 +1058,16 @@ class Main(QMainWindow):
     def closeEvent(self, event):
         if self.retVal != 1:
             self.CancelClicked()
+        elif self.rebuildBiling:
+        
+            # Show hourglass cursor 
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor) 
+
+            # Pause for 3 seconds to let FLEx write out the links before the bilingual lexicon gets rebuilt
+            time.sleep(3)
+
+            # Revert back to the default cursor 
+            QApplication.restoreOverrideCursor()       
 
     def CancelClicked(self):
         self.retVal = 0
@@ -2037,9 +1928,6 @@ def RunModule(DB, report, configMap):
             if window.retVal:
 
                 TargetDB.CloseProject()
-
-                # Pause for 3 seconds to perhaps let FLEx write out the links
-                time.sleep(3)
                 return REBUILD_BILING
     
     TargetDB.CloseProject()
