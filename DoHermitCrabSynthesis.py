@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.6 - 1/10/25 - Ron Lockwood
+#    Fixes #843. Fix bug of setting the HC dll's config file when it did not exist.
+#
 #   Version 3.12.5 - 1/2/25 - Ron Lockwood
 #    Fix decode error when outputting Synthesis errors.
 #
@@ -123,7 +126,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -194,14 +197,14 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     else:
         DONT_CACHE = True
     
-    if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
-
-        if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-            errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
-            return errorList
-
     # If the target FLEx project hasn't changed and useCache is true than don't run HermitCrab, just return
     if not DONT_CACHE and useCacheIfAvailable and not configFileOutOfDate(TargetDB, HCconfigPath):
+
+        if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
+
+            if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+                errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                return errorList
 
         errorList.append(("The HermitCrab configuration file is up to date.", 0))
         return errorList
@@ -222,7 +225,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if DLLobj:
 
                 if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)', 2))
                     return errorList
 
         except subprocess.CalledProcessError as e:
