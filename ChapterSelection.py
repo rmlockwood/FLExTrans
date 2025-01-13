@@ -38,11 +38,13 @@
 #
 
 import os
+import re
 import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox
 import ClusterUtils
+from ComboBox import CheckableComboBox
 import FTPaths
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
@@ -111,7 +113,7 @@ class ChapterSelection(object):
         else:
             return fileList[0]
 
-def InitControls(self, export=True):
+def InitControls(self, export=True, fromFLEx=False):
     
     self.chapSel = None
     self.retVal = False
@@ -165,22 +167,41 @@ def InitControls(self, export=True):
         self.ui.includeIntroCheckBox.setVisible(False)
         self.ui.overwriteExistingTextCheckBox.setVisible(False)
         
-        # Resize the main window 
-        self.resize(self.width(), self.height()-SHRINK_WINDOW_PIXELS)
+        pixels = SHRINK_WINDOW_PIXELS
 
-        # Move controls up by SHRINK_WINDOW_PIXELS
+        if fromFLEx:
+
+            self.ui.bookAbbrevLineEdit.setVisible(False)
+            self.ui.bookAbbrevLabel.setVisible(False)
+            self.ui.fromChapterSpinBox.setVisible(False)
+            self.ui.toChapterSpinBox.setVisible(False)
+            self.ui.chapterLabel.setVisible(False)
+            self.ui.toLabel.setVisible(False)
+
+            pixels += 13
+
+        # Resize the main window 
+        self.resize(self.width(), self.height()-pixels)
+
+        # Move controls up by pixels
         widgetsToMove = [
             self.ui.clusterProjectsLabel,
             self.ui.clusterProjectsComboBox,
             self.ui.OKButton,
             self.ui.CancelButton,
+            self.ui.selectAllChaptersCheckbox
         ]
         for wid in widgetsToMove:
 
-            wid.setGeometry(wid.x(), wid.y()-SHRINK_WINDOW_PIXELS, wid.width(), wid.height())
+            wid.setGeometry(wid.x(), wid.y()-pixels, wid.width(), wid.height())
+            
+    if not fromFLEx:
+
+        # Hide a checkbox
+        self.ui.selectAllChaptersCheckbox.setVisible(False)
 
     # Initialize cluster projects
-    if len(self.clusterProjects) > 0 and not export:
+    if not export and len(self.clusterProjects) > 0:
 
         ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
 
@@ -192,14 +213,29 @@ def InitControls(self, export=True):
             if i < len(self.keyWidgetList):
                 self.keyWidgetList[i].setCurrentText(ptxProj)
     else:
-        # Hide cluster project widgets
-        widgetsToHide = [
-            self.ui.clusterProjectsLabel,
-            self.ui.clusterProjectsComboBox,
-        ]
-        for wid in widgetsToHide:
+        if fromFLEx:
 
-            wid.setVisible(False)
+            # Setup the checkable combo box for cluster projects. ***Replace*** the one from the designer tool.
+            geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
+            self.ui.clusterProjectsComboBox.hide()
+            self.ui.scriptureTexts = CheckableComboBox(self.ui.centralwidget)
+            self.ui.scriptureTexts.setGeometry(geom)
+            self.ui.scriptureTexts.setObjectName("scriptureTextsComboBox")
+            self.ui.scriptureTexts.addItems([title for title in self.scriptureTitles if title])
+            self.ui.clusterProjectsLabel.setText("Scripture Texts")
+
+            # Connect a custom signal a function
+            self.ui.scriptureTexts.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
+
+        else:
+            # Hide cluster project widgets
+            widgetsToHide = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+            ]
+            for wid in widgetsToHide:
+
+                wid.setVisible(False)
 
 def getParatextPath():
 
@@ -211,7 +247,7 @@ def getParatextPath():
     return paratextPathTuple[0]
     
     
-def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True):
+def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False):
     
     # Get values from the 'dialog' window
     projectAbbrev = self.ui.ptxProjAbbrevLineEdit.text()
@@ -262,15 +298,17 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
             QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
             return
 
-        # Check if the book exists
-        bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
-        
-        fileList = glob.glob(bookPath)
-        
-        if checkBookPath and len(fileList) < 1:
+        if not fromFLEx:
+
+            # Check if the book exists
+            bookPath = os.path.join(projPath, '*' + bookAbbrev + projectAbbrev + '.SFM')
             
-            QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
-            return
+            fileList = glob.glob(bookPath)
+            
+            if checkBookPath and len(fileList) < 1:
+                
+                QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+                return
 
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
                                     makeActive, useFullBookName, overwriteText, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
@@ -315,6 +353,38 @@ def getParatextProjects():
     ptxProjs = getFilteredSubdirectories(getParatextPath(), excludeList)
 
     return ptxProjs
+
+def getScriptureText(report, textTitles):
+    """
+    Filters textTitles to match the criteria:
+    - The book has to start with either an abbreviation or name that matches the dictionary bookMap.
+    - The title will have a space and a two-digit chapter number and optionally a '-' and another two-digit chapter number.
+
+    Parameters:
+    - report: The report object for reporting.
+    - textTitles: List of text titles to filter.
+
+    Returns:
+    - A list of filtered text titles.
+    """
+    filteredTitles = []
+    pattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?$')
+
+    for title in textTitles:
+
+        match = pattern.match(title)
+
+        if match:
+
+            book = match.group('book')
+            chap1 = match.group('chap1')
+            chap2 = match.group('chap2')
+
+            if book in bookMap or book in bookMap.values():
+                
+                filteredTitles.append(title)
+
+    return sorted(filteredTitles)
 
 bookMap = {\
 'GEN':'Genesis',\
@@ -425,3 +495,4 @@ bookMap = {\
 'XXG':'Extra G',\
 'INT':'Introduction',\
 }
+

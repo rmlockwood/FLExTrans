@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
 
 import ReadConfig
 import FTPaths
+import Utils
 from ParatextChapSelectionDlg import Ui_MainWindow
 import ChapterSelection
 
@@ -55,11 +56,11 @@ a chapter number or a range of chapter numbers.""" }
 
 class Main(QMainWindow):
 
-    def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
+    def __init__(self, scriptureTitles):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
-        self.clusterProjects = clusterProjects
+        self.scriptureTitles = scriptureTitles
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -67,18 +68,7 @@ class Main(QMainWindow):
         self.setWindowTitle("Export Chapters from FLEx to Paratext")
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
-        ChapterSelection.InitControls(self, export=True)
-
-        # Set the interface according to what was passed in 
-        # This overrides values set in the init controls call above.
-        self.ui.fromChapterSpinBox.setValue(fromChap)
-        self.ui.fromChapterSpinBox.setEnabled(False)
-        
-        self.ui.toChapterSpinBox.setValue(toChap)
-        self.ui.toChapterSpinBox.setEnabled(False)
-        
-        self.ui.bookAbbrevLineEdit.setText(bookAbbrev)
-        self.ui.bookAbbrevLineEdit.setEnabled(False)
+        ChapterSelection.InitControls(self, export=True, fromFLEx=True)
         
     def CancelClicked(self):
         self.retVal = False
@@ -86,7 +76,11 @@ class Main(QMainWindow):
         
     def OKClicked(self):
 
-        ChapterSelection.doOKbuttonValidation(self, export=True)
+        ChapterSelection.doOKbuttonValidation(self, export=True, checkBookAbbrev=False, checkBookPath=True, fromFLEx=True)
+
+    def titlesSelectionChanged(self):
+        
+        pass
 
 def parseSourceTextName(report, sourceText, infoMap): 
     
@@ -284,26 +278,16 @@ def MainFunction(DB, report, modify):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Find the desired text
-    sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    if not sourceText:
-        return
+    # Get a list of the text titles
+    textTitles = Utils.getSourceTextList(DB)
+
+    # Filter these down to the ones that match a scripture book name or abbreviation and a chapter number
+    scriptureTitles = ChapterSelection.getScriptureText(report, textTitles)
     
-    infoMap = {'bookAbbrev': '', 'fromChap': 0, 'toChap': 0}
-    
-    # Parse it into book and chapters
-    if parseSourceTextName(report, sourceText, infoMap) == False: # error occurred
-        return 
-    
-    # Get the cluster projects
-    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
-    if not clusterProjects:
-        clusterProjects = []
-        
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
+    window = Main(scriptureTitles)
     
     window.show()
     
@@ -311,7 +295,9 @@ def MainFunction(DB, report, modify):
     
     if window.retVal == True:
         
-        do_export(DB, report, window.chapSel, configMap, window)
+        for i, title in enumerate(window.selectedTitles):
+
+            do_export(DB, report, window.chapSel, configMap, window)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
