@@ -20,6 +20,7 @@
 
 
 import os
+import re
 import sys
 from unicodedata import normalize
 
@@ -35,6 +36,7 @@ from SIL.LCModel import ( # type: ignore
     IMoMorphAdhocProhibFactory,
     IMoAdhocProhibGrFactory,
     ICmObjectRepository,
+    ILexEntry,
     )
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
@@ -377,18 +379,41 @@ class AdHocMain(QMainWindow):
                 try:
                     _ = repo.GetObject(keyObj.Guid)
                 except:
-                    feedbackStr += f'The {selectedType} {key} with the same ID does not exist in the project {proj}.\n'
-                    problemFound = True
+                    if selectedType == 'Morpheme':
+
+                        keyObj = self.findObject(self.sourceDB, myDB, keyObj)
+
+                        if not keyObj:
+
+                            feedbackStr += f'The {selectedType} {key} could not be found in the project {proj}.\n'
+                            problemFound = True
+                    
+                    # We can't reliably locate allomorphs by looking for links, or glosses and POSs, so don't do findObject, just give an error.
+                    else:
+                        feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
+                        problemFound = True
 
                 # Loop through all the other values
-                for othObj, otherStr in otherObjList:
+                for i, (othObj, otherStr) in enumerate(otherObjList):
 
                     # Verify this other object exists in the project
                     try:
                         _ = repo.GetObject(othObj.Guid)
                     except:
-                        feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
-                        problemFound = True
+                        if selectedType == 'Morpheme':
+
+                            newObj = self.findObject(self.sourceDB, myDB, othObj)
+
+                            if not othObj:
+                                feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}.\n'
+                                problemFound = True
+                            
+                            # Replace this object in the list
+                            otherObjList[i] = (newObj, otherStr)
+
+                        else:
+                            feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
+                            problemFound = True
 
             if not problemFound:
 
@@ -499,6 +524,59 @@ class AdHocMain(QMainWindow):
         # Give some feedback
         QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
 
+    def findObject(self, sourceDB, targetDB, msaObj):
+
+        # Get the entry object from this msa object
+        entryObj = ILexEntry(msaObj.Owner)
+        senseObj = self.getSenseForMsa(msaObj)
+
+        if not senseObj:
+            return None
+
+        # If we have a stem that is not a clitic get the link to the appropriate sense
+        if msaObj.ClassName == 'MoStemMsa':
+
+            # Get a list of custom fields at the sense level
+            idAndLabelList = sourceDB.LexiconGetSenseCustomFields()
+
+            # Go through the labels and check the links until we match the project name
+            for id, _ in idAndLabelList:
+                
+                customFieldUrl = Utils.getTargetEquivalentUrl(sourceDB, senseObj, id)
+                
+                if re.search(proj := targetDB.ProjectName(), re.sub(r'\+', ' ', customFieldUrl)):
+
+                    targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(entryObj, sourceDB, targetDB, senseObj, customFieldUrl, \
+                                                                                  senseNumField=None, report=None)
+                    if targetSense:
+                        return targetSense.MorphoSyntaxAnalysisRA
+                    else:
+                        return None
+
+        # If we have a stem that's a clitic, find the sense by gloss and POS
+
+        # If we have an affix, find the sense by gloss and POS
+
+            # If we have a derivational affix, need to match the from and to POS
+
+            # Inflectional affix
+
+        return None
+    
+    def getSenseForMsa(self, msaObj):
+
+        # Get the entry object from this msa object
+        entryObj = ILexEntry(msaObj.Owner)
+
+        # Go through senses until we match the msa guid
+        for senseObj in entryObj.SensesOS:
+            
+            if senseObj.MorphoSyntaxAnalysisRA.Guid == msaObj.Guid:
+
+                return senseObj
+            
+        return None
+
     def promptUserForGroupName(self, groupNames, projectName):
 
         # Create an input dialog with a list of group names
@@ -590,7 +668,7 @@ class AdHocMain(QMainWindow):
 
                     allomorphStr = ITsString(allom.Form.VernacularDefaultWritingSystem).Text
                     allomorphStr = norm(allomorphStr)
-                    lemmas[f'{allomorphStr} ({pos}): {headWord}'] = allom
+                    lemmas[f'{allomorphStr} ({pos}): {headWord} {gloss}'] = allom
 
         return lemmas
     
