@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.7 - 1/13/25 - Ron Lockwood
+#    Fixes crash on import with no cluster projects.
+#
 #   Version 3.12.6 - 12/31/24 - Ron Lockwood
 #    Fixes #830. Validate project abbreviation only if we are not using cluster projects.
 #    Revamp what we do before calling do_import and have do_import build the full path to the book.
@@ -95,29 +98,7 @@
 #    Fixes #173 and #190. Give user choice to exclude \x..\x* and \r... Handle
 #    verse bridges like \v 3-4. Handle \vp 3-4 or \vp 2
 #
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Added RegexFlag before re constants
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5.4 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5.3 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
-#
-#   Version 3.5.2 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.5.1 - 5/5/22 - Ron Lockwood
-#    Various improvements.
-#
-#   Version 3.5 - 5/3/22 - Ron Lockwood
-#    Initial version.
+#   earlier version history removed on 1/13/25
 #
 #   Import chapters from Paratext. The user is prompted which chapters and which
 #   Paratext project.
@@ -157,7 +138,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.6",
+        FTM_Version    : "3.12.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -535,7 +516,7 @@ def MainFunction(DB, report, modify=True):
     
     if window.retVal == True:
         
-        if len(window.chapSel.clusterProjects) > 0:
+        if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
 
             for i, proj in enumerate(window.chapSel.clusterProjects):
 

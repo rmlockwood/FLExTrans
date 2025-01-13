@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.12.2 - 1/11/25 - Ron Lockwood
+#    Add gloss to the end of the string identifying the morpheme/allomorph.
+#
 #   Version 3.12.1 - 1/9/25 - Ron Lockwood
 #    First working version.
 #
@@ -51,7 +54,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
@@ -536,8 +539,9 @@ class AdHocMain(QMainWindow):
                 if msa != lastMsa:
 
                     pos = self.setPOS(msa)
+                    gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
 
-                    lemmas[f'{headWord}.{i} {pos}'] = msa
+                    lemmas[f'{headWord}.{i} {pos} {gloss}'] = msa
                     lastMsa = msa
 
         return lemmas
@@ -554,6 +558,7 @@ class AdHocMain(QMainWindow):
         for entry in DB.LexiconAllEntries():
 
             pos = ''
+            gloss = ''
 
             if entry.LexemeFormOA and not entry.LexemeFormOA.IsAbstract:
 
@@ -568,14 +573,15 @@ class AdHocMain(QMainWindow):
 
                     if not sense.MorphoSyntaxAnalysisRA:
                         continue
-                    else:                    
-                        msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
-                        pos = self.setPOS(msa)
+                        
+                    msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
+                    pos = self.setPOS(msa)
+                    gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
 
                     # Just want the first POS
                     break
 
-                lemmas[f'{mainAllomorphStr} ({pos}): {headWord}'] = entry.LexemeFormOA
+                lemmas[f'{mainAllomorphStr} ({pos}): {headWord} {gloss}'] = entry.LexemeFormOA
 
             # Now get any allomorphs
             for allom in entry.AlternateFormsOS:

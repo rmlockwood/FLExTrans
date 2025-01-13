@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.4 - 1/13/25 - Ron Lockwood
+#    Fixes crash on import with no cluster projects.
+#
 #   Version 3.12.3 - 12/31/24 - Ron Lockwood
 #    Fixes #830. Track the Paratext path instead of book path.
 #
@@ -289,7 +292,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
         return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
-    if export or len(self.ui.clusterProjectsComboBox.currentData()) == 0:
+    if export or self.ui.clusterProjectsComboBox.isHidden() or len(self.ui.clusterProjectsComboBox.currentData()) == 0:
 
         # Check if project path exists under Paratext
         projPath = os.path.join(paratextPath, projectAbbrev)
@@ -310,8 +313,13 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
                 QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
                 return
 
+    if self.ui.clusterProjectsComboBox.isHidden():
+        clustProjs = []
+    else:
+        clustProjs = self.ui.clusterProjectsComboBox.currentData()
+
     self.chapSel = ChapterSelection(export, self.otherProj, projectAbbrev, bookAbbrev, paratextPath, fromChap, toChap, includeFootnotes, includeCrossRefs, \
-                                    makeActive, useFullBookName, overwriteText, self.ui.clusterProjectsComboBox.currentData(), ptxProjList, oneTextPerChapter, includeIntro)
+                                    makeActive, useFullBookName, overwriteText, clustProjs, ptxProjList, oneTextPerChapter, includeIntro)
     
     # Save the settings to a file so the same settings can be shown next time
     f = open(self.settingsPath, 'w')
