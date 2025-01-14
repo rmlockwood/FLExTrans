@@ -12,6 +12,8 @@
 #
 #   30 Jun 2023 bb  Get it working as a module in FLExTrans
 #
+#   13 Jan 2025 dm  adding more functionality (grabbing words from lexicon, settings)
+#
 #   Original version: BB
 #    SIL International
 #    31 May 2023
@@ -25,6 +27,12 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 
 from flextoolslib import *                                                 
 from flexlibs import FLExProject
+
+from SIL.LCModel import (
+    IMoStemMsa,
+    IMoInflAffMsa,
+    IMoDerivAffMsa,
+)
 
 import ReadConfig
 import Utils
@@ -73,12 +81,12 @@ def MainFunction(DB, report, modifyAllowed):
 #    match_1_pos = "adj"
     
 # For Noun Adj Poss text
-#    match_n_lem = "thu1.1"
-#    match_n_pos = "n"
-#    match_1_lem = "ng'ono1.1"
-#    match_1_pos = "adj"
-#    match_2_lem = "aga1.1"
-#    match_2_pos = "poss"
+#    match_n_lem = ["_thu1.1"]
+#    match_n_pos = ["n"]
+#    match_1_lem = ["_ng'ono1.1"]
+#    match_1_pos = ["adj"]
+#    match_2_lem = ["_aga1.1"]
+#    match_2_pos = ["poss"]
 
 
 
@@ -196,22 +204,52 @@ def MainFunction(DB, report, modifyAllowed):
 
     ## For Spanish-GenerateSentences project
     # Noun list
-    subListN = ["hablar1.1", "comer1.1", "existir1.1", "venir1.1"]
+    subListN = []  # For Nouns (or any headword POS you want)
+    subList1 = []  # For Adjectives or other POS
+    subList2 = []  # For second words or another category
+
+    # Fetch lexical entries from FLEx
+
+    for entry in DB.LexiconAllEntries():
+        lex = DB.LexiconGetLexemeForm(entry) or DB.LexiconGetCitationForm(entry)
+        pos = 'UNK'
+        if lex and entry.SensesOS.Count > 0:
+            for s in entry.SensesOS:
+                if s.MorphoSyntaxAnalysisRA:
+                    if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                        msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
+                        if msa.PartOfSpeechRA:
+                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
+                            if pos in match_n_pos:  # Filter by target POS
+                                subListN.append(lex)
+
+
+    #subListN = ["hablar1.1", "comer1.1", "existir1.1", "venir1.1"]
     # In order to apply the rules correctly to do agreement; we need to include all the features from 
     # these lexical entries.  In the hard-coded version, I haven't included those, so anything masculine
     # in a sentence that expects feminine, comes out as "not found" (@caramelo1.1) currently.
     # Adjective list
-    subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
+    for entry in DB.LexiconAllEntries():
+        lex = DB.LexiconGetLexemeForm(entry) or DB.LexiconGetCitationForm(entry)
+        pos = 'UNK'
+        if lex and entry.SensesOS.Count > 0:
+            for s in entry.SensesOS:
+                if s.MorphoSyntaxAnalysisRA:
+                    if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                        msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
+                        if msa.PartOfSpeechRA:
+                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
+                            if pos in match_1_pos:  # Filter by target POS
+                                subList1.append(lex)
+    #subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
 
     # DM: adding sublist2 for the future 
-    subList2 = []
+    #subList2 = []
     # verde doesn't working right because in the lexicon it is AdjMF instead of adj.  I'm keeping it here
     # for now just to show what it looks like when a word doesn't match.
 
-    # DM: limiting lists to the limit specified in settings
-    subListN = subListN[:stemLimit]
-    subList1 = subList1[:stemLimit]
-    subList2 = subList2[:stemLimit]
+    
+
 
 #################################################################################
 ### I was testing with a Takwane database, but that isn't available at the moment.
@@ -224,12 +262,17 @@ def MainFunction(DB, report, modifyAllowed):
 
 #    ## For Noun Adj Poss 1 text:
 #    # Words to use for replacing the Noun
-#    subListN = ["sogoleli1.1","thu1.1","hima1.1","mwihiyana1.1","nyakoddo1.1"]
+    #subListN = ["sogoleli1.1","thu1.1","hima1.1","mwihiyana1.1","nyakoddo1.1"]
 #    # Words to use for replacing the First substitutable word
-#    subList1 = ["jinji1.1","ng'ono1.1","lubale1.1","xa1.1"]
+    #subList1 = ["jinji1.1","ng'ono1.1","lubale1.1","xa1.1"]
 #    # Words to use for replacing the Second substitutable word
-#    subList2 = ["aga1.1","aye1.1","ihu1.1"]
+    #subList2 = ["aga1.1","aye1.1","ihu1.1"]
 #################################################################################
+
+    # DM: limiting lists to the limit specified in settings
+    subListN = subListN[:stemLimit]
+    subList1 = subList1[:stemLimit]
+    subList2 = subList2[:stemLimit]
     
     # Practice using TextClasses
     # (I just wanted to see how these functions worked, and prove that I could call them on the FLEx project.)
