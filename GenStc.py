@@ -192,14 +192,17 @@ def MainFunction(DB, report, modifyAllowed):
     ## in the frame sentence.
     # These will be eventually be calculated (found in the lexicon based on criteria), 
     # but for now they are hard coded for testing.
+    
     # When we are getting these from the lexicon, we need to bring in not only the lemma, but also
     # the POS and any features that are in that lexical entry.
-    # An example of fetching features is in the funtion getInflectionInfoSymbols in ExtractBilingualLexicon.py
+    # An example of fetching features is in the function getInflectionInfoSymbols in ExtractBilingualLexicon.py
+    
     # The words we matched could also be in this list, when it gets calculated from the Lexicon,
     # but I'm excluding them from these lists for now.
     # For the substitution words, eventually it would be nice if the user could specify more than one POS to 
     # include, e.g., adj, AdjMF?  
     # But for now, if they want more than one POS, they need to make another sentence for it.
+    
  ## Temporarily hardcoding these lists
 
     ## For Spanish-GenerateSentences project
@@ -254,7 +257,7 @@ def MainFunction(DB, report, modifyAllowed):
 #################################################################################
 ### I was testing with a Takwane database, but that isn't available at the moment.
 ### We do want to verify that this works with a Bantu language.
-#    ## For Test 3/4 text in Takwane Parsing17 project:
+#    ## For Test 3/4 text in Takwane Sentences project:
 #    # Words to use for replacing the Noun
 #    subListN = ["nddo1.1","thanko1.1","hobo1.1","ziwo1.1","selo1.1"]
 #    # Words to use for replacing the first substitutable word
