@@ -1,5 +1,5 @@
 #
-#   ClustwerUtils
+#   ClusterUtils
 #
 #   Ron Lockwood
 #   SIL International
