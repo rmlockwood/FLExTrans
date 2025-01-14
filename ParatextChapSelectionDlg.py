@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(438, 259)
+        MainWindow.resize(440, 283)
         MainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -94,6 +94,13 @@ class Ui_MainWindow(object):
         self.selectAllChaptersCheckbox.setEnabled(True)
         self.selectAllChaptersCheckbox.setGeometry(QtCore.QRect(220, 170, 211, 17))
         self.selectAllChaptersCheckbox.setObjectName("selectAllChaptersCheckbox")
+        self.scriptureTextsLabel = QtWidgets.QLabel(self.centralwidget)
+        self.scriptureTextsLabel.setGeometry(QtCore.QRect(0, 250, 191, 21))
+        self.scriptureTextsLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.scriptureTextsLabel.setObjectName("scriptureTextsLabel")
+        self.scriptureTextsComboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.scriptureTextsComboBox.setGeometry(QtCore.QRect(210, 250, 221, 22))
+        self.scriptureTextsComboBox.setObjectName("scriptureTextsComboBox")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -134,3 +141,4 @@ class Ui_MainWindow(object):
 "if John 01 already exists, it will delete it and create John 01 again."))
         self.overwriteExistingTextCheckBox.setText(_translate("MainWindow", "Overwrite existing text"))
         self.selectAllChaptersCheckbox.setText(_translate("MainWindow", "Clicking any chapter selects all chapters"))
+        self.scriptureTextsLabel.setText(_translate("MainWindow", "Scripture Texts"))

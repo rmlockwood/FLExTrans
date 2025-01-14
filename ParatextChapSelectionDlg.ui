@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>259</height>
+    <width>440</width>
+    <height>283</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -318,6 +318,32 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
     </property>
     <property name="text">
      <string>Clicking any chapter selects all chapters</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="scriptureTextsLabel">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>250</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scripture Texts</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="scriptureTextsComboBox">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>250</y>
+      <width>221</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>

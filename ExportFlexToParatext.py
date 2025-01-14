@@ -19,11 +19,15 @@ import re
 import sys
 from shutil import copyfile
 
+import ClusterUtils
 from SIL.LCModel import *                                                   
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
 from SIL.LCModel.Core.Text import TsStringUtils
 
 from flextoolslib import *                                                 
+from SIL.LCModel import ( # type: ignore
+    IStTxtPara, 
+)
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
@@ -56,10 +60,11 @@ a chapter number or a range of chapter numbers.""" }
 
 class Main(QMainWindow):
 
-    def __init__(self, scriptureTitles):
+    def __init__(self, clusterProjects, scriptureTitles):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.clusterProjects = clusterProjects
         self.scriptureTitles = scriptureTitles
         self.ui.setupUi(self)
         
@@ -70,6 +75,24 @@ class Main(QMainWindow):
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=True, fromFLEx=True)
         
+        # Load cluster projects
+        if len(self.clusterProjects) > 0:
+
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, savedClusterProjects=[], parentWin=self) # load last used cluster projects here
+        else:
+            # Hide cluster project widgets
+            widgetsToHide = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+            ]
+            for wid in widgetsToHide:
+
+                wid.setVisible(False)
+
+    def clusterSelectionChanged(self):
+
+        pass
+
     def CancelClicked(self):
         self.retVal = False
         self.close()
@@ -145,22 +168,7 @@ def parseSourceTextName(report, sourceText, infoMap):
     
     return True
                
-def do_export(DB, report, chapSelectObj, configMap, parent):
-    
-    # Check that we have a synthesized file
-    synFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
-    if not synFile:
-        return
-    
-    # Read in the syn. file chapters
-    try:
-        f = open(synFile, 'r', encoding='utf-8')
-    except:
-        report.Error(f'Could not find the synthesis file. Have you run the Synthesis Module? Missing file: {synFile}.')
-        return
-        
-    synFileContents = f.read()
-    f.close()
+def do_export(synFileContents, report, chapSelectObj, configMap, parent):
     
     # Find all the chapter #s
     synChapList = re.findall(r'\\c (\d+)', synFileContents, flags=re.RegexFlag.DOTALL)
@@ -278,6 +286,16 @@ def MainFunction(DB, report, modify):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
+    # Get the cluster projects
+    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
+    if not clusterProjects:
+        clusterProjects = []
+    else:
+        # Remove blank ones
+        clusterProjects = [x for x in clusterProjects if x]
+        
+    matchingContentsObjList = []
+
     # Get a list of the text titles
     textTitles = Utils.getSourceTextList(DB)
 
@@ -287,7 +305,7 @@ def MainFunction(DB, report, modify):
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(scriptureTitles)
+    window = Main(clusterProjects, scriptureTitles)
     
     window.show()
     
@@ -295,10 +313,64 @@ def MainFunction(DB, report, modify):
     
     if window.retVal == True:
         
-        for i, title in enumerate(window.selectedTitles):
+        if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
 
-            do_export(DB, report, window.chapSel, configMap, window)
+            for i, proj in enumerate(window.chapSel.clusterProjects):
 
+                if window.chapSel.ptxProjList[i] == '...':
+                    continue
+
+                # Open the project (if it's not the main proj)
+                if proj == DB.ProjectName():
+
+                    myDB = DB
+                else:
+                    myDB = Utils.openProject(report, proj)
+
+                textTitles = Utils.getSourceTextList(myDB, matchingContentsObjList)
+
+                for j, title in enumerate(window.selectedTitles):
+
+                    try:
+                        contents = matchingContentsObjList[textTitles.index(title)]
+
+                    except ValueError:
+                        report.Error(f'{title} not found in the {proj} project.')
+                        continue
+
+                    textStr = makeTextStr(contents)
+
+                    # TODO: need the ptxProjList.
+                    window.chapSel.exportProjectAbbrev = window.chapSel.ptxProjList[i]
+                    do_export(textStr, report, window.chapSel, configMap, window)
+
+                # Close the project (if not the main)
+                if proj != DB.ProjectName():
+
+                    myDB.CloseProject()
+        else:
+            for j, title in enumerate(window.selectedTitles):
+
+                contents = matchingContentsObjList[textTitles.index(title)]
+
+                if not contents:
+                    continue
+
+                textStr = makeTextStr(contents)
+                do_export(textStr, report, window.chapSel, configMap, window)
+
+
+def makeTextStr(contentsObj):
+
+    paraList = []
+
+    for p in contentsObj.ParagraphsOS:
+
+        if para := ITsString(IStTxtPara(p).Contents).Text:
+
+            paraList.append(para)
+
+    return '\n'.join(paraList)
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

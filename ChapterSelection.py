@@ -124,7 +124,9 @@ def InitControls(self, export=True, fromFLEx=False):
     self.ui.OKButton.clicked.connect(self.OKClicked)
     self.ui.CancelButton.clicked.connect(self.CancelClicked)
 
+    # Set initial window size. Import doesn't change it (but in ClusterUtils height is saved), but export to ptx and export from flex do.
     self.otherProj = ''
+    self.resize(ClusterUtils.IMP_EXP_WINDOW_WIDTH, ClusterUtils.IMP_EXP_WINDOW_HEIGHT)
     
     # Load settings if available
     try:
@@ -181,7 +183,7 @@ def InitControls(self, export=True, fromFLEx=False):
             self.ui.chapterLabel.setVisible(False)
             self.ui.toLabel.setVisible(False)
 
-            pixels += 13
+            pixels -= 33
 
         # Resize the main window 
         self.resize(self.width(), self.height()-pixels)
@@ -192,16 +194,17 @@ def InitControls(self, export=True, fromFLEx=False):
             self.ui.clusterProjectsComboBox,
             self.ui.OKButton,
             self.ui.CancelButton,
-            self.ui.selectAllChaptersCheckbox
         ]
         for wid in widgetsToMove:
 
             wid.setGeometry(wid.x(), wid.y()-pixels, wid.width(), wid.height())
-            
+
     if not fromFLEx:
 
         # Hide a checkbox
         self.ui.selectAllChaptersCheckbox.setVisible(False)
+        self.ui.scriptureTextsComboBox.setVisible(False)
+        self.ui.scriptureTextsLabel.setVisible(False)
 
     # Initialize cluster projects
     if not export and len(self.clusterProjects) > 0:
@@ -218,17 +221,26 @@ def InitControls(self, export=True, fromFLEx=False):
     else:
         if fromFLEx:
 
-            # Setup the checkable combo box for cluster projects. ***Replace*** the one from the designer tool.
-            geom = self.ui.clusterProjectsComboBox.geometry() # same as old control
-            self.ui.clusterProjectsComboBox.hide()
-            self.ui.scriptureTexts = CheckableComboBox(self.ui.centralwidget)
-            self.ui.scriptureTexts.setGeometry(geom)
-            self.ui.scriptureTexts.setObjectName("scriptureTextsComboBox")
-            self.ui.scriptureTexts.addItems([title for title in self.scriptureTitles if title])
-            self.ui.clusterProjectsLabel.setText("Scripture Texts")
+            # Setup the checkable combo box for scripture text. ***Replace*** the one from the designer tool.
+            geom = self.ui.scriptureTextsComboBox.geometry() # same as old control
+            self.ui.scriptureTextsComboBox.hide()
+            self.ui.scriptureTextsComboBox = CheckableComboBox(self.ui.centralwidget)
+            geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-30)  # move above cluster projects
+            self.ui.scriptureTextsComboBox.setGeometry(geom)
+            self.ui.scriptureTextsComboBox.setObjectName("scriptureTextsComboBox")
+            self.ui.scriptureTextsComboBox.addItems([title for title in self.scriptureTitles if title])
 
-            # Connect a custom signal a function
-            self.ui.scriptureTexts.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
+            wid = self.ui.scriptureTextsLabel
+            #width = newGeom.width()
+            #geom.moveTo(0, 0)  # move above cluster projects label
+            wid.setGeometry(wid.x(), self.ui.clusterProjectsComboBox.geometry().y()-30, wid.width(), wid.height())
+
+            geom = self.ui.selectAllChaptersCheckbox.geometry()
+            geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-60)
+            self.ui.selectAllChaptersCheckbox.setGeometry(geom)
+
+            # Connect a custom signal to a function
+            self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
 
         else:
             # Hide cluster project widgets
