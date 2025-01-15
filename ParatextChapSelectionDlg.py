@@ -92,7 +92,7 @@ class Ui_MainWindow(object):
         self.overwriteExistingTextCheckBox.setObjectName("overwriteExistingTextCheckBox")
         self.selectAllChaptersCheckbox = QtWidgets.QCheckBox(self.centralwidget)
         self.selectAllChaptersCheckbox.setEnabled(True)
-        self.selectAllChaptersCheckbox.setGeometry(QtCore.QRect(220, 170, 211, 17))
+        self.selectAllChaptersCheckbox.setGeometry(QtCore.QRect(90, 170, 341, 20))
         self.selectAllChaptersCheckbox.setObjectName("selectAllChaptersCheckbox")
         self.scriptureTextsLabel = QtWidgets.QLabel(self.centralwidget)
         self.scriptureTextsLabel.setGeometry(QtCore.QRect(0, 250, 191, 21))
@@ -140,5 +140,5 @@ class Ui_MainWindow(object):
         self.overwriteExistingTextCheckBox.setToolTip(_translate("MainWindow", "Overwrite a text that has the same name. For example, \n"
 "if John 01 already exists, it will delete it and create John 01 again."))
         self.overwriteExistingTextCheckBox.setText(_translate("MainWindow", "Overwrite existing text"))
-        self.selectAllChaptersCheckbox.setText(_translate("MainWindow", "Clicking any chapter selects all chapters"))
+        self.selectAllChaptersCheckbox.setText(_translate("MainWindow", "Clicking any chapter of a book selects all chapters of the book"))
         self.scriptureTextsLabel.setText(_translate("MainWindow", "Scripture Texts"))

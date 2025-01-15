@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.5 - 1/15/25 - Ron Lockwood
+#    Export from FLEx to Paratext, optionally across cluster projects.
+#
 #   Version 3.12.4 - 1/13/25 - Ron Lockwood
 #    Fixes crash on import with no cluster projects.
 #
@@ -42,6 +45,7 @@
 
 import os
 import re
+from shutil import copyfile
 import winreg
 import glob
 import json
@@ -51,7 +55,10 @@ from ComboBox import CheckableComboBox
 import FTPaths
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
-SHRINK_WINDOW_PIXELS = 120
+EXP_SHRINK_WINDOW_PIXELS = 120
+FROM_FLEX_EXP_PIXELS = 33
+
+bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?$')
 
 class ChapterSelection(object):
         
@@ -172,7 +179,7 @@ def InitControls(self, export=True, fromFLEx=False):
         self.ui.includeIntroCheckBox.setVisible(False)
         self.ui.overwriteExistingTextCheckBox.setVisible(False)
         
-        pixels = SHRINK_WINDOW_PIXELS
+        pixels = EXP_SHRINK_WINDOW_PIXELS
 
         if fromFLEx:
 
@@ -183,7 +190,7 @@ def InitControls(self, export=True, fromFLEx=False):
             self.ui.chapterLabel.setVisible(False)
             self.ui.toLabel.setVisible(False)
 
-            pixels -= 33
+            pixels -= FROM_FLEX_EXP_PIXELS
 
         # Resize the main window 
         self.resize(self.width(), self.height()-pixels)
@@ -206,8 +213,8 @@ def InitControls(self, export=True, fromFLEx=False):
         self.ui.scriptureTextsComboBox.setVisible(False)
         self.ui.scriptureTextsLabel.setVisible(False)
 
-    # Initialize cluster projects
-    if not export and len(self.clusterProjects) > 0:
+    # Initialize cluster projects (for import and from FLEx export)
+    if (export == False or (export == True and fromFLEx == True)) and len(self.clusterProjects) > 0:
 
         ClusterUtils.initClusterProjects(self, self.clusterProjects, myMap.get('clusterProjects', []), self.ui.centralwidget)
 
@@ -219,38 +226,35 @@ def InitControls(self, export=True, fromFLEx=False):
             if i < len(self.keyWidgetList):
                 self.keyWidgetList[i].setCurrentText(ptxProj)
     else:
-        if fromFLEx:
+        # Hide cluster project widgets
+        widgetsToHide = [
+            self.ui.clusterProjectsLabel,
+            self.ui.clusterProjectsComboBox,
+        ]
+        for wid in widgetsToHide:
 
-            # Setup the checkable combo box for scripture text. ***Replace*** the one from the designer tool.
-            geom = self.ui.scriptureTextsComboBox.geometry() # same as old control
-            self.ui.scriptureTextsComboBox.hide()
-            self.ui.scriptureTextsComboBox = CheckableComboBox(self.ui.centralwidget)
-            geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-30)  # move above cluster projects
-            self.ui.scriptureTextsComboBox.setGeometry(geom)
-            self.ui.scriptureTextsComboBox.setObjectName("scriptureTextsComboBox")
-            self.ui.scriptureTextsComboBox.addItems([title for title in self.scriptureTitles if title])
+            wid.setVisible(False)
 
-            wid = self.ui.scriptureTextsLabel
-            #width = newGeom.width()
-            #geom.moveTo(0, 0)  # move above cluster projects label
-            wid.setGeometry(wid.x(), self.ui.clusterProjectsComboBox.geometry().y()-30, wid.width(), wid.height())
+    if fromFLEx:
 
-            geom = self.ui.selectAllChaptersCheckbox.geometry()
-            geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-60)
-            self.ui.selectAllChaptersCheckbox.setGeometry(geom)
+        # Setup the checkable combo box for scripture text. ***Replace*** the one from the designer tool.
+        geom = self.ui.scriptureTextsComboBox.geometry() # same as old control
+        self.ui.scriptureTextsComboBox.hide()
+        self.ui.scriptureTextsComboBox = CheckableComboBox(self.ui.centralwidget)
+        geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-30)  # move above cluster projects
+        self.ui.scriptureTextsComboBox.setGeometry(geom)
+        self.ui.scriptureTextsComboBox.setObjectName("scriptureTextsComboBox")
+        self.ui.scriptureTextsComboBox.addItems([title for title in self.scriptureTitles if title])
 
-            # Connect a custom signal to a function
-            self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
+        wid = self.ui.scriptureTextsLabel
+        wid.setGeometry(wid.x(), self.ui.clusterProjectsComboBox.geometry().y()-30, wid.width(), wid.height())
 
-        else:
-            # Hide cluster project widgets
-            widgetsToHide = [
-                self.ui.clusterProjectsLabel,
-                self.ui.clusterProjectsComboBox,
-            ]
-            for wid in widgetsToHide:
+        geom = self.ui.selectAllChaptersCheckbox.geometry()
+        geom.moveTo(geom.x(), self.ui.clusterProjectsComboBox.geometry().y()-60)
+        self.ui.selectAllChaptersCheckbox.setGeometry(geom)
 
-                wid.setVisible(False)
+        # Connect a custom signal to a function
+        self.ui.scriptureTextsComboBox.itemCheckedStateChanged.connect(self.titlesSelectionChanged)
 
 def getParatextPath():
 
@@ -279,7 +283,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
    
     ptxProjList = []
 
-    if not export:
+    if export == False or (export == True and fromFLEx == True):
 
         # Go through each visible Paratext combobox and get the value
         for myCombo in self.keyWidgetList:
@@ -365,7 +369,6 @@ def getFilteredSubdirectories(rootDir, excludeList):
 
 def getParatextProjects():
 
-
     excludeList = [
         'cms',
         'Temp Files',
@@ -388,11 +391,10 @@ def getScriptureText(report, textTitles):
     - A list of filtered text titles.
     """
     filteredTitles = []
-    pattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?$')
 
     for title in textTitles:
 
-        match = pattern.match(title)
+        match = bookChapterPattern.match(title)
 
         if match:
 
@@ -406,6 +408,125 @@ def getScriptureText(report, textTitles):
 
     return sorted(filteredTitles)
 
+def doExport(textContents, report, chapSelectObj, parent):
+    
+    # Find all the chapter #s
+    myChapList = re.findall(r'\\c (\d+)', textContents, flags=re.RegexFlag.DOTALL)
+    
+    # Check that we have chapters in the syn. file
+    if len(myChapList) < 1:
+
+        report.Error(f'No chapters found in the text.')
+        return None
+    
+    elif len(myChapList) > 1:
+    
+        chapStr = 'chapters'
+        digitsStr = myChapList[0]+'-'+myChapList[-1]
+    else:
+        chapStr = 'chapter'
+        digitsStr = myChapList[0]
+
+    # Prompt the user to be sure they want to replace these chapters.
+    ret = QMessageBox.question(parent, 'Overwrite chapters', \
+          f'Are you sure you want to overwrite {chapStr} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} in the {chapSelectObj.exportProjectAbbrev} project?', \
+          QMessageBox.Yes | QMessageBox.No)
+    
+    if ret == QMessageBox.No:
+
+        report.Info('Export cancelled.')
+        return None
+    
+    bookPath = chapSelectObj.getBookPath()
+
+    if not bookPath:
+
+        report.Error(f'Could not find the book file: {bookPath}')
+        return None
+    
+    # Create a backup of the paratext file
+    copyfile(bookPath, bookPath+'.bak')
+    
+    # Read the Paratext file
+    with open(bookPath, encoding='utf-8') as f:
+    
+        bookContents = f.read()
+    
+    # Find all the chapter #s
+    ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
+    
+    # Split the synthesis contents into chapter chunks
+    synContentsList = re.split(r'(\\c \d+)', textContents, flags=re.RegexFlag.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
+    haveIntro = False
+
+    # Loop through each synthesis chapter and splice it into the paratext chapter contents
+    for n in range(1, len(synContentsList), 2): # the zeroth one will be whatever is before the first \c, possibly the empty string
+        
+        # If we have chapter 1, and before chapter 1 is some intro stuff, add intro portion before chapter 1 marker and text
+        if n == 1 and synContentsList[n] == '\\c 1' and re.search(r'\\ip', synContentsList[0]):
+
+            haveIntro = True
+            wholeChStr = synContentsList[0] + synContentsList[n] + synContentsList[n+1]
+        else:
+            wholeChStr = synContentsList[n] + synContentsList[n+1]
+        
+        # Check the corresponding chapter in the synthesis chapter list
+        if myChapList[n//2] in ptxChapList:
+            
+            # If we have intro stuff to put in chapter 1, start the regex at \mt if it exists.
+            if n == 1 and haveIntro:
+
+                begRE = r'(\\mt.+\\c 1|\\c 1)'
+            else:
+                begRE = r'\\c ' + myChapList[n//2]
+            
+            # See if this is the last paratext chapter
+            if myChapList[n//2] == ptxChapList[-1]:
+                
+                endRE = r'\s.+'
+                replExtra = ''
+            else:
+                endRE = r'\s.+?\\c' # non-greedy match
+                replExtra = '\\c'
+        else:
+            found = False
+            
+            # Find the next chapter # in the list
+            for i, ptxCh in enumerate(ptxChapList):
+                
+                if int(myChapList[n//2]) < int(ptxCh):
+                    
+                    found = True
+                    break
+            if found:
+                
+                begRE = r'\\c ' + ptxCh
+                replExtra = '\\c ' + ptxCh
+                endRE = ''
+                
+            # No next chapter found, just append
+            else: 
+                
+                bookContents += wholeChStr
+                continue
+        
+        # Escape each backslash
+        wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
+        
+        bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
+        
+    # Write the ptx file
+    f = open(bookPath, 'w', encoding='utf-8')
+    f.write(bookContents)
+    
+    # Close files
+    f.close()
+
+    # Report what got exported
+    report.Info(f'{chapStr.capitalize()} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} exported to the {chapSelectObj.exportProjectAbbrev} project.')
+
+    return 1
+    
 bookMap = {\
 'GEN':'Genesis',\
 'EXO':'Exodus',\

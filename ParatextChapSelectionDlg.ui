@@ -310,14 +310,14 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>90</x>
       <y>170</y>
-      <width>211</width>
-      <height>17</height>
+      <width>341</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Clicking any chapter selects all chapters</string>
+     <string>Clicking any chapter of a book selects all chapters of the book</string>
     </property>
    </widget>
    <widget class="QLabel" name="scriptureTextsLabel">

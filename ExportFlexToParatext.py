@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.12.1 - 1/15/25 - Ron Lockwood
+#    Export from FLEx to Paratext, optionally across cluster projects.
+#
 #   Version 3.12 - 1/10/25 - Ron Lockwood
 #    Initial version.
 #
@@ -17,20 +20,18 @@
 import os
 import re
 import sys
-from shutil import copyfile
 
 import ClusterUtils
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.Core.Text import TsStringUtils
+from SIL.LCModel import * # type: ignore                                                  
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore        
 
 from flextoolslib import *                                                 
 from SIL.LCModel import ( # type: ignore
     IStTxtPara, 
 )
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
 
 import ReadConfig
 import FTPaths
@@ -45,7 +46,7 @@ import ChapterSelection
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLEx Text to Paratext",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export one or more texts in FLEx that contains scripture to Paratext.",
         FTM_Help       : "",
@@ -66,32 +67,38 @@ class Main(QMainWindow):
         self.ui = Ui_MainWindow()
         self.clusterProjects = clusterProjects
         self.scriptureTitles = scriptureTitles
+        self.selectedTitles = []
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        
         self.setWindowTitle("Export Chapters from FLEx to Paratext")
+
+        header1TextStr = "FLEx project name"
+        header2TextStr = "Paratext project abbrev."
+        self.ptxProjs = ChapterSelection.getParatextProjects()
+
+        # Set the top two widgets that need to be disabled
+        self.topWidget1 = self.ui.ptxProjAbbrevLineEdit
+        self.topWidget2 = self.ui.label
+
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QComboBox, self.ui.centralwidget, header1TextStr, header2TextStr, 100, self.fillPtxCombo)
+
+        reduction = ChapterSelection.EXP_SHRINK_WINDOW_PIXELS - ChapterSelection.FROM_FLEX_EXP_PIXELS
+        self.originalMainWinHeight = ClusterUtils.IMP_EXP_WINDOW_HEIGHT - reduction
+        self.originalOKyPos = self.ui.OKButton.y() - reduction
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=True, fromFLEx=True)
         
-        # Load cluster projects
-        if len(self.clusterProjects) > 0:
+    def fillPtxCombo(self, comboWidget):
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, savedClusterProjects=[], parentWin=self) # load last used cluster projects here
-        else:
-            # Hide cluster project widgets
-            widgetsToHide = [
-                self.ui.clusterProjectsLabel,
-                self.ui.clusterProjectsComboBox,
-            ]
-            for wid in widgetsToHide:
-
-                wid.setVisible(False)
-
+        # Fill the combo box
+        comboWidget.addItems(['...'] + self.ptxProjs)
+    
     def clusterSelectionChanged(self):
 
-        pass
+        ClusterUtils.showClusterWidgets(self)
 
     def CancelClicked(self):
         self.retVal = False
@@ -101,9 +108,35 @@ class Main(QMainWindow):
 
         ChapterSelection.doOKbuttonValidation(self, export=True, checkBookAbbrev=False, checkBookPath=True, fromFLEx=True)
 
-    def titlesSelectionChanged(self):
+        self.selectedTitles = self.ui.scriptureTextsComboBox.currentData()
+
+    def titlesSelectionChanged(self, index):
         
-        pass
+        # If the user chooses, select whole books at a time (all chapters that match the book)
+        if self.ui.selectAllChaptersCheckbox.isChecked():
+
+            title = self.ui.scriptureTextsComboBox.itemText(index)
+
+            # If the click on a checkbox made in checked, it will now be part of the current data
+            if title in self.ui.scriptureTextsComboBox.currentData():
+
+                checkFunc = self.ui.scriptureTextsComboBox.check
+            else:
+                checkFunc = self.ui.scriptureTextsComboBox.unCheck
+            
+            match = ChapterSelection.bookChapterPattern.match(title)
+
+            if not match:
+                return
+            
+            book = match.group('book')
+
+            # select/unselect all titles that match this book
+            for index in range(self.ui.scriptureTextsComboBox.count()): 
+                
+                if re.match(book, title := self.ui.scriptureTextsComboBox.itemText(index)):
+
+                    checkFunc(title)
 
 def parseSourceTextName(report, sourceText, infoMap): 
     
@@ -168,111 +201,6 @@ def parseSourceTextName(report, sourceText, infoMap):
     
     return True
                
-def do_export(synFileContents, report, chapSelectObj, configMap, parent):
-    
-    # Find all the chapter #s
-    synChapList = re.findall(r'\\c (\d+)', synFileContents, flags=re.RegexFlag.DOTALL)
-    
-    # Check that we have chapters in the syn. file
-    if len(synChapList) < 1:
-        report.Error('No chapters found in the synthesis file.')
-        return
-    
-    # Prompt the user to be sure they want to replace these chapters, preview?
-    ret = QMessageBox.question(parent, 'Overwrite chapters', f'Are you sure you want to overwrite {str(len(synChapList))} chapter(s)?', QMessageBox.Yes | QMessageBox.No)
-    
-    if ret == QMessageBox.No:
-        report.Info('Export cancelled.')
-        return 
-    
-    bookPath = chapSelectObj.getBookPath()
-
-    if not bookPath:
-
-        report.Error(f'Could not find the book file: {bookPath}')
-        return
-    
-    # Create a backup of the paratext file
-    copyfile(bookPath, bookPath+'.bak')
-    
-    # Read the Paratext file
-    with open(bookPath, encoding='utf-8') as f:
-    
-        bookContents = f.read()
-    
-    # Find all the chapter #s
-    ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
-    
-    # Split the synthesis contents into chapter chunks
-    synContentsList = re.split(r'(\\c \d+)', synFileContents, flags=re.RegexFlag.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
-    haveIntro = False
-
-    # Loop through each synthesis chapter and splice it into the paratext chapter contents
-    for n in range(1, len(synContentsList), 2): # the zeroth one will be whatever is before the first \c, possibly the empty string
-        
-        # If we have chapter 1, and before chapter 1 is some intro stuff, add intro portion before chapter 1 marker and text
-        if n == 1 and synContentsList[n] == '\\c 1' and re.search(r'\\ip', synContentsList[0]):
-
-            haveIntro = True
-            wholeChStr = synContentsList[0] + synContentsList[n] + synContentsList[n+1]
-        else:
-            wholeChStr = synContentsList[n] + synContentsList[n+1]
-        
-        # Check the corresponding chapter in the synthesis chapter list
-        if synChapList[n//2] in ptxChapList:
-            
-            # If we have intro stuff to put in chapter 1, start the regex at \mt if it exists.
-            if n == 1 and haveIntro:
-
-                begRE = r'(\\mt.+\\c 1|\\c 1)'
-            else:
-                begRE = r'\\c ' + synChapList[n//2]
-            
-            # See if this is the last paratext chapter
-            if synChapList[n//2] == ptxChapList[-1]:
-                
-                endRE = r'\s.+'
-                replExtra = ''
-            else:
-                endRE = r'\s.+?\\c' # non-greedy match
-                replExtra = '\\c'
-        else:
-            found = False
-            
-            # Find the next chapter # in the list
-            for i, ptxCh in enumerate(ptxChapList):
-                
-                if int(synChapList[n//2]) < int(ptxCh):
-                    
-                    found = True
-                    break
-            if found:
-                
-                begRE = r'\\c ' + ptxCh
-                replExtra = '\\c ' + ptxCh
-                endRE = ''
-                
-            # No next chapter found, just append
-            else: 
-                
-                bookContents += wholeChStr
-                continue
-        
-        # Escape each backslash
-        wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
-        
-        bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
-        
-    # Write the ptx file
-    f = open(bookPath, 'w', encoding='utf-8')
-    f.write(bookContents)
-    
-    # Close files
-    f.close()
-    
-    # Report how many chapters processed
-    report.Info(f'{str(len(synChapList))} chapter(s) exported.')
-    
 def MainFunction(DB, report, modify):
     
     ## Read the SourceName from the config file
@@ -294,7 +222,7 @@ def MainFunction(DB, report, modify):
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
         
-    matchingContentsObjList = []
+    
 
     # Get a list of the text titles
     textTitles = Utils.getSourceTextList(DB)
@@ -325,39 +253,42 @@ def MainFunction(DB, report, modify):
 
                     myDB = DB
                 else:
-                    myDB = Utils.openProject(report, proj)
+                    myDB = Utils.openProject(myDB, proj)
 
-                textTitles = Utils.getSourceTextList(myDB, matchingContentsObjList)
-
-                for j, title in enumerate(window.selectedTitles):
-
-                    try:
-                        contents = matchingContentsObjList[textTitles.index(title)]
-
-                    except ValueError:
-                        report.Error(f'{title} not found in the {proj} project.')
-                        continue
-
-                    textStr = makeTextStr(contents)
-
-                    # TODO: need the ptxProjList.
-                    window.chapSel.exportProjectAbbrev = window.chapSel.ptxProjList[i]
-                    do_export(textStr, report, window.chapSel, configMap, window)
-
+                report.Blank()
+                report.Info(f'Exporting from the {proj} project...')
+                exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
+                
                 # Close the project (if not the main)
                 if proj != DB.ProjectName():
 
                     myDB.CloseProject()
         else:
-            for j, title in enumerate(window.selectedTitles):
+            exportAllSelectedTitles(DB, report, window, DB.ProjectName())
 
-                contents = matchingContentsObjList[textTitles.index(title)]
+def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
-                if not contents:
-                    continue
+    matchingContentsObjList = []
+    textTitles = Utils.getSourceTextList(myDB, matchingContentsObjList)
 
-                textStr = makeTextStr(contents)
-                do_export(textStr, report, window.chapSel, configMap, window)
+    for title in window.selectedTitles:
+
+        try:
+            contents = matchingContentsObjList[textTitles.index(title)]
+
+        except ValueError:
+            report.Error(f'{title} not found in the {proj} project.')
+            continue
+
+        textStr = makeTextStr(contents)
+
+        if ptxAbbrev:
+
+            window.chapSel.exportProjectAbbrev = ptxAbbrev
+
+        if not ChapterSelection.doExport(textStr, report, window.chapSel, window):
+           
+           report.Error(f'There was a problem exporting {title} from the {proj} project to {window.chapSel.exportProjectAbbrev}.') 
 
 
 def makeTextStr(contentsObj):
