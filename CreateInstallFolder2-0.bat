@@ -90,6 +90,7 @@ copy FixUpSynthText.py %modulesflextrans%
 copy LinkAllSensesAsDup.py %modulesflextrans%
 copy ReplacementEditor.py %modulesflextrans%
 copy AdHocConstrForCluster.py %modulesflextrans%
+copy ExportFlexToParatext.py %modulesflextrans%
 
 rem testbed-specific modules to Modules\FLExTrans
 copy StartTestbed.py %modulesflextrans%
