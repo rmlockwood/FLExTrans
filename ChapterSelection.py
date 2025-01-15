@@ -5,6 +5,10 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.6 - 1/15/25 - Ron Lockwood
+#    Export from the target DB as the default. Also recognize texts that have - Copy ...
+#    at the end.
+#
 #   Version 3.12.5 - 1/15/25 - Ron Lockwood
 #    Export from FLEx to Paratext, optionally across cluster projects.
 #
@@ -50,6 +54,7 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox, QCheckBox
+from PyQt5.QtGui import QIcon
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
@@ -58,7 +63,7 @@ PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
 EXP_SHRINK_WINDOW_PIXELS = 120
 FROM_FLEX_EXP_PIXELS = 33
 
-bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?$')
+bookChapterPattern = re.compile(r'^(?P<book>.+?) (?P<chap1>\d{2})(?:-(?P<chap2>\d{2}))?(?: - Copy(?: \(\d{1,2}\))?)?$')
 
 class ChapterSelection(object):
         
@@ -433,6 +438,7 @@ def doExport(textContents, report, chapSelectObj, parent):
 
         # Create a QMessageBox instance
         msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
         msgBox.setText(f'Are you sure you want to overwrite {chapStr} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} in the {chapSelectObj.exportProjectAbbrev} project?')
         msgBox.setWindowTitle("Overwrite chapters")
         msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
