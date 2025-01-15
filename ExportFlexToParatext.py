@@ -138,69 +138,6 @@ class Main(QMainWindow):
 
                     checkFunc(title)
 
-def parseSourceTextName(report, sourceText, infoMap): 
-    
-    # Remove the - Copy ... so that a title like Ruth 01 - Copy (2) is still allowed
-    sourceText = re.sub(r' - Copy.*', '', sourceText)
-    
-    stdError = f'The text name "{sourceText}" is invalid it should be of the form GEN 01 or Genesis 23-38'
-    
-    # should have two main elements, book name (which can have spaces) and chapter number
-    myList = sourceText.split()
-    
-    # the book portion will be all except the last one
-    bookAbbrev = book = ' '.join(myList[0:-1])
-    
-    chapters = myList[-1]
-    
-    # Check first if this is an abbreviation that is in the book map
-    if book.upper() not in ChapterSelection.bookMap:
-        
-        # Now check if this is a full book name that is in the values part of the map (e.g. 'Genesis')
-        if book not in ChapterSelection.bookMap.values():
-            report.Error(f'The book name or abbreviation {book} is invalid. It should match a Paratext book.')
-            return False
-        else:
-            for key, val in ChapterSelection.bookMap.items():
-                
-                if book == val:
-                    bookAbbrev = key
-                    break
-    
-    if re.search('-', chapters):
-        
-        bList = chapters.split('-')
-        
-        if len(bList) != 2:
-            report.Error(stdError)
-            return False
-        
-        (fromStr, toStr) = bList
-            
-        if not fromStr.isdigit() or not toStr.isdigit():
-            report.Error(stdError)
-            return False
-        else:
-            fromChap = int(fromStr)
-            toChap = int(toStr)
-            
-            if toChap < fromChap or toChap == 0 or fromChap == 0:
-                report.Error(stdError)
-                return False
-    else:
-        if chapters.isdigit() == False:
-            
-            report.Error(stdError)
-            return False
-            
-        fromChap = toChap = int(chapters)               
-                    
-    infoMap['bookAbbrev'] = bookAbbrev
-    infoMap['fromChap'] = fromChap
-    infoMap['toChap'] = toChap
-    
-    return True
-               
 def MainFunction(DB, report, modify):
     
     ## Read the SourceName from the config file
@@ -257,6 +194,7 @@ def MainFunction(DB, report, modify):
 
                 report.Blank()
                 report.Info(f'Exporting from the {proj} project...')
+
                 exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
                 
                 # Close the project (if not the main)
@@ -282,14 +220,35 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
         textStr = makeTextStr(contents)
 
+        ## Get the book abbreviation
+        # First get the book string at the start of the tile. It could be full name or abbrev.
+        matchObj = ChapterSelection.bookChapterPattern.match(title)
+        bookStr = matchObj.group('book')
+        bookAbbrev = ''
+
+        # if we have an abbrev. already, done
+        if bookStr in ChapterSelection.bookMap:
+                    
+            bookAbbrev = bookStr 
+
+        # Otherwise find the abbreviation for the full name
+        else:
+            for key, val in ChapterSelection.bookMap.items():
+                
+                if bookStr == val:
+                    bookAbbrev = key
+                    break
+        
+        window.chapSel.bookAbbrev = bookAbbrev
+        
         if ptxAbbrev:
 
             window.chapSel.exportProjectAbbrev = ptxAbbrev
 
         if not ChapterSelection.doExport(textStr, report, window.chapSel, window):
            
-           report.Error(f'There was a problem exporting {title} from the {proj} project to {window.chapSel.exportProjectAbbrev}.') 
-
+            report.Error(f'There was a problem exporting {title} from the {proj} project to {window.chapSel.exportProjectAbbrev}.') 
+            break
 
 def makeTextStr(contentsObj):
 
