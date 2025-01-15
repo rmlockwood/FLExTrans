@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.9 - 1/15/25 - Ron Lockwood
+#    Reversal morpheme map added.
+#
 #   Version 3.12.8 - 1/6/25 - Ron Lockwood
 #    Clean up more Rule Assistant files.
 #
@@ -176,277 +179,7 @@
 #   Version 3.7.9 - 1/5/23 - Ron Lockwood
 #    Support fixes to issue 229 by adding a parameter to check_for_cat_errors.
 #
-#   Version 3.7.8 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7.7 - 12/24/22 - Ron Lockwood
-#    added GetEntryWithSense, renamed old one to GetEntryWithSensPlusFeat
-#
-#   Version 3.7.6 - 12/24/22 - Ron Lockwood
-#    Output a verse number also when getting a word by guid. Only for the first call
-#    for a sentence.
-#
-#   Version 3.7.5 - 12/19/22 - Ron Lockwood
-#    Output a verse number at the beg. of the sentence when getting surface and data
-#    tuples if a verse number is present.
-#
-#   Version 3.7.4 - 12/13/22 - Ron Lockwood
-#    handle file not found in the un fixproblemchars function.
-#
-#   Version 3.7.3 - 12/12/22 - Ron Lockwood
-#    added none headword constant.
-#
-#   Version 3.7.2 - 12/1/22 - Ron Lockwood
-#    Set PATH="" in the do_make.bat file we create to prevent other make programs
-#    from being found and executed.
-#
-#   Version 3.7.1 - 11/7/22 - Ron Lockwood
-#    Moved function here for stripping DOCTYPE from transfer rules file.
-#
-#   Version 3.7 - 11/5/22 - Ron Lockwood
-#    New function loadSourceTextList to load a combo box with source texts titles
-#
-#   Version 3.6.10 - 10/19/22 - Ron Lockwood
-#    Fixes #244. Give a warning if an attribute matches a grammatical category.
-#
-#   Version 3.6.9 - 9/2/22 - Ron Lockwood
-#    Slash fix had a problem passing re MULTILINE to a pre-compiled regex.
-#    It was actually passing 8 to the sub function to only do 8 substitutions.
-#    Did away with the MULTILINE since it wasn't needed.
-#
-#   Version 3.6.8 - 9/2/22 - Ron Lockwood
-#    Fixes #255. Convert slashes in symbols before running Apertium
-#
-#   Version 3.6.7 - 9/1/22 - Ron Lockwood
-#   Fixes #254. Convert * to _ in stems.
-#   Also reworked the convert problem chars function and calling functions.
-#
-#   Version 3.6.6 - 8/27/22 - Ron Lockwood
-#   Made isProClitic, etc. global functions.
-#
-#   Version 3.6.5 - 8/26/22 - Ron Lockwood
-#   Fixes #215 Check morpheme type against guid in the object instead of
-#   the analysis writing system so we aren't dependent on an English WS.
-#   Added a guid map for morpheme types.
-#
-#   Version 3.6.4 - 8/18/22 - Ron Lockwood
-#    New function getXMLEntryText to get the string part of a left or right element
-#    of the bilingual lexicon entry. Uses tail to get the text after <b/>. Modified the new
-#    convertXMLEntryToColoredString
-#
-#   Version 3.6.3 - 8/18/22 - Ron Lockwood
-#    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
-#    The tooltip display the entry or entries for the word that are found in the
-#    bilingual lexicon. For Utils this meant pulling out some code from process lexical unit()
-#    and making a new function. Then a new function to convert XML to colored string was added.
-#
-#   Version 3.6.2 - 8/11/22 - Ron Lockwood
-#    Fixes #198. Warn the user for periods in attribute definitions.
-#
-#   Version 3.6.1 - 8/11/22 - Ron Lockwood
-#    Save transfer rule file in decomposed unicode.
-#
-#   Version 3.6 - 8/10/22 - Ron Lockwood
-#    Save testbed file in composed or decomposed unicode depending on the config.
-#    setting. Always convert the file to decomposed when first reading it.
-#
-#   Version 3.5.5 - 7/16/22 - Ron Lockwood
-#    Fixes #142 (preceding spaces in entries)
-#
-#   Version 3.5.4 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
-#
-#   Version 3.5.3 - 6/13/22 - Ron Lockwood
-#    Run make file changes to support the Windows version of the Apertium tools. Fixes #143.
-#    This includes creating a batch file instead of a bash file and stripping out
-#    the DocType info. from the rules file within code here instead of the old fix.py.
-#
-#   Version 3.5.2 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.5.1 - 5/5/22 - Ron Lockwood
-#    Moved CreateUniqueTitle from InsertTargetText to here so that ImportFromParatext
-#    could use it.
-#
-#   Version 3.5 - 4/1/22 - Ron Lockwood
-#    Support functions used by Extract Bilingual Lexicon that may have a null
-#    report object. Fixes #37
-#
-#   Version 3.4.4 - 3/21/22 - Ron Lockwood
-#    Handle when transfer rules file and testbed file locations are not set in
-#    the configuration file. Issue #95. Applies to run_makefile for Apertium.
-#
-#   Version 3.4.3 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4.2 - 3/10/22 - Ron Lockwood
-#    Don't do the discontiguous types processing if there is nothing on the list
-#    in the config file. This is a fix for issue #87.
-#
-#   Version 3.4.1 - 3/5/22 - Ron Lockwood
-#    Use a config file setting for the transfer rules file. Make it an
-#    environment variable that the makefile can use.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3.3 - 1/29/22 - Ron Lockwood
-#    Fixed bug introduced in 3.3.1. Which output a 2nd version of unknown words.
-#    Also, if a later part of the word lacks a sense or entry, don't put out another
-#    lemma, instead put out a bogus affix: PartMissing. Fixes #54
-#
-#   Version 3.3.2 - 1/27/22 - Ron Lockwood
-#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
-#    Now the setup tool and the bilingual lexicon uses common code for getting
-#    the grammatical categories from each lexicon. Fixes #50.
-#
-#   Version 3.3.1 - 1/27/22 - Ron Lockwood
-#    Fixed index error bug when an index to the sense list overflowed. This is in
-#    The TextWord class. Also prevent empty lexical units from being produced when
-#    no root is present. This fixes #39 & #40.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2.6 - 12/30/21 - Ron Lockwood
-#    Optimized Testbed Viewing. Particularly through caching Lexical Units.
-#
-#   Version 3.2.5 - 11/30/21 - Ron Lockwood
-#    New methods for TextSentence, TextWord to support Linker enhancements
-#
-#   Version 3.2.4 - 10/22/21 - Ron Lockwood
-#    Process the insertList first when building the guid map. This way uses
-#    of az or va in the current sentence override the inserList ones. This
-#    matters for punctuation.
-#
-#   Version 3.2.3 - 7/1/21 - Ron Lockwood
-#    punctuation_eval() moved here from ExtractSourceText
-#
-#   Version 3.2.2 - 4/30/21 - Ron Lockwood
-#    More detailed error when GUID not found.
-#
-#   Version 3.2.1 - 3/8/21 - Ron Lockwood
-#    Error checking for missing guid in XML files
-#
-#   Version 3.2 - 3/4/21 - Ron Lockwood
-#    Support for discontiguous complex forms
-#
-#   Version 3.1.2 - 3/4/21 - Ron Lockwood
-#    Support for testbed editing in the XML Editor XXE
-#
-#   Version 3.1.1 - 2/25/21 - Ron Lockwood
-#    Fixed bug where stem features would be duplicated if getStemFeatures was
-#    called more than once. Also set the surface form in the new initialize() method.
-#
-#   Version 3.1 - 2/25/21 - Ron Lockwood
-#    Support an insert word list file for extraction purposes. Added a parameter
-#    to createGuidMaps functions. New initialize() method in TextWord. New function:
-#    getInsertedWordsList.
-#
-#   Version 3.0.1 - 2/19/21 - Ron Lockwood
-#    remove @EOL or just EOL
-#
-#   Version 3.0 - 1/25/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.1.8 - 7/29/20 - Ron Lockwood
-#    Return a count from writePrecedingSentPunc
-#
-#   Version 2.1.7 - 7/29/20 - Ron Lockwood
-#    In CheckForUnknown, check the surface form, not punctuation.
-#
-#   Version 2.1.6 - 7/29/20 - Ron Lockwood
-#    Support writing the word data and the punctuation separately in the Word
-#    and Sent classes. This is for keeping punctuation in the same place during
-#    TreeTran transformations.
-#
-#   Version 2.1.5 - 7/29/20 - Ron Lockwood
-#    Moved pre-punctuation check in getInterlinear above check for new sent.
-#
-#   Version 2.1.4 - 3/27/20 - Ron Lockwood
-#    Handle adding sentence punctuation when using TreeTran.
-#
-#   Version 2.1.3 - 3/26/20 - Ron Lockwood
-#    Moved TreeTran related class and functions from ExtractSourceText to the
-#    Utils file.
-#
-#   Version 2.1.2 - 3/22/20 - Ron Lockwood
-#    Reorganized the punctuation part. Put the check for new sentence and
-#    paragraph into a function. The logic is more linear now.
-#
-#   Version 2.1.1 - 3/21/20 - Ron Lockwood
-#    Rewrote the TextWord class to handle multiple entries with associated lemmas
-#    affix sets, etc. This was needed to handle compound words where more than one
-#    root or stem is present in a 'word'. Calling functions were changed to
-#    accommodate the class changes. Also we rewrote the logic for doing punctuation.
-#    Also corrected the logic for letting certain unknown words pass without
-#    warning and pass down a text-wide unknown words map.
-#
-#   Version 2.1 - 3/20/20 - Ron Lockwood
-#    Total rewrite of getInterlinData. Added a bunch of new classes that
-#    encapsulate texts, paragraphs, sentences, and words. Greatly reduced the
-#    basic loop that goes through all analysis bundles and the elements of each
-#    bundle. Now all the data is stored in the objects with the word object holding
-#    most of it. The handling of complex forms is now done after we have gathered
-#    all of the data. We also create the guid map only when needed for TreeTran.
-#
-#   Version 2.0.3 - 2/12/20 - Ron Lockwood
-#    Don't use sentence number as part of the guid map key.
-#
-#   Version 2.0.2 - 2/4/20 - Ron Lockwood
-#    Fixed bug where prev_e not being set in the correct loop.
-#
-#   Version 2.0.1 - 1/22/20 - Ron Lockwood
-#    Add a new return object from get_interlinear that is a list of sentences
-#    each sentence contains two items for each word, the lexical item in data stream
-#    format and the spacing or punctuation afterwards. Also fixed the Guid list use;
-#    in the case of phrasal verbs, the first element of the compound wasn't getting
-#    deleted from the Guid list.
-#
-#   Version 1.7.1 - 4/22/19 - Ron Lockwood
-#    Fixed bug where two entries that occur together but were not part of the
-#    same complex form cause the 2nd one to be ignored. E.g. dust enteqad kon
-#    the code saw dust was part of a complex form, when it got to enteqad it saw
-#    it too was part of a complex form, but it wasn't in the right position so it
-#    ignored it and the complex form enteqad kon didn't get recognized. Now when
-#    enteqad is reached, the counter starts over for looking for new complex forms.
-#
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.6.1 - 3/27/19 - Ron Lockwood
-#    New methods in the TestbedTestXMLObject: getTest, getTestsList. Compile a
-#    RegEx at the beginning.
-#
-#   Version 1.6 - 5/23/18 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.1.5 - 1/10/18 - Ron Lockwood
-#    Put run_makefile in this file so that both RunApertium and LiveRuleTesterTool
-#    can use it. Put split_compounds in this file so that ExtractSourceText and
-#    LiveRuleTesterTool can use it.
-#
-#   Version 1.1.4 - 1/1/18 - Ron
-#    Put process_lexical_unit and associated functions in this file so that
-#    both ViewSrcTgt and LiveRuleTesterTool can use it.
-#
-#   Version 1.1.3 - 12/26/17 - Ron
-#    Suppress warnings for standard format markers (e.g. \s) and some special
-#    Combinations of a sfm and following text. Also suppress warnings when the
-#    same unknown word occurs more than once, but give a warning that an
-#    unknown word occurred multiple times.
-#
-#   Version 1.1.2 - 1/18/17 - Ron
-#    Scripture text fixes. Surface forms had empty lines. Prevented this.
-#    Changed some comments.
-#
-#   Version 1.1.1 - 11/9/16 - Ron
-#    Handle any kind of text contents coming in -- scripture or standard.
-#    Handle no analyses in a text.
-#
-#   Version 1.1 - 9/28/16 - Ron
-#    Moved main extraction code from ExtractSourceText here to be shared with
-#    LiveRuleTesterTool.py
+#   earlier version history removed on 1/15/25
 #
 #   Shared functions
 
@@ -568,6 +301,26 @@ morphTypeMap = {
 "d7f713e8-e8cf-11d3-9764-00c04f186933": "stem",
 "d7f713dd-e8cf-11d3-9764-00c04f186933": "suffix",
 "3433683d-08a9-4bae-ae53-2a7798f64068": "suffixing interfix"}
+
+morphTypeReverseMap = {
+"bound root"           : "d7f713e4-e8cf-11d3-9764-00c04f186933",                   
+"bound stem"           : "d7f713e7-e8cf-11d3-9764-00c04f186933",      
+"circumfix"            : "d7f713df-e8cf-11d3-9764-00c04f186933",     
+"clitic"               : "c2d140e5-7ca9-41f4-a69a-22fc7049dd2c",  
+"discontiguous phrase" : "0cc8c35a-cee9-434d-be58-5d29130fba5b",                
+"enclitic"             : "d7f713e1-e8cf-11d3-9764-00c04f186933",    
+"infix"                : "d7f713da-e8cf-11d3-9764-00c04f186933", 
+"infixing interfix"    : "18d9b1c3-b5b6-4c07-b92c-2fe1d2281bd4",             
+"particle"             : "56db04bf-3d58-44cc-b292-4c8aa68538f4",    
+"phrase"               : "a23b6faa-1052-4f4d-984b-4b338bdaf95f",  
+"prefix"               : "d7f713db-e8cf-11d3-9764-00c04f186933",  
+"prefixing interfix"   : "af6537b0-7175-4387-ba6a-36547d37fb13",              
+"proclitic"            : "d7f713e2-e8cf-11d3-9764-00c04f186933",     
+"root"                 : "d7f713e5-e8cf-11d3-9764-00c04f186933",
+"stem"                 : "d7f713e8-e8cf-11d3-9764-00c04f186933",
+"suffix"               : "d7f713dd-e8cf-11d3-9764-00c04f186933",  
+"suffixing interfix"   : "3433683d-08a9-4bae-ae53-2a7798f64068"}              
+
 
 # Invalid category characters & descriptions & messages & replacements
 catProbData = [['space', 'converted to an underscore', '_', reSpace],
