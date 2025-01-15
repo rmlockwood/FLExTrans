@@ -5,7 +5,10 @@
 #   SIL International
 #   12/12/24
 #
-#   Version 3.12.2 - 1/11/25 - Ron Lockwood
+#   Version 3.12.3 - 1/11/25 - Ron Lockwood
+#    Added logic to find a morpheme msa object if we don't have a guid match.
+#
+#   Version 3.12.2 - 1/15/25 - Ron Lockwood
 #    Add gloss to the end of the string identifying the morpheme/allomorph.
 #
 #   Version 3.12.1 - 1/9/25 - Ron Lockwood
@@ -44,7 +47,8 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from fuzzywuzzy import fuzz
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCompleter, QInputDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QInputDialog, QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QMessageBox
+from fuzzywuzzy import fuzz
 
 from ClusterAdHoc import Ui_AdHocMainWindow
 from ComboBox import CheckableComboBox
@@ -65,8 +69,6 @@ docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
 Add an ad hoc constraint to multiple cluster projects. 
 """ }
 
-SIMILARITY_THRESHOLD = 75
-
 adjacencyMap = {
     'anywhere around':  0,
     'somewhere after':  1,
@@ -75,10 +77,10 @@ adjacencyMap = {
     'adjacent before':  4,
 }
 
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QApplication, QMessageBox
-from fuzzywuzzy import fuzz
+glossPOSMap = {}
 
 SIMILARITY_THRESHOLD = 75
+EM_SPACE = '\u2003'
 
 class GroupInputDialog(QDialog):
     def __init__(self, parent=None):
@@ -338,9 +340,10 @@ class AdHocMain(QMainWindow):
 
         # Lookup the msa/or allomorph for the key item
         key = self.ui.KeyMorphAllomorphLineEdit.text()
-        keyObj = objMap[key]
+        keyObj = origKeyObj = objMap[key]
 
         otherObjList = []
+        origOtherObjList = []
         
         # Get the list of msas/allomorphs for the other morpheme/allomorph fields
         for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
@@ -349,13 +352,16 @@ class AdHocMain(QMainWindow):
             if otherStr := widget.text():
 
                 otherObjList.append((objMap[otherStr], otherStr))   
+        
+        # Duplicate the list to save it for later
+        origOtherObjList = otherObjList.copy()  
 
         # Loop through all projects
         for proj in self.ui.clusterProjectsComboBox.currentData():
 
             problemFound = False
-            isSourceProject = proj == self.sourceDB.ProjectName()
-            isOrigSourceProject = proj == self.origSourceDB.ProjectName()
+            isSourceProject = (proj == self.sourceDB.ProjectName())
+            isOrigSourceProject = (proj == self.origSourceDB.ProjectName())
 
             # Open the project (if not the current source project or the original source - these are already open)
             if isOrigSourceProject:
@@ -370,18 +376,23 @@ class AdHocMain(QMainWindow):
 
                 if not myDB:
                     continue
-
+            
+            # Get the object repository
             repo = myDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
+            # If we aren't on the source project get the equivalent msa in this project
+            # We try at first to see if the same guid exists which may work most of the time because the FLEx projects
+            # were copied from each other. If that doesn't work, find the equivalent msa in other ways.
             if not isSourceProject:
             
-                # Verify this key object exists in the project. The assumption is that the cluster projects will have the same GUIDs for the same objects.
+                # Check if this key object exists in the project.
                 try:
-                    _ = repo.GetObject(keyObj.Guid)
+                    _ = repo.GetObject(origKeyObj.Guid)
                 except:
+                    # If it's a morpheme we can try finding the msa other ways. 
                     if selectedType == 'Morpheme':
 
-                        keyObj = self.findObject(self.sourceDB, myDB, keyObj)
+                        keyObj = self.findObject(self.sourceDB, myDB, origKeyObj, key)
 
                         if not keyObj:
 
@@ -393,6 +404,9 @@ class AdHocMain(QMainWindow):
                         feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
                         problemFound = True
 
+                # Restore the other list to what it was in case it got changed below
+                otherObjList = origOtherObjList.copy()
+
                 # Loop through all the other values
                 for i, (othObj, otherStr) in enumerate(otherObjList):
 
@@ -402,7 +416,7 @@ class AdHocMain(QMainWindow):
                     except:
                         if selectedType == 'Morpheme':
 
-                            newObj = self.findObject(self.sourceDB, myDB, othObj)
+                            newObj = self.findObject(self.sourceDB, myDB, othObj, otherStr)
 
                             if not othObj:
                                 feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}.\n'
@@ -411,6 +425,7 @@ class AdHocMain(QMainWindow):
                             # Replace this object in the list
                             otherObjList[i] = (newObj, otherStr)
 
+                        # Again, give up if it's an allomorph
                         else:
                             feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
                             problemFound = True
@@ -449,7 +464,7 @@ class AdHocMain(QMainWindow):
                 
                 validGroup = False
 
-                # Add the object to the group list if this is the source project
+                # Add the object to the group if this is the source project
                 if isSourceProject:
 
                     groupObj = self.ui.adHocGroupComboBox.currentData()
@@ -479,7 +494,7 @@ class AdHocMain(QMainWindow):
                                 validGroup = True
                                 break
 
-                        # If not, filter the list to near matches
+                        # If not, filter the list to 75% near matches
                         if not validGroup:
 
                             filteredGroupNames = [name for name, _ in groupList if fuzz.ratio(sourceGroupName, name) >= SIMILARITY_THRESHOLD]
@@ -488,7 +503,7 @@ class AdHocMain(QMainWindow):
                             # Revert back to the default cursor 
                             QApplication.restoreOverrideCursor()       
 
-                            # Prompt the user to select one 
+                            # Prompt the user to select a group from a list 
                             selectedGroupName = self.promptUserForGroupName(filteredGroupNames, proj)
 
                             # Show hourglass cursor 
@@ -524,22 +539,24 @@ class AdHocMain(QMainWindow):
         # Give some feedback
         QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
 
-    def findObject(self, sourceDB, targetDB, msaObj):
+    def findObject(self, sourceDB, targetDB, msaObj, keyStr):
 
-        # Get the entry object from this msa object
+        desiredMSA = None
+
+        # Get the entry and sense objects from this msa object
         entryObj = ILexEntry(msaObj.Owner)
         senseObj = self.getSenseForMsa(msaObj)
 
         if not senseObj:
             return None
 
-        # If we have a stem that is not a clitic get the link to the appropriate sense
-        if msaObj.ClassName == 'MoStemMsa':
+        # If we have a stem that is not a clitic get the link that likely exists to the appropriate sense
+        if msaObj.ClassName == 'MoStemMsa' and not Utils.isClitic(entryObj):
 
             # Get a list of custom fields at the sense level
             idAndLabelList = sourceDB.LexiconGetSenseCustomFields()
 
-            # Go through the labels and check the links until we match the project name
+            # Go through the labels and check the link urls until we match the project name
             for id, _ in idAndLabelList:
                 
                 customFieldUrl = Utils.getTargetEquivalentUrl(sourceDB, senseObj, id)
@@ -548,20 +565,52 @@ class AdHocMain(QMainWindow):
 
                     targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(entryObj, sourceDB, targetDB, senseObj, customFieldUrl, \
                                                                                   senseNumField=None, report=None)
+                    # If the url led us to a valid target sense, return that sense's msa
                     if targetSense:
                         return targetSense.MorphoSyntaxAnalysisRA
                     else:
                         return None
 
-        # If we have a stem that's a clitic, find the sense by gloss and POS
+        # If we have an affix or clitic, find the sense by gloss and POS
+        elif msaObj.ClassName == 'MoInflAffMsa' or msaObj.ClassName == 'MoDerivAffMsa' or Utils.isClitic(entryObj):
 
-        # If we have an affix, find the sense by gloss and POS
+            # Parse the key string of entry/sense info. into lemma, pos and gloss
+            # This is the same string that the user sees in the text boxes.
+            lemma, pos, gloss = re.split(EM_SPACE, keyStr)
 
-            # If we have a derivational affix, need to match the from and to POS
+            # See if we have a match on the gloss and POS in our saved map for this DB, if so, return the msa
+            # In theory, a two senses of an entry could have identical gloss and pos, but then the msa would be the same.
+            if desiredMSA := glossPOSMap.get(gloss+pos+targetDB.ProjectName(), None):
 
-            # Inflectional affix
+                return desiredMSA
 
-        return None
+            # Loop through all entries
+            for entry in targetDB.LexiconAllEntries():
+
+                # Skip stems
+                if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph':
+                    continue
+
+                # Loop through all senses for an entry
+                for sense in entry.SensesOS:
+
+                    # Get gloss, msa and pos
+                    currGloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
+                    myMSA = self.createMSA(sense.MorphoSyntaxAnalysisRA) # Cast to the right class
+                    currPOS = self.setPOS(myMSA)
+
+                    # Save the gloss and POS with associated msa into a saved map for the current DB
+                    glossPOSMap[currGloss+currPOS+targetDB.ProjectName()] = myMSA
+
+                    # If we have a match on POS and gloss
+                    if not desiredMSA and currGloss == gloss and currPOS == pos:
+
+                        # Save the msa
+                        desiredMSA = myMSA
+        else:
+            return None
+
+        return desiredMSA
     
     def getSenseForMsa(self, msaObj):
 
@@ -619,7 +668,7 @@ class AdHocMain(QMainWindow):
                     pos = self.setPOS(msa)
                     gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
 
-                    lemmas[f'{headWord}.{i} {pos} {gloss}'] = msa
+                    lemmas[f'{headWord}.{i}{EM_SPACE}{pos}{EM_SPACE}{gloss}'] = msa
                     lastMsa = msa
 
         return lemmas
@@ -659,7 +708,7 @@ class AdHocMain(QMainWindow):
                     # Just want the first POS
                     break
 
-                lemmas[f'{mainAllomorphStr} ({pos}): {headWord} {gloss}'] = entry.LexemeFormOA
+                lemmas[f'{mainAllomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = entry.LexemeFormOA
 
             # Now get any allomorphs
             for allom in entry.AlternateFormsOS:
@@ -668,7 +717,7 @@ class AdHocMain(QMainWindow):
 
                     allomorphStr = ITsString(allom.Form.VernacularDefaultWritingSystem).Text
                     allomorphStr = norm(allomorphStr)
-                    lemmas[f'{allomorphStr} ({pos}): {headWord} {gloss}'] = allom
+                    lemmas[f'{allomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = allom
 
         return lemmas
     
