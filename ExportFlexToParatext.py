@@ -48,11 +48,11 @@ import ChapterSelection
 docs = {FTM_Name       : "Export FLEx Text to Paratext",
         FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Export one or more texts in FLEx that contains scripture to Paratext.",
+        FTM_Synopsis   : "Export one or more texts in FLEx that contain scripture to Paratext.",
         FTM_Help       : "",
         FTM_Description:
 """
-Export one or more texts in FLEx that contains scripture to Paratext. The list of possible texts to choose
+Export one or more texts in FLEx that contain scripture to Paratext. The list of possible texts to choose
 from will be filtered according to texts that have a scripture book name or abbreviation in the title plus
 a chapter number or a range of chapter numbers.""" }
                  
@@ -158,8 +158,6 @@ def MainFunction(DB, report, modify):
     else:
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
-        
-    
 
     # Get a list of the text titles
     textTitles = Utils.getSourceTextList(DB)
@@ -190,7 +188,7 @@ def MainFunction(DB, report, modify):
 
                     myDB = DB
                 else:
-                    myDB = Utils.openProject(myDB, proj)
+                    myDB = Utils.openProject(report, proj)
 
                 report.Blank()
                 report.Info(f'Exporting from the {proj} project...')
