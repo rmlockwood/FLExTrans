@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.12.1 - 1/15/25 - Ron Lockwood
+#    Export from FLEx to Paratext, optionally across cluster projects.
+#
 #   Version 3.12 - 12/24/24 - Ron Lockwood
 #    Add signal for when an item is checked.
 #
@@ -28,7 +31,7 @@ from PyQt5.QtCore import QEvent, Qt, pyqtSignal
 class CheckableComboBox(QComboBox):
 
     # Define a custom signal
-    itemCheckedStateChanged = pyqtSignal()
+    itemCheckedStateChanged = pyqtSignal(int)
 
     # Subclass Delegate to increase item height
     class Delegate(QStyledItemDelegate):
@@ -91,7 +94,7 @@ class CheckableComboBox(QComboBox):
                     item.setCheckState(Qt.Checked)
             
                 # Emit the custom signal when an item is checked/unchecked
-                self.itemCheckedStateChanged.emit()
+                self.itemCheckedStateChanged.emit(index.row())
                 return True
 
         return False
@@ -132,6 +135,11 @@ class CheckableComboBox(QComboBox):
         for i in range(self.model().rowCount()):
             if self.model().item(i).text() == text:
                 self.model().item(i).setCheckState(Qt.Checked)
+
+    def unCheck(self, text):
+        for i in range(self.model().rowCount()):
+            if self.model().item(i).text() == text:
+                self.model().item(i).setCheckState(Qt.Unchecked)
 
     def addItem(self, text, data=None):
         item = QStandardItem()

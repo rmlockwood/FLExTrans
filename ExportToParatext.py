@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.4 - 1/15/25 - Ron Lockwood
+#    Export from FLEx to Paratext, optionally across cluster projects.
+#
 #   Version 3.12.3 - 12/31/24 - Ron Lockwood
 #    Fixes #830. Have do_export build the full path to the book.
 #
@@ -49,26 +52,7 @@
 #    Fixes #173 and #190. Shorten window and move up OK and Cancel.
 #    Also allow - Copy ... after the source text title.
 #
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Added RegexFlag before re constants
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5.3 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5.2 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
-#
-#   Version 3.5.1 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.5 - 5/3/22 - Ron Lockwood
-#    Initial version.
+#   earlier version history removed on 1/14/25
 #
 #   Export chapters from FLExTrans to Paratext. The user is prompted which Paratext 
 #   project to use and the book, from and to chapter come from the current SourceName 
@@ -80,16 +64,12 @@
 import os
 import re
 import sys
-from shutil import copyfile
 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-from SIL.LCModel.Core.Text import TsStringUtils
-
+from SIL.LCModel import * # type: ignore                                                  
 from flextoolslib import *                                                 
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 import ReadConfig
 import FTPaths
@@ -213,130 +193,8 @@ def parseSourceTextName(report, sourceText, infoMap):
     infoMap['toChap'] = toChap
     
     return True
-               
-def do_export(DB, report, chapSelectObj, configMap, parent):
-    
-    # Check that we have a synthesized file
-    synFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
-    if not synFile:
-        return
-    
-    # Read in the syn. file chapters
-    try:
-        f = open(synFile, 'r', encoding='utf-8')
-    except:
-        report.Error(f'Could not find the synthesis file. Have you run the Synthesis Module? Missing file: {synFile}.')
-        return
-        
-    synFileContents = f.read()
-    f.close()
-    
-    # Find all the chapter #s
-    synChapList = re.findall(r'\\c (\d+)', synFileContents, flags=re.RegexFlag.DOTALL)
-    
-    # Check that we have chapters in the syn. file
-    if len(synChapList) < 1:
-        report.Error('No chapters found in the synthesis file.')
-        return
-    
-    # Prompt the user to be sure they want to replace these chapters, preview?
-    ret = QMessageBox.question(parent, 'Overwrite chapters', f'Are you sure you want to overwrite {str(len(synChapList))} chapter(s)?', QMessageBox.Yes | QMessageBox.No)
-    
-    if ret == QMessageBox.No:
-        report.Info('Export cancelled.')
-        return 
-    
-    bookPath = chapSelectObj.getBookPath()
 
-    if not bookPath:
-
-        report.Error(f'Could not find the book file: {bookPath}')
-        return
-    
-    # Create a backup of the paratext file
-    copyfile(bookPath, bookPath+'.bak')
-    
-    # Read the Paratext file
-    with open(bookPath, encoding='utf-8') as f:
-    
-        bookContents = f.read()
-    
-    # Find all the chapter #s
-    ptxChapList = re.findall(r'\\c (\d+)', bookContents, flags=re.RegexFlag.DOTALL)
-    
-    # Split the synthesis contents into chapter chunks
-    synContentsList = re.split(r'(\\c \d+)', synFileContents, flags=re.RegexFlag.DOTALL) # gives us [\c 1, \s ..., \c 2, \s ..., ...]
-    haveIntro = False
-
-    # Loop through each synthesis chapter and splice it into the paratext chapter contents
-    for n in range(1, len(synContentsList), 2): # the zeroth one will be whatever is before the first \c, possibly the empty string
-        
-        # If we have chapter 1, and before chapter 1 is some intro stuff, add intro portion before chapter 1 marker and text
-        if n == 1 and synContentsList[n] == '\\c 1' and re.search(r'\\ip', synContentsList[0]):
-
-            haveIntro = True
-            wholeChStr = synContentsList[0] + synContentsList[n] + synContentsList[n+1]
-        else:
-            wholeChStr = synContentsList[n] + synContentsList[n+1]
-        
-        # Check the corresponding chapter in the synthesis chapter list
-        if synChapList[n//2] in ptxChapList:
-            
-            # If we have intro stuff to put in chapter 1, start the regex at \mt if it exists.
-            if n == 1 and haveIntro:
-
-                begRE = r'(\\mt.+\\c 1|\\c 1)'
-            else:
-                begRE = r'\\c ' + synChapList[n//2]
-            
-            # See if this is the last paratext chapter
-            if synChapList[n//2] == ptxChapList[-1]:
-                
-                endRE = r'\s.+'
-                replExtra = ''
-            else:
-                endRE = r'\s.+?\\c' # non-greedy match
-                replExtra = '\\c'
-        else:
-            found = False
-            
-            # Find the next chapter # in the list
-            for i, ptxCh in enumerate(ptxChapList):
-                
-                if int(synChapList[n//2]) < int(ptxCh):
-                    
-                    found = True
-                    break
-            if found:
-                
-                begRE = r'\\c ' + ptxCh
-                replExtra = '\\c ' + ptxCh
-                endRE = ''
-                
-            # No next chapter found, just append
-            else: 
-                
-                bookContents += wholeChStr
-                continue
-        
-        # Escape each backslash
-        wholeChStr = re.sub(r'\\', r'\\\\', wholeChStr + replExtra)    
-        
-        bookContents = re.sub(begRE + endRE, wholeChStr, bookContents, flags=re.RegexFlag.DOTALL)
-        
-    # Write the ptx file
-    f = open(bookPath, 'w', encoding='utf-8')
-    f.write(bookContents)
-    
-    # Close files
-    f.close()
-    
-    # Report how many chapters processed
-    report.Info(f'{str(len(synChapList))} chapter(s) exported.')
-    
 def MainFunction(DB, report, modify):
-    
-    ## Read the SourceName from the config file
     
     # Read the configuration file 
     configMap = ReadConfig.readConfig(report)
@@ -374,7 +232,22 @@ def MainFunction(DB, report, modify):
     
     if window.retVal == True:
         
-        do_export(DB, report, window.chapSel, configMap, window)
+        # Check that we have a synthesized file
+        synFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
+        if not synFile:
+            return
+        
+        # Read in the syn. file chapters
+        try:
+            f = open(synFile, 'r', encoding='utf-8')
+        except:
+            report.Error(f'Could not find the synthesis file. Have you run the Synthesis Module? Missing file: {synFile}.')
+            return
+            
+        synFileContents = f.read()
+        f.close()
+        
+        ChapterSelection.doExport(synFileContents, report, window.chapSel, window)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

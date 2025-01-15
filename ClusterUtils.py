@@ -1,5 +1,5 @@
 #
-#   ClustwerUtils
+#   ClusterUtils
 #
 #   Ron Lockwood
 #   SIL International
@@ -13,10 +13,13 @@ from ComboBox import CheckableComboBox
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QLabel, QComboBox
 
+IMP_EXP_WINDOW_HEIGHT = 260
+IMP_EXP_WINDOW_WIDTH = 440
+
 def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, width, specialProcessFunc=None):
 
     self.originalOKyPos = self.ui.OKButton.y()
-    self.originalMainWinHeight = self.height()
+    self.originalMainWinHeight = IMP_EXP_WINDOW_HEIGHT
     self.widgetList = []
     self.keyWidgetList = []
 
@@ -81,9 +84,11 @@ def initClusterProjects(self, allClusterProjects, savedClusterProjects, parentWi
     for projectName in allClusterProjects:
 
         # Check the ones that were saved.
-        if projectName in savedClusterProjects:
+        if savedClusterProjects:
+            
+            if projectName in savedClusterProjects:
         
-            self.ui.clusterProjectsComboBox.check(projectName)
+                self.ui.clusterProjectsComboBox.check(projectName)
 
     # Set up the display the first time
     self.clusterSelectionChanged()

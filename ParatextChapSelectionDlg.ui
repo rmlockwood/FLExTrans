@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>259</height>
+    <width>440</width>
+    <height>283</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="bookAbbrevLabel">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -87,7 +87,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="toLabel">
     <property name="geometry">
      <rect>
       <x>225</x>
@@ -155,7 +155,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="chapterLabel">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -302,6 +302,48 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
     </property>
     <property name="checked">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="selectAllChaptersCheckbox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>170</y>
+      <width>341</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clicking any chapter of a book selects all chapters of the book</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="scriptureTextsLabel">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>250</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scripture Texts</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="scriptureTextsComboBox">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>250</y>
+      <width>221</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>
