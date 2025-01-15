@@ -49,7 +49,7 @@ from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QCheckBox
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
@@ -66,6 +66,7 @@ class ChapterSelection(object):
                  makeActive, useFullBookName, overwriteText, clusterProjects, ptxProjList, oneTextPerChapter=False, includeIntro=False):
     
         self.export = export
+        self.dontShowWarning = False
 
         if self.export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -428,15 +429,30 @@ def doExport(textContents, report, chapSelectObj, parent):
         digitsStr = myChapList[0]
 
     # Prompt the user to be sure they want to replace these chapters.
-    ret = QMessageBox.question(parent, 'Overwrite chapters', \
-          f'Are you sure you want to overwrite {chapStr} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} in the {chapSelectObj.exportProjectAbbrev} project?', \
-          QMessageBox.Yes | QMessageBox.No)
-    
-    if ret == QMessageBox.No:
+    if not chapSelectObj.dontShowWarning:
 
-        report.Info('Export cancelled.')
-        return None
-    
+        # Create a QMessageBox instance
+        msgBox = QMessageBox()
+        msgBox.setText(f'Are you sure you want to overwrite {chapStr} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} in the {chapSelectObj.exportProjectAbbrev} project?')
+        msgBox.setWindowTitle("Overwrite chapters")
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        
+        # Add checkbox to the QMessageBox
+        checkBox = QCheckBox("Do not show this message again.")
+        msgBox.setCheckBox(checkBox)
+        
+        # Display the message box and wait for user interaction
+        ret = msgBox.exec_()
+        
+        # Check if the checkbox was checked
+        if checkBox.isChecked():
+            chapSelectObj.dontShowWarning = True
+
+        if ret == QMessageBox.No:
+
+            report.Info('Export cancelled.')
+            return None
+        
     bookPath = chapSelectObj.getBookPath()
 
     if not bookPath:
