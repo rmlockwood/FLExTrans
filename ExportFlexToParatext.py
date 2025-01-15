@@ -5,6 +5,10 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.12.2 - 1/15/25 - Ron Lockwood
+#    Export from the target DB as the default. Also recognize texts that have - Copy ...
+#    at the end.
+#
 #   Version 3.12.1 - 1/15/25 - Ron Lockwood
 #    Export from FLEx to Paratext, optionally across cluster projects.
 #
@@ -46,13 +50,13 @@ import ChapterSelection
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLEx Text to Paratext",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Export one or more texts in FLEx that contain scripture to Paratext.",
+        FTM_Synopsis   : "Export one or more texts that contain scripture from the target FLEx project to Paratext.",
         FTM_Help       : "",
         FTM_Description:
 """
-Export one or more texts in FLEx that contain scripture to Paratext. The list of possible texts to choose
+Export one or more texts that contain scripture from the target FLEx project to Paratext. The list of possible texts to choose
 from will be filtered according to texts that have a scripture book name or abbreviation in the title plus
 a chapter number or a range of chapter numbers.""" }
                  
@@ -61,7 +65,7 @@ a chapter number or a range of chapter numbers.""" }
 
 class Main(QMainWindow):
 
-    def __init__(self, clusterProjects, scriptureTitles):
+    def __init__(self, targetDB, clusterProjects, scriptureTitles):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
@@ -71,7 +75,7 @@ class Main(QMainWindow):
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        self.setWindowTitle("Export Chapters from FLEx to Paratext")
+        self.setWindowTitle(f"Export from {targetDB.ProjectName()} to Paratext")
 
         header1TextStr = "FLEx project name"
         header2TextStr = "Paratext project abbrev."
@@ -159,8 +163,11 @@ def MainFunction(DB, report, modify):
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
 
+    # Open the Target DB
+    targetDB = Utils.openTargetProject(configMap, report)
+
     # Get a list of the text titles
-    textTitles = Utils.getSourceTextList(DB)
+    textTitles = Utils.getSourceTextList(targetDB)
 
     # Filter these down to the ones that match a scripture book name or abbreviation and a chapter number
     scriptureTitles = ChapterSelection.getScriptureText(report, textTitles)
@@ -168,7 +175,7 @@ def MainFunction(DB, report, modify):
     # Show the window
     app = QApplication(sys.argv)
 
-    window = Main(clusterProjects, scriptureTitles)
+    window = Main(targetDB, clusterProjects, scriptureTitles)
     
     window.show()
     
@@ -183,10 +190,14 @@ def MainFunction(DB, report, modify):
                 if window.chapSel.ptxProjList[i] == '...':
                     continue
 
-                # Open the project (if it's not the main proj)
+                # Open the project (if it's not the main project or the target project)
                 if proj == DB.ProjectName():
 
                     myDB = DB
+
+                elif proj == targetDB.ProjectName():
+
+                    myDB = targetDB
                 else:
                     myDB = Utils.openProject(report, proj)
 
@@ -196,11 +207,13 @@ def MainFunction(DB, report, modify):
                 exportAllSelectedTitles(myDB, report, window, proj, window.chapSel.ptxProjList[i])
                 
                 # Close the project (if not the main)
-                if proj != DB.ProjectName():
+                if proj != DB.ProjectName() and proj != targetDB.ProjectName():
 
                     myDB.CloseProject()
         else:
-            exportAllSelectedTitles(DB, report, window, DB.ProjectName())
+            exportAllSelectedTitles(targetDB, report, window, targetDB.ProjectName())
+
+    targetDB.CloseProject()
 
 def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
 
@@ -219,7 +232,7 @@ def exportAllSelectedTitles(myDB, report, window, proj, ptxAbbrev=None):
         textStr = makeTextStr(contents)
 
         ## Get the book abbreviation
-        # First get the book string at the start of the tile. It could be full name or abbrev.
+        # First get the book string at the start of the title. It could be full name or abbrev.
         matchObj = ChapterSelection.bookChapterPattern.match(title)
         bookStr = matchObj.group('book')
         bookAbbrev = ''
