@@ -53,90 +53,24 @@ echo regex >> %flextransfolder%\requirements.txt
 echo wildebeest-nlp >> %flextransfolder%\requirements.txt
 
 rem special flextrans stub files for flextools plus settings tool to top FlexTools folder
-copy FLExTrans.py %flextoolsfolder%
-copy Version.py %flextoolsfolder%
-copy FLExTransMenu.py %flextoolsfolder%
-copy FLExTransStatusbar.py %flextoolsfolder%
-copy SettingsGUI.py %flextoolsfolder%
+copy Dev\TopLevel\*.py %flextoolsfolder%
 
 rem sub directory paths file to Modules
 copy /Y subdirs.pth %flextoolsmodules%
 
-rem core models to Modules\FLExTrans
-copy CatalogTargetAffixes.py %modulesflextrans%
-copy ConvertTextToSTAMPformat.py %modulesflextrans%
-copy ExtractBilingualLexicon.py %modulesflextrans%
-copy ExtractSourceText.py %modulesflextrans%
-copy DoSynthesis.py %modulesflextrans%
-copy DoHermitCrabSynthesis.py %modulesflextrans%
-copy DoStampSynthesis.py %modulesflextrans%
-copy InsertTargetText.py %modulesflextrans%
-copy RunApertium.py %modulesflextrans%
-copy RunTreeTran.py %modulesflextrans%
+rem copy all module code files
+copy Dev\Modules\*.py %modulesflextrans%
 
-rem tools to Modules\FLExTrans
-copy LinkSenseTool.py %modulesflextrans%
-copy LiveRuleTesterTool.py %modulesflextrans%
-copy ViewSrcTgt.py %modulesflextrans%
-copy SetUpTransferRuleGramCat.py %modulesflextrans%
-copy ImportFromParatext.py %modulesflextrans%
-copy ExportToParatext.py %modulesflextrans%
-copy CleanFiles.py %modulesflextrans%
-copy GenerateParses.py %modulesflextrans%
-copy RuleAssistant.py %modulesflextrans%
-copy TextInRules.py %modulesflextrans%
-copy TextOutRules.py %modulesflextrans%
-copy FixUpSynthText.py %modulesflextrans%
-copy LinkAllSensesAsDup.py %modulesflextrans%
-copy ReplacementEditor.py %modulesflextrans%
-copy AdHocConstrForCluster.py %modulesflextrans%
-copy ExportFlexToParatext.py %modulesflextrans%
+rem copy all shared code files
+copy Dev\Lib\*.py %flextranslib%
 
-rem testbed-specific modules to Modules\FLExTrans
-copy StartTestbed.py %modulesflextrans%
-copy EndTestbed.py %modulesflextrans%
-copy TestbedLogViewer.py %modulesflextrans%
+rem copy all window ui code files
+copy Dev\Lib\Windows\*.py %flextranslib%
 
-rem support code to Lib
-copy readconfig.py %flextranslib%
-copy Utils.py %flextranslib%
-copy TextClasses.py %flextranslib%
-copy Testbed.py %flextranslib%
-copy FTPaths.py %flextranslib%
-copy TestbedValidator.py %flextranslib%
-copy CreateApertiumRules.py %flextranslib%
-copy TextInOutUtils.py %flextranslib%
-copy TextInOut.py %flextranslib%
-copy ReplacementEditorWindow.py %flextranslib%
-copy Mixpanel.py %flextranslib%
-copy ClusterUtils.py %flextranslib%
-copy NewEntryDlg.py %flextranslib%
+rem UI resources and supporting executables to Tools
+copy Tools\* %toolsflextools%
 
-rem dialog code (generated from .ui files) to Lib
-copy MyTableView.py %flextranslib%
-copy Linker.py %flextranslib%
-copy LiveRuleTester.py %flextranslib%
-copy TestbedLog.py %flextranslib%
-copy RuleCatsAndAttribs.py %flextranslib%
-copy ParatextChapSelectionDlg.py %flextranslib%
-copy SrcTgtViewer.py %flextranslib%
-copy ChapterSelection.py %flextranslib%
-copy ComboBox.py %flextranslib%
-copy OverWriteTestDlg.py %flextranslib%
-copy NewEntry.py %flextranslib%
-copy ClusterAdHoc.py %flextranslib%
-
-rem UI resources to Tools
-copy FLExTransWindowIcon.ico %toolsflextools%
-copy UpArrow.png %toolsflextools%
-copy DownArrow.png %toolsflextools%
-copy Light_green_check.png %toolsflextools%
-copy Red_x.png             %toolsflextools%
-copy Yellow_triangle.png   %toolsflextools%
-
-rem support programs to Tools
-copy stamp64.exe %toolsflextools%
-copy treetran.exe %toolsflextools%
+rem Copy Apertium and Make tool files
 copy Apertium4Windows\*.* %toolsflextools%
 copy Make4Windows\*.* %toolsflextools%
 
