@@ -9,8 +9,10 @@ import subprocess
 ParentFolder = os.path.dirname(__file__)
 DataFolder = os.path.join(ParentFolder, 'Rule Assistant')
 TestFolder = os.path.join(ParentFolder, 'RuleAssistantTests')
+DevFolder = os.path.join(ParentFolder, 'Dev')
+LibFolder = os.path.join(DevFolder, 'Lib')
 script = 'CreateApertiumRules.py'
-with open(os.path.join(ParentFolder, script)) as fin:
+with open(os.path.join(LibFolder, script)) as fin:
     with open(os.path.join(TestFolder, script), 'w') as fout:
         fout.write(fin.read().replace('import Utils', 'from . import Utils'))
 
