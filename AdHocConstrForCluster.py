@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.12.4 - 1/17/25 - Ron Lockwood
+#    Give an error if the user didn't used the auto-complete value.
+#
 #   Version 3.12.3 - 1/11/25 - Ron Lockwood
 #    Added logic to find a morpheme msa object if we don't have a guid match.
 #
@@ -60,7 +63,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
@@ -340,7 +343,14 @@ class AdHocMain(QMainWindow):
 
         # Lookup the msa/or allomorph for the key item
         key = self.ui.KeyMorphAllomorphLineEdit.text()
-        keyObj = origKeyObj = objMap[key]
+
+        try:
+            keyObj = origKeyObj = objMap[key]
+
+        except KeyError:
+            QApplication.restoreOverrideCursor()       
+            QMessageBox.critical(self, 'Ad Hoc Rules', f'It looks like you may not have used the Auto Complete values. "{key}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.')
+            return
 
         otherObjList = []
         origOtherObjList = []
@@ -351,7 +361,13 @@ class AdHocMain(QMainWindow):
             # If we have a value, add it to the list
             if otherStr := widget.text():
 
-                otherObjList.append((objMap[otherStr], otherStr))   
+                try:
+                    otherObjList.append((objMap[otherStr], otherStr))  
+
+                except KeyError:
+                    QApplication.restoreOverrideCursor()       
+                    QMessageBox.critical(self, 'Ad Hoc Rules', f'It looks like you may not have used the Auto Complete values. "{otherStr}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.')
+                    return
         
         # Duplicate the list to save it for later
         origOtherObjList = otherObjList.copy()  
