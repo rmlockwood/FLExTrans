@@ -63,16 +63,31 @@ def MainFunction(DB, report, modifyAllowed):
     ## Needs to be investigated.
     # Currently this is hard-coded to work with project Spanish-GenerateSentences, for the Text "Model Text".
     # I was experimenting with different values.
-#    match_n_lem = "coche1.1"
 
-    # DM: making the lemma(s) a list instead of individual values
-    match_n_lem = ["jugar1.1"]
-    match_n_pos = ["v"]
-#    match_1_lem = "amarillo1.1"
-    match_1_lem = ["rojo1.1"]
-    match_1_pos = ["adj"]
-    match_2_lem = [""]
-    match_2_pos = [""]
+    #lang = "TKW"
+    lang = "SPA"
+
+    if lang == "SPA":
+        # DM: making the lemma(s) a list instead of individual values
+        #    match_n_lem = ["coche1.1"]
+        #    match_n_pos = ["n"]
+        match_n_lem = ["jugar1.1"]
+        match_n_pos = ["v"]
+        #    match_1_lem = ["amarillo1.1"]
+        match_1_lem = ["rojo1.1"]
+        match_1_pos = ["adj"]
+        match_2_lem = [""]
+        match_2_pos = [""]
+
+    else:
+        # For Noun Adj Poss text
+        match_n_lem = ["thu1.1"]
+        match_n_pos = ["n"]
+        #match_1_lem = ["_ng'ono1.1"]
+        match_1_lem = ["lubale1.1"]
+        match_1_pos = ["adj"]
+        match_2_lem = ["aga1.1"]
+        match_2_pos = ["poss"]
 
 ## For Test 3/4 text in TKW database
 #    match_n_lem = "_nddo1.1"
@@ -80,14 +95,6 @@ def MainFunction(DB, report, modifyAllowed):
 #    match_1_lem = "_jinji1.1"
 #    match_1_pos = "adj"
     
-# For Noun Adj Poss text
-#    match_n_lem = ["_thu1.1"]
-#    match_n_pos = ["n"]
-#    match_1_lem = ["_ng'ono1.1"]
-#    match_1_pos = ["adj"]
-#    match_2_lem = ["_aga1.1"]
-#    match_2_pos = ["poss"]
-
 
 
 #    # Read the configuration file which we assume is in the current directory.
@@ -225,9 +232,13 @@ def MainFunction(DB, report, modifyAllowed):
                             pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             if pos in match_n_pos:  # Filter by target POS
                                 subListN.append(lex)
+#    if lang == "SPA":
+#        #subListN = ["papel1.1", "caramelo1.1", "tren1.1", "pescado1.1", "luz1.1", "perro1.1", "coche1.1"]
+#        subListN = ["hablar1.1", "comer1.1", "existir1.1", "venir1.1"]
+#    else:
+#        subListN = ["sogoleli1.1","thu1.1","hima1.1","mwihiyana1.1","nyakoddo1.1"]
+#    report.Info("ListN = ", subListN)
 
-
-    #subListN = ["hablar1.1", "comer1.1", "existir1.1", "venir1.1"]
     # In order to apply the rules correctly to do agreement; we need to include all the features from 
     # these lexical entries.  In the hard-coded version, I haven't included those, so anything masculine
     # in a sentence that expects feminine, comes out as "not found" (@caramelo1.1) currently.
@@ -244,18 +255,26 @@ def MainFunction(DB, report, modifyAllowed):
                             pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             if pos in match_1_pos:  # Filter by target POS
                                 subList1.append(lex)
-    #subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
+#    if lang == "SPA":
+#        subList1 = ["bueno1.1", "largo1.1", "verde1.1", "amarillo1.1"]
+#        # verde doesn't work right because in the lexicon it is AdjMF instead of adj.  I'm keeping it here
+#        # for now just to show what it looks like when a word doesn't match.
+#    else:
+#        subList1 = ["jinji1.1","ng'ono1.1","lubale1.1","xa1.1"]
+    report.Info("List1 = ", subList1)
 
     # DM: adding sublist2 for the future 
     #subList2 = []
-    # verde doesn't working right because in the lexicon it is AdjMF instead of adj.  I'm keeping it here
-    # for now just to show what it looks like when a word doesn't match.
+#    if lang == "SPA":
+#        subList2 = ["un1.1"]
+#    else:
+#        subList2 = ["aga1.1","aye1.1","ihu1.1"]
 
     
 
 
 #################################################################################
-### I was testing with a Takwane database, but that isn't available at the moment.
+### I was testing with a Takwane database.
 ### We do want to verify that this works with a Bantu language.
 #    ## For Test 3/4 text in Takwane Sentences project:
 #    # Words to use for replacing the Noun
@@ -263,19 +282,16 @@ def MainFunction(DB, report, modifyAllowed):
 #    # Words to use for replacing the first substitutable word
 #    subList1 = ["jinji1.1","ng'ono1.1","lubale1.1","xa1.1"]
 
-#    ## For Noun Adj Poss 1 text:
-#    # Words to use for replacing the Noun
-    #subListN = ["sogoleli1.1","thu1.1","hima1.1","mwihiyana1.1","nyakoddo1.1"]
-#    # Words to use for replacing the First substitutable word
-    #subList1 = ["jinji1.1","ng'ono1.1","lubale1.1","xa1.1"]
-#    # Words to use for replacing the Second substitutable word
-    #subList2 = ["aga1.1","aye1.1","ihu1.1"]
 #################################################################################
 
     # DM: limiting lists to the limit specified in settings
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
+    
+    report.Info("ListN = ", subListN)
+    report.Info("List1 = ", subList1)
+
     
     # Practice using TextClasses
     # (I just wanted to see how these functions worked, and prove that I could call them on the FLEx project.)
