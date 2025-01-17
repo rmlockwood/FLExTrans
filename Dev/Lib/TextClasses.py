@@ -836,7 +836,7 @@ class TextWord():
     def __outputDataForAllRoots(self, escapeLemma):
         retStr = ''
         if self.isSentPunctutationWord():
-            return self.getLemma(0) + self.getDataStreamSymbols(0)
+            return self.escapeReservedApertChars(self.getLemma(0)) + self.getDataStreamSymbols(0)
         else:
             for i, _ in enumerate(self.__lemmaList):
                 retStr += self.escapeReservedApertChars(self.getLemma(i)) if escapeLemma else self.getLemma(i)

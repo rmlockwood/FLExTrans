@@ -231,7 +231,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # https://wiki.apertium.org/wiki/Apertium_stream_format
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
-APERT_RESERVED = r'([\[\]@/\\^${}\*])'
+APERT_RESERVED = r'([\[\]@/\\^${}\<\>\*])'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -904,6 +904,11 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
 # Compound words get put within one ^...$ block. Split them into one per word.
 def split_compounds(outStr):
 
+    # Ignore <sent> lexical units
+    if re.search(r'<sent>', outStr):
+
+        return outStr
+    
     # TODO: this function sometimes get called with multiple LUs. Right now it doesn't remove punctuation from all places between punctuation.
     # TODO: This needs to be done because punctuation could have > chars in it.
     # TODO: In fact, this probably won't handle ^ or $ in the punctuation. Probably need to look for unescaped ^ and $. Maybe ([^\\]*?^)([^\\]*?)(\$.*) would work.
