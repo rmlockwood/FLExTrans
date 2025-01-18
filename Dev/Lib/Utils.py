@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.10 - 1/18/25 - Ron Lockwood
+#    Escape angle brackets.
+#
 #   Version 3.12.9 - 1/15/25 - Ron Lockwood
 #    Reversal morpheme map added.
 #

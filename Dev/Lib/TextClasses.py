@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12.1 - 1/18/25 - Ron Lockwood
+#    Escape angle brackets.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -61,12 +64,12 @@
 #   Classes that model text objects from whole text down to word.
 
 import re
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IWfiMorphBundleRepository,
     ILexEntry,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 import Utils
 
 MAX_SKIPPED_WORDS = 4
