@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->2 December 2024</date
+>20 January 2025</date
 ><version
->3.12</version
+>3.12.1</version
 ><contents
 showLevel="4"
 ></contents
@@ -1930,18 +1930,23 @@ type="tItalic"
 > on in <object
 type="tTool"
 >Paratext</object
->. You cannot import from <object
+>. </p
+><p
+>Also, you cannot import from <object
 type="tTool"
 >Paratext</object
-> resources. Use the <object
+> resources. Put the <object
 type="tTool"
 >Paratext</object
-> book abbreviation in the second box. You can import multiple chapters.</p
+> book abbreviation in the second box. Select from and to chapters.</p
 ><p
 >After importing, you will have a new text in the source <object
 type="tFlexx"
 ></object
-> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended.</p
+> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended. Unless you have checked the <object
+type="tItalic"
+>Overwrite existing text</object
+> box.</p
 ><p
 >Additional options are the following:</p
 ><ul
@@ -1953,16 +1958,6 @@ type="tBoldItalic"
 type="tFlexx"
 ></object
 > for each chapter.</li
-><li
-><object
-type="tBoldItalic"
->Include footnotes</object
-> - include all the text involved with footnotes</li
-><li
-><object
-type="tBoldItalic"
->Include cross references</object
-> - include all the text involved with cross references, namely \x and \r marked text.</li
 ><li
 ><object
 type="tBoldItalic"
@@ -1979,6 +1974,26 @@ type="tFlextrans"
 type="tBoldItalic"
 >Use full English book name for title</object
 > - e.g. JHN will change to John.</li
+><li
+><object
+type="tBoldItalic"
+>Overwrite existing text</object
+> - If a text already exists with the same name exists, it will be overwritten. When this is not checked, '- Copy' will be appended to the text name when a text already exists.</li
+><li
+><object
+type="tBoldItalic"
+>Include footnotes</object
+> - include all the text involved with footnotes</li
+><li
+><object
+type="tBoldItalic"
+>Include cross references</object
+> - include all the text involved with cross references, namely \x and \r marked text.</li
+><li
+><object
+type="tBoldItalic"
+>Include introduction (for chapter 1)</object
+> - bring in introductory information that is above chapter 1. This only applies to chapter 1.</li
 ></ul
 ><example
 num="xParatextImport"
@@ -1998,19 +2013,79 @@ type="tTool"
 >Paratext</object
 > Export</secTitle
 ><p
+>There are two tools that help you export to <object
+type="tTool"
+>Paratext</object
+>. The difference between them is where your you want to export your text from.</p
+><ol
+><li
+><object
+type="tTool"
+>Export Translated Text to Paratext</object
+> - takes a newly synthesized text and exports it to <object
+type="tTool"
+>Paratext</object
+>.<ol
+><li
+>You can substitute this module for the <object
+type="tTool"
+>Insert Target Text</object
+> module that is normally the last module in the <object
+type="tCollection"
+>Drafting</object
+> collection.</li
+><li
+>By doing this, after a text gets translated, it will immediately get put into the target <object
+type="tTool"
+>Paratext</object
+> project for further editing.</li
+><li
+>This is the best practice once your translation system is working smoothly.</li
+></ol
+></li
+><li
+><object
+type="tTool"
+>Export FLEx Text to Paratext</object
+> - takes a text that is in <object
+type="tFlexx"
+></object
+> and exports it to <object
+type="tTool"
+>Paratext</object
+>.<ol
+><li
+>Use this module if you have made changes or normally make changes to the target text in <object
+type="tFlexx"
+></object
+> and you want those changes to end up in <object
+type="tTool"
+>Paratext</object
+>.</li
+></ol
+></li
+></ol
+><section4
+id="sPtxExportFromSynth"
+><secTitle
+><object
+type="tTool"
+>Export Translated Text to Paratext</object
+></secTitle
+><p
 >To export chapters to <object
 type="tTool"
 >Paratext</object
-> from the active text, use the <object
-type="tTool"
->Export Text From Paratext</object
-> module. This tool is designed to work well with a text that you have previously imported with the <object
+> from the newly synthesized text, use this tool. It is designed to work well with a text that you have previously imported with the <object
 type="tTool"
 >Import Text From Paratext</object
-> module. In other words, the export tool expects the active source text to be in the form John 03-04 or JHN 03-04. Use the <object
+> module and translated. The export tool expects the name of the active source text to be in the form John 03-04 or JHN 03-04. Use the <object
 type="tSettingsTool"
 ></object
-> if you need to change the active source text. The tool will find the book and chapters in the given <object
+> if you need to change the active source text. <object
+type="tTool"
+>Export Text From Paratext</object
+> will find the book and chapters in the given <object
 type="tTool"
 >Paratext</object
 > project and replace the text that was there with the text created by <object
@@ -2024,7 +2099,7 @@ type="tSettingsProperty"
 >Target Output Synthesis File</object
 > as defined in the settings. This is the file created by the <object
 type="tTool"
->Extract Target Lexicon</object
+>Synthesize Text</object
 > module.</p
 ></endnote
 > Note: the <object
@@ -2040,7 +2115,7 @@ type="tTool"
 ><p
 >Normally this module should be run after the <object
 type="tTool"
->Extract Target Lexicon</object
+>Synthesize Text</object
 > module.</p
 ><example
 num="xParatextExport"
@@ -2051,6 +2126,55 @@ src="Images/ParatextExport.png"
 ></img
 ></chart
 ></example
+></section4
+><section4
+id="sPtxExportFromFLEx"
+><secTitle
+><object
+type="tTool"
+>Export FLEx Text to Paratext</object
+></secTitle
+><p
+>To export chapters to <object
+type="tTool"
+>Paratext</object
+> from a <object
+type="tFlexx"
+></object
+> text, use this tool. It is designed to work well with a text that you have previously inserted into the target <object
+type="tFlexx"
+></object
+> project with the <object
+type="tTool"
+>Insert Target Text</object
+> tool. <object
+type="tTool"
+>Export FLEx Text to Paratext</object
+> will find all scripture texts in FLEx and shows you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple text to be exported. Also, if you want to export all chapters for book, first check the checkbox that says: <object
+type="tItalic"
+>Clicking any chapter of a book selects all chapters of the book</object
+>. Then when you click one of the book's chapters in the Scripture Texts list, all chapters will get selected.</p
+><p
+>Note: the <object
+type="tTool"
+>Paratext</object
+> project must be a project that you are at least a <object
+type="tItalic"
+>Translator</object
+> on. Also, the <object
+type="tTool"
+>Paratext</object
+> book must already exist.</p
+><example
+num="xParatextExportFromFLEx"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ParatextExportFromFLEx.png"
+></img
+></chart
+></example
+></section4
 ></section3
 ></section2
 ><section2
