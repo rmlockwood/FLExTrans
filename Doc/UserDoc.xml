@@ -1025,8 +1025,10 @@ type="tFlexxTools"
 ></object
 >, click on the <object
 type="tCollection"
->All Steps</object
-> tab and you’ll see <exampleRef
+>Drafting</object
+> <?xxe-remark Sara
+2025-01-01T00:04:39Z
+Changed "All Steps" to "Drafting"?>tab and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
@@ -1338,7 +1340,9 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s a sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order.<?xxe-remark Sara
+2025-01-01T00:08:07Z
+The phrase "every sense" could be understood in two ways 1) every unique sense, or 2) every instance of every sense. It would be helpful to clarify.?> Here’s a sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -1487,7 +1491,7 @@ src="Images/SenseLinkerNoLinks-Filter.png"
 ></example
 ></section3
 ><section3
-id="sAddEntry "
+id="sAddEntry"
 ><secTitle
 >Add Entry</secTitle
 ><example
@@ -1573,7 +1577,9 @@ id="sExportUnlinked"
 ><secTitle
 >Export Unlinked Senses</secTitle
 ><p
->Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
+>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word.<?xxe-remark Sara
+2025-01-01T00:03:21Z
+It could be useful to also add a comment regarding how this file can be used after completion - presumably there is no automatic addition of those target glosses anywhere, so new entries are probably needed in FLEx??> The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
 ></section3
 ><section3
 id="sSenses2Link"
@@ -1619,7 +1625,9 @@ type="tLiveRuleTester"
 >.</p
 ><ol
 ><li
->First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do the <genericRef
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do<?xxe-remark Sara
+2025-01-01T00:29:44Z
+Commas before and after "when you do" would help the readability of this sentence?> the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
 > of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <object
@@ -1633,7 +1641,9 @@ type="tButton"
 > button. Uncheck them all with the <object
 type="tButton"
 >Unselect All</object
-> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
+> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.<?xxe-remark Sara
+2025-01-01T00:30:58Z
+Extra sentence about the fact that the rules will be run in the order they are listed??></li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1698,7 +1708,9 @@ type="tTab"
 > tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you have used the <sectionRef
 sec="sReplEditTool"
 ></sectionRef
->, you may see multiple mappings in the pop-up image.</p
+><?xxe-remark Sara
+2025-01-01T00:34:03Z
+this just lists a number in the help file; can it list the name of the tool instead? Then the user can more easily see what is being refered to.?>, you may see multiple mappings in the pop-up image.</p
 ></section3
 ><section3
 id="sTesterOther"
@@ -1791,7 +1803,9 @@ type="tTool"
 > and the test data shown in it will be from the source text that is currently shown in the <object
 type="tLiveRuleTester"
 ></object
->.</p
+>.<?xxe-remark Sara
+2025-01-01T00:41:39Z
+Need to submit Github issue as errors seen on using the button.?></p
 ></section3
 ></section2
 ><section2
@@ -1799,7 +1813,18 @@ id="sViewSrcTgt"
 ><secTitle
 >The <object
 type="tViewSrcTgt"
-></object
+><?xxe-remark Sara
+2025-01-03T23:23:06Z
+This tool is now called "View Source/Target Apertium Text Tool".
+
+The tool is only usable after running:
+Extract Source Text
+(to create source_text-aper.txt)
+AND
+Run Apertium
+(to create target_text-aper.txt)
+
+If these modules haven't been run; and therefore the .txt file(s) do not exist, should the user be given help to know (from the program, not the help file) why the files don't exist / how to create the files??></object
 ></secTitle
 ><p
 >The <object
@@ -1814,10 +1839,18 @@ type="tTool"
 > files <object
 type="tFilename"
 >source_text.txt</object
-> or <object
+> <?xxe-remark Sara
+2025-01-03T23:20:52Z
+Filename:
+
+source_text-aper.txt?>or <object
 type="tFilename"
 >target_text.txt</object
-> very often, but sometimes you may find it useful to see what got extracted from the source <object
+> <?xxe-remark Sara
+2025-01-03T23:21:11Z
+Filename:
+
+target_text-aper.txt?>very often, but sometimes you may find it useful to see what got extracted from the source <object
 type="tFlexx"
 ></object
 > project into <object
