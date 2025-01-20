@@ -156,6 +156,23 @@
                   <li><a href="#sMacro">7.2.9&nbsp;How do I use a macro? (How can I repeat rule statements in multiple places?) (video)</a></li>
                   <li><a href="#sAgreement">7.2.10&nbsp;How do I handle noun agreement? (How do I get a target word or words to agree with a noun?) (video)</a></li>
                   <li><a href="#sSampleLogic">7.2.11&nbsp;How do I use the Sample logic that&#8217;s in the transfer rules file?</a></li>
+                  <li><a href="#sSpecialEl">7.2.12&nbsp;How do I use special elements in my rules?</a></li>
+                  <ul>
+                     <li><a href="#sAnd">7.2.12.1&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">and</span></a></li>
+                     <li><a href="#sApend">7.2.12.2&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">append to</span></a></li>
+                     <li><a href="#sBeginsWith">7.2.12.3&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span></a></li>
+                     <li><a href="#sBeginsWithList">7.2.12.4&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span></a></li>
+                     <li><a href="#sConcat">7.2.12.5&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">concat</span></a></li>
+                     <li><a href="#sContainsSub">7.2.12.6&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">contains substring</span></a></li>
+                     <li><a href="#sCaseOf">7.2.12.7&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">case of</span></a></li>
+                     <li><a href="#sEndsWith">7.2.12.8&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with</span></a></li>
+                     <li><a href="#sEndsWithList">7.2.12.9&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span></a></li>
+                     <li><a href="#sGetCaseFrom">7.2.12.10&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from item</span></a></li>
+                     <li><a href="#sIn">7.2.12.11&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span></a></li>
+                     <li><a href="#sModifyCase">7.2.12.12&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span></a></li>
+                     <li><a href="#sNot">7.2.12.13&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">not</span></a></li>
+                     <li><a href="#sOr">7.2.12.14&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">or</span></a></li>
+                  </ul>
                </ul>
                <li><a href="#sOther">7.3&nbsp;Other How To&#8217;s</a></li>
                <ul>
@@ -976,7 +993,7 @@
       </h3>
       <p>By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <span style="font-style:normal; font-weight:bold; ">Rebuild Bilingual Lexicon</span> button.
       </p>
-      <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">14</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
+      <p>You may have noticed that there is a <span style="font-style:italic; font-weight:bold; color:#a349a4; ">Manual Entry</span> tab for the source text words. You can enter words (technically word-senses) directly in plain text data stream format<span style="font-size:65%; vertical-align:super">[<a href="#nRawDataStream">15</a>]</span>. This might be useful if you want to test a word-sense that isn&#8217;t in a given text.
       </p>
       <p>The <span style="font-style:normal; font-weight:bold; ">Interchunk</span> and <span style="font-style:normal; font-weight:bold; ">Postchunk</span> tabs are for use in testing rules using the advanced <span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> transfer engine.
       </p>
@@ -2833,17 +2850,284 @@
          kind of logic matches your need. When you find one, click on the first black word under the comment. That will select the
          block (outlined in red). Now you can copy that block and put it into your own rule. There's also a file called <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> you can copy and paste from that rule file as well.
       </p>
+      <h3 style=""><a name="sSpecialEl"></a>7.2.12&nbsp;How do I use special elements in my rules?
+      </h3>
+      <h4 style=""><a name="sAnd"></a>7.2.12.1&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">and</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if two things are true, you can use the
+         <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">and</span> element and then list two <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> elements. The easiest way to bring this element into your rule is to copy an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">and</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xAnd">(92)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementAnd.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sApend"></a>7.2.12.2&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">append to</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">let</span> element you normally copying the value of the second element to the first element. See <a href="#sDeleteAffix">7.2.7</a>, method 1 for an example. With this element you can add to the end of the first element whatever is in the second element.
+         For lemmas and <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">literal strings</span> this is straightforward. For example, you could append <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">1.1</span> to the end of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">praise</span> to end up with the value <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">praise1.1</span>. For tags this is little different. You can't use append to add on to a tag, you can only use it to add a second tag. You
+         could add the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span> after the tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> so that there is now two tags <span style="font-family:Courier New; font-size:90%; color:#00B050; ">pl</span> and <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span>. You can't create a combined tag of <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3pl</span> this way.<span style="font-size:65%; vertical-align:super">[<a href="#nappend">12</a>]</span> The easiest way to produce this element is to simply use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Insert</span> command, to put it into your rule.
+      </p>
+      <p>Note: you can append multiple things to your primary element. Just add more elements under <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">append to</span>.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xAppend">(93)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementAppend.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sBeginsWith"></a>7.2.12.3&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span> element and then list two elements. The first element is the thing you are checking. The second element contains what you
+         want the first element to begin with. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xBeginsWith">(94)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementBeginsWith.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sBeginsWithList"></a>7.2.12.4&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
+         of a list. The text to match can be anything in the given list. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xBeginsWithList">(95)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementBeginsWithList.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sConcat"></a>7.2.12.5&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">concat</span></h4>
+      <p>This element concatenates two or more things together.</p>
+      <p>The same thing regarding tags and literal strings as discussed in <a href="#sApend">7.2.12.2</a> applies.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xConcat">(96)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementConcat.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sContainsSub"></a>7.2.12.6&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">contains substring</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">contains substring</span> element and then list two elements. The first element is the thing you are checking. The second element contains what you
+         want to find in the first element. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">contains substring</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xContainsSub">(97)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementContainsSubstring.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sCaseOf"></a>7.2.12.7&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">case of</span></h4>
+      <p>Not needed. See <a href="#sGetCaseFrom">7.2.12.10</a> or <a href="#sModifyCase">7.2.12.12</a>.
+      </p>
+      <h4 style=""><a name="sEndsWith"></a>7.2.12.8&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span> element and then list two elements. The first element is the thing you are checking. The second element contains what you
+         want the first element to end with. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xEndsWith">(98)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementEndsWith.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sEndsWithList"></a>7.2.12.9&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
+         of a list. The text to match can be anything in the given list. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xEndsWithList">(99)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementEndsWithList.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sGetCaseFrom"></a>7.2.12.10&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get case from item</span></h4>
+      <p>This element lets you change the case of something. It as the same function as the  <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> element. But it helps you save the step of having to call <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> as a separate step. As you are using some piece of data, you can wrap this element around it to on-the-fly change its case.
+         So instead of <a href="#xModifyCase2">(103)</a> as a separate step, could you use this element as in <a href="#xGetCaseFrom">(100)</a> to output the lemma for item 1, making it's case the same as item 2.
+      </p>
+      <p>The easiest way to produce this element is to highlight an element such as <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">clip</span> or <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">variable</span> and then use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Wrap</span> command to wrap an element around it and choose <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">get-case-from</span>.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xGetCaseFrom">(100)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementGetCaseFrom.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sIn"></a>7.2.12.11&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if a value matches something in a list,
+         you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
+         of a list. The logic will be true if the first element match anything in the given list. The list has to be defined separately
+         in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xIn">(101)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementIn.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sModifyCase"></a>7.2.12.12&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span></h4>
+      <p>This element lets you change the case of something. Under <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">modify case</span> you have two elements. The first element is the thing that you want to change. The second element instructs the rule engine
+         what kind of case to give it. You can use a literal string to intentionally change it to a certain case. See <a href="#xModifyCase">(102)</a>. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">Aa</span> will change it to have the first letter capitalized. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">aa</span> will change it to lower case. <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">AA</span> will change it to upper case. Or you can have it copy the case of a value that already exists. In <a href="#xModifyCase2">(103)</a> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2. 
+      </p>
+      <p>The easiest way to produce this element is to simply use the <span style="font-family:Courier New; font-weight:bold; color:#009933; ">Insert</span> command, to put it into your rule.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xModifyCase">(102)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementModifyCase.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <div style="margin-left: 0.25in; margin-right: 0.25in; margin-top:.2in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xModifyCase2">(103)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementModifyCase2.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sNot"></a>7.2.12.13&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">not</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if x is not equal to y, you can use the
+         <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">not</span> element and then list one <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element inside it. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">not</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xNot">(104)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementNot.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h4 style=""><a name="sOr"></a>7.2.12.14&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">or</span></h4>
+      <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if either one of two things is true, you
+         can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">or</span> element and then list two <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> elements. The easiest way to bring this element into your rule is to copy an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">or</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xOr">(105)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img style=" height:60%" src="Images/ElementOr.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
       <h2 style=""><a name="sOther"></a>7.3&nbsp;Other How To&#8217;s
       </h2>
       <p></p>
       <h3 style=""><a name="sViewBiling"></a>7.3.1&nbsp;How do I view the bilingual lexicon?
       </h3>
-      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(92)</a>.
+      <p>You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. An example portion of a bilingual lexicon is shown in <a href="#xBilingEntries0">(106)</a>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries0">(92)</a></td>
+               <td valign="top"><a name="xBilingEntries0">(106)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2893,12 +3177,12 @@
       </p>
       <p>The bilingual lexicon is a mapping of source word-senses to target word-senses. There are no inflectional affixes present
          in the bilingual lexicon. That's the way <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> builds it. In theory, though, there could be inflectional features or classes present. An example portion of a bilingual
-         lexicon is shown in <a href="#xBilingEntries">(93)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
+         lexicon is shown in <a href="#xBilingEntries">(107)</a>. You can view the bilingual lexicon by double-clicking on the file <span style="font-style:italic; ">bilingual.dix</span> in the <span style="font-family:Tahoma; font-size:80%; font-style:normal; font-weight:normal; ">Output</span> folder or click on the <span style="font-style:normal; font-weight:bold; ">View Bilingual Lexicon</span> button in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xBilingEntries">(93)</a></td>
+               <td valign="top"><a name="xBilingEntries">(107)</a></td>
                <td>
                   <table>
                      <tr>
@@ -2952,7 +3236,7 @@
                <li>Set the <span style="color:#cc9900; ">Morph Type</span> to phrase
                </li>
                <li>Set the <span style="color:#cc9900; ">Grammatical Info.</span> to <span style="color:#0070c0; ">Verb Phrasal</span></li>
-               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">12</a>]</span></li>
+               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">13</a>]</span></li>
                <li>Set the <span style="color:#cc9900; ">Complex Form Type</span> to <span style="color:#990099; ">Phrasal Verb</span></li>
             </ol>
          </li>
@@ -2979,7 +3263,7 @@
                <li>Set the <span style="color:#cc9900; ">Morph Type</span> to phrase
                </li>
                <li>Set the <span style="color:#cc9900; ">Grammatical Info.</span> to <span style="color:#0070c0; ">Verb Phrasal</span></li>
-               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">12</a>]</span></li>
+               <li>Set <span style="color:#cc9900; ">Components</span> to the two words that form the phrasal verb. Note: the components should be the order they occur in the phrasal verb.<span style="font-size:65%; vertical-align:super">[<a href="#nMoveComponent">13</a>]</span></li>
                <li>Set the <span style="color:#cc9900; ">Complex Form Type</span> to <span style="color:#990099; ">Phrasal Verb</span></li>
             </ol>
          </li>
@@ -3019,7 +3303,7 @@
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xErrorCond">(94)</a></td>
+               <td valign="top"><a name="xErrorCond">(108)</a></td>
                <td>
                   <td style="padding-left: .25em">
                      <table style="" border="1">
@@ -3113,8 +3397,8 @@
       </h1>
       <p>The <a name="gDataStream"></a><span style="font-family:Courier New; font-weight:bold; color:navy; ">Apertium</span> data stream format consists of one or more lexical units. In <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, a lexical unit looks something like this:
       </p>
-      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">13</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">14</a>]</span></span></p>
-      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">15</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
+      <p><span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">take<span style="font-size:65%; vertical-align:sub;">1.1</span> <span style="font-family:Courier New; font-size:90%; color:#0070c0; ">v</span> <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3sg</span><span style="font-size:65%; vertical-align:super">[<a href="#nToolToView">14</a>]</span><span style="font-size:65%; vertical-align:super">,&nbsp;[<a href="#nRawDataStream">15</a>]</span></span></p>
+      <p>Where take<span style="font-size:65%; vertical-align:sub;">1</span><span style="font-size:65%; vertical-align:super">[<a href="#nNoOneHomograph">16</a>]</span> is the headword from <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. The 1.1 subscript means homograph one, sense one. The grammatical category is colored in blue and all other tags are colored
          in green.
       </p>
       <hr size="3"><a name="rXLingPapEndnotes"></a><p style=""><big><big><big><b>Endnotes</b></big></big></big></p>
@@ -3196,20 +3480,27 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nMoveComponent">[12]</a></td>
+            <td valign="top"><a name="nappend">[12]</a></td>
+            <td>
+               <p>You could achieve this by taking a literal string with a value of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">3</span> and appending another literal string with a value of <span style="font-family:Courier New; font-size:90%; font-style:normal; font-weight:bold; ">pl</span>. But you couldn't start with a tag that has a value of <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span>. This is because under the hood, the value of a tag includes the angle brackets. Tag <span style="font-family:Courier New; font-size:90%; color:#00B050; ">3</span> is actually <span style="font-family:Courier New; font-size:100%; ">&lt;3&gt;</span>.
+               </p>
+            </td>
+         </tr>
+         <tr>
+            <td valign="top"><a name="nMoveComponent">[13]</a></td>
             <td>
                <p>You can right-click on a component word and select Move Left or Move Right.</p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nToolToView">[13]</a></td>
+            <td valign="top"><a name="nToolToView">[14]</a></td>
             <td>
                <p>You can use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">View Source/Target Apertium File Tool</span> for a more friendly view of the data stream format found in the files <span style="font-style:italic; ">source_text.txt</span> and <span style="font-style:italic; ">target_text.txt</span>.
                </p>
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nRawDataStream">[14]</a></td>
+            <td valign="top"><a name="nRawDataStream">[15]</a></td>
             <td>
                <p>In the plain format the stream format can be explained as follows:</p>
                <table>
@@ -3225,7 +3516,7 @@
             </td>
          </tr>
          <tr>
-            <td valign="top"><a name="nNoOneHomograph">[15]</a></td>
+            <td valign="top"><a name="nNoOneHomograph">[16]</a></td>
             <td>
                <p>Technically <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> only displays a subscript 1 if there is a homograph that exists with subscript 2. Without any homograph the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> headword is just plain -- without any subscript.
                </p>
