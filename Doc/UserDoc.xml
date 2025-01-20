@@ -2679,6 +2679,74 @@ src="Images/ReplacementEditor.png"
 ></section2
 ></section1
 ><section1
+id="sCluster"
+><secTitle
+>Cluster Project Support</secTitle
+><p
+><object
+type="tFlextrans"
+></object
+> works great in cluster projects. You can leverage the approval of an interlinear text in the source language to produce translations of the text in multiple target languages.</p
+><p
+><object
+type="tFlextrans"
+></object
+> supports cluster projects by allowing you to define which <object
+type="tFlexx"
+></object
+> projects are in your cluster. You do this in the <object
+type="tSettingsTool"
+></object
+>. See <exampleRef
+letter="xClusterSettings"
+num="xClusterSettings"
+></exampleRef
+>. Then this information is used in various tools to allow you to apply the tool to multiple <object
+type="tFlexx"
+></object
+> projects at once. See tool images below that show support for cluster projects.</p
+><example
+num="xClusterSettings"
+><chart
+><img
+src="Images/ClusterSettings.png"
+></img
+></chart
+></example
+><example
+num="xClusterAddNewEntry"
+><chart
+><img
+src="Images/ClusterAddNewEntry.png"
+></img
+></chart
+></example
+><example
+num="xClusterExportFromFlex"
+><chart
+><img
+src="Images/ClusterExportFromFLEx.png"
+></img
+></chart
+></example
+><example
+num="xClusterImportParatext"
+><chart
+><img
+src="Images/ClusterImportParatext.png"
+></img
+></chart
+></example
+><example
+num="xClusterAdHoc"
+><chart
+><img
+src="Images/ClusterAdHoc.png"
+></img
+></chart
+></example
+></section1
+><section1
 id="sTransferTutorial"
 ><secTitle
 >A Tutorial on Writing Transfer Rules<endnote
@@ -5502,7 +5570,7 @@ id="sTransferRuleHowTos"
 >Transfer Rule How To’s</secTitle
 ><p
 ><comment
->How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
+>How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
 id="sAffixRef"
