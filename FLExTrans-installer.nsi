@@ -66,7 +66,7 @@ Page custom nsDialogsPage
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\FLExTransWindowIcon.ico"
+Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
