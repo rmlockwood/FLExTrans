@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.12.1 - 1/21/25 - Ron Lockwood
+#    Fixes #841. Use new method to get an object repository. This fixes the crash.
+#
 #   Version 3.12 - 11/11/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -18,10 +21,10 @@
 
 import re
 
-from System import Guid
-from System import String
+from System import Guid # type: ignore
+from System import String # type: ignore
 
-from SIL.LCModel import ICmObjectRepository, ILexSense
+from SIL.LCModel import ICmObjectRepository, ILexSense # type: ignore
 
 from flextoolslib import *                                                 
 
@@ -32,7 +35,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link all senses to the same guid in the target.",
         FTM_Help       : "",
@@ -108,7 +111,7 @@ def MainFunction(DB, report, modify=False):
 
                 # Get target sense from the guid
                 guid = Guid(String(guidSubStr))
-                repo = TargetDB.project.ServiceLocator.GetInstance(ICmObjectRepository)
+                repo = TargetDB.project.ServiceLocator.GetService(ICmObjectRepository)
 
                 try:
                     targetSense = ILexSense(repo.GetObject(guid))
