@@ -1235,7 +1235,7 @@ def fix_up_text(synFile, cleanUpText):
         f_s.write(line)
     f_s.close()
 
-def synthesize(configMap, anaFile, synFile, report=None):
+def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     error_list = []
 
     global stemNameList
@@ -1253,6 +1253,10 @@ def synthesize(configMap, anaFile, synFile, report=None):
     if clean[0].lower() == 'y':
         cleanUpText = True
     else:
+        cleanUpText = False
+
+    # If the caller wants to turn off cleaning up the text, set the boolean to False
+    if overrideClean:
         cleanUpText = False
 
     # Get lexicon files folder setting

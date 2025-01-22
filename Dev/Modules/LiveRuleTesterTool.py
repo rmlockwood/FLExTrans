@@ -744,6 +744,9 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
+        # The checkbox starts out disabled.
+        self.ui.DoNotCleanupCheckbox.setEnabled(True) if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y' else False
+
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
             self.__transfer_rules_file = self.buildFolder + '\\..\\transfer_rules.t1x'
@@ -1442,7 +1445,8 @@ class Main(QMainWindow):
             # Check if the user wants to do a trace which will bring up a web page.
             traceIt = self.ui.traceHermitCrabSynthesisCheckBox.isChecked()
 
-            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath, report=None, trace=traceIt, DLLobj=self.HCdllObj)
+            errorList = DoHermitCrabSynthesis.synthesizeWithHermitCrab(self.__configMap, HCconfigPath, self.synthesisFilePath, self.parsesFile, self.HCmasterFile, self.surfaceFormsFile, self.transferResultsPath,\
+                                                                       report=None, trace=traceIt, DLLobj=self.HCdllObj, overrideClean=self.ui.DoNotCleanupCheckbox.isChecked())
 
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)
@@ -1455,7 +1459,7 @@ class Main(QMainWindow):
                 self.unsetCursor()
                 return
         else:
-            errorList = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath)
+            errorList = DoStampSynthesis.synthesize(self.__configMap, self.targetAnaPath, self.synthesisFilePath, report=None, overrideClean=self.ui.DoNotCleanupCheckbox.isChecked())
 
             # check for fatal errors
             fatal, msg = Utils.checkForFatalError(errorList, None)

@@ -849,6 +849,26 @@
      <string>Apply Text Out rules</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="DoNotCleanupCheckbox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>990</x>
+      <y>563</y>
+      <width>191</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>If you have checked the FLExTrans setting to clean up unknown words,
+this keeps the clean up from happening so you can more easily see errors.</string>
+    </property>
+    <property name="text">
+     <string>Do not clean up unknown words</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
