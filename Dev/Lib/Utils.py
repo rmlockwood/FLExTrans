@@ -815,6 +815,9 @@ def do_capitalization(wordToChange, modelWord):
 def as_string(obj):
     return ITsString(obj.BestAnalysisAlternative).Text
 
+def as_vern_string(obj):
+    return ITsString(obj.BestVernacularAlternative).Text
+
 def as_tag(obj):
     return underscores(as_string(obj.Abbreviation))
 
