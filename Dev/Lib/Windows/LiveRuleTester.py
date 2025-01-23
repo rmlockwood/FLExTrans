@@ -264,9 +264,13 @@ class Ui_MainWindow(object):
         self.startRuleAssistant.setGeometry(QtCore.QRect(540, 440, 141, 31))
         self.startRuleAssistant.setObjectName("startRuleAssistant")
         self.applyTextOutRulesCheckbox = QtWidgets.QCheckBox(self.centralwidget)
-        self.applyTextOutRulesCheckbox.setEnabled(False)
+        self.applyTextOutRulesCheckbox.setEnabled(True)
         self.applyTextOutRulesCheckbox.setGeometry(QtCore.QRect(820, 563, 171, 30))
         self.applyTextOutRulesCheckbox.setObjectName("applyTextOutRulesCheckbox")
+        self.DoNotCleanupCheckbox = QtWidgets.QCheckBox(self.centralwidget)
+        self.DoNotCleanupCheckbox.setEnabled(True)
+        self.DoNotCleanupCheckbox.setGeometry(QtCore.QRect(990, 563, 191, 30))
+        self.DoNotCleanupCheckbox.setObjectName("DoNotCleanupCheckbox")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -316,3 +320,6 @@ class Ui_MainWindow(object):
         self.startRuleAssistant.setText(_translate("MainWindow", "Open Rule Assistant"))
         self.applyTextOutRulesCheckbox.setToolTip(_translate("MainWindow", "Apply the search/replace rules defined in the Text Out Rules module."))
         self.applyTextOutRulesCheckbox.setText(_translate("MainWindow", "Apply Text Out rules"))
+        self.DoNotCleanupCheckbox.setToolTip(_translate("MainWindow", "If you have checked the FLExTrans setting to clean up unknown words,\n"
+"this keeps the clean up from happening so you can more easily see errors."))
+        self.DoNotCleanupCheckbox.setText(_translate("MainWindow", "Do not clean up unknown words"))
