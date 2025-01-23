@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.5 - 1/10/25 - Ron Lockwood
+#    Fixes #855. Don't clean up unknown words, if desired.
+#    Make Apply Textout Rules invisible unless rules exist.
+#
 #   Version 3.12.4 - 1/10/25 - Ron Lockwood
 #    Fixes #843. Fix bug of setting the HC dll's config file when it did not exist.
 #
@@ -445,7 +449,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -744,8 +748,12 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
-        # The checkbox starts out disabled.
-        self.ui.DoNotCleanupCheckbox.setEnabled(True) if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y' else False
+        # The checkbox starts out visible.
+        if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
+
+            self.ui.DoNotCleanupCheckbox.setVisible(True) 
+        else:
+            self.ui.DoNotCleanupCheckbox.setVisible(False) 
 
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
@@ -886,6 +894,9 @@ class Main(QMainWindow):
 
         self.textOutElemTree = None
 
+        # Start out hiding this checkbox
+        self.ui.applyTextOutRulesCheckbox.setVisible(False)
+
         # See if we have a Text Out Rules file. 
         textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
 
@@ -896,7 +907,7 @@ class Main(QMainWindow):
 
                 try:
                     self.textOutElemTree = ET.parse(textOutRulesFile)
-                    self.ui.applyTextOutRulesCheckbox.setEnabled(True) # The checkbox starts out disabled.
+                    self.ui.applyTextOutRulesCheckbox.setVisible(True) 
                 except:
                     pass 
 
