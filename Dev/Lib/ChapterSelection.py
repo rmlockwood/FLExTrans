@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.7 - 1/23/25 - Ron Lockwood
+#    Support import of Glossary book (GLO).
+#
 #   Version 3.12.6 - 1/15/25 - Ron Lockwood
 #    Export from the target DB as the default. Also recognize texts that have - Copy ...
 #    at the end.
@@ -657,5 +660,6 @@ bookMap = {\
 'XXF':'Extra F',\
 'XXG':'Extra G',\
 'INT':'Introduction',\
+'GLO':'Glossary',\
 }
 

@@ -481,7 +481,7 @@ def getCapitalLemmas(HCconfigPath):
 
     return HCcapitalLemmasMap
 
-def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False, DLLobj=None):
+def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report=None, trace=False, DLLobj=None, overrideClean=False):
     
     errorList = []
     luInfoList = []
@@ -575,6 +575,10 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     if clean[0].lower() == 'y':
         cleanUpText = True
     else:
+        cleanUpText = False
+
+    # If the caller wants to turn off cleaning up the text, set the boolean to False
+    if overrideClean:
         cleanUpText = False
 
     fix_up_text(synFile, cleanUpText)
