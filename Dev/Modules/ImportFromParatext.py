@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.8 - 1/23/25 - Ron Lockwood
+#    Support import of Glossary book (GLO).
+#
 #   Version 3.12.7 - 1/13/25 - Ron Lockwood
 #    Fixes crash on import with no cluster projects.
 #
@@ -138,7 +141,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.7",
+        FTM_Version    : "3.12.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -147,8 +150,8 @@ docs = {FTM_Name       : "Import Text From Paratext",
 This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
-new text. If you want to include the footnotes in the import, click the check box. 
-If you want to use the English full name of the book in the text name, click the check box. 
+new text. If you want to include various things, click the appropriate check box. 
+If you want to use the English full name of the book in the text name, instead of the abbreviation, click the check box. 
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select
 cluster projects in the main FLExTrans Settings, then come back to this module.""" }
@@ -340,6 +343,11 @@ def do_import(DB, report, chapSelectObj, tree):
 
         # Build the search regex. It starts the search at \mt. This will work if the first title is \mt2 or \mt1, etc.
         reStr = fr'(\\mt.+?)'
+
+        if not re.search(reStr, bookContents):
+
+            report.Error('Cannot find main title (\mt or \mtN). This is needed for importing introductory material.')
+            return
     else:
         # Build the search regex. It starts the search at the fromChapter
         reStr = fr'(\\c {str(chapSelectObj.fromChap)}\s.+?)'
@@ -355,6 +363,13 @@ def do_import(DB, report, chapSelectObj, tree):
 
     # Get the results
     matchObj = re.search(reStr, bookContents, flags=re.RegexFlag.DOTALL)
+
+    # Check for nothing found
+    if not matchObj:
+
+        report.Error('Cannot find the range of chapters specified.')
+        return
+
     importText = matchObj.group(1)
     
     # Remove newlines
@@ -381,7 +396,7 @@ def do_import(DB, report, chapSelectObj, tree):
     if chapSelectObj.includeCrossRefs == False:
         
         importText = re.sub(r'\\x.+?\\x\*', '', importText)
-        importText = re.sub(r'\\r.+?\\p', r'\\p', importText, flags=re.DOTALL) # assume a \p directly follows a \r
+        importText = re.sub(r'\\r\s.+?\\p', r'\\p', importText, flags=re.DOTALL) # assume a \p directly follows a \r
 
     # If the user wants one text per chapter, split the text on chapters
     if chapSelectObj.oneTextPerChapter == True:
