@@ -647,6 +647,31 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
 
+        # Create a group box for the radio buttons
+        self.radioGroupBox = QtWidgets.QGroupBox(self.centralwidget)
+        self.radioGroupBox.setObjectName("radioGroupBox")
+        self.radioGroupBox.setTitle("Select Mode")
+
+        # Create a horizontal layout for the radio buttons
+        self.radioLayout = QtWidgets.QHBoxLayout(self.radioGroupBox)
+        self.radioLayout.setObjectName("radioLayout")
+
+        # Create the radio buttons
+        self.miniRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.miniRadioButton.setObjectName("miniRadioButton")
+        self.miniRadioButton.setText("Mini")
+        self.radioLayout.addWidget(self.miniRadioButton)
+
+        self.basicRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.basicRadioButton.setObjectName("basicRadioButton")
+        self.basicRadioButton.setText("Basic")
+        self.radioLayout.addWidget(self.basicRadioButton)
+
+        self.fullRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.fullRadioButton.setObjectName("fullRadioButton")
+        self.fullRadioButton.setText("Full")
+        self.radioLayout.addWidget(self.fullRadioButton)
+
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -659,7 +684,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
 
         font = QtGui.QFont()
-#         font.setFamily("Arial")
+    #         font.setFamily("Arial")
         font.setPointSize(9)
 
         self.scrollArea.setFont(font)
@@ -667,7 +692,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setObjectName("scrollArea")
 
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
+#        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
 
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -676,6 +701,9 @@ class Ui_MainWindow(object):
         # Set up scroll area
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 6) # span 6 columns
+
+        # Add the group box to the main layout above the scroll area
+        self.gridLayout.addWidget(self.radioGroupBox, 0, 0, 1, 6)  # span 6 columns
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
