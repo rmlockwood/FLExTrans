@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.12.2 - 1/30/25 - Ron Lockwood
+#    Corrected module description.
+#
 #   Version 3.12.1 - 1/21/25 - Ron Lockwood
 #    Fixes #841. Use new method to get an object repository. This fixes the crash.
 #
@@ -35,15 +38,15 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Link all senses to the same guid in the target.",
+        FTM_Synopsis   : "Link all senses to the same ID in the target.",
         FTM_Help       : "",
         FTM_Description:  
 """
-This module will link all senses to the same guid in the target. CAUTION: This will 
+This module will link all senses to the same ID in the target. CAUTION: This will 
 overwrite all senses in the source project!
-This assumes the source was copied from the target and all the senses have the same
+This assumes the target project was copied from the source and all the senses have the same
 unique identifier (guid).
 """ }
                  
