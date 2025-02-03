@@ -24,5 +24,6 @@ Do these things when making a new release
  -Publish
  -Edit release notes.
 -Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
+-Update the instructions on the download and installation web pages as necessary.
 -announce the new release on the FLEx list
 -Setup things for the next release (set what TeamCity copies, set version # in createInstallFolder2.0.bat, .nsi, Version.py) so that new builds don't overwrite the just released one.
