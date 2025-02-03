@@ -294,9 +294,9 @@ type="tUnderline"
 id="nCustomFieldNames"
 ><p
 >You may choose a different name for the custom field, but you also have to update the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings to match the name. The name <object
+> to match the name. The name <object
 type="tSettingsProperty"
 >Target Equivalent</object
 > is already defined in the settings that get installed with <object
@@ -412,7 +412,7 @@ type="tMenu"
 >You should see the <object
 type="tSettingsTool"
 ></object
-> that looks like this: <example
+> window that looks like this: <example
 num="xPrepSettings"
 ><chart
 ><img
@@ -1225,7 +1225,7 @@ type="tSettingsTool"
 >The <object
 type="tSettingsTool"
 ></object
-> provides a way to configure various details needed for <object
+> provide a way to configure various details needed for <object
 type="tFlextrans"
 ></object
 >. You launch the <object
@@ -1246,7 +1246,7 @@ type="tButton"
 > button to get an explanation of the setting. For file or folder names in the <object
 type="tSettingsTool"
 ></object
->, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+>, you can change the file to be used by simply typing the changes in the pertinent text box.</p
 ><example
 num="xSettings"
 ><chart
@@ -1718,9 +1718,9 @@ id="sTesterOther"
 >Other Parts of the Tool</secTitle
 ><p
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
+>. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
 type="tButton"
 >Rebuild Bilingual Lexicon</object
 > button.</p
@@ -1809,14 +1809,54 @@ Need to submit Github issue as errors seen on using the button.?></p
 ><p
 >The <object
 type="tButton"
+>Trace HermitCrab synthesis</object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will bring up a web page showing trace information. This may be helpful when trying to troubleshoot why some morphemes are not synthesizing correctly. This check box will only be visible if you have already indicated you want to use HermitCrab synthesis in the <object
+type="tSettingsTool"
+></object
+>.</p
+><p
+>The <object
+type="tButton"
 >Apply Text Out rules</object
-> checkbox when checked will execute all of the search/replace rules you have defined with the <object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will execute all of the search/replace rules you have defined with the <object
 type="tModule"
 >Text Out Rules</object
-> module. These will be applied before showing the result <object
+> module. These will be applied before showing the result in the <object
 type="tButton"
 >Synthesis Text</object
-> box.</p
+> box. This check box will only be visible if you have already added some rules via the <object
+type="tModule"
+>Text Out Rules</object
+> module.</p
+><p
+>The <object
+type="tButton"
+>Do not clean up unknown words</object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will prevent the synthesis process from removing symbols around synthesized words that indicate a word didn't synthesize. For example, <object
+type="tCourier"
+>%0%bilar%</object
+> will not get cleaned up to be <object
+type="tCourier"
+>bilar</object
+>. For production use of FT it is often helpful to do this clean up for words that you don't expect to synthesize, but for troubleshooting synthesis issues, it is helpful to see any problems. Otherwise, these problems may lie hidden. This check box will only be visible if you have already selected <object
+type="tSettingsValue"
+>Yes</object
+> for the <object
+type="tSettingsProperty"
+>Clean Up Unknown Target Words</object
+> setting in the <object
+type="tSettingsTool"
+></object
+>.</p
 ></section3
 ></section2
 ><section2
@@ -2161,7 +2201,7 @@ type="tTool"
 > tool. <object
 type="tTool"
 >Export FLEx Text to Paratext</object
-> will find all scripture texts in FLEx and shows you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple text to be exported. Also, if you want to export all chapters for book, first check the checkbox that says: <object
+> will find all scripture texts in FLEx and shows you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple text to be exported. Also, if you want to export all chapters for book, first check the check box that says: <object
 type="tItalic"
 >Clicking any chapter of a book selects all chapters of the book</object
 >. Then when you click one of the book's chapters in the Scripture Texts list, all chapters will get selected.</p
@@ -2373,7 +2413,7 @@ src="Images/SynthTestSteps.png"
 >To run the Synthesis Test:</p
 ><ol
 ><li
->First run the <object
+>First open the <object
 type="tSettingsTool"
 ></object
 > (as described in <sectionRef
@@ -2584,7 +2624,7 @@ type="tButton"
 >If the search and replace lines are Regular Expressions, check the <object
 type="tButton"
 >Regular Expression</object
-> checkbox. See the <object
+> check box. See the <object
 type="tFlexx"
 ></object
 > help on how to use Regular Expressions or various websites that explain the Regular Expression language.</p
@@ -6920,9 +6960,9 @@ type="tFoldername"
 type="tSettingsProperty"
 >Source Text Name</object
 > property in the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings to <object
+> to <object
 type="tSettingsValue"
 >Text2</object
 >.</p
@@ -7005,9 +7045,6 @@ type="tTypeInFLEx"
 ></li
 ><li
 >Open the <object
-type="tFlextrans"
-></object
-> <object
 type="tSettingsTool"
 ></object
 >.</li
@@ -7091,9 +7128,6 @@ type="tTypeInFLEx"
 ></li
 ><li
 >Open the <object
-type="tFlextrans"
-></object
-> <object
 type="tSettingsTool"
 ></object
 >.</li
@@ -7201,7 +7235,7 @@ type="tFlextrans"
 ></object
 >.</p
 ><p
->There’s a checkbox in the <object
+>There’s a check box in the <object
 type="tLiveRuleTester"
 ></object
 > labelled <object
@@ -7942,7 +7976,7 @@ font-weight="bold"
 id="tSettingsProperty"
 ></type
 ><type
-after="Settings Tool"
+after="FLExTrans Settings"
 id="tSettingsTool"
 types="tTool"
 ></type
