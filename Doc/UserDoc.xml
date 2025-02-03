@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->20 January 2025</date
+>3 February 2025</date
 ><version
 >3.12.1</version
 ><contents
@@ -1806,6 +1806,17 @@ type="tLiveRuleTester"
 >.<?xxe-remark Sara
 2025-01-01T00:41:39Z
 Need to submit Github issue as errors seen on using the button.?></p
+><p
+>The <object
+type="tButton"
+>Apply Text Out rules</object
+> checkbox when checked will execute all of the search/replace rules you have defined with the <object
+type="tModule"
+>Text Out Rules</object
+> module. These will be applied before showing the result <object
+type="tButton"
+>Synthesis Text</object
+> box.</p
 ></section3
 ></section2
 ><section2
@@ -1930,7 +1941,7 @@ type="tItalic"
 > on in <object
 type="tTool"
 >Paratext</object
->. </p
+>.</p
 ><p
 >Also, you cannot import from <object
 type="tTool"
@@ -6463,7 +6474,7 @@ type="tRuleElemInXXE"
 >get case from item</object
 ></secTitle
 ><p
->This element lets you change the case of something. It as the same function as the  <object
+>This element lets you change the case of something. It as the same function as the <object
 type="tRuleElemInXXE"
 >modify case</object
 > element. But it helps you save the step of having to call <object
@@ -6570,7 +6581,7 @@ lang="lVernacular"
 letter="xModifyCase2"
 num="xModifyCase2"
 ></exampleRef
-> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2. </p
+> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2.</p
 ><p
 >The easiest way to produce this element is to simply use the <object
 type="tMenu"
