@@ -1,20 +1,20 @@
 Do these things when making a new release
--Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
--Finish code changes and commit
--Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
--Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
--Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
--Change Copyright date if necessary in the .nsi file. 
--Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
--Change TeamCity by editing the FLExTrans project, Build FLExTrans Installer configuration, Artifact paths to use the new version #
--Build and test the install locally
--Do another commit that has the install changes
--Finish merging all pull requests
--Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
--Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
--Test the install
--Make a new .download_info file changing the relevant data. 3 changes.
--Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
+x-Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
+x-Finish code changes and commit
+x-Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
+x-Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
+x-Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
+x-Change Copyright date if necessary in the .nsi file. 
+x-Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
+x-Change TeamCity by editing the FLExTrans project, Build FLExTrans Installer configuration, Artifact paths to use the new version #
+x-Build and test the install locally
+x-Do another commit that has the install changes
+x-Finish merging all pull requests
+x-Get FLExTransX.X.exe from the software.sil.org products folder and put in the local Installer folder
+x-Download zip files from TeamCity and put into git folders (main FT folder and Previous Versions)
+x-Test the install
+x-Make a new .download_info file changing the relevant data. 3 changes.
+x-Upload the new .download_info file using FileZilla to the uploads_areas\flextrans folder (see SSH key ... in keepass for password)
 -Create the release in Git with the new version string. 
  -Go to tags, switch to Releases
  -Click draft new release
@@ -23,7 +23,20 @@ Do these things when making a new release
  -Auto-generate release notes.
  -Publish
  -Edit release notes.
--Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
--Update the instructions on the download and installation web pages as necessary.
--announce the new release on the FLEx list
--Setup things for the next release (set what TeamCity copies, set version # in createInstallFolder2.0.bat, .nsi, Version.py) so that new builds don't overwrite the just released one.
+x-If just doing a minor release without release notes and want to create a tag
+ -Go to tags, switch to Releases
+ -Click draft new release
+ -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
+ -Publish, then delete the release, the tag will remain
+x-Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
+x-Update the instructions on the download and installation web pages as necessary.
+x-announce the new release on the FLEx list
+-Setup things for the next release 
+ -TeamCity
+  -Click on Build FLExTrans Installer
+  -Click on Edit Configuration
+  -Change artifact paths if going to a new major version
+ -set version # in createInstallFolder2.0.bat
+ -set version # in .nsi
+ -set version # in Version.py
+ (so that new builds don't overwrite the just released one.)
