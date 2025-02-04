@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.12 - 2/4/25 - Ron Lockwood
+#    Fixes #876. Split a text to insert into FLEx also on newlines so that paragraphs get divided properly.
+#
 #   Version 3.12.11 - 1/23/25 - Ron Lockwood
 #    Support import of Glossary book (GLO).
 #
@@ -2227,7 +2230,7 @@ def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
     # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
     #                                                                                                                                                                                                  eg \+xt
     #                  attribs end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    remark     ref+dash       ref        marker+ any marker
-    segs = re.split(r'(\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\\rem.+?\n|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', inputStr) 
+    segs = re.split(r'(\n|\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\\rem.+?\n|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', inputStr) 
 
     # Create 1st paragraph object
     stTxtPara = m_stTxtParaFactory.Create()
