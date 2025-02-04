@@ -5,8 +5,8 @@
 #   SIL International
 #   12/12/24
 #
-#   Version 3.12.5 - 1/17/25 - Ron Lockwood
-#    Give an error if the user didn't used the auto-complete value.
+#   Version 3.12.5 - 2/4/25 - Ron Lockwood
+#    Fix bug where not checking if the new other object was None.
 #
 #   Version 3.12.4 - 1/17/25 - Ron Lockwood
 #    Give an error if the user didn't used the auto-complete value.
@@ -66,7 +66,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
