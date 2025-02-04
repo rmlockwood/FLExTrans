@@ -900,7 +900,7 @@ class Main(QMainWindow):
 
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
-        msgBox = QMessageBox()
+        msgBox = QMessageBox(self)
         msgBox.setWindowTitle("Test Exists")
         msgBox.setText(f'There is a test that already exists in the testbed that matches the lexical unit:\n\n{luStr}\n\nDo you want to overwrite it?')
         
