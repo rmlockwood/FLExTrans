@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->2 December 2024</date
+>3 February 2025</date
 ><version
->3.12</version
+>3.12.1</version
 ><contents
 showLevel="4"
 ></contents
@@ -294,9 +294,9 @@ type="tUnderline"
 id="nCustomFieldNames"
 ><p
 >You may choose a different name for the custom field, but you also have to update the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings to match the name. The name <object
+> to match the name. The name <object
 type="tSettingsProperty"
 >Target Equivalent</object
 > is already defined in the settings that get installed with <object
@@ -412,7 +412,7 @@ type="tMenu"
 >You should see the <object
 type="tSettingsTool"
 ></object
-> that looks like this: <example
+> window that looks like this: <example
 num="xPrepSettings"
 ><chart
 ><img
@@ -1025,8 +1025,10 @@ type="tFlexxTools"
 ></object
 >, click on the <object
 type="tCollection"
->All Steps</object
-> tab and you’ll see <exampleRef
+>Drafting</object
+> <?xxe-remark Sara
+2025-01-01T00:04:39Z
+Changed "All Steps" to "Drafting"?>tab and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
@@ -1223,7 +1225,7 @@ type="tSettingsTool"
 >The <object
 type="tSettingsTool"
 ></object
-> provides a way to configure various details needed for <object
+> provide a way to configure various details needed for <object
 type="tFlextrans"
 ></object
 >. You launch the <object
@@ -1244,7 +1246,7 @@ type="tButton"
 > button to get an explanation of the setting. For file or folder names in the <object
 type="tSettingsTool"
 ></object
->, you can rename the file to be used by simply typing the changes in the pertinent text box.</p
+>, you can change the file to be used by simply typing the changes in the pertinent text box.</p
 ><example
 num="xSettings"
 ><chart
@@ -1338,7 +1340,9 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order. Here’s a sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order.<?xxe-remark Sara
+2025-01-01T00:08:07Z
+The phrase "every sense" could be understood in two ways 1) every unique sense, or 2) every instance of every sense. It would be helpful to clarify.?> Here’s a sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -1487,7 +1491,7 @@ src="Images/SenseLinkerNoLinks-Filter.png"
 ></example
 ></section3
 ><section3
-id="sAddEntry "
+id="sAddEntry"
 ><secTitle
 >Add Entry</secTitle
 ><example
@@ -1573,7 +1577,9 @@ id="sExportUnlinked"
 ><secTitle
 >Export Unlinked Senses</secTitle
 ><p
->Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
+>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word.<?xxe-remark Sara
+2025-01-01T00:03:21Z
+It could be useful to also add a comment regarding how this file can be used after completion - presumably there is no automatic addition of those target glosses anywhere, so new entries are probably needed in FLEx??> The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
 ></section3
 ><section3
 id="sSenses2Link"
@@ -1619,7 +1625,9 @@ type="tLiveRuleTester"
 >.</p
 ><ol
 ><li
->First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do the <genericRef
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do<?xxe-remark Sara
+2025-01-01T00:29:44Z
+Commas before and after "when you do" would help the readability of this sentence?> the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
 > of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <object
@@ -1633,7 +1641,9 @@ type="tButton"
 > button. Uncheck them all with the <object
 type="tButton"
 >Unselect All</object
-> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.</li
+> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.<?xxe-remark Sara
+2025-01-01T00:30:58Z
+Extra sentence about the fact that the rules will be run in the order they are listed??></li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1698,7 +1708,9 @@ type="tTab"
 > tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you have used the <sectionRef
 sec="sReplEditTool"
 ></sectionRef
->, you may see multiple mappings in the pop-up image.</p
+><?xxe-remark Sara
+2025-01-01T00:34:03Z
+this just lists a number in the help file; can it list the name of the tool instead? Then the user can more easily see what is being refered to.?>, you may see multiple mappings in the pop-up image.</p
 ></section3
 ><section3
 id="sTesterOther"
@@ -1706,9 +1718,9 @@ id="sTesterOther"
 >Other Parts of the Tool</secTitle
 ><p
 >By default the transfer rules file, the bilingual lexicon file and the source text are loaded according to the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
+>. If you want to rebuild the bilingual lexicon, perhaps after changing something in a lexicon, click the <object
 type="tButton"
 >Rebuild Bilingual Lexicon</object
 > button.</p
@@ -1791,6 +1803,59 @@ type="tTool"
 > and the test data shown in it will be from the source text that is currently shown in the <object
 type="tLiveRuleTester"
 ></object
+>.<?xxe-remark Sara
+2025-01-01T00:41:39Z
+Need to submit Github issue as errors seen on using the button.?></p
+><p
+>The <object
+type="tButton"
+>Trace HermitCrab synthesis</object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will bring up a web page showing trace information. This may be helpful when trying to troubleshoot why some morphemes are not synthesizing correctly. This check box will only be visible if you have already indicated you want to use HermitCrab synthesis in the <object
+type="tSettingsTool"
+></object
+>.</p
+><p
+>The <object
+type="tButton"
+>Apply Text Out rules</object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will execute all of the search/replace rules you have defined with the <object
+type="tModule"
+>Text Out Rules</object
+> module. These will be applied before showing the result in the <object
+type="tButton"
+>Synthesis Text</object
+> box. This check box will only be visible if you have already added some rules via the <object
+type="tModule"
+>Text Out Rules</object
+> module.</p
+><p
+>The <object
+type="tButton"
+>Do not clean up unknown words</object
+> check box, when checked before clicking the <object
+type="tButton"
+>Synthesize</object
+> button, will prevent the synthesis process from removing symbols around synthesized words that indicate a word didn't synthesize. For example, <object
+type="tCourier"
+>%0%bilar%</object
+> will not get cleaned up to be <object
+type="tCourier"
+>bilar</object
+>. For production use of FT it is often helpful to do this clean up for words that you don't expect to synthesize, but for troubleshooting synthesis issues, it is helpful to see any problems. Otherwise, these problems may lie hidden. This check box will only be visible if you have already selected <object
+type="tSettingsValue"
+>Yes</object
+> for the <object
+type="tSettingsProperty"
+>Clean Up Unknown Target Words</object
+> setting in the <object
+type="tSettingsTool"
+></object
 >.</p
 ></section3
 ></section2
@@ -1799,7 +1864,18 @@ id="sViewSrcTgt"
 ><secTitle
 >The <object
 type="tViewSrcTgt"
-></object
+><?xxe-remark Sara
+2025-01-03T23:23:06Z
+This tool is now called "View Source/Target Apertium Text Tool".
+
+The tool is only usable after running:
+Extract Source Text
+(to create source_text-aper.txt)
+AND
+Run Apertium
+(to create target_text-aper.txt)
+
+If these modules haven't been run; and therefore the .txt file(s) do not exist, should the user be given help to know (from the program, not the help file) why the files don't exist / how to create the files??></object
 ></secTitle
 ><p
 >The <object
@@ -1814,10 +1890,18 @@ type="tTool"
 > files <object
 type="tFilename"
 >source_text.txt</object
-> or <object
+> <?xxe-remark Sara
+2025-01-03T23:20:52Z
+Filename:
+
+source_text-aper.txt?>or <object
 type="tFilename"
 >target_text.txt</object
-> very often, but sometimes you may find it useful to see what got extracted from the source <object
+> <?xxe-remark Sara
+2025-01-03T23:21:11Z
+Filename:
+
+target_text-aper.txt?>very often, but sometimes you may find it useful to see what got extracted from the source <object
 type="tFlexx"
 ></object
 > project into <object
@@ -1897,18 +1981,23 @@ type="tItalic"
 > on in <object
 type="tTool"
 >Paratext</object
->. You cannot import from <object
+>.</p
+><p
+>Also, you cannot import from <object
 type="tTool"
 >Paratext</object
-> resources. Use the <object
+> resources. Put the <object
 type="tTool"
 >Paratext</object
-> book abbreviation in the second box. You can import multiple chapters.</p
+> book abbreviation in the second box. Select from and to chapters.</p
 ><p
 >After importing, you will have a new text in the source <object
 type="tFlexx"
 ></object
-> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended.</p
+> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended. Unless you have checked the <object
+type="tItalic"
+>Overwrite existing text</object
+> box.</p
 ><p
 >Additional options are the following:</p
 ><ul
@@ -1920,16 +2009,6 @@ type="tBoldItalic"
 type="tFlexx"
 ></object
 > for each chapter.</li
-><li
-><object
-type="tBoldItalic"
->Include footnotes</object
-> - include all the text involved with footnotes</li
-><li
-><object
-type="tBoldItalic"
->Include cross references</object
-> - include all the text involved with cross references, namely \x and \r marked text.</li
 ><li
 ><object
 type="tBoldItalic"
@@ -1946,6 +2025,26 @@ type="tFlextrans"
 type="tBoldItalic"
 >Use full English book name for title</object
 > - e.g. JHN will change to John.</li
+><li
+><object
+type="tBoldItalic"
+>Overwrite existing text</object
+> - If a text already exists with the same name exists, it will be overwritten. When this is not checked, '- Copy' will be appended to the text name when a text already exists.</li
+><li
+><object
+type="tBoldItalic"
+>Include footnotes</object
+> - include all the text involved with footnotes</li
+><li
+><object
+type="tBoldItalic"
+>Include cross references</object
+> - include all the text involved with cross references, namely \x and \r marked text.</li
+><li
+><object
+type="tBoldItalic"
+>Include introduction (for chapter 1)</object
+> - bring in introductory information that is above chapter 1. This only applies to chapter 1.</li
 ></ul
 ><example
 num="xParatextImport"
@@ -1965,19 +2064,79 @@ type="tTool"
 >Paratext</object
 > Export</secTitle
 ><p
+>There are two tools that help you export to <object
+type="tTool"
+>Paratext</object
+>. The difference between them is where your you want to export your text from.</p
+><ol
+><li
+><object
+type="tTool"
+>Export Translated Text to Paratext</object
+> - takes a newly synthesized text and exports it to <object
+type="tTool"
+>Paratext</object
+>.<ol
+><li
+>You can substitute this module for the <object
+type="tTool"
+>Insert Target Text</object
+> module that is normally the last module in the <object
+type="tCollection"
+>Drafting</object
+> collection.</li
+><li
+>By doing this, after a text gets translated, it will immediately get put into the target <object
+type="tTool"
+>Paratext</object
+> project for further editing.</li
+><li
+>This is the best practice once your translation system is working smoothly.</li
+></ol
+></li
+><li
+><object
+type="tTool"
+>Export FLEx Text to Paratext</object
+> - takes a text that is in <object
+type="tFlexx"
+></object
+> and exports it to <object
+type="tTool"
+>Paratext</object
+>.<ol
+><li
+>Use this module if you have made changes or normally make changes to the target text in <object
+type="tFlexx"
+></object
+> and you want those changes to end up in <object
+type="tTool"
+>Paratext</object
+>.</li
+></ol
+></li
+></ol
+><section4
+id="sPtxExportFromSynth"
+><secTitle
+><object
+type="tTool"
+>Export Translated Text to Paratext</object
+></secTitle
+><p
 >To export chapters to <object
 type="tTool"
 >Paratext</object
-> from the active text, use the <object
-type="tTool"
->Export Text From Paratext</object
-> module. This tool is designed to work well with a text that you have previously imported with the <object
+> from the newly synthesized text, use this tool. It is designed to work well with a text that you have previously imported with the <object
 type="tTool"
 >Import Text From Paratext</object
-> module. In other words, the export tool expects the active source text to be in the form John 03-04 or JHN 03-04. Use the <object
+> module and translated. The export tool expects the name of the active source text to be in the form John 03-04 or JHN 03-04. Use the <object
 type="tSettingsTool"
 ></object
-> if you need to change the active source text. The tool will find the book and chapters in the given <object
+> if you need to change the active source text. <object
+type="tTool"
+>Export Text From Paratext</object
+> will find the book and chapters in the given <object
 type="tTool"
 >Paratext</object
 > project and replace the text that was there with the text created by <object
@@ -1991,7 +2150,7 @@ type="tSettingsProperty"
 >Target Output Synthesis File</object
 > as defined in the settings. This is the file created by the <object
 type="tTool"
->Extract Target Lexicon</object
+>Synthesize Text</object
 > module.</p
 ></endnote
 > Note: the <object
@@ -2007,7 +2166,7 @@ type="tTool"
 ><p
 >Normally this module should be run after the <object
 type="tTool"
->Extract Target Lexicon</object
+>Synthesize Text</object
 > module.</p
 ><example
 num="xParatextExport"
@@ -2018,6 +2177,55 @@ src="Images/ParatextExport.png"
 ></img
 ></chart
 ></example
+></section4
+><section4
+id="sPtxExportFromFLEx"
+><secTitle
+><object
+type="tTool"
+>Export FLEx Text to Paratext</object
+></secTitle
+><p
+>To export chapters to <object
+type="tTool"
+>Paratext</object
+> from a <object
+type="tFlexx"
+></object
+> text, use this tool. It is designed to work well with a text that you have previously inserted into the target <object
+type="tFlexx"
+></object
+> project with the <object
+type="tTool"
+>Insert Target Text</object
+> tool. <object
+type="tTool"
+>Export FLEx Text to Paratext</object
+> will find all scripture texts in FLEx and shows you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple text to be exported. Also, if you want to export all chapters for book, first check the check box that says: <object
+type="tItalic"
+>Clicking any chapter of a book selects all chapters of the book</object
+>. Then when you click one of the book's chapters in the Scripture Texts list, all chapters will get selected.</p
+><p
+>Note: the <object
+type="tTool"
+>Paratext</object
+> project must be a project that you are at least a <object
+type="tItalic"
+>Translator</object
+> on. Also, the <object
+type="tTool"
+>Paratext</object
+> book must already exist.</p
+><example
+num="xParatextExportFromFLEx"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ParatextExportFromFLEx.png"
+></img
+></chart
+></example
+></section4
 ></section3
 ></section2
 ><section2
@@ -2205,7 +2413,7 @@ src="Images/SynthTestSteps.png"
 >To run the Synthesis Test:</p
 ><ol
 ><li
->First run the <object
+>First open the <object
 type="tSettingsTool"
 ></object
 > (as described in <sectionRef
@@ -2416,7 +2624,7 @@ type="tButton"
 >If the search and replace lines are Regular Expressions, check the <object
 type="tButton"
 >Regular Expression</object
-> checkbox. See the <object
+> check box. See the <object
 type="tFlexx"
 ></object
 > help on how to use Regular Expressions or various websites that explain the Regular Expression language.</p
@@ -2553,6 +2761,74 @@ src="Images/ReplacementEditor.png"
 ></chart
 ></example
 ></section2
+></section1
+><section1
+id="sCluster"
+><secTitle
+>Cluster Project Support</secTitle
+><p
+><object
+type="tFlextrans"
+></object
+> works great in cluster projects. You can leverage the approval of an interlinear text in the source language to produce translations of the text in multiple target languages.</p
+><p
+><object
+type="tFlextrans"
+></object
+> supports cluster projects by allowing you to define which <object
+type="tFlexx"
+></object
+> projects are in your cluster. You do this in the <object
+type="tSettingsTool"
+></object
+>. See <exampleRef
+letter="xClusterSettings"
+num="xClusterSettings"
+></exampleRef
+>. Then this information is used in various tools to allow you to apply the tool to multiple <object
+type="tFlexx"
+></object
+> projects at once. See tool images below that show support for cluster projects.</p
+><example
+num="xClusterSettings"
+><chart
+><img
+src="Images/ClusterSettings.png"
+></img
+></chart
+></example
+><example
+num="xClusterAddNewEntry"
+><chart
+><img
+src="Images/ClusterAddNewEntry.png"
+></img
+></chart
+></example
+><example
+num="xClusterExportFromFlex"
+><chart
+><img
+src="Images/ClusterExportFromFLEx.png"
+></img
+></chart
+></example
+><example
+num="xClusterImportParatext"
+><chart
+><img
+src="Images/ClusterImportParatext.png"
+></img
+></chart
+></example
+><example
+num="xClusterAdHoc"
+><chart
+><img
+src="Images/ClusterAdHoc.png"
+></img
+></chart
+></example
 ></section1
 ><section1
 id="sTransferTutorial"
@@ -5378,7 +5654,7 @@ id="sTransferRuleHowTos"
 >Transfer Rule How To’s</secTitle
 ><p
 ><comment
->How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use 'and', 'or' and 'not' as part of the choose logic. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
+>How to use a variable. How to run rule logic on subset of entries (how do I use a list). How to save the fact that a word occurred in a sentence (How to use a flag) How to check if the end of the sentence has been reached. How to use inflection features and classes in rules. How do I get the upper case at the beginning of the sentence. How do I enter a comment in my transfer rules?</comment
 ></p
 ><section3
 id="sAffixRef"
@@ -5875,6 +6151,582 @@ type="tFilename"
 >transfer_rules-Sample1.t1x</object
 > you can copy and paste from that rule file as well.</p
 ></section3
+><section3
+id="sSpecialEl"
+><secTitle
+>How do I use special elements in my rules?</secTitle
+><section4
+id="sAnd"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>and</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if two things are true, you can use the <object
+type="tRuleElemInXXE"
+>and</object
+> element and then list two <object
+type="tRuleElemInXXE"
+>equal</object
+> elements. The easiest way to bring this element into your rule is to copy an <object
+type="tRuleElemInXXE"
+>and</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xAnd"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementAnd.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sApend"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>append to</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>let</object
+> element you normally copying the value of the second element to the first element. See <sectionRef
+sec="sDeleteAffix"
+></sectionRef
+>, method 1 for an example. With this element you can add to the end of the first element whatever is in the second element. For lemmas and <object
+type="tRuleElemInXXE"
+>literal strings</object
+> this is straightforward. For example, you could append <langData
+lang="lVernacular"
+>1.1</langData
+> to the end of <langData
+lang="lVernacular"
+>praise</langData
+> to end up with the value <langData
+lang="lVernacular"
+>praise1.1</langData
+>. For tags this is little different. You can't use append to add on to a tag, you can only use it to add a second tag. You could add the tag <object
+type="tluAffix"
+>pl</object
+> after the tag <object
+type="tluAffix"
+>3</object
+> so that there is now two tags <object
+type="tluAffix"
+>pl</object
+> and <object
+type="tluAffix"
+>3</object
+>. You can't create a combined tag of <object
+type="tluAffix"
+>3pl</object
+> this way.<endnote
+id="nappend"
+><p
+>You could achieve this by taking a literal string with a value of <langData
+lang="lVernacular"
+>3</langData
+> and appending another literal string with a value of <langData
+lang="lVernacular"
+>pl</langData
+>. But you couldn't start with a tag that has a value of <object
+type="tluAffix"
+>3</object
+>. This is because under the hood, the value of a tag includes the angle brackets. Tag <object
+type="tluAffix"
+>3</object
+> is actually <object
+type="tCourier"
+>&lt;3&gt;</object
+>.</p
+></endnote
+> The easiest way to produce this element is to simply use the <object
+type="tMenu"
+>Insert</object
+> command, to put it into your rule.</p
+><p
+>Note: you can append multiple things to your primary element. Just add more elements under <object
+type="tRuleElemInXXE"
+>append to</object
+>.</p
+><example
+num="xAppend"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementAppend.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sBeginsWith"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>begins with</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value, you can use the <object
+type="tRuleElemInXXE"
+>begins with</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains what you want the first element to begin with. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>begins with</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xBeginsWith"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementBeginsWith.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sBeginsWithList"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>begins with something in list</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value, you can use the <object
+type="tRuleElemInXXE"
+>begins with something in list</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. The list has to be defined separately in the <object
+type="tRuleElemInXXE"
+>Lists</object
+> section of the rules file. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>begins with something in list</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xBeginsWithList"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementBeginsWithList.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sConcat"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>concat</object
+></secTitle
+><p
+>This element concatenates two or more things together.</p
+><p
+>The same thing regarding tags and literal strings as discussed in <sectionRef
+sec="sApend"
+></sectionRef
+> applies.</p
+><example
+num="xConcat"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementConcat.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sContainsSub"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>contains substring</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value, you can use the <object
+type="tRuleElemInXXE"
+>contains substring</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains what you want to find in the first element. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>contains substring</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xContainsSub"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementContainsSubstring.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sCaseOf"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>case of</object
+></secTitle
+><p
+>Not needed. See <sectionRef
+sec="sGetCaseFrom"
+></sectionRef
+> or <sectionRef
+sec="sModifyCase"
+></sectionRef
+>.</p
+></section4
+><section4
+id="sEndsWith"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>ends with</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value, you can use the <object
+type="tRuleElemInXXE"
+>begins with</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains what you want the first element to end with. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>begins with</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xEndsWith"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementEndsWith.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sEndsWithList"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>ends with something in list</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value, you can use the <object
+type="tRuleElemInXXE"
+>ends with something in list</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. The list has to be defined separately in the <object
+type="tRuleElemInXXE"
+>Lists</object
+> section of the rules file. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>ends with something in list</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xEndsWithList"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementEndsWithList.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sGetCaseFrom"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>get case from item</object
+></secTitle
+><p
+>This element lets you change the case of something. It as the same function as the <object
+type="tRuleElemInXXE"
+>modify case</object
+> element. But it helps you save the step of having to call <object
+type="tRuleElemInXXE"
+>modify case</object
+> as a separate step. As you are using some piece of data, you can wrap this element around it to on-the-fly change its case. So instead of <exampleRef
+letter="xModifyCase2"
+num="xModifyCase2"
+></exampleRef
+> as a separate step, could you use this element as in <exampleRef
+letter="xGetCaseFrom"
+num="xGetCaseFrom"
+></exampleRef
+> to output the lemma for item 1, making it's case the same as item 2.</p
+><p
+>The easiest way to produce this element is to highlight an element such as <object
+type="tRuleElemInXXE"
+>clip</object
+> or <object
+type="tRuleElemInXXE"
+>variable</object
+> and then use the <object
+type="tMenu"
+>Wrap</object
+> command to wrap an element around it and choose <object
+type="tRuleElemInXXE"
+>get-case-from</object
+>.</p
+><example
+num="xGetCaseFrom"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementGetCaseFrom.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sIn"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>in list</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if a value matches something in a list, you can use the <object
+type="tRuleElemInXXE"
+>in list</object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The logic will be true if the first element match anything in the given list. The list has to be defined separately in the <object
+type="tRuleElemInXXE"
+>Lists</object
+> section of the rules file. The easiest way to bring this element into your rule is to copy an <object
+type="tRuleElemInXXE"
+>in list</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xIn"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementIn.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sModifyCase"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>modify case</object
+></secTitle
+><p
+>This element lets you change the case of something. Under <object
+type="tRuleElemInXXE"
+>modify case</object
+> you have two elements. The first element is the thing that you want to change. The second element instructs the rule engine what kind of case to give it. You can use a literal string to intentionally change it to a certain case. See <exampleRef
+letter="xModifyCase"
+num="xModifyCase"
+></exampleRef
+>. <langData
+lang="lVernacular"
+>Aa</langData
+> will change it to have the first letter capitalized. <langData
+lang="lVernacular"
+>aa</langData
+> will change it to lower case. <langData
+lang="lVernacular"
+>AA</langData
+> will change it to upper case. Or you can have it copy the case of a value that already exists. In <exampleRef
+letter="xModifyCase2"
+num="xModifyCase2"
+></exampleRef
+> the case of the lemma of item 1 will be set to be the same case as the lemma of item 2.</p
+><p
+>The easiest way to produce this element is to simply use the <object
+type="tMenu"
+>Insert</object
+> command, to put it into your rule.</p
+><example
+num="xModifyCase"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementModifyCase.png"
+></img
+></chart
+></example
+><example
+num="xModifyCase2"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementModifyCase2.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sNot"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>not</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if x is not equal to y, you can use the <object
+type="tRuleElemInXXE"
+>not</object
+> element and then list one <object
+type="tRuleElemInXXE"
+>equal</object
+> element inside it. The easiest way to bring this element into your rule is to copy a <object
+type="tRuleElemInXXE"
+>not</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xNot"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementNot.png"
+></img
+></chart
+></example
+></section4
+><section4
+id="sOr"
+><secTitle
+><object
+type="tRuleElemInXXE"
+>or</object
+></secTitle
+><p
+>Inside of a <object
+type="tRuleElemInXXE"
+>test</object
+> element you normally have an <object
+type="tRuleElemInXXE"
+>equal</object
+> element. This allows you to see if x is equal to y. But if you want to test to see if either one of two things is true, you can use the <object
+type="tRuleElemInXXE"
+>or</object
+> element and then list two <object
+type="tRuleElemInXXE"
+>equal</object
+> elements. The easiest way to bring this element into your rule is to copy an <object
+type="tRuleElemInXXE"
+>or</object
+> element from the <object
+type="tBold"
+>Sample logic rule</object
+> or from the <object
+type="tFilename"
+>transfer_rules-Sample1.t1x</object
+> file.</p
+><example
+num="xOr"
+><chart
+><img
+cssSpecial=" height:60%"
+src="Images/ElementOr.png"
+></img
+></chart
+></example
+></section4
+></section3
 ></section2
 ><section2
 id="sOther"
@@ -6108,9 +6960,9 @@ type="tFoldername"
 type="tSettingsProperty"
 >Source Text Name</object
 > property in the <object
-type="tFlextrans"
+type="tSettingsTool"
 ></object
-> settings to <object
+> to <object
 type="tSettingsValue"
 >Text2</object
 >.</p
@@ -6193,9 +7045,6 @@ type="tTypeInFLEx"
 ></li
 ><li
 >Open the <object
-type="tFlextrans"
-></object
-> <object
 type="tSettingsTool"
 ></object
 >.</li
@@ -6279,9 +7128,6 @@ type="tTypeInFLEx"
 ></li
 ><li
 >Open the <object
-type="tFlextrans"
-></object
-> <object
 type="tSettingsTool"
 ></object
 >.</li
@@ -6389,7 +7235,7 @@ type="tFlextrans"
 ></object
 >.</p
 ><p
->There’s a checkbox in the <object
+>There’s a check box in the <object
 type="tLiveRuleTester"
 ></object
 > labelled <object
@@ -7130,7 +7976,7 @@ font-weight="bold"
 id="tSettingsProperty"
 ></type
 ><type
-after="Settings Tool"
+after="FLExTrans Settings"
 id="tSettingsTool"
 types="tTool"
 ></type
