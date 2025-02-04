@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.12.5 - 1/17/25 - Ron Lockwood
+#    Give an error if the user didn't used the auto-complete value.
+#
 #   Version 3.12.4 - 1/17/25 - Ron Lockwood
 #    Give an error if the user didn't used the auto-complete value.
 #
@@ -434,7 +437,7 @@ class AdHocMain(QMainWindow):
 
                             newObj = self.findObject(self.sourceDB, myDB, othObj, otherStr)
 
-                            if not othObj:
+                            if not newObj:
                                 feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}.\n'
                                 problemFound = True
                             
