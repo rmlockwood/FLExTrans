@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.12.5 - 2/7/25 - Ron Lockwood
+#    Reworked to use guid strings as the things that get saved in combo box data.
+#
 #   Version 3.12.4 - 1/17/25 - Ron Lockwood
 #    Give an error if the user didn't used the auto-complete value.
 #
@@ -30,6 +33,8 @@ import re
 import sys
 from unicodedata import normalize
 
+from System import Guid   # type: ignore
+from System import String # type: ignore
 from flextoolslib import *                                                 
 from flexlibs import AllProjectNames
 from SIL.LCModel import ( # type: ignore
@@ -41,8 +46,11 @@ from SIL.LCModel import ( # type: ignore
     IMoAlloAdhocProhibFactory,
     IMoMorphAdhocProhibFactory,
     IMoAdhocProhibGrFactory,
+    IMoAdhocProhibGr,
     ICmObjectRepository,
     ILexEntry,
+    IMoMorphSynAnalysis,
+    IMoForm,
     )
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
@@ -63,7 +71,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12.4",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
@@ -184,6 +192,13 @@ class AdHocMain(QMainWindow):
         self.ui.closeButton.clicked.connect(self.closeIt)
         self.ui.newGroupButton.clicked.connect(self.promptUserForGroupDetails)
         self.ui.adHocTypeComboBox.currentIndexChanged.connect(self.typeChanged)
+        self.ui.adHocGroupComboBox.currentIndexChanged.connect(self.groupChanged)
+
+    def groupChanged(self):
+        
+        #if self.newGroupName == '':
+
+        self.isNewGroup = False
 
     def promptUserForGroupDetails(self):
 
@@ -192,17 +207,15 @@ class AdHocMain(QMainWindow):
         
         if result == QDialog.Accepted:
 
-            groupName, groupDesc = dialog.getInputs()
+            self.newGroupName, self.newGroupDesc = dialog.getInputs()
 
-            adHocObj = self.createGroupObject(self.sourceDB, groupName, groupDesc)
+            #adHocObj = self.createGroupObject(self.sourceDB, groupName, groupDesc)
 
             # Add the new group name to the list and select it
-            self.ui.adHocGroupComboBox.addItem(groupName, adHocObj)
+            # The group object will get created later.
+            self.ui.adHocGroupComboBox.addItem(self.newGroupName, None)
             self.ui.adHocGroupComboBox.setCurrentIndex(self.ui.adHocGroupComboBox.count() - 1)
-
             self.isNewGroup = True
-            self.newGroupName = groupName
-            self.newGroupDesc = groupDesc
 
     def createGroupObject(self, DB, groupName, groupDesc):
 
@@ -233,11 +246,11 @@ class AdHocMain(QMainWindow):
         
         if selectedType == 'Morpheme':
 
-            completer = QCompleter(sorted(list(self.morphMap.keys()), key=lambda x: x.lower()))
+            completer = QCompleter(sorted(list(self.morphGuidMap.keys()), key=lambda x: x.lower()))
 
         elif selectedType == 'Allomorph':
         
-            completer = QCompleter(sorted(list(self.allomorphMap.keys()), key=lambda x: x.lower()))
+            completer = QCompleter(sorted(list(self.allomorphGuidMap.keys()), key=lambda x: x.lower()))
         else:
             return # still on (Choose Type)
         
@@ -277,7 +290,7 @@ class AdHocMain(QMainWindow):
         # Load the group names
         for name, grpObj in groupList:
 
-            self.ui.adHocGroupComboBox.addItem(name, grpObj)
+            self.ui.adHocGroupComboBox.addItem(name, grpObj.Guid.ToString())
         
     def sourceProjectChanged(self, index):
         
@@ -301,8 +314,8 @@ class AdHocMain(QMainWindow):
         self.updateGroups(self.sourceDB)
 
         # Reset maps
-        self.morphMap = self.getMorphs(self.sourceDB)
-        self.allomorphMap = self.getAllomorphs(self.sourceDB)
+        self.morphGuidMap = self.getMorphs(self.sourceDB)
+        self.allomorphGuidMap = self.getAllomorphs(self.sourceDB)
 
         # Clear and disable the line edits
         for widget in self.autoCompleteWidgets:
@@ -339,30 +352,30 @@ class AdHocMain(QMainWindow):
         # Determine the type of ad hoc rule
         selectedType = self.ui.adHocTypeComboBox.currentText()
                     
-        objMap = self.morphMap if selectedType == 'Morpheme' else self.allomorphMap
+        guidMap = self.morphGuidMap if selectedType == 'Morpheme' else self.allomorphGuidMap
 
         # Lookup the msa/or allomorph for the key item
         key = self.ui.KeyMorphAllomorphLineEdit.text()
 
         try:
-            keyObj = origKeyObj = objMap[key]
+            keyGuid = origKeyGuid = guidMap[key]
 
         except KeyError:
             QApplication.restoreOverrideCursor()       
             QMessageBox.critical(self, 'Ad Hoc Rules', f'It looks like you may not have used the Auto Complete values. "{key}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.')
             return
 
-        otherObjList = []
-        origOtherObjList = []
+        otherGuidList = []
+        origOtherGuidList = []
         
-        # Get the list of msas/allomorphs for the other morpheme/allomorph fields
+        # Get the list of msa guids/allomorph guids for the other morpheme/allomorph fields
         for widget in self.autoCompleteWidgets[1:]: # skip the first one which is the key line edit
 
             # If we have a value, add it to the list
             if otherStr := widget.text():
 
                 try:
-                    otherObjList.append((objMap[otherStr], otherStr))  
+                    otherGuidList.append((guidMap[otherStr], otherStr))  
 
                 except KeyError:
                     QApplication.restoreOverrideCursor()       
@@ -370,7 +383,7 @@ class AdHocMain(QMainWindow):
                     return
         
         # Duplicate the list to save it for later
-        origOtherObjList = otherObjList.copy()  
+        origOtherGuidList = otherGuidList.copy()  
 
         # Loop through all projects
         for proj in self.ui.clusterProjectsComboBox.currentData():
@@ -380,21 +393,30 @@ class AdHocMain(QMainWindow):
             isOrigSourceProject = (proj == self.origSourceDB.ProjectName())
 
             # Open the project (if not the current source project or the original source - these are already open)
-            if isOrigSourceProject:
+            # if isOrigSourceProject:
 
-                myDB = self.origSourceDB
+            #     myDB = self.origSourceDB
 
-            elif isSourceProject:
+            # elif isSourceProject:
 
-                myDB = self.sourceDB
-            else:
-                myDB = Utils.openProject(self.report, proj)
+            #     myDB = self.sourceDB
+            # else:
+            #     myDB = Utils.openProject(self.report, proj)
 
-                if not myDB:
-                    continue
+            #     if not myDB:
+            #         continue
             
+            myDB = Utils.openProject(self.report, proj)
+
+            if not myDB:
+                continue
+
             # Get the object repository
             repo = myDB.project.ServiceLocator.GetService(ICmObjectRepository)
+
+            # Restore stuff in case it got changed below
+            keyGuid = origKeyGuid
+            otherGuidList = origOtherGuidList.copy()
 
             # If we aren't on the source project get the equivalent msa in this project
             # We try at first to see if the same guid exists which may work most of the time because the FLEx projects
@@ -403,43 +425,40 @@ class AdHocMain(QMainWindow):
             
                 # Check if this key object exists in the project.
                 try:
-                    _ = repo.GetObject(origKeyObj.Guid)
+                    _ = repo.GetObject(Guid(String(origKeyGuid)))
                 except:
                     # If it's a morpheme we can try finding the msa other ways. 
                     if selectedType == 'Morpheme':
 
-                        keyObj = self.findObject(self.sourceDB, myDB, origKeyObj, key)
+                        keyGuid = self.findObject(self.sourceDB, myDB, origKeyGuid, key)
 
-                        if not keyObj:
+                        if not keyGuid:
 
-                            feedbackStr += f'The {selectedType} {key} could not be found in the project {proj}.\n'
+                            feedbackStr += f'The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n'
                             problemFound = True
                     
-                    # We can't reliably locate allomorphs by looking for links, or glosses and POSs, so don't do findObject, just give an error.
+                    # We can't reliably locate allomorphs by looking for links, or glosses and POSs, so don't do find Object, just give an error.
                     else:
                         feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
                         problemFound = True
 
-                # Restore the other list to what it was in case it got changed below
-                otherObjList = origOtherObjList.copy()
-
                 # Loop through all the other values
-                for i, (othObj, otherStr) in enumerate(otherObjList):
+                for i, (othGuid, otherStr) in enumerate(otherGuidList):
 
                     # Verify this other object exists in the project
                     try:
-                        _ = repo.GetObject(othObj.Guid)
+                        _ = repo.GetObject(Guid(String(othGuid)))
                     except:
                         if selectedType == 'Morpheme':
 
-                            newObj = self.findObject(self.sourceDB, myDB, othObj, otherStr)
+                            newGuid = self.findObject(self.sourceDB, myDB, othGuid, otherStr)
 
-                            if not othObj:
-                                feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}.\n'
+                            if not newGuid:
+                                feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n'
                                 problemFound = True
                             
                             # Replace this object in the list
-                            otherObjList[i] = (newObj, otherStr)
+                            otherGuidList[i] = (newGuid, otherStr)
 
                         # Again, give up if it's an allomorph
                         else:
@@ -455,12 +474,13 @@ class AdHocMain(QMainWindow):
                     myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
 
                     # Set the properties
-                    adHocObj.FirstMorphemeRA = keyObj
+                    myObj = repo.GetObject(Guid(String(keyGuid)))
+                    adHocObj.FirstMorphemeRA = IMoMorphSynAnalysis(myObj)
 
                     # Loop through all the other values
-                    for othObj, _ in otherObjList:
-
-                        adHocObj.RestOfMorphsRS.Add(othObj)
+                    for othGuid, _ in otherGuidList:
+                        myObj = repo.GetObject(Guid(String(othGuid)))
+                        adHocObj.RestOfMorphsRS.Add(IMoMorphSynAnalysis(myObj))
 
                 else: # selectedType == 'Allomorph':
                     
@@ -468,34 +488,43 @@ class AdHocMain(QMainWindow):
                     myDB.lp.MorphologicalDataOA.AdhocCoProhibitionsOC.Add(adHocObj)
 
                     # Set the properties
-                    adHocObj.FirstAllomorphRA = keyObj
+                    adHocObj.FirstAllomorphRA = IMoForm(repo.GetObject(Guid(String(keyGuid))))
 
                     # Loop through all the other values
-                    for othObj, _ in otherObjList:
+                    for othGuid, _ in otherGuidList:
 
-                        adHocObj.RestOfAllosRS.Add(othObj)
+                        adHocObj.RestOfAllosRS.Add(IMoForm(repo.GetObject(Guid(String(othGuid)))))
 
                 adHocObj.Adjacency = self.ui.cannotOccurComboBox.currentData()
                 feedbackStr += f'Added ad hoc rule to project {proj}.\n'
                 
                 validGroup = False
+                groupGuid = self.ui.adHocGroupComboBox.currentData()
 
-                # Add the object to the group if this is the source project
-                if isSourceProject:
+                # If we have a user created new group, add it to the current project and add the rule
+                if self.isNewGroup or groupGuid is None: # Could be None if new group created, then switch away from it, then back
 
-                    groupObj = self.ui.adHocGroupComboBox.currentData()
-
+                    groupObj = self.createGroupObject(myDB, self.newGroupName, self.newGroupDesc)
+                    
                     if groupObj:
+
+                        if isSourceProject:
+
+                            self.ui.adHocGroupComboBox.setItemData(self.ui.adHocGroupComboBox.currentIndex(), groupObj.Guid.ToString())
+
                         validGroup = True
+
+                # Otherwise, try and find the group in the project or prompt the user for one
                 else:
+                    
+                    # If it's the source project and we know it's an existing group, get the group object
+                    if isSourceProject :
 
-                    # If we have a user created new group, add it to the current project and add the rule
-                    if self.isNewGroup:
+                        groupObj = IMoAdhocProhibGr(repo.GetObject(Guid(String(self.ui.adHocGroupComboBox.currentData()))))
 
-                        groupObj = self.createGroupObject(myDB, self.newGroupName, self.newGroupDesc)
-                        validGroup = True
+                        if groupObj:
 
-                    # Otherwise, try and find the group in the project or prompt the user for one
+                            validGroup = True
                     else:
                         sourceGroupName = self.ui.adHocGroupComboBox.currentText()
 
@@ -528,7 +557,11 @@ class AdHocMain(QMainWindow):
                             # Create a new group named the same as the source one when the user chooses NEW ...
                             if selectedGroupName == f'NEW: {sourceGroupName}':
 
-                                desc = Utils.as_string(self.ui.adHocGroupComboBox.currentData().Description)
+                                try:
+                                    desc = Utils.as_string(IMoAdhocProhibGr(repo.GetObject(Guid(String(self.ui.adHocGroupComboBox.currentData())))).Description)
+                                except:
+                                    desc = ''
+
                                 groupObj = self.createGroupObject(myDB, sourceGroupName, desc)
                                 validGroup = True
 
@@ -545,9 +578,13 @@ class AdHocMain(QMainWindow):
                     groupObj.MembersOC.Add(adHocObj)
                     
             # Close the project (if not the default one or the current source project)
-            if not isOrigSourceProject and not isSourceProject:
+            # if not isOrigSourceProject and not isSourceProject:
 
-                myDB.CloseProject()
+            #     myDB.CloseProject()
+
+            myDB.CloseProject()
+
+        self.isNewGroup = False
 
         # Revert back to the default cursor 
         QApplication.restoreOverrideCursor()       
@@ -555,16 +592,18 @@ class AdHocMain(QMainWindow):
         # Give some feedback
         QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
 
-    def findObject(self, sourceDB, targetDB, msaObj, keyStr):
+    def findObject(self, sourceDB, targetDB, myGuidStr, keyStr):
 
-        desiredMSA = None
+        retVal = None
+        repo = sourceDB.project.ServiceLocator.GetService(ICmObjectRepository)
+        msaObj = repo.GetObject(Guid(String(myGuidStr)))
 
         # Get the entry and sense objects from this msa object
         entryObj = ILexEntry(msaObj.Owner)
         senseObj = self.getSenseForMsa(msaObj)
 
         if not senseObj:
-            return None
+            return retVal
 
         # If we have a stem that is not a clitic get the link that likely exists to the appropriate sense
         if msaObj.ClassName == 'MoStemMsa' and not Utils.isClitic(entryObj):
@@ -577,15 +616,15 @@ class AdHocMain(QMainWindow):
                 
                 customFieldUrl = Utils.getTargetEquivalentUrl(sourceDB, senseObj, id)
                 
-                if re.search(proj := targetDB.ProjectName(), re.sub(r'\+', ' ', customFieldUrl)):
+                if customFieldUrl and re.search(proj := targetDB.ProjectName(), re.sub(r'\+', ' ', customFieldUrl)):
 
                     targetSense, targetLemma, senseNum = Utils.getTargetSenseInfo(entryObj, sourceDB, targetDB, senseObj, customFieldUrl, \
                                                                                   senseNumField=None, report=None)
                     # If the url led us to a valid target sense, return that sense's msa
                     if targetSense:
-                        return targetSense.MorphoSyntaxAnalysisRA
-                    else:
-                        return None
+                        retVal = targetSense.MorphoSyntaxAnalysisRA
+                    
+                    break
 
         # If we have an affix or clitic, find the sense by gloss and POS
         elif msaObj.ClassName == 'MoInflAffMsa' or msaObj.ClassName == 'MoDerivAffMsa' or Utils.isClitic(entryObj):
@@ -595,38 +634,41 @@ class AdHocMain(QMainWindow):
             lemma, pos, gloss = re.split(EM_SPACE, keyStr)
 
             # See if we have a match on the gloss and POS in our saved map for this DB, if so, return the msa
-            # In theory, a two senses of an entry could have identical gloss and pos, but then the msa would be the same.
+            # In theory, two senses of an entry could have identical gloss and pos, but then the msa would be the same.
             if desiredMSA := glossPOSMap.get(gloss+pos+targetDB.ProjectName(), None):
 
-                return desiredMSA
+                retVal = desiredMSA
+            else:
+                # Loop through all entries
+                for entry in targetDB.LexiconAllEntries():
 
-            # Loop through all entries
-            for entry in targetDB.LexiconAllEntries():
+                    # Skip stems
+                    if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph':
+                        continue
 
-                # Skip stems
-                if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph':
-                    continue
+                    # Loop through all senses for an entry
+                    for sense in entry.SensesOS:
 
-                # Loop through all senses for an entry
-                for sense in entry.SensesOS:
+                        # Get gloss, msa and pos
+                        currGloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
+                        myMSA = self.createMSA(sense.MorphoSyntaxAnalysisRA) # Cast to the right class
+                        currPOS = self.setPOS(myMSA)
 
-                    # Get gloss, msa and pos
-                    currGloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
-                    myMSA = self.createMSA(sense.MorphoSyntaxAnalysisRA) # Cast to the right class
-                    currPOS = self.setPOS(myMSA)
+                        # Save the gloss and POS with associated msa into a saved map for the current DB
+                        glossPOSMap[currGloss+currPOS+targetDB.ProjectName()] = myMSA
 
-                    # Save the gloss and POS with associated msa into a saved map for the current DB
-                    glossPOSMap[currGloss+currPOS+targetDB.ProjectName()] = myMSA
+                        # If we have a match on POS and gloss
+                        if not desiredMSA and currGloss == gloss and currPOS == pos:
 
-                    # If we have a match on POS and gloss
-                    if not desiredMSA and currGloss == gloss and currPOS == pos:
+                            # Save the msa
+                            retVal = myMSA
+                            break
 
-                        # Save the msa
-                        desiredMSA = myMSA
-        else:
-            return None
+        if retVal:
 
-        return desiredMSA
+            retVal = retVal.Guid.ToString()
+
+        return retVal
     
     def getSenseForMsa(self, msaObj):
 
@@ -657,6 +699,8 @@ class AdHocMain(QMainWindow):
 
     def getMorphs(self, DB, composed=True):
 
+        repo = DB.project.ServiceLocator.GetService(ICmObjectRepository)
+
         if composed:
             def norm(s): return normalize('NFC', s) if s else s
         else:
@@ -670,22 +714,23 @@ class AdHocMain(QMainWindow):
             headWord = Utils.add_one(headWord)
             headWord = norm(headWord)
 
-            lastMsa = None
+            lastGuidStr = ''
             for i, sense in enumerate(entry.SensesOS, 1):
 
                 if not sense.MorphoSyntaxAnalysisRA:
                     continue
                                     
-                msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
+                guidStr = sense.MorphoSyntaxAnalysisRA.Guid.ToString()
+                #msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
 
                 # Only keep unique MSAs
-                if msa != lastMsa:
+                if guidStr != lastGuidStr:
 
-                    pos = self.setPOS(msa)
+                    pos = self.setPOS(repo.GetObject(Guid(String(guidStr))))
                     gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
 
-                    lemmas[f'{headWord}.{i}{EM_SPACE}{pos}{EM_SPACE}{gloss}'] = msa
-                    lastMsa = msa
+                    lemmas[f'{headWord}.{i}{EM_SPACE}{pos}{EM_SPACE}{gloss}'] = guidStr
+                    lastGuidStr = guidStr
 
         return lemmas
     
@@ -724,7 +769,8 @@ class AdHocMain(QMainWindow):
                     # Just want the first POS
                     break
 
-                lemmas[f'{mainAllomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = entry.LexemeFormOA
+                lemmas[f'{mainAllomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = entry.LexemeFormOA.Guid.ToString()
+                #lemmas[f'{mainAllomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = entry.LexemeFormOA
 
             # Now get any allomorphs
             for allom in entry.AlternateFormsOS:
@@ -733,18 +779,32 @@ class AdHocMain(QMainWindow):
 
                     allomorphStr = ITsString(allom.Form.VernacularDefaultWritingSystem).Text
                     allomorphStr = norm(allomorphStr)
-                    lemmas[f'{allomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = allom
+                    lemmas[f'{allomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = allom.Guid.ToString()
+                    #lemmas[f'{allomorphStr}{EM_SPACE}({pos}):{EM_SPACE}{headWord}{EM_SPACE}{gloss}'] = allom
 
         return lemmas
     
     def setPOS(self, msa):
 
+        pos = ''
+
         if msa.ClassName == 'MoDerivAffMsa':
 
+            msa = IMoDerivAffMsa(msa)
             pos = Utils.as_string(msa.FromPartOfSpeechRA.Abbreviation) if msa.FromPartOfSpeechRA else '***'
             pos += ' > '
             pos += Utils.as_string(msa.ToPartOfSpeechRA.Abbreviation) if msa.ToPartOfSpeechRA else '***'
         else:
+            if msa.ClassName == 'MoStemMsa':
+
+                msa = IMoStemMsa(msa) 
+
+            elif msa.ClassName == 'MoInflAffMsa':
+
+                msa = IMoInflAffMsa(msa)
+            else:
+                return pos
+
             pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation) if msa.PartOfSpeechRA else '***'
 
         return pos
@@ -783,6 +843,7 @@ def MainFunction(DB, report, modify=True):
     # Get the cluster projects
     projects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report)
     if not projects:
+        report.Info("No cluster projects found. Define them in Settings.")
         return
         
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS, report)
