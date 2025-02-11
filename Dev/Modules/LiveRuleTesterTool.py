@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.6 - 1/10/25 - Ron Lockwood
+#    Fixes #874. Use a system message box instead of a custom one.
+#    Make it more readable for the user.
+#
 #   Version 3.12.5 - 1/10/25 - Ron Lockwood
 #    Fixes #855. Don't clean up unknown words, if desired.
 #    Make Apply Textout Rules invisible unless rules exist.
@@ -147,251 +151,14 @@
 #    Change the way we save the last sentence # selected. Use a class variable to
 #    keep track of it. Fixes #370.
 #
-#   Version 3.7.11 - 12/29/22 - Ron Lockwood
-#    Fixes #332. Don't show the Sample logic rule in the list
-#
-#   Version 3.7.10 - 12/30/22 - Ron Lockwood
-#    Fixes #212. Get View Testbed Log button working by calling a the core module code for
-#    the module after shutting down the LRT.
-#
-#   Version 3.7.9 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7.8 - 12/23/22 - Ron Lockwood
-#    Removed definition of GetEntryWithSense
-#
-#   Version 3.7.7 - 12/24/22 - Ron Lockwood
-#    Verse number support for RTL languages. Insert RTL markers before and after the
-#    sentence for the sentence list and sentence combo box.
-#
-#   Version 3.7.6 - 12/13/22 - Ron Lockwood
-#    Handle old target file name (target_text.aper) which may be in the old Makefile
-#    in the LiveRuleTester folder. If target_text.txt is not found use the old name.
-#
-#   Version 3.7.5 - 12/1/22 - Ron Lockwood
-#    Set the internal current row in the combo box model object and force the
-#    check boxes to get recreated. Fixes #345.
-#
-#   Version 3.7.4 - 11/7/22 - Ron Lockwood
-#    Get advanced rule file info. from files defined by new settings.
-#
-#   Version 3.7.3 - 11/5/22 - Ron Lockwood
-#    Fixes #309. Use saved sent number only when it's the same text as last time.
-#
-#   Version 3.7.2 - 11/5/22 - Ron Lockwood
-#    Fixes #310. Removed unneeded controls.
-#
-#   Version 3.7.1 - 11/5/22 - Ron Lockwood
-#    Fixes #197. The user can choose a different source text which triggers a restart
-#    of the module.
-#
-#   Version 3.7 - 10/29/22 - Ron Lockwood
-#    Fixes #277. Switch to same sentence between select words and select sentences tabs.
-#    Also save which sentence was selected when the LRT is closed.
-#
-#   Version 3.6.9 - 10/29/22 - Ron Lockwood
-#    Fixes #301. Biling lex. was not being rebuilt, just read when #237 was fixed.
-#
-#   Version 3.6.8 - 10/19/22 - Ron Lockwood
-#    Fixes #244. Give a warning if an attribute matches a grammatical category.
-#    Fixes #246. Allow unchecking of all rules. Also give message when there's no output.
-#    Fixes #237. Build the bilingual dictionary if it is missing.
-#
-#   Version 3.6.7 - 9/2/22 - Ron Lockwood
-#    Fixes #263. Force reload of word tooltips when Reload bilingual button clicked.
-#
-#   Version 3.6.6 - 9/2/22 - Ron Lockwood
-#    Fixes #255. Convert slashes in symbols before running Apertium
-#
-#   Version 3.6.5 - 8/27/22 - Ron Lockwood
-#    If the tooltip word is Title case and not found in the bilingual map, try
-#    lowercasing the first letter to find it.
-#
-#   Version 3.6.4 - 8/19/22 - Ron Lockwood
-#    Fixed bugs in last feature added. Now entries with spaces work as well as
-#    entries that have sfm markers or other stuff before the lexical unit.
-#    Use the new function getXMLEntryText.
-#
-#   Version 3.6.3 - 8/18/22 - Ron Lockwood
-#    Fixes #223. Show a tooltip for each word in the Select Words (checkbox) view.
-#    The tooltip display the entry or entries for the word that are found in the
-#    bilingual lexicon. To do this the bilingual lexicon has to be converted to a map
-#    on initialization and whenever the bilingual lexicon is rebuilt.
-#
-#   Version 3.6.2 - 8/11/22 - Ron Lockwood
-#    Fixes #198. Warn the user for periods in attribute definitions.
-#
-#   Version 3.6.1 - 8/11/22 - Ron Lockwood
-#    Save transfer rule file in decomposed unicode.
-#
-#   Version 3.6 - 8/8/22 - Ron Lockwood
-#    New buttons to view/edit the bilingual lexicon, the transfer rule file and
-#    the replacement file. Fixes #196
-#
-#   Version 3.5.10 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5.9 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5.8 - 5/19/22 - Ron Lockwood
-#    Close FLEx project and reopen on Rebuild Bilingual Lexicon button.
-#    This clears the cache in LCM and allows the rebuild function to use the
-#    latest FLEx data. Fixes #122.
-#
-#   Version 3.5.7 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.5.6 - 4/14/22 - Ron Lockwood
-#    Give error message when no words are suggested. Fixes #109
-#
-#   Version 3.5.5 - 4/14/22 - Ron Lockwood
-#    Turn on and off wait cursor for certain operations. Fixes #103
-#
-#   Version 3.5.4 - 4/1/22 - Ron Lockwood
-#    Program a button to rebuild the bilingual lexicon. Fixes #37
-#
-#   Version 3.5.3 - 4/1/22 - Ron Lockwood
-#    Save checked rules on refresh. Fixes #29
-#
-#   Version 3.5.2 - 4/1/22 - Ron Lockwood
-#    Fixed crash on up or down button. I was incorrectly using _children for
-#    ElementTree which no longer works in Python 3. Also got selecting a row
-#    working. Fixes #104
-#
-#   Version 3.5.1 - 4/1/22 - Ron Lockwood
-#    If no rule is checked, give a specific error. Instead of letting Apertium
-#    fail. Fixes #28.
-#
-#   Version 3.5 - 3/24/22 - Ron Lockwood
-#    Save selected tabs on close to a file and rest to those on open. Bug #2.
-#
-#   Version 3.4.5 - 3/21/22 - Ron Lockwood
-#    Handle when transfer rules file and testbed file locations are not set in
-#    the configuration file. Issue #95
-#
-#   Version 3.4.4 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4.3 - 3/10/22 - Ron Lockwood
-#    Get the transfer rules path from the config file
-#
-#   Version 3.4.2 - 3/5/22 - Ron Lockwood
-#    New parameter for run_makefile for a config file setting for transfer rules.
-#    Also rename err_log to apertium_log.txt and always use bilingual.dix for the
-#    filename in the tester folder.
-#
-#   Version 3.4.1 - 3/3/22 - Ron Lockwood
-#    Get the transfer_rules.t1x file from the top level
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2.5 - 3/8/21 - Ron Lockwood
-#    Error checking for missing guid in XML files
-#
-#   Version 3.2.4 - 3/4/21 - Ron Lockwood
-#    Support for discontiguous complex forms
-#
-#   Version 3.2.3 - 3/4/21 - Ron Lockwood
-#    Support for testbed editing in the XML Editor XXE
-#
-#   Version 3.2.2 - 2/25/21 - Ron Lockwood
-#    Support an insert word list file for extraction purposes. Get new item:
-#    TreeTranInsertWordsFile from the config file. call getInsertedWordsList
-#    and addInseredWordsList. Bug fix: check if we get None for the sent. object
-#    for the number given. Give an error if needed.
-#
-#   Version 3.2.1 - 2/19/21 - Ron Lockwood
-#    remove multiple spaces from synthesis result
-#
-#   Version 3.2 - 1/29/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 3.1.7 - 3/27/20 - Ron Lockwood
-#    Handle adding sentence punctuation when using TreeTran.
-#
-#   Version 3.1.6 - 3/26/20 - Ron Lockwood
-#    Added the same logic as ExtractSourceText to process words in TreeTran-
-#    outputted order, if TreeTran is being used.
-#
-#   Version 3.1.5 - 3/20/20 - Ron Lockwood
-#    Use new getInterlinData function.
-#
-#   Version 3.1.4 - 1/30/20 - Ron Lockwood
-#    On Synthesize catch if the Target DB is locked.
-#
-#   Version 3.1.3 - 4/22/19 - Ron Lockwood
-#    Look at first half of text box strings to determine rtl. This prevents the
-#    whole thing from being right aligned when there is just an rtl punctuation
-#    mark at the end.
-#
-#   Version 3.1.2 - 4/5/19 - Ron Lockwood
-#    Make the synthesis text box RTL only if the text going in there is RTL.
-#
-#   Version 3.1.1 - 3/27/19 - Ron Lockwood
-#    Handle errors coming from various calls as coming in triplets instead of twos.
-#    The last is a url that gets ignored. RTL fixes.
-#
-#   Version 3.1 - 3/30/18 - Ron Lockwood
-#    Add lexical units and synthesis results to the testbed. There is an option
-#    to add multiple lexical units and synthesis results if they match in number
-#    this could be useful for adding a whole paradigm to the testbed. Also added
-#    buttons to let the user edit the testbed or view the testbed log.
-#
-#   Version 3.0 - 3/30/18 - Ron Lockwood
-#    Added the capability of doing a test synthesis on the results of the test
-#    rules that were run. This involves running the last 4 of the main FLExTrans
-#    modules from this module. Each of these 4 modules was modified to give a
-#    function that this module could call. New interface elements were added.
-#    most of the new capability get run when the synthesize button is pushed.
-#
-#   Version 2.2.1 - 2/28/18 - Ron Lockwood
-#    More gracefully handle when the LiveRuleTester folder doesn't exist. Added
-#    missing module description.
-#
-#   Version 2.2 - 1/10/18 - Ron Lockwood
-#    Added the direct call to Apertium through bash. This uses the same
-#    code that the RunApertium module has. Handle splitting of compounds into parts
-#    just as ExtractSourceText does.
-#
-#   Version 2.1 - 1/2/18 - Ron
-#    Display the lexical units in a more readable manner using the same style
-#    as in the View Source-Target module. Fixed bug where RTL text wasn't detected
-#    properly because there was sfm markers at the beginning. Now we check the
-#    first 5 sentences to find RTL text.
-#
-#   Version 2.0 - 1/18/17 - Ron
-#    The tool now supports advanced transfer processing. When the .t2x and .t3x
-#    files are present, advanced mode is enabled and the Interchunk and Postchunk
-#    tabs can be used. The output from one gets copied to the input of the other
-#    when the tab is changed.
-#    Don't prompt the user for the transfer rules file anymore, just use the one
-#    defined in the configuration file by default.
-#    Copy the bilingual dictionary file and the Makefile once upon startup to the
-#    LiveRuleTester folder. If the biling. dictionary changes. The tool will have
-#    to be restarted or you can browse to find the file again.
-#    Removed unused RuleList class.
-#
-#   Version 1.0.2 - 12/12/16 - Ron
-#    Use contentsOA for the call to get_interlin_data just like the ExtractSourceText
-#    module.
-#    Handle scripture texts.
-#
-#   Version 1.0.1 - 11/8/16 - Ron
-#    Smaller interface.
-#
-#   Version 1.0 - 8/27/16 - Ron
-#    Initial version.
+#   Earlier version history removed on 2/4/25.
 #
 #   Allow the user to test source language input live against transfer rules.
 #
 #   By default the transfer rules file, the bilingual lexicon file and the
 #   source text file are loaded according to the configuration file. These
 #   can be changed as desired.
+#
 #   The user can choose to select words from a sentence in the source text or
 #   select a whole sentence or manually enter words in data stream format.
 #   In the first two cases, the selection(s) are converted to data stream format.
@@ -401,11 +168,9 @@
 #   Also the info. window will show errors and/or rules that have been matched.
 #
 #   Behind the scenes this tool is modifying a special source text file and
-#   transfer rule file. There is the assumption that an Apertium virtual machine
-#   has been set up and that under the FLExTools folder there is LiveRuleTester
-#   folder which serves as a share folder for the Linux VM. A cronjob runs the
-#   Makefile in the LiveRuleTester folder every 3 seconds. The Makefile builds
-#   the necessary files to create the target text file.
+#   transfer rule file. It thens runs Apertium tools to get the results.
+#
+#   Synthesis is done with either STAMP or HermitCrab.
 #
 
 import os
@@ -439,7 +204,6 @@ import ExtractBilingualLexicon
 import TestbedLogViewer
 
 from LiveRuleTester import Ui_MainWindow
-from OverWriteTestDlg import Ui_OverWriteTest
 import FTPaths
 
 #----------------------------------------------------------------
@@ -449,7 +213,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -541,37 +305,6 @@ class SentenceList(QtCore.QAbstractListModel):
                 ret += ' ' + t[i]
 
         return ret.lstrip()
-
-class OverWriteDlg(QDialog):
-    def __init__(self, luStr):
-        QDialog.__init__(self)
-        self.ui = Ui_OverWriteTest()
-        self.ui.setupUi(self)
-
-        # Default to NoToAll.
-        self.retValue = QDialogButtonBox.NoToAll
-
-        self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-
-        # Add the lexical unit to the label
-        labelStr = str(self.ui.label.text())
-        labelStr = re.sub('XX', '"' + luStr + '"', labelStr)
-        self.ui.label.setText(labelStr)
-
-        self.ui.buttonBox.button(QDialogButtonBox.YesToAll).clicked.connect(self.yesToAllClicked)
-        self.ui.buttonBox.button(QDialogButtonBox.NoToAll).clicked.connect(self.noToAllClicked)
-        self.ui.buttonBox.button(QDialogButtonBox.Yes).clicked.connect(self.yesClicked)
-        self.ui.buttonBox.button(QDialogButtonBox.No).clicked.connect(self.noClicked)
-    def yesToAllClicked(self):
-        self.retValue = QDialogButtonBox.YesToAll
-    def noToAllClicked(self):
-        self.retValue = QDialogButtonBox.NoToAll
-    def yesClicked(self):
-        self.retValue = QDialogButtonBox.Yes
-    def noClicked(self):
-        self.retValue = QDialogButtonBox.No
-    def getRetValue(self):
-        return self.retValue
 
 class Main(QMainWindow):
 
@@ -761,7 +494,7 @@ class Main(QMainWindow):
 
         # Parse the xml rules file and load the rules
         if not self.loadTransferRules():
-            self.ret_val = False
+            self.retVal = False
             self.close()
             return
 
@@ -788,7 +521,7 @@ class Main(QMainWindow):
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
-            self.ret_val = False
+            self.retVal = False
             self.close()
             return
 
@@ -826,14 +559,14 @@ class Main(QMainWindow):
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
-            self.ret_val = False
+            self.retVal = False
             return
 
         # Get replacement file name.
         self.__replFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, self.__report)
 
         if not self.__replFile:
-            self.ret_val = False
+            self.retVal = False
             self.close()
             return
 
@@ -846,7 +579,7 @@ class Main(QMainWindow):
         testbedPath = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_FILE, self.__report, False)
 
         if not testbedPath:
-            self.ret_val = False
+            self.retVal = False
             self.close()
 
         self.__testbedPath = testbedPath
@@ -871,7 +604,7 @@ class Main(QMainWindow):
         testbedLog = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TESTBED_RESULTS_FILE, self.__report)
 
         if not testbedLog:
-            self.ret_val = False
+            self.retVal = False
             self.close()
             return
 
@@ -911,7 +644,7 @@ class Main(QMainWindow):
                 except:
                     pass 
 
-        self.ret_val = True
+        self.retVal = True
 
     def sourceTextComboChanged(self):
 
@@ -1124,7 +857,7 @@ class Main(QMainWindow):
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
             QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
-            self.ret_val = False
+            self.retVal = False
             return
 
         # Make sure the last sentence used gets selected.
@@ -1165,6 +898,25 @@ class Main(QMainWindow):
 
         call([xxe, self.__testbedPath])
 
+    def ShowOverwritePrompt(self, luStr, showAllButtons=True):
+
+        msgBox = QMessageBox(self)
+        msgBox.setWindowTitle("Test Exists")
+        msgBox.setText(f'There is a test that already exists in the testbed that matches the lexical unit:\n\n{luStr}\n\nDo you want to overwrite it?')
+        
+        # Add custom buttons based on the parameter
+        if showAllButtons:
+
+            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No | QMessageBox.NoToAll)
+        else:
+            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        
+        msgBox.setDefaultButton(QMessageBox.Yes)
+        
+        # Show the dialog and get the user's response
+        result = msgBox.exec_()
+        return result
+        
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
 
@@ -1216,7 +968,7 @@ class Main(QMainWindow):
                 QMessageBox.warning(self, 'Testbed Error', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.')
                 return
 
-            ret_val = None
+            retVal = None
 
             # Loop through all the lexical units and results
             for i in range (0, len(luObjList)):
@@ -1241,18 +993,16 @@ class Main(QMainWindow):
 
                     if existingTestXMLObj:
                         # Get confirmation from the user if necessary.
-                        if ret_val != QDialogButtonBox.YesToAll:
-                            dlg = OverWriteDlg(myTestXMLObj.getLUString())
-                            dlg.exec_()
-                            ret_val = dlg.getRetValue()
+                        if retVal != QDialogButtonBox.YesToAll:
+                            retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString())
 
                         # See if we should overwrite
-                        if ret_val == QDialogButtonBox.Yes or ret_val == QDialogButtonBox.YesToAll:
+                        if retVal == QDialogButtonBox.Yes or retVal == QDialogButtonBox.YesToAll:
                             testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
                             cnt += 1
 
                         # Break out of the loop if the user said no to all
-                        elif ret_val == QDialogButtonBox.NoToAll:
+                        elif retVal == QDialogButtonBox.NoToAll:
                             break
                     else:
                         testbedObj.addToTestbed(myTestXMLObj)
@@ -1260,6 +1010,7 @@ class Main(QMainWindow):
 
         else:
             luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+
             if luObjList == None:
                 return
 
@@ -1278,18 +1029,15 @@ class Main(QMainWindow):
                 # Check if the lexical unit already exists for a test in the testbed
                 # None gets returned if it wasn't found
                 existingTestXMLObj = self.getExistingTest(testXMLObjList, myTestXMLObj)
+
                 if existingTestXMLObj:
-                    # Get confirmation from the user.
-                    dlg = OverWriteDlg(myTestXMLObj.getLUString())
 
-                    # Only show the Yes and No buttons
-                    dlg.ui.buttonBox.setStandardButtons(QDialogButtonBox.No|QDialogButtonBox.Yes)
-
-                    # Show the dialog
-                    ret_val = dlg.exec_()
+                    # Get confirmation from the user. Only display Yes and No buttons.
+                    retVal = self.ShowOverwritePrompt(myTestXMLObj.getLUString(), showAllButtons=False)
 
                     # See if we should overwrite
-                    if ret_val == 1: # Yes
+                    if retVal == QMessageBox.Yes:
+
                         testbedObj.overwriteInTestbed(existingTestXMLObj, myTestXMLObj)
                         cnt += 1
                 else:
@@ -1298,9 +1046,11 @@ class Main(QMainWindow):
 
         # Tell the user how many tests were added.
         if cnt == 1:
+
             feedbackStr = str(cnt) + ' test added.'
         else:
             feedbackStr = str(cnt) + ' tests added.'
+
         self.ui.TestsAddedLabel.setText(feedbackStr)
 
         # Write the XML file
@@ -2787,7 +2537,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
         # Supply the segment list to the main windowed program
         window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount)
 
-        if window.ret_val == False:
+        if window.retVal == False:
             report.Error('An error occurred getting things initialized.')
             return ERROR_HAPPENED
 
