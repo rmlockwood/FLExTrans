@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.13 - 2/11/25 - Ron Lockwood
+#    Fixes #649. Better error message when the rules file is invalid.
+#
 #   Version 3.12.12 - 2/4/25 - Ron Lockwood
 #    Fixes #876. Split a text to insert into FLEx also on newlines so that paragraphs get divided properly.
 #
@@ -1672,7 +1675,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
         # of apertium-transfer)
         tree = ET.parse(transferRulePath).getroot()
     except:
-        report.Error(f'Error in opening the file: "{transferRulePath}", check that it exists.')
+        report.Error(f'Error in opening the file: "{transferRulePath}", check that it exists and that it is valid.')
         return True
 
     # Lemmas in <cat-item> are not compared for string equality,
