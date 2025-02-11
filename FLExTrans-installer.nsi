@@ -17,6 +17,7 @@
 !define FLEX_TOOLS_WITH_VERSION "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
+!define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
@@ -210,6 +211,7 @@ InitPluginsDir
 			skip3:
 			
 			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${RULEASSISTANT}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
