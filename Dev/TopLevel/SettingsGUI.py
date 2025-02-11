@@ -4,6 +4,9 @@
 #   3/28/22
 #
 #
+#   Version 3.12.5 - 1/31/25 - Ron Lockwood
+#    Fixes #868. Give different view modes so the user doesn't have to see all settings.
+#
 #   Version 3.12.4 - 1/6/25 - Ron Lockwood
 #    Improved detection if a checked combo box changed. Before we were marking the settings as changed
 #    just if the combo box was clicked. Now we only mark the setting as changed if an item gets checked or unchecked.
@@ -76,82 +79,14 @@
 #    language and a comment. Also below this info. is the sentence where the sense was found with the
 #    word marked in bold type. A new setting for ProperNoun abbrev. added.
 #
-#   Version 3.7.5 - 12/7/22 - Ron Lockwood
-#    Fixes #285. Allow some settings to be missing without giving an error.
-#    The next time the settings are saved, the settings will be created. As part
-#    of this fix, created a map from config setting name to widget.
-#
-#   Version 3.7.4 - 11/14/22 - Ron Lockwood
-#    Shorter height for the window. Fixes #321
-#
-#   Version 3.7.3 - 11/7/22 - Ron Lockwood
-#    Two new transfer rule file settings for advanced transfer.
-#
-#   Version 3.7.2 - 11/1/22 - Ron Lockwood
-#    Fixes #154. Show user what settings changed.
-#
-#   Version 3.7.1 - 11/1/22 - Ron Lockwood
-#    Fixes #174. Fixes #282. Fixes #298. Disable certain target settings if the 
-#    target project is invalid or when the target project gets changed.
-#
-#   Version 3.7 - 11/1/22 - Ron Lockwood
-#    Fixes #284. Load only analysis titles of interlinear texts.
-#
-#   Version 3.6.3 - 10/21/22 - Ron Lockwood
-#    Fixes #236 Added Close and Apply/Close buttons. Detect Check Combo Box changes.
-#
-#   Version 3.6.2 - 9/7/22 - Ron Lockwood
-#    Fixes #269 When target DB isn't found, allow the Window to open so it can be set.
-#
-#   Version 3.6.1 - 8/27/22 - Ron Lockwood
-#    Fixes #215 Check morpheme type against guid in the object instead of
-#    the analysis writing system so we aren't dependent on an English WS.
-#    Also don't load types that aren't in the broad category of 'stem'.
-#
-#   Version 3.6 - 8/24/22 - Ron Lockwood
-#    Added 'sense-level' to the tool tip for the custom fields
-#
-#   Version 3.5.9 - 8/10/22 - Ron Lockwood
-#    Added new setting for composed characters.
-#
-#   Version 3.5.8 - 8/8/22 - Ron Lockwood
-#    Fixes #188. Missing tooltip for checkable combos. Extra blank string in the
-#    master list removed.
-#
-#   Version 3.5.7 - 7/30/22 - Ron Lockwood
-#    Fixes #199. On certain settings allow the list box to load even if the
-#    setting is blank.
-#
-#   Version 3.5.6 - 7/27/22 - Ron Lockwood
-#    Use relative paths now. One thing this helps with, is if a project folder
-#    gets copied from one place to another, the file paths will be to the new
-#    files in the new folder since the paths are relative. Fixes #194.
-#
-#   Version 3.5.5 - 7/13/22 - Ron Lockwood
-#    Give error if fail to open target DB.
-#
-#   Version 3.5.4 - 7/8/22 - Ron Lockwood
-#    Rewrite of this module to have a master list of settings and associated
-#    widgets. Loop through the widget list in various places to set up the window
-#    and process data coming in and going out. Fixes #151. Fixes #153. Fixes #137.
-#
-#   Version 3.5.3 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5.2 - 6/21/22 - Ron Lockwood
-#    Fixes for #141 and #144. Alphabetize source text list. Correctly load
-#    and save source complex types. Also change double loop code for multiple
-#    select settings to use x in y instead of the outer loop. This is easier to
-#    understand and is maybe more efficient.
-#
-#   Version 3.5.1 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
+#   earlier version history removed on 1/31/25
 #
 #   To make it easier to change the configfile
 #
 
 import os
 import sys
+import json
 
 from System import Guid # type: ignore
 from System import String # type: ignore
@@ -210,8 +145,10 @@ FOLDER = "folder"
 SECTION_TITLE = "section_title"
 GIVE_ERROR = True
 DONT_GIVE_ERROR = False
-DONT_HIDE = False
-HIDE_FROM_USER = True
+MINI_VIEW = 15
+BASIC_VIEW = 10
+FULL_VIEW = 5
+HIDE_FROM_USER = 0
 
 targetComplexTypes = []
 sourceComplexTypes = []
@@ -634,9 +571,11 @@ def setPaths(widget, myPath):
     widget.setToolTip(os.path.relpath(myPath, startPath))
     
 class Ui_MainWindow(object):
-    
+
     def setupUi(self, MainWindow):
         
+        self.MW = MainWindow
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 630)
         MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
@@ -646,6 +585,33 @@ class Ui_MainWindow(object):
 
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
+
+        # Create a group box for the radio buttons
+        self.radioGroupBox = QtWidgets.QGroupBox(self.centralwidget)
+        self.radioGroupBox.setObjectName("radioGroupBox")
+        self.radioGroupBox.setTitle("View Mode")
+        self.radioGroupBox.setFixedHeight(47)  # Set a fixed height for the group box
+
+        # Create a horizontal layout for the radio buttons
+        self.radioLayout = QtWidgets.QHBoxLayout(self.radioGroupBox)
+        self.radioLayout.setObjectName("radioLayout")
+
+        # Create the radio buttons
+        self.miniRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.miniRadioButton.setObjectName("miniRadioButton")
+        self.miniRadioButton.setText("Mini")
+        self.miniRadioButton.setChecked(True)  # Set the default mode to Mini
+        self.radioLayout.addWidget(self.miniRadioButton)
+
+        self.basicRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.basicRadioButton.setObjectName("basicRadioButton")
+        self.basicRadioButton.setText("Basic")
+        self.radioLayout.addWidget(self.basicRadioButton)
+
+        self.fullRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
+        self.fullRadioButton.setObjectName("fullRadioButton")
+        self.fullRadioButton.setText("Full")
+        self.radioLayout.addWidget(self.fullRadioButton)
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
 
@@ -659,7 +625,6 @@ class Ui_MainWindow(object):
         self.scrollArea.setMaximumSize(QtCore.QSize(900, 1000))
 
         font = QtGui.QFont()
-#         font.setFamily("Arial")
         font.setPointSize(9)
 
         self.scrollArea.setFont(font)
@@ -667,27 +632,41 @@ class Ui_MainWindow(object):
         self.scrollArea.setObjectName("scrollArea")
 
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
+#        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
 
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_2.setObjectName("gridLayout_2")
 
+        # Add the group box to the main layout above the scroll area
+        self.gridLayout.addWidget(self.radioGroupBox, 2, 0, 1, 3)  # span 6 columns
+
         # Set up scroll area
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollArea, 0, 0, 1, 6) # span 6 columns
+        self.gridLayout.addWidget(self.scrollArea, 1, 0, 1, 6) # span 6 columns
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
-        self.gridLayout.addWidget(self.apply_button, 1, 3, 1, 1) # put the buttons at columns 3-5 so they are on the right side
+        self.gridLayout.addWidget(self.apply_button, 2, 3, 1, 1) # put the buttons at columns 3-5 so they are on the right side
 
         self.applyClose_button = QtWidgets.QPushButton(self.centralwidget)
         self.applyClose_button.setObjectName("applyClose_button")
-        self.gridLayout.addWidget(self.applyClose_button, 1, 4, 1, 1)
+        self.gridLayout.addWidget(self.applyClose_button, 2, 4, 1, 1)
 
         self.Close_button = QtWidgets.QPushButton(self.centralwidget)
         self.Close_button.setObjectName("Close_button")
-        self.gridLayout.addWidget(self.Close_button, 1, 5, 1, 1)
+        self.gridLayout.addWidget(self.Close_button, 2, 5, 1, 1)
+
+        # Set the radio button based on the loaded view setting
+        if MainWindow.viewSetting == MINI_VIEW:
+
+            self.miniRadioButton.setChecked(True)
+
+        elif MainWindow.viewSetting == BASIC_VIEW:
+
+            self.basicRadioButton.setChecked(True)
+        else:
+            self.fullRadioButton.setChecked(True)
 
         # Set up for the fields in the config file
         # They are placed in the order according to the widgetList
@@ -702,11 +681,10 @@ class Ui_MainWindow(object):
             self.gridLayout_2.addWidget(newObj, i+j, 0, 1, 1)
             widgInfo[LABEL_OBJ] = newObj
 
-            # Hide the widget if necessary
-            if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+            # Hide the widget if necessary depending on the view mode value
+            if widgInfo[HIDE_SETTING] < MainWindow.viewSetting:
 
                 newObj.hide()
-                j -= 1
 
             # Process section title
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
@@ -721,8 +699,14 @@ class Ui_MainWindow(object):
                 line.setFrameShape(QtWidgets.QFrame.HLine)
                 line.setFrameShadow(QtWidgets.QFrame.Sunken)
                 line.setObjectName("line")
+                widgInfo[WIDGET1_OBJ] = line
                 j += 1
                 self.gridLayout_2.addWidget(line, i+j, 0, 1, 4)
+
+                if widgInfo[HIDE_SETTING] < MainWindow.viewSetting:
+
+                    line.hide()
+
                 continue
 
             elif widgInfo[WIDGET_TYPE] == COMBO_BOX:
@@ -829,7 +813,7 @@ class Ui_MainWindow(object):
     def hideWidgetIfNeeded(self, widgInfo, newObj):
 
         # Hide the widget if necessary
-        if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
+        if widgInfo[HIDE_SETTING] < self.MW.viewSetting:
 
             newObj.hide()
 
@@ -889,14 +873,21 @@ class Main(QMainWindow):
         self.configMap = configMap
         self.targetDB = targetDB
         self.DB = DB
-        self.giveConfirmation = True
         self.changedSettingsSet = set()
         self.nameToWidgetMap = {}
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-        
+
+        # Load the view setting from the JSON file
+        self.loadViewSetting()
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # Connect the toggled signal to the slot method
+        self.ui.miniRadioButton.toggled.connect(self.hideUnhide)
+        self.ui.basicRadioButton.toggled.connect(self.hideUnhide)
+        self.ui.fullRadioButton.toggled.connect(self.hideUnhide)
 
         # Loop through all settings 
         for i in range(0, len(widgetList)):
@@ -978,6 +969,97 @@ class Main(QMainWindow):
         self.ui.applyClose_button.clicked.connect(self.saveAndClose)
         self.ui.Close_button.clicked.connect(self.closeEvent)
 
+        self.hideUnhide()
+        
+    def calcViewSetting(self):
+
+        if self.ui.miniRadioButton.isChecked():
+
+            self.viewSetting = MINI_VIEW
+
+        elif self.ui.basicRadioButton.isChecked():
+
+            self.viewSetting = BASIC_VIEW
+        else:
+            self.viewSetting = FULL_VIEW
+
+    def loadViewSetting(self):
+
+        # Determine the path to the JSON file
+        jsonPath = os.path.join(os.getcwd(), 'SettingsViewMode.json')
+
+        # Load the view setting from the JSON file
+        if os.path.exists(jsonPath):
+            
+            with open(jsonPath, 'r') as file:
+
+                data = json.load(file)
+                self.viewSetting = data.get('viewSetting', MINI_VIEW)
+        else:
+            self.viewSetting = MINI_VIEW
+
+    def saveViewSetting(self):
+
+        # Determine the path to the JSON file
+        jsonPath = os.path.join(os.getcwd(), 'SettingsViewMode.json')
+
+        # Save the view setting to the JSON file
+        with open(jsonPath, 'w') as file:
+
+            json.dump({'viewSetting': self.viewSetting}, file)
+
+    def centerWindow(self):
+
+        # Get the screen geometry
+        screen = QtWidgets.QDesktopWidget().screenGeometry()
+
+        # Get the window geometry
+        size = self.geometry()
+        
+        # Calculate the center position
+        x = (screen.width() - size.width()) // 2
+        y = (screen.height() - size.height()) // 2
+
+        # Check if the window is already centered
+        if self.x() != x or self.y() != y:
+
+            # Move the window to the center position
+            self.move(x, y)
+
+    def hideUnhide(self):
+
+        self.calcViewSetting()
+        
+        for i in range(0, len(widgetList)):
+            
+            widgInfo = widgetList[i]
+            
+            if widgInfo[HIDE_SETTING] < self.viewSetting:
+
+                widgInfo[LABEL_OBJ].hide()
+                widgInfo[WIDGET1_OBJ].hide()
+
+                if type(widgInfo[WIDGET2_OBJ]) != type:
+
+                    widgInfo[WIDGET2_OBJ].hide()
+            else:
+                widgInfo[LABEL_OBJ].show()
+                widgInfo[WIDGET1_OBJ].show()
+
+                if type(widgInfo[WIDGET2_OBJ]) != type:
+
+                    widgInfo[WIDGET2_OBJ].show()
+        
+        if self.viewSetting == MINI_VIEW:
+        
+            # Adjust the size of the main window to fit the reduced amount of content
+            self.ui.centralwidget.adjustSize()
+            self.adjustSize()
+        else:
+            self.resize(800, 630)
+
+        self.centerWindow()
+
     def disableTargetWidgets(self):
         
         for i in range(0, len(widgetList)):
@@ -1038,13 +1120,14 @@ class Main(QMainWindow):
 
     def closeEvent(self, event):
         
+        # Save the view setting to the JSON file
+        self.saveViewSetting()
         self.close()
         
     def saveAndClose(self):
         
-        self.giveConfirmation = False
         self.save()
-        self.close()
+        self.closeEvent(None)
         
     def reportChangedSettings(self):
         
@@ -1115,11 +1198,6 @@ class Main(QMainWindow):
         self.modified = False
         self.changedSettingsSet.clear()
         
-        if self.giveConfirmation:
-            
-            pass
-            #QMessageBox.information(self, 'Save Settings', 'Changes saved.')
-
     def addCommas(self, array):
         retStr = ''
         if array:
@@ -1176,9 +1254,7 @@ def MainFunction(DB, report, modify=True):
         
         if QMessageBox.question(window, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
-            window.giveConfirmation = False
             window.save()
-            #window.reportChangedSettings()
     
     if TargetDB:
         
@@ -1203,221 +1279,221 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 widgetList = [
 
    ["Project Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, MINI_VIEW],\
 
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    ["Source Text Name", "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
     # tooltip text                                                                                               Give an error if missing
-    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", GIVE_ERROR, DONT_HIDE],\
+    "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated.", GIVE_ERROR, MINI_VIEW],\
    
    ["Target Project", "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
-    "The name of the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+    "The name of the target FLEx project.", GIVE_ERROR, MINI_VIEW],\
 
    ["Source Custom Field for Entry Link", "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+    "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, BASIC_VIEW],\
    
    ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
-    "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, BASIC_VIEW],\
    
    ["Hide warnings for unanalyzed Proper Nouns", "unanalyzed_proper_noun_yes", "unanalyzed_proper_noun_no", YES_NO, object, object, object, loadYesNo, ReadConfig.NO_PROPER_NOUN_WARNING,\
-    "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.", DONT_GIVE_ERROR, BASIC_VIEW],\
    
    ["Cache data for faster processing?", "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
-    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", GIVE_ERROR, DONT_HIDE],\
+    "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data.", GIVE_ERROR, BASIC_VIEW],\
 
    ["Use composed characters in editing?", "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).", GIVE_ERROR, DONT_HIDE],\
+    "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).",\
+          GIVE_ERROR, BASIC_VIEW],\
 
    ["Sentence Punctuation", "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
-    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence.", GIVE_ERROR, DONT_HIDE],\
+    "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence.", GIVE_ERROR, BASIC_VIEW],\
 
    ["Source Morpheme Types Counted As Roots", "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
-    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, DONT_HIDE],\
+    "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Morpheme Types Counted As Roots", "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
-    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, DONT_HIDE],\
+    "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics.", GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["Complex Forms", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    ["Source Complex Form Types", "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit.", GIVE_ERROR, DONT_HIDE],\
+    "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit.", GIVE_ERROR, FULL_VIEW],\
 
    ["Source Discontiguous Complex Form Types", "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
-    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit.", GIVE_ERROR, DONT_HIDE],\
+    "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit.", GIVE_ERROR, FULL_VIEW],\
 
    ["Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms", "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
-    "One or more grammatical categories that can intervene in the above complex types.", GIVE_ERROR, DONT_HIDE],\
+    "One or more grammatical categories that can intervene in the above complex types.", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Complex Form Types\nwith inflection on 1st Element", "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
-    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form.", GIVE_ERROR, DONT_HIDE],\
+    "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form.", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Complex Form Types\nwith inflection on 2nd Element", "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    "Same as above. Use this property for the types that have inflection\non the second element of the complex form.", GIVE_ERROR, DONT_HIDE],\
+    "Same as above. Use this property for the types that have inflection\non the second element of the complex form.", GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["Linker Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, BASIC_VIEW],\
     
    ["Default to rebuilding the bilingual\nlexicon after linking senses?", "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
-    "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.", DONT_GIVE_ERROR, BASIC_VIEW],\
 
    ["Default to filtering on all fields?", "filter_all_yes", "filter_all_yno", YES_NO, object, object, object, loadYesNo, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, \
-    "In the Sense Linker tool by default check the checkbox for filtering on all fields.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "In the Sense Linker tool by default check the checkbox for filtering on all fields.", DONT_GIVE_ERROR, BASIC_VIEW],\
 
 
 
    ["Transfer Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    ["Transfer Rules File", "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
-    "The path and name of the file containing the transfer rules.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file containing the transfer rules.", GIVE_ERROR, FULL_VIEW],\
 
    ["Transfer Rules File 2 (Advanced Transfer)", "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
-    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file containing the 2nd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Transfer Rules File 3 (Advanced Transfer)", "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
-    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file containing the 3rd transfer rules for use in advanced transfer.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Category Abbreviation Pairs", "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
-    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+    "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\n"+\
+        "is the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon.", GIVE_ERROR, FULL_VIEW],\
    
    ["Analyzed Text Output File", "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
-    "The path and name of the file which holds\nthe extracted source text.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file which holds\nthe extracted source text.", GIVE_ERROR, FULL_VIEW],\
 
    ["Bilingual Dictionary Output File", "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
-    "The path and name of the file which holds the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file which holds the bilingual lexicon.", GIVE_ERROR, FULL_VIEW],\
 
    ["Bilingual Dictionary Replacement File", "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
-    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon.", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Transfer Results File", "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
-    "The path and name of the file which holds the text contents\nafter going through the transfer process.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file which holds the text contents\nafter going through the transfer process.", GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["Synthesis Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, BASIC_VIEW],\
 
    ["Use HermitCrab synthesis?", "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
-    "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\n"+\
+        "Synthesize Text with HermitCrab module in your AllSteps collection.", DONT_GIVE_ERROR, BASIC_VIEW],\
 
    ["Clean Up Unknown Target Words?", "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
-    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", GIVE_ERROR, DONT_HIDE],\
+    "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text.", GIVE_ERROR, BASIC_VIEW],\
 
    ["Target Lexicon Files Folder", "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
-    "The path where lexicon files and other STAMP files are created", GIVE_ERROR, DONT_HIDE],\
+    "The path where lexicon files and other STAMP files are created", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Output ANA File", "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
-    "The path and name of the file holding\nthe intermediary text in STAMP format.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file holding\nthe intermediary text in STAMP format.", GIVE_ERROR, FULL_VIEW],\
 
    ["Hermit Crab Master File", "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
-    "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, FULL_VIEW],\
+
+   ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
+    "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, FULL_VIEW],\
+
+   ["Hermit Crab Parses File", "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
+    "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, FULL_VIEW],\
+
+   ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
+    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, FULL_VIEW],
 
    ["Target Output Synthesis File", "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
-    "The path and name of the file holding\nthe intermediary synthesized file.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file holding\nthe intermediary synthesized file.", GIVE_ERROR, FULL_VIEW],\
 
    ["Target Affix Gloss List File", "target_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
-    "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", GIVE_ERROR, DONT_HIDE],\
+    "The ancillary file that hold a list of affix\nglosses from the target FLEx project.", GIVE_ERROR, FULL_VIEW],\
 
    ["Text Out Rules File", "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
-    "The file that holds the search/replace rules to fix up the synthesis result text.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The file that holds the search/replace rules to fix up the synthesis result text.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Text In Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
-    "The file that holds the search/replace rules to fix up the Paratext import text.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The file that holds the search/replace rules to fix up the Paratext import text.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["Synthesis Test Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
     
    ["Limit to specific POS values", "limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
-    "One or more grammatical categories. The synthesis test will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "One or more grammatical categories. The synthesis test will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Limit number of stems", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
-    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Limit to specific Citation Form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
-    "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, DONT_HIDE],\
+    "Limit the generation to one or more specified Citation Form(s).", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Parses Output File", "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE,\
-    "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["SIGMORPHON Output File", "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE,\
-    "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+    "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Synthesis test log file", "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOG_FILE,\
-    "The path and name of the file for the log output\nof the synthesis test.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file for the log output\nof the synthesis test.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["Testbed Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    ["Testbed File", "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
-    "The path and name of the testbed file.", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the testbed file.", GIVE_ERROR, FULL_VIEW],\
 
    ["Testbed Results Log File", "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
-    "The path and name of the testbed results log file", GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the testbed results log file", GIVE_ERROR, FULL_VIEW],\
 
 
    ["Rule Assistant", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    ["Rule Assistant Rule File", "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
-    "The path and name of the rule assistant rule definition file.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the rule assistant rule definition file.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
    ["TreeTran Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-    "", GIVE_ERROR, DONT_HIDE],\
+    "", GIVE_ERROR, FULL_VIEW],\
 
    ["TreeTran Insert Words File", "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
-    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["TreeTran Rules File", "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
-    "The path and name of the TreeTran rules file", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the TreeTran rules file", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Analyzed Text TreeTran Output File", "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
-    "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, DONT_HIDE],\
+    "The path and name of the file that holds the output from TreeTran.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
-    ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
-     "", GIVE_ERROR, DONT_HIDE],\
+   ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, FULL_VIEW],\
 
-    ["Projects to treat together as a cluster", "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
-     "Indicate the cluster projects you would like to run some modules on together.", DONT_GIVE_ERROR, DONT_HIDE],\
-
-
-
-    ["Privacy", "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
-     "", GIVE_ERROR, DONT_HIDE],\
-
-    ["Send usage statistics to FLExTrans developers", "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
-     "No personally identifiable information is sent. These anonymous statistics will help with future development.", DONT_GIVE_ERROR, DONT_HIDE],\
+   ["Projects to treat together as a cluster", "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
+    "Indicate the cluster projects you would like to run some modules on together.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
-# Hidden settings
-   ["Hermit Crab Configuration File", "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
-    "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
 
-   ["Hermit Crab Parses File", "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
-    "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],\
+   ["Privacy", "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
+    "", GIVE_ERROR, MINI_VIEW],\
 
-   ["Hermit Crab Surface Forms File", "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
-    "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis.", DONT_GIVE_ERROR, HIDE_FROM_USER],
+   ["Send usage statistics to FLExTrans developers", "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
+    "No personally identifiable information is sent. These anonymous statistics will help with future development.", DONT_GIVE_ERROR, MINI_VIEW],\
 
-    ["Mixpanel User ID", "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
-     "The (probably) unique ID for this project which gets logged to Mixpanel.", DONT_GIVE_ERROR, HIDE_FROM_USER],
+   ["Mixpanel User ID", "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
+    "The (probably) unique ID for this project which gets logged to Mixpanel.", DONT_GIVE_ERROR, FULL_VIEW],
 
-    ["Usage Statistics Opt Out Question Asked", "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
-     "Opt out of sending usage statistics.", DONT_GIVE_ERROR, HIDE_FROM_USER],
-
-              ]
+   ["Usage Statistics Opt Out Question Asked", "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
+    "Opt out of sending usage statistics.", DONT_GIVE_ERROR, FULL_VIEW],
+]
 
 # ----------------------------------------------------------------
 # The main processing function
