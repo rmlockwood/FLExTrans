@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.7 - 2/11/25 - Ron Lockwood
+#    Fixes #873. Prevent mismatches on LUs and synthesis result words when punctuation is there.
+#    This is for when they want to add each word as its own test with the checkbox.
+#
 #   Version 3.12.6 - 1/10/25 - Ron Lockwood
 #    Fixes #874. Use a system message box instead of a custom one.
 #    Make it more readable for the user.
@@ -175,6 +179,7 @@
 
 import os
 import re
+import regex
 import sys
 import unicodedata
 import copy
@@ -213,7 +218,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.6",
+        FTM_Version    : "3.12.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -917,6 +922,16 @@ class Main(QMainWindow):
         result = msgBox.exec_()
         return result
         
+    def removeSentLUs(self, luObjList):
+
+        # Go throught the list in reverse and remove <sent> LU objects.
+        for i in range(len(luObjList) - 1, -1, -1):
+
+            if luObjList[i].getGramCat() == 'sent':
+
+                luObjList.pop(i)
+        return
+    
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
 
@@ -961,7 +976,13 @@ class Main(QMainWindow):
             if luObjList == None:
                 return
 
-            resultList = synResult.split(' ') # split on space
+            # Remove any <sent> LUs. It doesn't make sense to add a test of just a sentence punctuation mark mapped to it's result.
+            # If that's really needed it can be added without checking the Add multiple words checkbox.
+            self.removeSentLUs(luObjList)
+
+            # Remove punctuation from the result.
+            synResult = regex.sub(r'\p{P}', '', synResult)
+            resultList = synResult.split(' ') 
 
             # Check for an equal amount of lexical units as synthesis results
             if len(luObjList) != len(resultList):
