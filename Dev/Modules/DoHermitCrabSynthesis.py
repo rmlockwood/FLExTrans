@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.12.7 - 2/12/25 - Ron Lockwood
+#    Fixes #888. Show better error when there is a Fatal error from HermitCrab tools in the LRT.
+#
 #   Version 3.12.6 - 1/10/25 - Ron Lockwood
 #    Fixes #843. Fix bug of setting the HC dll's config file when it did not exist.
 #
@@ -126,7 +129,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.12.6",
+        FTM_Version    : "3.12.7",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -220,6 +223,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             else:
                 errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
                 errorList.append((result.stderr.decode(), 2))
+                return errorList
 
             # Reload the config file into the dll object.
             if DLLobj:
