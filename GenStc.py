@@ -35,6 +35,7 @@ from SIL.LCModel import (
 import ReadConfig
 import Utils
 import random
+import itertools
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -51,7 +52,7 @@ Put a better description here.
 
 
 
-def initialize_language_variables(lang):
+def initializeLanguageVariables(lang):
     """Initializes language-specific variables."""
     # this is going to change a lot later 
     # just initializes the hard-coded variables for now. 
@@ -80,7 +81,7 @@ def initialize_language_variables(lang):
     return match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos
 
 
-def load_configuration(report):
+def loadConfiguration(report):
     """Reads and loads the configuration file."""
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -88,7 +89,7 @@ def load_configuration(report):
     return configMap
 
 
-def setup_settings(configMap, report):
+def setupSettings(configMap, report):
     """Sets up POS focus and stem limits based on the configuration."""
     # this will set up the settings that have been created for GenStc from the settings menu. 
     # right now that is the POS focus and stem limit. 
@@ -113,7 +114,7 @@ def setup_settings(configMap, report):
     return posFocus, stemLimit
 
 
-def initialize_output_file(configMap, report):
+def initializeOutputFile(configMap, report):
     """Initializes the output file for writing."""
     outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
     if not outFileVal:
@@ -126,11 +127,11 @@ def initialize_output_file(configMap, report):
         report.Error('There is a problem with the Analyzed Text Output File path: ' + fullPathTextOutputFile + '. Please check the configuration file setting.')
         return None
 
-def get_source_text_name(report, configMap):
+def getSourceTextName(report, configMap):
     """Fetches the name of the source text."""
     return ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
 
-def get_source_text(DB, report, configMap):
+def getSourceText(DB, report, configMap):
     """Fetches the source text from the database."""
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceTextName:
@@ -144,13 +145,13 @@ def get_source_text(DB, report, configMap):
     return matchingContentsObjList[sourceTextList.index(sourceTextName)]
 
 
-def get_lexical_entries(DB, match_n_pos, match_1_pos):
+def getLexicalEntries(DB, match_n_pos, match_1_pos, report):
     """Fetches lexical entries from the database."""
     # this function grabs all the lexical entries from the database and shuffles them. 
     # the stem limit from the settings is added in the main function. 
-    subListN = []
-    subList1 = []
-    subList2 = []
+    subListN = {}
+    subList1 = {}
+    subList2 = {}
 
     # need to edit so it grabs inflection features as well. 
     for entry in DB.LexiconAllEntries():
@@ -163,42 +164,69 @@ def get_lexical_entries(DB, match_n_pos, match_1_pos):
                     if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                         msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
                         if msa.PartOfSpeechRA:
+                            inflectionInfo = Utils.getInflectionTags(msa)
+                        
                             pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             if pos in match_n_pos:
-                                subListN.append(lex)
+                                subListN[lex] = inflectionInfo
                             if pos in match_1_pos:
-                                subList1.append(lex)
+                                subList1[lex] = inflectionInfo
 
-    random.shuffle(subListN)
-    random.shuffle(subList1)
-    random.shuffle(subList2)
+    lexKeysN = list(subListN.keys())
+    lexKeys1 = list(subList1.keys())
+    #lexKeys2 = list(sublist2.keys())
 
-    return subListN, subList1, subList2
+    random.shuffle(lexKeysN)
+    random.shuffle(lexKeys1)
+    #random.shuffle(lex_keys_2)
+
+    subDictN = {key:subListN[key] for key in lexKeysN}
+    subDict1 = {key:subList1[key] for key in lexKeys1}
+    #subDict2 = {key:subList2[key] for key in lex_keys_2}
+
+    # just so the code will run
+    subDict2 = {}
+
+    return subDictN, subDict1, subDict2
 
 
-def process_sentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report):
+def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, subDict2, f_out, stc, report):
     """Process and substitute words in the sentence."""
     # unchanged processing algorithm 
-    for wordNoun in subListN: # head word 
-        for idxN in idxN_list:
-            report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordNoun}")
-            wrdList[idxN]._TextWord__lemmaList[0] = wordNoun
+    for wordN, infoN in subDictN.items(): # head word 
+        for idxN in idxNList:
+            report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
+            wrdList[idxN]._TextWord__lemmaList[0] = wordN
 
-            if not idx1_list:
+            report.Info(f"inflection info for {wordN}: {infoN}")
+            #report.Info(f"inflection infor for {wrdList[idxN]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+            #wrdList[idxN]._TextWord__inflFeatAbbrevsList = infoN[1:]
+            #if len(infoN) > 1:
+                #wrdList[idxN].addInflFeatures(infoN[1:])
+                #wrdList[idxN]._TextWord__inflFeatAbbrevsList = infoN
+
+            if not idx1List:
                 stc.write(f_out)
                 f_out.write('\n')
             else:
-                for idx1 in idx1_list: # first dependent 
-                    for word1 in subList1:
+                for idx1 in idx1List: # first dependent 
+                    for word1, info1 in subDict1.items():
                         report.Info(f"Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
                         wrdList[idx1]._TextWord__lemmaList[0] = word1
 
-                        if not idx2_list:
+                        report.Info(f"inflection info for {word1}: {info1}")
+                        #report.Info(f"inflection info for {wrdList[idx1]}: {wrdList[idx1].getInflFeatures()}")
+                        #wrdList[idx1]._TextWord__inflFeatAbbrevsList = info1[1:]
+                        #if len(info1) > 1:
+                            #wrdList[idx1].addInflFeatures(info1[1:])
+                            #wrdList[idx1]._TextWord__inflFeatAbbrevsList = info1
+
+                        if not idx2List:
                             stc.write(f_out)
                             f_out.write('\n')
                         else:
-                            for idx2 in idx2_list: # second dependent
-                                for word2 in subList2:
+                            for idx2 in idx2List: # second dependent
+                                for word2, info2 in subDict2.items():
                                     report.Info(f"Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
                                     wrdList[idx2]._TextWord__lemmaList[0] = word2
                                     stc.write(f_out)
@@ -208,30 +236,30 @@ def process_sentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList
 def MainFunction(DB, report, modifyAllowed):
     # Initialize language-specific variables
     lang = "SPA"
-    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initialize_language_variables(lang)
+    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
 
-    configMap = load_configuration(report)
+    configMap = loadConfiguration(report)
     if not configMap:
         return
 
     # Set up POS filter and stem limit (settings could change later)
-    posFocus, stemLimit = setup_settings(configMap, report)
+    posFocus, stemLimit = setupSettings(configMap, report)
 
-    f_out = initialize_output_file(configMap, report)
+    f_out = initializeOutputFile(configMap, report)
     if not f_out:
         return
 
-    contents = get_source_text(DB, report, configMap)
+    contents = getSourceText(DB, report, configMap)
     if not contents:
         return
 
     # Fetch lexical entries from FLEx
-    subListN, subList1, subList2 = get_lexical_entries(DB, match_n_pos, match_1_pos)
+    subDictN, subDict1, subDict2 = getLexicalEntries(DB, match_n_pos, match_1_pos, report)
 
     # Apply stem limit
-    subListN = subListN[:stemLimit]
-    subList1 = subList1[:stemLimit]
-    subList2 = subList2[:stemLimit]
+    subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
+    subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
+    subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
 
     # Get interlinear data
     interlinParams = Utils.initInterlinParams(configMap, report, contents)
@@ -263,11 +291,11 @@ def MainFunction(DB, report, modifyAllowed):
                     idx2_list.append(idx)
 
         # Process and substitute words in the current sentence
-        process_sentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
+        processSentence(wrdList, idxN_list, idx1_list, idx2_list, subDictN, subDict1, subDict2, f_out, stc, report)
 
     f_out.close()
 
-    report.Info("Export of " + get_source_text_name(report, configMap) + " complete.")
+    report.Info("Export of " + getSourceTextName(report, configMap) + " complete.")
     
 
 ###  This is how other modules run their process and generate error messages.
