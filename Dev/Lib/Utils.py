@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.14 - 2/12/25 - Ron Lockwood
+#    Fixes #888. Show better error when there is a Fatal error from HermitCrab tools in the LRT.
+#
 #   Version 3.12.13 - 2/11/25 - Ron Lockwood
 #    Fixes #649. Better error message when the rules file is invalid.
 #
@@ -1780,7 +1783,7 @@ def processErrorList(error_list, report):
 def checkForFatalError(errorList, report):
 
     fatal = False
-    msg = ''
+    retMsgList = []
 
     for triplet in errorList:
 
@@ -1789,13 +1792,14 @@ def checkForFatalError(errorList, report):
         if triplet[1] == 2:
 
             fatal = True
+            retMsgList.append(msg)
 
             if report == None:
-                break
+                continue
+            else:
+                report.Error(msg)
 
-            report.Error(msg)
-
-    return fatal, msg
+    return fatal, '\n'.join(retMsgList)
 
 def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
 
