@@ -222,6 +222,13 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
                 errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
             else:
                 errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+                
+                # Check for KeyNotFoundException from FLEx
+                if re.search('KeyNotFoundException', result.stderr.decode()):
+
+                    errorList.append((f'The error contains a "KeyNotFoundException" and this often indicates that the FLEx Find and Fix utility should be run on the {TargetDB.ProjectName()} database.', 2))
+                    errorList.append(('The full error message is:', 2))
+
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
 
