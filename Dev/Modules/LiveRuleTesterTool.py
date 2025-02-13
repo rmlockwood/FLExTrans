@@ -2083,7 +2083,8 @@ class Main(QMainWindow):
                 myStr += f' ^{tok}$'
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
-        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
+        #sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
+        sf.write(myStr.strip())
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change

@@ -1161,15 +1161,24 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
         # output the symbol
         outputLUSpan(parent_element, symbol_color, ' '+symb, rtl)
 
+def parseString(inputStr):
+
+    # Regex pattern to match the main part and the <n> parts, ignoring escaped angle brackets
+    pattern = r'([^<>\\]*(?:\\.[^<>\\]*)*)|<([^<>]+)>'
+
+    matches = re.findall(pattern, inputStr)
+
+    # Extract the main part and the <n> parts
+    mainPart = matches[0][0]
+    symbolParts = [match[1] for match in matches if match[1]]
+
+    return mainPart, symbolParts
+
 # Split a compound from one lexical unit containing multiple words to multiple
 def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     
-    # Split off the symbols from the lemma in the lexical unit (which is i+1)
-    symbols = re.split('<|>', lu_str)
-    symbols = [_f for _f in symbols if _f] # filter out the empty strings
-    
-    # Lemma is the first one
-    lemma = symbols.pop(0)
+    # Split off the symbols from the lemma in the lexical unit
+    lemma, symbols = parseString(lu_str)
 
     # Remove the slash in front of reserved characters. We really only need this for displaying the
     # Execution log, but I think it doesn't hurt for other contexts.
