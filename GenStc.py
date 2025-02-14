@@ -198,17 +198,18 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
             report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
             wrdList[idxN]._TextWord__lemmaList[0] = wordN
 
-            report.Info(f"old inflection info for {wrdList[idxN]._TextWord__lemmaList[0]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
-            report.Info(f"new inflection info for {wrdList[idxN]._TextWord__lemmaList[0]}: {infoN}")
-            wrdList[idxN]._TextWord_inflFeatAbbrevsList = infoN
-            report.Info(f"checking inflection pass: {wrdList[idxN]._TextWord__lemmaList[0]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
-            
-            #report.Info(f"inflection infor for {wrdList[idxN]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
-            #wrdList[idxN]._TextWord__inflFeatAbbrevsList = infoN[1:]
-            #if len(infoN) > 1:
-                #wrdList[idxN].addInflFeatures(infoN[1:])
-                #wrdList[idxN]._TextWord__inflFeatAbbrevsList = infoN
+            # pre-adjustment
+            report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+                        
+            # changing inflection info
+            for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
+                report.Info(f"accessing sublist at index {i}: {sublist}")
+                wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN]
 
+            # post-adjustment
+            report.Info(f"After modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+
+            
             if not idx1List:
                 stc.write(f_out)
                 f_out.write('\n')
@@ -218,13 +219,17 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                         report.Info(f"Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
                         wrdList[idx1]._TextWord__lemmaList[0] = word1
 
-                        report.Info(f"inflection info for {word1}: {info1}")
-                        wrdList[idx1]._TextWord_inflFeatAbbrevsList = info1
-                        #report.Info(f"inflection info for {wrdList[idx1]}: {wrdList[idx1].getInflFeatures()}")
-                        #wrdList[idx1]._TextWord__inflFeatAbbrevsList = info1[1:]
-                        #if len(info1) > 1:
-                            #wrdList[idx1].addInflFeatures(info1[1:])
-                            #wrdList[idx1]._TextWord__inflFeatAbbrevsList = info1
+                        # pre-adjustment
+                        report.Info(f"Before modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
+                        
+                        # changing inflection info
+                        for i, sublist in enumerate(wrdList[idx1]._TextWord__inflFeatAbbrevsList):
+                            report.Info(f"accessing sublist at index {i}: {sublist}")
+                            wrdList[idx1]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in info1]
+
+                        # post-adjustment
+                        report.Info(f"After modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
+
 
                         if not idx2List:
                             stc.write(f_out)
