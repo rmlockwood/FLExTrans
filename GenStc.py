@@ -198,7 +198,11 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
             report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
             wrdList[idxN]._TextWord__lemmaList[0] = wordN
 
-            report.Info(f"inflection info for {wordN}: {infoN}")
+            report.Info(f"old inflection info for {wrdList[idxN]._TextWord__lemmaList[0]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+            report.Info(f"new inflection info for {wrdList[idxN]._TextWord__lemmaList[0]}: {infoN}")
+            wrdList[idxN]._TextWord_inflFeatAbbrevsList = infoN
+            report.Info(f"checking inflection pass: {wrdList[idxN]._TextWord__lemmaList[0]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+            
             #report.Info(f"inflection infor for {wrdList[idxN]}: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
             #wrdList[idxN]._TextWord__inflFeatAbbrevsList = infoN[1:]
             #if len(infoN) > 1:
@@ -215,6 +219,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                         wrdList[idx1]._TextWord__lemmaList[0] = word1
 
                         report.Info(f"inflection info for {word1}: {info1}")
+                        wrdList[idx1]._TextWord_inflFeatAbbrevsList = info1
                         #report.Info(f"inflection info for {wrdList[idx1]}: {wrdList[idx1].getInflFeatures()}")
                         #wrdList[idx1]._TextWord__inflFeatAbbrevsList = info1[1:]
                         #if len(info1) > 1:
