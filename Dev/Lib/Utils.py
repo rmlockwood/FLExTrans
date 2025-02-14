@@ -246,7 +246,9 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # https://wiki.apertium.org/wiki/Apertium_stream_format
 # But +, ~, # don't affect the behavior of lt-proc or apertium-transfer
 # { and } need to be escaped if we're using apertium-interchunk
-APERT_RESERVED = r'([\[\]@/\\^${}\<\>\*])'
+# Don't list backslash here, it is handled in the functions that use the
+# reserved character list
+APERT_RESERVED = r'\[\]@/^${}<>*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -291,8 +293,8 @@ rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
 reDoubleNewline = re.compile(r'\n\n')
-reApertReserved = re.compile(APERT_RESERVED)
-reApertReservedEscaped = re.compile(r'\\'+APERT_RESERVED)
+reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
+reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 
@@ -1698,8 +1700,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
     for tag in ['lit', 'list-item']:
         for node in tree.findall('.//test//'+tag):
             if 'v' in node.attrib:
-                node.attrib['v'] = re.sub(APERT_RESERVED, r'\\\1',
-                                          node.attrib['v'])
+                node.attrib['v'] = escapeReservedApertChars(node.attrib['v'])
 
     outPath = os.path.join(buildFolder, strippedRulesFileName)
     with open(outPath, 'w', encoding='utf-8') as fout:
@@ -2208,6 +2209,16 @@ def getCategoryHierarchy(DB):
 def unescapeReservedApertChars(inStr):
 
     return reApertReservedEscaped.sub(r'\1', inStr)
+
+def escapeReservedApertChars(inStr):
+    
+    # Escape special characters that are not already escaped
+    inStr = reApertReserved.sub(r'\1', inStr)
+
+    # Now escape backslashes that are not already escaped and aren't being used to escape a special char
+    inStr = re.sub(rf'(?<!\\)\\([^{APERT_RESERVED}\\]|$)', r'\\\\\1', inStr)
+
+    return inStr
 
 def getInflectionTags(MSAobject):
     '''Take a IMoStemMsa object and return a list of tags'''

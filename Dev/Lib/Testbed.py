@@ -219,7 +219,7 @@ class LexicalUnit():
     def toApertiumString(self):
         
         # Escape reserved characters with a backslash
-        ret_str = '^' + Utils.reApertReserved.sub(r'\\\1', self.__headWord)
+        ret_str = '^' + Utils.escapeReservedApertChars(self.__headWord)
 
         if self.__gramCat != SENT:
             ret_str += '.' + self.__senseNum
@@ -251,20 +251,14 @@ class LexicalUnit():
     def __parseApertiumStyle(self):
         
         # Split off the symbols from the lemma in the lexical unit
-        tokens = re.split('<|>', self.__inStr)
-        
-        #Python 2 code: tokens = filter(None, tokens) # filter out the empty strings
-        tokens = [_f for _f in tokens if _f] # filter out the empty strings
-        
-        # If we have less than 2 items, it's badly_formed. We need at least a value plus it's gramm. category
-        if len(tokens) < 2:
+        lemma, tokens = parseString(self.__inStr)
+
+        # If we have less than 1 item, it's badly_formed. We need at least a lemma plus it's gramm. category
+        if len(tokens) < 1:
             self.__badly_formed = True
             return
         
-        # lemma (e.g. haus1.1) is the first one
-        lemma = tokens.pop(0)
-        
-        # gram. cat. is the next one
+        # gram. cat. is the first one
         self.__gramCat = tokens.pop(0)
         
         # if sentence punctuation, don't assign sense number
@@ -284,8 +278,8 @@ class LexicalUnit():
         
         tokens = re.split(' ',  self.__inStr)
         
-        # If we have less than 2 items, it's badly_formed. We need at least a headword plus it's gramm. category
-        if len(tokens) < 2:
+        # If we have less than 1 item, it's badly_formed. We need at least a lemma plus it's gramm. category
+        if len(tokens) < 1:
             self.__badly_formed = True
             return    
         
@@ -1162,17 +1156,69 @@ def colorInnerLU(lemma, symbols, parent_element, rtl, show_unk):
         outputLUSpan(parent_element, symbol_color, ' '+symb, rtl)
 
 def parseString(inputStr):
+    """
+    Parse a string into main part and symbols using regex.
+    Symbols are defined as content between < and > at the end of the string.
+    The main part can contain escaped brackets \< and \>.
+    
+    Args:
+        inputStr (str): Input string to parse
+        
+    Returns:
+        tuple: (mainPart, listOfSymbols)
+        
+    Examples:
+        >>> parseString("abc<zx><uv>")
+        ('abc', ['zx', 'uv'])
+        >>> parseString("abc\\<def\\><zx>")
+        ('abc\\<def\\>', ['zx'])
+        >>> parseString(">><sent>")
+        ('>>', ['sent'])
+        >>> parseString("\\>\\><sent>")
+        ('\\>\\>', ['sent'])
+        >>> parseString("d\>a<b>c<zx><uv>")
+        ('d\\>a<b>c', ['zx', 'uv'])
+        >>> parseString("d<<c<zx><uv>")
+        ('d<<c', ['zx', 'uv'])
+    """
+    pattern = r'(?<!\\)(?:<([^<>]+)>)'
+    
+    # Need a string without at least trailing spaces.
+    newIn = inputStr.strip()
+    
+    # Find all matches from the string
+    allMatches = list(re.finditer(pattern, newIn))
+    
+    # If no matches found, return original string and empty list
+    if not allMatches:
+        return newIn, []
+    
+    # Check if the matches are consecutive at the end
+    symbolList = []
+    lastPosition = len(newIn)
+    
+    # Process matches from right to left
+    for match in reversed(allMatches):
 
-    # Regex pattern to match the main part and the <n> parts, ignoring escaped angle brackets
-    pattern = r'([^<>\\]*(?:\\.[^<>\\]*)*)|<([^<>]+)>'
+        if match.end() == lastPosition:
 
-    matches = re.findall(pattern, inputStr)
+            # This is a valid symbol at the end
+            symbolList.insert(0, match.group()[1:-1])  # Remove < and >
+            lastPosition = match.start()
+        else:
+            # Stop when we find a non-consecutive match
+            break
+    
+    mainPart = newIn[:lastPosition]
 
-    # Extract the main part and the <n> parts
-    mainPart = matches[0][0]
-    symbolParts = [match[1] for match in matches if match[1]]
+    # If the lu ends in a space add a space 'symbol'
+    # We're doing this because that's what the old code did and other functions expect this.
+    # Without it, the display in the LRT doesn't have spaces between displayed LUs.
+    if inputStr[-1] == ' ':
+        
+        symbolList.append(' ')
 
-    return mainPart, symbolParts
+    return mainPart, symbolList
 
 # Split a compound from one lexical unit containing multiple words to multiple
 def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
@@ -1188,13 +1234,9 @@ def processLexicalUnit(lu_str, parent_element, rtl, show_unk):
     
 def processChunkLexicalUnit(lu_str, parent_element, rtl):
     
-    # Split off the symbols from the lemma in the lexical unit (which is i+1)
-    symbols = re.split('<|>', lu_str)
-    symbols = [_f for _f in symbols if _f] # filter out the empty strings
-    
-    # Lemma is the first one
-    lemma = symbols.pop(0)
-    
+    # Split off the symbols from the lemma in the lexical unit
+    lemma, symbols = parseString(lu_str)
+
     # if the first symbol is UNK, use a special lemma color
     if len(symbols) > 0 and symbols[0] == 'UNK':
         

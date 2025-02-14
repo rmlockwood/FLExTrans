@@ -2001,6 +2001,10 @@ class Main(QMainWindow):
             initialCaret = match.group(1)
             toEscape = match.group(2)
             escaped = Utils.reApertReserved.sub(lambda x: '\\' + x.group(), toEscape)
+
+            # Now escape backslashes that are not already escaped and aren't being used to escape a special char
+            # At the moment backslashes are disallowed, but just in case do this.
+            escaped = re.sub(rf'(?<!\\)\\([^{Utils.APERT_RESERVED}\\]|$)', r'\\\\\1', escaped)
             return initialCaret + escaped + match.group(3)
 
         # Perform the substitution using the compiled pattern. The pattern looks like this: r'(\^)(.*?)(<)'
@@ -2083,8 +2087,8 @@ class Main(QMainWindow):
                 myStr += f' ^{tok}$'
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
-        #sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
-        sf.write(myStr.strip())
+        sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
+        #sf.write(myStr.strip())
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
