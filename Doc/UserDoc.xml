@@ -6206,7 +6206,7 @@ type="tRuleElemInXXE"
 >Inside of a <object
 type="tRuleElemInXXE"
 >let</object
-> element you normally copying the value of the second element to the first element. See <sectionRef
+> element you normally copy the value of the second element to the first element. See <sectionRef
 sec="sDeleteAffix"
 ></sectionRef
 >, method 1 for an example. With this element you can add to the end of the first element whatever is in the second element. For lemmas and <object
