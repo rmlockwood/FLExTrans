@@ -5,6 +5,12 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12.2 - 2/17/25 - Ron Lockwood
+#    Better handling of angle brackets. Improved escaping reserved Apertium characters
+#    by making sure the character is not already escaped. This avoids double-escaping.
+#    Also a new parse string function to better find the lemma and symbols when 
+#    escaped angle brackets are present.
+#
 #   Version 3.12.1 - 1/3/25 - Ron Lockwood
 #    Fixes #241. Also fix if the lemma is something like 7.1, we have an empty lemma.
 #

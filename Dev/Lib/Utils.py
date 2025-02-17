@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.15 - 2/17/25 - Ron Lockwood
+#    Better handling of angle brackets. Improved escaping reserved Apertium characters
+#    by making sure the character is not already escaped. This avoids double-escaping.
+#
 #   Version 3.12.14 - 2/12/25 - Ron Lockwood
 #    Fixes #888. Show better error when there is a Fatal error from HermitCrab tools in the LRT.
 #
@@ -295,7 +299,7 @@ reAsterisk = re.compile(r'\*')
 reDoubleNewline = re.compile(r'\n\n')
 reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
-reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(<)')
+reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 
 NGRAM_SIZE = 5
@@ -2213,7 +2217,7 @@ def unescapeReservedApertChars(inStr):
 def escapeReservedApertChars(inStr):
     
     # Escape special characters that are not already escaped
-    inStr = reApertReserved.sub(r'\1', inStr)
+    inStr = reApertReserved.sub(r'\\\1', inStr)
 
     # Now escape backslashes that are not already escaped and aren't being used to escape a special char
     inStr = re.sub(rf'(?<!\\)\\([^{APERT_RESERVED}\\]|$)', r'\\\\\1', inStr)

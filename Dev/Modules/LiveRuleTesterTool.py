@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.8 - 2/17/25 - Ron Lockwood
+#    Better handling of angle brackets. Improved escaping reserved Apertium characters
+#    by making sure the character is not already escaped. This avoids double-escaping.
+#
 #   Version 3.12.7 - 2/11/25 - Ron Lockwood
 #    Fixes #873. Prevent mismatches on LUs and synthesis result words when punctuation is there.
 #    This is for when they want to add each word as its own test with the checkbox.
@@ -2000,14 +2004,10 @@ class Main(QMainWindow):
 
             initialCaret = match.group(1)
             toEscape = match.group(2)
-            escaped = Utils.reApertReserved.sub(lambda x: '\\' + x.group(), toEscape)
-
-            # Now escape backslashes that are not already escaped and aren't being used to escape a special char
-            # At the moment backslashes are disallowed, but just in case do this.
-            escaped = re.sub(rf'(?<!\\)\\([^{Utils.APERT_RESERVED}\\]|$)', r'\\\\\1', escaped)
+            escaped = Utils.escapeReservedApertChars(toEscape)
             return initialCaret + escaped + match.group(3)
 
-        # Perform the substitution using the compiled pattern. The pattern looks like this: r'(\^)(.*?)(<)'
+        # Perform the substitution using the compiled pattern. The pattern looks like this: r'(\^)(.*?)(?<!\\)(<)'
         escapedString = Utils.reBetweenCaretAndFirstAngleBracket.sub(escapeMatch, inputString)
 
         return escapedString
@@ -2088,7 +2088,6 @@ class Main(QMainWindow):
 
         # When writing to the source text file, insert slashes before reserved Apertium characters
         sf.write(self.escapeDataStreamsLemmas(myStr.strip()))
-        #sf.write(myStr.strip())
         sf.close()
 
         # Only rewrite the transfer rules file if there was a change
