@@ -301,6 +301,7 @@ reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative l
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
+reFindSymbols = re.compile(r'(?<!\\)(?:<([^<>]+)>)')
 
 NGRAM_SIZE = 5
 

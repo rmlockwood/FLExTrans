@@ -1187,13 +1187,11 @@ def parseString(inputStr):
         >>> parseString("d<<c<zx><uv>")
         ('d<<c', ['zx', 'uv'])
     """
-    pattern = r'(?<!\\)(?:<([^<>]+)>)'
-    
     # Need a string without at least trailing spaces.
     newIn = inputStr.strip()
     
     # Find all matches from the string
-    allMatches = list(re.finditer(pattern, newIn))
+    allMatches = list(Utils.reFindSymbols.finditer(newIn))
     
     # If no matches found, return original string and empty list
     if not allMatches:
