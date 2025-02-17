@@ -5,6 +5,10 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12.2 - 2/17/25 - Ron Lockwood
+#    Better handling of angle brackets. Improved escaping reserved Apertium characters
+#    by making sure the character is not already escaped. This avoids double-escaping.
+#
 #   Version 3.12.1 - 1/18/25 - Ron Lockwood
 #    Escape angle brackets.
 #
@@ -602,7 +606,7 @@ class TextWord():
         lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
     def escapeReservedApertChars(self, inStr):
-        return Utils.reApertReserved.sub(r'\\\1', inStr)
+        return Utils.escapeReservedApertChars(inStr)
     def getAffixSymbols(self):
         # assume no compound roots for this word
         return self.__affixLists[0]
