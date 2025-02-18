@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.12.9 - 2/18/25 - Ron Lockwood
+#    Fixes #892. Save check box states.
+#
 #   Version 3.12.8 - 2/17/25 - Ron Lockwood
 #    Better handling of angle brackets. Improved escaping reserved Apertium characters
 #    by making sure the character is not already escaped. This avoids double-escaping.
@@ -222,7 +225,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.12.7",
+        FTM_Version    : "3.12.9",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -457,29 +460,37 @@ class Main(QMainWindow):
         # Put this in a try so that if the number of values in the users file are fewer than expected,
         # We won't crash and instead just ignore the saved values
         try:
-            f = open(self.windowsSettingsFile)
+            with open(self.windowsSettingsFile) as f:
 
-            line = f.readline()
+                line = f.readline()
 
-            ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
-            ruleTab = int(ruleTab)
-            sourceTab = int(sourceTab)
-            selectWordsSentNum = int(selectWordsSentNum)
-            savedSourceTextName = savedSourceTextName.strip()
+                ruleTab, sourceTab, selectWordsSentNum, savedSourceTextName = line.split('|')
+                ruleTab = int(ruleTab)
+                sourceTab = int(sourceTab)
+                selectWordsSentNum = int(selectWordsSentNum)
+                savedSourceTextName = savedSourceTextName.strip()
 
-            # Read the 2nd line which is the state of the rule checkboxes
-            checkBoxStateStr = f.readline().strip()
-            self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
+                # Read the 2nd line which is the state of the rule checkboxes
+                checkBoxStateStr = f.readline().strip()
+                self.rulesCheckedList = [int(char) for char in checkBoxStateStr]
 
-            # Read the 3rd line which is the state of the word checkboxes
-            checkBoxStateWordsStr = f.readline().strip()
-            self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
+                # Read the 3rd line which is the state of the word checkboxes
+                checkBoxStateWordsStr = f.readline().strip()
+                self.wordsCheckedList = [int(char) for char in checkBoxStateWordsStr]
 
-            # Read the 4th line which is the source and target font size
-            fontSizesStr = f.readline().strip()
-            sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
+                # Read the 4th line which is the source and target font size
+                fontSizesStr = f.readline().strip()
+                sourceFontSizeStr, targetFontSizeStr = fontSizesStr.split('|')
 
-            f.close()
+                # Read the 5th line which is the checkbox values for Apply Text Out rules and Do not clean up unknown words
+                checkBoxStateStr = f.readline().strip()
+
+                # Assuming checkBoxStateStr contains two characters, each either '1' or '0'
+                if len(checkBoxStateStr) == 2:
+
+                    # Set the checkboxes based on the values in the list
+                    self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
+                    self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
         except:
             pass
 
@@ -490,12 +501,13 @@ class Main(QMainWindow):
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
 
-        # The checkbox starts out visible.
+        # Show the Do not clean up... checkbox if the applicable setting is 'y'
         if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
 
             self.ui.DoNotCleanupCheckbox.setVisible(True) 
         else:
             self.ui.DoNotCleanupCheckbox.setVisible(False) 
+            self.ui.DoNotCleanupCheckbox.setChecked(False)
 
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
@@ -639,6 +651,10 @@ class Main(QMainWindow):
         # Start out hiding this checkbox
         self.ui.applyTextOutRulesCheckbox.setVisible(False)
 
+        # Save the checkstate (above it was read from the window_settings) and uncheck it initially
+        myState = self.ui.applyTextOutRulesCheckbox.isChecked()
+        self.ui.applyTextOutRulesCheckbox.setChecked(False)
+
         # See if we have a Text Out Rules file. 
         textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
 
@@ -650,6 +666,7 @@ class Main(QMainWindow):
                 try:
                     self.textOutElemTree = ET.parse(textOutRulesFile)
                     self.ui.applyTextOutRulesCheckbox.setVisible(True) 
+                    self.ui.applyTextOutRulesCheckbox.setChecked(myState)
                 except:
                     pass 
 
@@ -1835,14 +1852,18 @@ class Main(QMainWindow):
         myFont = self.ui.SynthTextEdit.font()
         targetFontSizeStr = str(myFont.pointSizeF())
 
-        f = open(self.windowsSettingsFile, 'w')
+        # Get checkbox values
+        checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
+        checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
 
-        # Save current rules tab, current source tab, last sentence # selected and the last source text
-        f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
-        f.write(f'{checkedStateStr}\n')
-        f.write(f'{checkedWordsState}\n')
-        f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
-        f.close()
+        with open(self.windowsSettingsFile, 'w') as f:
+
+            # Save current rules tab, current source tab, last sentence # selected and the last source text
+            f.write(f'{str(rulesTab)}|{str(sourceTab)}|{str(self.lastSentNum)}|{self.__sourceText}\n')
+            f.write(f'{checkedStateStr}\n')
+            f.write(f'{checkedWordsState}\n')
+            f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
+            f.write(f'{checkboxStr1}{checkboxStr2}\n')
 
         if self.HCdllObj:
 
