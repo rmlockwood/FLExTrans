@@ -71,7 +71,7 @@ class TestParseString(unittest.TestCase):
         expected_symbols = ["zx", "uv", " "]
         main_part, symbols = parseString(input_str)
         self.assertEqual(main_part, expected_main_part)
-        self.assertEqual(symbols, expected_symbols)
+        self.assertEqual(symbols,expected_symbols)
 
 if __name__ == "__main__":
     unittest.main()
