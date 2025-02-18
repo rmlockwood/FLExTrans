@@ -198,16 +198,24 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
             report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
             wrdList[idxN]._TextWord__lemmaList[0] = wordN
 
-            # pre-adjustment
-            report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
-                        
-            # changing inflection info
-            for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
-                report.Info(f"accessing sublist at index {i}: {sublist}")
-                wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN]
+            if infoN:
+                # pre-adjustment
+                report.Info(f"Before modification: {wrdList[idxN].getInflClass(0)}")
+                report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+    
+                # changing inflection class
+                wrdList[idxN].setInflClass(str(infoN[0]))
+                wrdList[idxN].setIgnoreInflectionClass(False)
 
-            # post-adjustment
-            report.Info(f"After modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+                # changing inflection info
+                if len(infoN) > 1:
+                    for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
+                        report.Info(f"accessing sublist at index {i}: {sublist}")
+                        wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN[1:]]
+
+                # post-adjustment
+                report.Info(f"After modification: {wrdList[idxN].getInflClass(0)}")
+                report.Info(f"After modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
 
             
             if not idx1List:
@@ -245,7 +253,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
 def MainFunction(DB, report, modifyAllowed):
     # Initialize language-specific variables
-    lang = "SPA"
+    lang = "HIN"
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
 
     configMap = loadConfiguration(report)

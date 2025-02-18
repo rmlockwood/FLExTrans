@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.12.1 - 2/18/25 - David McKean
+#    Edit TextWord class to function with GenStc.py
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -559,6 +562,8 @@ class TextWord():
         self.__senseList = []
         self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
+        self.__ignoreInflClass = True
+        self.__inflClassList = []
     def addAffix(self, myObj):
         self.addPlainTextAffix(ITsString(myObj.BestAnalysisAlternative).Text)
     def addAffixesFromList(self, strList):
@@ -570,6 +575,8 @@ class TextWord():
         self.__inflFeatAbbrevsList.append([]) # create an empty list
     def addFinalPunc(self, myStr):
         self.__finalPunc += self.escapeReservedApertChars(myStr)
+    def addInflClass(self, inflClasses):
+        self.__inflClassList.append(inflClasses)
     def addInflFeatures(self, inflFeatAbbrevs):
         self.__inflFeatAbbrevsList[-1] = inflFeatAbbrevs # add to last slot
     def addInitialPunc(self, myStr):
@@ -626,6 +633,7 @@ class TextWord():
         # Start with POS. <sent> words are special, no POS
         if not self.isSentPunctutationWord():
             symbols = [self.getPOS(i)]
+
         # Then inflection class
         symbols += self.getInflClass(i)
         # Then stem features
@@ -662,12 +670,15 @@ class TextWord():
                 return Utils.getHeadwordStr(self.__eList[-1])
         return ""
     def getInflClass(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.InflectionClassRA:
-                    return [ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
-        return []
+        if self.__ignoreInflClass:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.InflectionClassRA:
+                        return [ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
+            return []
+        
+        return self.__inflClassList
     def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
         if i < len(self.__inflFeatAbbrevsList):
@@ -856,6 +867,10 @@ class TextWord():
         self.__componentList = cList
     def setGuid(self, myGuid):
         self.__guid = myGuid
+    def setInflClass(self, inflClass): 
+        self.__inflClassList = [inflClass]
+    def setIgnoreInflectionClass(self, flag):
+        self.__ignoreInflClass = flag
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
