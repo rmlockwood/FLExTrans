@@ -5,6 +5,11 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.12.9 - 2/20/25 - Ron Lockwood
+#    Fixes #900. Prevent from chapter changing to single digit.
+#    Don't do the logic of keeping the from chapter less than the to chapter until the user
+#    finishes editing the to chapter box.
+#
 #   Version 3.12.8 - 1/23/25 - Ron Lockwood
 #    Support import of Glossary book (GLO).
 #
@@ -141,7 +146,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.12.8",
+        FTM_Version    : "3.12.9",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -199,6 +204,7 @@ class Main(QMainWindow):
 
         self.ui.fromChapterSpinBox.valueChanged.connect(self.FromSpinChanged)
         self.ui.toChapterSpinBox.valueChanged.connect(self.ToSpinChanged)
+        self.ui.toChapterSpinBox.editingFinished.connect(self.ToSpinEditFinish)
 
     def fillPtxCombo(self, comboWidget):
 
@@ -244,10 +250,7 @@ class Main(QMainWindow):
         self.enableOneTextPerChapter()
         self.enableIncludeIntro()
 
-    def ToSpinChanged(self):
-        
-        self.fromChap = self.ui.fromChapterSpinBox.value()
-        self.toChap = self.ui.toChapterSpinBox.value()
+    def ToSpinEditFinish(self):
 
         # if to chapter is less than the from chapter, change the from chapter to match
         if self.toChap < self.fromChap:
@@ -255,6 +258,11 @@ class Main(QMainWindow):
             self.ui.fromChapterSpinBox.setValue(self.toChap)
             self.fromChap = self.toChap
             
+    def ToSpinChanged(self):
+        
+        self.fromChap = self.ui.fromChapterSpinBox.value()
+        self.toChap = self.ui.toChapterSpinBox.value()
+
         self.enableOneTextPerChapter()
 
     def OKClicked(self):
