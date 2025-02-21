@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.16 - 2/21/25 - Ron Lockwood
+#    Fixes #907. Fix places where FLEx puts a newline between the \ and sfm chars so that
+#    inserting into the target text will come out with the \ on the next line.
+#
 #   Version 3.12.15 - 2/17/25 - Ron Lockwood
 #    Better handling of angle brackets. Improved escaping reserved Apertium characters
 #    by making sure the character is not already escaped. This avoids double-escaping.
@@ -2248,6 +2252,10 @@ def containsInvalidLemmaChars(myStr):
     return True if reInvalidLemmaChars.search(myStr) else False
 
 def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
+
+    # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
+    # put the \ after the newline
+    inputStr = re.sub(r'\\\n', r'\n\\', inputStr)
 
     # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
     # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
