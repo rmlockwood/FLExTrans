@@ -58,7 +58,7 @@ def initializeLanguageVariables(lang):
     # just initializes the hard-coded variables for now. 
 
     if lang == "SPA":
-        match_n_lem = ["jugar1.1"]
+        match_n_lem = ["hacer1.1", "jugar1.1"]
         match_n_pos = ["v"]
         match_1_lem = ["rojo1.1"]
         match_1_pos = ["adj"]
@@ -199,6 +199,9 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
             wrdList[idxN]._TextWord__lemmaList[0] = wordN
 
             if infoN:
+                # checking contents
+                report.Info(f"inflection info of {wordN}: {infoN}")
+
                 # pre-adjustment
                 report.Info(f"Before modification: {wrdList[idxN].getInflClass(0)}")
                 report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
@@ -207,11 +210,18 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                 wrdList[idxN].setInflClass(str(infoN[0]))
                 wrdList[idxN].setIgnoreInflectionClass(False)
 
+                # Reset inflection features before assigning new ones
+                wrdList[idxN]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idxN]._TextWord__inflFeatAbbrevsList]
+
                 # changing inflection info
                 if len(infoN) > 1:
-                    for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
-                        report.Info(f"accessing sublist at index {i}: {sublist}")
-                        wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN[1:]]
+                    for i, feat in enumerate(infoN[1:]):  # Iterate through infoN[1:] directly
+                        report.Info(f"Assigning feature {feat} at index {i}")
+                        wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
+
+                    #for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
+                        #report.Info(f"accessing sublist at index {i}: {sublist}")
+                        #wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN[1:]]
 
                 # post-adjustment
                 report.Info(f"After modification: {wrdList[idxN].getInflClass(0)}")
@@ -227,16 +237,25 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                         report.Info(f"Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
                         wrdList[idx1]._TextWord__lemmaList[0] = word1
 
-                        # pre-adjustment
-                        report.Info(f"Before modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
-                        
-                        # changing inflection info
-                        for i, sublist in enumerate(wrdList[idx1]._TextWord__inflFeatAbbrevsList):
-                            report.Info(f"accessing sublist at index {i}: {sublist}")
-                            wrdList[idx1]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in info1]
+                        if info1:
+                            # pre-adjustment
+                            report.Info(f"Before modification: {wrdList[idx1].getInflClass(0)}")
+                            report.Info(f"Before modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
 
-                        # post-adjustment
-                        report.Info(f"After modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
+                            # changing inflection class
+                            wrdList[idx1].setInflClass(str(info1[0]))
+                            wrdList[idx1].setIgnoreInflectionClass(False)
+
+                            # Reset inflection features before assigning new ones
+                            wrdList[idx1]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx1]._TextWord__inflFeatAbbrevsList]
+
+                            if len(info1) > 1:
+                                for i, feat in enumerate(info1[1:]):  # Iterate through infoN[1:] directly
+                                    report.Info(f"Assigning feature {feat} at index {i}")
+                                    wrdList[idx1]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
+
+                            # post-adjustment
+                            report.Info(f"After modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
 
 
                         if not idx2List:
@@ -253,7 +272,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
 def MainFunction(DB, report, modifyAllowed):
     # Initialize language-specific variables
-    lang = "HIN"
+    lang = "SPA"
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
 
     configMap = loadConfiguration(report)
