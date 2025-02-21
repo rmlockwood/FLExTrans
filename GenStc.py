@@ -72,8 +72,8 @@ def initializeLanguageVariables(lang):
         match_n_pos = ["n"]
         match_1_lem = ["chota1.1"]
         match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
+        match_2_lem = ["do1.1"]
+        match_2_pos = ["num"]
     else: # lang = 'TKW' 
         match_n_lem = ["thu1.1"]
         match_n_pos = ["n"]
