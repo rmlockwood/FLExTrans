@@ -5,14 +5,14 @@
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
 #
+#   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
+#
 #   21 Nov 2024 bb  v3.10.12  Update use of GetInterlinData for changes in Utils.py at version 3.10.11
 #                                               on 3/20/24.  Add analytics.
 #
 #   15 Feb 2024 bb  v3.8.6  Incorporate parts of ExtractSourceText.py to read from FLEx text
 #
 #   30 Jun 2023 bb  Get it working as a module in FLExTrans
-#
-#   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
 #
 #   Original version: BB
 #    SIL International
@@ -253,7 +253,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
 def MainFunction(DB, report, modifyAllowed):
     # Initialize language-specific variables
-    lang = "HIN"
+    lang = "SPA"
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
 
     configMap = loadConfiguration(report)
