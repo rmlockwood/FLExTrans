@@ -60,6 +60,9 @@ def initializeLanguageVariables(lang):
     if lang == "SPA":
         match_n_lem = ["hacer1.1", "jugar1.1"]
         match_n_pos = ["v"]
+        ##match_n_lem = ["manzana1.1"]
+        #match_n_lem = ["niño1.1", "manzana1.1"]
+        #match_n_pos = ["n"]
         match_1_lem = ["rojo1.1"]
         match_1_pos = ["adj"]
         match_2_lem = [""]
