@@ -4,21 +4,18 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
-#
+#   24 Feb 2025 dm GenStc now uses the settings to determine substituable words and grabs words,
+#                                           inflection class, and inflection features from lexicon. 
+#                                           second dependents can now be substituted. 
+# 
 #   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
-#
+# 
 #   21 Nov 2024 bb  v3.10.12  Update use of GetInterlinData for changes in Utils.py at version 3.10.11
 #                                           on 3/20/24.  Add analytics.
 #
 #   15 Feb 2024 bb  v3.8.6  Incorporate parts of ExtractSourceText.py to read from FLEx text
 #
 #   30 Jun 2023 bb  Get it working as a module in FLExTrans
-#
-#   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
-#
-#   24 Feb 2025 dm GenStc now uses the settings to determine substituable words and grabs words,
-#                                           inflection class, and inflection features from lexicon. 
-#                                           second dependents can now be substituted. 
 #
 #   Original version: BB
 #    SIL International
@@ -55,7 +52,6 @@ docs = {FTM_Name       : "Generate sentences from model",
 """
 Put a better description here.
 """ }
-
 
 def loadConfiguration(report):
     """Reads and loads the configuration file."""
@@ -143,9 +139,6 @@ def initializeLanguageVariables(lang):
     if lang == "SPA":
         match_n_lem = ["hacer1.1", "jugar1.1"]
         match_n_pos = ["v"]
-        ##match_n_lem = ["manzana1.1"]
-        #match_n_lem = ["niño1.1", "manzana1.1"]
-        #match_n_pos = ["n"]
         match_1_lem = ["rojo1.1"]
         match_1_pos = ["adj"]
         match_2_lem = [""]
@@ -155,8 +148,8 @@ def initializeLanguageVariables(lang):
         match_n_pos = ["n"]
         match_1_lem = ["chota1.1"]
         match_1_pos = ["adj"]
-        match_2_lem = ["do1.1"]
-        match_2_pos = ["num"]
+        match_2_lem = [""]
+        match_2_pos = [""]
     else: # lang = 'TKW' 
         match_n_lem = ["thu1.1"]
         match_n_pos = ["n"]
