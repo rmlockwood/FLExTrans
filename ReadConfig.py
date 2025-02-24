@@ -167,7 +167,9 @@ TREETRAN_INSERT_WORDS_FILE = 'TreeTranInsertWordsFile'
 TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 
 # DM: ADDING NEW CONFIGS FOR POS SETTING (GENSTC)
-GEN_STC_LIMIT_POS = 'GenStcLimitPos'
+GEN_STC_LIMIT_POS_N = 'GenStcLimitPosN'
+GEN_STC_LIMIT_POS_1 = 'GenStcLimitPos1'
+GEN_STC_LIMIT_POS_2 = 'GenStcLimitPos2'
 GEN_STC_LIMIT_STEM_COUNT = 'GenStcLimitStemCount'
 
 ##### IMPORTANT #####
@@ -181,7 +183,9 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_FORMS_INFLECTION_2ND,
                              SYNTHESIS_TEST_LIMIT_POS,
                              CATEGORY_ABBREV_SUB_LIST, 
-                             GEN_STC_LIMIT_POS] #DM 
+                             GEN_STC_LIMIT_POS_N,
+                             GEN_STC_LIMIT_POS_1,
+                             GEN_STC_LIMIT_POS_2] #DM 
 
 def openConfigFile(report, info):
     

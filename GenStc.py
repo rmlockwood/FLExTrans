@@ -6,13 +6,17 @@
 #
 #
 #   21 Nov 2024 bb  v3.10.12  Update use of GetInterlinData for changes in Utils.py at version 3.10.11
-#                                               on 3/20/24.  Add analytics.
+#                                           on 3/20/24.  Add analytics.
 #
 #   15 Feb 2024 bb  v3.8.6  Incorporate parts of ExtractSourceText.py to read from FLEx text
 #
 #   30 Jun 2023 bb  Get it working as a module in FLExTrans
 #
 #   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
+#
+#   24 Feb 2025 dm GenStc now uses the settings to determine substituable words and grabs words,
+#                                           inflection class, and inflection features from lexicon. 
+#                                           second dependents can now be substituted. 
 #
 #   Original version: BB
 #    SIL International
@@ -50,37 +54,6 @@ docs = {FTM_Name       : "Generate sentences from model",
 Put a better description here.
 """ }
 
-
-
-def initializeLanguageVariables(lang):
-    """Initializes language-specific variables."""
-    # this is going to change a lot later 
-    # just initializes the hard-coded variables for now. 
-
-    if lang == "SPA":
-        match_n_lem = ["hacer1.1", "jugar1.1"]
-        match_n_pos = ["v"]
-        match_1_lem = ["rojo1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
-    elif lang == "HIN":
-        match_n_lem = ["machli1.1"]
-        match_n_pos = ["n"]
-        match_1_lem = ["chota1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
-    else: # lang = 'TKW' 
-        match_n_lem = ["thu1.1"]
-        match_n_pos = ["n"]
-        match_1_lem = ["_ng'ono1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = ["aga1.1"]
-        match_2_pos = ["poss"]
-    return match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos
-
-
 def loadConfiguration(report):
     """Reads and loads the configuration file."""
     configMap = ReadConfig.readConfig(report)
@@ -93,15 +66,32 @@ def setupSettings(configMap, report):
     """Sets up POS focus and stem limits based on the configuration."""
     # this will set up the settings that have been created for GenStc from the settings menu. 
     # right now that is the POS focus and stem limit. 
-    posFocus = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS, report)
+    posFocusN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_N, report)
+    posFocus1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_1, report)
+    posFocus2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_2, report)
     stemLimit = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report)
 
-    if posFocus:
-        if posFocus[-1] == '':
-            posFocus.pop()
-        report.Info('  Only collecting templates for these POS: ' + str(posFocus))
+    if posFocusN:
+        if posFocusN[-1] == '':
+            posFocusN.pop()
+        report.Info('  Only collecting templates for these POS: ' + str(posFocusN))
     else:
-        posFocus = []  # Default to an empty list if not provided
+        posFocusN = []  # Default to an empty list if not provided
+
+    if posFocus1:
+        if posFocus1[-1] == '':
+            posFocus1.pop()
+        report.Info('  Only collecting templates for these POS: ' + str(posFocus1))
+    else:
+        posFocus1 = []  # Default to an empty list if not provided
+
+    if posFocus2:
+        if posFocus2[-1] == '':
+            posFocus2.pop()
+        report.Info('  Only collecting templates for these POS: ' + str(posFocus2))
+    else:
+        posFocus2 = []  # Default to an empty list if not provided
+
 
     if stemLimit:
         try:
@@ -111,7 +101,7 @@ def setupSettings(configMap, report):
     else:
         stemLimit = 10  # Default to 10 if not specified
 
-    return posFocus, stemLimit
+    return posFocusN, posFocus1, posFocus2, stemLimit
 
 
 def initializeOutputFile(configMap, report):
@@ -144,8 +134,75 @@ def getSourceText(DB, report, configMap):
         return None
     return matchingContentsObjList[sourceTextList.index(sourceTextName)]
 
+def initializeLanguageVariables(lang):
+    """(OLD) Initializes language-specific variables. (OLD) (UNUSED)"""
 
-def getLexicalEntries(DB, match_n_pos, match_1_pos, report):
+    if lang == "SPA":
+        match_n_lem = ["hacer1.1", "jugar1.1"]
+        match_n_pos = ["v"]
+        match_1_lem = ["rojo1.1"]
+        match_1_pos = ["adj"]
+        match_2_lem = [""]
+        match_2_pos = [""]
+    elif lang == "HIN":
+        match_n_lem = ["machli1.1"]
+        match_n_pos = ["n"]
+        match_1_lem = ["chota1.1"]
+        match_1_pos = ["adj"]
+        match_2_lem = [""]
+        match_2_pos = [""]
+    else: # lang = 'TKW' 
+        match_n_lem = ["thu1.1"]
+        match_n_pos = ["n"]
+        match_1_lem = ["_ng'ono1.1"]
+        match_1_pos = ["adj"]
+        match_2_lem = ["aga1.1"]
+        match_2_pos = ["poss"]
+    return match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos
+
+def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
+    """Extract lemmas and POS for substituting from the source text."""
+    match_n_lem = []
+    match_n_pos = []
+    match_1_lem = []
+    match_1_pos = []
+    match_2_lem = []
+    match_2_pos = []
+
+    stcCount = myText.getSentCount()
+    report.Info(f"Found {stcCount} sentences in the text")
+
+    for i in range(stcCount):
+        stc = myText.getSent(i)  # Get each sentence
+        wrdList = stc.getWords()  # Get the list of words in the sentence
+
+        # Collect indices of words that match the specified lemmas and POS
+        for w in wrdList:
+            thisLemma = w.getLemma(0)
+            thisPOS = w.getPOS(0)
+
+            if thisPOS in posFocusN:
+                match_n_lem.append(thisLemma)
+                match_n_pos.append(thisPOS)
+            elif thisPOS in posFocus1:
+                match_1_lem.append(thisLemma)
+                match_1_pos.append(thisPOS)
+            elif thisPOS in posFocus2:
+                match_2_lem.append(thisLemma)
+                match_2_pos.append(thisPOS)
+
+    matchLemmaN = list(set(match_n_lem))
+    matchLemma1 = list(set(match_1_lem))
+    matchLemma2 = list(set(match_2_lem))
+    report.Info(f"matching these words (head): ({matchLemmaN})")
+    report.Info(f"matching these words (dependent): ({matchLemma1})")
+    report.Info(f"matching these words (2nd dependent): {matchLemma2}")
+
+    return matchLemmaN, match_n_pos, matchLemma1, match_1_pos, matchLemma2, match_2_pos
+
+
+
+def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     """Fetches lexical entries from the database."""
     # this function grabs all the lexical entries from the database and shuffles them. 
     # the stem limit from the settings is added in the main function. 
@@ -171,27 +228,26 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, report):
                                 subListN[lex] = inflectionInfo
                             if pos in match_1_pos:
                                 subList1[lex] = inflectionInfo
+                            if pos in match_2_pos:
+                                subList2[lex] = inflectionInfo
 
     lexKeysN = list(subListN.keys())
     lexKeys1 = list(subList1.keys())
-    #lexKeys2 = list(sublist2.keys())
+    lexKeys2 = list(subList2.keys())
 
     random.shuffle(lexKeysN)
     random.shuffle(lexKeys1)
-    #random.shuffle(lex_keys_2)
+    random.shuffle(lexKeys2)
 
     subDictN = {key:subListN[key] for key in lexKeysN}
     subDict1 = {key:subList1[key] for key in lexKeys1}
-    #subDict2 = {key:subList2[key] for key in lex_keys_2}
-
-    # just so the code will run
-    subDict2 = {}
+    subDict2 = {key:subList2[key] for key in lexKeys2}
 
     return subDictN, subDict1, subDict2
 
 
 def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, subDict2, f_out, stc, report):
-    """Process and substitute words in the sentence."""
+    """Processes and substitutes words in the sentence, writes them to output file."""
     # unchanged processing algorithm 
     for wordN, infoN in subDictN.items(): # head word 
         for idxN in idxNList:
@@ -266,21 +322,39 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                                 for word2, info2 in subDict2.items():
                                     report.Info(f"Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
                                     wrdList[idx2]._TextWord__lemmaList[0] = word2
+
+                                    if info2:
+                                        # pre-adjustment
+                                        report.Info(f"Before modification: {wrdList[idx2].getInflClass(0)}")
+                                        report.Info(f"Before modification: {wrdList[idx2]._TextWord__inflFeatAbbrevsList}")
+
+                                        # changing inflection class
+                                        wrdList[idx2].setInflClass(str(info2[0]))
+                                        wrdList[idx2].setIgnoreInflectionClass(False)
+
+                                        # Reset inflection features before assigning new ones
+                                        wrdList[idx2]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx2]._TextWord__inflFeatAbbrevsList]
+
+                                        if len(info2) > 1:
+                                            for i, feat in enumerate(info2[1:]):  # Iterate through infoN[1:] directly
+                                                report.Info(f"Assigning feature {feat} at index {i}")
+                                                wrdList[idx2]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
+
+                                        # post-adjustment
+                                        report.Info(f"After modification: {wrdList[idx2]._TextWord__inflFeatAbbrevsList}")
+
                                     stc.write(f_out)
                                     f_out.write('\n')
 
 
 def MainFunction(DB, report, modifyAllowed):
-    # Initialize language-specific variables
-    lang = "SPA"
-    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
 
     configMap = loadConfiguration(report)
     if not configMap:
         return
 
     # Set up POS filter and stem limit (settings could change later)
-    posFocus, stemLimit = setupSettings(configMap, report)
+    posFocusN, posFocus1, posFocus2, stemLimit = setupSettings(configMap, report)
 
     f_out = initializeOutputFile(configMap, report)
     if not f_out:
@@ -290,19 +364,25 @@ def MainFunction(DB, report, modifyAllowed):
     if not contents:
         return
 
-    # Fetch lexical entries from FLEx
-    subDictN, subDict1, subDict2 = getLexicalEntries(DB, match_n_pos, match_1_pos, report)
-
-    # Apply stem limit
-    subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
-    subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
-    subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
 
     # Get interlinear data
     interlinParams = Utils.initInterlinParams(configMap, report, contents)
     if interlinParams is None:
         return
     myText = Utils.getInterlinData(DB, report, interlinParams)
+
+    # Initialize language-specific variables
+    lang = "SPA"
+    #match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
+    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report)
+
+    # Fetch lexical entries from FLEx
+    subDictN, subDict1, subDict2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+
+    # Apply stem limit
+    subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
+    subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
+    subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
 
     stcCount = myText.getSentCount()
     report.Info(f"Found {stcCount} sentences in the text")
@@ -319,7 +399,7 @@ def MainFunction(DB, report, modifyAllowed):
             thisLemma = w.getLemma(0)
             thisPOS = w.getPOS(0)
 
-            if thisPOS in posFocus:
+            if thisPOS in posFocusN or posFocus1 or posFocus2:
                 if thisLemma in match_n_lem and thisPOS in match_n_pos:
                     idxN_list.append(idx)
                 if thisLemma in match_1_lem and thisPOS in match_1_pos:
