@@ -5,6 +5,8 @@
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
 #
+#   29 Jan 2025 dm  re-organized code. Added more functionality, made code more modular. 
+#
 #   21 Nov 2024 bb  v3.10.12  Update use of GetInterlinData for changes in Utils.py at version 3.10.11
 #                                           on 3/20/24.  Add analytics.
 #
@@ -53,6 +55,7 @@ docs = {FTM_Name       : "Generate sentences from model",
 """
 Put a better description here.
 """ }
+
 
 def loadConfiguration(report):
     """Reads and loads the configuration file."""
@@ -140,6 +143,9 @@ def initializeLanguageVariables(lang):
     if lang == "SPA":
         match_n_lem = ["hacer1.1", "jugar1.1"]
         match_n_pos = ["v"]
+        ##match_n_lem = ["manzana1.1"]
+        #match_n_lem = ["niño1.1", "manzana1.1"]
+        #match_n_pos = ["n"]
         match_1_lem = ["rojo1.1"]
         match_1_pos = ["adj"]
         match_2_lem = [""]
@@ -149,8 +155,8 @@ def initializeLanguageVariables(lang):
         match_n_pos = ["n"]
         match_1_lem = ["chota1.1"]
         match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
+        match_2_lem = ["do1.1"]
+        match_2_pos = ["num"]
     else: # lang = 'TKW' 
         match_n_lem = ["thu1.1"]
         match_n_pos = ["n"]
