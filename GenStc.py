@@ -64,12 +64,21 @@ def loadConfiguration(report):
 def setupSettings(configMap, report):
     """Sets up POS focus and stem limits based on the configuration."""
     # this will set up the settings that have been created for GenStc from the settings menu. 
-    # right now that is the POS focus and stem limit. 
+
+    # grabbing POS settings 
     posFocusN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_N, report)
     posFocus1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_1, report)
     posFocus2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_2, report)
+
+    # grabbing Lemma settings
+    lemmaFocusN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_N, report)
+    lemmaFocus1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_1, report)
+    lemmaFocus2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_2, report)
+
+    # grabbing stem limit settings
     stemLimit = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report)
 
+    # error correct posFocus 
     if posFocusN:
         if posFocusN[-1] == '':
             posFocusN.pop()
@@ -91,7 +100,26 @@ def setupSettings(configMap, report):
     else:
         posFocus2 = []  # Default to an empty list if not provided
 
+    # error correct lemma focus
+    if not lemmaFocusN: 
+        lemmaFocusN = 'UNK'
 
+    if lemmaFocusN[-3:] != '1.1':
+        lemmaFocusN += '1.1'
+
+    if not lemmaFocus1:
+        lemmaFocus1 = 'UNK'
+
+    if lemmaFocus1[-3:] != '1.1':
+        lemmaFocus1 += '1.1'
+
+    if not lemmaFocus2:
+        lemmaFocus2 = 'UNK'
+
+    if lemmaFocus1[-3:] != '1.1':
+        lemmaFocus1 += '1.1'
+
+    # error correct stem limit
     if stemLimit:
         try:
             stemLimit = int(stemLimit)
@@ -100,7 +128,7 @@ def setupSettings(configMap, report):
     else:
         stemLimit = 10  # Default to 10 if not specified
 
-    return posFocusN, posFocus1, posFocus2, stemLimit
+    return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit
 
 
 def initializeOutputFile(configMap, report):
@@ -199,7 +227,37 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
 
     return matchLemmaN, match_n_pos, matchLemma1, match_1_pos, matchLemma2, match_2_pos
 
+def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
+    """Extract lemmas for substituting from the source text from lemmas entered into settings box."""
+    match_n_lem = []
+    match_1_lem = []
+    match_2_lem = []
 
+    stcCount = myText.getSentCount()
+    report.Info(f"Found {stcCount} sentences in the text")
+
+    for i in range(stcCount):
+        stc = myText.getSent(i)  # Get each sentence
+        wrdList = stc.getWords()  # Get the list of words in the sentence
+
+        # Collect indices of words that match the specified lemmas and POS
+        for w in wrdList:
+            thisLemma = w.getLemma(0)
+
+            if thisLemma in lemmaFocusN:
+                match_n_lem.append(thisLemma)
+
+            elif thisLemma in lemmaFocus1:
+                match_1_lem.append(thisLemma)
+
+            elif thisLemma in lemmaFocus2:
+                match_2_lem.append(thisLemma)
+
+    matchLemmaN = list(set(match_n_lem))
+    matchLemma1 = list(set(match_1_lem))
+    matchLemma2 = list(set(match_2_lem))
+
+    return matchLemmaN, matchLemma1, matchLemma2
 
 def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     """Fetches lexical entries from the database."""
@@ -264,6 +322,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                 # changing inflection class
                 wrdList[idxN].setInflClass(str(infoN[0]))
                 wrdList[idxN].setIgnoreInflectionClass(False)
+                wrdList[idxN].setIgnoreStemFeatures(False)
 
                 # Reset inflection features before assigning new ones
                 wrdList[idxN]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idxN]._TextWord__inflFeatAbbrevsList]
@@ -300,6 +359,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                             # changing inflection class
                             wrdList[idx1].setInflClass(str(info1[0]))
                             wrdList[idx1].setIgnoreInflectionClass(False)
+                            wrdList[idx1].setIgnoreStemFeatures(False)
 
                             # Reset inflection features before assigning new ones
                             wrdList[idx1]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx1]._TextWord__inflFeatAbbrevsList]
@@ -330,6 +390,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                                         # changing inflection class
                                         wrdList[idx2].setInflClass(str(info2[0]))
                                         wrdList[idx2].setIgnoreInflectionClass(False)
+                                        wrdList[idx2].setIgnoreStemFeatures(False)
 
                                         # Reset inflection features before assigning new ones
                                         wrdList[idx2]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx2]._TextWord__inflFeatAbbrevsList]
@@ -353,7 +414,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Set up POS filter and stem limit (settings could change later)
-    posFocusN, posFocus1, posFocus2, stemLimit = setupSettings(configMap, report)
+    posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit = setupSettings(configMap, report)
 
     f_out = initializeOutputFile(configMap, report)
     if not f_out:
@@ -374,6 +435,8 @@ def MainFunction(DB, report, modifyAllowed):
     lang = "SPA"
     #match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report)
+    if lemmaFocusN and lemmaFocus1 != 'UNK':
+        match_n_lem, match_1_lem, match_2_lem = extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report)
 
     # Fetch lexical entries from FLEx
     subDictN, subDict1, subDict2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)

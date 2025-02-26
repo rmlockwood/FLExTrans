@@ -170,6 +170,10 @@ TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 GEN_STC_LIMIT_POS_N = 'GenStcLimitPosN'
 GEN_STC_LIMIT_POS_1 = 'GenStcLimitPos1'
 GEN_STC_LIMIT_POS_2 = 'GenStcLimitPos2'
+
+GEN_STC_LIMIT_LEMMA_N = 'GenStcLimitLemmaN'
+GEN_STC_LIMIT_LEMMA_1 = 'GenStcLimitLemma1'
+GEN_STC_LIMIT_LEMMA_2 = 'GenStcLimitLemma2'
 GEN_STC_LIMIT_STEM_COUNT = 'GenStcLimitStemCount'
 
 ##### IMPORTANT #####

@@ -1388,7 +1388,7 @@ widgetList = [
 
 
     # DM: testing a GenStc settings module (limit POS, limit stem count)
-    ["GenSentences", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+    ["GenSentences Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
 
     ["Limit to specific POS values in head word", "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
@@ -1399,6 +1399,15 @@ widgetList = [
     
     ["Limit to specific POS values in second dependent word", "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
     "One or more grammatical categories. GenStc word replacement in second dependent word will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
+
+    ["Limit to specific lemmas in head word", "genstc_limit_lemma_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_N, \
+    "Limit GenStc word replacememnt to specific lemmas in head word.", DONT_GIVE_ERROR, DONT_HIDE],\
+    
+    ["Limit to specific lemmas in dependent word 1", "genstc_limit_lemma_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_1, \
+    "Limit GenStc word replacememnt to specific lemmas in first dependent word.", DONT_GIVE_ERROR, DONT_HIDE],\
+    
+    ["Limit to specific lemmas in dependent word 2", "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
+    "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, DONT_HIDE],\
     
     ["Limit number of stems", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
     "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, DONT_HIDE],\
