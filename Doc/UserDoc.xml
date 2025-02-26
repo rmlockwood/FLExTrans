@@ -272,7 +272,10 @@ type="tFlexx"
 >In your source <object
 type="tFlexx"
 ></object
-> project, go to the Lexicon area</li
+> project, go to the <object
+type="tBold"
+>Lexicon</object
+> area</li
 ><li
 >From the menu select <object
 type="tMenu"
