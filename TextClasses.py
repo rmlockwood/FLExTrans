@@ -563,6 +563,7 @@ class TextWord():
         self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
         self.__ignoreInflClass = True
+        self.__ignoreStemFeatures = True
         self.__inflClassList = []
     def addAffix(self, myObj):
         self.addPlainTextAffix(ITsString(myObj.BestAnalysisAlternative).Text)
@@ -702,16 +703,18 @@ class TextWord():
             return self.__senseList[i]
         return None
     def getStemFeatures(self, i):
-        if self.hasSenses() and i < len(self.__senseList):
-            if mySense := self.__senseList[i]:
-                msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
-                if msa.MsFeaturesOA:
-                    # if we already have a populated list, we don't need to do it again.
-                    if len(self.__stemFeatAbbrList) == 0:
-                        # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
-                        Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
-                    return self.getFeatures(self.__stemFeatAbbrList)
-        return []
+        if self.__ignoreStemFeatures:
+            if self.hasSenses() and i < len(self.__senseList):
+                if mySense := self.__senseList[i]:
+                    msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
+                    if msa.MsFeaturesOA:
+                        # if we already have a populated list, we don't need to do it again.
+                        if len(self.__stemFeatAbbrList) == 0:
+                            # The features might be complex, make a recursive function call to find all features. Features keep getting added to list.
+                            Utils.get_feat_abbr_list(msa.MsFeaturesOA.FeatureSpecsOC, self.__stemFeatAbbrList)
+                        return self.getFeatures(self.__stemFeatAbbrList)
+            return []
+        return self.getFeatures(self.__stemFeatAbbrList)
     def getSurfaceForm(self):
         return self.__surfaceForm
     def getSurfaceFormWithVerseNum(self):
@@ -871,6 +874,8 @@ class TextWord():
         self.__inflClassList = [inflClass]
     def setIgnoreInflectionClass(self, flag):
         self.__ignoreInflClass = flag
+    def setIgnoreStemFeatures(self, flag):
+        self.__ignoreStemFeatures = flag
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
