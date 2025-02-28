@@ -175,16 +175,14 @@ def get_cat2focus(DB, focusPOS):
 
     cat2focus = defaultdict(set)
     for pos in children:
-        if pos in keep:
-            cat2focus[pos].add(pos)
+        cat2focus[pos].add(pos)
         todo = list(children[pos])
         while todo:
             c = todo.pop()
-            if c in keep:
-                cat2focus[pos].add(c)
+            cat2focus[pos].add(c)
             todo += list(children[c])
 
-    return cat2focus
+    return cat2focus, keep
 
 # Build a map from categories to templates and maps from templates to slots
 def get_templ_list(myDB, cat2focus, report):
@@ -221,6 +219,32 @@ def get_templ_list(myDB, cat2focus, report):
             templates[templObj.name] = templObj
 
     return cat2templ, templates
+
+def get_stems(standardSpellList, derivAffixList, maxStems, outputCats):
+    random.shuffle(standardSpellList)
+    stems = 0
+
+    for lemma, gloss, pos_tag, pos_key in standardSpellList:
+        yield_any = False
+
+        aStem = f'{lemma}<{pos_tag}>'
+        gStem = f'{gloss}<{pos_tag}>'
+
+        if pos_key in outputCats:
+            yield (aStem, gStem, pos_key)
+            yield_any = True
+
+        for tag, toPos, isPrefix in derivAffixList[pos_key]:
+            if toPos in outputCats:
+                yield (aStem,
+                       (tag + gStem) if isPrefix else (gStem + tag),
+                       toPos)
+                yield_any = True
+
+        if yield_any:
+            stems += 1
+            if stems >= maxStems:
+                break
 
 def MainFunction(DB, report, modifyAllowed):
     slot2AffixList = defaultdict(list)
@@ -263,7 +287,7 @@ def MainFunction(DB, report, modifyAllowed):
             focusPOS.pop()
         report.Info('  Only collecting templates for these POS: '+str(focusPOS))
 
-    cat2focus = get_cat2focus(DB, focusPOS)
+    cat2focus, outputCats = get_cat2focus(DB, focusPOS)
 
     report.Info("Collecting templates from FLEx project...")
 
@@ -355,10 +379,6 @@ def MainFunction(DB, report, modifyAllowed):
                     # BB: The word may have multiple senses, but we really only
                     # care about the POS of the template we generated from.
                     break
-
-            # Only add words of the desired POS to the list to be inflected
-            if pos not in focusPOS:
-                continue
 
             if lex and catAndGuid:
                 logger.info(f'  Adding [{thisGloss}]{lex}<{pos}> to roots list')
@@ -500,11 +520,7 @@ def MainFunction(DB, report, modifyAllowed):
     # Process each word and add affixes and clitics
     # Then output the full set of inflections for each word
     wrdCount = 0
-    for lemma, gloss, pos_tag, pos_key in standardSpellList:
-
-        aStem = f'{lemma}<{pos_tag}>'
-        gStem = f'{gloss}<{pos_tag}>'
-
+    for aStem, gStem, pos_key in get_stems(standardSpellList, derivAffixList, maxStems, outputCats):
         for templName in cat2templ[pos_key]:
             templ = templates[templName]
 
@@ -513,19 +529,6 @@ def MainFunction(DB, report, modifyAllowed):
                 wrdCount += 1
                 f_aper.write(f'^{aForm}$\n')
                 f_out.write(gForm + '\n')
-
-        for tag, toPos, isPrefix in derivAffixList[pos_key]:
-            aStemDeriv = aStem + tag
-            gStemDeriv = (tag + gStem) if isPrefix else (gStem + tag)
-
-            for templName in cat2templ[toPos]:
-                templ = templates[templName]
-
-                for aForm, gForm in templ.inflect(slot2AffixList, aStemDeriv,
-                                                  gStemDeriv, cat2clitic[toPos]):
-                    wrdCount += 1
-                    f_apr.write(f'^{aForm}$\n')
-                    f_out.write(gForm + '\n')
 
     ## Output final counts to the log file.
     logger.info('\n\n'+str(wrdCount)+' words generated.'+'\n')
