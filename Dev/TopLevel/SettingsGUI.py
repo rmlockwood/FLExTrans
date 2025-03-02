@@ -4,6 +4,10 @@
 #   3/28/22
 #
 #
+#   Version 3.12.6 - 3/2/25 - Ron Lockwood
+#    Use a default list of morphnames also if there is no existing morphnames found in the list.
+#    Also, use the default list for source morphnames.
+#
 #   Version 3.12.5 - 1/31/25 - Ron Lockwood
 #    Fixes #868. Give different view modes so the user doesn't have to see all settings.
 #
@@ -326,13 +330,27 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
     
     morphNames = wind.read(settingName)
     
-    if morphNames:
+    # Use a default list if we have nothing set or no morphNames found in the typesList
+    if not morphNames or set(morphNames).isdisjoint(set(typesList)):
 
-        for morphName in morphNames:
+        for guidStr in defaultMorphNames:
 
-            if morphName in typesList:
+            # Go from guid to to morphname string in the analysis lang.
+            morphType = repo.GetObject(Guid(String(guidStr[0])))
+            morphType = ICmPossibility(morphType)
+            morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+
+            if morphTypeStr in typesList:
                 
-                widget.check(morphName)
+                widget.check(morphTypeStr)
+    else:
+        if morphNames:
+
+            for morphName in morphNames:
+
+                if morphName in typesList:
+                    
+                    widget.check(morphName)
 
 def loadTargetMorphemeTypes(widget, wind, settingName):
 
@@ -360,8 +378,8 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
         
         morphNames = wind.read(settingName)
         
-        # Use a default list if we have nothing set
-        if not morphNames:
+        # Use a default list if we have nothing set or no morphNames found in the typesList
+        if not morphNames or set(morphNames).isdisjoint(set(typesList)):
 
             for guidStr in defaultMorphNames:
 
