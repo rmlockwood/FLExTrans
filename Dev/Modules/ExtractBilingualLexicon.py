@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.12.1 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -88,170 +92,7 @@
 #    Fixes #214. Give a warning for replacement file entries that couldn't be
 #    found in the bilingual lexicon.
 #
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Added RegexFlag before re constants
-#
-#   Version 3.7 - 12/12/22 - Ron Lockwood
-#    Skip entries that are mapped to the 'none' headword
-#
-#   Version 3.6.3 - 9/1/22 - Ron Lockwood
-#    Fixes #254. Convert * to _ in stems.
-#
-#   Version 3.6.2 - 8/26/22 - Ron Lockwood
-#    Fixes #215 Check morpheme type against guid in the object instead of
-#    the analysis writing system so we aren't dependent on an English WS.
-#
-#   Version 3.6.1 - 8/19/22 - Ron Lockwood
-#    Use new new function getXMLEntryText which should be more efficient.
-#
-#   Version 3.6 - 8/11/22 - Ron Lockwood
-#    Fixes #65. Decompose the replacement file before combining with bilingual lexicon.
-#
-#   Version 3.5.4 - 8/8/22 - Ron Lockwood
-#    Fixes #142. Warn when entries start with a space.
-#
-#   Version 3.5.3 - 7/9/22 - Ron Lockwood
-#    Use a new config setting for using cache. Fixes #115.
-#
-#   Version 3.5.2 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5.1 - 6/22/22 - Ron Lockwood
-#    Change in FlexTools 2.1 means that an empty string gets returned now from
-#    a custom field that has nothing in it. Before it was None. Fixes #156
-#
-#   Version 3.5 - 4/1/22 - Ron Lockwood
-#    Put the code that does the main work into its own function so it can be
-#    called by the Live Rule Tester. This means that a possible null report
-#    object is passed in. Also use an error list in the new function instead of
-#    report object. Output collected errors at the end. Fixes #37
-#
-#   Version 3.4.2 - 3/11/22 - Ron Lockwood
-#    Give errors if biling lex file or replacement file values not found in the
-#    configuration file.
-#    Fixed bug where the old style replacement file wasn't doing the append section
-#    correctly.
-#
-#   Version 3.4.1 - 3/4/22 - Ron Lockwood
-#    Set sourcePOSabbrev variable in the main loop to prevent crash shown in issue #79.
-#    Also put out UNK as a symbol in the symbol definitions for the
-#    bilingual.dix file. Simplified building the sdef string.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3.3 - 2/4/22 - Ron Lockwood
-#    Changed replacement file to a different format for improved editing. Handle
-#    either the old format or the new which uses new elements <leftdata> <rightdata>
-#
-#   Version 3.3.2 - 1/27/22 - Ron Lockwood
-#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
-#    Now the setup tool and the bilingual lexicon uses common code for getting
-#    the grammatical categories from each lexicon. Fixes #50.
-#
-#   Version 3.3.1 - 1/25/22 - Ron Lockwood
-#    Fixed crash when grammatical category not set for a word.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2.1 - 11/30/21 - Ron Lockwood
-#    Report when the bilingual lexicon is up to date (taken from cache).
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Put underscores in target feature abbreviations if necessary.
-#
-#   Version 3.0.5 - 7/8/21 - Ron Lockwood
-#    Handle slash in category name
-#
-#   Version 3.0.4 - 7/1/21 - Ron Lockwood
-#    Instead of just using the text in the <l> element as the key for finding
-#    lines in the bilingual file, use everything between <l>
-#    and </l> including </b>, but remove any <s> elements. This is because sometimes
-#    we have a phrase in the replacement file that has a space (/b) and before we would
-#    only pick up the text before the space.
-#
-#   Version 3.0.3 - 4/30/21 - Ron Lockwood
-#    Just give one warning for spaces in categories and likewise one warning for
-#    periods in categories. Make the "suppressing" message just info. not a warning
-#    This cuts down on the number of warning you always have
-#    to see if these warnings are prevalent.
-#
-#   Version 3.0.2 - 2/26/21 - Ron Lockwood
-#    Check if the bilingual file is older than the replacement file and if so
-#    process everything.
-#
-#   Version 3.0.1 - 2/15/21 - Ron Lockwood
-#    Always process the replacement file, even if the biling file is up-to-date.
-#    This will allow changes there to be seen in results every time.
-#
-#   Version 3.0 - 1/27/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0.2 - 2/4/20 - Ron Lockwood
-#    give an error when the target db open fails.
-#
-#   Version 2.0.1 - 1/22/20 - Ron Lockwood
-#    Only do replacement file if the dictionary is out of date.
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 12/2/19 - Ron Lockwood
-#    Import FlexProject instead of DBAcess
-#
-#   Version 1.6.2 - 4/5/19 - Ron Lockwood
-#    Check if the bilingual dictionary is out of date in respect to the source
-#    and target databases. If not, just process the replacement file. Don't do
-#    anything else. This helps performance.
-#
-#   Version 1.6.1 - 3/27/19 - Ron Lockwood
-#    Limit the number of warnings shown for pos abbreviations in the wrong format.
-#
-#   Version 1.6 - 5/23/18 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.3.7 - 12/24/17 - Ron Lockwood
-#    When processing replacements, don't add symbols that already exist in the
-#    bilingual dictionary. Add new lines at then end of comment elements to get
-#    multiple lines.
-#
-#   Version 1.3.6 - 12/24/17 - Ron
-#    Changed the way the replacement file is processed since it is now a fully
-#    valid XML file with two section elements for replacing or appending. We
-#    now process both the replacement file and the bilingual file with
-#    ElementTree & Element objects. Loop through objects in both XML files and
-#    replace or add entries from the replacement file in the bilingual dic. file.
-#
-#   Version 1.3.5 - 7/28/17 - Ron
-#    Check that there is a valid target POS before processing the POS names and
-#    abbreviations.
-#
-#   Version 1.3.4 - 1/18/17 - Ron
-#    Give a warning if there is a space or an period in a grammatical category.
-#    Change the space to an underscore and remove periods.
-#
-#   Version 1.3.3 - 5/7/16 - Ron
-#    Give a more helpful message when the target database is not found.
-#    Give an error for every category abbreviation that has a space in it then
-#    exit.
-#
-#   Version 1.3.2 - 4/23/16 - Ron
-#    Check for valid analysis object before checking class name.
-#    Don't use tempfile for the bilingual dictionary file.
-#
-#   Version 1.3.1 - 4/15/16 - Ron
-#    No changes to this module.
-#
-#   Version 1.2.1 - 2/11/16 - Ron
-#    Error checking when opening the replacement file.
-#
-#   Version 1.2.0 - 1/28/16 - Ron
-#    Punctuation support. Use what the user specified in the configuration file for
-#    what is put at the bottom of the bilingual dictionary to handle sentence
-#    punctuation.
-#    Bug fix. When getting inflection class information recursively set the name
-#    before checking for sub inflection classes.
+#   earlier version history removed on 3/1/25
 #
 #   Create a bilingual dictionary in Apertium format. The bilingual dictionary is one
 #   of two elements needed for the Apertium transfer system for transferring a text.
@@ -285,16 +126,16 @@ from datetime import datetime
 import unicodedata
 import io
 
-from System import Guid
-from System import String
+from System import Guid # type: ignore
+from System import String # type: ignore
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IFsClosedFeature,
     FsClosedFeatureTags,
     ILexEntry,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
+from SIL.LCModel.Core.KernelInterfaces import ITsString  # type: ignore
 
 from flextoolslib import *
 
@@ -310,7 +151,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",
@@ -530,9 +371,9 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             rawHeadWord = ITsString(sourceEntry.HeadWord).Text
             sourceURL = DB.BuildGotoURL(sourceEntry)
 
-            # Don't process affixes, clitics
+            # Don't process affixes, clitics  
             if sourceEntry.LexemeFormOA and sourceEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-               sourceEntry.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[sourceEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+               sourceEntry.LexemeFormOA.MorphTypeRA and Utils.as_string(sourceEntry.LexemeFormOA.MorphTypeRA.Name) in sourceMorphNames:
 
                 # Get the headword string
                 headWord = ITsString(sourceEntry.HeadWord).Text

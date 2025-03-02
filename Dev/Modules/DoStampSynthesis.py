@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.1 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -70,179 +74,7 @@
 #    Use flags=re.RegexFlag.A, without flags it won't do what we expect
 #    Also fix for circumfix - needed to check for 'suffix' not SUFFIX_TYPE
 #
-#   Version 3.7.2 - 12/25/22 - Ron Lockwood
-#    Added RegexFlag before re constants
-#
-#   Version 3.7.1 - 12/13/22 - Ron Lockwood
-#    Fixes #360. Process all possible stem names, not just the first one encountered.
-#
-#   Version 3.7 - 12/7/22 - Ron Lockwood
-#    Fixes #291. Match a stem name for an affix if the features of a stem name feature
-#    set is a subset of the features on the affix.
-#
-#   Version 3.6.12 - 10/31/22 - Ron Lockwood
-#    Fixes #302. Skip affix allomorphs of stems when processing stem names or environments.
-#
-#   Version 3.6.11 - 10/19/22 - Ron Lockwood
-#    Fixes #187. Give an error when the ANA file is missing.
-#
-#   Version 3.6.10 - 10/11/22 - Ron Lockwood
-#    Handle msa's that are not MoInflAffMsa or MoStemMsa, by skipping them. Also skip null
-#    environment strings. Also skip clitics. Fixes #280
-#
-#   Version 3.6.9 - 9/17/22 - Ron Lockwood
-#    Overhaul of writing allomorphs to support proper negating of environment
-#    constraints when inflection classes and/or stem names are present.
-#
-#   Version 3.6.8 - 9/3/22 - Ron Lockwood
-#    Fixes #250. Don't create empty STAMP control files if they already exist.
-#    This allows someone to use modifications to these files for whatever purpose.
-#    JH requested this.
-#
-#   Version 3.6.7 - 9/1/22 - Ron Lockwood
-#    Fixes #254. Convert * to _ in stems.
-#
-#   Version 3.6.6 - 8/20/22 - Ron Lockwood
-#    Fixes #256. Handle various null morpheme renderings.
-#
-#   Version 3.6.5 - 8/20/22 - Ron Lockwood
-#    Renamed this module.
-#
-#   Version 3.6.4 - 8/26/22 - Ron Lockwood
-#    Fixes #215 Check morpheme type against guid in the object instead of
-#    the analysis writing system so we aren't dependent on an English WS.
-#    Reformatted, indented the main loop.
-#
-#   Version 3.6.3 - 8/26/22 - Ron Lockwood
-#    Fixes #245. Warn if the morpheme type or lexeme form is null.
-#
-#   Version 3.6.2 - 8/20/22 - Ron Lockwood
-#    Removed logging
-#
-#   Version 3.6.1 - 8/20/22 - Ron Lockwood
-#    Fix bug in last feature. Don't try to process inflection classes for clitics
-#
-#   Version 3.6 - 8/16/22 - Ron Lockwood
-#    Fixes #164. STAMP dictionaries now have constraints and properties for
-#    inflection classes and stem names. Now synthesis with STAMP will take into
-#    account the inflection classes that apply and the stem names. One difference
-#    currently with FLEx, is that secondary allomorph don't get the negation of
-#    the stem name environment of the previous allomorph.
-#
-#   Version 3.5.5.1 - 8/23/22 - Ron Lockwood
-#    Fixes #231. Check for a valid lexeme form object before processing sub objects.
-#
-#   Version 3.5.5 - 7/14/22 - Ron Lockwood
-#    More CloseProject() calls for FlexTools2.1.1
-#
-#   Version 3.5.4 - 7/13/22 - Ron Lockwood
-#    More CloseProject() calls for FlexTools2.1.1
-#
-#   Version 3.5.3 - 7/9/22 - Ron Lockwood
-#    Use a new config setting for using cache. Fixes #115.
-#
-#   Version 3.5.2 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5.1 - 6/13/22 - Ron Lockwood
-#    import change for flexlibs for FlexTools2.1
-#
-#   Version 3.5 - 4/1/22 - Ron Lockwood
-#    Added a parameter useCacheIfAvailable and default it to false so that the
-#    LiveRuleTester can force the rebuild of the lexicon files.  Fixes #56.
-#
-#   Version 3.4.2 - 3/11/22 - Ron Lockwood
-#    Less Information outputted to FlexTools.
-#
-#   Version 3.4.1 - 3/10/22 - Ron Lockwood
-#    Allow variants with sense information to be put into the STAMP root dictionary.
-#    Fixes #84.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0.1 - 7/8/21 - Ron Lockwood
-#    Handle slash in category name
-# 
-#   Version 3.0 - 1/26/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 12/2/19 - Ron Lockwood
-#    Import FlexProject instead of DBAcess
-#
-#   Version 1.6.2 - 4/4/19 - Ron Lockwood
-#    Check for the root lexicon file being out of date compared to the target database
-#    before going through all target entries. This improves performance.
-#
-#   Version 1.6.1 - 3/27/19 - Ron Lockwood
-#    Bugfix for null MSA and for null PartOfSpeech. Give sensible errors in these
-#    situations and skip the sense. 
-#
-#   Version 1.6 - 3/30/18 - Ron Lockwood
-#    Made the main function minimal and separated the main logic into two main functions 
-#    one for extracting the target lexicon and one for running the synthesis. Also 
-#    modularized a lot more of the code.
-#
-#   Version 1.3.8 - 01/19/18 - Ron Lockwood
-#    Skip natural classes that are related to phonological features (PhNCFeatures)
-#
-#   Version 1.3.7 - 10/10/17 - Marc
-#    Extracted call to do_make_direct.sh to RunApertium.py
-#
-#   Version 1.3.6 - 10/6/17 - Marc
-#    Added call to do_make_direct.sh to use Windows Subsystem for Linux and to avoid
-#    the use of VirtualBox for Apertium.
-#
-#   Version 1.3.5 - 1/18/17 - Ron
-#    Use BestAnalysisAlternative instead of AnalysisDefault.
-#    Change the spaces to underscores and remove periods in
-#    grammatical categories.
-#
-#   Version 1.3.4 - 10/21/16 - Ron
-#    Allow the affix and ana files to not be in the temp folder if a slash is present.
-#
-#   Version 1.3.3 - 5/7/16 - Ron
-#    Give a more helpful message when the target database is not found.
-#    If the gloss is None for an affix, skip it and give a warning message.
-#
-#   Version 1.3.2 - 4/23/16 - Ron
-#    Check for a non-null natural class name.
-#
-#   Version 1.3.1 - 4/15/16 - Ron
-#    Handle allomorphs of circumfixes.
-#    Don't assume one prefix and one suffix allomorph. Put all prefix 
-#    allomorphs in the prefix file and likewise for suffix allomorphs.
-#
-#   Version 1.3.0 - 4/13/16 - Ron
-#    Handle infixes and circumfixes.
-#    For infixes write new information to the infix dictionary that is specific
-#    to infixes. Namely the location field which we get from FLEx's 
-#    InfixPositions field. The STAMP sfm mapping file for infixes gets \l
-#    mapped to \L. Circumfixes get processed by writing the 1st allomorph to
-#    the prefix file and the 2nd allomorph to the suffix file.
-#
-#   Version 1.2.0 - 1/29/16 - Ron
-#    No changes to this module.
-#
-#   Version 3 - 7/24/15 - Ron
-#    Preserve case in words. 
-#    Convert the head word for the root dictionaries to lower case. Use the
-#    add_one utility.
-#
-#   Version 2 - 7/16/15 - Ron
-#    Support handling of irregularly inflected forms. Allow variants to be put
-#    into the root dictionary if they they are inflectional variants. Add a new
-#    POS '_variant_' to the list. If there are no senses for an entry see if it
-#    is an infl. variant and if so write it to the root dictionary.
+#   earlier version history removed on 3/1/25
 #
 #   Create the target dictionaries that STAMP needs. These are in the 
 #   AMPLE-style sfm format. Also at the end of the module, create the files that 
@@ -261,7 +93,7 @@ import re
 from subprocess import call
 from datetime import datetime
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IMoInflAffMsa,
     IMoStemAllomorph,
@@ -269,9 +101,9 @@ from SIL.LCModel import (
     IMoAffixProcess,
     IPhNCSegments,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr          # type: ignore
 
-from flextoolslib import *                                                 
+from flextoolslib import *                                                  # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig
@@ -290,7 +122,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -625,9 +457,9 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     for allomorph in e.AlternateFormsOS:
         
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
-        morphType = Utils.morphTypeMap[morphGuidStr]
+        affixGuidStr = Utils.morphTypeReverseMap['prefix']
             
-        if morphType == 'prefix':
+        if morphGuidStr == affixGuidStr:
             
             gather_allomorph_data(allomorph, masterAlloList, PREFIX_TYPE)
     
@@ -651,9 +483,9 @@ def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     for allomorph in e.AlternateFormsOS:
         
         morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
-        morphType = Utils.morphTypeMap[morphGuidStr]
+        affixGuidStr = Utils.morphTypeReverseMap['suffix']
             
-        if morphType == 'suffix':
+        if morphGuidStr == affixGuidStr:
 
             gather_allomorph_data(allomorph, masterAlloList, SUFFIX_TYPE)
 
@@ -802,10 +634,10 @@ def output_cat_info(TargetDB, f_dec):
         posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
         
         # change spaces to underscores
-        posAbbr = re.sub('\s', '_', posAbbr)
+        posAbbr = re.sub(r'\s', '_', posAbbr)
 
         # remove periods
-        posAbbr = re.sub('\.', '', posAbbr)
+        posAbbr = re.sub(r'\.', '', posAbbr)
 
         # change / to |
         posAbbr = re.sub('/', '|', posAbbr)
@@ -895,40 +727,40 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
     pf_cnt = sf_cnt = if_cnt = rt_cnt = 0
     
     # Loop through all the entries
-    for i,e in enumerate(TargetDB.LexiconAllEntries()):
+    for i,entry in enumerate(TargetDB.LexiconAllEntries()):
     
         if report is not None:
             report.ProgressUpdate(i)
             
         # Check that the objects we need are valid
-        if not e.LexemeFormOA:
+        if not entry.LexemeFormOA:
             
-            if e.HeadWord:
+            if entry.HeadWord:
                 
-                err_list.append(('Skipping sense because the lexeme form is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
-                
-            continue
-            
-        if not e.LexemeFormOA.MorphTypeRA or not e.LexemeFormOA.MorphTypeRA.Name:
-            
-            if e.HeadWord:
-                
-                err_list.append(('Skipping sense because the morpheme type is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                err_list.append(('Skipping sense because the lexeme form is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                 
             continue
             
-        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
-        morphType = Utils.morphTypeMap[morphGuidStr]
+        if not entry.LexemeFormOA.MorphTypeRA or not entry.LexemeFormOA.MorphTypeRA.Name:
+            
+            if entry.HeadWord:
+                
+                err_list.append(('Skipping sense because the morpheme type is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                
+            continue
+            
+        # See if we have the right morph type
+        morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
         
         # Process inflectional variants even if they have senses.
         got_one = False
         
         # Process roots
         # Don't process clitics in this block
-        if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
+        if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph' and entry.LexemeFormOA.MorphTypeRA and morphType in morphNames:
         
             # Check for an inflectional variant
-            for entryRef in e.EntryRefsOS:
+            for entryRef in entry.EntryRefsOS:
                 
                 if entryRef.RefType == 0: # we have a variant
                     
@@ -946,38 +778,38 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             if got_one:                
                 
                 # Set the headword value and the homograph #, if necessary
-                headWord = ITsString(e.HeadWord).Text
+                headWord = ITsString(entry.HeadWord).Text
                 headWord = Utils.add_one(headWord)
                 headWord = headWord.lower()
                 # change spaces to underscores
-                headWord = re.sub('\s', '_', headWord)
+                headWord = re.sub(r'\s', '_', headWord)
 
                 # Write out morphname field (no sense number for variants)
                 f_rt.write('\\m '+headWord+'\n')
                 f_rt.write('\\c '+"_variant_"+'\n')
 
                 # Process all allomorphs and their environments
-                process_allomorphs(e, f_rt, "", STEM_TYPE, sense=None)
+                process_allomorphs(entry, f_rt, "", STEM_TYPE, sense=None)
                 rt_cnt +=1
 
-        if e.SensesOS.Count > 0: # Entry with senses
+        if entry.SensesOS.Count > 0: # Entry with senses
             
             # Loop through senses
-            for i, mySense in enumerate(e.SensesOS):
+            for i, mySense in enumerate(entry.SensesOS):
                 
                 gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
                 
                 # Process roots
                 # Don't process clitics in this block
-                if e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType in morphNames:
+                if entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph' and entry.LexemeFormOA.MorphTypeRA and morphType in morphNames:
                 
                     # Set the headword value and the homograph #, if necessary
-                    headWord = ITsString(e.HeadWord).Text
+                    headWord = ITsString(entry.HeadWord).Text
                     headWord = Utils.add_one(headWord)
                     headWord = headWord.lower()
                     
                     # change spaces to underscores
-                    headWord = re.sub('\s', '_', headWord)
+                    headWord = re.sub(r'\s', '_', headWord)
 
                     if mySense.MorphoSyntaxAnalysisRA:
                         
@@ -988,13 +820,13 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                                           
                                 abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
                             else:
-                                err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                                err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                                 continue
                         else:
-                            err_list.append((f'Skipping sense that is of class: {msa.ClassName} for headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append((f'Skipping sense that is of class: {msa.ClassName} for headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                             continue
                     else:
-                        err_list.append(('Skipping sense that has no Morpho-syntax analysis. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append(('Skipping sense that has no Morpho-syntax analysis. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                         continue
     
                     # Write out morphname field
@@ -1005,46 +837,46 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                     f_rt.write('\\c '+abbrev+'\n')
                     
                     # Process all allomorphs and their environments 
-                    process_allomorphs(e, f_rt, gloss, STEM_TYPE, mySense)
+                    process_allomorphs(entry, f_rt, gloss, STEM_TYPE, mySense)
                     rt_cnt +=1
 
                 # Now process non-roots
                 else:
                     if gloss == None:
                         
-                        err_list.append(('No gloss. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append(('No gloss. Skipping. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                         
-                    elif e.LexemeFormOA == None:
+                    elif entry.LexemeFormOA == None:
                         
-                        err_list.append(('No lexeme form. Skipping. Headword: '+ITsString(e.HeadWord).Text, 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append(('No lexeme form. Skipping. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                         
-                    elif e.LexemeFormOA.MorphTypeRA == None:
+                    elif entry.LexemeFormOA.MorphTypeRA == None:
                         
-                        err_list.append((f'No Morph Type. Skipping.{ITsString(e.HeadWord).Text} Best Vern: {ITsString(e.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text}', 1, TargetDB.BuildGotoURL(e)))
+                        err_list.append((f'No Morph Type. Skipping.{ITsString(entry.HeadWord).Text} Best Vern: {ITsString(entry.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text}', 1, TargetDB.BuildGotoURL(entry)))
                         
-                    elif e.LexemeFormOA.ClassName != 'MoStemAllomorph':
+                    elif entry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         
-                        if e.LexemeFormOA.ClassName == 'MoAffixAllomorph':
+                        if entry.LexemeFormOA.ClassName == 'MoAffixAllomorph':
                             
                             # Add the entry and sense and other stuff to a list for processing later
-                            allAffixesList.append((e, gloss, mySense, morphType))
+                            allAffixesList.append((entry, gloss, mySense, morphType))
 
                         else:
-                            err_list.append(('Skipping entry since the lexeme is of type: '+e.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append(('Skipping entry since the lexeme is of type: '+entry.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(entry)))
                             
                     elif morphType not in morphNames:
                         
                         if morphType == 'proclitic':
                             
-                            process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
+                            process_allomorphs(entry, f_pf, gloss, PREFIX_TYPE, mySense)
                             pf_cnt += 1
                             
                         elif morphType == 'enclitic':
                             
-                            process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
+                            process_allomorphs(entry, f_sf, gloss, SUFFIX_TYPE, mySense)
                             sf_cnt += 1
                         else:
-                            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+                            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(entry)))
 
     getRequiredFeaturesInfo(allAffixesList)   
 
@@ -1167,7 +999,8 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
-        report.Error('Failed to open the target database.')
+        if report:
+            report.Error('Failed to open the target database.')
         raise
 
     error_list.append(('Using: '+targetProj+' as the target database.', 0))
