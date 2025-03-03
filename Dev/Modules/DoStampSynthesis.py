@@ -866,12 +866,14 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             
                     elif morphType not in morphNames:
                         
-                        if morphType == 'proclitic':
+                        morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
+
+                        if morphGuidStr == Utils.morphTypeReverseMap['proclitic']:
                             
                             process_allomorphs(entry, f_pf, gloss, PREFIX_TYPE, mySense)
                             pf_cnt += 1
                             
-                        elif morphType == 'enclitic':
+                        elif morphGuidStr == Utils.morphTypeReverseMap['enclitic']:
                             
                             process_allomorphs(entry, f_sf, gloss, SUFFIX_TYPE, mySense)
                             sf_cnt += 1
@@ -923,22 +925,24 @@ def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cn
     # Loop through all the affixes and process them
     for e, gloss, mySense, morphType in allAffixesList:
 
-        if morphType in ['prefix', 'prefixing interfix']:
+        morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
+        
+        if morphGuidStr in [Utils.morphTypeReverseMap['prefix'], Utils.morphTypeReverseMap['prefixing interfix']]:
             
             process_allomorphs(e, f_pf, gloss, PREFIX_TYPE, mySense)
             pf_cnt += 1
             
-        elif morphType in ['suffix', 'suffixing interfix']:
+        elif morphGuidStr in [Utils.morphTypeReverseMap['suffix'], Utils.morphTypeReverseMap['suffixing interfix']]:
             
             process_allomorphs(e, f_sf, gloss, SUFFIX_TYPE, mySense)
             sf_cnt += 1
             
-        elif morphType in ['infix', 'infixing interfix']:
+        elif morphGuidStr in [Utils.morphTypeReverseMap['infix'], Utils.morphTypeReverseMap['infixing interfix']]:
             
             process_allomorphs(e, f_if, gloss, INFIX_TYPE, mySense)
             if_cnt += 1
             
-        elif morphType == 'circumfix':
+        elif morphGuidStr == Utils.morphTypeReverseMap['circumfix']:
             
             process_circumfix(e, f_pf, f_sf, gloss, mySense)
             pf_cnt += 1
