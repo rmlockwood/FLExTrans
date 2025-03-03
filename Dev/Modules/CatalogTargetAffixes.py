@@ -164,6 +164,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
           
             morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
+            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
@@ -188,7 +189,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                         processIt = True
                         break
                 
-            # Process affixes or clitics (stems that aren't in the morphNames list)
+            # Process affixes or clitics (entries that aren't in the morphNames list)
             if processIt:
             
                 myGlossAndTypes = []
@@ -201,10 +202,13 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
                     
-                    # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
-                    if (morphType, myGloss) not in myGlossAndTypes:
+                    # Use the English morphtype as a standard.
+                    engMorphType = Utils.morphTypeMap[morphGuidStr]
 
-                        myGlossAndTypes.append((morphType, myGloss))
+                    # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
+                    if (engMorphType, myGloss) not in myGlossAndTypes:
+
+                        myGlossAndTypes.append((engMorphType, myGloss))
 
                 glossAndTypeList.extend(myGlossAndTypes)
                     
