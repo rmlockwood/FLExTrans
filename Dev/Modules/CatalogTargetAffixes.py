@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.2 - 3/3/25 - Ron Lockwood
+#    Fixes #915. More checks for invalid chars in lemmas or affixes.
+#
 #   Version 3.12.1 - 3/2/25 - Ron Lockwood
 #    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
 #    This is needed now that we let non-English morphtype names be used in the settings.
@@ -55,7 +58,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.12.1",        
+        FTM_Version    : "3.12.2",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -163,8 +166,9 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         # Make sure we have a valid MorphType object
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
           
+            # Use the English morphtype as a standard when we write it out.
+            engMorphType = Utils.morphTypeMap[entry.LexemeFormOA.MorphTypeRA.Guid.ToString()]
             morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
-            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
@@ -181,6 +185,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 
                 for allomorph in entry.AlternateFormsOS:
                     
+                    # Use the English morphtype as a standard when we write it out.
+                    engMorphType = Utils.morphTypeMap[allomorph.MorphTypeRA.Guid.ToString()]
                     morphType = Utils.as_string(allomorph.MorphTypeRA.Name)
 
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
@@ -198,13 +204,17 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
                 for i, mySense in enumerate(entry.SensesOS):
                     
                     count += 1
-                    
-                    # Convert dots to underscores in the affix gloss
-                    myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
-                    
-                    # Use the English morphtype as a standard.
-                    engMorphType = Utils.morphTypeMap[morphGuidStr]
+                    myGloss = Utils.as_string(mySense.Gloss)
 
+                    # Check for invalid characters
+                    if Utils.containsInvalidLemmaChars(myGloss):
+
+                        if report:
+                            report.Error(f'Invalid characters in the affix: {myGloss}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(entry))
+
+                    # Convert dots to underscores in the affix gloss
+                    myGloss = Utils.underscores(myGloss)
+                    
                     # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
                     if (engMorphType, myGloss) not in myGlossAndTypes:
 
@@ -218,6 +228,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     
     # Sort by type and then by gloss
     for tupType, tupGloss in sorted(glossAndTypeList):
+
         f_out.write(tupGloss +'|'+ tupType + '\n')
         
         # Check for duplicates and give a warning.
