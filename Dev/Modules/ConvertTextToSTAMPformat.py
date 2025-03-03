@@ -249,7 +249,7 @@ import re
 import os
 from datetime import datetime
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     ILexSense,
     ILexEntryInflType,
     IFsClosedValue,
@@ -258,7 +258,7 @@ from SIL.LCModel import (
     ILexEntry,
     IMoStemMsa,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel.Core.KernelInterfaces import ITsString          # type: ignore
 
 from flextoolslib import *                                                 
 from flexlibs import FLExProject
@@ -1381,7 +1381,7 @@ def processLU(lexUnitStr, affixMap):
             suffixList.append(morphs[i])
             
         ## We use English morphnames as a standard in the target affix glosses file
-        
+
         # prefix
         elif affixMap[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
             

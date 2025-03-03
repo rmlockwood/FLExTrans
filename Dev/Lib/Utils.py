@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.18 - 3/3/25 - Ron Lockwood
+#    Fixes #915. More checks for invalid chars in lemmas or affixes.
+#
 #   Version 3.12.17 - 3/2/25 - Ron Lockwood
 #    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
 #    This is needed now that we let non-English morphtype names be used in the settings.
@@ -298,7 +301,7 @@ globalStyle = 'NotSet'
 
 # precompiled reguglar expressions
 reDataStream = re.compile('(>[^$<])')
-reObjAddOne = re.compile('\d$', flags=re.RegexFlag.A) # ASCII-only match
+reObjAddOne = re.compile(r'\d$', flags=re.RegexFlag.A) # ASCII-only match
 reTestID = re.compile('test id=".+?"')
 reSpace = re.compile(r'\s')
 rePeriod = re.compile(r'\.')
@@ -1296,15 +1299,23 @@ def getInterlinData(DB, report, params):
                             # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far
                             # in this case, treat it as a root
                             if isClitic(tempEntry) == True and not (isEnclitic(tempEntry) and myWord.hasEntries() == False):
-                                # Get the clitic gloss.
+
+                                # Check for invalid characters
+                                if containsInvalidLemmaChars(as_string(bundle.SenseRA.Gloss)):
+
+                                    report.Error(f'Invalid characters in the affix: {as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
+                                    return myText
+                                
+                                # Add the clitic
                                 myWord.addAffix(bundle.SenseRA.Gloss)
 
                             # Otherwise we have a root or stem or phrase
                             else:
 
                                 # See if there are any invalid chars in the headword
-                                if containsInvalidLemmaChars(myWord.getHeadword()):
+                                if containsInvalidLemmaChars(getHeadwordStr(tempEntry)):
                                     
+                                    report.Error(f'Invalid characters in the source headword: {getHeadwordStr(tempEntry)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
                                     return myText
 
                                 myWord.addEntry(tempEntry)
@@ -1312,12 +1323,17 @@ def getInterlinData(DB, report, params):
 
                                 # Go through each sense and identify which sense number we have
                                 foundSense = False
+
                                 for senseNum, mySense in enumerate(tempEntry.SensesOS):
+
                                     if mySense.Guid == bundle.SenseRA.Guid:
+
                                         myWord.addSense(mySense)
                                         foundSense = True
                                         break
+
                                 if foundSense:
+                                    
                                     # Construct and set the lemma
                                     myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                                 else:
@@ -1329,7 +1345,13 @@ def getInterlinData(DB, report, params):
                     # We have an affix
                     else:
                         if bundle.SenseRA:
-                            # Get the clitic gloss. Substitute periods with underscores. dots cause problems because in rules Apertium sees them as additional tags
+                             
+                                # Check for invalid characters
+                            if containsInvalidLemmaChars(as_string(bundle.SenseRA.Gloss)):
+
+                                report.Error(f'Invalid characters in the affix: {as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}')
+                                return myText
+                            
                             myWord.addAffix(bundle.SenseRA.Gloss)
                         else:
                             report.Warning("Sense object for a source affix is null.")
