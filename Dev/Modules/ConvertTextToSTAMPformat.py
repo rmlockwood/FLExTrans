@@ -1380,6 +1380,8 @@ def processLU(lexUnitStr, affixMap):
             
             suffixList.append(morphs[i])
             
+        ## We use English morphnames as a standard in the target affix glosses file
+        
         # prefix
         elif affixMap[morphs[i]] in ['prefix', 'proclitic', 'prefixing interfix']:
             

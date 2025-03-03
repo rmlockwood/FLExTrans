@@ -5,6 +5,10 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.12 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.10 - 4/11/24 - Ron Lockwood
 #    Bug fix for TreeTran use -- check msa object is valid.
 #
@@ -47,12 +51,12 @@ import ReadConfig
 import Testbed 
 import Utils as MyUtils
 
-from SIL.LCModel import (
+from SIL.LCModel import (  # type: ignore
     IMoStemMsa,
     IMoInflClassRepository,
     IFsClosedFeatureRepository,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+from SIL.LCModel.Core.KernelInterfaces import ITsString    # type: ignore
 
 GRAM_CATS = 'Grammatical Categories:'
 TAGS = 'Tags:'
@@ -214,8 +218,8 @@ class TestbedValidator():
         # Loop through all the entries
         for i,e in enumerate(self.db.LexiconAllEntries()):
             
-            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
-            morphType = MyUtils.morphTypeMap[morphGuidStr]
+            # See if we have the right morph type
+            morphType = MyUtils.as_string(e.LexemeFormOA.MorphTypeRA.Name)
             
             # If no senses, skip it
             if e.SensesOS.Count == 0:

@@ -6,6 +6,10 @@
 #   7/24/23
 #
 #
+#   Version 3.12.3 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12.2 - 1/30/25 - Ron Lockwood
 #    Corrected module description.
 #
@@ -38,7 +42,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.12.2",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link all senses to the same ID in the target.",
         FTM_Help       : "",
@@ -99,7 +103,7 @@ def MainFunction(DB, report, modify=False):
     
         # Don't process affixes, clitics
         if entryObj.LexemeFormOA and entryObj.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           entryObj.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[entryObj.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+           entryObj.LexemeFormOA.MorphTypeRA and Utils.as_string(entryObj.LexemeFormOA.MorphTypeRA.Name) in sourceMorphNames:
         
             # Loop through senses
             for mySense in entryObj.SensesOS:

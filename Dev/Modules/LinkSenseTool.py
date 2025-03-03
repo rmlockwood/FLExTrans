@@ -5,6 +5,10 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.12.7 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12.6 - 1/10/25 - Ron Lockwood
 #    Fixes #840. Show the waitcursor for 3 seconds before closing the window if 
 #    the users wants to rebuild the bilingual lexicon.
@@ -189,7 +193,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.12.6",
+        FTM_Version    : "3.12.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1162,7 +1166,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
         
         # Don't process affixes, clitics
         if entryObj.LexemeFormOA and entryObj.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-           entryObj.LexemeFormOA.MorphTypeRA and Utils.morphTypeMap[entryObj.LexemeFormOA.MorphTypeRA.Guid.ToString()] in targetMorphNames:
+           entryObj.LexemeFormOA.MorphTypeRA and Utils.as_string(entryObj.LexemeFormOA.MorphTypeRA.Name) in targetMorphNames:
         
             # Loop through senses
             for senseNum, mySense in enumerate(entryObj.SensesOS):
@@ -1328,9 +1332,8 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                             # If we have processed this sense already, we will just re-add it to the list
                             if mySense not in processedMap:
                                 
-                                # Lookup the morphType via hard-coded guid
-                                morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
-                                morphType = Utils.morphTypeMap[morphGuidStr]
+                                # See if we have the right morph type
+                                morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
             
                                 if morphType in sourceMorphNames:
                                     

@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.12.1 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -28,92 +32,7 @@
 #    Fixes #482. Affix allomorphs were skipped when the main form was a stem
 #    because new guid lookup of morphname was using the entry object instead of the allomorph object.
 #
-#   Version 3.9 - 17 Jul 2023 - Beth Bryson
-#    Use GUIDs for morphType, to allow non-English analysis writing systems
-#
-#   Version 3.8.1 - 4/20/23 - Ron Lockwood
-#    Reworked import statements
-#
-#   Version 3.8 - 4/18/23 - Ron Lockwood
-#    Fixes #117. Common function to handle collected errors.
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 8/20/22 - Ron Lockwood
-#    Renamed this module.
-#
-#   Version 3.5.4 - 8/8/22 - Ron Lockwood
-#    Error message fix.
-#
-#   Version 3.5.3 - 7/13/22 - Ron Lockwood
-#    More CloseProject() calls for FlexTools2.1.1
-#
-#   Version 3.5.2 - 7/9/22 - Ron Lockwood
-#    Use a new config setting for using cache. Fixes #115.
-#    Also more calls to CloseProject when there's an error.
-#
-#   Version 3.5.1 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5 - 4/1/22 - Ron Lockwood
-#    Added a parameter useCacheIfAvailable and default it to false so that the
-#    LiveRuleTester can force the rebuild of the affix list.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/26/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 12/2/19 - Ron Lockwood
-#    Import FlexProject instead of DBAcess
-#
-#   Version 1.6.2 - 4/3/19 - Ron Lockwood
-#    Check for the affix file being out of date compared to the target database
-#    before going through all target entries. This improves performance.
-#
-#   Version 1.6.1 - 8/4/18 - Ron Lockwood
-#    Give a warning for affixes or clitics that are duplicate. Also sort the
-#    affixes before outputing to the file.
-#
-#   Version 1.6 - 2/7/18 - Ron Lockwood
-#    Made the main function minimal and separated the main logic into a another
-#    that can be called by the Live Rule Tester.
-#
-#   Version 1.3.4 - 1/18/17 - Ron
-#    Use BestAnalysisAlternative instead of AnalysisDefault.
-#    Check for empty morphType.
-#
-#   Version 1.3.3 - 10/21/16 - Ron
-#    Allow the affix file to not be in the temp folder if a slash is present.
-#
-#   Version 1.3.2 - 4/23/16 - Ron
-#    Use | as the separator between affix name and mopheme type.
-#
-#   Version 1.3.1 - 4/15/16 - Ron
-#    No changes to this module.
-#
-#   Version 1.3.0 - 4/13/16 - Ron
-#    Handle infixes and circumfixes.
-#    Instead of just outputting prefixes, output all affix glosses and their
-#    corresponding morphtype. Also convert dots to underscores in the glosses.
-#    Process all allomorphs of an entry to see if there are affixes/clitics.
-#
-#   Version 1.2.1 - 2/11/16 - Ron
-#    Error checking when opening the prefix file.
-#
-#   Version 1.2.0 - 1/29/16 - Ron
-#    No changes to this module.
+#   earlier version history removed on 3/1/25
 #
 #   Go through the database and extract the gloss field and morpheme type
 #   for each affix. Do this per sense. Write one gloss and morphtype per line.
@@ -123,8 +42,8 @@ import os
 import re
 from datetime import datetime
 
-from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr   
+from SIL.LCModel import * # type: ignore
+from SIL.LCModel.Core.KernelInterfaces import ITsString    # type: ignore
 
 from flextoolslib import *
 from flexlibs import FLExProject
@@ -136,7 +55,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.12",        
+        FTM_Version    : "3.12.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
         FTM_Help  : "",
@@ -234,7 +153,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         report.ProgressStart(TargetDB.LexiconNumberOfEntries())
   
     # Loop through all the entries
-    for i,e in enumerate(TargetDB.LexiconAllEntries()):
+    for i,entry in enumerate(TargetDB.LexiconAllEntries()):
     
         if report is not None:
             report.ProgressUpdate(i)
@@ -242,50 +161,54 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
         processIt = False
         
         # Make sure we have a valid MorphType object
-        if e.LexemeFormOA and e.LexemeFormOA.MorphTypeRA:
+        if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
           
-            morphGuidStr = e.LexemeFormOA.MorphTypeRA.Guid.ToString()
-            morphType = Utils.morphTypeMap[morphGuidStr]
+            morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
+            morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
             
             # Check if either the main form or any allomorphs are affixes or non-roots (e.g. clitics)
             
             # First the main form. If we have an affix or stem type that is anything other than the ones counted 
             # as roots according to the config file (morphNames), e.g. clitic, enclitic, proclitic, etc.
-            if (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoAffixAllomorph' and e.LexemeFormOA.MorphTypeRA) or \
-               (e.LexemeFormOA and e.LexemeFormOA.ClassName == 'MoStemAllomorph' and e.LexemeFormOA.MorphTypeRA and morphType != None and morphType not in morphNames):
+            if (entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoAffixAllomorph' and entry.LexemeFormOA.MorphTypeRA) or \
+               (entry.LexemeFormOA and entry.LexemeFormOA.ClassName == 'MoStemAllomorph' and entry.LexemeFormOA.MorphTypeRA and morphType != None and morphType not in morphNames):
     
                 processIt = True
             
             # If main form isn't an affix or non-root look in allomorphs. This is because you can have for example a
             # clitic allomorph of a stem.
             if processIt == False:
-                for allomorph in e.AlternateFormsOS:
+
+                for allomorph in entry.AlternateFormsOS:
                     
-                    morphGuidStr = allomorph.MorphTypeRA.Guid.ToString()
-                    morphType = Utils.morphTypeMap[morphGuidStr]
+                    morphType = Utils.as_string(allomorph.MorphTypeRA.Name)
+
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
                        (allomorph and allomorph.ClassName == 'MoStemAllomorph' and allomorph.MorphTypeRA and morphType != None and morphType not in morphNames):
             
                         processIt = True
                         break
                 
-            # Process affixes or clitics (stems that aren't in the morphNames list)
+            # Process affixes or clitics (entries that aren't in the morphNames list)
             if processIt:
             
                 myGlossAndTypes = []
 
                 # Loop through senses
-                for i, mySense in enumerate(e.SensesOS):
+                for i, mySense in enumerate(entry.SensesOS):
                     
                     count += 1
                     
                     # Convert dots to underscores in the affix gloss
                     myGloss = Utils.underscores(ITsString(mySense.Gloss.BestAnalysisAlternative).Text)
                     
-                    # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
-                    if (morphType, myGloss) not in myGlossAndTypes:
+                    # Use the English morphtype as a standard.
+                    engMorphType = Utils.morphTypeMap[morphGuidStr]
 
-                        myGlossAndTypes.append((morphType, myGloss))
+                    # Save the gloss and morph type (allow the same gloss and morphtype within an entry, i.e. don't add again causing a warning)
+                    if (engMorphType, myGloss) not in myGlossAndTypes:
+
+                        myGlossAndTypes.append((engMorphType, myGloss))
 
                 glossAndTypeList.extend(myGlossAndTypes)
                     

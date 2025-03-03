@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.12.17 - 3/2/25 - Ron Lockwood
+#    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
+#    This is needed now that we let non-English morphtype names be used in the settings.
+#
 #   Version 3.12.16 - 2/21/25 - Ron Lockwood
 #    Fixes #907. Fix places where FLEx puts a newline between the \ and sfm chars so that
 #    inserting into the target text will come out with the \ on the next line.
@@ -411,9 +415,9 @@ def isProclitic(entry):
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
 
             morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
-            morphType = morphTypeMap[morphGuidStr]
-
-            if morphType  == 'proclitic':
+            affixGuidStr = morphTypeReverseMap['proclitic']
+            
+            if morphGuidStr == affixGuidStr:
 
                 ret_val = True
 
@@ -431,9 +435,9 @@ def isEnclitic(entry):
         if entry.LexemeFormOA and entry.LexemeFormOA.MorphTypeRA:
 
             morphGuidStr = entry.LexemeFormOA.MorphTypeRA.Guid.ToString()
-            morphType = morphTypeMap[morphGuidStr]
-
-            if morphType  == 'enclitic':
+            affixGuidStr = morphTypeReverseMap['enclitic']
+            
+            if morphGuidStr == affixGuidStr:
 
                 ret_val = True
 
@@ -2003,7 +2007,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
 
         # Don't process affixes, clitics
         if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
-            srcEntry.LexemeFormOA.MorphTypeRA and morphTypeMap[srcEntry.LexemeFormOA.MorphTypeRA.Guid.ToString()] in sourceMorphNames:
+            srcEntry.LexemeFormOA.MorphTypeRA and as_string(srcEntry.LexemeFormOA.MorphTypeRA.Name) in sourceMorphNames:
 
             if srcEntry.LexemeFormOA.IsAbstract:
                 continue
@@ -2144,7 +2148,7 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
         LF = entry.LexemeFormOA
         if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
             continue
-        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+        if not LF.MorphTypeRA or as_string(LF.LexemeFormOA.MorphTypeRA.Name) not in sourceMorphNames:
             continue
 
         for sense in entry.SensesOS:
@@ -2171,7 +2175,7 @@ def getAllStemFeatures(DB, report, configMap):
         LF = entry.LexemeFormOA
         if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
             continue
-        if not LF.MorphTypeRA or morphTypeMap[LF.MorphTypeRA.Guid.ToString()] not in sourceMorphNames:
+        if not LF.MorphTypeRA or as_string(LF.LexemeFormOA.MorphTypeRA.Name) not in sourceMorphNames:
             continue
 
         for sense in entry.SensesOS:
