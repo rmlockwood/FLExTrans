@@ -185,6 +185,8 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 
                 for allomorph in entry.AlternateFormsOS:
                     
+                    # Use the English morphtype as a standard when we write it out.
+                    engMorphType = Utils.morphTypeMap[allomorph.MorphTypeRA.Guid.ToString()]
                     morphType = Utils.as_string(allomorph.MorphTypeRA.Name)
 
                     if (allomorph and allomorph.ClassName == 'MoAffixAllomorph' and allomorph.MorphTypeRA) or \
@@ -226,6 +228,7 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
     
     # Sort by type and then by gloss
     for tupType, tupGloss in sorted(glossAndTypeList):
+
         f_out.write(tupGloss +'|'+ tupType + '\n')
         
         # Check for duplicates and give a warning.
