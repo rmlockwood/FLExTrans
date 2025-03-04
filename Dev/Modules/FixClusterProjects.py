@@ -42,16 +42,17 @@ import FTPaths
 #----------------------------------------------------------------
 # Documentation for the user:
 
-docs = {FTM_Name       : "FixFWProject",
+docs = {FTM_Name       : "Fix Cluster Projects",
         FTM_Version    : "3.12",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Run the Find and Fix utility on the cluster projects you choose.",
         FTM_Help       : None,
         FTM_Description: 
 """
-Run the Find and Fix utility on the cluster projects you choose.
+Run the Find and Fix utility on the cluster projects you choose. This the same utility that is available in FLEx. 
+You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
+it is not open. Fixed errors are logged to the report pane.
 """ }
-
 
 #----------------------------------------------------------------
 # Dummy progress class to pass to FwDataFixer(). 
