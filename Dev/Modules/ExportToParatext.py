@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.5 - 3/4/25 - Ron Lockwood
+#    New module name.
+#
 #   Version 3.12.4 - 1/15/25 - Ron Lockwood
 #    Export from FLEx to Paratext, optionally across cluster projects.
 #
@@ -83,15 +86,16 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Export Translated Text to Paratext",
-        FTM_Version    : "3.12.3",
+docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
+        FTM_Version    : "3.12.5",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Export text that has been translated with FLExTrans to Paratext.",
+        FTM_Synopsis   : "Export the draft that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
         FTM_Description:
 """
-After chapters have been translated with FLExTrans, this module will copy the chapters
-into Paratext to the project specified.""" }
+After chapters have been synthesized with the Synthesize Text module, the draft resides in the file specified
+by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
+takes the draft in this file and copies the chapters into Paratext to the project specified.""" }
                  
 #----------------------------------------------------------------
 # The main processing function
