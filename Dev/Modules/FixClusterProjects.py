@@ -23,13 +23,13 @@ clr.AddReference("FixFWDataDll")
 #from SIL.FieldWorks.FixData import FixErrorsDlg
 
 clr.AddReference("SIL.LCModel.FixData")
-from SIL.LCModel.FixData import FwDataFixer
+from SIL.LCModel.FixData import FwDataFixer # type: ignore
 
 clr.AddReference("SIL.LCModel")
-from SIL.LCModel import LcmFileHelper
+from SIL.LCModel import LcmFileHelper # type: ignore
 
 clr.AddReference("SIL.LCModel.Utils")
-from SIL.LCModel.Utils import IProgress 
+from SIL.LCModel.Utils import IProgress  # type: ignore
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5 import QtGui
