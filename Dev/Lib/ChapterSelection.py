@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.8 - 3/4/25 - Ron Lockwood
+#    Fixes #903. Don't show the 'Don't show message again' checkbox if there are no cluster projects.
+#
 #   Version 3.12.7 - 1/23/25 - Ron Lockwood
 #    Support import of Glossary book (GLO).
 #
@@ -57,7 +60,6 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox, QCheckBox
-from PyQt5.QtGui import QIcon
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
@@ -446,15 +448,18 @@ def doExport(textContents, report, chapSelectObj, parent):
         msgBox.setWindowTitle("Overwrite chapters")
         msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         
-        # Add checkbox to the QMessageBox
-        checkBox = QCheckBox("Do not show this message again.")
-        msgBox.setCheckBox(checkBox)
+        # Add checkbox to the QMessageBox if we have multiple projects
+        if len(chapSelectObj.clusterProjects) > 0:
+
+            checkBox = QCheckBox("Do not show this message again.")
+            msgBox.setCheckBox(checkBox)
         
         # Display the message box and wait for user interaction
         ret = msgBox.exec_()
         
         # Check if the checkbox was checked
-        if checkBox.isChecked():
+        if len(chapSelectObj.clusterProjects) > 0 and checkBox.isChecked():
+
             chapSelectObj.dontShowWarning = True
 
         if ret == QMessageBox.No:
