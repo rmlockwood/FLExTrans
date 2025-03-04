@@ -21,7 +21,7 @@
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
-!define EXPORTFROMFLEX "FLExTrans.Export FLEx Text to Paratext"
+!define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -223,9 +223,11 @@ InitPluginsDir
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
         # older module names
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text with STAMP"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
       ${EndIf}
       FindNext $3 $4
       Goto loop2

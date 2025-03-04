@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.12.3 - 3/4/25 - Ron Lockwood
+#    New module name.
+#
 #   Version 3.12.2 - 1/15/25 - Ron Lockwood
 #    Export from the target DB as the default. Also recognize texts that have - Copy ...
 #    at the end.
@@ -49,8 +52,8 @@ import ChapterSelection
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Export FLEx Text to Paratext",
-        FTM_Version    : "3.12.2",
+docs = {FTM_Name       : "Export Text from Target FLEx to Paratext",
+        FTM_Version    : "3.12.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export one or more texts that contain scripture from the target FLEx project to Paratext.",
         FTM_Help       : "",
