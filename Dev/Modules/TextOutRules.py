@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.12.2 - 3/4/25 - Ron Lockwood
+#    Improved description.
+#
 #   Version 3.12.1 - 11/12/24 - Ron Lockwood
 #    Use default path if settings has no path to the xml file.
 #
@@ -42,14 +45,16 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.12.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
         FTM_Description: 
 """
 This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-synthesis. Regular expressions can be used if desired.
+synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the Fix Up Synthesis Text module.
+This module is not in the Drafting collection of modules by default. You need to add Fix Up Synthesis Text to the Drafting collection 
+and move it to be after the Synthesize Text module.
 """}
 
 DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
