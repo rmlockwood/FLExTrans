@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.12.1 - 3/5/25 - Ron Lockwood
+#   Fixes #909. Error messages when files don't exist.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -28,7 +31,6 @@
 #
 
 import os
-import regex
 import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                          
@@ -40,7 +42,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Run a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",
@@ -89,9 +91,13 @@ def MainFunction(DB, report, modify=True):
         report.Error(f'The rules file: {textOutRulesFile} has invalid XML data.')
         return 
 
-    f = open(synthFile, encoding='utf-8')
-    lines = f.readlines()
-    f.close()
+    try:
+        with open(synthFile, encoding='utf-8') as f:
+        
+            lines = f.readlines()
+    except:
+        report.Error(f"The Synthesize Text module must be run before this one. Could not open the synthesis file: '{synthFile}'.")
+        return
     
     newLines = []
 

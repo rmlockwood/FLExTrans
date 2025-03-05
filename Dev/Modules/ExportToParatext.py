@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.12.6 - 3/5/25 - Ron Lockwood
+#   Fixes #909. Error messages when files don't exist.
+#
 #   Version 3.12.5 - 3/4/25 - Ron Lockwood
 #    New module name.
 #
@@ -87,7 +90,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.12.6",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export the draft that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -245,7 +248,7 @@ def MainFunction(DB, report, modify):
         try:
             f = open(synFile, 'r', encoding='utf-8')
         except:
-            report.Error(f'Could not find the synthesis file. Have you run the Synthesis Module? Missing file: {synFile}.')
+            report.Error(f'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.')
             return
             
         synFileContents = f.read()
