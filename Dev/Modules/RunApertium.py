@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.12.1 - 3/5/25 - Ron Lockwood
+#   Fixes #909. Error messages when files don't exist.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -31,62 +34,7 @@
 #   Version 3.7.1 - 2/25/23 - Ron Lockwood
 #    Fixes #389. Don't recreate the rule file unless something changes with the rule list.
 #
-#   Version 3.7 - 11/7/22 - Ron Lockwood
-#   Move strip rules function to Utils
-#
-#   Version 3.6.3 - 10/25/22 - Ron Lockwood
-#   Strip advanced rule files if they exist. Error handling if can't open file to strip.
-#
-#   Version 3.6.2 - 10/19/22 - Ron Lockwood
-#    Fixes #244. Give a warning if an attribute matches a grammatical category.
-#
-#   Version 3.6.1 - 9/2/22 - Ron Lockwood
-#    Fixes #255. Convert slashes in symbols before running Apertium
-#
-#   Version 3.6 - 8/11/22 - Ron Lockwood
-#    Fixes #198. Warn the user for periods in attribute definitions.
-#
-#   Version 3.5.1 - 6/13/22 - Ron Lockwood
-#    Changes to support the Windows version of the Apertium tools. Fixes #143.
-#    Run a function called stripRulesFile to remove DocType from the transfer 
-#    rules file before applying aperitum tools.
-#
-#   Version 3.5 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.4.1 - 3/5/22 - Ron Lockwood
-#    Use a config file setting for the transfer rules file. Make it an 
-#    environment variable that the makefile can use.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/25/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.6 - 5/23/18 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.1.1 2/28/2018 - Ron Lockwood
-#      Fixed typo. Use report.Error instead of report.error
-#
-#   Version 1.1 1/9/2018 - Ron Lockwood
-#      Use absolute paths and moved most of the code into Utils.
-#
-#   Version 1.0 10/10/2017 - Marc Penner
-#      Extracted call to run Apertium commands
+#   earlier version history removed on 3/5/25
 #
 #   Runs the makefile that calls Apertium 
 #
@@ -103,7 +51,7 @@ descr = """This module executes lexical transfer based on links from source to t
 runs the transfer rules you have made to transform source morphemes into target morphemes.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.12.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -131,6 +79,21 @@ def MainFunction(DB, report, modify=True):
     # Get the path to the dictionary file
     dictionaryPath = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not dictionaryPath:
+        return True
+    
+    # See if the dictionary file exists.
+    if not os.path.exists(dictionaryPath):
+        report.Error('The bilingual dictionary file does not exist. You may need to run the Build Bilingual Lexicon module. The file should be: ' + dictionaryPath)
+        return True
+    
+    # Get the path to the analyzed text
+    analyzedTextPath = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
+    if not analyzedTextPath:
+        return True
+    
+    # See if the source text file exists.
+    if not os.path.exists(analyzedTextPath):
+        report.Error('The analyzed text file does not exist. You may need to run the Extract Source Text module. The file should be: ' + analyzedTextPath)
         return True
     
     # Get the path to the target apertium file

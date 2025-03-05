@@ -20,16 +20,15 @@ import clr
 clr.AddReference("FixFWDataDll")
 import ClusterUtils
 import ReadConfig
-from SIL.FieldWorks.FixData import FixErrorsDlg
 
 clr.AddReference("SIL.LCModel.FixData")
-from SIL.LCModel.FixData import FwDataFixer
+from SIL.LCModel.FixData import FwDataFixer # type: ignore
 
 clr.AddReference("SIL.LCModel")
-from SIL.LCModel import LcmFileHelper
+from SIL.LCModel import LcmFileHelper # type: ignore
 
 clr.AddReference("SIL.LCModel.Utils")
-from SIL.LCModel.Utils import IProgress 
+from SIL.LCModel.Utils import IProgress  # type: ignore
 
 from FixClusterProjects import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -69,7 +68,7 @@ Run the Find and Fix utility on the cluster projects you choose.
 # (See https://github.com/pythonnet/pythonnet/issues/520#issuecomment-1961353677)
 
 try:
-    from FixFWProject import NullProgress
+    from FixFWProjects import NullProgress
     
 except ImportError:
 
