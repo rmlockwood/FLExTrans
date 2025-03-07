@@ -44,9 +44,9 @@ LIMIT_SECS = 45
 BROWSE_BUT_PCT = 0.33
 
 class MainWindow(QMainWindow):
-    def __init__(self, default_folder):
+    def __init__(self, defaultFolder):
         super().__init__()
-        self.selected_folder = default_folder  # Class variable to store the selected folder
+        self.selectedFolder = defaultFolder  # Class variable to store the selected folder
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         self.returnVal = False
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label to show the selected folder
-        self.folderLabel = QLabel(f'Backup Folder: {os.path.normpath(self.selected_folder)}')
+        self.folderLabel = QLabel(f'Backup Folder: {os.path.normpath(self.selectedFolder)}')
         layout.addWidget(self.folderLabel)
 
         # Create a horizontal layout for the browse button
@@ -99,35 +99,35 @@ class MainWindow(QMainWindow):
         self.okButton.clicked.connect(self.okButtonClicked)
         self.cancelButton.clicked.connect(self.cancelButtonClicked)
 
-        self.adjustWindowWidth(self.selected_folder)
+        self.adjustWindowWidth(self.selectedFolder)
 
         # Populate the list widget with .fwbackup files from the default folder
-        self.populateListWidget(self.selected_folder)
+        self.populateListWidget(self.selectedFolder)
 
     def populateListWidget(self, folder):
         self.listWidget.clear()
-        for file_name in os.listdir(folder):
-            if file_name.endswith('.fwbackup'):
-                self.listWidget.addItem(file_name)
+        for fileName in os.listdir(folder):
+            if fileName.endswith('.fwbackup'):
+                self.listWidget.addItem(fileName)
 
     def browseForFolder(self):
-        folder = QFileDialog.getExistingDirectory(self, 'Select Folder', self.selected_folder)
+        folder = QFileDialog.getExistingDirectory(self, 'Select Folder', self.selectedFolder)
         if folder:
-            self.selected_folder = folder  # Update the selected folder
+            self.selectedFolder = folder  # Update the selected folder
             self.folderLabel.setText(f'Selected Folder: {folder}')
             self.adjustWindowWidth(folder)
             self.populateListWidget(folder)
 
     def adjustWindowWidth(self, folder):
         # Calculate the required width based on the folder path length
-        font_metrics = self.fontMetrics()
-        text_width = font_metrics.horizontalAdvance(f'Selected Folder: {folder}')
+        fontMetrics = self.fontMetrics()
+        textWidth = fontMetrics.horizontalAdvance(f'Selected Folder: {folder}')
         margin = 20  # Add some margin
-        new_width = text_width + margin
+        newWidth = textWidth + margin
 
         # Set the new width if it's greater than the current width
-        if new_width > self.width():
-            self.setFixedWidth(new_width)
+        if newWidth > self.width():
+            self.setFixedWidth(newWidth)
 
         # Adjust the browse button width to X% of the new window width
         self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))
@@ -143,28 +143,28 @@ class MainWindow(QMainWindow):
         self.selectedBackups = []
         self.close()
 
-def is_flex_open(projName):
+def isFlexOpen(projName):
     # Check if a window with the project name is open
     windows = gw.getWindowsWithTitle(f'{projName} - Fieldworks')
     return len(windows) > 0
 
-def extract_proj_name(backup_name):
+def extractProjName(backupName):
     # Regular expression to match the pattern and capture the projName
-    match = re.match(r'^(.*?) \d{4}-\d{2}-\d{2} \d{4}(?: .*)?\.fwbackup$', backup_name)
+    match = re.match(r'^(.*?) \d{4}-\d{2}-\d{2} \d{4}(?: .*)?\.fwbackup$', backupName)
     if match:
         return match.group(1)
     return None
 
-def MainFunction(DB, report, modifyAllowed):
+def mainFunction(DB, report, modifyAllowed):
 
-    default_folder = FTPaths.SAMPLE_PROJECTS_DIR
+    defaultFolder = FTPaths.SAMPLE_PROJECTS_DIR
 
-    if not Path(default_folder).is_dir():
-        report.Error(f"Could not find the sample projects folder: {default_folder}.")
+    if not Path(defaultFolder).is_dir():
+        report.Error(f"Could not find the sample projects folder: {defaultFolder}.")
         return
 
     app = QApplication(sys.argv)
-    mainWindow = MainWindow(default_folder)
+    mainWindow = MainWindow(defaultFolder)
     mainWindow.show()
     app.exec_()
 
@@ -177,20 +177,20 @@ def MainFunction(DB, report, modifyAllowed):
         # Loop through selected backups and restore them
         for i, backupName in enumerate(mainWindow.selectedBackups):
 
-            proj = extract_proj_name(backupName)
+            proj = extractProjName(backupName)
             if not proj:
                 report.Info(f"Could not extract project name from {backupName}. Skipping.")
                 continue
             
-            if is_flex_open(proj):
+            if isFlexOpen(proj):
                 report.Info(f"The {proj} project is already open. Skipping. Close the project and try again.")
                 continue
 
-            backup_path = os.path.join(mainWindow.selected_folder, backupName)  # Append backupName to the selected folder path
-            process = Popen([flexExe, '-restore', backup_path], creationflags=DETACHED_PROCESS)
+            backupPath = os.path.join(mainWindow.selectedFolder, backupName)  # Append backupName to the selected folder path
+            process = Popen([flexExe, '-restore', backupPath], creationflags=DETACHED_PROCESS)
 
             secs = 0
-            while not is_flex_open(proj):
+            while not isFlexOpen(proj):
                 time.sleep(1)  # Check every second if the project is fully opened
                 secs += 1
 
@@ -208,7 +208,7 @@ def MainFunction(DB, report, modifyAllowed):
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
-FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
+FlexToolsModule = FlexToolsModuleClass(runFunction = mainFunction,
                                        docs = docs)
 #----------------------------------------------------------------
 if __name__ == '__main__':
