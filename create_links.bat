@@ -1,57 +1,63 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set current_dir="C:\Data\FLExTrans\Dev\Test Projects\FlexTools\Modules\FLExTrans"
-set git_dev=c:\users\rlboo\GitHub\flextrans\Dev
+set batch_dir="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
+set git_dev="c:\users\rlboo\GitHub\flextrans\Dev"
 
-cd /d %current_dir%
+cd /d %batch_dir%
 
-REM Set the target directory path here
-set target_dir=%git_dev%\Modules
+REM List of current directories relative to %batch_dir%
+set current_dirs=.;Lib;Lib;..\..
 
-REM Loop through each file in the target directory
-for %%f in ("%target_dir%\*.py") do (
-    REM Extract just the file name
-    set file_name=%%~nf
-    REM Create the symbolic link in the current directory
-    mklink "%cd%\!file_name!%%~xf" "%%f"
+REM List of target directories relative to %git_dev%
+set target_dirs=Modules;Lib;Lib\Windows;TopLevel
+
+REM Convert the lists to arrays
+set i=0
+for %%d in (%current_dirs:;= %) do (
+    set current_dir_array[!i!]=%%d
+    set /a i+=1
 )
 
-cd %current_dir%\Lib
-
-REM Set the target directory path here
-set target_dir=%git_dev%\Lib
-
-REM Loop through each file in the target directory
-for %%f in ("%target_dir%\*.py") do (
-    REM Extract just the file name
-    set file_name=%%~nf
-    REM Create the symbolic link in the current directory
-    mklink "%cd%\!file_name!%%~xf" "%%f"
+set i=0
+for %%d in (%target_dirs:;= %) do (
+    set target_dir_array[!i!]=%%d
+    set /a i+=1
 )
 
-REM Set the target directory path here
-set target_dir=%git_dev%\Lib\Windows
+set /a array_size=i-1
 
-REM Loop through each file in the target directory
-for %%f in ("%target_dir%\*.py") do (
-    REM Extract just the file name
-    set file_name=%%~nf
-    REM Create the symbolic link in the current directory
-    mklink "%cd%\!file_name!%%~xf" "%%f"
-)
+REM Initialize last_dir to an empty value
+set last_dir=
 
-cd %current_dir%\..\..
+REM Loop through each pair of current and target directories
+for /L %%j in (0, 1, %array_size%) do (
+    set current_dir=!current_dir_array[%%j]!
+    set target_dir=!target_dir_array[%%j]!
+    
+    REM Change to the corresponding current directory
+    echo Changing to directory: %batch_dir%\!current_dir!
+    cd /d "%batch_dir%\!current_dir!"
+    
+    REM Delete existing symbolic links if current_dir is different from last_dir
+    if not "!current_dir!"=="!last_dir!" (
+        for /f "delims=" %%k in ('dir /a:l /b') do (
+            echo Deleting symbolic link: %%k
+            del "%%k"
+        )
+    )
 
-REM Set the target directory path here
-set target_dir=%git_dev%\TopLevel
-
-REM Loop through each file in the target directory
-for %%f in ("%target_dir%\*.py") do (
-    REM Extract just the file name
-    set file_name=%%~nf
-    REM Create the symbolic link in the current directory
-    mklink "%cd%\!file_name!%%~xf" "%%f"
+    REM Loop through each file in the target directory
+    for %%f in ("%git_dev%\!target_dir!\*.py") do (
+        REM Extract just the file name
+        set file_name=%%~nf
+        REM Create the symbolic link in the current directory
+        echo Creating symbolic link: !file_name!.py -> %%f
+        mklink "!file_name!.py" "%%f"
+    )
+    
+    REM Update last_dir to the current directory
+    set last_dir=!current_dir!
 )
 
 endlocal
