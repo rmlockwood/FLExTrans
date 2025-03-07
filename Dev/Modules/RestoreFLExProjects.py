@@ -1,14 +1,14 @@
 #
-#   OpenFLExProjects
+#   RestoreFLExProjects
 #
 #   Ron Lockwood
 #   SIL International
-#   2/20/2025
+#   3/7/2025
 #
-#   Version 3.12 - 2/20/2025 - Ron Lockwood
+#   Version 3.12 - 3/7/2025 - Ron Lockwood
 #    Initial version.
 #
-#   Open multiple FLEx projects. 
+#   Restore multiple FLEx projects. 
 #
 
 import os
@@ -20,21 +20,20 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListW
 import pygetwindow as gw
 
 from flextoolslib import *
-from flexlibs import AllProjectNames
 
 import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Open Multiple FLEx Projects",
+docs = {FTM_Name       : "Restore Multiple FLEx Projects",
         FTM_Version    : "3.12",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Select one or more FLEx project and automatically open them one by one.",
+        FTM_Synopsis   : "Select one or more FLEx backup files and automatically restore them one by one.",
         FTM_Help       :"",
         FTM_Description:  
 f"""
-Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.
+Select one or more FLEx backup files and automatically restore them one by one. The tool waits until one project is open before restoring the next.
 """ }
 
 LIMIT_SECS = 40
@@ -114,7 +113,7 @@ def MainFunction(DB, report, modifyAllowed):
                 report.Info(f"The {proj} project is already open. Skipping.")
                 continue
 
-            process = Popen([flexExe, '-db', proj], creationflags=DETACHED_PROCESS)
+            process = Popen([flexExe, '-restore', proj], creationflags=DETACHED_PROCESS)
 
             secs = 0
             while not is_flex_open(proj):
