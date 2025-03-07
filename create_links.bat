@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set batch_dir="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
-set git_dev="c:\users\rlboo\GitHub\flextrans\Dev"
+set git_dev=c:\users\rlboo\GitHub\flextrans\Dev
 
 cd /d %batch_dir%
 
@@ -27,9 +27,6 @@ for %%d in (%target_dirs:;= %) do (
 
 set /a array_size=i-1
 
-REM Initialize last_dir to an empty value
-set last_dir=
-
 REM Loop through each pair of current and target directories
 for /L %%j in (0, 1, %array_size%) do (
     set current_dir=!current_dir_array[%%j]!
@@ -39,12 +36,10 @@ for /L %%j in (0, 1, %array_size%) do (
     echo Changing to directory: %batch_dir%\!current_dir!
     cd /d "%batch_dir%\!current_dir!"
     
-    REM Delete existing symbolic links if current_dir is different from last_dir
-    if not "!current_dir!"=="!last_dir!" (
-        for /f "delims=" %%k in ('dir /a:l /b') do (
-            echo Deleting symbolic link: %%k
-            del "%%k"
-        )
+    REM Delete existing symbolic links
+    for /f "delims=" %%k in ('dir /a:l /b') do (
+        echo Deleting symbolic link: %%k
+        del "%%k"
     )
 
     REM Loop through each file in the target directory
@@ -52,12 +47,9 @@ for /L %%j in (0, 1, %array_size%) do (
         REM Extract just the file name
         set file_name=%%~nf
         REM Create the symbolic link in the current directory
-        echo Creating symbolic link: !file_name!.py -> %%f
+        echo Creating symbolic link
         mklink "!file_name!.py" "%%f"
     )
-    
-    REM Update last_dir to the current directory
-    set last_dir=!current_dir!
 )
 
 endlocal
