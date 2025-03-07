@@ -39,7 +39,9 @@ Select one or more FLEx backup files and automatically restore them one by one. 
 """ }
 
 # Maximum time to wait for a project to open before exiting
-LIMIT_SECS = 90
+LIMIT_SECS = 45
+
+BROWSE_BUT_PCT = 0.33
 
 class MainWindow(QMainWindow):
     def __init__(self, default_folder):
@@ -51,7 +53,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('Select FLEx Projects')
-        self.setGeometry(100, 100, 400, 400)  # Set the window width to be wide enough
+        self.setGeometry(100, 100, 400, 300)  # Set the initial window width
 
         # Create a central widget and set a layout
         centralWidget = QWidget()
@@ -59,7 +61,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label to show the selected folder
-        self.folderLabel = QLabel(f'Selected Folder: {self.selected_folder}')
+        self.folderLabel = QLabel(f'Backup Folder: {os.path.normpath(self.selected_folder)}')
         layout.addWidget(self.folderLabel)
 
         # Create a horizontal layout for the browse button
@@ -67,11 +69,14 @@ class MainWindow(QMainWindow):
         spacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         spacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.browseButton = QPushButton('Browse for Folder')
-        self.browseButton.setFixedWidth(200)  # Set the button width to a third of the space
+        self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))  # Set the button width to X% of the window width
         browseLayout.addItem(spacer1)
         browseLayout.addWidget(self.browseButton)
         browseLayout.addItem(spacer2)
         layout.addLayout(browseLayout)
+
+        # Add vertical space below the browse button
+        layout.addSpacing(20)
 
         # Create a label and list widget for project names
         projectLabel = QLabel('FLEx project backup files (multi-select):')
@@ -94,6 +99,8 @@ class MainWindow(QMainWindow):
         self.okButton.clicked.connect(self.okButtonClicked)
         self.cancelButton.clicked.connect(self.cancelButtonClicked)
 
+        self.adjustWindowWidth(self.selected_folder)
+
         # Populate the list widget with .fwbackup files from the default folder
         self.populateListWidget(self.selected_folder)
 
@@ -108,7 +115,22 @@ class MainWindow(QMainWindow):
         if folder:
             self.selected_folder = folder  # Update the selected folder
             self.folderLabel.setText(f'Selected Folder: {folder}')
+            self.adjustWindowWidth(folder)
             self.populateListWidget(folder)
+
+    def adjustWindowWidth(self, folder):
+        # Calculate the required width based on the folder path length
+        font_metrics = self.fontMetrics()
+        text_width = font_metrics.horizontalAdvance(f'Selected Folder: {folder}')
+        margin = 20  # Add some margin
+        new_width = text_width + margin
+
+        # Set the new width if it's greater than the current width
+        if new_width > self.width():
+            self.setFixedWidth(new_width)
+
+        # Adjust the browse button width to X% of the new window width
+        self.browseButton.setFixedWidth(int(self.width() * BROWSE_BUT_PCT))
 
     def okButtonClicked(self):
         selectedItems = self.listWidget.selectedItems()
