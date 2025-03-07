@@ -12,13 +12,13 @@
 #
 
 import os
-from pathlib import Path
 import re
+from pathlib import Path
 from subprocess import Popen, DETACHED_PROCESS
 import sys
 import time
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QFileDialog, QSpacerItem, QSizePolicy
 import pygetwindow as gw
 
 from flextoolslib import *
@@ -38,19 +38,20 @@ f"""
 Select one or more FLEx backup files and automatically restore them one by one. The tool waits until one project is open before restoring the next.
 """ }
 
-LIMIT_SECS = 40
+# Maximum time to wait for a project to open before exiting
+LIMIT_SECS = 90
 
 class MainWindow(QMainWindow):
     def __init__(self, default_folder):
         super().__init__()
-        self.default_folder = default_folder
+        self.selected_folder = default_folder  # Class variable to store the selected folder
         self.initUI()
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         self.returnVal = False
 
     def initUI(self):
         self.setWindowTitle('Select FLEx Projects')
-        self.setGeometry(100, 100, 400, 400)
+        self.setGeometry(100, 100, 400, 400)  # Set the window width to be wide enough
 
         # Create a central widget and set a layout
         centralWidget = QWidget()
@@ -58,16 +59,19 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(centralWidget)
 
         # Create a label to show the selected folder
-        self.folderLabel = QLabel(f'Selected Folder: {self.default_folder}')
+        self.folderLabel = QLabel(f'Selected Folder: {self.selected_folder}')
         layout.addWidget(self.folderLabel)
 
-        # Create a button to browse for a folder
+        # Create a horizontal layout for the browse button
+        browseLayout = QHBoxLayout()
+        spacer1 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        spacer2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.browseButton = QPushButton('Browse for Folder')
-        layout.addWidget(self.browseButton)
-
-        # Create a blank label
-        projectLabel = QLabel('')
-        layout.addWidget(projectLabel)
+        self.browseButton.setFixedWidth(200)  # Set the button width to a third of the space
+        browseLayout.addItem(spacer1)
+        browseLayout.addWidget(self.browseButton)
+        browseLayout.addItem(spacer2)
+        layout.addLayout(browseLayout)
 
         # Create a label and list widget for project names
         projectLabel = QLabel('FLEx project backup files (multi-select):')
@@ -91,7 +95,7 @@ class MainWindow(QMainWindow):
         self.cancelButton.clicked.connect(self.cancelButtonClicked)
 
         # Populate the list widget with .fwbackup files from the default folder
-        self.populateListWidget(self.default_folder)
+        self.populateListWidget(self.selected_folder)
 
     def populateListWidget(self, folder):
         self.listWidget.clear()
@@ -100,8 +104,9 @@ class MainWindow(QMainWindow):
                 self.listWidget.addItem(file_name)
 
     def browseForFolder(self):
-        folder = QFileDialog.getExistingDirectory(self, 'Select Folder', self.default_folder)
+        folder = QFileDialog.getExistingDirectory(self, 'Select Folder', self.selected_folder)
         if folder:
+            self.selected_folder = folder  # Update the selected folder
             self.folderLabel.setText(f'Selected Folder: {folder}')
             self.populateListWidget(folder)
 
@@ -133,7 +138,6 @@ def MainFunction(DB, report, modifyAllowed):
     default_folder = FTPaths.SAMPLE_PROJECTS_DIR
 
     if not Path(default_folder).is_dir():
-
         report.Error(f"Could not find the sample projects folder: {default_folder}.")
         return
 
@@ -149,7 +153,7 @@ def MainFunction(DB, report, modifyAllowed):
     if mainWindow.returnVal:
 
         # Loop through selected backups and restore them
-        for backupName in mainWindow.selectedBackups:
+        for i, backupName in enumerate(mainWindow.selectedBackups):
 
             proj = extract_proj_name(backupName)
             if not proj:
@@ -160,7 +164,8 @@ def MainFunction(DB, report, modifyAllowed):
                 report.Info(f"The {proj} project is already open. Skipping. Close the project and try again.")
                 continue
 
-            process = Popen([flexExe, '-restore', proj], creationflags=DETACHED_PROCESS)
+            backup_path = os.path.join(mainWindow.selected_folder, backupName)  # Append backupName to the selected folder path
+            process = Popen([flexExe, '-restore', backup_path], creationflags=DETACHED_PROCESS)
 
             secs = 0
             while not is_flex_open(proj):
@@ -174,6 +179,10 @@ def MainFunction(DB, report, modifyAllowed):
             if secs < LIMIT_SECS:
                 report.Info(f'The {proj} project took about {str(secs)} seconds to open.')
                 time.sleep(2)  # Give a little more time to finish opening.
+        
+        report.Info(f'{str(i+1)} projects processed.')
+    else:
+        report.Info('No projects selected or window cancelled.')
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
