@@ -12,6 +12,8 @@
 #
 
 import os
+from pathlib import Path
+import re
 from subprocess import Popen, DETACHED_PROCESS
 import sys
 import time
@@ -48,7 +50,7 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('Select FLEx Projects')
-        self.setGeometry(100, 100, 600, 400)
+        self.setGeometry(100, 100, 400, 400)
 
         # Create a central widget and set a layout
         centralWidget = QWidget()
@@ -59,6 +61,14 @@ class MainWindow(QMainWindow):
         self.folderLabel = QLabel(f'Selected Folder: {self.default_folder}')
         layout.addWidget(self.folderLabel)
 
+        # Create a button to browse for a folder
+        self.browseButton = QPushButton('Browse for Folder')
+        layout.addWidget(self.browseButton)
+
+        # Create a blank label
+        projectLabel = QLabel('')
+        layout.addWidget(projectLabel)
+
         # Create a label and list widget for project names
         projectLabel = QLabel('FLEx project backup files (multi-select):')
         layout.addWidget(projectLabel)
@@ -66,10 +76,6 @@ class MainWindow(QMainWindow):
         self.listWidget = QListWidget()
         self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
         layout.addWidget(self.listWidget)
-
-        # Create a button to browse for a folder
-        self.browseButton = QPushButton('Browse for Folder')
-        layout.addWidget(self.browseButton)
 
         # Create OK and Cancel buttons
         buttonLayout = QHBoxLayout()
@@ -115,9 +121,21 @@ def is_flex_open(projName):
     windows = gw.getWindowsWithTitle(f'{projName} - Fieldworks')
     return len(windows) > 0
 
+def extract_proj_name(backup_name):
+    # Regular expression to match the pattern and capture the projName
+    match = re.match(r'^(.*?) \d{4}-\d{2}-\d{2} \d{4}(?: .*)?\.fwbackup$', backup_name)
+    if match:
+        return match.group(1)
+    return None
+
 def MainFunction(DB, report, modifyAllowed):
 
     default_folder = FTPaths.SAMPLE_PROJECTS_DIR
+
+    if not Path(default_folder).is_dir():
+
+        report.Error(f"Could not find the sample projects folder: {default_folder}.")
+        return
 
     app = QApplication(sys.argv)
     mainWindow = MainWindow(default_folder)
@@ -133,10 +151,13 @@ def MainFunction(DB, report, modifyAllowed):
         # Loop through selected backups and restore them
         for backupName in mainWindow.selectedBackups:
 
-            proj = os.path.splitext(backupName)[0]
+            proj = extract_proj_name(backupName)
+            if not proj:
+                report.Info(f"Could not extract project name from {backupName}. Skipping.")
+                continue
             
             if is_flex_open(proj):
-                report.Info(f"The {proj} project is already open. Skipping.")
+                report.Info(f"The {proj} project is already open. Skipping. Close the project and try again.")
                 continue
 
             process = Popen([flexExe, '-restore', proj], creationflags=DETACHED_PROCESS)
