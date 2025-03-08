@@ -35,7 +35,9 @@ docs = {FTM_Name       : "Restore Multiple FLEx Projects",
         FTM_Help       :"",
         FTM_Description:  
 f"""
-Select one or more FLEx backup files and automatically restore them one by one. The tool waits until one project is open before restoring the next.
+Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
+window that comes up to complete the restore. 
+The tool waits until one project is open before restoring the next.
 """ }
 
 # Maximum time to wait for a project to open before exiting
