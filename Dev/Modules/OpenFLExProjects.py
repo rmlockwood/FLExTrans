@@ -1,5 +1,5 @@
 #
-#   OpenFLExProjects.py
+#   OpenFLExProjects
 #
 #   Ron Lockwood
 #   SIL International
@@ -34,7 +34,7 @@ docs = {FTM_Name       : "Open Multiple FLEx Projects",
         FTM_Help       :"",
         FTM_Description:  
 f"""
-Select one or more FLEx project and automatically open them one by one. The tool waits unit one project is open before opening the next.
+Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.
 """ }
 
 LIMIT_SECS = 40
