@@ -1,6 +1,8 @@
 import os
 import re
 
+# Change version # in 3 places and the date.
+
 # Define the new version comment and version string
 new_version_comment = \
 """#   Version 3.13 - 3/10/25 - Ron Lockwood
