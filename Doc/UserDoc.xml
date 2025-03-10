@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->3 February 2025</date
+>10 March 2025</date
 ><version
->3.12.1</version
+>3.13</version
 ><contents
 showLevel="4"
 ></contents
@@ -1525,6 +1525,12 @@ type="tFlexx"
 type="tFlextrans"
 ></object
 > links directly to the sense regardless of where it is.</p
+><p
+>This function supports cluster projects. See <exampleRef
+letter="xClusterAddNewEntry"
+num="xClusterAddNewEntry"
+></exampleRef
+>.</p
 ></section3
 ><section3
 id="sShowUnlinked"
@@ -1997,7 +2003,7 @@ type="tTool"
 >After importing, you will have a new text in the source <object
 type="tFlexx"
 ></object
-> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended. Unless you have checked the <object
+> project. It will be named something like the following: John 03-04. Note: if a text with that name already exists, you will get a text with the same name with '- Copy' appended, unless you have checked the <object
 type="tItalic"
 >Overwrite existing text</object
 > box.</p
@@ -2058,6 +2064,12 @@ src="Images/ParatextImport.png"
 ></img
 ></chart
 ></example
+><p
+>This module supports cluster projects. See <exampleRef
+letter="xClusterImportParatext"
+num="xClusterImportParatext"
+></exampleRef
+>.</p
 ></section3
 ><section3
 id="sPtxExport"
@@ -2070,12 +2082,12 @@ type="tTool"
 >There are two tools that help you export to <object
 type="tTool"
 >Paratext</object
->. The difference between them is where your you want to export your text from.</p
+>. The difference between them is where you want to export your text from.</p
 ><ol
 ><li
 ><object
-type="tTool"
->Export Translated Text to Paratext</object
+type="tExportDraft2PtxTool"
+></object
 > - takes a newly synthesized text and exports it to <object
 type="tTool"
 >Paratext</object
@@ -2100,7 +2112,7 @@ type="tTool"
 ><li
 ><object
 type="tTool"
->Export FLEx Text to Paratext</object
+>Export Text from Target FLEx to Paratext</object
 > - takes a text that is in <object
 type="tFlexx"
 ></object
@@ -2123,8 +2135,8 @@ type="tTool"
 id="sPtxExportFromSynth"
 ><secTitle
 ><object
-type="tTool"
->Export Translated Text to Paratext</object
+type="tExportDraft2PtxTool"
+></object
 ></secTitle
 ><p
 >To export chapters to <object
@@ -2137,8 +2149,8 @@ type="tTool"
 type="tSettingsTool"
 ></object
 > if you need to change the active source text. <object
-type="tTool"
->Export Text From Paratext</object
+type="tExportDraft2PtxTool"
+></object
 > will find the book and chapters in the given <object
 type="tTool"
 >Paratext</object
@@ -2185,8 +2197,8 @@ src="Images/ParatextExport.png"
 id="sPtxExportFromFLEx"
 ><secTitle
 ><object
-type="tTool"
->Export FLEx Text to Paratext</object
+type="tExportFLEx2PtxTool"
+></object
 ></secTitle
 ><p
 >To export chapters to <object
@@ -2195,16 +2207,19 @@ type="tTool"
 > from a <object
 type="tFlexx"
 ></object
-> text, use this tool. It is designed to work well with a text that you have previously inserted into the target <object
+> project, use this tool. It is designed to work well with a text that you have previously inserted into the target <object
 type="tFlexx"
 ></object
 > project with the <object
 type="tTool"
 >Insert Target Text</object
 > tool. <object
-type="tTool"
->Export FLEx Text to Paratext</object
-> will find all scripture texts in FLEx and shows you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple text to be exported. Also, if you want to export all chapters for book, first check the check box that says: <object
+type="tExportFLEx2PtxTool"
+></object
+> will find all scripture texts in <object
+type="tFlexx"
+></object
+> and will show you the filtered list of texts. It looks for texts with names in the format John 03-04 or JHN 01. You can select multiple texts to be exported. Also, if you want to export all chapters for a book, first check the box that says: <object
 type="tItalic"
 >Clicking any chapter of a book selects all chapters of the book</object
 >. Then when you click one of the book's chapters in the Scripture Texts list, all chapters will get selected.</p
@@ -2228,6 +2243,12 @@ src="Images/ParatextExportFromFLEx.png"
 ></img
 ></chart
 ></example
+><p
+>This module supports cluster projects. See <exampleRef
+letter="xClusterExportFromFlex"
+num="xClusterExportFromFlex"
+></exampleRef
+>.</p
 ></section4
 ></section3
 ></section2
@@ -2461,7 +2482,10 @@ src="Images/ApplyAndCloseButton.png"
 ></img
 > button.</li
 ><li
->Back in the FLExTrans window, click the <object
+>Back in the <object
+type="tFlextrans"
+></object
+> window, click the <object
 type="tButton"
 >Run All</object
 > button to run all the modules. It will choose which synthesis module to use based on the value for the <object
@@ -2788,10 +2812,10 @@ type="tSettingsTool"
 letter="xClusterSettings"
 num="xClusterSettings"
 ></exampleRef
->. Then this information is used in various tools to allow you to apply the tool to multiple <object
+>. This information is used in various tools to allow you to apply the tool to multiple <object
 type="tFlexx"
 ></object
-> projects at once. See tool images below that show support for cluster projects.</p
+> projects at once. </p
 ><example
 num="xClusterSettings"
 ><chart
@@ -2800,6 +2824,22 @@ src="Images/ClusterSettings.png"
 ></img
 ></chart
 ></example
+><section2
+id="sClustExisting"
+><secTitle
+>Cluster Support in Existing Tools</secTitle
+><p
+>See tool images below that show support for cluster projects. <exampleRef
+letter="xClusterAddNewEntry"
+num="xClusterAddNewEntry"
+></exampleRef
+> shows the <object
+type="tBold"
+>Add New Entry</object
+> window that is launched from the <object
+type="tSenseLinker"
+></object
+>.</p
 ><example
 num="xClusterAddNewEntry"
 ><chart
@@ -2824,6 +2864,80 @@ src="Images/ClusterImportParatext.png"
 ></img
 ></chart
 ></example
+></section2
+><section2
+id="sClustNew"
+><secTitle
+>Cluster Support in New Tools</secTitle
+><section3
+id="sFixClusterProjs"
+><secTitle
+>Fix Cluster Projects Tool</secTitle
+><p
+>This tool allows you to run the Find and Fix utility on the cluster projects you choose. This is the same utility that is available in <object
+type="tFlexx"
+></object
+>. You cannot run this utility on a project that is currently open in <object
+type="tFlexx"
+></object
+> or on the current source project even if it is not open. Fixed errors are logged to the report pane.</p
+><example
+num="xFixClusterProjs"
+><chart
+><img
+src="Images/FixClusterProjects.png"
+></img
+></chart
+></example
+></section3
+><section3
+id="sOpenMultProjs"
+><secTitle
+>Open Multiple <object
+type="tFlexx"
+></object
+> Projects Tool</secTitle
+><p
+>This tool allows you to open <object
+type="tFlexx"
+></object
+> projects you choose.</p
+><example
+num="xOpenMultProjs"
+><chart
+><img
+src="Images/OpenMultipleProjects.png"
+></img
+></chart
+></example
+></section3
+><section3
+id="sRestoreProjs"
+><secTitle
+>Restore Multiple <object
+type="tFlexx"
+></object
+> Projects Tool</secTitle
+><p
+>This tool allows you to restore <object
+type="tFlexx"
+></object
+> projects you choose.</p
+><example
+num="xRestoreProjs"
+><chart
+><img
+src="Images/RestoreFLExProjects.png"
+></img
+></chart
+></example
+></section3
+><section3
+id="sAddClusterAdHoc"
+><secTitle
+>Add Ad Hoc Constraint for a Cluster Tool</secTitle
+><p
+>This tool allows you to add an ad hoc constraint to multiple cluster projects.</p
 ><example
 num="xClusterAdHoc"
 ><chart
@@ -2832,6 +2946,8 @@ src="Images/ClusterAdHoc.png"
 ></img
 ></chart
 ></example
+></section3
+></section2
 ></section1
 ><section1
 id="sTransferTutorial"
@@ -5971,7 +6087,10 @@ type="tUnderline"
 > If we are manually outputting a word-sense, we need to use a <object
 type="tRuleElemInXXE"
 >literal string</object
-> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in FLEx, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
+> element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in <object
+type="tFlexx"
+></object
+>, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
 letter="xInsertWord"
 num="xInsertWord"
 ></exampleRef
@@ -5992,7 +6111,10 @@ type="tRuleElemInXXE"
 > elements. Remember the first literal tag is the grammatical category, all subsequent tags are affixes and the like. If you have a valid word-sense and its corresponding grammatical category, <object
 type="tFlextrans"
 ></object
-> will look up this word-sense in the target FLEx lexicon and use it in the final synthesis process.</p
+> will look up this word-sense in the target <object
+type="tFlexx"
+></object
+> lexicon and use it in the final synthesis process.</p
 ><p
 >If you have other lexical units that you will be outputting, remember to put a <object
 type="tRuleElemInXXE"
@@ -7211,8 +7333,6 @@ textBefore="capitalizedSingular"
 id="sTroubleshooting"
 ><secTitle
 >Troubleshooting</secTitle
-><p
-></p
 ><section2
 id="sSynFail"
 ><secTitle
@@ -7307,7 +7427,7 @@ type="tBold"
 ><td
 >First ensure the word is in the target lexicon. In the LRT, Refresh Target Lexicon. For a text, ensure <object
 type="tFlexx"
->FLEx</object
+></object
 > has saved everything.</td
 ></tr
 ><tr
@@ -7339,7 +7459,7 @@ type="tPink"
 ><td
 >Analyze and approve the word in the source text. Ensure <object
 type="tFlexx"
->FLEx</object
+></object
 > has saved everything. If you intentionally don't want to analyze the word and want to keep its form, check <object
 type="tSettingsValue"
 >Yes</object
@@ -7368,7 +7488,7 @@ type="tSettingsProperty"
 ><td
 >Check that the word analyzes properly in target <object
 type="tFlexx"
->FLEx</object
+></object
 > project.</td
 ></tr
 ><tr
@@ -7378,8 +7498,8 @@ type="tFlexx"
 >%0%^kon1.1&lt;v&gt;$%<br
 ></br
 >(you should see a warning in the <object
-type="tTool"
->FLExTools</object
+type="tFlexxTools"
+></object
 > output saying: One or more glosses not found: 'kon1.1';)</td
 ><td
 >When using <object
@@ -7866,6 +7986,20 @@ id="tCollection"
 font-family="Courier New"
 font-size="100%"
 id="tCourier"
+></type
+><type
+after="Export FLExTrans Draft to Paratext"
+color="navy"
+font-family="Courier New"
+font-weight="bold"
+id="tExportDraft2PtxTool"
+></type
+><type
+after="Export Text from Target FLEx to Paratext"
+color="navy"
+font-family="Courier New"
+font-weight="bold"
+id="tExportFLEx2PtxTool"
 ></type
 ><type
 color="#cc9900"
