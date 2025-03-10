@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 1/2/25 - Ron Lockwood
 #    Fixes problem with HC synthesis where title-cased phrases were not coming out in the write case.
 #
@@ -270,7 +273,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 

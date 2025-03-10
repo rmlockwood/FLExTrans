@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12 - 2/9/25 - Ron Lockwood
 #    Fixes #878. Menu option for editing transfer rules.
 #

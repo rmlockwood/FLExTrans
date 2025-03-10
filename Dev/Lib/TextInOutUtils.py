@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 11/12/24 - Ron Lockwood
 #    Use default path if settings has no path to the xml file.
 #

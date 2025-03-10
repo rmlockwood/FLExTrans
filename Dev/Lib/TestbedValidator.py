@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12 - 3/2/25 - Ron Lockwood
 #    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
 #    This is needed now that we let non-English morphtype names be used in the settings.

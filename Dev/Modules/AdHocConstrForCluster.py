@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.5 - 2/7/25 - Ron Lockwood
 #    Reworked to use guid strings as the things that get saved in combo box data.
 #
@@ -71,7 +74,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.12.5",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",

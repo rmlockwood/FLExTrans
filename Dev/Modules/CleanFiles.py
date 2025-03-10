@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 1/6/25 - Ron Lockwood
 #    Clean up more Rule Assistant files.
 #
@@ -75,7 +78,7 @@ import FTPaths
 # Documentation that the user sees:
 descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
         FTM_Help  : "",  

@@ -1,6 +1,9 @@
 #
 #   A shell module to launch FlexTools
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.9 - 7/25/23 - Ron Lockwood
 #    Bumped to 3.9
 #

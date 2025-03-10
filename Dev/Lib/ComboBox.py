@@ -4,6 +4,9 @@
 #   Lærke Roager Christensen
 #   6/30/22
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 1/15/25 - Ron Lockwood
 #    Export from FLEx to Paratext, optionally across cluster projects.
 #

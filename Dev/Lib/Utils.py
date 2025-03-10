@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.18 - 3/3/25 - Ron Lockwood
 #    Fixes #915. More checks for invalid chars in lemmas or affixes.
 #

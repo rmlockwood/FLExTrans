@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.6 - 3/5/25 - Ron Lockwood
 #   Fixes #909. Error messages when files don't exist.
 #
@@ -90,7 +93,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.12.6",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export the draft that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 3/2/25 - Ron Lockwood
 #    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
 #    This is needed now that we let non-English morphtype names be used in the settings.
@@ -151,7 +154,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",

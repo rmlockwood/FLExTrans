@@ -5,6 +5,9 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 11/12/24 - Ron Lockwood
 #    Use default path if settings has no path to the xml file.
 #
@@ -45,7 +48,7 @@ from TextInOut import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Define and test a set of Paratext-import search and replace operations.' ,
         FTM_Help   : "",

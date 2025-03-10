@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.8 - 3/4/25 - Ron Lockwood
 #    Fixes #903. Don't show the 'Don't show message again' checkbox if there are no cluster projects.
 #

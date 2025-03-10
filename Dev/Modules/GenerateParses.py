@@ -14,6 +14,9 @@
 #   the correct homograph/sense number on root glosses
 #
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12 - 11/2/24 - Ron Lockwood
 #    Bumped to 3.12.
 #
@@ -69,7 +72,7 @@ import ReadConfig
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Generate All Parses",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
         FTM_Help       :"",
