@@ -26,41 +26,7 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5 - 6/21/22 - Ron Lockwood
-#    Bump version number for FlexTools 3.5
-#
-#   Version 3.4.1 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/26/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 12/2/19 - Ron Lockwood
-#    Import FlexProject instead of DBAcess
-#
-#   Version 1.0 - 6/16/18 - Ron Lockwood
-#    Initial version.
+#   earlier version history removed on 3/10/25
 #
 #   Conclude a the testbed log result. Put the results for each test into the 
 #   log and start the log viewer. Put in an end time in the log.

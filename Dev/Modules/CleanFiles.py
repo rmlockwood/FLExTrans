@@ -37,32 +37,7 @@
 #   Version 3.8 - 4/4/23 - Ron Lockwood
 #    Support HermitCrab Synthesis.
 #
-#   Version 3.7 - 11/7/22 - Ron Lockwood
-#    LiveRuleTester files weren't getting deleted. Delete advanced files.
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Fixes #235. Clean all STAMP files regardless of project name prefix.
-#
-#   Version 3.5 - 5/10/22 - Ron Lockwood
-#    Support multiple projects in one FlexTools folder. Folders rearranged.
-#
-#   Version 3.4.2 - 3/21/22 - Ron Lockwood
-#    Handle when transfer rules file and testbed file locations are not set in
-#    the configuration file. Issue #95. In fact always give no error when config file
-#    entry is missing.
-#
-#   Version 3.4.1 - 3/5/22 - Ron Lockwood
-#    Makefile paramaterized to use setting in the config file. But many things
-#    to delete are in the Makefile as outputs, so just hard code them here.
-#    Remove nearly all files from the LiveRuleTester folder
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use the config file to find file names to clean up.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 11/25/2021 - Ron Lockwood
+#   earlier version history removed on 3/10/25
 #
 
 import os
