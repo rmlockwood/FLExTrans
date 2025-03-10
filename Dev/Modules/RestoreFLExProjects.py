@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         self.returnVal = False
 
     def initUI(self):
-        self.setWindowTitle('Select FLEx Projects')
+        self.setWindowTitle('Restore Multiple FLEx Projects')
         self.setGeometry(100, 100, 400, 300)  # Set the initial window width
 
         # Create a central widget and set a layout
