@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.3 - 3/2/25 - Ron Lockwood
 #    Fixes #914. Set the morphtype to be from the analysis writing system instead of English.
 #    This is needed now that we let non-English morphtype names be used in the settings.
@@ -42,7 +45,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.12.3",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link all senses to the same ID in the target.",
         FTM_Help       : "",

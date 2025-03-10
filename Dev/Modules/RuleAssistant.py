@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 1/6/25 - Ron Lockwood
 #    Fixes #835. Don't crash when Apertium data is missing as Rule Assistant test data. Just don't show test data.
 #
@@ -61,7 +64,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",

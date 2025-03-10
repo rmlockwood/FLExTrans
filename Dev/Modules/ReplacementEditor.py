@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 11/21/24 - Ron Lockwood
 #    We do need to convert problem characters for the POS. Partially undid the 3.11.2 change.
 #
@@ -38,7 +41,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version: "3.12.1",
+    FTM_Version    : "3.13",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",

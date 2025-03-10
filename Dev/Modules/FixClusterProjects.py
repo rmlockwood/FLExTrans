@@ -5,6 +5,9 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12 - 3/3/25 - Ron Lockwood
 #    Initial version.
 #
@@ -43,7 +46,7 @@ import FTPaths
 # Documentation for the user:
 
 docs = {FTM_Name       : "Fix Cluster Projects",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Run the Find and Fix utility on the cluster projects you choose.",
         FTM_Help       : None,

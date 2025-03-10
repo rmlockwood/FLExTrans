@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 3/5/25 - Ron Lockwood
 #   Fixes #909. Error messages when files don't exist.
 #
@@ -42,7 +45,7 @@ import TextInOutUtils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.12.1",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Run a set of post-synthesis search and replace operations.' ,
         FTM_Help   : "",

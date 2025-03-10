@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12 - 3/7/2025 - Ron Lockwood
 #    Initial version.
 #
@@ -29,7 +32,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Restore Multiple FLEx Projects",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Select one or more FLEx backup files and automatically restore them one by one.",
         FTM_Help       :"",

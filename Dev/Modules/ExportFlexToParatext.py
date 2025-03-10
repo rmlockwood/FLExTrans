@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.3 - 3/4/25 - Ron Lockwood
 #    New module name.
 #
@@ -53,7 +56,7 @@ import ChapterSelection
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Text from Target FLEx to Paratext",
-        FTM_Version    : "3.12.3",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export one or more texts that contain scripture from the target FLEx project to Paratext.",
         FTM_Help       : "",

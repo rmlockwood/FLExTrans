@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Bumped to 3.13.
+#
 #   Version 3.12.1 - 11/7/24 - Ron Lockwood
 #    When searching for unused macros & variables to delete, skip the 
 #    Bantu_noun_class_from_n ones. Also before creating the special hand-crafted
