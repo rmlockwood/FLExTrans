@@ -4,6 +4,9 @@
 #   3/28/22
 #
 #
+#   Version 3.13.1 - 3/11/25 - Ron Lockwood
+#    Fixes #869. Better error on failure to open DB.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -1226,6 +1229,13 @@ class Main(QMainWindow):
                 retStr += text + ","
         return retStr
 
+def giveDBErrorMessageBox(myProj):
+    
+    errMsg = f"Failed to open the '{myProj}' database. This could be because you have the project open "+\
+        "and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. "+\
+        "This is found under File > Project Management > Fieldworks Project Properties on the menu."
+    MessageBox.Show(errMsg, "FLExTrans", MessageBoxButtons.OK)
+
 def MainFunction(DB, report, modify=True): 
     
     # DB and report will be None
@@ -1242,7 +1252,7 @@ def MainFunction(DB, report, modify=True):
     try:
         sourceDB.OpenProject(FTConfig.currentProject, False)
     except:
-        MessageBox.Show("Failed to open the source database.", "FLExTrans", MessageBoxButtons.OK)
+        giveDBErrorMessageBox(FTConfig.currentProject)
         sourceDB = None
         return
 
@@ -1258,7 +1268,7 @@ def MainFunction(DB, report, modify=True):
         else:
             TargetDB.OpenProject(targetProj, False)
     except:
-        MessageBox.Show("Failed to open the target database.", "FLExTrans", MessageBoxButtons.OK)
+        giveDBErrorMessageBox(targetProj)
         TargetDB = None
     
     # Show the window
