@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.1 - 3/10/25 - Ron Lockwood
+#    Fixes #928. Look for newlines between | and * when splitting what will be analysis WS text.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -2280,20 +2283,42 @@ def containsInvalidLemmaChars(myStr):
 
     return True if reInvalidLemmaChars.search(myStr) else False
 
+# Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
+# have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
+# We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+# Attributes are of the form |x=123 ... \s*
+# You can't have parens inside of the split expression since the whole thing is already in parens, unless you mark it as non-capturing parens with ?:. Otherwise it will mess up the output.
+def splitSFMs(inputStr):
+
+    segs = re.split(r'(\n|'                 # newline
+                    r'\|(?:.|\n)+?\*|'      # attributes endining in * but possibly across lines
+                    r'\\\w+\*|'             # end marker
+                    r'\\f \+ |'             # footnote with plus
+                    r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                    r'\\fr \d+[:.]\d+|'     # footnote reference
+                    r'\\xt .+?\\x\*|'       # cross reference with end marker
+                    r'\\x \+ |'             # cross reference with plus
+                    r'\\xo \d+[:.]\d+-\d+|' # cross reference original with dash
+                    r'\\xo \d+[:.]\d+|'     # cross reference original
+                    r'\\v \d+-\d+ |'        # verse with dash
+                    r'\\v \d+ |'            # verse
+                    r'\\vp \S+ |'           # publication verse
+                    r'\\c \d+|'             # chapter
+                    r'\\rem.+?\n|'          # remark
+                    r'\d+[:.]\d+-\d+|'      # verse reference with dash
+                    r'\d+[:.]\d+|'          # verse reference
+                    r'\\\+\w+|'             # marker preceded by plus
+                    r'\\\w+)',              # any other marker
+                    inputStr) 
+    return segs
+
 def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
 
     # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
     # put the \ after the newline
     inputStr = re.sub(r'\\\n', r'\n\\', inputStr)
 
-    # Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text contenct. The sfm marker or reference will later get marked as analysis lang. so it doesn't
-    # have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
-    # We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
-    # Attributes are of the form |x=123 ... \s*
-    # You can't have parens inside of the split expression since it is already in parens. It will mess up the output.
-    #                                                                                                                                                                                                  eg \+xt
-    #                  attribs end mrk footnt  footnt ref+dash     footnt ref      cr ref note   cr ref  cr ref orig+dash    cr ref orig     verse+dash   verse    pub verse chap    remark     ref+dash       ref        marker+ any marker
-    segs = re.split(r'(\n|\|.+?\*|\\\w+\*|\\f \+ |\\fr \d+[:.]\d+-\d+|\\fr \d+[:.]\d+|\\xt .+?\\x\*|\\x \+ |\\xo \d+[:.]\d+-\d+|\\xo \d+[:.]\d+|\\v \d+-\d+ |\\v \d+ |\\vp \S+ |\\c \d+|\\rem.+?\n|\d+[:.]\d+-\d+|\d+[:.]\d+|\\\+\w+|\\\w+)', inputStr) 
+    segs = splitSFMs(inputStr)
 
     # Create 1st paragraph object
     stTxtPara = m_stTxtParaFactory.Create()
