@@ -40,53 +40,7 @@
 #    Fixes #229. Slots, features and classes now converted to attributes in the
 #    transfer rule file. The user can choose which one and whether to override.
 #
-#   Version 3.7.1 - 12/28/22 - Ron Lockwood
-#    Adds categories to the categories section from FLEx. This capability
-#    is referenced in issue #229.
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 8/29/22 - Ron Lockwood
-#    Renamed module
-#
-#   Version 3.5.1 - 6/24/22 - Ron Lockwood
-#    Call CloseProject() for FlexTools2.1.1 fixes #159
-#
-#   Version 3.5 - 6/21/22 - Ron Lockwood
-#    Bump version number for FlexTools 3.5
-#
-#   Version 3.4.1 - 3/22/22 - Ron Lockwood
-#    Fixed bug #99. Give an error if the file isn't in the format that XXE
-#    makes the xml file. Otherwise it's hard to find the right section of the
-#    transfer rules file to make the changes.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3.1 - 1/27/22 - Ron Lockwood
-#    Major overhaul of the Setup Transfer Rule Grammatical Categories Tool.
-#    Now the setup tool and the bilingual lexicon uses common code for getting
-#    the grammatical categories from each lexicon. Categories are 'repaired' as 
-#    needed in the process. E.g. space > underscore, etc. Fixes #50.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/25/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.0.1 - 2/28/18 - Ron Lockwood
-#    Write the DOCTYPE.
-#
-#   Version 1.0 - 2/22/18 - Ron Lockwood
-#    Initial version.
+#   earlier version history removed on 3/10/25
 #
 #   Take the grammatical categories from the bilingual lexicon file and put them
 #   into the transfer rule file as tags of an attribute called a_gram_cat. It is

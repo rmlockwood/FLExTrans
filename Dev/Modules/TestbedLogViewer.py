@@ -32,68 +32,7 @@
 #   Version 3.7.3 - 1/10/23 - Ron Lockwood
 #    Renamed some functions to be camel case.
 #
-#   Version 3.7.2 - 12/30/22 - Ron Lockwood
-#    Fixes #212. Get View Testbed Log button working in the LRT by restructuring the
-#    code so the core code can be called.
-#
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5.1 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5 - 6/21/22 - Ron Lockwood
-#    Bump version number for FlexTools 3.5
-#
-#   Version 3.4.1 - 3/17/22 - Ron Lockwood
-#    Allow for a user configurable Testbed location. Issue #70.
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2.2 - 12/30/21 - Ron Lockwood
-#    Optimized Testbed Viewing. Particularly through caching TestResultItem objects.
-#
-#   Version 3.2.1 - 12/20/21 - Ron Lockwood
-#    Fixes issue #6 where only the test results -50 were being displayed. 
-#    This resulted in having the a test results file with only 1 result to not 
-#    show anything. Now there's a MAX_RESULTS_TO_DISPLAY set to 50 and the tool 
-#    will display up to this amount of test results. Also performance tweaks. 
-#    The main one that helped is just creating the QTGui object for the green check, 
-#    red x and yellow triangle just once for a TestResultItem.
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.1 - 4/30/21 - Ron Lockwood
-#    Enable the Edit Testbed button which now calls XXE with the xml file.
-#    Also limit the display of testbed results to the last 50 results. This
-#    significantly improves performance when there are lots of results. This is
-#    hard-coded for now. It would be nice to allow the user to change this and
-#    re-load.
-#
-#   Version 3.0 - 1/28/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0.1 - 1/30/20 - Ron Lockwood
-#    Start with a font size of 12 
-# 
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.7 - 4/19/19 - Ron Lockwood
-#    Bump the version number.
-#
-#   Version 1.0 - 4/19/2019 - Ron Lockwood
+#   earlier version history removed on 3/10/25
 #
 #   Show the testbed log which shows the results of tests run for a certain
 #   date/time. See design doc at: https://app.moqups.com/pNl8pLlTB6/edit/page/a8dd9b3cb

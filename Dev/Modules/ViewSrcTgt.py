@@ -35,49 +35,7 @@
 #   Version 3.7.3 - 1/8/23 - Ron Lockwood
 #    Fixed bug in last fix. Don't require advance transfer file to be there.
 #
-#   Version 3.7.2 - 12/26/22 - Ron Lockwood
-#    Fixed support for advanced transfer that wasn't working. Target text 1 & 2
-#    couldn't be shown. Fixes #373.
-#
-#   Version 3.7.1 - 12/25/22 - Ron Lockwood
-#    Moved text and testbed classes to separate files TextClasses.py and Testbed.py
-#
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5.2 - 8/8/22 - Ron Lockwood
-#    Kludge fix to prevent extra blank lines in the target text. Fixes #203
-#    Also have tree write directly to utf-16.
-#
-#   Version 3.5.1 - 7/8/22 - Ron Lockwood
-#    Set Window Icon to be the FLExTrans Icon
-#
-#   Version 3.5 - 6/21/22 - Ron Lockwood
-#    Bump version number for FlexTools 3.5
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0 - 1/28/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.1 - 4/12/18 - Ron
-#    Fixed bug in message box call.
-#
-#   Version 1.0 - 12/30/17 - Ron
-#    Initial version.
+#   earlier version history removed on 3/10/25
 #
 # This module reads the source or target Apertium files whose paths are defined
 # in the configuration file and displays them in a user-friendly way. The 

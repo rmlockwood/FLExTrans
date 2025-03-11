@@ -29,44 +29,7 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Reworked import statements
 #
-#   Version 3.7 - 12/13/22 - Ron Lockwood
-#    Bumped version number for FLExTrans 3.7
-#
-#   Version 3.6 - 9/3/22 - Ron Lockwood
-#    Bump version number.
-#
-#   Version 3.5.1 - 7/9/22 - Ron Lockwood
-#    Use a new config setting for the TreeTran rules path. Fixes #121.
-#
-#   Version 3.5 - 5/13/22 - Ron Lockwood
-#    Look for the rules file in the project folder instead of Output
-#
-#   Version 3.4 - 2/17/22 - Ron Lockwood
-#    Use ReadConfig file constants.
-#
-#   Version 3.3 - 1/8/22 - Ron Lockwood
-#    Bump version number for FLExTrans 3.3
-#
-#   Version 3.2 - 10/22/21 - Ron Lockwood
-#    Bump version number for FlexTools 3.2
-#
-#   Version 3.0.2 - 5/7/21 - Ron Lockwood
-#    Give the user the # of sentences processed.
-#
-#   Version 3.0.1 - 2/24/21 - Ron Lockwood
-#    Error message when config file not right.
-#
-#   Version 3.0 - 1/25/21 - Ron Lockwood
-#    Changes for python 3 conversion
-#
-#   Version 2.0.1 - 1/22/20 - Ron Lockwood
-#    Updated comments and documentation.
-#
-#   Version 2.0 - 12/2/19 - Ron Lockwood
-#    Bump version number for FlexTools 2.0
-#
-#   Version 1.0 - 12/30/17 - Ron
-#    Initial version.
+#   earlier version history removed on 3/10/25
 #
 # This module runs the TreeTran program which modifies a syntax tree. 
 # See if we have a file for TreeTran output set in the configuration file. If not, 
