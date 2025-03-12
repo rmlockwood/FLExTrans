@@ -1,9 +1,12 @@
 #
-#   FixClusterProjects.py
+#   FixFLExProjects
 #
 #   Ron Lockwood
 #   SIL International
 #   3/3/25
+#
+#   Version 3.13.1 - 3/12/25 - Ron Lockwood
+#    Fixes #929. Changed to list all FLEx projects.
 #
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
@@ -21,9 +24,9 @@ import clr
 
 from flextoolslib import *
 from flexlibs import FWProjectsDir
+from flexlibs import AllProjectNames
 
 clr.AddReference("FixFWDataDll")
-#from SIL.FieldWorks.FixData import FixErrorsDlg
 
 clr.AddReference("SIL.LCModel.FixData")
 from SIL.LCModel.FixData import FwDataFixer # type: ignore
@@ -34,25 +37,23 @@ from SIL.LCModel import LcmFileHelper # type: ignore
 clr.AddReference("SIL.LCModel.Utils")
 from SIL.LCModel.Utils import IProgress  # type: ignore
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAbstractItemView, QListWidget, QPushButton, QVBoxLayout, QWidget, QLabel, QHBoxLayout
 from PyQt5 import QtGui
 
-from FixClusterProjectsUI import Ui_MainWindow
-import ClusterUtils
 import ReadConfig
 import FTPaths
 
 #----------------------------------------------------------------
 # Documentation for the user:
 
-docs = {FTM_Name       : "Fix Cluster Projects",
-        FTM_Version    : "3.13",
+docs = {FTM_Name       : "Fix FLEx Projects",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Run the Find and Fix utility on the cluster projects you choose.",
+        FTM_Synopsis   : "Run the Find and Fix utility on the FLEx projects you choose.",
         FTM_Help       : None,
         FTM_Description: 
 """
-Run the Find and Fix utility on the cluster projects you choose. This the same utility that is available in FLEx. 
+Run the Find and Fix utility on the FLEx projects you choose. This the same utility that is available in FLEx. 
 You cannot run this utility on a project that is currently open in FLEx or on the current source project even if
 it is not open. Fixed errors are logged to the report pane.
 """ }
@@ -74,7 +75,7 @@ it is not open. Fixed errors are logged to the report pane.
 # (See https://github.com/pythonnet/pythonnet/issues/520#issuecomment-1961353677)
 
 try:
-    from FixClusterProjects import NullProgress
+    from FixFLExProjects import NullProgress
     
 except ImportError:
 
@@ -159,35 +160,52 @@ except ImportError:
 
 class Main(QMainWindow):
 
-    def __init__(self, clusterProjects):
-        
-        QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
-        self.clusterProjects = clusterProjects
-        self.ui.setupUi(self)
+    def __init__(self, project_names):
+        super().__init__()
+        self.initUI(project_names)
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+        self.returnVal = False
 
-        self.ui.OKButton.clicked.connect(self.OKClicked)
-        self.ui.CancelButton.clicked.connect(self.CancelClicked)
+    def initUI(self, project_names):
+        self.setWindowTitle('Fix FLEx Projects')
+        self.setGeometry(100, 100, 400, 300)
 
-        # Load cluster projects
-        if len(self.clusterProjects) > 0:
+        # Create a central widget and set a layout
+        centralWidget = QWidget()
+        self.setCentralWidget(centralWidget)
+        layout = QVBoxLayout(centralWidget)
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, [], self) # load last used cluster projects here
+        # Create a label and list widget for project names
+        projectLabel = QLabel('FLEx project names (multi-select):')
+        layout.addWidget(projectLabel)
 
-    def OKClicked(self):
+        self.listWidget = QListWidget()
+        self.listWidget.addItems(project_names)
+        self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        layout.addWidget(self.listWidget)
 
-        self.selectedClusterProjects = self.ui.clusterProjectsComboBox.currentData()
-        self.retVal = True
+        # Create OK and Cancel buttons
+        buttonLayout = QHBoxLayout()
+        self.okButton = QPushButton('OK')
+        self.cancelButton = QPushButton('Cancel')
+        buttonLayout.addWidget(self.okButton)
+        buttonLayout.addWidget(self.cancelButton)
+        layout.addLayout(buttonLayout)
+
+        # Connect buttons to their respective slots
+        self.okButton.clicked.connect(self.okButtonClicked)
+        self.cancelButton.clicked.connect(self.cancelButtonClicked)
+
+    def okButtonClicked(self):
+        selectedItems = self.listWidget.selectedItems()
+        selectedProjects = [item.text() for item in selectedItems]
+        self.selectedProjects = selectedProjects
+        self.returnVal = True
         self.close()
 
-    def CancelClicked(self):
-        self.retVal = False
+    def cancelButtonClicked(self):
+        self.selectedProjects = []
         self.close()
-
-    # This has to be here because init cluster projects above connects it to a changed event.
-    def clusterSelectionChanged(self):
-        pass
 
 # ------------------------------------------------------- 
 errorsOccurred = False
@@ -218,26 +236,16 @@ def MainFunction(DB, report, modifyAllowed=True):
     import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Get cluster projects from settings;
-    clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report)
-
-    if not clusterProjects:
-
-        clusterProjects = []
-    else:
-        # Remove blank ones
-        clusterProjects = [x for x in clusterProjects if x]
-
     # Show the window to get the options the user wants
     app = QApplication(sys.argv)
-    window = Main(clusterProjects)
+    window = Main(AllProjectNames())
     window.show()
     app.exec_()
     
-    if window.retVal:
+    if window.returnVal:
 
         # Loop through all the projects selected by the user
-        for projName in window.selectedClusterProjects:
+        for projName in window.selectedProjects:
 
             errorsOccurred = False
             errorCount     = 0
@@ -255,9 +263,13 @@ def MainFunction(DB, report, modifyAllowed=True):
 
                 report.Warning(f"{projName}: Project is open. Skipping.")
                 continue
+            try:
+                df = FwDataFixer(projectFileName, progress, FwDataFixer.ErrorLogger(__logger), FwDataFixer.ErrorCounter(__counter))
+                df.FixErrorsAndSave()
 
-            df = FwDataFixer(projectFileName, progress, FwDataFixer.ErrorLogger(__logger), FwDataFixer.ErrorCounter(__counter))
-            df.FixErrorsAndSave()
+            except Exception as e:
+
+                report.Error(f"{projName}: Skipping. {str(e)}")
 
             if errorsOccurred:
                 report.Warning(f"{projName}: {errorCount} errors fixed.")

@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.13.1 - 3/12/25 - Ron Lockwood
+#    Add Mixpanel logging.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -27,12 +30,13 @@ import pygetwindow as gw
 from flextoolslib import *
 
 import FTPaths
+import ReadConfig
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Restore Multiple FLEx Projects",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Select one or more FLEx backup files and automatically restore them one by one.",
         FTM_Help       :"",
@@ -161,6 +165,15 @@ def extractProjName(backupName):
     return None
 
 def mainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     defaultFolder = FTPaths.SAMPLE_PROJECTS_DIR
 

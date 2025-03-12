@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->10 March 2025</date
+>12 March 2025</date
 ><version
 >3.13</version
 ><contents
@@ -2815,7 +2815,7 @@ num="xClusterSettings"
 >. This information is used in various tools to allow you to apply the tool to multiple <object
 type="tFlexx"
 ></object
-> projects at once. </p
+> projects at once.</p
 ><example
 num="xClusterSettings"
 ><chart
@@ -2870,27 +2870,6 @@ id="sClustNew"
 ><secTitle
 >Cluster Support in New Tools</secTitle
 ><section3
-id="sFixClusterProjs"
-><secTitle
->Fix Cluster Projects Tool</secTitle
-><p
->This tool allows you to run the Find and Fix utility on the cluster projects you choose. This is the same utility that is available in <object
-type="tFlexx"
-></object
->. You cannot run this utility on a project that is currently open in <object
-type="tFlexx"
-></object
-> or on the current source project even if it is not open. Fixed errors are logged to the report pane.</p
-><example
-num="xFixClusterProjs"
-><chart
-><img
-src="Images/FixClusterProjects.png"
-></img
-></chart
-></example
-></section3
-><section3
 id="sOpenMultProjs"
 ><secTitle
 >Open Multiple <object
@@ -2928,6 +2907,30 @@ num="xRestoreProjs"
 ><chart
 ><img
 src="Images/RestoreFLExProjects.png"
+></img
+></chart
+></example
+></section3
+><section3
+id="sFixClusterProjs"
+><secTitle
+>Fix <object
+type="tFlexx"
+></object
+> Projects Tool</secTitle
+><p
+>This tool allows you to run the Find and Fix utility on the projects you choose. This is the same utility that is available in <object
+type="tFlexx"
+></object
+>. You cannot run this utility on a project that is currently open in <object
+type="tFlexx"
+></object
+> or on the current source project even if it is not open. Fixed errors are logged to the report pane.</p
+><example
+num="xFixClusterProjs"
+><chart
+><img
+src="Images/FixClusterProjects.png"
 ></img
 ></chart
 ></example

@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>10 March 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>12 March 2025</small></center>
       <center><small>Version: 3.13</small></center>
       <hr>
       <div>
@@ -97,9 +97,9 @@
                <li><a href="#sClustExisting">5.1&nbsp;Cluster Support in Existing Tools</a></li>
                <li><a href="#sClustNew">5.2&nbsp;Cluster Support in New Tools</a></li>
                <ul>
-                  <li><a href="#sFixClusterProjs">5.2.1&nbsp;Fix Cluster Projects Tool</a></li>
-                  <li><a href="#sOpenMultProjs">5.2.2&nbsp;Open Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool</a></li>
-                  <li><a href="#sRestoreProjs">5.2.3&nbsp;Restore Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool</a></li>
+                  <li><a href="#sOpenMultProjs">5.2.1&nbsp;Open Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool</a></li>
+                  <li><a href="#sRestoreProjs">5.2.2&nbsp;Restore Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool</a></li>
+                  <li><a href="#sFixClusterProjs">5.2.3&nbsp;Fix <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool</a></li>
                   <li><a href="#sAddClusterAdHoc">5.2.4&nbsp;Add Ad Hoc Constraint for a Cluster Tool</a></li>
                </ul>
             </ul>
@@ -1452,7 +1452,7 @@
       <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> works great in cluster projects. You can leverage the approval of an interlinear text in the source language to produce translations
          of the text in multiple target languages.
       </p>
-      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> supports cluster projects by allowing you to define which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects are in your cluster. You do this in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>. See <a href="#xClusterSettings">(34)</a>. This information is used in various tools to allow you to apply the tool to multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects at once. 
+      <p><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> supports cluster projects by allowing you to define which <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects are in your cluster. You do this in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans Settings</span>. See <a href="#xClusterSettings">(34)</a>. This information is used in various tools to allow you to apply the tool to multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects at once.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -1516,33 +1516,14 @@
       </div>
       <h2 style=""><a name="sClustNew"></a>5.2&nbsp;Cluster Support in New Tools
       </h2>
-      <h3 style=""><a name="sFixClusterProjs"></a>5.2.1&nbsp;Fix Cluster Projects Tool
-      </h3>
-      <p>This tool allows you to run the Find and Fix utility on the cluster projects you choose. This is the same utility that is
-         available in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. You cannot run this utility on a project that is currently open in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> or on the current source project even if it is not open. Fixed errors are logged to the report pane.
-      </p>
-      <div style="margin-left: 0.25in; margin-right: 0.25in">
-         <table>
-            <tr>
-               <td valign="top"><a name="xFixClusterProjs">(38)</a></td>
-               <td>
-                  <table>
-                     <tr>
-                        <td><img src="Images/FixClusterProjects.png"></td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div>
-      <h3 style=""><a name="sOpenMultProjs"></a>5.2.2&nbsp;Open Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool
+      <h3 style=""><a name="sOpenMultProjs"></a>5.2.1&nbsp;Open Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool
       </h3>
       <p>This tool allows you to open <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects you choose.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xOpenMultProjs">(39)</a></td>
+               <td valign="top"><a name="xOpenMultProjs">(38)</a></td>
                <td>
                   <table>
                      <tr>
@@ -1553,18 +1534,37 @@
             </tr>
          </table>
       </div>
-      <h3 style=""><a name="sRestoreProjs"></a>5.2.3&nbsp;Restore Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool
+      <h3 style=""><a name="sRestoreProjs"></a>5.2.2&nbsp;Restore Multiple <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool
       </h3>
       <p>This tool allows you to restore <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> projects you choose.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
             <tr>
-               <td valign="top"><a name="xRestoreProjs">(40)</a></td>
+               <td valign="top"><a name="xRestoreProjs">(39)</a></td>
                <td>
                   <table>
                      <tr>
                         <td><img src="Images/RestoreFLExProjects.png"></td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div>
+      <h3 style=""><a name="sFixClusterProjs"></a>5.2.3&nbsp;Fix <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> Projects Tool
+      </h3>
+      <p>This tool allows you to run the Find and Fix utility on the projects you choose. This is the same utility that is available
+         in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span>. You cannot run this utility on a project that is currently open in <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLEx</span> or on the current source project even if it is not open. Fixed errors are logged to the report pane.
+      </p>
+      <div style="margin-left: 0.25in; margin-right: 0.25in">
+         <table>
+            <tr>
+               <td valign="top"><a name="xFixClusterProjs">(40)</a></td>
+               <td>
+                  <table>
+                     <tr>
+                        <td><img src="Images/FixClusterProjects.png"></td>
                      </tr>
                   </table>
                </td>

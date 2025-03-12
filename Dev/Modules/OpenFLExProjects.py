@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.13 - 3/12/25 - Ron Lockwood
+#    Add Mixpanel logging.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -26,12 +29,13 @@ from flextoolslib import *
 from flexlibs import AllProjectNames
 
 import FTPaths
+import ReadConfig
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Open Multiple FLEx Projects",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Select one or more FLEx project and automatically open them one by one.",
         FTM_Help       :"",
@@ -90,13 +94,22 @@ class MainWindow(QMainWindow):
         self.selectedProjects = []
         self.close()
 
-def is_flex_open(projName):
+def isFLExOpen(projName):
 
     # Check if a window with the project name is open
     windows = gw.getWindowsWithTitle(f'{projName} - Fieldworks')
     return len(windows) > 0
 
 def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     app = QApplication(sys.argv)
     mainWindow = MainWindow(AllProjectNames())
@@ -112,7 +125,7 @@ def MainFunction(DB, report, modifyAllowed):
         # Loop through selected projects and open them
         for proj in mainWindow.selectedProjects:
 
-            if is_flex_open(proj):
+            if isFLExOpen(proj):
 
                 report.Info(f"The {proj} project is already open. Skipping.")
                 continue
@@ -120,7 +133,7 @@ def MainFunction(DB, report, modifyAllowed):
             process = Popen([flexExe, '-db', proj], creationflags=DETACHED_PROCESS)
 
             secs = 0
-            while not is_flex_open(proj):
+            while not isFLExOpen(proj):
 
                 time.sleep(1)  # Check every second if the project is fully opened
                 secs += 1
