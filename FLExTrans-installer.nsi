@@ -261,6 +261,45 @@ InitPluginsDir
         ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
         Goto endXXeSync
   endXXeSync:
+    
+  # Associate file extensions with XMLmind XML Editor
+  
+  # Start extension association loop
+  StrCpy $R1 ".t1x"
+  Goto associate_extension
+  
+next_t2x:
+  StrCpy $R1 ".t2x"
+  Goto associate_extension
+  
+next_t3x:
+  StrCpy $R1 ".t3x"
+  Goto associate_extension
+  
+next_dix:
+  StrCpy $R1 ".dix"
+  Goto associate_extension
+  
+associate_extension:
+  # Create OpenWithList entry
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
+  
+  # Create OpenWithProgids entry
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
+  
+  # Check which extension we just processed and jump to next one
+  ${If} $R1 == ".t1x"
+    Goto next_t2x
+  ${ElseIf} $R1 == ".t2x"
+    Goto next_t3x
+  ${ElseIf} $R1 == ".t3x"
+    Goto next_dix
+  ${EndIf}
+  
+  # Notify Windows of the change
+  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   SetOutPath "$APPDATA\XMLmind\XMLEditor8"
