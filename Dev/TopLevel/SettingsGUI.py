@@ -4,6 +4,9 @@
 #   3/28/22
 #
 #
+#   Version 3.13.2 - 3/18/25 - Ron Lockwood
+#    Fixes #676. Let user know of implicit settings changes.
+#
 #   Version 3.13.1 - 3/11/25 - Ron Lockwood
 #    Fixes #869. Better error on failure to open DB.
 #
@@ -899,6 +902,7 @@ class Main(QMainWindow):
         self.DB = DB
         self.changedSettingsSet = set()
         self.nameToWidgetMap = {}
+        self.nameToLabelMap = {}
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
@@ -1153,17 +1157,56 @@ class Main(QMainWindow):
         self.save()
         self.closeEvent(None)
         
-    def reportChangedSettings(self):
+    def getLabelForName(self, name):
         
+        # See if we filled out the map already once
+        if not self.nameToLabelMap:
+
+            for i in range(0, len(widgetList)):
+                
+                widgInfo = widgetList[i]
+                self.nameToLabelMap[widgInfo[CONFIG_NAME]] = widgInfo[LABEL_TEXT]
+
+        return self.nameToLabelMap.get(name, '')
+    
+    def userChangedThisSetting(self, nameStr):
+        
+        # If the user changed the setting, the label will be in the set
+        return self.getLabelForName(nameStr) in self.changedSettingsSet
+    
+    def reportChangedSettings(self, updatedConfigMap):
+        
+        labelsList = []
+        msgStr = ''
+
         refreshStatusbar()
 
         if len(self.changedSettingsSet) > 0:
         
             msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
             msgStr = '\n'.join(msgList)    
-            QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+
+        # See if we changed anything that wasn't a user change
+        for key in updatedConfigMap:
+
+            if key in self.configMap:
+
+                if self.configMap[key] != updatedConfigMap[key] and not self.userChangedThisSetting(key):
+                    
+                    labelsList.append(self.getLabelForName(key))
+            else:
+                labelsList.append(self.getLabelForName(key))
+
+        if labelsList:
+
+            flexTransChanges = '\n\nFLExTrans made these changes for you:\n' + '\n'.join(labelsList)
+            msgStr += flexTransChanges
+        
+        QMessageBox.information(self, 'FLExTrans Settings', msgStr)
         
     def save(self):
+
+        updatedConfigMap = {}
 
         f = open(self.config, "w", encoding='utf-8')
         
@@ -1178,6 +1221,7 @@ class Main(QMainWindow):
             if widgInfo[WIDGET_TYPE] == COMBO_BOX:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].currentText()
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = widgInfo[WIDGET1_OBJ].currentText()
                 
                 if widgInfo[CONFIG_NAME] == ReadConfig.SOURCE_TEXT_NAME:
                     
@@ -1187,7 +1231,9 @@ class Main(QMainWindow):
             elif widgInfo[WIDGET_TYPE] == CHECK_COMBO_BOX:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+self.addCommas(widgInfo[WIDGET1_OBJ].currentData())
-                
+                myList = widgInfo[WIDGET1_OBJ].currentData()
+                updatedConfigMap[widgInfo[CONFIG_NAME]] =  myList + [''] if myList else '' # just need the list, but always with a blank at the end. For an empty list make it the null string
+
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
                 valStr = widgInfo[WIDGET1_OBJ].currentText()+','+widgInfo[WIDGET2_OBJ].currentText()
@@ -1198,10 +1244,12 @@ class Main(QMainWindow):
                     valStr = ''
                     
                 outStr = widgInfo[CONFIG_NAME]+'='+valStr
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = valStr
                 
             elif widgInfo[WIDGET_TYPE] in [FILE, FOLDER, TEXT_BOX]:
                 
                 outStr = widgInfo[CONFIG_NAME]+'='+widgInfo[WIDGET1_OBJ].text().strip()
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = widgInfo[WIDGET1_OBJ].text().strip()
                 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
@@ -1212,12 +1260,13 @@ class Main(QMainWindow):
                     selected='n'
             
                 outStr = widgInfo[CONFIG_NAME]+'='+selected
+                updatedConfigMap[widgInfo[CONFIG_NAME]] = selected
                 
             f.write(outStr+'\n')
             
         f.close()
         
-        self.reportChangedSettings()
+        self.reportChangedSettings(updatedConfigMap)
 
         self.modified = False
         self.changedSettingsSet.clear()
