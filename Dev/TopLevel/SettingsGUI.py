@@ -1199,10 +1199,15 @@ class Main(QMainWindow):
 
         if labelsList:
 
-            flexTransChanges = '\n\nFLExTrans made these changes for you:\n' + '\n'.join(labelsList)
+            flexTransChanges = 'FLExTrans made these changes for you:\n' + '\n'.join(labelsList)
+
+            if msgStr:
+                msgStr += '\n\n'
+                
             msgStr += flexTransChanges
         
-        QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+        if msgStr:
+            QMessageBox.information(self, 'FLExTrans Settings', msgStr)
         
     def save(self):
 
