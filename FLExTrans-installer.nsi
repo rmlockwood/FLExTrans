@@ -197,6 +197,8 @@ InitPluginsDir
       StrCmp $4 "" done2
       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
       
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
+
 		# If the Tools collection doesn't have disablerunall set yet, set it to True
 		StrCmp $4 "Tools.ini" 0 skip2 # 0 means go 0 lines down and execute, on failed comparison execution goes to skip2 line
 		
@@ -227,7 +229,6 @@ InitPluginsDir
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
       ${EndIf}
       FindNext $3 $4
       Goto loop2
