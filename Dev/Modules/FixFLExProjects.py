@@ -80,7 +80,7 @@ try:
 except ImportError:
 
     class NullProgress(IProgress):
-        __namespace__ = 'FixFWProject'
+        __namespace__ = 'FixFLExProjects'
         
         def __init__(self):
             self._canceling = None
