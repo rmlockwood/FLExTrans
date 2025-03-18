@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.2 - 3/18/25 - Ron Lockwood
+#    Fixes #939. Bug in get All Stem Features where wrong object referenced.
+#
 #   Version 3.13.1 - 3/10/25 - Ron Lockwood
 #    Fixes #928. Look for newlines between | and * when splitting what will be analysis WS text.
 #
@@ -2203,7 +2206,7 @@ def getAllStemFeatures(DB, report, configMap):
         LF = entry.LexemeFormOA
         if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
             continue
-        if not LF.MorphTypeRA or as_string(LF.LexemeFormOA.MorphTypeRA.Name) not in sourceMorphNames:
+        if not LF.MorphTypeRA or as_string(LF.MorphTypeRA.Name) not in sourceMorphNames:
             continue
 
         for sense in entry.SensesOS:
