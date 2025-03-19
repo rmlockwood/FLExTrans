@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -154,18 +158,19 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",
         FTM_Description:
 """
-This module will build a bilingual
-lexicon for two projects. The
-database that FlexTools is set to is your source project. Set the Target Project
+This module will build a bilingual lexicon for two projects. The
+project that FlexTools is set to is your source project. Set the Target Project
 in Settings to the name of your target project.
 This module builds the bilingual lexicon based on the links from source senses to target senses
-that are in your source project. Use the Sense Linker Module to create these link.
+that are in your source project. Use the Sense Linker Module to create these links.
+The bilingual lexicon will be stored in the file specified by the Bilingual Dictionary Output File setting.
+This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using a replacement file. See the help
 document for more details.
@@ -357,8 +362,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
         addFeatureStringsToMap(DB, posMap)
         addFeatureStringsToMap(TargetDB, posMap)
 
-        errorList.append(("Building the bilingual dictionary...", 0))
         recordsDumpedCount = 0
+
         if report:
             report.ProgressStart(DB.LexiconNumberOfEntries())
 
@@ -582,8 +587,8 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
             TargetDB.CloseProject()
             return errorList
 
-        errorList.append(('Creation complete to the file: '+fullPathBilingFile+'.', 0))
-        errorList.append((f'{recordsDumpedCount} records created in the bilingual dictionary.', 0))
+        errorList.append((f'Creation complete to the file: {Utils.getPathRelativeToWorkProjectsDir(fullPathBilingFile)}.', 0))
+        errorList.append((f'{recordsDumpedCount} records created.', 0))
 
     TargetDB.CloseProject()
     return errorList

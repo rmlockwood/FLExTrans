@@ -5,6 +5,10 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -50,11 +54,14 @@ import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = """This module executes lexical transfer based on links from source to target sense you have established and then executes structural transfer which
+descr = """This module executes lexical transfer based on links from source to target sense 
+you have established and then executes structural transfer which
 runs the transfer rules you have made to transform source morphemes into target morphemes.
+The results of this module are found in the file you specified in the Target Transfer Results File.
+This is typically called target_text-aper.txt and is usually in the Build folder.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -154,6 +161,7 @@ def runApertium(DB, configMap, report):
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     Utils.unfixProblemCharsRuleFile(transferResultsPath)
     Utils.unfixProblemCharsDict(dictionaryPath)
+    report.Info(f'Transferred text put in the file: {Utils.getPathRelativeToWorkProjectsDir(transferResultsPath)}.')
     report.Info('Apertium transfer complete.')
     
     return 1

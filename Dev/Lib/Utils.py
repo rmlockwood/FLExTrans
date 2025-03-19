@@ -5,6 +5,10 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.3 - 3/19/25 - Ron Lockwood
+#    New function to get shorter path including and below WorkProjects.
+#    Also don't report which target database.
+#
 #   Version 3.13.2 - 3/18/25 - Ron Lockwood
 #    Fixes #939. Bug in get All Stem Features where wrong object referenced.
 #
@@ -1567,8 +1571,8 @@ def openTargetProject(configMap, report):
             report.Error('There was an error opening target database: '+targetProj+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
         raise
 
-    if report:
-        report.Info('Using: '+targetProj+' as the target database.')
+    # if report:
+    #     report.Info('Using: '+targetProj+' as the target database.')
 
     return TargetDB
 
@@ -2377,3 +2381,15 @@ def setTextMetaData(DB, text):
 
     # Set the IsTranslated field
     text.IsTranslated = True
+
+def getPathRelativeToWorkProjectsDir(fullPath):
+    '''Get the path relative to the work projects directory.
+       If WorkProjects isn't found in the path, return the full path.'''
+    
+    # Look for 'WorkProjects' in the path
+    index = fullPath.find('WorkProjects')
+    if index == -1:
+        return fullPath
+        
+    # Return the path starting from 'WorkProjects'
+    return "..."+fullPath[index:]

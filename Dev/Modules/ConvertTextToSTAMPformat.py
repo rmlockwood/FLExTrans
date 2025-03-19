@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+# 
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -145,6 +149,11 @@ This module will take the Target Transfer Results File created by Apertium and c
 for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
 synthesis program. 
+The output file will be stored in different files depending on whether you are doing STAMP synthesis (default) or
+HermitCrab synthesis. For STAMP, the file is what you specified by the Target Output ANA File setting -- typically
+called target_text-ana.txt.
+For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
+target_words-HC.txt. Both files are usually in the Build folder.
 NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
 is being used.
 """ }
@@ -422,8 +431,6 @@ class ConversionData():
         except: #FDA_DatabaseError, e:
             report.Error('Failed to open the target database.')
             raise
-    
-        errorList.append(('Using: '+targetProj+' as the target database.', 0))
     
         self.project = TargetDB
         
@@ -1386,8 +1393,10 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
         count += 1
     
     if not doHermitCrabSynthesis:
+        errorList.append((f'Converted target words put in the file: {Utils.getPathRelativeToWorkProjectsDir(targetANAFile)}.', 0))
         errorList.append((str(count)+' records exported in ANA format.', 0))
     else:
+        errorList.append((f'Converted target words put in the file: {Utils.getPathRelativeToWorkProjectsDir(HCmasterFile)}', 0))
         errorList.append((str(count)+' records exported in HermitCrab format.', 0))
 
     fOutput.close()
