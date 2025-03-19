@@ -10,16 +10,18 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.12.1"
+!define PRODUCT_VERSION "3.13"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEX_TOOLS_WITH_VERSION "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
+!define RULEASSISTANT "FLExTrans.Rule Assistant"
 !define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
+!define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -27,12 +29,12 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "© 2015-2024 SIL International"
+VIAddVersionKey "LegalCopyright" "© 2015-2025 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.12.1.${BUILD_NUM}
+VIProductVersion 3.13.0.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -65,7 +67,7 @@ Page custom nsDialogsPage
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\FLExTransWindowIcon.ico"
+Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -185,7 +187,7 @@ InitPluginsDir
 	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
-    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
+    !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
     
     # Find all collection ini files (e.g. tools.ini)
@@ -196,7 +198,7 @@ InitPluginsDir
       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\$4"
       
 		# If the Tools collection doesn't have disablerunall set yet, set it to True
-		StrCmp $4 "Tools.ini" 0 skip2 # 0 means go 0 lines down and execute, on failed comparison execution goes to skip2 line
+		${If} $4 == "Tools.ini" 
 		
 			# Get the current disablerunall setting
 			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
@@ -208,20 +210,29 @@ InitPluginsDir
 
 			skip3:
 			
+			# Delete extra section if needed. Mainly for MB.
+			DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}"
+			# Need to do this before we write EXPORTFROMFLEX below so that we don't get duplicate sections
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
+
 			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${RULEASSISTANT}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
 			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}" "X" "Y"
 
-			skip2:
-		
-        # Rename modules in the all the .ini files (for old installs)
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
-        # older module names
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text with STAMP"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
+			
+		${Else}
+			# Rename modules in the all the .ini files (for old installs)
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
+			# older module names
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text"
+			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
+		${EndIf}
       ${EndIf}
       FindNext $3 $4
       Goto loop2
@@ -255,6 +266,45 @@ InitPluginsDir
         ExecWait "$INSTDIR\install_files\xxe-perso-8_2_0-setup.exe /SILENT"
         Goto endXXeSync
   endXXeSync:
+    
+  # Associate file extensions with XMLmind XML Editor
+  
+  # Start extension association loop
+  StrCpy $R1 ".t1x"
+  Goto associate_extension
+  
+next_t2x:
+  StrCpy $R1 ".t2x"
+  Goto associate_extension
+  
+next_t3x:
+  StrCpy $R1 ".t3x"
+  Goto associate_extension
+  
+next_dix:
+  StrCpy $R1 ".dix"
+  Goto associate_extension
+  
+associate_extension:
+  # Create OpenWithList entry
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "a" "xxe.exe"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithList" "MRUList" "a"
+  
+  # Create OpenWithProgids entry
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\$R1\OpenWithProgids" "XXE_XML_File" ""
+  
+  # Check which extension we just processed and jump to next one
+  ${If} $R1 == ".t1x"
+    Goto next_t2x
+  ${ElseIf} $R1 == ".t2x"
+    Goto next_t3x
+  ${ElseIf} $R1 == ".t3x"
+    Goto next_dix
+  ${EndIf}
+  
+  # Notify Windows of the change
+  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   SetOutPath "$APPDATA\XMLmind\XMLEditor8"
