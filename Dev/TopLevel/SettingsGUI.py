@@ -1199,7 +1199,7 @@ class Main(QMainWindow):
 
         if labelsList:
 
-            flexTransChanges = 'FLExTrans made these changes for you:\n' + '\n'.join(labelsList)
+            flexTransChanges = 'FLExTrans made changed these settings for you:\n' + '\n'.join(labelsList)
 
             if msgStr:
                 msgStr += '\n\n'
