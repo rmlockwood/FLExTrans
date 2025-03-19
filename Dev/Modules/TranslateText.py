@@ -5,6 +5,10 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.13 - 3/19/25 - Ron Lockwood
+#    Info messages added and some blank lines.
+#    Also, do Export to Paratext as the default last step.
+#
 #   Version 3.12 - 12/31/24 - Ron Lockwood
 #    Initial version.
 #
@@ -13,27 +17,18 @@
 
 
 import os
-import re
-import sys
-from unicodedata import normalize
 
-import ExtractBilingualLexicon
-from Modules.FLExTrans import ConvertTextToSTAMPformat, DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText
-import RunApertium
-import CatalogTargetAffixes
-from System import Int32 # type: ignore
 from flextoolslib import *                                                 
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
+from Modules.FLExTrans import ConvertTextToSTAMPformat, DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText, ExportToParatext, ExtractBilingualLexicon, CatalogTargetAffixes, RunApertium
 import ReadConfig
 import Utils
-import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.12",
+        FTM_Version    : "3.13",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Translate the current source text.",    
         FTM_Help   : "",
@@ -42,15 +37,17 @@ docs = {FTM_Name       : "Translate Text",
 Translate the current source text.
 """ }
 
+FINAL_MODULE_IS_EXPORT_TO_PARATEXT = True # Otherwise, the last module is Insert Target Text
+
 def extractSourcText(DB, configMap, report):
 
     # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
+    fullPathTextOutputFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
 
-    if not outFileVal:
+    if not fullPathTextOutputFile:
         return None
     
-    fullPathTextOutputFile = outFileVal
+    abbrPath = Utils.getPathRelativeToWorkProjectsDir(fullPathTextOutputFile)
     
     try:
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
@@ -76,9 +73,6 @@ def extractSourcText(DB, configMap, report):
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
-    # Process the text
-    report.Info("Exporting analyses...")
-
     # Get various bits of data for the get interlinear function
     interlinParams = Utils.initInterlinParams(configMap, report, contents)
 
@@ -91,9 +85,10 @@ def extractSourcText(DB, configMap, report):
         
     # Write out all the words
     myText.write(f_out)
+    totalStr = str(myText.getSentCount())
+    #endstr = 's' if totalStr != '1' else ''
+    report.Info(f"Exported {totalStr} sentence(s) to {abbrPath}.")
     
-    report.Info("Exported: " + str(myText.getSentCount()) + " sentence(s).")
-        
     f_out.close()
 
     report.Info("Export of " + sourceTextName + " complete.")
@@ -148,10 +143,14 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     ## Extract the source text
+    report.Blank()
+    report.Info('Exporting source text...')
     if not extractSourcText(DB, configMap, report):
         return
 
     ## Build the bilingual lexicon
+    report.Blank()
+    report.Info('Building the bilingual lexicon...')
     errorList = ExtractBilingualLexicon.extract_bilingual_lex(DB, configMap, report, useCacheIfAvailable=True)
 
     # output info, warnings, errors and url links
@@ -159,6 +158,8 @@ def MainFunction(DB, report, modify=True):
         return
 
     ## Run Apertium
+    report.Blank()
+    report.Info('Running the Apertium transfer engine...')
     if not RunApertium.runApertium(DB, configMap, report):
         return
     
@@ -170,6 +171,8 @@ def MainFunction(DB, report, modify=True):
     if not outFileVal:
         return
     
+    report.Blank()
+    report.Info('Cataloging target affixes...')
     errorList = CatalogTargetAffixes.catalog_affixes(DB, configMap, outFileVal, report, useCacheIfAvailable=True)
     
     # output info, warnings, errors and url links
@@ -177,12 +180,16 @@ def MainFunction(DB, report, modify=True):
         return
     
     ## Convert to Synthesizer Format
+    report.Blank()
+    report.Info('Converting target words to synthesizer format...')
     if not convertToSynthesizerFormat(DB, configMap, report):
         return
     
     ## Synthesize Text
     hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=True)
 
+    report.Blank()
+    report.Info('Synthesizing target text...')
     if hermitCrabSynthesisYesNo == 'y':
 
         report.Info('Using HermitCrab for synthesis.')
@@ -193,9 +200,22 @@ def MainFunction(DB, report, modify=True):
         if not DoStampSynthesis.doStamp(DB, report, configMap):
             return
     
-    ## Insert Target Text
-    if not InsertTargetText.insertTargetText(DB, configMap, report):
-        return
+    if FINAL_MODULE_IS_EXPORT_TO_PARATEXT:
+
+        ## Export to Paratext
+        report.Blank()
+        report.Info('Exporting to Paratext...')
+        if not ExportToParatext.doExportToParatext(DB, configMap, report):
+            return
+    else:
+        ## Insert Target Text
+        report.Blank()
+        report.Info('Inserting text into the target project...')
+        if not InsertTargetText.insertTargetText(DB, configMap, report):
+            return
+    
+    report.Blank()
+    report.Info('Translation complete.')
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
