@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -123,16 +127,18 @@ description = """
 This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
-Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab configuration file. 
+Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
+configuration file. 
 It is named 'HermitCrab.config' and will be in the 'Build' folder. 
 NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
-Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to produce surface forms ('target_words-surface.txt'). 
+Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
+produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -186,8 +192,6 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
         errorList.append((f'Failed to open the target database: {targetProj}', 2))
         return errorList
 
-    errorList.append(('Using: '+targetProj+' as the target database.', 0))
-
     # Get fwdata file path
     fwdataPath = os.path.join(FWProjectsDir, TargetDB.ProjectName(), TargetDB.ProjectName() + '.fwdata')
         
@@ -222,7 +226,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if result.returncode == 0:
 
                 gatherWarnings(result, errorList)
-                errorList.append((f'Successfully generated the HermitCrab configuration file: {HCconfigPath}', 0))
+                errorList.append((f'Generated the HermitCrab config. file: {Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)}', 0))
             else:
                 errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
                 
@@ -568,7 +572,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
         errorList.append((f'An error happened when trying to open the file: {parsesFile}', 2))
         return errorList
     
-    errorList.append((f'Synthesized {LUsCount} unique lexical units.', 0))
+    errorList.append((f'Processing {LUsCount} unique lexical units.', 0))
 
     # Produce synthesis file
     errList = produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synFile)
@@ -598,7 +602,8 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     fix_up_text(synFile, cleanUpText)
 
     # Tell the user which file was created
-    errorList.append((f'Target text: {synFile} created.', 0))
+    errorList.append((f'The synthesized target text is in the file: {Utils.getPathRelativeToWorkProjectsDir(synFile)}.', 0))
+    errorList.append(('Synthesis complete.', 0))
     
     return errorList
 
@@ -610,7 +615,7 @@ def doHermitCrab(DB, report, configMap=None):
         # Read the configuration file.
         configMap = ReadConfig.readConfig(report)
         if not configMap:
-            return
+            return None
 
     # Log the start of this module on the analytics server if the user allows logging.
     import Mixpanel
@@ -621,7 +626,7 @@ def doHermitCrab(DB, report, configMap=None):
     HCconfigPath = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report)
 
     if not (HCconfigPath and targetSynthesis):
-        return 
+        return None 
 
     # Extract the target lexicon
     errorList = extractHermitCrabConfig(DB, configMap, HCconfigPath, report, useCacheIfAvailable=True)
@@ -630,7 +635,7 @@ def doHermitCrab(DB, report, configMap=None):
     fatal, _ = Utils.checkForFatalError(errorList, report)
    
     if fatal:
-        return
+        return None
 
     # Get HermitCrab file names
     parsesFile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_PARSES_FILE, report)
@@ -642,14 +647,19 @@ def doHermitCrab(DB, report, configMap=None):
 
         errorList.append((f'{ReadConfig.HERMIT_CRAB_MASTER_FILE} or {ReadConfig.HERMIT_CRAB_PARSES_FILE} \
                          or {ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE} or {ReadConfig.TRANSFER_RESULTS_FILE} not found in the configuration file.', 2))
-        return errorList
+        return None
 
     # Synthesize the new target text
     errList = synthesizeWithHermitCrab(configMap, HCconfigPath, targetSynthesis, parsesFile, masterFile, surfaceFormsFile, transferResultsFile, report)
     errorList.extend(errList)
     
     # output info, warnings, errors and url links
-    Utils.processErrorList(errorList, report)
+    if not Utils.processErrorList(errorList, report):
+        return None   
+    
+    return 1
+    
+
     
 def MainFunction(DB, report, modifyAllowed):
 

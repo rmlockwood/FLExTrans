@@ -8,6 +8,10 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -51,8 +55,7 @@
 #   earlier version history removed on 3/10/25
 #
 
-from SIL.LCModel import *
-from SIL.LCModel.Core.KernelInterfaces import ITsString   
+from SIL.LCModel import * # type: ignore
 from flextoolslib import *
 
 import ReadConfig
@@ -70,22 +73,24 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB: False,
-        FTM_Synopsis  : "Extracts an Analyzed FLEx text into Apertium format.",
+        FTM_Synopsis  : "Exports an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
         FTM_Description :
 """
 This module will use the Source Text Name set in the Settings. It will first check 
 to see if each word in the selected text is
 fully analyzed (word gloss or category is not necessary). If the text is not
-fully analyzed you will get a warning.
+fully analyzed you will get warnings.
 Next, this module will go through each bundle in the interlinear text and export
 information in the format that Apertium needs. The general idea is that
 affixes and clitics will be exported as <gloss> and root/stems will be exported
 as head_word<pos><feat1>...<featN><class1>...<classN>. Where feat1 to featN are one or more 
 inflection features that may be present for the root/stem 
 and class1 to classN are inflection classes that may be present on the stem.
+The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
+This is typically called source_text-aper.txt and is usually in the Build folder.
 """ }
 
 #----------------------------------------------------------------
@@ -103,12 +108,12 @@ def MainFunction(DB, report, modifyAllowed):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.
-    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
-    if not outFileVal:
+    fullPathTextOutputFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
+    if not fullPathTextOutputFile:
         return
     
-    fullPathTextOutputFile = outFileVal
-    
+    abbrPath = Utils.getPathRelativeToWorkProjectsDir(fullPathTextOutputFile)
+
     try:
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
@@ -172,7 +177,6 @@ def MainFunction(DB, report, modifyAllowed):
         logInfo = Utils.importGoodParsesLog()
             
     # Process the text
-    report.Info("Exporting analyses...")
 
     # Get various bits of data for the get interlinear function
     interlinParams = Utils.initInterlinParams(configMap, report, contents)
@@ -310,8 +314,9 @@ def MainFunction(DB, report, modifyAllowed):
     else:
         # Write out all the words
         myText.write(f_out)
-        
-        report.Info("Exported: " + str(myText.getSentCount()) + " sentence(s).")
+        totalStr = str(myText.getSentCount())
+        #endstr = 's' if totalStr != '1' else ''
+        report.Info(f"Exported {totalStr} sentence(s) to {abbrPath}.")
         
     f_out.close()
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Put the export logic in a separate function. So it can be called from other modules.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -93,7 +96,7 @@ PTXPATH = 'C:\\My Paratext 8 Projects'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export the draft that has been translated with FLExTrans to Paratext.",
         FTM_Help       : "",
@@ -204,27 +207,18 @@ def parseSourceTextName(report, sourceText, infoMap):
     
     return True
 
-def MainFunction(DB, report, modify):
-    
-    # Read the configuration file 
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+def doExportToParatext(DB, configMap, report):
 
     # Find the desired text
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceText:
-        return
+        return None
     
     infoMap = {'bookAbbrev': '', 'fromChap': 0, 'toChap': 0}
     
     # Parse it into book and chapters
     if parseSourceTextName(report, sourceText, infoMap) == False: # error occurred
-        return 
+        return None 
     
     # Get the cluster projects
     clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
@@ -245,19 +239,37 @@ def MainFunction(DB, report, modify):
         # Check that we have a synthesized file
         synFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
         if not synFile:
-            return
+            return None
         
         # Read in the syn. file chapters
         try:
             f = open(synFile, 'r', encoding='utf-8')
         except:
             report.Error(f'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.')
-            return
+            return None
             
         synFileContents = f.read()
         f.close()
         
         ChapterSelection.doExport(synFileContents, report, window.chapSel, window)
+
+        return 1
+    else:
+        report.Warning(f'Export cancelled.')
+        return None
+
+def MainFunction(DB, report, modify):
+    
+    # Read the configuration file 
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    doExportToParatext(DB, configMap, report)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

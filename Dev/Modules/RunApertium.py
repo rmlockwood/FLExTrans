@@ -5,6 +5,10 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -50,11 +54,14 @@ import FTPaths
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = """This module executes lexical transfer based on links from source to target sense you have established and then executes structural transfer which
+descr = """This module executes lexical transfer based on links from source to target sense 
+you have established and then executes structural transfer which
 runs the transfer rules you have made to transform source morphemes into target morphemes.
+The results of this module are found in the file you specified in the Target Transfer Results File.
+This is typically called target_text-aper.txt and is usually in the Build folder.
 """
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Run the Apertium transfer engine.",
         FTM_Help  : "",  
@@ -64,25 +71,15 @@ STRIPPED_RULES  = 'tr.t1x'
 STRIPPED_RULES2 = 'tr.t2x'
 STRIPPED_RULES3 = 'tr.t3x'
 
-#----------------------------------------------------------------
-# The main processing function
-def MainFunction(DB, report, modify=True):
+def runApertium(DB, configMap, report):
 
     # Get parent folder of the folder flextools.ini is in and add \Build to it
     buildFolder = FTPaths.BUILD_DIR
 
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return True
-
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
-
     # Get the path to the dictionary file
     dictionaryPath = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
     if not dictionaryPath:
-        return True
+        return None
     
     # See if the dictionary file exists.
     if not os.path.exists(dictionaryPath):
@@ -102,19 +99,19 @@ def MainFunction(DB, report, modify=True):
     # Get the path to the target apertium file
     transferResultsPath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
     if not transferResultsPath:
-        return True
+        return None
     
     # Get the path to the transfer rules file
     tranferRulePath = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=False)
     if not tranferRulePath:
-        return True
+        return None
 
     # Get the modification date of the transfer rule file.
     statResult = os.stat(tranferRulePath)
 
     # Escape some characters and write as NFD unicode.
     if Utils.stripRulesFile(report, buildFolder, tranferRulePath, STRIPPED_RULES) == True:
-        return True
+        return None
     
     ## Advanced transfer files
     
@@ -124,7 +121,7 @@ def MainFunction(DB, report, modify=True):
 
         # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath2, STRIPPED_RULES2) == True:
-            return True
+            return None
 
     # Get the path to the 3rd transfer rules file (could be blank)
     tranferRulePath3 = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE3, report, giveError=False)
@@ -132,7 +129,7 @@ def MainFunction(DB, report, modify=True):
 
         # Escape some characters and write as NFD unicode.
         if Utils.stripRulesFile(report, buildFolder, tranferRulePath3, STRIPPED_RULES3) == True:
-            return True
+            return None
 
     # Check if attributes are well-formed. Warnings will be reported in the function
     error_list = Utils.checkRuleAttributes(tranferRulePath)
@@ -164,7 +161,23 @@ def MainFunction(DB, report, modify=True):
     # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
     Utils.unfixProblemCharsRuleFile(transferResultsPath)
     Utils.unfixProblemCharsDict(dictionaryPath)
+    report.Info(f'Transferred text put in the file: {Utils.getPathRelativeToWorkProjectsDir(transferResultsPath)}.')
+    report.Info('Apertium transfer complete.')
+    
+    return 1
+#----------------------------------------------------------------
+# The main processing function
+def MainFunction(DB, report, modify=True):
 
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    runApertium(DB, configMap, report)
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

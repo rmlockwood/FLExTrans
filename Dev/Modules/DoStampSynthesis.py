@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.1 - 3/19/25 - Ron Lockwood
+#    Use abbreviated path when telling user what file was used.
+#    Updated module description.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -91,7 +95,6 @@
 #
 
 import os
-import sys
 import re 
 from subprocess import call
 from datetime import datetime
@@ -104,7 +107,7 @@ from SIL.LCModel import ( # type: ignore
     IMoAffixProcess,
     IPhNCSegments,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr          # type: ignore
+from SIL.LCModel.Core.KernelInterfaces import ITsString                     # type: ignore
 
 from flextoolslib import *                                                  # type: ignore
 from flexlibs import FLExProject, AllProjectNames
@@ -117,15 +120,16 @@ import FTPaths
 # Documentation that the user sees:
 description = """
 This module runs STAMP to create the
-synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
-This will default to something like 'target_text-syn.txt'. 
+synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
-roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files 
-are put into the folder designated in the Settings as Target Lexicon Files Folder. By default it is the 'Build' folder.
+roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
+are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
+The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
+This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -1010,8 +1014,6 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
             report.Error('Failed to open the target database.')
         raise
 
-    error_list.append(('Using: '+targetProj+' as the target database.', 0))
-
     # If the target database hasn't changed since we created the root databse file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         TargetDB.CloseProject()
@@ -1116,23 +1118,18 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     # Create other files we need for STAMP
     cmdFileName = create_synthesis_files(partPath)
 
-    # Synthesize the target text
-    error_list.append(('Synthesizing the target text...', 0))
-
     # run STAMP to synthesize the results. E.g. stamp32" -f ggg-Thesis_ctrl_files. txt -i ppp_verbs.ana -o ppp_verbs.syn
     # this assumes stamp32.exe is in the current working directory.
     
     call([FTPaths.STAMP_EXE, '-f', cmdFileName, '-i', anaFile, '-o', synFile])
 
-    error_list.append(('Fixing up the target text...', 0))
-    
-    
     # Replace underscores with spaces in the Synthesized file
     # Underscores were added for multiword entries that contained a space
     fix_up_text(synFile, cleanUpText)
 
     # Tell the user which file was created
-    error_list.append((f'Target text: {synFile} created.', 0))
+    error_list.append((f'The synthesized target text is in the file: {Utils.getPathRelativeToWorkProjectsDir(synFile)}.', 0))
+    error_list.append(('Synthesis complete.', 0))
     
     return error_list
 
@@ -1144,7 +1141,7 @@ def doStamp(DB, report, configMap=None):
         # Read the configuration file.
         configMap = ReadConfig.readConfig(report)
         if not configMap:
-            return
+            return None
 
     # Log the start of this module on the analytics server if the user allows logging.
     import Mixpanel
@@ -1154,12 +1151,12 @@ def doStamp(DB, report, configMap=None):
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     if not (targetANA and targetSynthesis):
-        return 
+        return None 
     
     # Verify that the ana file exists.
     if os.path.exists(targetANA) == False:
         report.Error(f'The Convert Text to STAMP Format module must be run before this module. The {ReadConfig.TARGET_ANA_FILE}: {targetANA} does not exist.')
-        return
+        return None
     
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
@@ -1172,7 +1169,10 @@ def doStamp(DB, report, configMap=None):
     error_list.extend(err_list)
     
     # output info, warnings, errors and url links
-    Utils.processErrorList(error_list, report)
+    if not Utils.processErrorList(error_list, report):
+        return None   
+    
+    return 1
 
 def MainFunction(DB, report, modifyAllowed):
 

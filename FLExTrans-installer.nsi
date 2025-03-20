@@ -47,6 +47,37 @@ VIProductVersion 3.13.0.${BUILD_NUM}
 ; Directory page
 Page custom nsDialogsPage
 
+; Production mode radio buttons (Yes or No)
+Page custom ProdModeDialog ProdModeDlgLeave ; Link the custom page with ProdModeDlgLeave
+
+!include nsDialogs.nsh
+Var Dialog
+Var Label
+Var RadioYes
+Var RadioNo
+Var /GLOBAL PRODUCTION_MODE
+
+Function ProdModeDialog
+  nsDialogs::Create 1018
+  Pop $Dialog
+
+  ${NSD_CreateLabel} 0 0 450 40 "Do you want to set FLExTrans up for production use? If you choose Yes, the installer will set up a simpler interface for production use. For normal development work with FLExTrans leave this as 'No'."
+  Pop $Label
+
+  ${NSD_CreateRadioButton} 10 50 200 12 "Yes"
+  Pop $RadioYes
+
+  ${NSD_CreateRadioButton} 10 70 200 12 "No"
+  Pop $RadioNo
+  SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
+
+  nsDialogs::Show
+FunctionEnd
+
+Function ProdModeDlgLeave
+  ${NSD_GetChecked} $RadioYes $PRODUCTION_MODE
+FunctionEnd
+
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -125,13 +156,15 @@ InitPluginsDir
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
+  File "${GIT_FOLDER}\FLExTrans.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
   File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
-  
+  File "${GIT_FOLDER}\FLExTrans.ini"
+
   SetOverwrite on
   
   # Find where FLEx is installed
@@ -159,7 +192,13 @@ InitPluginsDir
     # Get two values from flextools.ini
     ReadIniStr $8 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject"
     ReadIniStr $9 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection"
-    
+
+    # If currentcollection is set to FLExTrans (likely from a previous install in production mode) change it to Tools
+    # Otherwise a developer-type user will get this collection added as a tab.
+    ${If} $9 == "FLExTrans"
+      StrCpy $9 "Tools"
+    ${EndIf}
+
     # Overwrite FlexTools.vbs
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1"
@@ -169,10 +208,22 @@ InitPluginsDir
     # Overwrite flextools.ini
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Config"
-      File "${GIT_FOLDER}\flextools.ini"
+      
+      # Use a production mode ini file if the user chose that
+      ${If} $PRODUCTION_MODE <> ${BST_UNCHECKED}
+        File "/oname=${WORKPROJECTSDIR}\$1\Config\flextools.ini" "${GIT_FOLDER}\flextools_basic.ini"
+      ${Else}
+        File "${GIT_FOLDER}\flextools.ini"
+      ${EndIf}
     ${EndIf}
     
-	# Overwrite Makefiles
+	  # Overwrite FLExTrans.ini - the production mode collection
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
+      File "${GIT_FOLDER}\FLExTrans.ini"
+    ${EndIf}
+	
+	  # Overwrite Makefiles
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build"
       File "${GIT_FOLDER}\Makefile"
@@ -371,7 +422,7 @@ SectionEnd
 !include nsDialogs.nsh
 var /global BROWSEDEST
 var /global DESTTEXT
-Var Dialog
+;Var Dialog
 Function nsDialogsPage
 
         #Create Dialog and quit if error
