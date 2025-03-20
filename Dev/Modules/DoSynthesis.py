@@ -5,6 +5,9 @@
 #   SIL International
 #   7/19/23
 #
+#   Version 3.13.1 - 3/20/25 - Ron Lockwood
+#    Move the Mixpanel logging to the main function. Callers should do it.
+# 
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -26,17 +29,7 @@
 #   switch synthesizing methods quickly. 
 #
 
-import os
-import sys
-import re 
-import subprocess
-from datetime import datetime
-
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-
 from flextoolslib import *                                                 
-from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
 
 import ReadConfig
 import DoHermitCrabSynthesis
@@ -46,7 +39,7 @@ import DoStampSynthesis
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with either STAMP or HermitCrab.",
         FTM_Help       :"",
@@ -71,9 +64,17 @@ def MainFunction(DB, report, modifyAllowed):
 
     if hermitCrabSynthesisYesNo == 'y':
 
+        # Log the start of this module on the analytics server if the user allows logging.
+        import Mixpanel
+        Mixpanel.LogModuleStarted(configMap, report, DoHermitCrabSynthesis.docs[FTM_Name], DoHermitCrabSynthesis.docs[FTM_Version])
+
         report.Info('Using HermitCrab for synthesis.')
         DoHermitCrabSynthesis.doHermitCrab(DB, report, configMap)
     else:
+        # Log the start of this module on the analytics server if the user allows logging.
+        import Mixpanel
+        Mixpanel.LogModuleStarted(configMap, report, DoStampSynthesis.docs[FTM_Name], DoStampSynthesis.docs[FTM_Version])
+
         report.Info('Using STAMP for synthesis.')
         DoStampSynthesis.doStamp(DB, report, configMap)
     

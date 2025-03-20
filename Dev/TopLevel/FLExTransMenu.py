@@ -13,9 +13,10 @@
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
 
-from System.Windows.Forms import (
+from System.Windows.Forms import ( # type: ignore
     Shortcut,
-    MessageBox, MessageBoxButtons, MessageBoxIcon,
+    MessageBox, 
+    MessageBoxButtons,
     )
     
 import os

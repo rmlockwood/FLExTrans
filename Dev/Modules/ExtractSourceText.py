@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.13.2 - 3/20/25 - Ron Lockwood
+#    Modularized the main function to make it easy to call from other modules.
+# 
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -73,7 +76,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Exports an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -96,21 +99,60 @@ This is typically called source_text-aper.txt and is usually in the Build folder
 #----------------------------------------------------------------
 # The main processing function
 
-def MainFunction(DB, report, modifyAllowed):
+def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
+    wordObjList = []
+    
+    fullList = sentObj.getWords()
+    
+    deleteList = ['را1.1']
+    
+    # Remove words that are going to be deleted
+    for wordObj in fullList:
+        
+        if wordObj.getLemma(0) not in deleteList:
+            
+            wordObjList.append(wordObj)
+    
+    numWords = len(wordObjList)
+    
+    # set up the before/after map which is a map of the current word to its before and after words
+    for i, wordObj in enumerate(wordObjList):
+        
+        if i > 0 and i < numWords-1: # not first or last
 
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+            if wordObjList[i-1].getID() is not None and wordObjList[i+1].getID() is not None:
+
+                befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
+            
+    # set up the word-gram map which is the current word + 1-n following words. e.g. for abcd: ab, abc, abcd, bc, bcd, cd (if n was 4 or more)
+    for i in range(0, numWords-1):
+        for j in range(2, NGRAM_SIZE+1):
+            
+            keyList = []
+            if i+j <= numWords:
+                
+                for k in range(i, i+j):
+                    if k < numWords:
+                        
+                        myID = wordObjList[k].getID()
+                        
+                        # see if the guid is not None
+                        if myID is not None:
+                            keyList.append(myID)
+                        else:
+                            break
+                        
+                if len(keyList) > 1 and len(str(myID)) > 0:
+                    # we can't use a list as the map value, a tuple works, why not make a hash of it
+                    wrdGramMap[hash(tuple(keyList))] = 1
+                    
+def doExtractSourceText(DB, configMap, report):
 
     # Build an output path using the system temp directory.
     fullPathTextOutputFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
     if not fullPathTextOutputFile:
-        return
+        return None
     
     abbrPath = Utils.getPathRelativeToWorkProjectsDir(fullPathTextOutputFile)
 
@@ -118,12 +160,12 @@ def MainFunction(DB, report, modifyAllowed):
         f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
-        return
+        return None
     
     # Find the desired text
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceTextName:
-        return
+        return None
     
     matchingContentsObjList = []
 
@@ -133,7 +175,7 @@ def MainFunction(DB, report, modifyAllowed):
     if sourceTextName not in sourceTextList:
         
         report.Error('The text named: '+sourceTextName+' not found.')
-        return
+        return None
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
     
@@ -156,7 +198,7 @@ def MainFunction(DB, report, modifyAllowed):
             insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
     
             if insertWordsList == None: 
-                return # error already reported
+                return None # error already reported
         
     # We need to also find the TreeTran output file, if not don't do a Tree Tran sort
     if TreeTranSort:
@@ -165,13 +207,13 @@ def MainFunction(DB, report, modifyAllowed):
             f_treeTranResultFile.close()
         except:
             report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
-            return
+            return None
         
         # get the list of guids from the TreeTran results file
         treeSentList = Utils.getTreeSents(treeTranResultFile, report)
         
         if treeSentList == None: 
-            return # error already reported
+            return None # error already reported
         
         # get log info. that tells us which sentences have a syntax parse and # words per sent
         logInfo = Utils.importGoodParsesLog()
@@ -183,7 +225,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Check for an error
     if interlinParams == None:
-        return
+        return None
 
     # Get interlinear data. A complex text object is returned.
     myText = Utils.getInterlinData(DB, report, interlinParams)
@@ -213,7 +255,7 @@ def MainFunction(DB, report, modifyAllowed):
                 
                 if myFLExSent is None:
                     report.Error('Sentence ' + str(sentNum+1) + ' from TreeTran not found')
-                    return
+                    return None
                 
                 beforeAfterMap = {}
                 wordGramMap = {}
@@ -321,55 +363,21 @@ def MainFunction(DB, report, modifyAllowed):
     f_out.close()
 
     report.Info("Export of " + sourceTextName + " complete.")
+    return 1
 
-def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
+def MainFunction(DB, report, modifyAllowed):
     
-    wordObjList = []
-    
-    fullList = sentObj.getWords()
-    
-    deleteList = ['را1.1']
-    
-    # Remove words that are going to be deleted
-    for wordObj in fullList:
-        
-        if wordObj.getLemma(0) not in deleteList:
-            
-            wordObjList.append(wordObj)
-    
-    numWords = len(wordObjList)
-    
-    # set up the before/after map which is a map of the current word to its before and after words
-    for i, wordObj in enumerate(wordObjList):
-        
-        if i > 0 and i < numWords-1: # not first or last
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
 
-            if wordObjList[i-1].getID() is not None and wordObjList[i+1].getID() is not None:
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-                befAftMap[wordObj.getID()] = (wordObjList[i-1].getID(), wordObjList[i+1].getID())
-            
-    # set up the word-gram map which is the current word + 1-n following words. e.g. for abcd: ab, abc, abcd, bc, bcd, cd (if n was 4 or more)
-    for i in range(0, numWords-1):
-        for j in range(2, NGRAM_SIZE+1):
-            
-            keyList = []
-            if i+j <= numWords:
-                
-                for k in range(i, i+j):
-                    if k < numWords:
-                        
-                        myID = wordObjList[k].getID()
-                        
-                        # see if the guid is not None
-                        if myID is not None:
-                            keyList.append(myID)
-                        else:
-                            break
-                        
-                if len(keyList) > 1 and len(str(myID)) > 0:
-                    # we can't use a list as the map value, a tuple works, why not make a hash of it
-                    wrdGramMap[hash(tuple(keyList))] = 1
-                    
+    doExtractSourceText(DB, configMap, report)
+
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
