@@ -296,7 +296,7 @@ InitPluginsDir
     FindClose $0
     
   # Attempt to run pip to install FlexTools dependencies
-  !define mycmd '"$LocalAppdata\Programs\Python\Python311\Scripts\pip3.exe" install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
+  !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
   # assume pip3 got installed in the default folder under %appdata%. If it did pip will run successfully the first time it gets installed.
