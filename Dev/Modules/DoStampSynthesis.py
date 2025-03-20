@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.2 - 3/20/25 - Ron Lockwood
+#    Move the Mixpanel logging to the main function. Callers should do it.
+# 
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -129,7 +132,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -1143,10 +1146,6 @@ def doStamp(DB, report, configMap=None):
         if not configMap:
             return None
 
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
-
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
@@ -1176,7 +1175,16 @@ def doStamp(DB, report, configMap=None):
 
 def MainFunction(DB, report, modifyAllowed):
 
-    doStamp(DB, report)
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return 
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    doStamp(DB, report, configMap)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.13.1 - 3/20/25 - Ron Lockwood
+#    Modularized the main functions to make it easy to call from other modules.
+# 
 #   Version 3.13 - 3/19/25 - Ron Lockwood
 #    Info messages added and some blank lines.
 #    Also, do Export to Paratext as the default last step.
@@ -20,7 +23,15 @@ import os
 
 from flextoolslib import *                                                 
 
-from Modules.FLExTrans import ConvertTextToSTAMPformat, DoHermitCrabSynthesis, DoStampSynthesis, InsertTargetText, ExportToParatext, ExtractBilingualLexicon, CatalogTargetAffixes, RunApertium
+import DoHermitCrabSynthesis
+import DoStampSynthesis
+import InsertTargetText
+import ExportToParatext
+import ExtractBilingualLexicon
+import CatalogTargetAffixes
+import RunApertium
+import ExtractSourceText
+import ConvertTextToSTAMPformat
 import ReadConfig
 import Utils
 
@@ -28,7 +39,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Translate the current source text.",    
         FTM_Help   : "",
@@ -38,97 +49,6 @@ Translate the current source text.
 """ }
 
 FINAL_MODULE_IS_EXPORT_TO_PARATEXT = True # Otherwise, the last module is Insert Target Text
-
-def extractSourcText(DB, configMap, report):
-
-    # Build an output path using the system temp directory.
-    fullPathTextOutputFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
-
-    if not fullPathTextOutputFile:
-        return None
-    
-    abbrPath = Utils.getPathRelativeToWorkProjectsDir(fullPathTextOutputFile)
-    
-    try:
-        f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
-    except IOError:
-        report.Error('There is a problem with the Analyzed Text Output File path: '+fullPathTextOutputFile+'. Please check the configuration file setting.')
-        return None
-    
-    # Find the desired text
-    sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-
-    if not sourceTextName:
-        return None
-    
-    matchingContentsObjList = []
-
-    # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
-    
-    if sourceTextName not in sourceTextList:
-        
-        report.Error('The text named: '+sourceTextName+' not found.')
-        return None
-    else:
-        contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
-    
-    # Get various bits of data for the get interlinear function
-    interlinParams = Utils.initInterlinParams(configMap, report, contents)
-
-    # Check for an error
-    if interlinParams == None:
-        return None
-
-    # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, interlinParams)
-        
-    # Write out all the words
-    myText.write(f_out)
-    totalStr = str(myText.getSentCount())
-    #endstr = 's' if totalStr != '1' else ''
-    report.Info(f"Exported {totalStr} sentence(s) to {abbrPath}.")
-    
-    f_out.close()
-
-    report.Info("Export of " + sourceTextName + " complete.")
-
-    return 1
-
-def convertToSynthesizerFormat(DB, configMap, report):
-
-    targetANAFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
-    affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
-    
-    # Verify that the affix file exist.
-    if not os.path.exists(affixFile):
-        
-        report.Error(f'The Catalog Target Affixes module must be run before this module. The {ReadConfig.TARGET_AFFIX_GLOSS_FILE}: {affixFile} does not exist.')
-        return None
-    
-    transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
-    hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=False)
-
-    doHermitCrabSynthesis = True if hermitCrabSynthesisYesNo == 'y' else False
-    HCmasterFile = None
-    
-    # Get the master file name
-    if doHermitCrabSynthesis:
-
-        HCmasterFile = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_MASTER_FILE, report)
-
-        if not HCmasterFile:
-
-            report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
-            return  None
-    
-    errorList = ConvertTextToSTAMPformat.convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
-
-    # output info, warnings, errors and url links
-    if not Utils.processErrorList(errorList, report):
-        return None
-    
-    return 1
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -145,7 +65,7 @@ def MainFunction(DB, report, modify=True):
     ## Extract the source text
     report.Blank()
     report.Info('Exporting source text...')
-    if not extractSourcText(DB, configMap, report):
+    if not ExtractSourceText.doExtractSourceText(DB, configMap, report):
         return
 
     ## Build the bilingual lexicon
@@ -182,7 +102,7 @@ def MainFunction(DB, report, modify=True):
     ## Convert to Synthesizer Format
     report.Blank()
     report.Info('Converting target words to synthesizer format...')
-    if not convertToSynthesizerFormat(DB, configMap, report):
+    if not ConvertTextToSTAMPformat.convertToSynthesizerFormat(DB, configMap, report):
         return
     
     ## Synthesize Text

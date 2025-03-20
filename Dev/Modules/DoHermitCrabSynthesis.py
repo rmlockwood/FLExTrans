@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.13.2 - 3/20/25 - Ron Lockwood
+#    Move the Mixpanel logging to the main function. Callers should do it.
+# 
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -106,16 +109,14 @@
 #   In the loop, the code applies the need capitalization for the word before substitution.
 
 import os
-import sys
 import re 
 import subprocess
 from datetime import datetime
 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
+from SIL.LCModel import *                                                    # type: ignore
 
 from flextoolslib import *                                                 
-from flexlibs import FLExProject, AllProjectNames, FWProjectsDir
+from flexlibs import FLExProject, FWProjectsDir
 
 import ReadConfig
 import Utils
@@ -138,7 +139,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -617,10 +618,6 @@ def doHermitCrab(DB, report, configMap=None):
         if not configMap:
             return None
 
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
-
     # Get config settings we need.
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
     HCconfigPath = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_CONFIG_FILE, report)
@@ -659,11 +656,18 @@ def doHermitCrab(DB, report, configMap=None):
     
     return 1
     
-
-    
 def MainFunction(DB, report, modifyAllowed):
 
-    doHermitCrab(DB, report)
+    # Read the configuration file.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return 
+    
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    doHermitCrab(DB, report, configMap)
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.2 - 3/20/25 - Ron Lockwood
+#    Modularized the main function to make it easy to call from other modules.
+# 
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -139,7 +142,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -1403,17 +1406,8 @@ def convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFil
     
     return errorList
 
-def MainFunction(DB, report, modifyAllowed):
-
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
-    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
-
+def convertToSynthesizerFormat(DB, configMap, report):
+    
     targetANAFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     affixFile = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_AFFIX_GLOSS_FILE, report, giveError=False) # don't give error yet
     
@@ -1426,7 +1420,7 @@ def MainFunction(DB, report, modifyAllowed):
     if not os.path.exists(affixFile):
         
         report.Error(f'The Catalog Target Affixes module must be run before this module. The {ReadConfig.TARGET_AFFIX_GLOSS_FILE}: {affixFile} does not exist.')
-        return
+        return None
     
     transferResultsFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RESULTS_FILE, report)
     hermitCrabSynthesisYesNo = ReadConfig.getConfigVal(configMap, ReadConfig.HERMIT_CRAB_SYNTHESIS, report, giveError=False)
@@ -1442,13 +1436,27 @@ def MainFunction(DB, report, modifyAllowed):
         if not HCmasterFile:
 
             report.Error(f'Configuration file problem with: {ReadConfig.HERMIT_CRAB_MASTER_FILE}.')
-            return 
+            return None 
     
     errorList = convert_to_STAMP(DB, configMap, targetANAFile, affixFile, transferResultsFile, doHermitCrabSynthesis, HCmasterFile, report)
 
     # output info, warnings, errors and url links
     Utils.processErrorList(errorList, report)
-    
+    return 1
+
+def MainFunction(DB, report, modifyAllowed):
+
+    # Read the configuration file which we assume is in the current directory.
+    configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    import Mixpanel
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
+
+    convertToSynthesizerFormat(DB, configMap, report)
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
