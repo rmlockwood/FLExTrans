@@ -69,7 +69,7 @@ Page custom nsDialogsPage
 Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
 
-OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
+OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}BTtools.exe"
 InstallDir "$PROGRAMFILES\FLExTrans_Installer"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -94,6 +94,7 @@ InitPluginsDir
   nsisunz::Unzip "$INSTDIR\install_files\${PRODUCT_ZIP_FILE}" "$OUT_FOLDER"
 
   # Create empty Output folders
+  CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\French-Spanish\Output"
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
   
@@ -108,6 +109,15 @@ InitPluginsDir
   
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\French-Spanish\Output"
+
+  File "${GIT_FOLDER}\replace.dix"
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\French-Spanish"
+  
+  File "${GIT_FOLDER}\transfer_rules-Spanish.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+  
   SetOutPath "${TEMPLATEDIR}\Output"
 
   File "${GIT_FOLDER}\replace.dix"
@@ -120,6 +130,12 @@ InitPluginsDir
   File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
+  File "${GIT_FOLDER}\Drafting.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\French-Spanish\Config\Collections"
   File "${GIT_FOLDER}\Drafting.ini"
   File "${GIT_FOLDER}\Run Testbed.ini"
   File "${GIT_FOLDER}\Tools.ini"
@@ -147,6 +163,10 @@ InitPluginsDir
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
   Delete "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\FlexTools\FTPaths.py"
   
+# Overwrite flextools.ini
+  SetOutPath "${WORKPROJECTSDIR}\French-Spanish\Config"
+  File "/oname=${WORKPROJECTSDIR}\French-Spanish\Config\flextools.ini" "${GIT_FOLDER}\flextools_spanish.ini"
+    
   # Fix up ini files, both collection ones and flextools.ini
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"

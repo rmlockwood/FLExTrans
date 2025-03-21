@@ -26,7 +26,7 @@ mkdir %flextranslib%
 
 rem Create identical folder structures for two work project folders
 set workprojects=%flextransfolder%\WorkProjects
-for %%d in (German-Swedish TemplateProject) do (
+for %%d in (German-Swedish French-Spanish TemplateProject) do (
     mkdir %workprojects%\%%d\Build
     mkdir %workprojects%\%%d\Build\LiveRuleTester
     mkdir %workprojects%\%%d\Config\Collections
@@ -39,8 +39,12 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy MakefileForLiveRuleTester.advanced %workprojects%\%%d\Build\LiveRuleTester\Makefile.advanced
 )
 
+rem for special installer for BT Tools
+copy RuleAssistantRules.xml %workprojects%\French-Spanish\Output
+
 rem copy the FlexTrans.config file and force it to be overwritten.
 copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
+copy FlexTrans-Spanish.config %workprojects%\French-Spanish\Config\FlexTrans.config
 copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
 
 rem build Python requirements file
@@ -83,8 +87,7 @@ for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Ru
 )
 
 rem SampleProjects
-copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
-copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
+copy "Sample Projects\*.fwbackup" %sampleproject%
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
