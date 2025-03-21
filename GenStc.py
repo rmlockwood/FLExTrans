@@ -101,23 +101,23 @@ def setupSettings(configMap, report):
         posFocus2 = []  # Default to an empty list if not provided
 
     # error correct lemma focus
-    if not lemmaFocusN: 
-        lemmaFocusN = 'UNK'
+    lemma_focus_vars = {"lemmaFocusN": lemmaFocusN, "lemmaFocus1": lemmaFocus1, "lemmaFocus2": lemmaFocus2}
 
-    if lemmaFocusN[-3:] != '1.1':
-        lemmaFocusN += '1.1'
+    for key in lemma_focus_vars:
+        if not lemma_focus_vars[key]:
+            lemma_focus_vars[key] = "UNK"
+    
+        # debug
+        #report.Info(f"{key}: {lemma_focus_vars[key]}")
+    
+        if lemma_focus_vars[key] != "UNK" and not lemma_focus_vars[key].endswith("1.1"):
+            lemma_focus_vars[key] += "1.1"
+    
+        # debug
+        #report.Info(f"{key}: {lemma_focus_vars[key]}")
 
-    if not lemmaFocus1:
-        lemmaFocus1 = 'UNK'
-
-    if lemmaFocus1[-3:] != '1.1':
-        lemmaFocus1 += '1.1'
-
-    if not lemmaFocus2:
-        lemmaFocus2 = 'UNK'
-
-    if lemmaFocus1[-3:] != '1.1':
-        lemmaFocus1 += '1.1'
+    # Unpack back to original variables if needed
+    lemmaFocusN, lemmaFocus1, lemmaFocus2 = lemma_focus_vars.values()
 
     # error correct stem limit
     if stemLimit:
@@ -266,6 +266,9 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     subListN = {}
     subList1 = {}
     subList2 = {}
+    glossListN = []
+    glossList1 = []
+    glossList2 = []
 
     # need to edit so it grabs inflection features as well. 
     for entry in DB.LexiconAllEntries():
@@ -274,6 +277,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
         pos = 'UNK'
         if lex and entry.SensesOS.Count > 0:
             for s in entry.SensesOS:
+                gloss = s.Gloss
                 if s.MorphoSyntaxAnalysisRA:
                     if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                         msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
@@ -283,10 +287,13 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
                             pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             if pos in match_n_pos:
                                 subListN[lex] = inflectionInfo
+                                glossListN.append(Utils.as_string(gloss))
                             if pos in match_1_pos:
                                 subList1[lex] = inflectionInfo
+                                glossList1.append(Utils.as_string(gloss))
                             if pos in match_2_pos:
                                 subList2[lex] = inflectionInfo
+                                glossList2.append(Utils.as_string(gloss))
 
     lexKeysN = list(subListN.keys())
     lexKeys1 = list(subList1.keys())
@@ -300,7 +307,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     subDict1 = {key:subList1[key] for key in lexKeys1}
     subDict2 = {key:subList2[key] for key in lexKeys2}
 
-    return subDictN, subDict1, subDict2
+    return subDictN, subDict1, subDict2, glossListN, glossList1, glossList2
 
 
 def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, subDict2, f_out, stc, report):
@@ -317,12 +324,14 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
                 # pre-adjustment
                 report.Info(f"Before modification: {wrdList[idxN].getInflClass(0)}")
+                report.Info(f"Before modification: {wrdList[idxN].getStemFeatures(0)}")
                 report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
     
                 # changing inflection class
                 wrdList[idxN].setInflClass(str(infoN[0]))
                 wrdList[idxN].setIgnoreInflectionClass(False)
                 wrdList[idxN].setIgnoreStemFeatures(False)
+                wrdList[idxN].setStemFeatAbbrevList([])
 
                 # Reset inflection features before assigning new ones
                 wrdList[idxN]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idxN]._TextWord__inflFeatAbbrevsList]
@@ -339,6 +348,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
                 # post-adjustment
                 report.Info(f"After modification: {wrdList[idxN].getInflClass(0)}")
+                report.Info(f"After modification: {wrdList[idxN].getStemFeatures(0)}")
                 report.Info(f"After modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
 
             
@@ -360,6 +370,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                             wrdList[idx1].setInflClass(str(info1[0]))
                             wrdList[idx1].setIgnoreInflectionClass(False)
                             wrdList[idx1].setIgnoreStemFeatures(False)
+                            wrdList[idx1].setStemFeatAbbrevList([])
 
                             # Reset inflection features before assigning new ones
                             wrdList[idx1]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx1]._TextWord__inflFeatAbbrevsList]
@@ -391,6 +402,7 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                                         wrdList[idx2].setInflClass(str(info2[0]))
                                         wrdList[idx2].setIgnoreInflectionClass(False)
                                         wrdList[idx2].setIgnoreStemFeatures(False)
+                                        wrdList[idx2].setStemFeatAbbrevList([])
 
                                         # Reset inflection features before assigning new ones
                                         wrdList[idx2]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx2]._TextWord__inflFeatAbbrevsList]
@@ -432,14 +444,32 @@ def MainFunction(DB, report, modifyAllowed):
     myText = Utils.getInterlinData(DB, report, interlinParams)
 
     # Initialize language-specific variables
-    lang = "SPA"
+
+    # OLD CODE USING initializeLanguageVariables
+    #lang = "SPA"
     #match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
+    
+    # Extracting language variables from settings 
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report)
-    if lemmaFocusN and lemmaFocus1 != 'UNK':
-        match_n_lem, match_1_lem, match_2_lem = extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report)
+
+    # If at least one lemma is provided, run extractFromLemmas
+    if lemmaFocusN != 'UNK' or lemmaFocus1 != 'UNK' or lemmaFocus2 != 'UNK':
+        extracted_n_lem, extracted_1_lem, extracted_2_lem = extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report)
+    
+        # Replace only the lists where a lemma was actually provided
+        if lemmaFocusN != 'UNK':
+            match_n_lem = extracted_n_lem
+        if lemmaFocus1 != 'UNK':
+            match_1_lem = extracted_1_lem
+        if lemmaFocus2 != 'UNK':
+            match_2_lem = extracted_2_lem
 
     # Fetch lexical entries from FLEx
-    subDictN, subDict1, subDict2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+    subDictN, subDict1, subDict2, glossListN, glossList1, glossList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+
+    report.Info(f"gloss list N: {glossListN}")
+    report.Info(f"gloss list N: {glossList1}")
+    report.Info(f"gloss list N: {glossList2}")
 
     # Apply stem limit
     subDictN = dict(itertools.islice(subDictN.items(), stemLimit))

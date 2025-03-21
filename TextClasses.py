@@ -876,6 +876,8 @@ class TextWord():
         self.__ignoreInflClass = flag
     def setIgnoreStemFeatures(self, flag):
         self.__ignoreStemFeatures = flag
+    def setStemFeatAbbrevList(self, stemList):
+        self.__stemFeatAbbrList = stemList
     def setSurfaceForm(self, myStr):
         self.__surfaceForm = myStr
     def write(self, fOut):
