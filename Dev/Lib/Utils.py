@@ -5,6 +5,12 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.4 - 3/22/25 - Ron Lockwood
+#    Fixes #946. We want the contents of all of \w to be vernacular.
+#    But we also want \fig with | symbols to be handled correctly. For \fig we want the text
+#    without an attribute like xyz= to be vernacular, but the others to be analysis. Also make
+#    the | be analysis.
+#
 #   Version 3.13.3 - 3/19/25 - Ron Lockwood
 #    New function to get shorter path including and below WorkProjects.
 #    Also don't report which target database.
@@ -2303,7 +2309,8 @@ def containsInvalidLemmaChars(myStr):
 def splitSFMs(inputStr):
 
     segs = re.split(r'(\n|'                 # newline
-                    r'\|(?:.|\n)+?\*|'      # attributes endining in * but possibly across lines
+                    r'\|\w+?=(?:.|\n)+?\*|' # attributes (|xyz=...) ending in * but possibly across lines
+                    r'\||'                  # verticle bar
                     r'\\\w+\*|'             # end marker
                     r'\\f \+ |'             # footnote with plus
                     r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)

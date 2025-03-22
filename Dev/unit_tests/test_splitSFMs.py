@@ -87,5 +87,10 @@ class TestSplitSFMs(unittest.TestCase):
         expected_output = ['', '\\v 1 ', 'In the beginning', '\\+add', ' additional text']
         self.assertEqual(splitSFMs(input_str), expected_output)
 
+    def test_split_with_glossary_term(self):
+        input_str = "the beginning \\w God|Yahweh\w* created"
+        expected_output = ['the beginning ', '\\w', ' God', '|', 'Yahweh', '\\w*', ' created']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
 if __name__ == "__main__":
     unittest.main()
