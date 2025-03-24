@@ -461,8 +461,8 @@ class Main(QMainWindow):
             self.deleteRow(lastRow)
 
     def gatherCompletionData(self, DB, composed):
-        from SIL.LCModel import IMoStemMsa, IMoInflAffMsa
-        from SIL.LCModel.Core.KernelInterfaces import ITsString
+        from SIL.LCModel import IMoStemMsa                      # type: ignore
+        from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
         if composed:
             from unicodedata import normalize
             def norm(s): return normalize('NFC', s)
@@ -504,7 +504,7 @@ class Main(QMainWindow):
         return sorted(posMap.keys())
 
     def gatherTags(self, DB):
-        from SIL.LCModel import IFsClosedFeatureRepository
+        from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
         tags = set()
         for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
             tags.update(Utils.as_tag(val) for val in feature.ValuesOC)

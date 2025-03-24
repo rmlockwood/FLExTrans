@@ -235,7 +235,7 @@ class TestbedValidator():
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
                     
-                    gloss = Utils.as_string(mySense.Gloss)
+                    gloss = MyUtils.as_string(mySense.Gloss)
                     
                     # Process roots
                     # Don't process clitics in this block
@@ -284,7 +284,7 @@ class TestbedValidator():
         for pos in self.db.lp.AllPartsOfSpeech:
 
             # save abbreviation
-            posAbbr = Utils.as_string(pos.Abbreviation)
+            posAbbr = MyUtils.as_string(pos.Abbreviation)
             posAbbr = re.sub(' ', '_', posAbbr)
             self.mapCats[posAbbr] = 7
             
@@ -293,12 +293,12 @@ class TestbedValidator():
         # Get all the inflection feature abbreviations
         for feature in self.db.ObjectsIn(IFsClosedFeatureRepository):
             for value in feature.ValuesOC:
-                abbr = Utils.as_string(value.Abbreviation)
+                abbr = MyUtils.as_string(value.Abbreviation)
                 abbr = re.sub(r'\.', '_', abbr)
                 self.mapTags[abbr] = 7
 
         # Get all the inflection class abbreviations
         for inflClass in self.db.ObjectsIn(IMoInflClassRepository):
-            abbr = Utils.as_string(inflClass.Abbreviation)
+            abbr = MyUtils.as_string(inflClass.Abbreviation)
             abbr = re.sub(r'\.', '_', abbr)
             self.mapTags[abbr] = 7

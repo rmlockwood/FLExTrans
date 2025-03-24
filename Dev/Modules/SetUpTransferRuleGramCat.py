@@ -57,7 +57,7 @@ import shutil
 import re
 import sys
 
-from SIL.LCModel import (
+from SIL.LCModel import ( # type: ignore
     IFsClosedFeature,
     FsClosedFeatureTags,
     IMoInflAffixSlotRepository,
