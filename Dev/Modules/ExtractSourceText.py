@@ -8,6 +8,9 @@
 #   Dump an interlinear text into Apertium format so that it can be
 #   used by the Apertium transfer engine.
 #
+#   Version 3.13.3 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Modularized the main function to make it easy to call from other modules.
 # 
@@ -58,6 +61,7 @@
 #   earlier version history removed on 3/10/25
 #
 
+import InterlinData
 from SIL.LCModel import * # type: ignore
 from flextoolslib import *
 
@@ -76,7 +80,7 @@ DEBUG = False
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB: False,
         FTM_Synopsis  : "Exports an Analyzed FLEx text into Apertium format.",
         FTM_Help : '',
@@ -98,6 +102,97 @@ This is typically called source_text-aper.txt and is usually in the Build folder
 
 #----------------------------------------------------------------
 # The main processing function
+
+def punctuationEval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):
+
+    wordList = treeTranSentObj.getGuidList()
+    numWords = len(wordList)
+
+    # See if we match an n-gram that was reversed in the tree tran sentence
+    for j in list(reversed(range(2, NGRAM_SIZE+1))): # start with biggest n-gram and reduce it, because we want to make the biggest match possible
+
+        endPos = i+j-1
+        if endPos < numWords:
+
+            if hash(tuple(list(reversed(wordList[i:endPos+1])))) in wordGramMap:
+
+                # Situation 1 current word has punct. and needs to be put somewhere else
+                if myFLExSent.hasPunctuation(wordList[i]) == True:
+
+                    # Save this puctuation for output at position i+j-1
+                    puncOutputMap[endPos] = wordList[i]
+
+                # Situation 2 current word needs punctuation from a word somewhere else
+                if myFLExSent.hasPunctuation(wordList[endPos]) == True and endPos not in wordsHandledMap:
+
+                    # Save this punctuation for output at position i, i.e. current position
+                    puncOutputMap[i] = wordList[endPos]
+
+                    # Keep track of words we handled for punctuation, so we don't do them again
+                    wordsHandledMap[endPos] = 1
+
+                return False
+
+    # Only process a word that has punctuation
+    if myFLExSent.hasPunctuation(wordList[i]) == True:
+
+        # TreeTran first word matches original first word
+        if i == 0:
+
+            if myFLExSent.matchesFirstWord(wordList[i]):
+
+                return True # output punctuation for this word
+
+        # If last word
+        if i == numWords-1:
+
+            # and matches original last word
+            if myFLExSent.matchesLastWord(wordList[i]):
+
+                return True
+
+        # Look to see if the previous and next words are the same as in the original
+        #myID = myFLExSent.getWordByGuid(wordList[i]).getID()
+        myID = wordList[i]
+
+        # Not first word or last word and this word is in the map
+        if i != 0 and i != numWords - 1 and myID in beforeAfterMap:
+
+            # First the simple case, the direct previous and direct following word
+            if beforeAfterMap[myID] == (wordList[i-1], wordList[i+1]):
+
+                return True
+
+            # Check a reversed n-gram for the previous word with the direct following word.
+            for j in range(2, NGRAM_SIZE+1):
+
+                if i-j > 0:
+                    if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
+                       beforeAfterMap[myID] == (wordList[i-j], wordList[i+1]):
+
+                        return True
+
+            # Check the direct previous word with a reversed n-gram for the next word
+            for j in range(2, NGRAM_SIZE+1):
+
+                if i+j < numWords:
+                    if hash(tuple(list(reversed(wordList[i+1:i+j+1])))) in wordGramMap and \
+                       beforeAfterMap[myID] == (wordList[i-1], wordList[i+j]):
+
+                        return True
+
+            # Check a reversed n-gram for the previous and a reversed n-gram for the following word
+            for j in range(2, NGRAM_SIZE+1):
+                for l in range(2, NGRAM_SIZE+1):
+
+                    if i-j > 0 and i+l < numWords:
+
+                        if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
+                           hash(tuple(list(reversed(wordList[i+1:i+l+1])))) in wordGramMap and \
+                           beforeAfterMap[myID] == (wordList[i-j], wordList[i+l]):
+
+                            return True
+    return False
 
 def setUpOrigSentMaps(sentObj, befAftMap, wrdGramMap):
     
@@ -195,7 +290,7 @@ def doExtractSourceText(DB, configMap, report):
         else:
             insertWordsFile = True
             
-            insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+            insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
     
             if insertWordsList == None: 
                 return None # error already reported
@@ -210,7 +305,7 @@ def doExtractSourceText(DB, configMap, report):
             return None
         
         # get the list of guids from the TreeTran results file
-        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        treeSentList = InterlinData.getTreeSents(treeTranResultFile, report)
         
         if treeSentList == None: 
             return None # error already reported
@@ -221,14 +316,14 @@ def doExtractSourceText(DB, configMap, report):
     # Process the text
 
     # Get various bits of data for the get interlinear function
-    interlinParams = Utils.initInterlinParams(configMap, report, contents)
+    interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
 
     # Check for an error
     if interlinParams == None:
         return None
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, interlinParams)
+    myText = InterlinData.getInterlinData(DB, report, interlinParams)
         
     if TreeTranSort:
         
@@ -292,7 +387,7 @@ def doExtractSourceText(DB, configMap, report):
                         #myFLExSent.writePrePunc(wrdNum+puncWrdsWritten, f_out)
 
                         # See if we should write punctuation for this word or if we should write punctuation for a different word
-                        writePunc = Utils.punctuation_eval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap)
+                        writePunc = punctuationEval(wrdNum, myTreeSent, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap)
                         
                         if writePunc == True:
                         

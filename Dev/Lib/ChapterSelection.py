@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -66,6 +69,7 @@ from PyQt5.QtWidgets import QMessageBox, QCheckBox
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
+from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
 EXP_SHRINK_WINDOW_PIXELS = 120
@@ -136,6 +140,94 @@ class ChapterSelection(object):
             return ''
         else:
             return fileList[0]
+
+# Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
+# have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
+# We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
+# Attributes are of the form |x=123 ... \s*
+# You can't have parens inside of the split expression since the whole thing is already in parens, unless you mark it as non-capturing parens with ?:. Otherwise it will mess up the output.
+def splitSFMs(inputStr):
+
+    segs = re.split(r'(\n|'                 # newline
+                    r'\|\w+?=(?:.|\n)+?\*|' # attributes (|xyz=...) ending in * but possibly across lines
+                    r'\||'                  # verticle bar
+                    r'\\\w+\*|'             # end marker
+                    r'\\f \+ |'             # footnote with plus
+                    r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                    r'\\fr \d+[:.]\d+|'     # footnote reference
+                    r'\\xt .+?\\x\*|'       # cross reference with end marker
+                    r'\\x \+ |'             # cross reference with plus
+                    r'\\xo \d+[:.]\d+-\d+|' # cross reference original with dash
+                    r'\\xo \d+[:.]\d+|'     # cross reference original
+                    r'\\v \d+-\d+ |'        # verse with dash
+                    r'\\v \d+ |'            # verse
+                    r'\\vp \S+ |'           # publication verse
+                    r'\\c \d+|'             # chapter
+                    r'\\rem.+?\n|'          # remark
+                    r'\d+[:.]\d+-\d+|'      # verse reference with dash
+                    r'\d+[:.]\d+|'          # verse reference
+                    r'\\\+\w+|'             # marker preceded by plus
+                    r'\\\w+)',              # any other marker
+                    inputStr) 
+    return segs
+
+def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
+
+    # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
+    # put the \ after the newline
+    inputStr = re.sub(r'\\\n', r'\n\\', inputStr)
+
+    segs = splitSFMs(inputStr)
+
+    # Create 1st paragraph object
+    stTxtPara = m_stTxtParaFactory.Create()
+    
+    # Add it to the stText object
+    stText.ParagraphsOS.Add(stTxtPara)    
+    bldr = TsStringUtils.MakeStrBldr()
+
+    # Start a new paragraph at every line feed
+    newPar = r'\n' 
+    
+    for _, seg in enumerate(segs):
+        
+        if not (seg is None or len(seg) == 0 or seg == '\n'):
+            
+            # Either an sfm marker or a verse ref should get marked as Analysis WS
+            if re.search(r'\\|\d+[.:]\d+', seg):
+                
+                # make this in the Analysis WS
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+                
+            else:
+                # make this in the Vernacular WS
+                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
+                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
+        
+        if seg and re.search(newPar, seg): # or first segment if not blank
+        
+            # Save the built up string to the Contents member
+            stTxtPara.Contents = bldr.GetString()
+            
+            # Create paragraph object
+            stTxtPara = m_stTxtParaFactory.Create()
+            
+            # Add it to the stText object
+            stText.ParagraphsOS.Add(stTxtPara)  
+        
+            bldr = TsStringUtils.MakeStrBldr()
+        
+    stTxtPara.Contents = bldr.GetString()
+
+def setTextMetaData(DB, text):
+
+    # Set the Source field
+    tss = TsStringUtils.MakeString('FLExTrans', DB.project.DefaultAnalWs)
+    text.Source.AnalysisDefaultWritingSystem = tss
+
+    # Set the IsTranslated field
+    text.IsTranslated = True
 
 def InitControls(self, export=True, fromFLEx=False):
     

@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -43,6 +46,7 @@
 #   Runs the Rule Assistant to create Apertium transfer rules.
 #
 
+import InterlinData
 import Utils
 import ReadConfig
 import CreateApertiumRules
@@ -64,7 +68,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 descr = """This module runs the Rule Assistant tool which let's you create transfer rules.
 """
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Runs the Rule Assistant tool.",
         FTM_Help  : "",
@@ -318,12 +322,12 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
         report.Error("The text named '%s' was not found." % sourceText)
         return False
 
-    params = Utils.initInterlinParams(configMap, report, content)
+    params = InterlinData.initInterlinParams(configMap, report, content)
 
     if params is None:
         return False
     
-    text = Utils.getInterlinData(DB, report, params)
+    text = InterlinData.getInterlinData(DB, report, params)
 
     fsrc = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_SOURCE_TEST_DATA_FILE)
 

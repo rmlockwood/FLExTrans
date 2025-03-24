@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -80,6 +83,15 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 import Utils
 
 MAX_SKIPPED_WORDS = 4
+
+# Duplicate the capitalization of the model word on the input word
+def do_capitalization(wordToChange, modelWord):
+    if wordToChange and modelWord:
+        if modelWord.isupper():
+            return wordToChange.upper()
+        elif modelWord[0].isupper():
+            return wordToChange[0].upper()+wordToChange[1:]
+    return wordToChange
 
 # The whole text from FLEx
 class TextEntirety():
@@ -606,7 +618,7 @@ class TextWord():
         else:
             myStr = ITsString(baseStr).Text
                                 
-        lem = Utils.do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
+        lem = do_capitalization(Utils.getHeadwordStr(self.__eList[-1]), myStr) # assume we can use the last entry as the one we want
         self.addLemma(Utils.add_one(lem) + '.' + str(senseNum+1))
     def escapeReservedApertChars(self, inStr):
         return Utils.escapeReservedApertChars(inStr)
