@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.3 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Modularized the main function to make it easy to call from other modules.
 # 
@@ -142,7 +145,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Convert the file produced by Run Apertium into a text file in a Synthesizer format",
         FTM_Help  : "", 
@@ -491,7 +494,7 @@ class ConversionData():
                 
                 for complexType in entryRef.ComplexEntryTypesRS:
                     
-                    formType = ITsString(complexType.Name.BestAnalysisAlternative).Text
+                    formType = Utils.as_string(complexType.Name)
                     
                     if formType in complexFormTypeMap: # this is one the user designated (via config. file) as a complex form to break down
                         
@@ -616,7 +619,7 @@ class ConversionData():
             
             if posObj:            
                 
-                abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
+                abbrev = Utils.as_string(posObj.Abbreviation)
 
             # Find which sense number this is
             for i, mySense in enumerate(owningEntry.SensesOS):
@@ -652,7 +655,7 @@ class ConversionData():
                 
                 if posObj:
                                 
-                    abbrev = ITsString(posObj.Abbreviation.BestAnalysisAlternative).Text
+                    abbrev = Utils.as_string(posObj.Abbreviation)
         
         return (a, abbrev, senseNum)
     
@@ -677,8 +680,8 @@ class ConversionData():
             else: # FsClosedValue - I don't think the other types are in use
                 
                 spec = IFsClosedValue(spec)
-                featGrpName = ITsString(spec.FeatureRA.Name.BestAnalysisAlternative).Text
-                abbValue = ITsString(spec.ValueRA.Abbreviation.BestAnalysisAlternative).Text
+                featGrpName = Utils.as_string(spec.FeatureRA.Name)
+                abbValue = Utils.as_string(spec.ValueRA.Abbreviation)
                 abbValue = re.sub('\.', '_', abbValue)
                 featAbbrevList.append((featGrpName, abbValue))
         return
@@ -688,7 +691,7 @@ class ConversionData():
         # follow the chain of variants to get an entry with a sense
         entry = Utils.GetEntryWithSense(entry)
         
-        return ITsString(entry.SensesOS.ToArray()[0].Gloss.BestAnalysisAlternative).Text
+        return Utils.as_string(entry.SensesOS.ToArray()[0].Gloss)
     
     def isCacheOutOfDate(self):
         
@@ -831,7 +834,7 @@ class ConversionData():
                             # just see if one of them is Phrasal Verb
                             for complexType in entryRef.ComplexEntryTypesRS:
                                 
-                                if ITsString(complexType.Name.BestAnalysisAlternative).Text in self.complexFormTypeMap:
+                                if Utils.as_string(complexType.Name) in self.complexFormTypeMap:
             
                                     self.complexMap[headWord] = e
                                     break

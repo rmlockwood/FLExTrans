@@ -4,6 +4,9 @@
 #   3/28/22
 #
 #
+#   Version 3.13.3 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.2 - 3/18/25 - Ron Lockwood
 #    Fixes #676. Let user know of implicit settings changes.
 #
@@ -184,7 +187,7 @@ def getSourceCategoryList(wind):
         
         for pos in wind.DB.lp.AllPartsOfSpeech:
             
-            catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            catStr = Utils.as_string(pos.Abbreviation)
             categoryList.append(catStr)
             
     return categoryList
@@ -195,7 +198,7 @@ def getTargetCategoryList(wind):
         
         for pos in wind.targetDB.lp.AllPartsOfSpeech:
             
-            catStr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            catStr = Utils.as_string(pos.Abbreviation)
             tgtCategoryList.append(catStr)
             
     return tgtCategoryList
@@ -331,7 +334,7 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
             # convert this item's id to a string
             morphType = repo.GetObject(item.Guid)
             morphType = ICmPossibility(morphType)
-            morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+            morphTypeStr = Utils.as_string(morphType.Name)
             
             typesList.append(morphTypeStr)
     
@@ -347,7 +350,7 @@ def loadSourceMorphemeTypes(widget, wind, settingName):
             # Go from guid to to morphname string in the analysis lang.
             morphType = repo.GetObject(Guid(String(guidStr[0])))
             morphType = ICmPossibility(morphType)
-            morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+            morphTypeStr = Utils.as_string(morphType.Name)
 
             if morphTypeStr in typesList:
                 
@@ -379,7 +382,7 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
                 # convert this item's id to a string
                 morphType = repo.GetObject(item.Guid)
                 morphType = ICmPossibility(morphType)
-                morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+                morphTypeStr = Utils.as_string(morphType.Name)
                 
                 typesList.append(morphTypeStr)
         
@@ -395,7 +398,7 @@ def loadTargetMorphemeTypes(widget, wind, settingName):
                 # Go from guid to to morphname string in the analysis lang.
                 morphType = repo.GetObject(Guid(String(guidStr[0])))
                 morphType = ICmPossibility(morphType)
-                morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+                morphTypeStr = Utils.as_string(morphType.Name)
 
                 if morphTypeStr in typesList:
                     

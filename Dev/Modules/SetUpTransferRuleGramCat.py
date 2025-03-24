@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -60,7 +63,6 @@ from SIL.LCModel import (
     IMoInflAffixSlotRepository,
     IMoInflAffMsa,
     )
-from SIL.LCModel.Core.KernelInterfaces import ITsString
 
 from flextoolslib import *                                          
 
@@ -76,7 +78,7 @@ from RuleCatsAndAttribs import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
         FTM_Help   : "",
@@ -379,7 +381,7 @@ def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countL
     if feat.ClassID == FsClosedFeatureTags.kClassId:
     
         feat = IFsClosedFeature(feat)
-        featureGroupName = ITsString(feat.Name.BestAnalysisAlternative).Text
+        featureGroupName = Utils.as_string(feat.Name)
         
         # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
         countList, featureGroupName = Utils.check_for_cat_errors(report, dbType, featureGroupName, featureGroupName, countList, 1, thingType) # 1 for numCatErrorsToShow
@@ -388,7 +390,7 @@ def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countL
         
         for val in feat.ValuesOC:
             
-            featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
+            featAbbr = Utils.as_string(val.Abbreviation)
             featList.append(featAbbr)
 
         # add the feature group name to the map along with the inflection feature abbreviations that go with it
@@ -404,7 +406,7 @@ def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countL
             
 def processSlots(masterAttribList, override, slot, dbType, report, countList, thingType):
     
-    slotName = ITsString(slot.Name.BestAnalysisAlternative).Text
+    slotName = Utils.as_string(slot.Name)
     slotGuid = slot.Guid.ToString()
     
     # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
@@ -441,7 +443,7 @@ def getSlot2AffixListMap(DB):
             # Loop through senses
             for _, mySense in enumerate(entry.SensesOS):
                 
-                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                gloss = Utils.as_string(mySense.Gloss)
                 
                 # Process only affixes
                 if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa' and gloss:

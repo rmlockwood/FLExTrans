@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.13.2 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -200,7 +203,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1201,7 +1204,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
                     POS = 'UNK'
                     report.Warning('Empty grammatical category found for the target word: '+ headword, TargetDB.BuildGotoURL(entryObj))
                     
-                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                gloss = Utils.as_string(mySense.Gloss)
                 
                 # If we have a non-empty gloss, add it to the map (we will allow ***)
                 if gloss and len(gloss) > 0:
@@ -1252,7 +1255,7 @@ def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNu
                     POS = ITsString(targetMsa.PartOfSpeechRA.\
                                     Abbreviation.BestAnalysisAlternative).Text
             
-                Gloss = ITsString(targetSense.Gloss.BestAnalysisAlternative).Text
+                Gloss = Utils.as_string(targetSense.Gloss)
                 
                 # Create an HPG (headword-POS-gloss) object
                 myHPG = HPG(targetSense, lem, POS, Gloss, senseNum)
@@ -1345,7 +1348,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                 if morphType in sourceMorphNames:
                                     
                                     # Get gloss
-                                    srcGloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text    
+                                    srcGloss = Utils.as_string(mySense.Gloss)    
                             
                                     # Get lemma & POS
                                     srcHeadWord = Utils.remove1dot1(word.getLemma(eNum))

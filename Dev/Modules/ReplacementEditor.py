@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -41,7 +44,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version    : "3.13",
+    FTM_Version    : "3.13.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -485,7 +488,7 @@ class Main(QMainWindow):
                     msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
                     if not msa.PartOfSpeechRA:
                         continue
-                    pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                    pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                     pos = Utils.convertProblemChars(pos, Utils.catProbData)
                     tags = Utils.getInflectionTags(msa)
                     lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))

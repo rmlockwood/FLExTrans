@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -115,7 +118,7 @@ class NewEntryDlg(QDialog):
             guid = Guid(String(STEM_MORPH_GUID))
             morphType = repo.GetObject(guid)
             morphType = ICmPossibility(morphType)
-            morphTypeStr = ITsString(morphType.Name.BestAnalysisAlternative).Text
+            morphTypeStr = Utils.as_string(morphType.Name)
 
         index = self.ui.morphemeTypeCombo.findText(morphTypeStr) 
         

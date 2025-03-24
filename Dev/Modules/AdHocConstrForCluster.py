@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -74,7 +77,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
         FTM_Help   : "",
@@ -275,7 +278,7 @@ class AdHocMain(QMainWindow):
         # Load the group names
         for groupObj in DB.ObjectsIn(IMoAdhocProhibGrRepository):
 
-            groupName = ITsString(groupObj.Name.BestAnalysisAlternative).Text
+            groupName = Utils.as_string(groupObj.Name)
             groupList.append((groupName, groupObj))
 
         # Sort on the group name, ignoring '-' and making it case insensitive
@@ -653,7 +656,7 @@ class AdHocMain(QMainWindow):
                     for sense in entry.SensesOS:
 
                         # Get gloss, msa and pos
-                        currGloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
+                        currGloss = Utils.as_string(sense.Gloss)
                         myMSA = self.createMSA(sense.MorphoSyntaxAnalysisRA) # Cast to the right class
                         currPOS = self.setPOS(myMSA)
 
@@ -730,7 +733,7 @@ class AdHocMain(QMainWindow):
                 if guidStr != lastGuidStr:
 
                     pos = self.setPOS(repo.GetObject(Guid(String(guidStr))))
-                    gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
+                    gloss = Utils.as_string(sense.Gloss)
 
                     lemmas[f'{headWord}.{i}{EM_SPACE}{pos}{EM_SPACE}{gloss}'] = guidStr
                     lastGuidStr = guidStr
@@ -767,7 +770,7 @@ class AdHocMain(QMainWindow):
                         
                     msa = self.createMSA(sense.MorphoSyntaxAnalysisRA)
                     pos = self.setPOS(msa)
-                    gloss = ITsString(sense.Gloss.BestAnalysisAlternative).Text
+                    gloss = Utils.as_string(sense.Gloss)
 
                     # Just want the first POS
                     break

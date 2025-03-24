@@ -5,6 +5,9 @@
 #   SIL International
 #   6/6/2018
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -232,7 +235,7 @@ class TestbedValidator():
                 # Loop through senses
                 for i, mySense in enumerate(e.SensesOS):
                     
-                    gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                    gloss = Utils.as_string(mySense.Gloss)
                     
                     # Process roots
                     # Don't process clitics in this block
@@ -281,7 +284,7 @@ class TestbedValidator():
         for pos in self.db.lp.AllPartsOfSpeech:
 
             # save abbreviation
-            posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+            posAbbr = Utils.as_string(pos.Abbreviation)
             posAbbr = re.sub(' ', '_', posAbbr)
             self.mapCats[posAbbr] = 7
             
@@ -290,12 +293,12 @@ class TestbedValidator():
         # Get all the inflection feature abbreviations
         for feature in self.db.ObjectsIn(IFsClosedFeatureRepository):
             for value in feature.ValuesOC:
-                abbr = ITsString(value.Abbreviation.BestAnalysisAlternative).Text
+                abbr = Utils.as_string(value.Abbreviation)
                 abbr = re.sub(r'\.', '_', abbr)
                 self.mapTags[abbr] = 7
 
         # Get all the inflection class abbreviations
         for inflClass in self.db.ObjectsIn(IMoInflClassRepository):
-            abbr = ITsString(inflClass.Abbreviation.BestAnalysisAlternative).Text
+            abbr = Utils.as_string(inflClass.Abbreviation)
             abbr = re.sub(r'\.', '_', abbr)
             self.mapTags[abbr] = 7
