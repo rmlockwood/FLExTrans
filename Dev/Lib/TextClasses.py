@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.13.2 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -350,7 +353,7 @@ class TextSentence():
                                     # there could be multiple types assigned to a complex form (e.g. Phrasal Verb, Derivative)
                                     # just see if one of them is one of the ones in the types list (e.g. Phrasal Verb)
                                     for complexType in entryRef.ComplexEntryTypesRS:
-                                        if ITsString(complexType.Name.BestAnalysisAlternative).Text in typesList:
+                                        if Utils.as_string(complexType.Name) in typesList:
                                             
                                             # get the component entries
                                             componentEs = []
@@ -564,7 +567,7 @@ class TextSentence():
     
 # TODO: have a config file defined way to change . to ><. This could be useful for port manteau languages.
 # Get the clitic gloss. Substitute periods with >< to produce multiple tags a la Apertium.
-#affixStr += '<' + re.sub(r'\.', r'><',ITsString(bundle.SenseRA.Gloss.BestAnalysisAlternative).Text) +'>'
+#affixStr += '<' + re.sub(r'\.', r'><',Utils.as_string(bundle.SenseRA.Gloss)) +'>'
 
 # A word within a sentence in a FLEx text    
 class TextWord():
@@ -582,7 +585,7 @@ class TextWord():
         self.__inflFeatAbbrevsList = [] # a list of lists
         self.__stemFeatAbbrList = []
     def addAffix(self, myObj):
-        self.addPlainTextAffix(ITsString(myObj.BestAnalysisAlternative).Text)
+        self.addPlainTextAffix(Utils.as_string(myObj))
     def addAffixesFromList(self, strList):
         # assume we don't have two or more entries, i.e. compound
         self.__affixLists[0] += strList
@@ -599,7 +602,7 @@ class TextWord():
     def addLemma(self, lemma):
         self.__lemmaList.append(lemma)
     def addLemmaFromObj(self, myObj):
-        self.__lemmaList.append(ITsString(myObj.Form.BestVernacularAlternative).Text)
+        self.__lemmaList.append(Utils.as_vern_string(myObj.Form))
     def addPlainTextAffix(self, myStr):
         # if there's no affix lists yet, create one with this string
         if self.isInitialized() == False:
@@ -688,7 +691,7 @@ class TextWord():
             if mySense := self.__senseList[i]:
                 msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
                 if msa.InflectionClassRA:
-                    return [ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text]
+                    return [Utils.as_string(msa.InflectionClassRA.Abbreviation)]
         return []
     def getInflFeatures(self, i):
         # Get any features that come from irregularly inflected forms   
@@ -706,7 +709,7 @@ class TextWord():
             if mySense := self.__senseList[i]:
                 msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
                 if msa.PartOfSpeechRA:
-                    return Utils.convertProblemChars(ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text, Utils.catProbData)
+                    return Utils.convertProblemChars(Utils.as_string(msa.PartOfSpeechRA.Abbreviation), Utils.catProbData)
         return self.getUnknownPOS()
     def getSense(self, i):
         if self.hasSenses() and i < len(self.__senseList):

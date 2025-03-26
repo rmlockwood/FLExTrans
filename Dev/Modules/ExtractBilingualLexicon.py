@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.13.2 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Use abbreviated path when telling user what file was used.
 #    Updated module description.
@@ -158,7 +161,7 @@ REPLDICTIONARY = 'repldictionary'
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Builds an Apertium-style bilingual lexicon.",
         FTM_Help   : "",
@@ -266,8 +269,8 @@ def addFeatureStringsToMap(myDB, myMap):
 
             for val in IFsClosedFeature(feat).ValuesOC:
 
-                featAbbr = ITsString(val.Abbreviation.BestAnalysisAlternative).Text
-                featName = ITsString(val.Name.BestAnalysisAlternative).Text
+                featAbbr = Utils.as_string(val.Abbreviation)
+                featName = Utils.as_string(val.Name)
                 myMap[Utils.underscores(featAbbr)] = featName
 
 def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False):
@@ -412,7 +415,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
                             sourceMsa = IMoStemMsa(sourceSense.MorphoSyntaxAnalysisRA)
                             if sourceMsa.PartOfSpeechRA:
 
-                                sourcePOSabbrev = ITsString(sourceMsa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                sourcePOSabbrev = Utils.as_string(sourceMsa.PartOfSpeechRA.Abbreviation)
                                 sourcePOSabbrev = Utils.convertProblemChars(sourcePOSabbrev, Utils.catProbData)
 
                                 # Get source inflection strings (containing class and feature abbreviations)
@@ -530,7 +533,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 
                 elif sourceEntry.LexemeFormOA.MorphTypeRA == None:
 
-                    errorList.append(('No Morph Type. Skipping.'+rawHeadWord+' Best Vern: '+ITsString(sourceEntry.LexemeFormOA.Form.BestVernacularAlternative).Text, 1, sourceURL))
+                    errorList.append(('No Morph Type. Skipping.'+rawHeadWord+' Best Vern: '+Utils.as_vern_string(sourceEntry.LexemeFormOA.Form), 1, sourceURL))
 
         mainSection.append(ET.Comment(' SECTION: Punctuation '))
 

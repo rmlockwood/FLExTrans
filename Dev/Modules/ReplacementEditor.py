@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -41,7 +44,7 @@ import Utils
 
 docs = {
     FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version    : "3.13",
+    FTM_Version    : "3.13.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
     FTM_Help: "",
@@ -458,8 +461,8 @@ class Main(QMainWindow):
             self.deleteRow(lastRow)
 
     def gatherCompletionData(self, DB, composed):
-        from SIL.LCModel import IMoStemMsa, IMoInflAffMsa
-        from SIL.LCModel.Core.KernelInterfaces import ITsString
+        from SIL.LCModel import IMoStemMsa                      # type: ignore
+        from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
         if composed:
             from unicodedata import normalize
             def norm(s): return normalize('NFC', s)
@@ -485,7 +488,7 @@ class Main(QMainWindow):
                     msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
                     if not msa.PartOfSpeechRA:
                         continue
-                    pos = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                    pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                     pos = Utils.convertProblemChars(pos, Utils.catProbData)
                     tags = Utils.getInflectionTags(msa)
                     lemmas[f'{headWord}.{i}'] = (pos, '.'.join(tags))
@@ -501,7 +504,7 @@ class Main(QMainWindow):
         return sorted(posMap.keys())
 
     def gatherTags(self, DB):
-        from SIL.LCModel import IFsClosedFeatureRepository
+        from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
         tags = set()
         for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
             tags.update(Utils.as_tag(val) for val in feature.ValuesOC)

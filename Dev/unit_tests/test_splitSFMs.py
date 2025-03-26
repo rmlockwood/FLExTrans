@@ -13,7 +13,7 @@ clr.AddReference("System")
 clr.AddReference("SIL.LCModel")
 clr.AddReference("SIL.LCModel.Core")
 
-from Utils import splitSFMs
+from ChapterSelection import splitSFMs
 
 class TestSplitSFMs(unittest.TestCase):
 

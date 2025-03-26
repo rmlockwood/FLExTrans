@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.3 - 3/24/25 - Ron Lockwood
+#    use as string & as vern string functions
+#
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Move the Mixpanel logging to the main function. Callers should do it.
 # 
@@ -132,7 +135,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
 """
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
         FTM_Help       :"",
@@ -158,7 +161,7 @@ def saveInflClass(inflClassList, myInflClass):
     
     if myInflClass.Abbreviation:
 
-        inflClassStr = ITsString(myInflClass.Abbreviation.BestAnalysisAlternative).Text
+        inflClassStr = Utils.as_string(myInflClass.Abbreviation)
         
         inflClassList.append(inflClassStr)
         
@@ -259,13 +262,13 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
             
             if msa.InflectionClassRA:
                 
-                inflClassStr = ITsString(msa.InflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
+                inflClassStr = Utils.as_string(msa.InflectionClassRA.Abbreviation)
                 f_handle.write(f'\\mp {inflClassStr}\n')
             
             # If there is not infl. class assigned, but there is a default inflection class for this POS, write it.
             elif msa.PartOfSpeechRA.DefaultInflectionClassRA:
 
-                inflClassStr = ITsString(msa.PartOfSpeechRA.DefaultInflectionClassRA.Abbreviation.BestAnalysisAlternative).Text
+                inflClassStr = Utils.as_string(msa.PartOfSpeechRA.DefaultInflectionClassRA.Abbreviation)
                 f_handle.write(f'\\mp {inflClassStr}\n')
 
 def gather_allomorph_data(morph, masterAlloList, morphCategory):
@@ -297,7 +300,7 @@ def gather_allomorph_data(morph, masterAlloList, morphCategory):
         morph = IMoStemAllomorph(morph)
         if morph.StemNameRA and morph.StemNameRA.Abbreviation:
             
-            stemName = ITsString(morph.StemNameRA.Abbreviation.BestAnalysisAlternative).Text
+            stemName = Utils.as_string(morph.StemNameRA.Abbreviation)
             
     else: # non-stems only
         
@@ -641,7 +644,7 @@ def output_cat_info(TargetDB, f_dec):
     for pos in TargetDB.lp.AllPartsOfSpeech:
         
         # get abbreviation
-        posAbbr = ITsString(pos.Abbreviation.BestAnalysisAlternative).Text
+        posAbbr = Utils.as_string(pos.Abbreviation)
         
         # change spaces to underscores
         posAbbr = re.sub(r'\s', '_', posAbbr)
@@ -662,7 +665,7 @@ def output_cat_info(TargetDB, f_dec):
                 stemNameMap = {}
             
                 stemNameMap[CATEGORY_STR] = pos
-                stemNameMap[STEM_STR] = ITsString(stemNameObj.Abbreviation.BestAnalysisAlternative).Text
+                stemNameMap[STEM_STR] = Utils.as_string(stemNameObj.Abbreviation)
                 stemNameMap[FEATURES_STR] = stemNameObj.RegionsOC # list of feature sets
         
                 stemNameList.append(stemNameMap)
@@ -703,7 +706,7 @@ def output_nat_class_info(TargetDB, f_dec):
     for natClass in TargetDB.lp.PhonologicalDataOA.NaturalClassesOS:
         
         # Get the natural class name and write it out
-        natClassName = ITsString(natClass.Abbreviation.BestAnalysisAlternative).Text
+        natClassName = Utils.as_string(natClass.Abbreviation)
         
         # Make sure we have a valid class name and that it is not a Natural Class of Features which we are not concerned with
         if natClassName and natClass.ClassName != 'PhNCFeatures':
@@ -807,7 +810,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             # Loop through senses
             for i, mySense in enumerate(entry.SensesOS):
                 
-                gloss = ITsString(mySense.Gloss.BestAnalysisAlternative).Text
+                gloss = Utils.as_string(mySense.Gloss)
                 
                 # Process roots
                 # Don't process clitics in this block
@@ -828,7 +831,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
                             if msa.PartOfSpeechRA:  
                                           
-                                abbrev = ITsString(msa.PartOfSpeechRA.Abbreviation.BestAnalysisAlternative).Text
+                                abbrev = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             else:
                                 err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
                                 continue
