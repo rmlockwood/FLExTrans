@@ -45,7 +45,7 @@ and
 append:before
 {
     content: " append to: "
-    text-field(attribute,n,background-color,def-var-background-color(),columns,16);
+    text-field(attribute,n,background-color,def-var-background-color(),columns,25);
 }
 append
 {
@@ -96,7 +96,7 @@ begins-with-list
 call-macro:before
 {
     content:"call macro: "
-    text-field(attribute,n,background-color,def-macro-background-color(),columns,16);;
+    text-field(attribute,n,background-color,def-macro-background-color(),columns,30);;
 }
 call-macro
 {
@@ -116,7 +116,7 @@ case-of[side=sl]
                            color, #ff0000,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16);
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
 }
 case-of
@@ -127,7 +127,7 @@ case-of
                            color, #ce901b,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16);
+     "  part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
 }
 
@@ -156,7 +156,7 @@ choose
 chunk[namefrom]:before
 {
     content: " chunk - get name from variable: "
-             text-field(attribute,namefrom,background-color,def-var-background-color(),columns,16);;
+             text-field(attribute,namefrom,background-color,def-var-background-color(),columns,25);;
              ;
 }
 chunk:before
@@ -183,7 +183,7 @@ clip[side=sl]
                            color, #ff0000,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16)
+     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
     padding-left:.125in;
 }
@@ -196,7 +196,7 @@ clip
                            color, #ce901b,
                            labels, "source lang.\A target lang.", 
                            values, "sl\A tl")
-     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,16)
+     " part: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
      label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
     padding-left:.125in;
 }
@@ -224,7 +224,7 @@ contains-substring
 def-attr:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,16);
+    " attribute: " text-field(attribute,n,background-color,def-attr-background-color(),columns,25);
 }
 def-attr
 {
@@ -260,7 +260,7 @@ def-list
 def-macro:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,16)
+    " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,30)
     " number of items = " 
     text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
 }
@@ -274,7 +274,7 @@ def-macro
 def-var:before
 {
     content: " variable: " 
-    text-field(attribute,n,background-color,def-var-background-color(),columns,16);
+    text-field(attribute,n,background-color,def-var-background-color(),columns,25);
 }
 def-var
 {
@@ -372,7 +372,7 @@ lit:before
 lit
 {
     display:block;
-    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,10);
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,20);
     padding-left: .125in;
 }
 
@@ -383,7 +383,7 @@ lit-tag:before
 lit-tag
 {
     display:block;
-    content: " " text-field(attribute,v,background-color,def-literal-tag-background-color(),columns,10);
+    content: " " text-field(attribute,v,background-color,def-literal-tag-background-color(),columns,20);
     padding-left: .125in;
 }
 
@@ -608,7 +608,7 @@ var:before
 var
 {
     display:block;
-    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,16);
+    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,25);
    padding-left:.125in;
 }
 

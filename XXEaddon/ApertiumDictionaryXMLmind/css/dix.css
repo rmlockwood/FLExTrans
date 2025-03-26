@@ -49,7 +49,7 @@ b
 
 e:before
 {
-    content:"Entry: ";
+    content:"Entry: weight: " text-field(attribute,w,background-color,def-rule-background-color(),columns,1) ;
 } 
 e
 {
@@ -74,7 +74,7 @@ g:after
 
 i:before
 {
-    content:"identity: ";
+    content:" identity: ";
     color:Black;
 } 
 i
@@ -106,7 +106,7 @@ l
 
 p:before
 {
-    content:"pair: ";
+    content:" pair: ";
 } 
 p
 {

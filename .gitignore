@@ -25,3 +25,9 @@ Previous Versions/AddOnsForXMLmind3.9beta.zip
 Previous Versions/FLExToolsWithFLExTrans3.9beta.zip
 Previous Versions/HermitCrabTools3.9beta.zip
 HermitCrabTools3.9beta.zip
+
+RuleAssistantTests/CreateApertiumRules.py
+RuleAssistantTests/*.t1x
+RuleAssistantTests/*.bin
+__pycache__
+.vscode/launch.json

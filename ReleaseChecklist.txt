@@ -1,11 +1,12 @@
 Do these things when making a new release
 -Update module version #s to X.X if they are lower. E.g. bring everything up to 3.6 that was 3.5.x
 -Finish code changes and commit
--Edit createInstallFolder2.0.bat and set the version # at the top.
--Edit C:\Users\rlboo\GitHub\FLExTrans\FLExTrans-installer.nsi setting Product version to the version #
--Change VIProductVersion in the .nsi file.
+-Edit createInstallFolder2.0.bat and set FLEXTRANS_VERSION at the top to the new version #.
+-Edit FLExTrans-installer.nsi setting PRODUCT_VERSION to the new version #.
+-Also change VIProductVersion in the .nsi file  to the new version #. This has to always have the 3rd # so make it 0 if needed. E.g. 3.12.0.${BUILD_NUM}
 -Change Copyright date if necessary in the .nsi file. 
 -Edit Version.py in the FlexTools folder with the new version #s (Also for FLExTools) (this shows up in the title bar and About)
+-Change TeamCity by editing the FLExTrans project, Build FLExTrans Installer configuration, Artifact paths to use the new version #
 -Build and test the install locally
 -Do another commit that has the install changes
 -Finish merging all pull requests
@@ -17,11 +18,12 @@ Do these things when making a new release
 -Create the release in Git with the new version string. 
  -Go to tags, switch to Releases
  -Click draft new release
- -Choose tags and give new vx.x.x and click Create new tag xxx on publish
+ -Choose a tag (dropdown) and give new vx.x.x and click Create new tag xxx on publish
  -Fill out Title (e.g. 3.7 - Sense Linker and Live Rule Tester Improvements)
  -Auto-generate release notes.
  -Publish
  -Edit release notes.
 -Make a new post on software.sil.org/flextrans. (use same bullets as the Github release page)
+-Update the instructions on the download and installation web pages as necessary.
 -announce the new release on the FLEx list
--Setup things for the next release (set version # in createInstallFolder2.0.bat, .nsi, Version.py) so that new builds don't overwrite the just released one.
+-Setup things for the next release (set what TeamCity copies, set version # in createInstallFolder2.0.bat, .nsi, Version.py) so that new builds don't overwrite the just released one.

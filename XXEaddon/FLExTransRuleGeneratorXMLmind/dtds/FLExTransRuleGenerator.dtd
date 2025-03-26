@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT FLExTransRuleGenerator (DisjointFeatureSets, FLExTransRules) >
+<!ATTLIST FLExTransRuleGenerator
+    overwrite_rules (yes | no) "yes"
+>
+<!ELEMENT  FLExTransRules (FLExTransRule+)>
+
+<!ELEMENT DisjointFeatureSets (DisjointFeatureSet*) >
+<!ELEMENT DisjointFeatureSet (DisjointFeatureValuePairings)>
+<!ATTLIST DisjointFeatureSet
+    language (source | target) "target"
+    disjoint_name CDATA #REQUIRED
+    co_feature_name CDATA #REQUIRED
+>
+<!ELEMENT DisjointFeatureValuePairings (DisjointFeatureValuePairing, DisjointFeatureValuePairing+)>
+<!ELEMENT DisjointFeatureValuePairing EMPTY>
+<!ATTLIST DisjointFeatureValuePairing
+  flex_feature_name CDATA #REQUIRED
+  co_feature_value CDATA #REQUIRED
+>
+
+<!ELEMENT FLExTransRule (Description, Source, Target)>
+<!ATTLIST FLExTransRule
+  name CDATA #REQUIRED
+  create_permutations (no | with_head | not_head) "no"
+>
+
+<!ELEMENT Description (#PCDATA) >
+
+<!ELEMENT Source (Phrase) >
+
+<!ELEMENT Target (Phrase) >
+ 
+<!ELEMENT Phrase (Words) >
+
+<!ELEMENT Words (Word+) >
+
+<!ELEMENT Word (Features*, Affixes*) >
+<!ATTLIST Word
+  id CDATA #REQUIRED
+  category CDATA #IMPLIED
+  head (yes | no) "no"
+>
+
+<!ELEMENT Features (Feature)* >
+
+<!ELEMENT Feature EMPTY >
+<!ATTLIST Feature
+  match CDATA #REQUIRED
+  label CDATA #REQUIRED
+  ranking CDATA #REQUIRED
+  unmarked_default CDATA #REQUIRED
+  value CDATA #REQUIRED
+>
+
+<!ELEMENT Affixes (Affix)* >
+
+<!ELEMENT Affix (Features*) >
+<!ATTLIST Affix
+  type (prefix | suffix) "suffix"
+>

@@ -10,14 +10,17 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.10.2"
-
+!define PRODUCT_VERSION "3.12.2"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
 !define FLEX_TOOLS_WITH_VERSION "FLExTrans"
 !define WORKPROJECTSDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects"
 !define TEMPLATEDIR "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject"
+!define REPLACEMENTEDITOR "FLExTrans.Replacement Dictionary Editor"
+!define TEXTIN "FLExTrans.Text In Rules"
+!define TEXTOUT "FLExTrans.Text Out Rules"
+!define EXPORTFROMFLEX "FLExTrans.Export FLEx Text to Paratext"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -25,12 +28,12 @@ VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
 VIAddVersionKey "Comments" ""
 VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
 VIAddVersionKey "LegalTrademarks" ""
-VIAddVersionKey "LegalCopyright" "© 2015-2024 SIL International"
+VIAddVersionKey "LegalCopyright" "Â© 2015-2025 SIL International"
 VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
-VIProductVersion 3.10.2.${BUILD_NUM}
+VIProductVersion 3.12.2.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -63,7 +66,7 @@ Page custom nsDialogsPage
 !macroend
 
 ; MUI end ------
-Icon "${GIT_FOLDER}\FLExTransWindowIcon.ico"
+Icon "${GIT_FOLDER}\Tools\FLExTransWindowIcon.ico"
 Name "${PRODUCT_NAME}"
 
 OutFile "${PRODUCT_NAME}${PRODUCT_VERSION}.exe"
@@ -94,20 +97,26 @@ InitPluginsDir
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
   CreateDirectory "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Output"
   
-  # Copy files users may change only if they don't already exist
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
-  
   SetOverwrite off
 
+  # Copy files users may change only if they don't already exist
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Output"
+
   File "${GIT_FOLDER}\replace.dix"
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+  
+  SetOutPath "${TEMPLATEDIR}\Output"
+
+  File "${GIT_FOLDER}\replace.dix"
   
   SetOutPath "${TEMPLATEDIR}"
 
-  File "${GIT_FOLDER}\replace.dix"
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
   
-  # Rename the file in the Template folder to not have -Swedish
+  # Copy and rename the file in the Template folder to not have -Swedish
   File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
@@ -162,6 +171,19 @@ InitPluginsDir
       File "${GIT_FOLDER}\flextools.ini"
     ${EndIf}
     
+	# Overwrite Makefiles
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Build"
+      File "${GIT_FOLDER}\Makefile"
+      File "${GIT_FOLDER}\Makefile.advanced"
+    ${EndIf}
+	
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\*.*"
+      SetOutPath "${WORKPROJECTSDIR}\$1\Build\LiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile" "${GIT_FOLDER}\MakefileForLiveRuleTester"
+      File "/oname=${WORKPROJECTSDIR}\$1\Build\LiveRuleTester\Makefile.advanced" "${GIT_FOLDER}\MakefileForLiveRuleTester.advanced"
+    ${EndIf}
+	
     # Replace the default currentproject and currentcollection values with what we read above
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "German-FLExTrans-Sample" $8
@@ -181,14 +203,20 @@ InitPluginsDir
 			ReadIniStr $5 "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall"
 			
 			# If we have no value, set disablerunall to True
-			StrCmp $5 "" 0 skip2
+			StrCmp $5 "" 0 skip3
 		
 				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
-		skip2:
-        # Delete Setting module (it's probably just in the Tools.ini but try deleting it everywhere)
-        # TURN THIS ON AGAIN WHEN FLEXTOOLS CAN HANDLE AN INI FILE WITH A ORDER NUMBER MISSING (E.g. 3 FOR SETTINGS)
-        #DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "FLExTrans.Settings Tool"
 
+			skip3:
+			
+			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
+			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}" "X" "Y"
+
+			skip2:
+		
         # Rename modules in the all the .ini files (for old installs)
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
@@ -217,6 +245,11 @@ InitPluginsDir
   IfErrors 0 +2
         Exec '"$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\Command.bat"'
 
+  # Install Rule Assistant in silent mode
+  SetOutPath "$INSTDIR\install_files"
+  File "${RESOURCE_FOLDER}\FLExTransRuleAssistant-setup.exe"
+  ExecWait "$INSTDIR\install_files\FLExTransRuleAssistant-setup.exe /SILENT"
+  
   # Install XMLmind
   SetOutPath "$INSTDIR\install_files"
   MessageBox MB_YESNO "Install XMLmind?" /SD IDYES IDNO endXXeSync
@@ -226,8 +259,11 @@ InitPluginsDir
   endXXeSync:
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
+  SetOutPath "$APPDATA\XMLmind\XMLEditor8"
+  File "${GIT_FOLDER}\preferences.properties"
   SetOutPath "$INSTDIR"
-  #Delete $DOCUMENTS\FLExTools2.0\Command.bat
+
+  # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
 SectionEnd
 
