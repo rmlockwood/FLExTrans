@@ -6,6 +6,11 @@
 #   3/23/25
 #
 #   Version 3.13 - 3/10/25 - Ron Lockwood
+#    Fixes #948. Use surface form for lemma when there is no analysis. This has the side effect that unanalyzed
+#    words that are capitalized because they are at the beginning of a sentence will now be capitalized. FLEx
+#    apparently changed because we used to be able to get the right cased form from the analysis object.
+#
+#   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Initial version. Moved from Utils.py
 #
 #   Functions for getting interlinear data.
@@ -38,6 +43,7 @@ DELIMITER_STR = '{'
 class GetInterlinParams():
 
     def __init__(self, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+
         self.sentPunct = sentPunct
         self.contents = contents
         self.typesList = typesList
@@ -46,29 +52,44 @@ class GetInterlinParams():
         self.noWarningProperNoun = noWarningProperNoun
 
 class treeTranSent():
+
     def __init__(self):
+
         self.__singleTree = True
         self.__guidList = []
         self.__index = 0
+        
     def getSingleTree(self):
         return self.__singleTree
+    
     def getGuidList(self):
         return self.__guidList
+    
     def setSingleTree(self, val):
         self.__singleTree = val
+
     def addGuid(self, myGuid):
         self.__guidList.append(myGuid)
+
     def getNextGuid(self):
+
         if self.__index >= len(self.__guidList):
+
             return None
+        
         return self.__guidList[self.__index]
+    
     def getNextGuidAndIncrement(self):
+
         if self.__index >= len(self.__guidList):
+
             return None
         g = self.__guidList[self.__index]
         self.__index += 1
         return g
+    
     def getLength(self):
+        
         return len(self.__guidList)
 
 def initProgress(contents, report):
@@ -414,7 +435,7 @@ def getInterlinData(DB, report, params):
         end = analysisOccurance.GetMyEndOffsetInPara()
         surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[beg:end]
 
-        # Set lemma to surfaceForm initially
+        # Set surfaceForm 
         myWord.setSurfaceForm(surfaceForm)
 
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
@@ -426,8 +447,8 @@ def getInterlinData(DB, report, params):
         # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
         elif analysisOccurance.Analysis.ClassName == "WfiWordform":
 
-            # Lemma will be the same as the surface form, I think
-            myWord.addLemmaFromObj(IWfiWordform(analysisOccurance.Analysis))
+            # Set the lemma to be the same as the surface form.
+            myWord.addLemma(surfaceForm)
             continue
 
         # Don't know when we ever would get here
