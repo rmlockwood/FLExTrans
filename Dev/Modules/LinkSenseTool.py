@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -174,6 +177,7 @@ from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
+import InterlinData
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     ILexEntry,
@@ -196,7 +200,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1288,14 +1292,14 @@ def getMatchesOnGloss(gloss, glossMap, saveMap, doFuzzyCompare):
 def getInterlinearText(DB, report, configMap, contents):
     
     # Get various bits of data for the get interlinear function
-    interlinParams = Utils.initInterlinParams(configMap, report, contents)
+    interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
 
     # Check for an error
     if interlinParams == None:
         return
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, interlinParams)
+    myText = InterlinData.getInterlinData(DB, report, interlinParams)
     
     return myText
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.5 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13.4 - 3/22/25 - Ron Lockwood
 #    Fixes #946. We want the contents of all of \w to be vernacular.
 #    But we also want \fig with | symbols to be handled correctly. For \fig we want the text
@@ -235,9 +238,6 @@
 import re
 import tempfile
 import os
-import shutil
-import xml.etree.ElementTree as ET
-import subprocess
 import unicodedata
 import itertools
 from collections import defaultdict
@@ -250,7 +250,6 @@ from SIL.LCModel import ( # type: ignore
     ILexEntry,
     ILexSense,
     ITextRepository,
-    IPunctuationForm,
     IMoStemMsa,
     IFsFeatStruc,
     IFsComplexFeature,
@@ -258,21 +257,16 @@ from SIL.LCModel import ( # type: ignore
     IFsClosedValue,
     IFsClosedFeatureRepository,
     IStStyleRepository,
-    IWfiAnalysis,
     ILexEntryInflType,
-    IWfiWordform,
     IMoInflAffMsa,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.DomainServices import StringServices   # type: ignore
-from SIL.LCModel.DomainServices import SegmentServices  # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig
-from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
-import FTPaths
 
 CIRCUMFIX_TAG_A = '_cfx_part_a'
 CIRCUMFIX_TAG_B = '_cfx_part_b'
@@ -287,14 +281,6 @@ INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
 
-GRAM_CAT_ATTRIBUTE = 'a_gram_cat'
-
-MAKEFILE_DICT_VARIABLE = 'DICTIONARY_PATH'
-MAKEFILE_SOURCE_VARIABLE = 'SOURCE_PATH'
-MAKEFILE_TARGET_VARIABLE = 'TARGET_PATH'
-MAKEFILE_FLEXTOOLS_VARIABLE = 'FLEXTOOLS_PATH'
-APERTIUM_ERROR_FILE = 'apertium_error.txt'
-DO_MAKE_SCRIPT_FILE = 'do_make.bat'
 CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache2.txt'
 TESTBED_CACHE_FILE = 'testbed_cache.txt'
 STRIPPED_RULES = 'tr.t1x'
@@ -302,9 +288,7 @@ STRIPPED_RULES = 'tr.t1x'
 ## For TreeTran
 GOOD_PARSES_LOG = 'good_parses.log'
 
-CHECK_DELIMITER = True
-DELIMITER_STR = '{'
-ID = 'id'
+ID_STR = 'id'
 
 # File and folder names
 OUTPUT_FOLDER = 'Output'
@@ -326,14 +310,11 @@ reSpace = re.compile(r'\s')
 rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
-reDoubleNewline = re.compile(r'\n\n')
 reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
 reFindSymbols = re.compile(r'(?<!\\)(?:<([^<>]+)>)')
-
-NGRAM_SIZE = 5
 
 morphTypeMap = {
 "d7f713e4-e8cf-11d3-9764-00c04f186933": "bound root",
@@ -380,11 +361,6 @@ catProbData = [['space', 'converted to an underscore', '_', reSpace],
 #          ['x char', 'fatal', '']
           ]
 
-bilingFixSymbProbData = []
-
-bilingUnFixSymbProbData = [['double newline', 'converted to single newline', r'\n', reDoubleNewline]
-                          ]
-
 def convertProblemChars(convertStr, problemDataList):
 
     # Convert spaces to underscores and remove periods and convert slash to bar, etc.
@@ -394,32 +370,6 @@ def convertProblemChars(convertStr, problemDataList):
         convertStr = probDataRow[3].sub(probDataRow[2], convertStr)
 
     return convertStr
-
-def getListOfSymbolSubPairs(convertStr, problemDataList):
-
-    masterList = []
-
-    for probDataRow in problemDataList:
-
-        foundList = probDataRow[3].findall(convertStr)
-
-        # remove duplicates
-        foundList = list(set(foundList))
-
-        # Assume we are getting a tuple because of the capture elements
-        if len(foundList) > 0 and isinstance(foundList[0], tuple) == False:
-            return []
-
-        for myItem in foundList:
-
-            # join the tuple into a string
-            trimmedItem = ''.join(myItem)
-
-            replStr = probDataRow[3].sub(probDataRow[2], trimmedItem)
-            masterList.append((trimmedItem, replStr))
-
-    # return a list with duplicates removed
-    return masterList
 
 def isClitic(myEntry):
 
@@ -465,21 +415,6 @@ def isEnclitic(entry):
 
     return ret_val
 
-def getXMLEntryText(node):
-
-    # Start with nodeText as the text part of the left node
-    nodeText = node.text
-
-    # But there is potentially more data. <b />'s which represent blanks might be there
-    # Each b has a tail portion that needs to be concatenated to the nodeText
-    for bElement in node.findall('b'):
-
-        if bElement.tail:
-
-            nodeText += ' ' + bElement.tail
-
-    return nodeText
-
 # Create a unique text title for FLEx
 def createUniqueTitle(DB, title):
 
@@ -511,244 +446,6 @@ def removeTestID(inStr):
 
     return reTestID.sub('', inStr)
 
-def punctuation_eval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):
-
-    wordList = treeTranSentObj.getGuidList()
-    numWords = len(wordList)
-
-    # See if we match an n-gram that was reversed in the tree tran sentence
-    for j in list(reversed(range(2, NGRAM_SIZE+1))): # start with biggest n-gram and reduce it, because we want to make the biggest match possible
-
-        endPos = i+j-1
-        if endPos < numWords:
-
-            if hash(tuple(list(reversed(wordList[i:endPos+1])))) in wordGramMap:
-
-                # Situation 1 current word has punct. and needs to be put somewhere else
-                if myFLExSent.hasPunctuation(wordList[i]) == True:
-
-                    # Save this puctuation for output at position i+j-1
-                    puncOutputMap[endPos] = wordList[i]
-
-                # Situation 2 current word needs punctuation from a word somewhere else
-                if myFLExSent.hasPunctuation(wordList[endPos]) == True and endPos not in wordsHandledMap:
-
-                    # Save this punctuation for output at position i, i.e. current position
-                    puncOutputMap[i] = wordList[endPos]
-
-                    # Keep track of words we handled for punctuation, so we don't do them again
-                    wordsHandledMap[endPos] = 1
-
-                return False
-
-    # Only process a word that has punctuation
-    if myFLExSent.hasPunctuation(wordList[i]) == True:
-
-        # TreeTran first word matches original first word
-        if i == 0:
-
-            if myFLExSent.matchesFirstWord(wordList[i]):
-
-                return True # output punctuation for this word
-
-        # If last word
-        if i == numWords-1:
-
-            # and matches original last word
-            if myFLExSent.matchesLastWord(wordList[i]):
-
-                return True
-
-        # Look to see if the previous and next words are the same as in the original
-        #myID = myFLExSent.getWordByGuid(wordList[i]).getID()
-        myID = wordList[i]
-
-        # Not first word or last word and this word is in the map
-        if i != 0 and i != numWords - 1 and myID in beforeAfterMap:
-
-            # First the simple case, the direct previous and direct following word
-            if beforeAfterMap[myID] == (wordList[i-1], wordList[i+1]):
-
-                return True
-
-            # Check a reversed n-gram for the previous word with the direct following word.
-            for j in range(2, NGRAM_SIZE+1):
-
-                if i-j > 0:
-                    if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
-                       beforeAfterMap[myID] == (wordList[i-j], wordList[i+1]):
-
-                        return True
-
-            # Check the direct previous word with a reversed n-gram for the next word
-            for j in range(2, NGRAM_SIZE+1):
-
-                if i+j < numWords:
-                    if hash(tuple(list(reversed(wordList[i+1:i+j+1])))) in wordGramMap and \
-                       beforeAfterMap[myID] == (wordList[i-1], wordList[i+j]):
-
-                        return True
-
-            # Check a reversed n-gram for the previous and a reversed n-gram for the following word
-            for j in range(2, NGRAM_SIZE+1):
-                for l in range(2, NGRAM_SIZE+1):
-
-                    if i-j > 0 and i+l < numWords:
-
-                        if hash(tuple(list(reversed(wordList[i-j:i])))) in wordGramMap and \
-                           hash(tuple(list(reversed(wordList[i+1:i+l+1])))) in wordGramMap and \
-                           beforeAfterMap[myID] == (wordList[i-j], wordList[i+l]):
-
-                            return True
-    return False
-
-# Get relative path to the given build folder and file
-def turnPathIntoEnvironPath(absPathToBuildFolder, myPath):
-
-    # See if we have an absolute path
-    if os.path.isabs(myPath):
-
-        relPath = os.path.relpath(myPath, absPathToBuildFolder)
-
-    # If it's not an absolute path, we assume it's relative to the work project subfolder (e.g. WorkProjects\German-Swedish)
-    # So from doing the make from the Build folder, we need to add ..\ to all of the paths we get from the config file.
-    else:
-        relPath = os.path.join('..', myPath)
-
-    return relPath
-
-# Run the makefile to run Apertium tools to do the transfer
-# component of FLExTrans. The makefile is run by invoking a
-# bash file. Absolute paths seem to be necessary.
-# relPathToBashFile is expected to be with Windows backslashes
-def run_makefile(absPathToBuildFolder, report):
-
-    configMap = MyReadConfig.readConfig(report)
-    if not configMap:
-        return True
-
-    # Get the path to the dictionary file
-    dictionaryPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.BILINGUAL_DICTIONARY_FILE, report)
-    if not dictionaryPath:
-        return True
-
-    dictionaryPath = turnPathIntoEnvironPath(absPathToBuildFolder, dictionaryPath)
-
-    # Get the path to the source apertium file
-    analyzedPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.ANALYZED_TEXT_FILE, report)
-    if not analyzedPath:
-        return True
-
-    analyzedPath = turnPathIntoEnvironPath(absPathToBuildFolder, analyzedPath)
-
-    # Get the path to the target apertium file
-    transferResultsPath = MyReadConfig.getConfigVal(configMap, MyReadConfig.TRANSFER_RESULTS_FILE, report)
-    if not transferResultsPath:
-        return True
-
-    transferResultsPath = turnPathIntoEnvironPath(absPathToBuildFolder, transferResultsPath)
-
-    # Create the batch file which merely cds to the appropriate
-    # directory and runs make.
-    fullPathMake = os.path.join(absPathToBuildFolder, DO_MAKE_SCRIPT_FILE)
-    f = open(fullPathMake, 'w', encoding='utf-8')
-
-    # make a variable for where the bilingual dictionary file should be found
-    outStr = f'set {MAKEFILE_DICT_VARIABLE}={dictionaryPath}\n'
-
-    # make a variable for where the analyzed text file should be found
-    outStr += f'set {MAKEFILE_SOURCE_VARIABLE}={analyzedPath}\n'
-
-    # make a variable for where the transfer results file should be found
-    outStr += f'set {MAKEFILE_TARGET_VARIABLE}={transferResultsPath}\n'
-
-    # Get the current working directory which should be the FlexTools folder
-    # cwd = os.getcwd()
-
-    flexToolsPath = turnPathIntoEnvironPath(absPathToBuildFolder, FTPaths.TOOLS_DIR)
-
-    # make a variable for where the apertium executable files and dlls are found
-    outStr += f'set {MAKEFILE_FLEXTOOLS_VARIABLE}={flexToolsPath}\n'
-
-    # set path to nothing
-    outStr += f'set PATH=""\n'
-
-    # Put quotes around the path in case there's a space
-    outStr += f'cd "{absPathToBuildFolder}"\n'
-
-    #fullPathErrFile = os.path.join(absPathToBuildFolder, APERTIUM_ERROR_FILE)
-    outStr += f'"{FTPaths.MAKE_EXE}" 2>"{APERTIUM_ERROR_FILE}"\n'
-
-    f.write(outStr)
-    f.close()
-
-    retVal = subprocess.call([fullPathMake])
-
-    return retVal
-
-def fixProblemChars(fullDictionaryPath):
-
-    # Save a copy of the bilingual dictionary
-    shutil.copy2(fullDictionaryPath, fullDictionaryPath+'.before_fix')
-
-    f = open(fullDictionaryPath, encoding='utf-8')
-    contentsStr = f.read()
-    f.close()
-
-    subPairs = getListOfSymbolSubPairs(contentsStr, bilingFixSymbProbData)
-
-    # Replace / with ||
-    contentsStr = convertProblemChars(contentsStr, bilingFixSymbProbData)
-
-    f = open(fullDictionaryPath, 'w', encoding='utf-8')
-    f.write(contentsStr)
-    f.close()
-
-    return subPairs
-
-def unfixProblemCharsDict(fullDictionaryPath):
-
-    # Restore original bilingual dictionary
-    shutil.copy2(fullDictionaryPath+'.before_fix', fullDictionaryPath)
-
-    # Delete the temporary dictionary file
-    os.remove(fullDictionaryPath+'.before_fix')
-
-def unfixProblemCharsRuleFile(fullTransferResultsPath):
-
-    try:
-        f = open(fullTransferResultsPath, encoding='utf-8')
-
-        contentsStr = f.read()
-        f.close()
-
-        # Replace || with /
-        contentsStr = convertProblemChars(contentsStr, bilingUnFixSymbProbData)
-
-        f = open(fullTransferResultsPath, 'w', encoding='utf-8')
-        f.write(contentsStr)
-        f.close()
-
-    except:
-        pass
-
-def subProbSymbols(buildFolder, ruleFile, subPairs):
-
-    f = open(os.path.join(buildFolder, ruleFile), encoding='utf-8')
-
-    contentsStr = f.read()
-    f.close()
-
-    # go through all problem symbols
-    for pair in subPairs:
-
-        # substitute all occurrences
-        contentsStr = re.sub(pair[0], pair[1], contentsStr)
-
-    f = open(os.path.join(buildFolder, ruleFile) ,"w", encoding='utf-8')
-    f.write(contentsStr)
-    f.close()
-
 def decompose(myFile):
 
     try:
@@ -769,72 +466,6 @@ def decompose(myFile):
         f.write(unicodedata.normalize('NFD', line))
     f.close()
 
-def checkRuleAttributes(tranferRulePath):
-
-    error_list = []
-
-    # Verify we have a valid transfer file.
-    try:
-        rulesTree = ET.parse(tranferRulePath)
-    except:
-        error_list.append(('Invalid File', f'The transfer file: {tranferRulePath} is invalid.', 2))
-        return error_list
-
-    # Find the attributes element
-    myRoot = rulesTree.getroot()
-
-    func_err_list = checkRuleAttributesXML(myRoot)
-
-    error_list.extend(func_err_list)
-
-    return error_list
-
-def checkRuleAttributesXML(myRoot):
-
-    error_list = []
-
-    def_attrs_element = myRoot.find('section-def-attrs')
-
-    if def_attrs_element:
-
-        gramCatSet = set()
-
-        # Loop through each attribute definition
-        for def_attr_el in def_attrs_element:
-
-            # If we have the special attribute for grammatical categories, add them to a list
-            if def_attr_el.attrib['n'] == GRAM_CAT_ATTRIBUTE:
-
-                # Loop through each grammatical category
-                for attr_item_el in def_attr_el:
-
-                    # Add the next one to the list
-                    gramCatSet.add(attr_item_el.attrib['tags'])
-
-                # Once we found the grammatical category, stop
-                break
-
-        # Loop through each attribute definition
-        for def_attr_el in def_attrs_element:
-
-            # Loop through each attribute
-            for attr_item_el in def_attr_el:
-
-                attribStr = attr_item_el.attrib['tags']
-
-                # If the attribute is the same as a grammatical category, give a warning. Of course don't check the gram cat attribute itself for this warning.
-                if def_attr_el.attrib['n'] != GRAM_CAT_ATTRIBUTE:
-
-                    if attribStr in gramCatSet:
-
-                        error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" is the same as a gramm. cat. Your rules may not work as expected.', 1))
-
-                # Make sure there are no periods in the attribute, if there are give a warning
-                if attribStr and re.search(r'\.', attribStr):
-
-                    error_list.append((f'The attribute: "{attribStr}" in "{def_attr_el.attrib["n"]}" has a period in it. It needs to be an underscore. Your rules may not work as expected.', 1))
-    return error_list
-
 # If the given path is has any relative or full paths
 # I.e. there is a slash somewhere, then don't use the
 # temp folder. Otherwise use the temp folder.
@@ -851,15 +482,6 @@ def add_one(headWord):
     if not reObjAddOne.search(headWord):
         return (headWord + '1')
     return headWord
-
-# Duplicate the capitalization of the model word on the input word
-def do_capitalization(wordToChange, modelWord):
-    if wordToChange and modelWord:
-        if modelWord.isupper():
-            return wordToChange.upper()
-        elif modelWord[0].isupper():
-            return wordToChange[0].upper()+wordToChange[1:]
-    return wordToChange
 
 def as_string(obj):
     return ITsString(obj.BestAnalysisAlternative).Text
@@ -1000,547 +622,6 @@ def split_compounds(outStr):
 # Convert . (dot) to _ (underscore)
 def underscores(inStr):
     return re.sub(r'\.', r'_', inStr)
-
-def initProgress(contents, report):
-    # count analysis objects
-    obj_cnt = -1
-    ss = SegmentServices.StTextAnnotationNavigator(contents)
-    for obj_cnt, _ in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
-        pass
-
-    if obj_cnt == -1:
-        report.Warning('No analyses found.')
-    else:
-        report.ProgressStart(obj_cnt+1)
-
-def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr):
-    if newSentence:
-
-        # Create a new sentence object and add it to the paragraph
-        mySent = TextSentence(report)
-        newSentence = False
-
-        # If we have a new paragraph, create the paragraph and add it to the text
-        if newParagraph:
-            myPar = TextParagraph()
-            myText.addParagraph(myPar)
-            newParagraph = False
-
-        # Add the sentence to the paragraph
-        myPar.addSentence(mySent)
-
-    # Add the word to the current sentence
-    mySent.addWord(myWord)
-
-    # Add initial spaces
-    myWord.addInitialPunc(spacesStr)
-
-    return newSentence, newParagraph, mySent, myPar
-
-class GetInterlinParams():
-
-    def __init__(self, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
-        self.sentPunct = sentPunct
-        self.contents = contents
-        self.typesList = typesList
-        self.discontigTypesList = discontigTypesList
-        self.discontigPOSList = discontigPOSList
-        self.noWarningProperNoun = noWarningProperNoun
-
-def initInterlinParams(configMap, report, contents):
-
-    # Get punctuation string
-    sentPunct = MyReadConfig.getConfigVal(configMap, MyReadConfig.SENTENCE_PUNCTUATION, report)
-
-    if not sentPunct:
-        return
-
-    typesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report)
-    if not typesList:
-        typesList = []
-    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_COMPLEX_TYPES, report):
-        return None
-
-    discontigTypesList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report)
-    if not discontigTypesList:
-        discontigTypesList = []
-    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_TYPES, report):
-        return None
-
-    discontigPOSList = MyReadConfig.getConfigVal(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
-    if not discontigPOSList:
-        discontigPOSList = []
-    elif not MyReadConfig.configValIsList(configMap, MyReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
-        return None
-
-    noWarningProperNounStr = MyReadConfig.getConfigVal(configMap, MyReadConfig.NO_PROPER_NOUN_WARNING, report, giveError=False)
-
-    if not noWarningProperNounStr or noWarningProperNounStr == 'n':
-        noWarningProperNoun = False
-    else:
-        noWarningProperNoun = True
-
-    # Initialize a class
-    interlinParams = GetInterlinParams(sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
-
-    return interlinParams
-
-# This is a key function used by the ExtractSourceText, LinkSenseTool and LiveRuleTesterTool modules
-# Go through the interlinear text and each word bundle in the text and collect the words (stems/roots),
-# the affixes and stuff associated with the words such as part of speech (POS), features, and classes.
-# The FLEx text is organized into paragraphs and paragraphs are organized into segments. Segments
-# contain word bundles. We collect words and associated data into Word objects which are containted in
-# Sentence objects (corresponding to Segments) which are contained in Paragraph objectes which are
-# containted in a Text object. The text object is returned to the calling module.
-# Punctuation is interspersed between word bundles as they occur. We associate punctuation with a Word
-# object except for special sentence ending punctuation which is given in the sentPuct parameter. This
-# kind of punctuation becomes its own Word object since eventually we want to output it as its own thing.
-# At the end of the function we figure out appropriate warnings for unknown words and we process
-# complex forms which basically is substituting complex forms when we find contiguous words that match
-# the complex form's components.
-def getInterlinData(DB, report, params):
-
-    prevEndOffset = 0
-    currSegNum = 0
-    myWord = None
-    mySent = None
-    savedPrePunc = ''
-    newParagraph = False
-    newSentence = False
-    inMultiLinePuncBlock = False
-
-    initProgress(params.contents, report)
-
-    # Save a regex for splitting on sentence punctuation so we can clump sentence-final and sentence-non-final together
-    # For the string "xy.'):\\" this would produce ['', '::', 'xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
-    reSplitPuncObj = re.compile(rf"([{''.join(params.sentPunct)}]+)")
-
-    # Initialize the text and the first paragraph object
-    myText = TextEntirety()
-    myPar = TextParagraph()
-
-    # Add the first paragraph
-    myText.addParagraph(myPar)
-
-    # Loop through each thing in the text
-    ss = SegmentServices.StTextAnnotationNavigator(params.contents)
-    for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
-
-        report.ProgressUpdate(prog_cnt)
-
-        # Get the number of spaces between words. This becomes initial spaces for the next word
-        numSpaces = analysisOccurance.GetMyBeginOffsetInPara() - prevEndOffset
-        spacesStr = ' '*numSpaces
-
-        # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
-        if numSpaces < 0 and myPar.getSentCount() > 0:
-            newParagraph = True
-
-        # If we are on a different segment, it's a new sentence.
-        if analysisOccurance.Segment.Hvo != currSegNum:
-            newSentence = True
-
-        # Save where we are
-        currSegNum = analysisOccurance.Segment.Hvo
-        prevEndOffset = analysisOccurance.GetMyEndOffsetInPara()
-
-        # Deal with punctuation first
-        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
-
-            puncForm = IPunctuationForm(analysisOccurance.Analysis)
-            textPunct = ITsString(puncForm.Form).Text
-
-            # Divide up the punctuation into sentence ending (ones that are in sentPunct) one ones that aren't
-            myPuncList = reSplitPuncObj.split(textPunct) # also see above where this object is defined
-
-            # Go through each cluster
-            for i, myPunc in enumerate(myPuncList):
-
-                # Skip empty list elements
-                if myPunc == '':
-                    continue
-
-                # even indexes which are the non-sentence final ones
-                # or odd indexes (sent final) where we are in the middle of a punctuation section (e.g. \xo 27.2-8)
-                # this is shown by there being some final punctuation or some saved pre-punctuation
-                if i % 2 == 0 or (i % 2 == 1 and myWord and (myWord.getFinalPunc() or savedPrePunc)):
-
-                    # If we have a word that has been started, that isn't the beginning of a new sentence, and it's not sent. punc., make this final punctuation.
-                    if myWord and not myWord.isSentPunctutationWord() and not newSentence and (CHECK_DELIMITER and not myPunc == DELIMITER_STR):
-
-                        myWord.addFinalPunc(spacesStr + myPunc)
-                        savedPrePunc = ''
-                    else:
-
-                        # New paragraph
-                        if numSpaces < 0:
-
-                            # if we have some prepunctutation and there's no final punctuation on the word (which means we haven't move pre-punct to final before)
-                            # and we are not in a block of punctuation lines after punctuation lines, move the pre-punctuation to final on the word and reset pre-punctutation
-                            if savedPrePunc and myWord and not myWord.getFinalPunc() and not inMultiLinePuncBlock:
-
-                                myWord.addFinalPunc(savedPrePunc)
-                                savedPrePunc = spacesStr + myPunc
-
-                            # If we haven't processed any pre-punctuation yet, add to saved pre-punctuation as normal (no preceding newline)
-                            elif not savedPrePunc:
-
-                                savedPrePunc += spacesStr + myPunc
-                                inMultiLinePuncBlock = True
-
-                            # If we have already had saved pre-punctuation, now add a preceding newline
-                            else:
-                                savedPrePunc += '\n' + spacesStr + myPunc
-
-                        # Not a new paragraph
-                        else:
-                            savedPrePunc += spacesStr + myPunc
-
-                else: # odd - sent-final ones
-
-                    ## save the punctuation as if it is its own word. E.g. ^.<sent>$
-
-                    # create a new word object
-                    myWord = TextWord(report)
-
-                    # initialize it with the puctuation and sent as the "POS"
-                    myWord.addLemma(myPunc)
-                    myWord.setSurfaceForm(myPunc)
-                    myWord.addPlainTextAffix('sent')
-
-                    # See if we have any pre-punctuation
-                    if len(savedPrePunc) > 0:
-                        myWord.addInitialPunc(savedPrePunc)
-                        savedPrePunc = ""
-
-                    # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
-                    newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
-
-                # After the first time through, we've dealt with the spaces
-                spacesStr = ''
-
-            continue
-
-        ## Now we know we have something other than punctuation
-
-        prevWord = myWord
-
-        # Start with a new word
-        myWord = TextWord(report)
-
-        # See if we have any pre-punctuation
-        if savedPrePunc:
-
-            # See if we have a new paragraph (which is shown by the numSpaces being negative) which means a paragraph of only punctuation.
-            # If so, add a newline to the punctuation
-            if numSpaces < 0:
-
-                if prevWord and not prevWord.getFinalPunc() and not inMultiLinePuncBlock:
-
-                    prevWord.addFinalPunc(savedPrePunc)
-                    savedPrePunc = ''
-                else:
-                    savedPrePunc += '\n'
-
-                # prevent an empty 1st paragrah
-                if myText.getParagraphCount() == 1 and myText.getSentCount() == 0:
-                    newParagraph = False
-
-            myWord.addInitialPunc(savedPrePunc)
-            savedPrePunc = ""
-
-        inMultiLinePuncBlock = False
-
-        # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
-        newSentence, newParagraph, mySent, myPar = checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr)
-
-        # Figure out the surface form and set it.
-        beg = analysisOccurance.GetMyBeginOffsetInPara()
-        end = analysisOccurance.GetMyEndOffsetInPara()
-        surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[beg:end]
-
-        # Set lemma to surfaceForm initially
-        myWord.setSurfaceForm(surfaceForm)
-
-        if analysisOccurance.Analysis.ClassName == "WfiGloss":
-            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
-
-        elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
-            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
-
-        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
-        elif analysisOccurance.Analysis.ClassName == "WfiWordform":
-
-            # Lemma will be the same as the surface form, I think
-            myWord.addLemmaFromObj(IWfiWordform(analysisOccurance.Analysis))
-            continue
-
-        # Don't know when we ever would get here
-        else:
-            wfiAnalysis = None
-
-        # Go through each morpheme bundle in the word
-        for bundle in wfiAnalysis.MorphBundlesOS:
-
-            if bundle.SenseRA:
-                if bundle.MsaRA and bundle.MorphRA:
-
-                    tempEntry = ILexEntry(bundle.MorphRA.Owner)
-
-                    # We have a stem. We just want the headword and it's POS
-                    if bundle.MsaRA.ClassName == 'MoStemMsa':
-
-                        msa = IMoStemMsa(bundle.MsaRA)
-
-                        tempGuid = myWord.getGuid()
-
-                        # Just save the the bundle guid for the first root in the bundle
-                        if tempGuid is None: # we can't use == None because the guid class doesn't implement __eq__
-
-                            # Only save the guid for a root, not a clitic
-                            if not isClitic(tempEntry):
-
-                                myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
-
-                        # If we have an invalid POS, give a warning
-                        if not msa.PartOfSpeechRA:
-
-                            #myWord.addLemmaFromObj(wfiAnalysis.Owner)
-                            report.Warning('No grammatical category found for the source word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
-                            break
-
-                        if bundle.MorphRA:
-                            # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
-                            # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
-                            inflFeatAbbrevs = []
-                            tempEntry = GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
-
-                            # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far
-                            # in this case, treat it as a root
-                            if isClitic(tempEntry) == True and not (isEnclitic(tempEntry) and myWord.hasEntries() == False):
-
-                                # Check for invalid characters
-                                if containsInvalidLemmaChars(as_string(bundle.SenseRA.Gloss)):
-
-                                    report.Error(f'Invalid characters in the affix: {as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                                    return myText
-                                
-                                # Add the clitic
-                                myWord.addAffix(bundle.SenseRA.Gloss)
-
-                            # Otherwise we have a root or stem or phrase
-                            else:
-
-                                # See if there are any invalid chars in the headword
-                                if containsInvalidLemmaChars(getHeadwordStr(tempEntry)):
-                                    
-                                    report.Error(f'Invalid characters in the source headword: {getHeadwordStr(tempEntry)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                                    return myText
-
-                                myWord.addEntry(tempEntry)
-                                myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
-
-                                # Go through each sense and identify which sense number we have
-                                foundSense = False
-
-                                for senseNum, mySense in enumerate(tempEntry.SensesOS):
-
-                                    if mySense.Guid == bundle.SenseRA.Guid:
-
-                                        myWord.addSense(mySense)
-                                        foundSense = True
-                                        break
-
-                                if foundSense:
-                                    
-                                    # Construct and set the lemma
-                                    myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
-                                else:
-                                    myWord.addSense(None)
-                                    report.Warning("Couldn't find the sense for source headword: "+getHeadwordStr(tempEntry))
-                        else:
-                            report.Warning("Morph object is null.")
-
-                    # We have an affix
-                    else:
-                        if bundle.SenseRA:
-                             
-                                # Check for invalid characters
-                            if containsInvalidLemmaChars(as_string(bundle.SenseRA.Gloss)):
-
-                                report.Error(f'Invalid characters in the affix: {as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {RAW_INVALID_LEMMA_CHARS}')
-                                return myText
-                            
-                            myWord.addAffix(bundle.SenseRA.Gloss)
-                        else:
-                            report.Warning("Sense object for a source affix is null.")
-                else:
-                    if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
-                        myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
-                    else:
-                        # Give a clue that a part is missing by adding a bogus affix
-                        myWord.addPlainTextAffix('PartMissing')
-
-                    report.Warning('No morphosyntactic analysis found for some part of the source word: '+ myWord.getSurfaceForm())
-                    break # go on to the next word
-            else:
-                # Part of the word has not been tied to a lexical entry-sense
-                if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
-                    myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
-                else:
-                    # Give a clue that a part is missing by adding a bogus affix
-                    myWord.addPlainTextAffix('PART_MISSING')
-
-                report.Warning('No sense found for some part of the source word: '+ myWord.getSurfaceForm())
-                break # go on to the next word
-
-        # if we don't have a root or stem and we have something else like an affix, give a warning
-        if myWord.getLemma(0) == '':
-
-            # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
-
-            # need a root
-            if wfiAnalysis.Owner.ClassName == 'WfiWordform':
-                myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
-            else:
-                myWord.addPlainTextAffix('ROOT_MISSING')
-
-            report.Warning('No root or stem found for source word: '+ myWord.getSurfaceForm())
-
-    # Handle any final punctuation text at the end of the text in its own paragraph
-    if len(savedPrePunc) > 0:
-
-        myWord.addFinalPunc('\n'+savedPrePunc)
-
-    # Don't warn for sfm markers, but warn once for others
-    if myText.warnForUnknownWords(params.noWarningProperNoun) == True:
-        report.Warning('One or more unknown words occurred multiple times.')
-
-    # substitute a complex form when its components are found contiguous in the text
-    myText.processComplexForms(params.typesList)
-
-    # substitute a complex form when its components are found discontiguous in the text
-    if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and len(params.typesList) > 0:
-
-        myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList)
-
-    return myText
-
-def importGoodParsesLog():
-    logList = []
-
-    f = open(os.path.join(tempfile.gettempdir(), GOOD_PARSES_LOG))
-
-    for line in f:
-        (numWordsStr, flagStr) = line.rstrip().split(',')
-
-        if flagStr == '1':
-            parsed = True
-        else:
-            parsed = False
-
-        logList.append((int(numWordsStr), parsed))
-
-    return logList
-
-class treeTranSent():
-    def __init__(self):
-        self.__singleTree = True
-        self.__guidList = []
-        self.__index = 0
-    def getSingleTree(self):
-        return self.__singleTree
-    def getGuidList(self):
-        return self.__guidList
-    def setSingleTree(self, val):
-        self.__singleTree = val
-    def addGuid(self, myGuid):
-        self.__guidList.append(myGuid)
-    def getNextGuid(self):
-        if self.__index >= len(self.__guidList):
-            return None
-        return self.__guidList[self.__index]
-    def getNextGuidAndIncrement(self):
-        if self.__index >= len(self.__guidList):
-            return None
-        g = self.__guidList[self.__index]
-        self.__index += 1
-        return g
-    def getLength(self):
-        return len(self.__guidList)
-
-def getTreeSents(inputFilename, report):
-
-    obj_list = []
-
-    try:
-        myETree = ET.parse(inputFilename)
-    except:
-        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
-
-    myRoot = myETree.getroot()
-
-    newSent = True
-    myTreeSent = None
-
-    # Loop through the anaRec's
-    for anaRec in myRoot:
-        # Create a new treeTranSent object
-        if newSent == True:
-            myTreeSent = treeTranSent()
-            obj_list.append(myTreeSent) # add it to the list
-            newSent = False
-
-        # See if this word has multiple parses which means it wasn't syntax-parsed
-        mparses = anaRec.findall('mparse')
-        if len(mparses) > 1:
-            myTreeSent.setSingleTree(False)
-
-        pNode = anaRec.find('./mparse/a/root/p')
-
-        if pNode == None:
-            report.Error("Could not find a GUID in the TreeTran results file. Perhaps TreeTran is not putting out all that you expect. anaRec id=" + anaRec.attrib[ID] + ". Exiting.")
-            return None
-
-        currGuid = Guid(String(pNode.text))
-        analysisNode = anaRec.find('Analysis')
-        if analysisNode != None:
-            newSent = True
-
-        myTreeSent.addGuid(currGuid)
-
-    return obj_list
-
-def getInsertedWordsList(inputFilename, report, DB):
-
-    obj_list = []
-
-    try:
-        myETree = ET.parse(inputFilename)
-    except:
-        raise ValueError('The Tree Tran Words to Insert File has invalid XML content.' + ' (' + inputFilename + ')')
-
-    myRoot = myETree.getroot()
-
-    # Loop through the anaRec's
-    for anaRec in myRoot:
-
-        # get the element that has the bundle guid
-        pNode = anaRec.find('./mparse/a/root/p')
-
-        if pNode == None:
-            report.Error("Could not find a GUID in the Inserted Words Lists file. Exiting.")
-            return None
-
-        currGuid = Guid(String(pNode.text))
-
-        # create and initialize a TextWord object
-        currWord = TextWord(report)
-        currWord.initialize(currGuid, DB)
-
-        obj_list.append(currWord)
-
-    return obj_list
 
 def openProject(report, DBname):
 
@@ -1724,46 +805,6 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
         return countList, posAbbrStr
 
     return countList, posAbbrStr
-
-def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName):
-
-    # Open the existing rule file
-    try:
-        # Note that by default this will strip comments and headers
-        # (even though that is no longer necessary on newer versions
-        # of apertium-transfer)
-        tree = ET.parse(transferRulePath).getroot()
-    except:
-        report.Error(f'Error in opening the file: "{transferRulePath}", check that it exists and that it is valid.')
-        return True
-
-    # Lemmas in <cat-item> are not compared for string equality,
-    # so we don't need to escape the other special characters,
-    # but * will be treated as a glob matching any sequence of characters,
-    # so we escape it here.
-    # If any users do want the glob behavior, we'll have a problem, but
-    # that strikes me as less likely.
-    for cat in tree.findall('.//cat-item'):
-        if 'lemma' in cat.attrib:
-            cat.attrib['lemma'] = cat.attrib['lemma'].replace('*', '\\*')
-
-    # If we're only doing one-stage transfer, then really we only need to
-    # escape things when we're comparing against input (so .//test//lit),
-    # but we might be doing multi-stage transfer and it doesn't hurt
-    # anything to also escape the output (and it's less complicated).
-    for tag in ['lit', 'list-item']:
-        for node in tree.findall('.//test//'+tag):
-            if 'v' in node.attrib:
-                node.attrib['v'] = escapeReservedApertChars(node.attrib['v'])
-
-    outPath = os.path.join(buildFolder, strippedRulesFileName)
-    with open(outPath, 'w', encoding='utf-8') as fout:
-        text = ET.tostring(tree, encoding='unicode')
-        # Always write transfer rule data as decomposed
-        text = unicodedata.normalize('NFD', text)
-        fout.write(text)
-
-    return False
 
 def getSourceTextList(DB, matchingContentsObjList=None):
 
@@ -2300,94 +1341,6 @@ def getInflectionTags(MSAobject):
 def containsInvalidLemmaChars(myStr):
 
     return True if reInvalidLemmaChars.search(myStr) else False
-
-# Split the text into sfm marker (or ref) and non-sfm marker (or ref), i.e. text content. The sfm marker or reference will later get marked as analysis lang. so it doesn't
-# have to be interlinearized. Always put the marker + ref with dash before the plain marker + ref. \\w+* catches all end markers and \\w+ catches everything else (it needs to be at the end)
-# We have the \d+:\d+-\d+ and \d+:\d+ as their own expressions to catch places in the text that have a verse reference like after a \r or \xt. It's nice if these get marked as analysis WS.
-# Attributes are of the form |x=123 ... \s*
-# You can't have parens inside of the split expression since the whole thing is already in parens, unless you mark it as non-capturing parens with ?:. Otherwise it will mess up the output.
-def splitSFMs(inputStr):
-
-    segs = re.split(r'(\n|'                 # newline
-                    r'\|\w+?=(?:.|\n)+?\*|' # attributes (|xyz=...) ending in * but possibly across lines
-                    r'\||'                  # verticle bar
-                    r'\\\w+\*|'             # end marker
-                    r'\\f \+ |'             # footnote with plus
-                    r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
-                    r'\\fr \d+[:.]\d+|'     # footnote reference
-                    r'\\xt .+?\\x\*|'       # cross reference with end marker
-                    r'\\x \+ |'             # cross reference with plus
-                    r'\\xo \d+[:.]\d+-\d+|' # cross reference original with dash
-                    r'\\xo \d+[:.]\d+|'     # cross reference original
-                    r'\\v \d+-\d+ |'        # verse with dash
-                    r'\\v \d+ |'            # verse
-                    r'\\vp \S+ |'           # publication verse
-                    r'\\c \d+|'             # chapter
-                    r'\\rem.+?\n|'          # remark
-                    r'\d+[:.]\d+-\d+|'      # verse reference with dash
-                    r'\d+[:.]\d+|'          # verse reference
-                    r'\\\+\w+|'             # marker preceded by plus
-                    r'\\\w+)',              # any other marker
-                    inputStr) 
-    return segs
-
-def insertParagraphs(DB, inputStr, m_stTxtParaFactory, stText):
-
-    # Fix any sfms that are split across two lines. E.g. kanqa>>.\[newline]x + \xo ...
-    # put the \ after the newline
-    inputStr = re.sub(r'\\\n', r'\n\\', inputStr)
-
-    segs = splitSFMs(inputStr)
-
-    # Create 1st paragraph object
-    stTxtPara = m_stTxtParaFactory.Create()
-    
-    # Add it to the stText object
-    stText.ParagraphsOS.Add(stTxtPara)    
-    bldr = TsStringUtils.MakeStrBldr()
-
-    # Start a new paragraph at every line feed
-    newPar = r'\n' 
-    
-    for _, seg in enumerate(segs):
-        
-        if not (seg is None or len(seg) == 0 or seg == '\n'):
-            
-            # Either an sfm marker or a verse ref should get marked as Analysis WS
-            if re.search(r'\\|\d+[.:]\d+', seg):
-                
-                # make this in the Analysis WS
-                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultAnalWs)
-                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-                
-            else:
-                # make this in the Vernacular WS
-                tss = TsStringUtils.MakeString(re.sub(r'\n','', seg), DB.project.DefaultVernWs)
-                bldr.ReplaceTsString(bldr.Length, bldr.Length, tss)
-        
-        if seg and re.search(newPar, seg): # or first segment if not blank
-        
-            # Save the built up string to the Contents member
-            stTxtPara.Contents = bldr.GetString()
-            
-            # Create paragraph object
-            stTxtPara = m_stTxtParaFactory.Create()
-            
-            # Add it to the stText object
-            stText.ParagraphsOS.Add(stTxtPara)  
-        
-            bldr = TsStringUtils.MakeStrBldr()
-        
-    stTxtPara.Contents = bldr.GetString()
-
-def setTextMetaData(DB, text):
-
-    # Set the Source field
-    tss = TsStringUtils.MakeString('FLExTrans', DB.project.DefaultAnalWs)
-    text.Source.AnalysisDefaultWritingSystem = tss
-
-    # Set the IsTranslated field
-    text.IsTranslated = True
 
 def getPathRelativeToWorkProjectsDir(fullPath):
     '''Get the path relative to the work projects directory.

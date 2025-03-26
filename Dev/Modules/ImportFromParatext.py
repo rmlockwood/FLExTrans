@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -149,7 +152,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -442,7 +445,7 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set StText object as the Text contents
         text.ContentsOA = stText  
     
-        Utils.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
+        ChapterSelection.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
 
         # Build the title string from book abbreviation and chapter.
         title = bibleBook + ' ' + str(titleChapNum).zfill(2)
@@ -479,7 +482,7 @@ def do_import(DB, report, chapSelectObj, tree):
         text.Name.AnalysisDefaultWritingSystem = tss
 
         # Set metadata for the text
-        Utils.setTextMetaData(DB, text)
+        ChapterSelection.setTextMetaData(DB, text)
 
         report.Info(f'Text: "{title}" created in the {DB.ProjectName()} project.')
 

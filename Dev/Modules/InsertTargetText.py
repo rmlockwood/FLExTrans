@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -42,6 +45,7 @@
 #   give it a new unique name.
 #
 
+import ChapterSelection
 from SIL.LCModel import ( # type: ignore
     ITextFactory,
     IStTextFactory,
@@ -63,7 +67,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Insert a translated text into the target FLEx project.",
         FTM_Help       : "",
@@ -132,14 +136,14 @@ def insertTargetText(DB, configMap, report):
     text.ContentsOA = stText  
 
     # Insert text into the target DB while marking sfms as analysis writing system
-    Utils.insertParagraphs(TargetDB, fullText, m_stTxtParaFactory, stText)
+    ChapterSelection.insertParagraphs(TargetDB, fullText, m_stTxtParaFactory, stText)
 
     # Set the title of the text
     tss = TsStringUtils.MakeString(sourceTextName, TargetDB.project.DefaultAnalWs)
     text.Name.AnalysisDefaultWritingSystem = tss
     
     # Set metadata for the text
-    Utils.setTextMetaData(DB, text)
+    ChapterSelection.setTextMetaData(DB, text)
 
     report.Info('Text: "'+sourceTextName+'" created in the '+targetProj+' project.')
     TargetDB.CloseProject()

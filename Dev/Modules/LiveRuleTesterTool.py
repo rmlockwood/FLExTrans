@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -197,6 +200,7 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
+import InterlinData
 from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
@@ -209,6 +213,7 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
 
 from Testbed import *
+import RunApertium
 import Utils
 import ReadConfig
 import CatalogTargetAffixes
@@ -228,7 +233,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -739,7 +744,7 @@ class Main(QMainWindow):
             right = entry.find('p/r')
 
             # Get just the text part of the left entry. Note: it's not as easy as left.text
-            key = Utils.getXMLEntryText(left)
+            key = getXMLEntryText(left)
 
             # See if we have the source entry already
             if key not in self.__bilingMap:
@@ -1885,7 +1890,7 @@ class Main(QMainWindow):
     def loadTransferRules(self):
 
         # Escape some characters and write as NFD unicode.
-        if Utils.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
+        if RunApertium.stripRulesFile(self.__report, self.testerFolder, self.__transfer_rules_file, RULE_FILE1) == True:
             return True
         
         test_tree = ET.parse(self.__transfer_rules_file)
@@ -1915,7 +1920,7 @@ class Main(QMainWindow):
         if interchunk_rules_file and os.path.isfile(interchunk_rules_file):
 
             # Escape some characters and write as NFD unicode.
-            if Utils.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
+            if RunApertium.stripRulesFile(self.__report, self.testerFolder, interchunk_rules_file, RULE_FILE2) == True:
                 return True
 
             interchunk_tree = ET.parse(interchunk_rules_file)
@@ -1939,7 +1944,7 @@ class Main(QMainWindow):
             if postchunk_rules_file and os.path.isfile(postchunk_rules_file):
 
                 # Escape some characters and write as NFD unicode.
-                if Utils.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
+                if RunApertium.stripRulesFile(self.__report, self.testerFolder, postchunk_rules_file, RULE_FILE3) == True:
                     return True
 
                 postchunk_tree = ET.parse(postchunk_rules_file)
@@ -2163,10 +2168,10 @@ class Main(QMainWindow):
         if self.fixBilingLex:
 
             # Fix problem characters in symbols of the bilingual lexicon (making a backup copy of the original file)
-            subPairs = Utils.fixProblemChars(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+            subPairs = RunApertium.fixProblemChars(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
 
             # Substitute symbols with problem characters with fixed ones in the transfer file
-            Utils.subProbSymbols('.', tr_file, subPairs)
+            RunApertium.subProbSymbols('.', tr_file, subPairs)
 
             self.fixBilingLex = False
 
@@ -2178,7 +2183,7 @@ class Main(QMainWindow):
         # Check if attributes are well-formed. Warnings will be reported in the function
         if not self.advancedTransfer:
 
-            errorList = Utils.checkRuleAttributesXML(ruleFileRoot)
+            errorList = RunApertium.checkRuleAttributesXML(ruleFileRoot)
 
             for i, triplet in enumerate(errorList):
                 if i == 0:
@@ -2189,7 +2194,7 @@ class Main(QMainWindow):
         # Run the makefile to run Apertium tools to do the transfer
         # component of FLExTrans. Pass in the folder of the bash
         # file to run. The current directory is FlexTools
-        ret = Utils.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
+        ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
             self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
@@ -2200,13 +2205,7 @@ class Main(QMainWindow):
         if self.rulesChanged:
 
             # Convert back the problem characters in the transfer results file back to what they were. Restore the backup biling. file
-            Utils.unfixProblemCharsRuleFile(os.path.join(tr_file))
-
-#     Don't think we need this if the biling. file gets rebuilt
-#         if self.fixBilingLex:
-#
-#             # Restore the backup biling. file
-#             Utils.unfixProblemCharsDict(os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
+            RunApertium.unfixProblemCharsRuleFile(os.path.join(tr_file))
 
         # Load the target text contents into the results edit box
         try:
@@ -2456,7 +2455,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
     else:
         insertWordsFile = True
 
-        insertWordsList = Utils.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
+        insertWordsList = InterlinData.getInsertedWordsList(treeTranInsertWordsFile, report, DB)
 
         if insertWordsList == None:
             return ERROR_HAPPENED # error already reported
@@ -2471,7 +2470,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
             return ERROR_HAPPENED
 
         # get the list of guids from the TreeTran results file
-        treeSentList = Utils.getTreeSents(treeTranResultFile, report)
+        treeSentList = InterlinData.getTreeSents(treeTranResultFile, report)
 
         if treeSentList == None:
             return ERROR_HAPPENED # error already reported
@@ -2480,14 +2479,14 @@ def RunModule(DB, report, configMap, ruleCount=None):
         logInfo = Utils.importGoodParsesLog()
 
     # Get various bits of data for the get interlinear function
-    interlinParams = Utils.initInterlinParams(configMap, report, contents)
+    interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
 
     # Check for an error
     if interlinParams == None:
         return
 
     # Get interlinear data. A complex text object is returned.
-    myText = Utils.getInterlinData(DB, report, interlinParams)
+    myText = InterlinData.getInterlinData(DB, report, interlinParams)
 
     if TreeTranSort:
 

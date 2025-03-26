@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.13.1 - 3/24/25 - Ron Lockwood
+#    Reorganized to thin out Utils code.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -114,6 +117,21 @@ NOT_FOUND_COLOR = 'FF0000' #red
 # The size of the subscript numbers in %. E.g. 50 means the subscripts will be 
 # 50% as big as it normally would be (which is already smaller than normal text)
 SUBSCRIPT_SIZE_PERCENTAGE = '60'
+
+def getXMLEntryText(node):
+
+    # Start with nodeText as the text part of the left node
+    nodeText = node.text
+
+    # But there is potentially more data. <b />'s which represent blanks might be there
+    # Each b has a tail portion that needs to be concatenated to the nodeText
+    for bElement in node.findall('b'):
+
+        if bElement.tail:
+
+            nodeText += ' ' + bElement.tail
+
+    return nodeText
 
 # Models a single FLExTrans lexical unit
 # A lexical unit consists of a headword, a sense number, a grammatical category 
@@ -1377,7 +1395,7 @@ def processAdvancedResults(targetOutput, pElem, RTLflag, dummy=True, punctuation
 
 def convertXMLEntryToColoredString(entryElement, isRtl):
     
-    fullLemma = Utils.getXMLEntryText(entryElement)
+    fullLemma = getXMLEntryText(entryElement)
     
     # Create a <p> html element
     paragraph_element = ET.Element('p')
