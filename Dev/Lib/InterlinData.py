@@ -89,7 +89,7 @@ class treeTranSent():
         return g
     
     def getLength(self):
-        
+
         return len(self.__guidList)
 
 def initProgress(contents, report):
@@ -173,25 +173,30 @@ def getTreeSents(inputFilename, report):
 
     # Loop through the anaRec's
     for anaRec in myRoot:
+
         # Create a new treeTranSent object
         if newSent == True:
+
             myTreeSent = treeTranSent()
             obj_list.append(myTreeSent) # add it to the list
             newSent = False
 
         # See if this word has multiple parses which means it wasn't syntax-parsed
         mparses = anaRec.findall('mparse')
+
         if len(mparses) > 1:
             myTreeSent.setSingleTree(False)
 
         pNode = anaRec.find('./mparse/a/root/p')
 
         if pNode == None:
+
             report.Error("Could not find a GUID in the TreeTran results file. Perhaps TreeTran is not putting out all that you expect. anaRec id=" + anaRec.attrib[Utils.ID_STR] + ". Exiting.")
             return None
 
         currGuid = Guid(String(pNode.text))
         analysisNode = anaRec.find('Analysis')
+
         if analysisNode != None:
             newSent = True
 
@@ -200,6 +205,7 @@ def getTreeSents(inputFilename, report):
     return obj_list
 
 def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, newParagraph, spacesStr):
+
     if newSentence:
 
         # Create a new sentence object and add it to the paragraph
@@ -208,6 +214,7 @@ def checkForNewSentOrPar(report, myWord, mySent, myPar, myText, newSentence, new
 
         # If we have a new paragraph, create the paragraph and add it to the text
         if newParagraph:
+
             myPar = TextParagraph()
             myText.addParagraph(myPar)
             newParagraph = False
@@ -232,26 +239,39 @@ def initInterlinParams(configMap, report, contents):
         return
 
     typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
+
     if not typesList:
+
         typesList = []
+
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
+
         return None
 
     discontigTypesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report)
+
     if not discontigTypesList:
+
         discontigTypesList = []
+
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_TYPES, report):
+
         return None
 
     discontigPOSList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report)
+
     if not discontigPOSList:
+
         discontigPOSList = []
+
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_DISCONTIG_SKIPPED, report):
+
         return None
 
     noWarningProperNounStr = ReadConfig.getConfigVal(configMap, ReadConfig.NO_PROPER_NOUN_WARNING, report, giveError=False)
 
     if not noWarningProperNounStr or noWarningProperNounStr == 'n':
+
         noWarningProperNoun = False
     else:
         noWarningProperNoun = True
@@ -300,6 +320,7 @@ def getInterlinData(DB, report, params):
 
     # Loop through each thing in the text
     ss = SegmentServices.StTextAnnotationNavigator(params.contents)
+
     for prog_cnt,analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
 
         report.ProgressUpdate(prog_cnt)
@@ -310,10 +331,12 @@ def getInterlinData(DB, report, params):
 
         # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
         if numSpaces < 0 and myPar.getSentCount() > 0:
+
             newParagraph = True
 
         # If we are on a different segment, it's a new sentence.
         if analysisOccurance.Segment.Hvo != currSegNum:
+
             newSentence = True
 
         # Save where we are
@@ -420,6 +443,7 @@ def getInterlinData(DB, report, params):
 
                 # prevent an empty 1st paragrah
                 if myText.getParagraphCount() == 1 and myText.getSentCount() == 0:
+
                     newParagraph = False
 
             myWord.addInitialPunc(savedPrePunc)
@@ -439,9 +463,11 @@ def getInterlinData(DB, report, params):
         myWord.setSurfaceForm(surfaceForm)
 
         if analysisOccurance.Analysis.ClassName == "WfiGloss":
+
             wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
 
         elif analysisOccurance.Analysis.ClassName == "WfiAnalysis":
+
             wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
 
         # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
@@ -459,6 +485,7 @@ def getInterlinData(DB, report, params):
         for bundle in wfiAnalysis.MorphBundlesOS:
 
             if bundle.SenseRA:
+
                 if bundle.MsaRA and bundle.MorphRA:
 
                     tempEntry = ILexEntry(bundle.MorphRA.Owner)
@@ -481,11 +508,11 @@ def getInterlinData(DB, report, params):
                         # If we have an invalid POS, give a warning
                         if not msa.PartOfSpeechRA:
 
-                            #myWord.addLemmaFromObj(wfiAnalysis.Owner)
                             report.Warning('No grammatical category found for the source word: '+ myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                             break
 
                         if bundle.MorphRA:
+
                             # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
                             # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
                             inflFeatAbbrevs = []
@@ -552,6 +579,7 @@ def getInterlinData(DB, report, params):
                             report.Warning("Sense object for a source affix is null.")
                 else:
                     if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+
                         myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
                     else:
                         # Give a clue that a part is missing by adding a bogus affix
@@ -562,6 +590,7 @@ def getInterlinData(DB, report, params):
             else:
                 # Part of the word has not been tied to a lexical entry-sense
                 if myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+
                     myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
                 else:
                     # Give a clue that a part is missing by adding a bogus affix
@@ -577,6 +606,7 @@ def getInterlinData(DB, report, params):
 
             # need a root
             if wfiAnalysis.Owner.ClassName == 'WfiWordform':
+
                 myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
             else:
                 myWord.addPlainTextAffix('ROOT_MISSING')
@@ -590,6 +620,7 @@ def getInterlinData(DB, report, params):
 
     # Don't warn for sfm markers, but warn once for others
     if myText.warnForUnknownWords(params.noWarningProperNoun) == True:
+
         report.Warning('One or more unknown words occurred multiple times.')
 
     # substitute a complex form when its components are found contiguous in the text
@@ -601,4 +632,3 @@ def getInterlinData(DB, report, params):
         myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList)
 
     return myText
-
