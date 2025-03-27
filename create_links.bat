@@ -1,23 +1,27 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Set the variables batch_dir and git_dev to the appropriate directories on your machine.
+REM Set the variables testing_folder and git_repo to the appropriate directories on your machine.
 
-REM batch_dir points to a folder inside of where you have FLExTrans installed for testing your development work.
-REM More specifically, inside that installation, find the path FlexTools\Modules\FLExTrans
+REM testing_folder points to a folder inside of where you have FLExTrans installed for testing your development work.
+REM Under this you would see folders like FlexTools, Workprojects, etc.
 
-REM git_dev points to the Dev folder inside your FLExTrans github repo folder.
+REM git_repo points to the FLExTrans github repo folder. Under this you would see folders like Apertium4Windows, Dev, Doc, etc.
 REM This path must not have any spaces in it (in order for the symbolic linking to work).
 
 REM You will probably need to run this .bat file "as Administrator"
 REM This script now deletes all symbolic links in each folder before recreating them.
 
-set batch_dir="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
-set git_dev=c:\users\rlboo\GitHub\flextrans\Dev
+set testing_folder="C:\Data\FLExTrans\Dev\Active Projects"
+set git_repo=c:\users\rlboo\GitHub\flextrans
 
-cd /d %batch_dir%
+REM add to the paths
+set modules_ft=%testing_folder%\FlexTools\Modules\FLExTrans
+set git_dev=%git_repo%\Dev
 
-REM List of current directories relative to %batch_dir%
+cd /d %modules_ft%
+
+REM List of current directories relative to %modules_ft%
 set current_dirs=.;Lib;Lib;..\..
 
 REM List of target directories relative to %git_dev%
@@ -47,8 +51,8 @@ for /L %%j in (0, 1, %array_size%) do (
     set target_dir=!target_dir_array[%%j]!
     
     REM Change to the corresponding current directory
-    echo Changing to directory: %batch_dir%\!current_dir!
-    cd /d "%batch_dir%\!current_dir!"
+    echo Changing to directory: %modules_ft%\!current_dir!
+    cd /d "%modules_ft%\!current_dir!"
     
     REM Delete existing symbolic links if current_dir is different from last_dir
     if not "!current_dir!"=="!last_dir!" (
