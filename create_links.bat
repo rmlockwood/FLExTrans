@@ -1,6 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Set the variables batch_dir and git_dev to the appropriate directories on your machine.
+
+REM batch_dir points to a folder inside of where you have FLExTrans installed for testing your development work.
+REM More specifically, inside that installation, find the path FlexTools\Modules\FLExTrans
+
+REM git_dev points to the Dev folder inside your FLExTrans github repo folder.
+REM This path must not have any spaces in it (in order for the symbolic linking to work).
+
+REM You will probably need to run this .bat file "as Administrator"
+REM This script now deletes all symbolic links in each folder before recreating them.
+
 set batch_dir="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
 set git_dev=c:\users\rlboo\GitHub\flextrans\Dev
 
