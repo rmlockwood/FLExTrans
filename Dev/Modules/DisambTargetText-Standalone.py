@@ -1,5 +1,11 @@
 #
-#   DisambTargetText
+#   DisambTargetText-Standalone.py
+
+# To run this in standalone mode, I'm needing to call it like this:
+# py -3.11 Disamb-alpha8.py
+# Maybe I have more than one Python on my system; it wasn't finding PyQt5 without the -3.11
+# The file DisambTargetText.py is set up as a module to run from within FLExTrans.
+
 #
 #   Beth Bryson
 #   SIL International
@@ -10,7 +16,7 @@
 #    in this file to clarify some of the behavior and goals.  No code changes.
 #
 #   Version 3.10 - 5/12/24 - Beth Bryson
-#    Prepare for adding to FLExTrans
+#    Start preparing for adding to FLExTrans, but this version still runs as a standalone.
 #
 #   Version 3.9.8 - 5/11/24 - Beth Bryson
 #    Prototype running outside of FLExTrans
@@ -56,39 +62,12 @@
 
 import sys
 import re
+
 from PyQt5.QtWidgets import QApplication, QDialog, QWidget, QLayout, QHBoxLayout, QPushButton, QComboBox, QLabel, QFrame
 from PyQt5.QtCore import Qt, QSize, QRect, pyqtSignal
 
-from flextoolslib import *                                                 
-
-import ReadConfig
-import Utils
-
-from SIL.LCModel import *                                                   
-#from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-#from SIL.LCModel.Core.Text import TsStringUtils
 
 
-#----------------------------------------------------------------
-# Configurables:
-
-
-#----------------------------------------------------------------
-# Documentation that the user sees:
-
-docs = {FTM_Name       : "Disambiguate Target Text",
-        FTM_Version    : "3.10",
-        FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Disambiguate a translated text before inserting into the target application.",
-        FTM_Help       : "",
-        FTM_Description:
-"""
-This module will take the results of the synthesis process and open it in the Disambiguation Editor.
-For each word/phrase that is ambiguous, the user can choose from among the possibilities.
-The user can save the file even if not all the ambiguities are resolved.  The module could be run
-again on the result of saving this text when it is only partially resolved, to finish the job in multiple runs.
-""" }
-                 
 #----------------------------------------------------------------
 # Functions and classes
 
@@ -400,60 +379,18 @@ def handleEditedText(text):
     # This is where we would write to the output file if we want to do it after the widget closes
     return()
 
-#----------------------------------------------------------------
-# The main processing function
+#-----------------------
 
-def MainFunction(DB, report, modify=True):
-    
-    if not modify:
-        report.Error('You need to run this module in "modify mode."')
-        return
-    
-    # Read the configuration file which we assume is in the current directory.
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return
-
-    # I don't think we actually need the sourceTextName
-    sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
-    if not (sourceTextName and targetSynthesis):
-        report.Error('Could not find values for the Source Text Name or Target Synthesis File"'+synFile+'".')
-        return
-    
-    # Allow the synthesis and ana files to not be in the temp folder if a slash is present
-    synFile = Utils.build_path_default_to_temp(targetSynthesis)
-
-    try:
-        f = open(synFile, encoding='utf-8')
-    except:
-        TargetDB.CloseProject()
-        report.Error('Could not open the file: "'+synFile+'".')
-
-    # Here are some examples of what the text might look like, for testing
+def main():
+    app = QApplication(sys.argv)
     # Hardcoded sample text 1
-#    text = "I %3%saw%thought I saw%liked% the big %2%puppy dog%cat% last year.  \nI %3%ate%tried to eat%swallowed% \"some\" %2%cotton candy%popcorn%.  \nI %2%walked%ran% \"to (the)\" %4%store%school%five-and-dime%yard% yesterday.  \n%2%He%She% %2%said%exclaimed% that %2%he%she% was %2%happy%sad%."
+    text = "I %3%saw%thought I saw%liked% the big %2%puppy dog%cat% last year.  \nI %3%ate%tried to eat%swallowed% \"some\" %2%cotton candy%popcorn%.  \nI %2%walked%ran% \"to (the)\" %4%store%school%five-and-dime%yard% yesterday.  \n%2%He%She% %2%said%exclaimed% that %2%he%she% was %2%happy%sad%."
     # Hardcoded sample text 2, for testing Right-to-Left behavior
 #    text = "%2%لرکا%لرکی% %2%خوشا%خوشی% ہے۔ \nمیں %2%چھوٹا%چھوٹی% چھائے %2%پیا%پی%۔  \nمیں %2%چھوٹا%چھوٹی% پانی %2%پیا%پی%۔  \nکیا لڑکی گھر میں %2%کھیلتی تھی%کھیلتا تھا%؟  \nکیا لڑکے بہر %2%کھیلتے تھے%کھیلتی تھی%؟"
-    
-    # Edit one line at a time.  This starts the disambiguator for each sentence.
-    # TODO: Do we want to edit the whole text at the same time?  Is that practical?
-    # We probably do need it for context, and if we didn't, we'd need more navigation controls.
-    # We would need a scrollable window, not what we have now.
-    for line in f:
-        dialog = DisambDialog(line)
-        dialog.exitedDialog.connect(handleEditedText)  # Connect signal to slot
-        sys.exit(app.exec_())
-    
-    
-    report.Info('Saved current version of "'+sourceTextName+'" after disambiguation.')
+    dialog = DisambDialog(text)
+    dialog.exitedDialog.connect(handleEditedText)  # Connect signal to slot
+#    dialog.exec_()
+    sys.exit(app.exec_())
 
- 
-#----------------------------------------------------------------
-# The name 'FlexToolsModule' must be defined like this:
-FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
-                                       docs = docs)
-            
-#----------------------------------------------------------------
 if __name__ == '__main__':
-    FlexToolsModule.Help()
+    main()
