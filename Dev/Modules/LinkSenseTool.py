@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.13.3 - 3/24/25 - Ron Lockwood
+#    Fixes #952. Don't try to make matches on glosses that are *** (missing in FLEx).
+#
 #   Version 3.13.2 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -1268,28 +1271,44 @@ def getHPGfromGuid(entry, DB, TargetDB, mySense, equiv, senseEquivField, senseNu
 def getMatchesOnGloss(gloss, glossMap, saveMap, doFuzzyCompare):
     matchList = []
     
+    # Blank glosses in FLEx will be *** in the gloss field, so we will skip them. We don't want to
+    # match a bunch of *** glosses in the target lexicon.
+    if gloss == '***':
+
+        return matchList
+    
     # check for exact match
     if gloss in glossMap:
+
         matchList = glossMap[gloss]
+
     elif doFuzzyCompare:    
+
         # See if we've processed this gloss before
         if gloss not in saveMap:
+
             # See if we have a candidate for a fuzzy compare
             glossLen = len(gloss)
+
             if glossLen >= MIN_GLOSS_LEN_FOR_FUZZ:
+
                 # Loop through all the target glosses
                 for mgloss in list(glossMap.keys()):
+
                     mglossLen = len(mgloss)
+
                     # skip the fuzzy match if the target gloss is to small or there's a big difference in length
-                    if mglossLen >= MIN_GLOSS_LEN_FOR_FUZZ and \
-                       abs(mglossLen-glossLen) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
+                    if mglossLen >= MIN_GLOSS_LEN_FOR_FUZZ and abs(mglossLen-glossLen) <= MIN_DIFF_GLOSS_LEN_FOR_FUZZ:
+                        
                         # See if we have a match
                         if fuzz.QRatio(mgloss, gloss) > FUZZ_THRESHOLD:
+
                             matchList.extend(glossMap[mgloss])
                             saveMap[gloss] = matchList
         else: 
             # use saved list
             matchList = saveMap[gloss]
+            
     return matchList
 
 def getInterlinearText(DB, report, configMap, contents):
