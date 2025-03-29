@@ -206,7 +206,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
