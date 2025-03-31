@@ -302,6 +302,18 @@ def initInterlinParams(configMap, report, contents):
 
     return interlinParams
 
+def processInvalidObjError(report, myInfo, wfiAnalysis, msg):
+
+    # Part of the word has not been tied to a lexical entry-sense
+    if myInfo.myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+
+        myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
+    else:
+        # Give a clue that a part is missing by adding a bogus affix
+        myInfo.myWord.addPlainTextAffix('PART_MISSING')
+
+    report.Warning(msg + myInfo.myWord.getSurfaceForm())
+
 def handlePunctuationOnlyParagraph(myInfo, prevWord):
 
     # See if we have a new paragraph (which is shown by the numSpaces being negative) which means a paragraph of only punctuation.
@@ -513,124 +525,100 @@ def getInterlinData(DB, report, params):
         # Don't know when we ever would get here
         else:
             wfiAnalysis = None
+            continue
 
         # Go through each morpheme bundle in the word
         for bundle in wfiAnalysis.MorphBundlesOS:
 
-            if bundle.SenseRA:
+            if not bundle.SenseRA:
 
-                if bundle.MsaRA and bundle.MorphRA:
+                processInvalidObjError(report, myInfo, wfiAnalysis, 'No sense found for some part of the source word: ')
+                break # go on to the next word
 
-                    tempEntry = ILexEntry(bundle.MorphRA.Owner)
+            if not (bundle.MsaRA and bundle.MorphRA):
 
-                    # We have a stem. We just want the headword and it's POS
-                    if bundle.MsaRA.ClassName == 'MoStemMsa':
+                processInvalidObjError(report, myInfo, wfiAnalysis, 'No morphosyntactic analysis found for some part of the source word: ')
+                break # go on to the next word
 
-                        msa = IMoStemMsa(bundle.MsaRA)
+            # We have a stem. We just want the headword and it's POS
+            if bundle.MsaRA.ClassName == 'MoStemMsa':
 
-                        tempGuid = myInfo.myWord.getGuid()
+                tempEntry = ILexEntry(bundle.MorphRA.Owner)
+                msa = IMoStemMsa(bundle.MsaRA)
+                tempGuid = myInfo.myWord.getGuid()
 
-                        # Just save the the bundle guid for the first root in the bundle
-                        if tempGuid is None: 
+                # See if we have a guid yet.
+                if tempGuid is None: 
 
-                            # Only save the guid for a root, not a clitic
-                            if not Utils.isClitic(tempEntry):
+                    # Only save the guid for a root, not a clitic
+                    if not Utils.isClitic(tempEntry):
 
-                                myInfo.myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
+                        myInfo.myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
 
-                        # If we have an invalid POS, give a warning
-                        if not msa.PartOfSpeechRA:
+                # If we have an invalid POS, give a warning
+                if not msa.PartOfSpeechRA:
 
-                            report.Warning('No grammatical category found for the source word: '+ myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                    report.Warning('No grammatical category found for the source word: '+ myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                    break
+
+                # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
+                # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
+                inflFeatAbbrevs = []
+                tempEntry = Utils.GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
+
+                # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far
+                # in this case, treat it as a root
+                if Utils.isClitic(tempEntry) == True and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False):
+
+                    # Check for invalid characters
+                    if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
+
+                        report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
+                        return myInfo.myText
+                    
+                    # Add the clitic
+                    myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
+
+                # Otherwise we have a root or stem or phrase
+                else:
+
+                    # See if there are any invalid chars in the headword
+                    if Utils.containsInvalidLemmaChars(Utils.getHeadwordStr(tempEntry)):
+                        
+                        report.Error(f'Invalid characters in the source headword: {Utils.getHeadwordStr(tempEntry)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
+                        return myInfo.myText
+
+                    myInfo.myWord.addEntry(tempEntry)
+                    myInfo.myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
+
+                    # Go through each sense and identify which sense number we have
+                    foundSense = False
+
+                    for senseNum, mySense in enumerate(tempEntry.SensesOS):
+
+                        if mySense.Guid == bundle.SenseRA.Guid:
+
+                            myInfo.myWord.addSense(mySense)
+                            foundSense = True
                             break
 
-                        if bundle.MorphRA:
-
-                            # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
-                            # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
-                            inflFeatAbbrevs = []
-                            tempEntry = Utils.GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
-
-                            # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far
-                            # in this case, treat it as a root
-                            if Utils.isClitic(tempEntry) == True and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False):
-
-                                # Check for invalid characters
-                                if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
-
-                                    report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                                    return myInfo.myText
-                                
-                                # Add the clitic
-                                myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
-
-                            # Otherwise we have a root or stem or phrase
-                            else:
-
-                                # See if there are any invalid chars in the headword
-                                if Utils.containsInvalidLemmaChars(Utils.getHeadwordStr(tempEntry)):
-                                    
-                                    report.Error(f'Invalid characters in the source headword: {Utils.getHeadwordStr(tempEntry)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                                    return myInfo.myText
-
-                                myInfo.myWord.addEntry(tempEntry)
-                                myInfo.myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
-
-                                # Go through each sense and identify which sense number we have
-                                foundSense = False
-
-                                for senseNum, mySense in enumerate(tempEntry.SensesOS):
-
-                                    if mySense.Guid == bundle.SenseRA.Guid:
-
-                                        myInfo.myWord.addSense(mySense)
-                                        foundSense = True
-                                        break
-
-                                if foundSense:
-                                    
-                                    # Construct and set the lemma
-                                    myInfo.myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
-                                else:
-                                    myInfo.myWord.addSense(None)
-                                    report.Warning("Couldn't find the sense for source headword: "+Utils.getHeadwordStr(tempEntry))
-                        else:
-                            report.Warning("Morph object is null.")
-
-                    # We have an affix
+                    if foundSense:
+                        
+                        # Construct and set the lemma
+                        myInfo.myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                     else:
-                        if bundle.SenseRA:
-                             
-                                # Check for invalid characters
-                            if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
+                        myInfo.myWord.addSense(None)
+                        report.Warning("Couldn't find the sense for source headword: "+Utils.getHeadwordStr(tempEntry))
 
-                                report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}')
-                                return myInfo.myText
-                            
-                            myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
-                        else:
-                            report.Warning("Sense object for a source affix is null.")
-                else:
-                    if myInfo.myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
-
-                        myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
-                    else:
-                        # Give a clue that a part is missing by adding a bogus affix
-                        myInfo.myWord.addPlainTextAffix('PartMissing')
-
-                    report.Warning('No morphosyntactic analysis found for some part of the source word: '+ myInfo.myWord.getSurfaceForm())
-                    break # go on to the next word
+            # We have an affix
             else:
-                # Part of the word has not been tied to a lexical entry-sense
-                if myInfo.myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+                # Check for invalid characters
+                if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
 
-                    myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
-                else:
-                    # Give a clue that a part is missing by adding a bogus affix
-                    myInfo.myWord.addPlainTextAffix('PART_MISSING')
-
-                report.Warning('No sense found for some part of the source word: '+ myInfo.myWord.getSurfaceForm())
-                break # go on to the next word
+                    report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}')
+                    return myInfo.myText
+                
+                myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
 
         # if we don't have a root or stem and we have something else like an affix, give a warning
         if myInfo.myWord.getLemma(0) == '':
