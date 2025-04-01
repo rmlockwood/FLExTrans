@@ -5,7 +5,11 @@
 #   SIL International
 #   3/23/25
 #
-#   Version 3.13 - 3/10/25 - Ron Lockwood
+#   Version 3.13.2 - 3/10/25 - Ron Lockwood
+#    Refactored the main function to use sub-functions for various parts of the code. Reordered logic to improve nesting.
+#    To use sub-functions, I created a template class to hold data that is passed around.
+#
+#   Version 3.13.1 - 3/10/25 - Ron Lockwood
 #    Fixes #948. Use surface form for lemma when there is no analysis. This has the side effect that unanalyzed
 #    words that are capitalized because they are at the beginning of a sentence will now be capitalized. FLEx
 #    apparently changed because we used to be able to get the right cased form from the analysis object.
