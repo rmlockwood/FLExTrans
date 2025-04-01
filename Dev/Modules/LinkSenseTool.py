@@ -1426,10 +1426,10 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                                 continue
                         
                             # Process all the matches
-                            matchLinkList, matchLink = createMatchLinkList(matchedSenseList, myLink, srcHPG)
+                            myMatchLinkList, matchLink = createMatchLinkList(matchedSenseList, myLink, srcHPG)
 
                             addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
-                            processedMap[mySense] = matchLink, matchLinkList, sentence
+                            processedMap[mySense] = matchLink, myMatchLinkList, sentence
                                     
                     else: # we've processed this sense before
 
