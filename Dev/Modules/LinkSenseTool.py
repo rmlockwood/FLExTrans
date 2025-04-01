@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.13.4 - 4/1/25 - Ron Lockwood
+#    Refactor the process interlinear function to make it easier to read.
+#
 #   Version 3.13.3 - 3/24/25 - Ron Lockwood
 #    Fixes #952. Don't try to make matches on glosses that are *** (missing in FLEx).
 #
@@ -206,7 +209,7 @@ from Linker import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.13.3",
+        FTM_Version    : "3.13.4",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Link source and target senses.",
         FTM_Help       : "",
@@ -1330,7 +1333,6 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     saveMap = {}
     processedMap = {}
     myData = []
-    wordIndex = 0
     
     report.ProgressStart(myText.getWordCount())
 
@@ -1339,139 +1341,142 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
         
         for sentence in paragraph.getSentences():
             
-            for word in sentence.getWords():
+            for wordIndex, word in enumerate(sentence.getWords()):
                 
                 report.ProgressUpdate(wordIndex)
 
-                # Possible multiple entries if it's a compound, I think
+                # Possible multiple entries if it's a compound
                 for eNum, entry in enumerate(word.getEntries()):
                     
-                    if word.hasSenses():
+                    if not word.hasSenses():
+                        continue
                     
-                        # each entry should have a sense
-                        mySense = word.getSense(eNum)
+                    # each entry should have a sense
+                    mySense = word.getSense(eNum)
+                    
+                    if mySense is None:
+                        continue
                         
-                        if mySense is not None:
+                    myLinkerRow = LinkerRow()
+
+                    # Add a possible verse number
+                    myLinkerRow.setVerseNum(word)
+
+                    # If we have not processed this sense already, initialize a new Link object
+                    if mySense not in processedMap:
+                        
+                        # See if we have the right morph type
+                        morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
+    
+                        if morphType not in sourceMorphNames:
+                            continue
                             
-                            myLinkerRow = LinkerRow()
+                        # Get gloss
+                        srcGloss = Utils.as_string(mySense.Gloss)    
+                
+                        # Get lemma & POS
+                        srcHeadWord = Utils.remove1dot1(word.getLemma(eNum))
+                        srcPOS = word.getPOS(eNum)
 
-                            # Add a possible verse number
-                            myLinkerRow.setVerseNum(word)
+                        # Change the word to lower case if that's what the entry's headword is
+                        srcHeadWord = word.matchCaseOfEntry(srcHeadWord, eNum)
+                        
+                        # Create a headword-POS-gloss (HPG) object and initialize a Link object with this as the source sense info.
+                        srcHPG = HPG(mySense, srcHeadWord, srcPOS, srcGloss)
+                        myLink = Link(srcHPG)
+                        myLinkerRow.setLinkObject(myLink)
+                        
+                        # Get the url to the target sense (if present)
+                        equivStr = Utils.getTargetEquivalentUrl(DB, mySense, senseEquivField)
 
-                            # If we have processed this sense already, we will just re-add it to the list
-                            if mySense not in processedMap:
+                        if equivStr:
+
+                            # handle sense mapped intentionally to nothing.
+                            if equivStr == Utils.NONE_HEADWORD:
                                 
-                                # See if we have the right morph type
-                                morphType = Utils.as_string(entry.LexemeFormOA.MorphTypeRA.Name)
-            
-                                if morphType in sourceMorphNames:
-                                    
-                                    # Get gloss
-                                    srcGloss = Utils.as_string(mySense.Gloss)    
+                                tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
+                            else:
+                                # Get headword-POS-gloss (HPG) object for the guid, this returns None if not found
+                                # This will also convert an entry guid to a sense guid and re-write it.
+                                tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseEquivField, senseNumField, report, preGuidStr)
                             
-                                    # Get lemma & POS
-                                    srcHeadWord = Utils.remove1dot1(word.getLemma(eNum))
-                                    srcPOS = word.getPOS(eNum)
+                            # Set the target part of the Link object and add it to the list
+                            myLink.setTgtHPG(tgtHPG)
+                            myData.append(myLinkerRow)
+                            processedMap[mySense] = myLink, None, sentence
+                            
+                        else: # no link url present
+                            
+                            # Don't do a fuzzy compare if the source POS is a proper noun
+                            doFuzzyCompare = False if srcPOS == properNounAbbr else True
 
-                                    # Change the word to lower case if that's what the entry's headword is
-                                    srcHeadWord = word.matchCaseOfEntry(srcHeadWord, eNum)
+                            # Find matches for the current gloss using fuzzy compare if needed
+                            matchedSenseList = getMatchesOnGloss(srcGloss, glossMap, saveMap, doFuzzyCompare)
+                            
+                            # No matches
+                            if len(matchedSenseList) == 0:
+
+                                # add a Link object that has no target information
+                                myData.append(myLinkerRow)
+                                processedMap[mySense] = myLink, None, sentence
+                                continue
+                        
+                            # Process all the matches
+                            matchLinkList, matchLink = createMatchLinkList(matchedSenseList, myLink, srcHPG)
+
+                            addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
+                            processedMap[mySense] = matchLink, matchLinkList, sentence
                                     
-                                    # Create a headword-POS-gloss object and initialize a Link object with this
-                                    # as the source sense info.
-                                    myHPG = HPG(mySense, srcHeadWord, srcPOS, srcGloss)
-                                    myLink = Link(myHPG)
-                                    myLinkerRow.setLinkObject(myLink)
-                                    
-                                    #equiv = DB.LexiconGetFieldText(mySense.Hvo, senseEquivField)
+                    else: # we've processed this sense before
 
-                                    # Get the url to the target sense (if present)
-                                    equivStr = Utils.getTargetEquivalentUrl(DB, mySense, senseEquivField)
-
-                                    if equivStr:
-
-                                        # handle sense mapped intentionally to nothing.
-                                        if equivStr == Utils.NONE_HEADWORD:
-                                            
-                                            tgtHPG = HPG(Sense=None, Headword=Utils.NONE_HEADWORD, POS=NA_STR, Gloss=NA_STR)
-                                            
-                                        else:
-                                            # Get sense information for the guid, this returns None if not found
-                                            # This will also convert an entry guid to a sense guid and re-write it.
-                                            tgtHPG = getHPGfromGuid(entry, DB, TargetDB, mySense, equivStr, senseEquivField, senseNumField, report, preGuidStr)
-                                        
-                                        # Set the target part of the Link object and add it to the list
-                                        myLink.setTgtHPG(tgtHPG)
-                                        myData.append(myLinkerRow)
-                                        processedMap[mySense] = myLink, None, sentence
-                                        
-                                    else: # no link url present
-                                      
-                                        if srcPOS == properNounAbbr:
-                                            
-                                            doFuzzyCompare = False
-                                        else:
-                                            doFuzzyCompare = True
-                                            
-                                        # Find matches for the current gloss using fuzzy compare if needed
-                                        matchedSenseList = getMatchesOnGloss(srcGloss, glossMap, saveMap, doFuzzyCompare)
-                                        
-                                        # Process all the matches
-                                        if len(matchedSenseList) > 0:
-                                            
-                                            matchLinkList = []
-                                            
-                                            for i, matchHPG in enumerate(matchedSenseList):
-                                                
-                                                if i == 0: # use the Link object already created
-                                                    myLink.setTgtHPG(matchHPG)
-                                                    matchLink = myLink
-                                                else:
-                                                    matchLink = Link(myHPG, matchHPG)
-
-                                                # See if we have an exact match
-                                                if matchLink.getSrcGloss().lower() == matchLink.getTgtGloss().lower():
-                                                    
-                                                    matchLink.setInitialStatus(INITIAL_STATUS_EXACT_SUGGESTION)
-                                                else:
-                                                    matchLink.setInitialStatus(INITIAL_STATUS_FUZZY_SUGGESTION)
-                                                    
-                                                matchLinkList.append(matchLink)
-
-                                            for curMatchLink in matchLinkList:
-
-                                                myNewLinkerRow = LinkerRow()
-                                                myNewLinkerRow.setLinkObject(curMatchLink)
-                                                myNewLinkerRow.setVerseNum(word)
-                                                myData.append(myNewLinkerRow)
-                                                
-                                            processedMap[mySense] = matchLink, matchLinkList, sentence
-                                                
-                                        # No matches
-                                        else:
-                                            # add a Link object that has no target information
-                                            myData.append(myLinkerRow)
-                                            processedMap[mySense] = myLink, None, sentence
-                                            
-                            else: # we've processed this sense before
-                                myLink, myMatchLinkList, _ = processedMap[mySense] # _ for sent which we don't need
-                                
-                                # if there's no associated list, just append the link object
-                                if myMatchLinkList == None:
-                                    
-                                    myLinkerRow.setLinkObject(myLink)
-                                    myData.append(myLinkerRow)
-                                
-                                # otherwise, we had multiple links associated with this sense, add them all to the list again
-                                else:
-                                    for curMatchLink in myMatchLinkList:
-
-                                        myNewLinkerRow = LinkerRow()
-                                        myNewLinkerRow.setLinkObject(curMatchLink)
-                                        myNewLinkerRow.setVerseNum(word)
-                                        myData.append(myNewLinkerRow)
-                wordIndex += 1
+                        myLink, myMatchLinkList, _ = processedMap[mySense] # _ for sent which we don't need
+                        
+                        # if there's no associated list, just append the link object
+                        if myMatchLinkList == None:
+                            
+                            myLinkerRow.setLinkObject(myLink)
+                            myData.append(myLinkerRow)
+                        
+                        # otherwise, we had multiple links associated with this sense, add them all to the list again
+                        else:
+                            addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
+                # wordIndex += 1
 
     return myData, processedMap
+
+def createMatchLinkList(matchedSenseList, myLink, srcHPG):
+
+    # Process all the matches
+    matchLinkList = []
+    
+    for i, matchHPG in enumerate(matchedSenseList):
+        
+        if i == 0: # use the Link object already created
+
+            myLink.setTgtHPG(matchHPG)
+            matchLink = myLink
+        else:
+            matchLink = Link(srcHPG, matchHPG)
+
+        # See if we have an exact match
+        if matchLink.getSrcGloss().lower() == matchLink.getTgtGloss().lower():
+            
+            matchLink.setInitialStatus(INITIAL_STATUS_EXACT_SUGGESTION)
+        else:
+            matchLink.setInitialStatus(INITIAL_STATUS_FUZZY_SUGGESTION)
+            
+        matchLinkList.append(matchLink)
+
+    return matchLinkList, matchLink
+
+def addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word):
+
+    for curMatchLink in myMatchLinkList:
+
+        myNewLinkerRow = LinkerRow()
+        myNewLinkerRow.setLinkObject(curMatchLink)
+        myNewLinkerRow.setVerseNum(word)
+        myData.append(myNewLinkerRow)
 
 def updateSourceDb(DB, TargetDB, report, myData, preGuidStr, senseEquivField, senseNumField):        
     
