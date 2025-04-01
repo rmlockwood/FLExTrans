@@ -302,6 +302,73 @@ def initInterlinParams(configMap, report, contents):
 
     return interlinParams
 
+def getSenseNumber(entry, bundle, myInfo):
+
+    # Go through each sense and identify which sense number we have
+    for senseNum, mySense in enumerate(entry.SensesOS):
+
+        if mySense.Guid == bundle.SenseRA.Guid:
+
+            myInfo.myWord.addSense(mySense)
+            return senseNum
+    return -1
+
+def checkForValidChars(report, myStr, tempEntry):
+
+    if Utils.containsInvalidLemmaChars(myStr):
+
+        report.Error(f'Invalid characters in the affix: {myStr}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
+        return False
+    
+    return True
+
+def getAnalysisObject(myInfo, analysisOccurance, surfaceForm):
+
+    # This is the normal analysis we expect
+    if analysisOccurance.Analysis.ClassName == "WfiAnalysis":
+
+        wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
+
+    # This is no analysis, but a word gloss
+    elif analysisOccurance.Analysis.ClassName == "WfiGloss":
+
+        wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
+
+    # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
+    elif analysisOccurance.Analysis.ClassName == "WfiWordform":
+
+        # Set the lemma to be the same as the surface form.
+        myInfo.myWord.addLemma(surfaceForm)
+        return None
+
+    # Don't know when we ever would get here
+    else:
+        return None
+    
+    return wfiAnalysis
+
+def setFlagsAndSpaces(myInfo, analysisOccurance, prevEndOffset, currSegNum) -> tuple:
+        
+    # Get offsets for current occurance
+    begOffset = analysisOccurance.GetMyBeginOffsetInPara()
+    endOffset = analysisOccurance.GetMyEndOffsetInPara()
+
+    # Get the number of spaces between words. This becomes initial spaces for the next word
+    myInfo.numSpaces = begOffset - prevEndOffset
+    myInfo.spacesStr = ' ' * myInfo.numSpaces
+
+    # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
+    if myInfo.numSpaces < 0 and myInfo.myPar.getSentCount() > 0:
+
+        myInfo.isNewParagraph = True
+
+    # If we are on a different segment, it's a new sentence.
+    if analysisOccurance.Segment.Hvo != currSegNum:
+
+        myInfo.isNewSentence = True
+
+    return begOffset, endOffset
+
 def processInvalidObjError(report, myInfo, wfiAnalysis, msg):
 
     # Part of the word has not been tied to a lexical entry-sense
@@ -332,7 +399,13 @@ def handlePunctuationOnlyParagraph(myInfo, prevWord):
 
             myInfo.isNewParagraph = False
 
-def processPunctuation(report, myInfo, puncList):
+def processPunctuation(report, myInfo, analysisOccurance, reSplitPuncObj):
+
+    puncForm = IPunctuationForm(analysisOccurance.Analysis)
+    textPunct = ITsString(puncForm.Form).Text
+
+    # Divide up the punctuation into sentence ending (ones that are in sentPunct) one ones that aren't
+    puncList = reSplitPuncObj.split(textPunct) # also see above where this object is defined
 
     # Go through each cluster
     for i, currPunc in enumerate(puncList):
@@ -416,15 +489,13 @@ def getInterlinData(DB, report, params):
 
     prevEndOffset = 0
     currSegNum = 0
-
     initProgress(params.contents, report)
 
     # Save a regex for splitting on sentence punctuation so we can clump sentence-final and sentence-non-final together
     # For the string "xy.'):\\" this would produce ['xy', ".'", ')', ':', '\\'] assuming :'. are in sentPunct
     reSplitPuncObj = re.compile(rf"([{''.join(params.sentPunct)}]+)")
 
-    myInfo = interlinInfo(
-                          myWord = None,
+    myInfo = interlinInfo(myWord = None,
                           mySent = None,
                           myPar = TextParagraph(),
                           myText = TextEntirety(),
@@ -442,60 +513,35 @@ def getInterlinData(DB, report, params):
     # Loop through each thing in the text
     ss = SegmentServices.StTextAnnotationNavigator(params.contents)
 
-    for prog_cnt, analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
+    for progressCount, analysisOccurance in enumerate(ss.GetAnalysisOccurrencesAdvancingInStText()):
 
-        report.ProgressUpdate(prog_cnt)
-
-        # Get offsets for current occurance
-        begOffset = analysisOccurance.GetMyBeginOffsetInPara()
-        endOffset = analysisOccurance.GetMyEndOffsetInPara()
-
-        # Get the number of spaces between words. This becomes initial spaces for the next word
-        myInfo.numSpaces = begOffset - prevEndOffset
-        myInfo.spacesStr = ' ' * myInfo.numSpaces
-
-        # See if we are on a new paragraph (numSpaces is negative), as long as the current paragrah isn't empty
-        if myInfo.numSpaces < 0 and myInfo.myPar.getSentCount() > 0:
-
-            myInfo.isNewParagraph = True
-
-        # If we are on a different segment, it's a new sentence.
-        if analysisOccurance.Segment.Hvo != currSegNum:
-
-            myInfo.isNewSentence = True
-
-        # Save where we are
-        currSegNum = analysisOccurance.Segment.Hvo
-        prevEndOffset = endOffset
+        # Do some initial details
+        report.ProgressUpdate(progressCount)
+        begOffset, endOffset = setFlagsAndSpaces(myInfo, analysisOccurance, prevEndOffset, currSegNum)
+        prevEndOffset = endOffset # Save the end offset for the next time through
+        currSegNum = analysisOccurance.Segment.Hvo # Save the segment number for the next time through
 
         # Deal with punctuation first
         if analysisOccurance.Analysis.ClassName == "PunctuationForm":
 
-            puncForm = IPunctuationForm(analysisOccurance.Analysis)
-            textPunct = ITsString(puncForm.Form).Text
-
-            # Divide up the punctuation into sentence ending (ones that are in sentPunct) one ones that aren't
-            myPuncList = reSplitPuncObj.split(textPunct) # also see above where this object is defined
-
             # Add punctuation to the current word or create a new punctuation 'word'
-            processPunctuation(report, myInfo, myPuncList)
+            processPunctuation(report, myInfo, analysisOccurance, reSplitPuncObj)
             continue
 
         ## Now we know we have something other than punctuation
-        prevWord = myInfo.myWord
 
-        # Start with a new word
+        # Initialize a new word
+        prevWord = myInfo.myWord
         myInfo.myWord = TextWord(report)
 
         # Add any pre-punctuation to the word.
         if myInfo.savedPrePunc:
 
             handlePunctuationOnlyParagraph(myInfo, prevWord)
-
             myInfo.myWord.addInitialPunc(myInfo.savedPrePunc)
             myInfo.savedPrePunc = ""
 
-        myInfo.inMultiLinePuncBlock = False
+        myInfo.inMultiLinePuncBlock = False # reset this flag
 
         # Check for new sentence or paragraph. If needed create it and add to parent object. Also add current word to the sentence.
         checkForNewSentOrPar(report, myInfo)
@@ -504,27 +550,8 @@ def getInterlinData(DB, report, params):
         surfaceForm = ITsString(analysisOccurance.Paragraph.Contents).Text[begOffset:endOffset]
         myInfo.myWord.setSurfaceForm(surfaceForm)
 
-        ## Get the right object
-        # This is the normal analysis we expect
-        if analysisOccurance.Analysis.ClassName == "WfiAnalysis":
-
-            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
-
-        # This is no analysis, but a word gloss
-        elif analysisOccurance.Analysis.ClassName == "WfiGloss":
-
-            wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
-
-        # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
-        elif analysisOccurance.Analysis.ClassName == "WfiWordform":
-
-            # Set the lemma to be the same as the surface form.
-            myInfo.myWord.addLemma(surfaceForm)
-            continue
-
-        # Don't know when we ever would get here
-        else:
-            wfiAnalysis = None
+        ## Get the right analysis object
+        if not (wfiAnalysis := getAnalysisObject(myInfo, analysisOccurance, surfaceForm)):
             continue
 
         # Go through each morpheme bundle in the word
@@ -540,99 +567,68 @@ def getInterlinData(DB, report, params):
                 processInvalidObjError(report, myInfo, wfiAnalysis, 'No morphosyntactic analysis found for some part of the source word: ')
                 break # go on to the next word
 
-            # We have a stem. We just want the headword and it's POS
-            if bundle.MsaRA.ClassName == 'MoStemMsa':
+            tempEntry = ILexEntry(bundle.MorphRA.Owner)
 
-                tempEntry = ILexEntry(bundle.MorphRA.Owner)
-                msa = IMoStemMsa(bundle.MsaRA)
-                tempGuid = myInfo.myWord.getGuid()
+            # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
+            # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
+            inflFeatAbbrevs = []
+            tempEntry = Utils.GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
+
+            # We have an affix or clitic (but not an enclitic that is standing alone which we will treat as a root)
+            if bundle.MsaRA.ClassName != 'MoStemMsa' or (Utils.isClitic(tempEntry) and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False)):
+
+                if checkForValidChars(report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
+
+                    return myInfo.myText
+                
+                myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
+
+            # We have a stem or stand-alone enclitic. 
+            else:
 
                 # See if we have a guid yet.
-                if tempGuid is None: 
+                if myInfo.myWord.getGuid() is None: 
 
-                    # Only save the guid for a root, not a clitic
-                    if not Utils.isClitic(tempEntry):
-
-                        myInfo.myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
+                    myInfo.myWord.setGuid(bundle.Guid) # identifies a bundle for matching with TreeTran output
 
                 # If we have an invalid POS, give a warning
+                msa = IMoStemMsa(bundle.MsaRA)
+            
                 if not msa.PartOfSpeechRA:
 
                     report.Warning('No grammatical category found for the source word: '+ myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                     break
 
-                # Go from variant(s) to entry/variant that has a sense. We are only dealing with senses, so we have to get to one. Along the way
-                # collect inflection features associated with irregularly inflected variant forms so they can be outputted.
-                inflFeatAbbrevs = []
-                tempEntry = Utils.GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
+                if checkForValidChars(report, Utils.getHeadwordStr(tempEntry), tempEntry) == False:
 
-                # If we have an enclitic or proclitic add it as an affix, unless we got an enclitic with no root so far
-                # in this case, treat it as a root
-                if Utils.isClitic(tempEntry) == True and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False):
-
-                    # Check for invalid characters
-                    if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
-
-                        report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                        return myInfo.myText
-                    
-                    # Add the clitic
-                    myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
-
-                # Otherwise we have a root or stem or phrase
-                else:
-
-                    # See if there are any invalid chars in the headword
-                    if Utils.containsInvalidLemmaChars(Utils.getHeadwordStr(tempEntry)):
-                        
-                        report.Error(f'Invalid characters in the source headword: {Utils.getHeadwordStr(tempEntry)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
-                        return myInfo.myText
-
-                    myInfo.myWord.addEntry(tempEntry)
-                    myInfo.myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
-
-                    # Go through each sense and identify which sense number we have
-                    foundSense = False
-
-                    for senseNum, mySense in enumerate(tempEntry.SensesOS):
-
-                        if mySense.Guid == bundle.SenseRA.Guid:
-
-                            myInfo.myWord.addSense(mySense)
-                            foundSense = True
-                            break
-
-                    if foundSense:
-                        
-                        # Construct and set the lemma
-                        myInfo.myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
-                    else:
-                        myInfo.myWord.addSense(None)
-                        report.Warning("Couldn't find the sense for source headword: "+Utils.getHeadwordStr(tempEntry))
-
-            # We have an affix
-            else:
-                # Check for invalid characters
-                if Utils.containsInvalidLemmaChars(Utils.as_string(bundle.SenseRA.Gloss)):
-
-                    report.Error(f'Invalid characters in the affix: {Utils.as_string(bundle.SenseRA.Gloss)}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}')
                     return myInfo.myText
-                
-                myInfo.myWord.addAffix(bundle.SenseRA.Gloss)
 
-        # if we don't have a root or stem and we have something else like an affix, give a warning
+                # Add the entry object and inflection features to the word object
+                myInfo.myWord.addEntry(tempEntry)
+                myInfo.myWord.addInflFeatures(inflFeatAbbrevs) # this assumes we don't pick up any features from clitics
+
+                if (senseNum := getSenseNumber(tempEntry, bundle, myInfo)) != -1:
+                    
+                    # Construct and add the lemma
+                    myInfo.myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
+                else:
+                    myInfo.myWord.addSense(None)
+                    report.Warning("Couldn't find the sense for source headword: "+Utils.getHeadwordStr(tempEntry))
+
+        # If after going through all the bundles, we don't have a root, give a warning
         if myInfo.myWord.getLemma(0) == '':
 
             # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
-
-            # need a root
+            # Unanalyzed word or not approved word
             if wfiAnalysis.Owner.ClassName == 'WfiWordform':
 
-                myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
+                myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner)) 
             else:
                 myInfo.myWord.addPlainTextAffix('ROOT_MISSING')
 
             report.Warning('No root or stem found for source word: '+ myInfo.myWord.getSurfaceForm())
+
+    ## Done with all the words in the text. Now we need to do some final things.
 
     # Handle any final punctuation text at the end of the text in its own paragraph
     if len(myInfo.savedPrePunc) > 0:
