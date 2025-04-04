@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.6 - 4/3/25 - Ron Lockwood
+#    Replaced magic strings with constants.
+#
 #   Version 3.13.5 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -280,6 +283,16 @@ APERT_RESERVED = r'\[\]@/^${}<>*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
+MO_STEM_MSA = 'MoStemMsa'
+MO_STEM_ALLOMORPH = 'MoStemAllomorph'
+MO_INFL_AFF_MSA = 'MoInflAffMsa'
+FS_COMPLEX_FEATURE = 'FsComplexFeature'
+FS_CLOSED_FEATURE = 'FsClosedFeature'
+LEX_ENTRY = 'LexEntry'
+LEX_SENSE = 'LexSense'
+LEX_ENTRY_INFL_TYPE = 'LexEntryInflType'
+STYLE_HYPERLINK = 'Hyperlink'
+STYLE_NOT_SET = 'NotSet'
 
 CONVERSION_TO_STAMP_CACHE_FILE = 'conversion_to_STAMP_cache2.txt'
 TESTBED_CACHE_FILE = 'testbed_cache.txt'
@@ -300,7 +313,7 @@ RULE_ASSISTANT_TARGET_TEST_DATA_FILE = 'RuleAssistantTargetTestData.txt'
 RULE_ASSISTANT_DISPLAY_DATA_FILE = 'RuleAssistantDisplayData.html'
 
 # Style used for hyperlink style
-globalStyle = 'NotSet'
+globalStyle = STYLE_NOT_SET
 
 # precompiled reguglar expressions
 reDataStream = re.compile('(>[^$<])')
@@ -380,7 +393,7 @@ def isProclitic(entry):
     ret_val = False
 
     # What might be passed in for a component could be a sense which isn't a clitic
-    if entry.ClassName == 'LexEntry':
+    if entry.ClassName == LEX_ENTRY:
 
         entry = ILexEntry(entry)
 
@@ -400,7 +413,7 @@ def isEnclitic(entry):
     ret_val = False
 
     # What might be passed in for a component could be a sense which isn't a clitic
-    if entry.ClassName == 'LexEntry':
+    if entry.ClassName == LEX_ENTRY:
 
         entry = ILexEntry(entry)
 
@@ -521,7 +534,7 @@ def GetEntryWithSense(e):
     # until we get to an entry that has a sense
     notDoneWithVariants = True
     while notDoneWithVariants:
-        if e.ClassName == 'LexEntry':
+        if e.ClassName == LEX_ENTRY:
             e = ILexEntry(e)
             if e.SensesOS.Count == 0:
                 if e.EntryRefsOS:
@@ -532,7 +545,7 @@ def GetEntryWithSense(e):
                             break
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == LEX_SENSE:
                             e = ILexEntry(entryRef.ComponentLexemesRS.ToArray()[0].Entry)
                             break
                         else: # normal variant of entry
@@ -546,7 +559,7 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
     # until we get to an entry that has a sense
     notDoneWithVariants = True
     while notDoneWithVariants:
-        if e.ClassName == 'LexEntry':
+        if e.ClassName == LEX_ENTRY:
             e = ILexEntry(e)
             if e.SensesOS.Count == 0:
                 if e.EntryRefsOS:
@@ -558,7 +571,7 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
                             # Collect any inflection features that are assigned to the special
                             # variant types called Irregularly Inflected Form
                             for varType in entryRef.VariantEntryTypesRS:
-                                if varType.ClassName == "LexEntryInflType":
+                                if varType.ClassName == LEX_ENTRY_INFL_TYPE:
                                     varType = ILexEntryInflType(varType)
                                     if  varType.InflFeatsOA:
                                         my_feat_abbr_list = []
@@ -568,7 +581,7 @@ def GetEntryWithSensePlusFeat(e, inflFeatAbbrevs):
                             break
                     if foundVariant and entryRef.ComponentLexemesRS.Count > 0:
                         # if the variant we found is a variant of sense, we are done. Use the owning entry.
-                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == 'LexSense':
+                        if entryRef.ComponentLexemesRS.ToArray()[0].ClassName == LEX_SENSE:
                             mySense = ILexSense(entryRef.ComponentLexemesRS.ToArray()[0])
                             e = mySense.Entry
                             break
@@ -940,7 +953,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     if targetObj:
 
         # See if this guid was for an entry or a sense. The old method was an entry with a given sense num.
-        if targetObj.ClassName == 'LexEntry':
+        if targetObj.ClassName == LEX_ENTRY:
 
             targetEntry = ILexEntry(targetObj)
 
@@ -1068,16 +1081,16 @@ def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, sen
 
 def getHyperLinkStyle(DB):
 
-    if globalStyle == 'NotSet':
+    if globalStyle == STYLE_NOT_SET:
 
         # Find the hyperlink style
         for Style in DB.ObjectsIn(IStStyleRepository):
 
-            if Style.Name == 'Hyperlink':
+            if Style.Name == STYLE_HYPERLINK:
                 break
 
         # If it wasn't found, set the style to None
-        if Style.Name != 'Hyperlink':
+        if Style.Name != STYLE_HYPERLINK:
             Style = None
     else:
         Style = globalStyle
@@ -1093,7 +1106,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
     for entry_cnt, srcEntry in enumerate(DB.LexiconAllEntries()):
 
         # Don't process affixes, clitics
-        if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == 'MoStemAllomorph' and \
+        if srcEntry.LexemeFormOA and srcEntry.LexemeFormOA.ClassName == MO_STEM_ALLOMORPH and \
             srcEntry.LexemeFormOA.MorphTypeRA and as_string(srcEntry.LexemeFormOA.MorphTypeRA.Name) in sourceMorphNames:
 
             if srcEntry.LexemeFormOA.IsAbstract:
@@ -1106,7 +1119,7 @@ def getLemmasForFeature(DB, report, configMap, gramCategoryAbbrev, featureCatego
                 if mySense.MorphoSyntaxAnalysisRA:
 
                     # Get the POS abbreviation for the current sense, assuming we have a stem
-                    if mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                    if mySense.MorphoSyntaxAnalysisRA.ClassName == MO_STEM_MSA:
 
                         msa = IMoStemMsa(mySense.MorphoSyntaxAnalysisRA)
 
@@ -1164,7 +1177,7 @@ def getAffixGlossesForFeature(DB, report, configMap, gramCategoryAbbrev, feature
             for _, mySense in enumerate(entry.SensesOS):
 
                 # Process only affixes
-                if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == 'MoInflAffMsa':
+                if mySense.MorphoSyntaxAnalysisRA and  mySense.MorphoSyntaxAnalysisRA.ClassName == MO_INFL_AFF_MSA:
 
                     senseMsa = IMoInflAffMsa(mySense.MorphoSyntaxAnalysisRA)
 
@@ -1233,14 +1246,14 @@ def getStemFeatures(DB, report, configMap, gramCategoryAbbrev):
 
     for entry in DB.LexiconAllEntries():
         LF = entry.LexemeFormOA
-        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
+        if not LF or LF.IsAbstract or LF.ClassName != MO_STEM_ALLOMORPH:
             continue
         if not LF.MorphTypeRA or as_string(LF.LexemeFormOA.MorphTypeRA.Name) not in sourceMorphNames:
             continue
 
         for sense in entry.SensesOS:
             msara = sense.MorphoSyntaxAnalysisRA
-            if not msara or msara.ClassName != 'MoStemMsa':
+            if not msara or msara.ClassName != MO_STEM_MSA:
                 continue
             msa = IMoStemMsa(msara)
             if not msa.PartOfSpeechRA:
@@ -1260,14 +1273,14 @@ def getAllStemFeatures(DB, report, configMap):
 
     for entry in DB.LexiconAllEntries():
         LF = entry.LexemeFormOA
-        if not LF or LF.IsAbstract or LF.ClassName != 'MoStemAllomorph':
+        if not LF or LF.IsAbstract or LF.ClassName != MO_STEM_ALLOMORPH:
             continue
         if not LF.MorphTypeRA or as_string(LF.MorphTypeRA.Name) not in sourceMorphNames:
             continue
 
         for sense in entry.SensesOS:
             msara = sense.MorphoSyntaxAnalysisRA
-            if not msara or msara.ClassName != 'MoStemMsa':
+            if not msara or msara.ClassName != MO_STEM_MSA:
                 continue
             msa = IMoStemMsa(msara)
             if not msa.PartOfSpeechRA:
@@ -1285,10 +1298,10 @@ def getAllInflectableFeatures(DB):
         abbr = as_string(pos.Abbreviation)
         for infl in pos.InflectableFeatsRC:
             # TODO: are there other possibilities?
-            if infl.ClassName == 'FsComplexFeature':
+            if infl.ClassName == FS_COMPLEX_FEATURE:
                 for feat in IFsComplexFeature(infl).TypeRA.FeaturesRS:
                     ret[abbr].add(as_string(feat.Name))
-            elif infl.ClassName == 'FsClosedFeature':
+            elif infl.ClassName == FS_CLOSED_FEATURE:
                 ret[abbr].add(as_string(infl.Name))
     return ret
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.13.3 - 4/3/25 - Ron Lockwood
+#    Replaced magic strings with constants.
+#
 #   Version 3.13.2 - 4/1/25 - Ron Lockwood
 #    Refactored the main function to use sub-functions for various parts of the code. Reordered logic to improve nesting.
 #    To use sub-functions, I created a template class to hold data that is passed around.
@@ -44,6 +47,12 @@ from System import String # type: ignore
 
 CHECK_DELIMITER = True
 DELIMITER_STR = '{'
+PUNCTUATION_FORM = "PunctuationForm"
+WFI_ANALYSIS = "WfiAnalysis"
+WFI_GLOSS = "WfiGloss"
+WFI_WORD_FORM = "WfiWordform"
+ROOT_MISSING = "ROOT_MISSING"
+PART_MISSING = "PART_MISSING"
 
 @dataclass
 class interlinInfo:
@@ -329,17 +338,17 @@ def checkForValidChars(report, myStr, tempEntry):
 def getAnalysisObject(myInfo, analysisOccurance, surfaceForm):
 
     # This is the normal analysis we expect
-    if analysisOccurance.Analysis.ClassName == "WfiAnalysis":
+    if analysisOccurance.Analysis.ClassName == WFI_ANALYSIS:
 
         wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis)
 
     # This is no analysis, but a word gloss
-    elif analysisOccurance.Analysis.ClassName == "WfiGloss":
+    elif analysisOccurance.Analysis.ClassName == WFI_GLOSS:
 
         wfiAnalysis = IWfiAnalysis(analysisOccurance.Analysis.Analysis)   # Same as Owner
 
     # We get into this block if there are no analyses for the word or an analysis suggestion hasn't been accepted.
-    elif analysisOccurance.Analysis.ClassName == "WfiWordform":
+    elif analysisOccurance.Analysis.ClassName == WFI_WORD_FORM:
 
         # Set the lemma to be the same as the surface form.
         myInfo.myWord.addLemma(surfaceForm)
@@ -376,12 +385,12 @@ def setFlagsAndSpaces(myInfo, analysisOccurance, prevEndOffset, currSegNum) -> t
 def processInvalidObjError(report, myInfo, wfiAnalysis, msg):
 
     # Part of the word has not been tied to a lexical entry-sense
-    if myInfo.myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == 'WfiWordform':
+    if myInfo.myWord.getLemma(0) == '' and wfiAnalysis.Owner.ClassName == WFI_WORD_FORM:
 
         myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner))
     else:
         # Give a clue that a part is missing by adding a bogus affix
-        myInfo.myWord.addPlainTextAffix('PART_MISSING')
+        myInfo.myWord.addPlainTextAffix(PART_MISSING)
 
     report.Warning(msg + myInfo.myWord.getSurfaceForm())
 
@@ -526,7 +535,7 @@ def getInterlinData(DB, report, params):
         currSegNum = analysisOccurance.Segment.Hvo # Save the segment number for the next time through
 
         # Deal with punctuation first
-        if analysisOccurance.Analysis.ClassName == "PunctuationForm":
+        if analysisOccurance.Analysis.ClassName == PUNCTUATION_FORM:
 
             # Add punctuation to the current word or create a new punctuation 'word'
             processPunctuation(report, myInfo, analysisOccurance, reSplitPuncObj)
@@ -579,7 +588,7 @@ def getInterlinData(DB, report, params):
             tempEntry = Utils.GetEntryWithSensePlusFeat(tempEntry, inflFeatAbbrevs)
 
             # We have an affix or clitic (but not an enclitic that is standing alone which we will treat as a root)
-            if bundle.MsaRA.ClassName != 'MoStemMsa' or (Utils.isClitic(tempEntry) and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False)):
+            if bundle.MsaRA.ClassName != Utils.MO_STEM_MSA or (Utils.isClitic(tempEntry) and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False)):
 
                 if checkForValidChars(report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
 
@@ -624,11 +633,11 @@ def getInterlinData(DB, report, params):
 
             # TODO: we might need to support a proclitic standing alone (no root) in which case we would convert the last proclitic to a root
             # Unanalyzed word or not approved word
-            if wfiAnalysis.Owner.ClassName == 'WfiWordform':
+            if wfiAnalysis.Owner.ClassName == WFI_WORD_FORM:
 
                 myInfo.myWord.addLemmaFromObj(IWfiWordform(wfiAnalysis.Owner)) 
             else:
-                myInfo.myWord.addPlainTextAffix('ROOT_MISSING')
+                myInfo.myWord.addPlainTextAffix(ROOT_MISSING)
 
             report.Warning('No root or stem found for source word: '+ myInfo.myWord.getSurfaceForm())
 
