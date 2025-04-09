@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.13.2 - 4/9/25 - Ron Lockwood
+#    Delete non-sentence-ending punctuation from the synthesis result before adding it to the testbed.
+#    Also, apply Text Out rules to the sentence-ending punctuation if necessary.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -233,7 +237,7 @@ import FTPaths
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
         FTM_Help   : "",
@@ -328,11 +332,10 @@ class SentenceList(QtCore.QAbstractListModel):
 
 class Main(QMainWindow):
 
-    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None):
+    def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-#        self.myWinId = int(self.winId())
 
         self.__biling_file = biling_file
         self.__sourceText = sourceText
@@ -340,6 +343,7 @@ class Main(QMainWindow):
         Utils.loadSourceTextList(self.ui.SourceTextCombo, self.__sourceText, sourceTextList)
         self.__configMap = configMap
         self.__report = report
+        self.__sentPunc = sentPunc
         self.__transfer_rules_file = None
         self.__replFile = None
         self.advancedTransfer = False
@@ -961,6 +965,39 @@ class Main(QMainWindow):
                 luObjList.pop(i)
         return
     
+    def removeNonSentencePunctuation(self, inputStr, sentencePunctuation):
+
+        errMsg = ''
+
+        # Extract all punctuation characters 
+        allPunctuation = set(regex.findall(r'\p{P}', inputStr))
+
+        # If the user is applying text out rules, we need to convert the sentence-ending punctuation with the same rules before we filter them out.
+        if self.ui.applyTextOutRulesCheckbox.isChecked() and self.textOutElemTree and inputStr:
+            
+            sentencePunctuation, errMsg = TextInOutUtils.applySearchReplaceRules(sentencePunctuation, self.textOutElemTree)
+
+            if errMsg:
+
+                return "", errMsg
+        
+        # Filter out sentence-ending punctuation
+        nonSentencePunctuation = allPunctuation - set(sentencePunctuation)
+        
+        if nonSentencePunctuation:
+
+            # Create a regex pattern to match non-sentence-ending punctuation
+            pattern = f"[{regex.escape(''.join(nonSentencePunctuation))}]"
+            
+            # Remove non-sentence-ending punctuation from the inputStr
+            resultStr = regex.sub(pattern, "", inputStr)
+            
+            return resultStr, errMsg
+        
+        else:
+            # If no non-sentence-ending punctuation was found, return the original string
+            return inputStr, errMsg
+
     def AddTestbedButtonClicked(self):
         self.ui.TestsAddedLabel.setText('')
 
@@ -993,9 +1030,13 @@ class Main(QMainWindow):
         # Remove multiple spaces
         synResult = re.sub('\s{2,}', ' ', synResult)
 
-        # For now remove non-sentence ending punctuation
-        synResult = re.sub(r'[,،]', '', synResult)
+        # Remove non-sentence-ending punctuation
+        synResult, errMsg = self.removeNonSentencePunctuation(synResult, self.__sentPunc)
 
+        if errMsg:
+            QMessageBox.warning(self, 'Testbed Error', errMsg)
+            return
+        
         cnt = 0
 
         # Check if add-multiple was selected
@@ -1009,7 +1050,7 @@ class Main(QMainWindow):
             # If that's really needed it can be added without checking the Add multiple words checkbox.
             self.removeSentLUs(luObjList)
 
-            # Remove punctuation from the result.
+            # Remove all punctuation from the result.
             synResult = regex.sub(r'\p{P}', '', synResult)
             resultList = synResult.split(' ') 
 
@@ -2422,9 +2463,10 @@ def RunModule(DB, report, configMap, ruleCount=None):
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     bilingFile = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    sentPunc = ReadConfig.getConfigVal(configMap, ReadConfig.SENTENCE_PUNCTUATION, report)
 
     # check for errors
-    if not (sourceText and bilingFile):
+    if not (sourceText and bilingFile and sentPunc):
         return ERROR_HAPPENED
 
     matchingContentsObjList = []
@@ -2583,7 +2625,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
             bilingFile = os.path.join(pwd, bilingFile)
 
         # Supply the segment list to the main windowed program
-        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount)
+        window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount, sentPunc=sentPunc)
 
         if window.retVal == False:
             report.Error('An error occurred getting things initialized.')
