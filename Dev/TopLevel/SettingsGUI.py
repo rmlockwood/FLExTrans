@@ -4,6 +4,9 @@
 #   3/28/22
 #
 #
+#   Version 3.13.4 - 4/9/25 - Sara Mason
+#   Fixes #953. Sort proper nouns, changed proper nouns tooltip
+#
 #   Version 3.13.3 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -451,17 +454,17 @@ def loadTargetCategories(widget, wind, settingName):
                 widget.check(cat)
 
 def loadSourceCategoriesNormalListBox(widget, wind, settingName):
-
     catList = getSourceCategoryList(wind)
     
     catProperNoun = wind.read(settingName)
     
+    # Sort the category list
+    catList.sort()
+    
     for i, cat in enumerate(catList):
-
         widget.addItem(cat)
         
         if catProperNoun and cat == catProperNoun:
-            
             widget.setCurrentIndex(i)
 
 def loadCategorySubLists(widget1, widget2, wind, settingName):
@@ -1381,7 +1384,7 @@ widgetList = [
     "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project.", GIVE_ERROR, BASIC_VIEW],\
    
    ["Category that Represents Proper Noun", "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
-    "The name of the category that you use for proper nouns in your source FLEx project.", DONT_GIVE_ERROR, BASIC_VIEW],\
+    "The name of the grammatical category that you use for proper nouns in your \nsource FLEx project. It is possible to choose not to translate proper nouns.", DONT_GIVE_ERROR, BASIC_VIEW],\
    
    ["Hide warnings for unanalyzed Proper Nouns", "unanalyzed_proper_noun_yes", "unanalyzed_proper_noun_no", YES_NO, object, object, object, loadYesNo, ReadConfig.NO_PROPER_NOUN_WARNING,\
     "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.", DONT_GIVE_ERROR, BASIC_VIEW],\
