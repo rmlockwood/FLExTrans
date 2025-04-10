@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->12 March 2025</date
+>9 April 2025</date
 ><version
 >3.13</version
 ><contents
@@ -6457,7 +6457,10 @@ type="tRuleElemInXXE"
 > element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value, you can use the <object
 type="tRuleElemInXXE"
 >begins with something in list</object
-> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. The list has to be defined separately in the <object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. Typically, the first element is "lem" and the things in the list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded by angle brackets. E.g. <object
+type="tluAffix"
+>&lt;PL&gt;</object
+>. The list has to be defined separately in the <object
 type="tRuleElemInXXE"
 >Lists</object
 > section of the rules file. The easiest way to bring this element into your rule is to copy a <object
@@ -6611,7 +6614,10 @@ type="tRuleElemInXXE"
 > element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value, you can use the <object
 type="tRuleElemInXXE"
 >ends with something in list</object
-> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. The list has to be defined separately in the <object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The text to match can be anything in the given list. Typically, the first element is "lem" and the things in the list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded by angle brackets. E.g. <object
+type="tluAffix"
+>&lt;PL&gt;</object
+>. The list has to be defined separately in the <object
 type="tRuleElemInXXE"
 >Lists</object
 > section of the rules file. The easiest way to bring this element into your rule is to copy a <object
@@ -6698,7 +6704,10 @@ type="tRuleElemInXXE"
 > element. This allows you to see if x is equal to y. But if you want to test to see if a value matches something in a list, you can use the <object
 type="tRuleElemInXXE"
 >in list</object
-> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The logic will be true if the first element match anything in the given list. The list has to be defined separately in the <object
+> element and then list two elements. The first element is the thing you are checking. The second element contains the name of a list. The logic will be true if the first element match anything in the given list. Typically, the first element is "lem" and the things in the list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded by angle brackets. E.g. <object
+type="tluAffix"
+>&lt;PL&gt;</object
+>. The list has to be defined separately in the <object
 type="tRuleElemInXXE"
 >Lists</object
 > section of the rules file. The easiest way to bring this element into your rule is to copy an <object
