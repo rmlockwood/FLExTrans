@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>12 March 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>9 April 2025</small></center>
       <center><small>Version: 3.13</small></center>
       <hr>
       <div>
@@ -3079,7 +3079,9 @@
       <h4 style=""><a name="sBeginsWithList"></a>8.2.12.4&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span></h4>
       <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something begins with a certain value,
          you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
-         of a list. The text to match can be anything in the given list. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+         of a list. The text to match can be anything in the given list. Typically, the first element is "lem" and the things in the
+         list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded by angle brackets.
+         E.g. <span style="font-family:Courier New; font-size:90%; color:#00B050; ">&lt;PL&gt;</span>. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">begins with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -3157,7 +3159,9 @@
       <h4 style=""><a name="sEndsWithList"></a>8.2.12.9&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span></h4>
       <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if something ends with a certain value,
          you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
-         of a list. The text to match can be anything in the given list. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+         of a list. The text to match can be anything in the given list. Typically, the first element is "lem" and the things in the
+         list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded by angle brackets.
+         E.g. <span style="font-family:Courier New; font-size:90%; color:#00B050; ">&lt;PL&gt;</span>. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">ends with something in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
@@ -3196,8 +3200,9 @@
       <h4 style=""><a name="sIn"></a>8.2.12.11&nbsp;<span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span></h4>
       <p>Inside of a <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">test</span> element you normally have an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">equal</span> element. This allows you to see if x is equal to y. But if you want to test to see if a value matches something in a list,
          you can use the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span> element and then list two elements. The first element is the thing you are checking. The second element contains the name
-         of a list. The logic will be true if the first element match anything in the given list. The list has to be defined separately
-         in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
+         of a list. The logic will be true if the first element match anything in the given list. Typically, the first element is "lem"
+         and the things in the list are lemmas. Note: if you want to match an attribute, then the things in the list have to be surrounded
+         by angle brackets. E.g. <span style="font-family:Courier New; font-size:90%; color:#00B050; ">&lt;PL&gt;</span>. The list has to be defined separately in the <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">Lists</span> section of the rules file. The easiest way to bring this element into your rule is to copy an <span style="font-family:Arial; font-size:80%; color:#006633; font-weight:bold; ">in list</span> element from the <span style="font-weight:bold; ">Sample logic rule</span> or from the <span style="font-style:italic; ">transfer_rules-Sample1.t1x</span> file.
       </p>
       <div style="margin-left: 0.25in; margin-right: 0.25in">
          <table>
