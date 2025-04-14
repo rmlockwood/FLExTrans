@@ -4,6 +4,8 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   28 Mar 2025 dm created GenWord class for encapsulation, very rudementary gloss printing
+# 
 #   24 Feb 2025 dm GenStc now uses the settings to determine substituable words and grabs words,
 #                                           inflection class, and inflection features from lexicon. 
 #                                           second dependents can now be substituted. 
@@ -59,6 +61,57 @@ def loadConfiguration(report):
     if not configMap:
         return None
     return configMap
+
+class GenWord:
+    def __init__(self, report):
+        """
+        Initializes a Word object with the following attributes:
+        - lemma: The base form of the word (string).
+        - inflection_features: A list of inflection features (e.g., tense, aspect, case).
+        - pos: The part of speech (string).
+        - gloss: A gloss (string) that explains the meaning of the word.
+        """
+        self.__lemma = ""
+        self.__inflection_features = []
+        self.__pos = ""
+        self.__gloss = ""
+    
+    def __repr__(self):
+        """Returns a string representation of the Word object."""
+        return f"Word(lemma='{self.__lemma}', pos='{self.__pos}', gloss='{self.__gloss}', inflection_features={self.__inflection_features})"
+    
+    def __str__(self):
+        """Returns a more readable string representation of the Word object."""
+        return f"{self.__lemma} ({self.__pos}): {self.__gloss} | Features: {', '.join(self.__inflection_features)}"
+    
+    def writeGloss(self, fOut):
+        fOut.write(self.__gloss)
+
+    # Getter methods
+    def get_lemma(self):
+        return self.__lemma
+    
+    def get_inflection_features(self):
+        return self.__inflection_features
+    
+    def get_pos(self):
+        return self.__pos
+    
+    def get_gloss(self):
+        return self.__gloss
+    
+    # Setter methods
+    def set_lemma(self, new_lemma):
+        self.__lemma = new_lemma
+    
+    def set_inflection_features(self, new_inflection_features):
+        self.__inflection_features = new_inflection_features
+    
+    def set_pos(self, new_pos):
+        self.__pos = new_pos
+    
+    def set_gloss(self, new_gloss):
+        self.__gloss = new_gloss
 
 
 def setupSettings(configMap, report):
@@ -143,6 +196,19 @@ def initializeOutputFile(configMap, report):
     except IOError:
         report.Error('There is a problem with the Analyzed Text Output File path: ' + fullPathTextOutputFile + '. Please check the configuration file setting.')
         return None
+    
+def initializeGlossOutputFile(configMap, report):
+    """Initializes the output file for writing the gloss."""
+    glossFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE, report)
+    if not glossFileVal:
+        return None
+    fullPathTextOutputFile = glossFileVal
+    try:
+        f_out2 = open(fullPathTextOutputFile, 'w', encoding='utf-8')
+        return f_out2
+    except IOError:
+        report.Error('There is a problem with the Analyzed Text Output File path: ' + fullPathTextOutputFile + '. Please check the configuration file setting.')
+        return None 
 
 def getSourceTextName(report, configMap):
     """Fetches the name of the source text."""
@@ -309,11 +375,89 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
 
     return subDictN, subDict1, subDict2, glossListN, glossList1, glossList2
 
+def getLexicalEntriesIntoWords(DB, match_n_pos, match_1_pos, match_2_pos, report):
+    """Fetches lexical entries from the database and returns lists of GenWord objects."""
+    
+    # Lists to store GenWord objects
+    wordListN = []
+    wordList1 = []
+    wordList2 = []
 
-def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, subDict2, f_out, stc, report):
+    # Loop through all lexical entries in the database
+    for entry in DB.LexiconAllEntries():
+        lex = DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)
+        lex += '1.1'  # Not sure why this is added, but keeping it as is
+        pos = 'UNK'
+
+        if lex and entry.SensesOS.Count > 0:
+            for s in entry.SensesOS:
+                gloss = s.Gloss  # Extract gloss
+                inflectionInfo = []  # Default empty inflection features list
+
+                if s.MorphoSyntaxAnalysisRA:
+                    if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                        msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
+                        if msa.PartOfSpeechRA:
+                            inflectionInfo = Utils.getInflectionTags(msa)
+                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
+                            
+                            # Create a GenWord object
+                            word = GenWord(report)
+                            word.set_lemma(lex)
+                            word.set_inflection_features(inflectionInfo)
+                            word.set_pos(pos)
+                            word.set_gloss(Utils.as_string(gloss))
+
+                            # Add word to the appropriate list based on POS match
+                            if pos in match_n_pos:
+                                wordListN.append(word)
+                            if pos in match_1_pos:
+                                wordList1.append(word)
+                            if pos in match_2_pos:
+                                wordList2.append(word)
+
+    # Shuffle the lists
+    random.shuffle(wordListN)
+    random.shuffle(wordList1)
+    random.shuffle(wordList2)
+
+    return wordListN, wordList1, wordList2
+
+def generateGlossedSentence(DB, wrdList, report):
+    
+    glossedList = []
+
+    for w in wrdList:
+
+        word = GenWord(report)
+
+        word.set_lemma(w._TextWord__lemmaList[0])
+        lem = word.get_lemma()
+
+            # Loop through all lexical entries in the database
+        for entry in DB.LexiconAllEntries():
+            lex = DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)
+            lex += '1.1'  
+
+            if lex and entry.SensesOS.Count > 0:
+                for s in entry.SensesOS:
+                    gloss = s.Gloss  # Extract gloss
+
+                    if lex == lem:
+                        word.set_gloss(Utils.as_string(gloss))
+                        glossedList.append(word)
+
+    return glossedList  
+
+
+def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
     """Processes and substitutes words in the sentence, writes them to output file."""
     # unchanged processing algorithm 
-    for wordN, infoN in subDictN.items(): # head word 
+    for genWord in subListN: # head word 
+
+        wordN = genWord.get_lemma()
+        infoN = genWord.get_inflection_features()
+
         for idxN in idxNList:
             report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
             wrdList[idxN]._TextWord__lemmaList[0] = wordN
@@ -357,7 +501,11 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                 f_out.write('\n')
             else:
                 for idx1 in idx1List: # first dependent 
-                    for word1, info1 in subDict1.items():
+                    for genWord1 in subList1:
+
+                        word1 = genWord1.get_lemma()
+                        info1 = genWord1.get_inflection_features()
+
                         report.Info(f"Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
                         wrdList[idx1]._TextWord__lemmaList[0] = word1
 
@@ -389,7 +537,11 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
                             f_out.write('\n')
                         else:
                             for idx2 in idx2List: # second dependent
-                                for word2, info2 in subDict2.items():
+                                for genWord2 in subList2:
+                                    
+                                    word2 = genWord2.get_lemma()
+                                    info2 = genWord2.get_inflection_features()
+
                                     report.Info(f"Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
                                     wrdList[idx2]._TextWord__lemmaList[0] = word2
 
@@ -417,7 +569,14 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subDictN, subDict1, s
 
                                     stc.write(f_out)
                                     f_out.write('\n')
-
+                                    
+def glossSentence(DB, wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out2, stc, report):
+    glossedList = generateGlossedSentence(DB, wrdList, report)
+    for word in glossedList:
+        word.writeGloss(f_out2)
+        f_out2.write(' ')
+    f_out2.write('\n')
+    return 
 
 def MainFunction(DB, report, modifyAllowed):
 
@@ -431,6 +590,11 @@ def MainFunction(DB, report, modifyAllowed):
     f_out = initializeOutputFile(configMap, report)
     if not f_out:
         return
+    
+    glossFile = False
+    f_out2 = initializeGlossOutputFile(configMap, report)
+    if f_out2:
+       glossFile = True
 
     contents = getSourceText(DB, report, configMap)
     if not contents:
@@ -465,16 +629,22 @@ def MainFunction(DB, report, modifyAllowed):
             match_2_lem = extracted_2_lem
 
     # Fetch lexical entries from FLEx
-    subDictN, subDict1, subDict2, glossListN, glossList1, glossList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+    #subDictN, subDict1, subDict2, glossListN, glossList1, glossList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+    subListN, subList1, subList2 = getLexicalEntriesIntoWords(DB, match_n_pos, match_1_pos, match_2_pos, report)
 
-    report.Info(f"gloss list N: {glossListN}")
-    report.Info(f"gloss list N: {glossList1}")
-    report.Info(f"gloss list N: {glossList2}")
+    #report.Info(f"gloss list N: {glossListN}")
+    #report.Info(f"gloss list N: {glossList1}")
+    #report.Info(f"gloss list N: {glossList2}")
 
     # Apply stem limit
-    subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
-    subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
-    subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
+    #subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
+    #subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
+    #subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
+
+    # Apply stem limit
+    subListN = subListN[:stemLimit]
+    subList1 = subList1[:stemLimit]
+    subList2 = subList2[:stemLimit]
 
     stcCount = myText.getSentCount()
     report.Info(f"Found {stcCount} sentences in the text")
@@ -500,9 +670,12 @@ def MainFunction(DB, report, modifyAllowed):
                     idx2_list.append(idx)
 
         # Process and substitute words in the current sentence
-        processSentence(wrdList, idxN_list, idx1_list, idx2_list, subDictN, subDict1, subDict2, f_out, stc, report)
+        processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
+        if glossFile:
+            glossSentence(DB, wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out2, stc, report)
 
     f_out.close()
+    f_out2.close()
 
     report.Info("Export of " + getSourceTextName(report, configMap) + " complete.")
     

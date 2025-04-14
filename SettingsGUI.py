@@ -1391,6 +1391,9 @@ widgetList = [
     ["GenSentences Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, DONT_HIDE],\
 
+    ["Gloss Text Output File", "gloss_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE,\
+    "The path and name of the file which holds\nthe extracted text in the source language.", DONT_GIVE_ERROR, DONT_HIDE],\
+
     ["Limit to specific POS values in head word", "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
     "One or more grammatical categories. GenStc word replacement in head word will be limited to using only these categories.", DONT_GIVE_ERROR, DONT_HIDE],\
     
