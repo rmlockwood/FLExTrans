@@ -361,7 +361,7 @@ list-item:before
 list-item[v]
 {
     display:block;
-    content: " " text-field(attribute,v,background-color,def-chunk-background-color(),columns,16);
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,16);
     margin-left:.2in;
 }
 
