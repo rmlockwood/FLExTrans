@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.13.3 - 4/15/25 - Ron Lockwood
+#    Fixes #964. Get the free translation for each segment.
+#
 #   Version 3.13.2 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -225,6 +228,7 @@ class TextSentence():
         self.__wordList = []
         self.__guidMap = {}
         self.firstGetByGuid = True
+        self.freeTranslation = ''
     def addWord(self, textWord):
         self.__wordList.append(textWord)
     def createGuidMap(self, insertList):
@@ -232,6 +236,8 @@ class TextSentence():
             self.__guidMap[word.getGuid()] = word
         for word in self.__wordList:
             self.__guidMap[word.getGuid()] = word
+    def getFreeTranslation(self):
+        return self.freeTranslation
     def getSurfaceAndDataForGuid(self, guid):
         if self.firstGetByGuid:
             self.firstGetByGuid = False
@@ -420,6 +426,9 @@ class TextSentence():
             if guidFirstComponent == currGuid:
                 return False
         return True
+
+    def setFreeTranslation(self, freeStr):
+        self.freeTranslation = freeStr if freeStr else ''
 
     def substituteComplexForms(self, cmplxFormMap):
         myIndex = 0
