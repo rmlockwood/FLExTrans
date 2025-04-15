@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.13.4 - 4/15/25 - Ron Lockwood
+#    Fixes #964. Get the free translation for each segment.
+#
 #   Version 3.13.3 - 4/3/25 - Ron Lockwood
 #    Replaced magic strings with constants.
 #
@@ -67,6 +70,8 @@ class interlinInfo:
     savedPrePunc: str
     spacesStr: str
     numSpaces: int
+    analysisOccurance: object
+    DB: object
 
 class GetInterlinParams():
 
@@ -248,6 +253,11 @@ def checkForNewSentOrPar(report, myInfo):
         myInfo.mySent = TextSentence(report)
         myInfo.isNewSentence = False
 
+        # Set the free translation for this sentence
+        if myInfo.analysisOccurance.Segment and myInfo.analysisOccurance.Segment.FreeTranslation:
+        
+            myInfo.mySent.setFreeTranslation(ITsString(myInfo.analysisOccurance.Segment.FreeTranslation.get_String(myInfo.DB.lp.DefaultAnalysisWritingSystem.Handle)).Text)
+
         # If we have a new paragraph, create the paragraph and add it to the text
         if myInfo.isNewParagraph:
 
@@ -362,6 +372,8 @@ def getAnalysisObject(myInfo, analysisOccurance, surfaceForm):
 
 def setFlagsAndSpaces(myInfo, analysisOccurance, prevEndOffset, currSegNum) -> tuple:
         
+    myInfo.analysisOccurance = analysisOccurance
+
     # Get offsets for current occurance
     begOffset = analysisOccurance.GetMyBeginOffsetInPara()
     endOffset = analysisOccurance.GetMyEndOffsetInPara()
@@ -517,7 +529,9 @@ def getInterlinData(DB, report, params):
                           inMultiLinePuncBlock = False,
                           savedPrePunc = '',
                           spacesStr = '',
-                          numSpaces = 0
+                          numSpaces = 0,
+                          analysisOccurance = None,
+                          DB = DB,
                         )
 
     # Add the first paragraph
