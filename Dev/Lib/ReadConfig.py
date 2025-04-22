@@ -198,7 +198,7 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              CATEGORY_ABBREV_SUB_LIST, 
                              GEN_STC_LIMIT_POS_N,
                              GEN_STC_LIMIT_POS_1,
-                             GEN_STC_LIMIT_POS_2 
+                             GEN_STC_LIMIT_POS_2, 
                              CATEGORY_ABBREV_SUB_LIST,
                              CLUSTER_PROJECTS,
                              ]
