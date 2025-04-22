@@ -39,6 +39,7 @@ from SIL.LCModel import (
 
 import ReadConfig
 import Utils
+import InterlinData
 import random
 import itertools
 
@@ -602,10 +603,10 @@ def MainFunction(DB, report, modifyAllowed):
 
 
     # Get interlinear data
-    interlinParams = Utils.initInterlinParams(configMap, report, contents)
+    interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
     if interlinParams is None:
         return
-    myText = Utils.getInterlinData(DB, report, interlinParams)
+    myText = InterlinData.getInterlinData(DB, report, interlinParams)
 
     # Initialize language-specific variables
 
