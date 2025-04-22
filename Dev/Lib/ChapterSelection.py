@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13.2 - 4/22/25 - Ron Lockwood
+#    Fixes #967. Handle \xt until \xt*. Sometimes \xt gets terminated with \x* and sometimes with \xt*.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -155,10 +158,11 @@ def splitSFMs(inputStr):
                     r'\\f \+ |'             # footnote with plus
                     r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
                     r'\\fr \d+[:.]\d+|'     # footnote reference
-                    r'\\xt .+?\\x\*|'       # cross reference with end marker
+                    r'\\xt .+?\\xt\*|'      # target reference until target reference end marker
+                    r'\\xt .+?\\x\*|'       # target reference until cross reference end marker
                     r'\\x \+ |'             # cross reference with plus
-                    r'\\xo \d+[:.]\d+-\d+|' # cross reference original with dash
-                    r'\\xo \d+[:.]\d+|'     # cross reference original
+                    r'\\xo \d+[:.]\d+-\d+|' # origin reference with dash
+                    r'\\xo \d+[:.]\d+|'     # origin reference normal
                     r'\\v \d+-\d+ |'        # verse with dash
                     r'\\v \d+ |'            # verse
                     r'\\vp \S+ |'           # publication verse

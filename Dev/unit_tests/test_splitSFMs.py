@@ -92,5 +92,10 @@ class TestSplitSFMs(unittest.TestCase):
         expected_output = ['the beginning ', '\\w', ' God', '|', 'Yahweh', '\\w*', ' created']
         self.assertEqual(splitSFMs(input_str), expected_output)
 
+    def test_split_with_target_ref_embedded_in_footnote(self): # from qvm Exo. 1:5
+        input_str = "chayarqan.\\f + \\fr 1.5 \\ft Septuaginta \\xt Hech. 7.14\\xt* niykan.\\f* Tsurin \\x + \\xo 1.1-5 \\xt Gén. 46.8-27.\\x*"
+        expected_output = ['chayarqan.', '\\f + ', '', '\\fr 1.5', ' ', '\\ft', ' Septuaginta ', '\\xt Hech. 7.14\\xt*', ' niykan.', '\\f*', ' Tsurin ', '\\x + ', '', '\\xo 1.1-5', ' ', '\\xt Gén. 46.8-27.\\x*', '']
+        self.assertEqual(splitSFMs(input_str), expected_output)
+
 if __name__ == "__main__":
     unittest.main()
