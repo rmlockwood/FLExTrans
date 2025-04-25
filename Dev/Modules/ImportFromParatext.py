@@ -5,7 +5,7 @@
 #   SIL International
 #   10/30/21
 #
-#   Version 3.13.2 - 3/24/25 - Ron Lockwood
+#   Version 3.13.2 - 4/25/25 - Ron Lockwood
 #    Fixes #969. Convert \fig data to the new USFM 3.0 syntax. This helps make the vernacular part - the caption -
 #    which the first thing in the new format easy to identify.
 #
