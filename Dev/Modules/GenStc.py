@@ -23,20 +23,14 @@
 #    SIL International
 #    31 May 2023
 #
-import re 
+import re
 import os
 from datetime import datetime
-
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-
-from flextoolslib import *                                                 
+from SIL.LCModel import *
+from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
+from flextoolslib import *
 from flexlibs import FLExProject
-
-from SIL.LCModel import (
-    IMoStemMsa,
-)
-
+from SIL.LCModel import IMoStemMsa
 import ReadConfig
 import Utils
 import InterlinData
@@ -45,232 +39,153 @@ import itertools
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
-docs = {FTM_Name       : "Generate sentences from model",
-        FTM_Version    : "3.10.12",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Iterate over certain POS in a model sentence to produce variations.",
-        FTM_Help  : "", 
-        FTM_Description:  
-"""
-Put a better description here.
-""" }
-
-def loadConfiguration(report):
-    """Reads and loads the configuration file."""
-    configMap = ReadConfig.readConfig(report)
-    if not configMap:
-        return None
-    return configMap
+docs = {
+    FTM_Name: "Generate sentences from model",
+    FTM_Version: "3.10.12",
+    FTM_ModifiesDB: False,
+    FTM_Synopsis: "Iterate over certain POS in a model sentence to produce variations.",
+    FTM_Help: "",
+    FTM_Description: "Put a better description here."
+}
+#----------------------------------------------------------------
 
 class GenWord:
+    """Represents a word with lemma, POS, gloss, and inflection features."""
     def __init__(self, report):
-        """
-        Initializes a Word object with the following attributes:
-        - lemma: The base form of the word (string).
-        - inflection_features: A list of inflection features (e.g., tense, aspect, case).
-        - pos: The part of speech (string).
-        - gloss: A gloss (string) that explains the meaning of the word.
-        """
         self.__lemma = ""
         self.__inflection_features = []
         self.__pos = ""
         self.__gloss = ""
     
     def __repr__(self):
-        """Returns a string representation of the Word object."""
         return f"Word(lemma='{self.__lemma}', pos='{self.__pos}', gloss='{self.__gloss}', inflection_features={self.__inflection_features})"
     
     def __str__(self):
-        """Returns a more readable string representation of the Word object."""
         return f"{self.__lemma} ({self.__pos}): {self.__gloss} | Features: {', '.join(self.__inflection_features)}"
     
     def writeGloss(self, fOut):
+        """Write the gloss to the given file object."""
         fOut.write(self.__gloss)
 
-    # Getter methods
-    def get_lemma(self):
+    # Property getters and setters
+    @property
+    def lemma(self):
         return self.__lemma
     
-    def get_inflection_features(self):
-        return self.__inflection_features
-    
-    def get_pos(self):
-        return self.__pos
-    
-    def get_gloss(self):
-        return self.__gloss
-    
-    # Setter methods
-    def set_lemma(self, new_lemma):
+    @lemma.setter
+    def lemma(self, new_lemma):
         self.__lemma = new_lemma
     
-    def set_inflection_features(self, new_inflection_features):
-        self.__inflection_features = new_inflection_features
+    @property
+    def inflection_features(self):
+        return self.__inflection_features
     
-    def set_pos(self, new_pos):
+    @inflection_features.setter
+    def inflection_features(self, new_features):
+        self.__inflection_features = new_features
+    
+    @property
+    def pos(self):
+        return self.__pos
+    
+    @pos.setter
+    def pos(self, new_pos):
         self.__pos = new_pos
     
-    def set_gloss(self, new_gloss):
+    @property
+    def gloss(self):
+        return self.__gloss
+    
+    @gloss.setter
+    def gloss(self, new_gloss):
         self.__gloss = new_gloss
 
+#----------------------------------------------------------------
+# Configuration and Setup Functions
+def loadConfiguration(report):
+    """Read and load the configuration file."""
+    return ReadConfig.readConfig(report)
 
 def setupSettings(configMap, report):
-    """Sets up POS focus and stem limits based on the configuration."""
-    # this will set up the settings that have been created for GenStc from the settings menu. 
+    """Set up POS focus and stem limits based on configuration."""
+    # Get POS settings
+    posFocusN = _cleanConfigList(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_N, report))
+    posFocus1 = _cleanConfigList(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_1, report))
+    posFocus2 = _cleanConfigList(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_2, report))
 
-    # grabbing POS settings 
-    posFocusN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_N, report)
-    posFocus1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_1, report)
-    posFocus2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_POS_2, report)
+    # Get Lemma settings and format them
+    lemmaFocusN = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_N, report))
+    lemmaFocus1 = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_1, report))
+    lemmaFocus2 = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_2, report))
 
-    # grabbing Lemma settings
-    lemmaFocusN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_N, report)
-    lemmaFocus1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_1, report)
-    lemmaFocus2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_2, report)
-
-    # grabbing stem limit settings
-    stemLimit = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report)
-
-    # error correct posFocus 
-    if posFocusN:
-        if posFocusN[-1] == '':
-            posFocusN.pop()
-        report.Info('  Only collecting templates for these POS: ' + str(posFocusN))
-    else:
-        posFocusN = []  # Default to an empty list if not provided
-
-    if posFocus1:
-        if posFocus1[-1] == '':
-            posFocus1.pop()
-        report.Info('  Only collecting templates for these POS: ' + str(posFocus1))
-    else:
-        posFocus1 = []  # Default to an empty list if not provided
-
-    if posFocus2:
-        if posFocus2[-1] == '':
-            posFocus2.pop()
-        report.Info('  Only collecting templates for these POS: ' + str(posFocus2))
-    else:
-        posFocus2 = []  # Default to an empty list if not provided
-
-    # error correct lemma focus
-    lemma_focus_vars = {"lemmaFocusN": lemmaFocusN, "lemmaFocus1": lemmaFocus1, "lemmaFocus2": lemmaFocus2}
-
-    for key in lemma_focus_vars:
-        if not lemma_focus_vars[key]:
-            lemma_focus_vars[key] = "UNK"
-    
-        # debug
-        #report.Info(f"{key}: {lemma_focus_vars[key]}")
-    
-        if lemma_focus_vars[key] != "UNK" and not lemma_focus_vars[key].endswith("1.1"):
-            lemma_focus_vars[key] += "1.1"
-    
-        # debug
-        #report.Info(f"{key}: {lemma_focus_vars[key]}")
-
-    # Unpack back to original variables if needed
-    lemmaFocusN, lemmaFocus1, lemmaFocus2 = lemma_focus_vars.values()
-
-    # error correct stem limit
-    if stemLimit:
-        try:
-            stemLimit = int(stemLimit)
-        except ValueError:
-            stemLimit = 10  # Default value if invalid
-    else:
-        stemLimit = 10  # Default to 10 if not specified
+    # Get stem limit setting
+    stemLimit = _getStemLimit(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report))
 
     return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit
 
+def _cleanConfigList(configList):
+    """Remove empty strings from config lists."""
+    if configList and configList[-1] == '':
+        configList.pop()
+    return configList or []
 
-def initializeOutputFile(configMap, report):
-    """Initializes the output file for writing."""
-    outFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TEXT_FILE, report)
-    if not outFileVal:
-        return None
-    fullPathTextOutputFile = outFileVal
+def _formatLemmaSetting(lemmaSetting):
+    """Format lemma settings consistently."""
+    if not lemmaSetting:
+        return "UNK"
+    return lemmaSetting if lemmaSetting.endswith("1.1") else f"{lemmaSetting}1.1"
+
+def _getStemLimit(stemLimit):
+    """Validate and return stem limit."""
     try:
-        f_out = open(fullPathTextOutputFile, 'w', encoding='utf-8')
-        return f_out
-    except IOError:
-        report.Error('There is a problem with the Analyzed Text Output File path: ' + fullPathTextOutputFile + '. Please check the configuration file setting.')
+        return int(stemLimit) if stemLimit else 10
+    except ValueError:
+        return 10
+
+#----------------------------------------------------------------
+# File Handling Functions
+def initializeOutputFile(configMap, report, configKey):
+    """Initialize an output file for writing."""
+    filePath = ReadConfig.getConfigVal(configMap, configKey, report)
+    if not filePath:
         return None
     
-def initializeGlossOutputFile(configMap, report):
-    """Initializes the output file for writing the gloss."""
-    glossFileVal = ReadConfig.getConfigVal(configMap, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE, report)
-    if not glossFileVal:
-        return None
-    fullPathTextOutputFile = glossFileVal
     try:
-        f_out2 = open(fullPathTextOutputFile, 'w', encoding='utf-8')
-        return f_out2
+        return open(filePath, 'w', encoding='utf-8')
     except IOError:
-        report.Error('There is a problem with the Analyzed Text Output File path: ' + fullPathTextOutputFile + '. Please check the configuration file setting.')
-        return None 
+        report.Error(f'Problem with output file path: {filePath}. Please check configuration.')
+        return None
 
-def getSourceTextName(report, configMap):
-    """Fetches the name of the source text."""
-    return ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-
+#----------------------------------------------------------------
+# Data Extraction Functions
 def getSourceText(DB, report, configMap):
-    """Fetches the source text from the database."""
+    """Fetch the source text from the database."""
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceTextName:
         return None
 
     matchingContentsObjList = []
     sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    
     if sourceTextName not in sourceTextList:
-        report.Error('The text named: ' + sourceTextName + ' not found.')
+        report.Error(f'Text not found: {sourceTextName}')
         return None
+        
     return matchingContentsObjList[sourceTextList.index(sourceTextName)]
-
-def initializeLanguageVariables(lang):
-    """(OLD) Initializes language-specific variables. (OLD) (UNUSED)"""
-
-    if lang == "SPA":
-        match_n_lem = ["hacer1.1", "jugar1.1"]
-        match_n_pos = ["v"]
-        match_1_lem = ["rojo1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
-    elif lang == "HIN":
-        match_n_lem = ["machli1.1"]
-        match_n_pos = ["n"]
-        match_1_lem = ["chota1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = [""]
-        match_2_pos = [""]
-    else: # lang = 'TKW' 
-        match_n_lem = ["thu1.1"]
-        match_n_pos = ["n"]
-        match_1_lem = ["_ng'ono1.1"]
-        match_1_pos = ["adj"]
-        match_2_lem = ["aga1.1"]
-        match_2_pos = ["poss"]
-    return match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos
 
 def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
     """Extract lemmas and POS for substituting from the source text."""
-    match_n_lem = []
-    match_n_pos = []
-    match_1_lem = []
-    match_1_pos = []
-    match_2_lem = []
-    match_2_pos = []
+    match_n_lem, match_n_pos = [], []
+    match_1_lem, match_1_pos = [], []
+    match_2_lem, match_2_pos = [], []
 
     stcCount = myText.getSentCount()
     report.Info(f"Found {stcCount} sentences in the text")
 
     for i in range(stcCount):
-        stc = myText.getSent(i)  # Get each sentence
-        wrdList = stc.getWords()  # Get the list of words in the sentence
+        stc = myText.getSent(i)
+        wrdList = stc.getWords()
 
-        # Collect indices of words that match the specified lemmas and POS
         for w in wrdList:
             thisLemma = w.getLemma(0)
             thisPOS = w.getPOS(0)
@@ -285,343 +200,165 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
                 match_2_lem.append(thisLemma)
                 match_2_pos.append(thisPOS)
 
-    matchLemmaN = list(set(match_n_lem))
-    matchLemma1 = list(set(match_1_lem))
-    matchLemma2 = list(set(match_2_lem))
-    report.Info(f"matching these words (head): ({matchLemmaN})")
-    report.Info(f"matching these words (dependent): ({matchLemma1})")
-    report.Info(f"matching these words (2nd dependent): {matchLemma2}")
-
-    return matchLemmaN, match_n_pos, matchLemma1, match_1_pos, matchLemma2, match_2_pos
+    return (list(set(match_n_lem)), list(set(match_n_pos)),
+            list(set(match_1_lem)), list(set(match_1_pos)),
+            list(set(match_2_lem)), list(set(match_2_pos)))
 
 def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
-    """Extract lemmas for substituting from the source text from lemmas entered into settings box."""
-    match_n_lem = []
-    match_1_lem = []
-    match_2_lem = []
-
+    """Extract lemmas from source text based on settings."""
+    match_n_lem, match_1_lem, match_2_lem = [], [], []
     stcCount = myText.getSentCount()
-    report.Info(f"Found {stcCount} sentences in the text")
 
     for i in range(stcCount):
-        stc = myText.getSent(i)  # Get each sentence
-        wrdList = stc.getWords()  # Get the list of words in the sentence
-
-        # Collect indices of words that match the specified lemmas and POS
-        for w in wrdList:
+        stc = myText.getSent(i)
+        for w in stc.getWords():
             thisLemma = w.getLemma(0)
-
-            if thisLemma in lemmaFocusN:
+            
+            if thisLemma == lemmaFocusN:
                 match_n_lem.append(thisLemma)
-
-            elif thisLemma in lemmaFocus1:
+            elif thisLemma == lemmaFocus1:
                 match_1_lem.append(thisLemma)
-
-            elif thisLemma in lemmaFocus2:
+            elif thisLemma == lemmaFocus2:
                 match_2_lem.append(thisLemma)
 
-    matchLemmaN = list(set(match_n_lem))
-    matchLemma1 = list(set(match_1_lem))
-    matchLemma2 = list(set(match_2_lem))
-
-    return matchLemmaN, matchLemma1, matchLemma2
+    return list(set(match_n_lem)), list(set(match_1_lem)), list(set(match_2_lem))
 
 def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
-    """Fetches lexical entries from the database."""
-    # this function grabs all the lexical entries from the database and shuffles them. 
-    # the stem limit from the settings is added in the main function. 
-    subListN = {}
-    subList1 = {}
-    subList2 = {}
-    glossListN = []
-    glossList1 = []
-    glossList2 = []
+    """Fetch lexical entries and return lists of GenWord objects."""
+    wordListN, wordList1, wordList2 = [], [], []
 
-    # need to edit so it grabs inflection features as well. 
     for entry in DB.LexiconAllEntries():
-        lex = DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)
-        lex += '1.1'
-        pos = 'UNK'
-        if lex and entry.SensesOS.Count > 0:
-            for s in entry.SensesOS:
-                gloss = s.Gloss
-                if s.MorphoSyntaxAnalysisRA:
-                    if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                        msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
-                        if msa.PartOfSpeechRA:
-                            inflectionInfo = Utils.getInflectionTags(msa)
+        lex = (DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)) + '1.1'
+        
+        if not lex or entry.SensesOS.Count == 0:
+            continue
+            
+        for s in entry.SensesOS:
+            if s.MorphoSyntaxAnalysisRA and s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+                msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
+                if msa.PartOfSpeechRA:
+                    pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
+                    if pos not in match_n_pos + match_1_pos + match_2_pos:
+                        continue
                         
-                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                            if pos in match_n_pos:
-                                subListN[lex] = inflectionInfo
-                                glossListN.append(Utils.as_string(gloss))
-                            if pos in match_1_pos:
-                                subList1[lex] = inflectionInfo
-                                glossList1.append(Utils.as_string(gloss))
-                            if pos in match_2_pos:
-                                subList2[lex] = inflectionInfo
-                                glossList2.append(Utils.as_string(gloss))
+                    word = GenWord(report)
+                    word.lemma = lex
+                    word.inflection_features = Utils.getInflectionTags(msa)
+                    word.pos = pos
+                    word.gloss = Utils.as_string(s.Gloss)
 
-    lexKeysN = list(subListN.keys())
-    lexKeys1 = list(subList1.keys())
-    lexKeys2 = list(subList2.keys())
+                    if pos in match_n_pos:
+                        wordListN.append(word)
+                    elif pos in match_1_pos:
+                        wordList1.append(word)
+                    elif pos in match_2_pos:
+                        wordList2.append(word)
 
-    random.shuffle(lexKeysN)
-    random.shuffle(lexKeys1)
-    random.shuffle(lexKeys2)
-
-    subDictN = {key:subListN[key] for key in lexKeysN}
-    subDict1 = {key:subList1[key] for key in lexKeys1}
-    subDict2 = {key:subList2[key] for key in lexKeys2}
-
-    return subDictN, subDict1, subDict2, glossListN, glossList1, glossList2
-
-def getLexicalEntriesIntoWords(DB, match_n_pos, match_1_pos, match_2_pos, report):
-    """Fetches lexical entries from the database and returns lists of GenWord objects."""
-    
-    # Lists to store GenWord objects
-    wordListN = []
-    wordList1 = []
-    wordList2 = []
-
-    # Loop through all lexical entries in the database
-    for entry in DB.LexiconAllEntries():
-        lex = DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)
-        lex += '1.1'  # Not sure why this is added, but keeping it as is
-        pos = 'UNK'
-
-        if lex and entry.SensesOS.Count > 0:
-            for s in entry.SensesOS:
-                gloss = s.Gloss  # Extract gloss
-                inflectionInfo = []  # Default empty inflection features list
-
-                if s.MorphoSyntaxAnalysisRA:
-                    if s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
-                        msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
-                        if msa.PartOfSpeechRA:
-                            inflectionInfo = Utils.getInflectionTags(msa)
-                            pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                            
-                            # Create a GenWord object
-                            word = GenWord(report)
-                            word.set_lemma(lex)
-                            word.set_inflection_features(inflectionInfo)
-                            word.set_pos(pos)
-                            word.set_gloss(Utils.as_string(gloss))
-
-                            # Add word to the appropriate list based on POS match
-                            if pos in match_n_pos:
-                                wordListN.append(word)
-                            if pos in match_1_pos:
-                                wordList1.append(word)
-                            if pos in match_2_pos:
-                                wordList2.append(word)
-
-    # Shuffle the lists
     random.shuffle(wordListN)
     random.shuffle(wordList1)
     random.shuffle(wordList2)
-
+    
     return wordListN, wordList1, wordList2
 
-def generateGlossedSentence(DB, wrdList, report):
-    
-    glossedList = []
-
-    for w in wrdList:
-
-        word = GenWord(report)
-
-        word.set_lemma(w._TextWord__lemmaList[0])
-        lem = word.get_lemma()
-
-            # Loop through all lexical entries in the database
-        for entry in DB.LexiconAllEntries():
-            lex = DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)
-            lex += '1.1'  
-
-            if lex and entry.SensesOS.Count > 0:
-                for s in entry.SensesOS:
-                    gloss = s.Gloss  # Extract gloss
-
-                    if lex == lem:
-                        word.set_gloss(Utils.as_string(gloss))
-                        glossedList.append(word)
-
-    return glossedList  
-
-
+#----------------------------------------------------------------
+# Sentence Processing Functions
 def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
-    """Processes and substitutes words in the sentence, writes them to output file."""
-    # unchanged processing algorithm 
-    for genWord in subListN: # head word 
+    """Process and substitute words in the sentence, writing to output file."""
+    for genWordN in subListN:
+        _processWord(wrdList, idxNList, genWordN, report)
+        
+        if not idx1List:
+            _writeSentence(stc, f_out)
+        else:
+            for genWord1 in subList1:
+                _processWord(wrdList, idx1List, genWord1, report)
+                
+                if not idx2List:
+                    _writeSentence(stc, f_out)
+                else:
+                    for genWord2 in subList2:
+                        _processWord(wrdList, idx2List, genWord2, report)
+                        _writeSentence(stc, f_out)
 
-        wordN = genWord.get_lemma()
-        infoN = genWord.get_inflection_features()
-
-        for idxN in idxNList:
-            report.Info(f"Testing idxN {str(idxN)} Match {wrdList[idxN]._TextWord__lemmaList[0]} Replace {wordN}")
-            wrdList[idxN]._TextWord__lemmaList[0] = wordN
-
-            if infoN:
-                # checking contents
-                report.Info(f"inflection info of {wordN}: {infoN}")
-
-                # pre-adjustment
-                report.Info(f"Before modification: {wrdList[idxN].getInflClass(0)}")
-                report.Info(f"Before modification: {wrdList[idxN].getStemFeatures(0)}")
-                report.Info(f"Before modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+def _processWord(wrdList, idxList, genWord, report):
+    """Process a single word in the sentence."""
+    word = genWord.lemma
+    info = genWord.inflection_features
     
-                # changing inflection class
-                wrdList[idxN].setInflClass(str(infoN[0]))
-                wrdList[idxN].setIgnoreInflectionClass(False)
-                wrdList[idxN].setIgnoreStemFeatures(False)
-                wrdList[idxN].setStemFeatAbbrevList([])
+    for idx in idxList:
+        wrd = wrdList[idx]
+        report.Info(f"Testing idx {str(idx)} Match {wrd._TextWord__lemmaList[0]} Replace {word}")
+        wrd._TextWord__lemmaList[0] = word
+        
+        if info:
+            _applyInflectionFeatures(wrd, info, report)
 
-                # Reset inflection features before assigning new ones
-                wrdList[idxN]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idxN]._TextWord__inflFeatAbbrevsList]
+def _applyInflectionFeatures(wrd, features, report):
+    """Apply inflection features to a word."""
+    report.Info(f"Before modification: {wrd.getInflClass(0)}")
+    report.Info(f"Before modification: {wrd._TextWord__inflFeatAbbrevsList}")
 
-                # changing inflection info
-                if len(infoN) > 1:
-                    for i, feat in enumerate(infoN[1:]):  # Iterate through infoN[1:] directly
-                        report.Info(f"Assigning feature {feat} at index {i}")
-                        wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
+    wrd.setInflClass(str(features[0]))
+    wrd.setIgnoreInflectionClass(False)
+    wrd.setIgnoreStemFeatures(False)
+    wrd.setStemFeatAbbrevList([])
+    wrd._TextWord__inflFeatAbbrevsList = [[] for _ in wrd._TextWord__inflFeatAbbrevsList]
 
-                    #for i, sublist in enumerate(wrdList[idxN]._TextWord__inflFeatAbbrevsList):
-                        #report.Info(f"accessing sublist at index {i}: {sublist}")
-                        #wrdList[idxN]._TextWord__inflFeatAbbrevsList[i] = [("None", feat) for feat in infoN[1:]]
+    if len(features) > 1:
+        for i, feat in enumerate(features[1:]):
+            report.Info(f"Assigning feature {feat} at index {i}")
+            wrd._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
 
-                # post-adjustment
-                report.Info(f"After modification: {wrdList[idxN].getInflClass(0)}")
-                report.Info(f"After modification: {wrdList[idxN].getStemFeatures(0)}")
-                report.Info(f"After modification: {wrdList[idxN]._TextWord__inflFeatAbbrevsList}")
+    report.Info(f"After modification: {wrd._TextWord__inflFeatAbbrevsList}")
 
-            
-            if not idx1List:
-                stc.write(f_out)
-                f_out.write('\n')
-            else:
-                for idx1 in idx1List: # first dependent 
-                    for genWord1 in subList1:
+def _writeSentence(stc, f_out):
+    """Write the sentence to the output file."""
+    stc.write(f_out)
+    f_out.write('\n')
 
-                        word1 = genWord1.get_lemma()
-                        info1 = genWord1.get_inflection_features()
+def processFreeTranslation(f_out, stc):
+    """Write the free translation to the output file."""
+    f_out.write(stc.getFreeTranslation())
+    f_out.write('\n')
 
-                        report.Info(f"Testing idx1 {str(idx1)}  Match {wrdList[idx1]._TextWord__lemmaList[0]} Replace {word1}")
-                        wrdList[idx1]._TextWord__lemmaList[0] = word1
-
-                        if info1:
-                            # pre-adjustment
-                            report.Info(f"Before modification: {wrdList[idx1].getInflClass(0)}")
-                            report.Info(f"Before modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
-
-                            # changing inflection class
-                            wrdList[idx1].setInflClass(str(info1[0]))
-                            wrdList[idx1].setIgnoreInflectionClass(False)
-                            wrdList[idx1].setIgnoreStemFeatures(False)
-                            wrdList[idx1].setStemFeatAbbrevList([])
-
-                            # Reset inflection features before assigning new ones
-                            wrdList[idx1]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx1]._TextWord__inflFeatAbbrevsList]
-
-                            if len(info1) > 1:
-                                for i, feat in enumerate(info1[1:]):  # Iterate through infoN[1:] directly
-                                    report.Info(f"Assigning feature {feat} at index {i}")
-                                    wrdList[idx1]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
-
-                            # post-adjustment
-                            report.Info(f"After modification: {wrdList[idx1]._TextWord__inflFeatAbbrevsList}")
-
-
-                        if not idx2List:
-                            stc.write(f_out)
-                            f_out.write('\n')
-                        else:
-                            for idx2 in idx2List: # second dependent
-                                for genWord2 in subList2:
-                                    
-                                    word2 = genWord2.get_lemma()
-                                    info2 = genWord2.get_inflection_features()
-
-                                    report.Info(f"Testing idx2 {str(idx2)}   Match {wrdList[idx2]._TextWord__lemmaList[0]} Replace {word2}")
-                                    wrdList[idx2]._TextWord__lemmaList[0] = word2
-
-                                    if info2:
-                                        # pre-adjustment
-                                        report.Info(f"Before modification: {wrdList[idx2].getInflClass(0)}")
-                                        report.Info(f"Before modification: {wrdList[idx2]._TextWord__inflFeatAbbrevsList}")
-
-                                        # changing inflection class
-                                        wrdList[idx2].setInflClass(str(info2[0]))
-                                        wrdList[idx2].setIgnoreInflectionClass(False)
-                                        wrdList[idx2].setIgnoreStemFeatures(False)
-                                        wrdList[idx2].setStemFeatAbbrevList([])
-
-                                        # Reset inflection features before assigning new ones
-                                        wrdList[idx2]._TextWord__inflFeatAbbrevsList = [[] for _ in wrdList[idx2]._TextWord__inflFeatAbbrevsList]
-
-                                        if len(info2) > 1:
-                                            for i, feat in enumerate(info2[1:]):  # Iterate through infoN[1:] directly
-                                                report.Info(f"Assigning feature {feat} at index {i}")
-                                                wrdList[idx2]._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
-
-                                        # post-adjustment
-                                        report.Info(f"After modification: {wrdList[idx2]._TextWord__inflFeatAbbrevsList}")
-
-                                    stc.write(f_out)
-                                    f_out.write('\n')
-                                    
-def glossSentence(DB, wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out2, stc, report):
-    glossedList = generateGlossedSentence(DB, wrdList, report)
-    for word in glossedList:
-        word.writeGloss(f_out2)
-        f_out2.write(' ')
-    f_out2.write('\n')
-    return 
-
+#----------------------------------------------------------------
+# Main Function
 def MainFunction(DB, report, modifyAllowed):
-
+    """Main function that orchestrates the entire process."""
+    # Load configuration
     configMap = loadConfiguration(report)
     if not configMap:
         return
 
-    # Set up POS filter and stem limit (settings could change later)
+    # Initialize settings and files
     posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit = setupSettings(configMap, report)
-
-    f_out = initializeOutputFile(configMap, report)
+    f_out = initializeOutputFile(configMap, report, ReadConfig.ANALYZED_TEXT_FILE)
     if not f_out:
         return
-    
-    glossFile = False
-    f_out2 = initializeGlossOutputFile(configMap, report)
-    if f_out2:
-       glossFile = True
+        
+    f_out2 = initializeOutputFile(configMap, report, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE)
+    translationFile = bool(f_out2)
 
+    # Get source text data
     contents = getSourceText(DB, report, configMap)
     if not contents:
         return
 
-
     # Get interlinear data
     interlinParams = InterlinData.initInterlinParams(configMap, report, contents)
-    if interlinParams is None:
+    if not interlinParams:
         return
     myText = InterlinData.getInterlinData(DB, report, interlinParams)
 
-    # Initialize language-specific variables
+    # Extract language variables
+    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(
+        myText, posFocusN, posFocus1, posFocus2, report)
 
-    # OLD CODE USING initializeLanguageVariables
-    #lang = "SPA"
-    #match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = initializeLanguageVariables(lang)
-    
-    # Extracting language variables from settings 
-    match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report)
-
-    # If at least one lemma is provided, run extractFromLemmas
-    if lemmaFocusN != 'UNK' or lemmaFocus1 != 'UNK' or lemmaFocus2 != 'UNK':
-        extracted_n_lem, extracted_1_lem, extracted_2_lem = extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report)
-    
-        # Replace only the lists where a lemma was actually provided
+    # Handle lemma focus if specified
+    if any(lemma != 'UNK' for lemma in [lemmaFocusN, lemmaFocus1, lemmaFocus2]):
+        extracted_n_lem, extracted_1_lem, extracted_2_lem = extractFromLemmas(
+            myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report)
+        
         if lemmaFocusN != 'UNK':
             match_n_lem = extracted_n_lem
         if lemmaFocus1 != 'UNK':
@@ -629,75 +366,47 @@ def MainFunction(DB, report, modifyAllowed):
         if lemmaFocus2 != 'UNK':
             match_2_lem = extracted_2_lem
 
-    # Fetch lexical entries from FLEx
-    #subDictN, subDict1, subDict2, glossListN, glossList1, glossList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
-    subListN, subList1, subList2 = getLexicalEntriesIntoWords(DB, match_n_pos, match_1_pos, match_2_pos, report)
-
-    #report.Info(f"gloss list N: {glossListN}")
-    #report.Info(f"gloss list N: {glossList1}")
-    #report.Info(f"gloss list N: {glossList2}")
-
-    # Apply stem limit
-    #subDictN = dict(itertools.islice(subDictN.items(), stemLimit))
-    #subDict1 = dict(itertools.islice(subDict1.items(), stemLimit))
-    #subDict2 = dict(itertools.islice(subDict2.items(), stemLimit))
-
-    # Apply stem limit
+    # Get lexical entries and apply stem limit
+    subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
 
+    # Process each sentence
     stcCount = myText.getSentCount()
     report.Info(f"Found {stcCount} sentences in the text")
 
     for i in range(stcCount):
-        stc = myText.getSent(i)  # Get each sentence
-        wrdList = stc.getWords()  # Get the list of words in the sentence
+        stc = myText.getSent(i)
+        wrdList = stc.getWords()
 
-        # Initialize POS index lists for this sentence
+        # Find indices of words to replace
         idxN_list, idx1_list, idx2_list = [], [], []
-
-        # Collect indices of words that match the specified lemmas and POS
         for idx, w in enumerate(wrdList):
             thisLemma = w.getLemma(0)
             thisPOS = w.getPOS(0)
 
-            if thisPOS in posFocusN or posFocus1 or posFocus2:
-                if thisLemma in match_n_lem and thisPOS in match_n_pos:
-                    idxN_list.append(idx)
-                if thisLemma in match_1_lem and thisPOS in match_1_pos:
-                    idx1_list.append(idx)
-                if thisLemma in match_2_lem and thisPOS in match_2_pos:
-                    idx2_list.append(idx)
+            if thisPOS in posFocusN and thisLemma in match_n_lem:
+                idxN_list.append(idx)
+            elif thisPOS in posFocus1 and thisLemma in match_1_lem:
+                idx1_list.append(idx)
+            elif thisPOS in posFocus2 and thisLemma in match_2_lem:
+                idx2_list.append(idx)
 
-        # Process and substitute words in the current sentence
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
-        if glossFile:
-            glossSentence(DB, wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out2, stc, report)
+        if translationFile:
+            processFreeTranslation(f_out2, stc)
 
+    # Clean up
     f_out.close()
-    f_out2.close()
+    if f_out2:
+        f_out2.close()
 
-    report.Info("Export of " + getSourceTextName(report, configMap) + " complete.")
-    
+    report.Info(f"Export of {ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)} complete.")
 
-###  This is how other modules run their process and generate error messages.
-###  I don't have this part working yet.    
- ###-----------Run the process?
-    #errorList = genStc(DB, configMap, targetGENFile, modelFile, report)
-
-#    # output info, warnings, errors and url links
-#    Utils.processErrorList(errorList, report)
-    
 #----------------------------------------------------------------
-# The name 'FlexToolsModule' must be defined like this:
+# FlexTools Module Setup
+FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction, docs=docs)
 
-FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
-                                       docs = docs)
-            
-#---------------------------------
 if __name__ == '__main__':
     FlexToolsModule.Help()
-
-
-
