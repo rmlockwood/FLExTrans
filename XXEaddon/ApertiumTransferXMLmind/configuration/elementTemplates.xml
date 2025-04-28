@@ -10,11 +10,11 @@
     <and>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
     </and>
   </cfg:elementTemplate>
@@ -22,15 +22,15 @@
     <and>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
     </and>
   </cfg:elementTemplate>
@@ -101,10 +101,22 @@
     <case-of pos="1" side="tl" part="lem"/>
   </cfg:elementTemplate>
   
+  <cfg:elementTemplate name="category">
+    <def-cat n="c_">
+      <cat-item tags="n"/>
+    </def-cat>
+  </cfg:elementTemplate>
   <cfg:elementTemplate name="category_2">
     <def-cat n="c_">
       <cat-item tags="n"/>
       <cat-item tags="n.*"/>
+    </def-cat>
+  </cfg:elementTemplate>
+  <cfg:elementTemplate name="category_3">
+    <def-cat n="c_">
+      <cat-item tags="n"/>
+      <cat-item tags="n.*"/>
+      <cat-item tags="n.f.*"/>
     </def-cat>
   </cfg:elementTemplate>
 
@@ -122,11 +134,11 @@
           <and>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
           </and>
         </test>
@@ -140,7 +152,7 @@
         <test>
           <begins-with>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </begins-with>
         </test>
       </when>
@@ -166,7 +178,7 @@
         <test>
           <contains-substring>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </contains-substring>
         </test>
       </when>
@@ -179,7 +191,7 @@
         <test>
           <ends-with>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="ly1.1"/>
           </ends-with>
         </test>
       </when>
@@ -205,7 +217,7 @@
         <test>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
         </test>
       </when>
@@ -232,7 +244,7 @@
           <not>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
           </not>
         </test>
@@ -247,11 +259,11 @@
           <or>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
           </or>
         </test>
@@ -312,7 +324,7 @@
   <cfg:elementTemplate name="equal_clip_lit-tag">
     <equal>
       <clip pos="1" side="tl" part="a_"/>
-      <lit-tag v="???"/>
+      <lit-tag v="pl"/>
     </equal>
   </cfg:elementTemplate>
 
@@ -330,7 +342,7 @@
   <cfg:elementTemplate name="let_clip_lit-tag">
     <let>
       <clip pos="1" side="tl" part="a_"/>
-      <lit-tag v="???"/>
+      <lit-tag v="pl"/>
     </let>
   </cfg:elementTemplate>
   <cfg:elementTemplate name="let_clip_lit-string">
@@ -354,7 +366,7 @@
   <cfg:elementTemplate name="let_var_lit-tag">
     <let>
       <var n="v_"/>
-      <lit-tag v="???"/>
+      <lit-tag v="n"/>
     </let>
   </cfg:elementTemplate>
 
@@ -383,9 +395,10 @@
       <clip pos="1" side="tl" part="a_"/>
     </lu>
   </cfg:elementTemplate>
-  <cfg:elementTemplate name="lexical_unit_lit-string">
+  <cfg:elementTemplate name="lexical_unit_lit-string-tag">
     <lu>
       <lit v="x1.1"/>
+      <lit-tag v="n"/>
     </lu>
   </cfg:elementTemplate>
 
@@ -402,7 +415,7 @@
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="literal_tag">
-    <lit-tag v="???"/>
+    <lit-tag v="n"/>
   </cfg:elementTemplate>
 
   <cfg:elementTemplate name="macro_choose">
@@ -412,7 +425,7 @@
           <test>
             <equal>
               <clip pos="1" side="tl" part="a_"/>
-              <lit-tag v="???"/>
+              <lit-tag v="pl"/>
             </equal>
           </test>
         </when>
@@ -436,7 +449,7 @@
     <not>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
     </not>
   </cfg:elementTemplate>
@@ -445,11 +458,11 @@
     <or>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
     </or>
   </cfg:elementTemplate>
@@ -457,15 +470,15 @@
     <or>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
       <equal>
         <clip pos="1" side="tl" part="a_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="pl"/>
       </equal>
     </or>
   </cfg:elementTemplate>
@@ -474,7 +487,7 @@
     <otherwise>
       <let>
         <var n="v_"/>
-        <lit-tag v="???"/>
+        <lit-tag v="n"/>
       </let>
     </otherwise>
   </cfg:elementTemplate>
@@ -497,7 +510,7 @@
 
   <cfg:elementTemplate name="tag">
     <tag>
-      <lit-tag v="???"/>
+      <lit-tag v="pl"/>
       <clip pos="1" side="tl" part="a_"/>
     </tag>
   </cfg:elementTemplate>
@@ -543,11 +556,11 @@
         <and>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
         </and>
       </test>
@@ -559,7 +572,7 @@
       <test>
         <begins-with>
           <clip pos="1" side="tl" part="a_"/>
-          <lit-tag v="???"/>
+          <lit-tag v="pl"/>
         </begins-with>
       </test>
     </when>
@@ -581,7 +594,7 @@
       <test>
         <contains-substring>
           <clip pos="1" side="tl" part="a_"/>
-          <lit-tag v="???"/>
+          <lit-tag v="pl"/>
         </contains-substring>
       </test>
     </when>
@@ -592,7 +605,7 @@
       <test>
         <ends-with>
           <clip pos="1" side="tl" part="a_"/>
-          <lit-tag v="???"/>
+          <lit-tag v="ly1.1"/>
         </ends-with>
       </test>
     </when>
@@ -614,7 +627,7 @@
       <test>
         <equal>
           <clip pos="1" side="tl" part="a_"/>
-          <lit-tag v="???"/>
+          <lit-tag v="pl"/>
         </equal>
       </test>
     </when>
@@ -637,7 +650,7 @@
         <not>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
         </not>
       </test>
@@ -650,11 +663,11 @@
         <or>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
           <equal>
             <clip pos="1" side="tl" part="a_"/>
-            <lit-tag v="???"/>
+            <lit-tag v="pl"/>
           </equal>
         </or>
       </test>
