@@ -290,10 +290,7 @@ type="tMenu"
 ><li
 >Click Add and use the following settings:<ol
 ><li
->Custom Field Name: <object
-type="tUnderline"
->Target Equivalent</object
-><endnote
+>Custom Field Name: Target Equivalent <endnote
 id="nCustomFieldNames"
 ><p
 >You may choose a different name for the custom field, but you also have to update the <object
@@ -415,13 +412,19 @@ type="tMenu"
 >You should see the <object
 type="tSettingsTool"
 ></object
-> window that looks like this: <example
+> window. Note that this window has three choices for the <object
+type="tButton"
+>View Mode</object
+>, with the <object
+type="tSettingsValue"
+>Basic</object
+> choice seen here: <example
 num="xPrepSettings"
 ><chart
 ><img
 XeLaTeXSpecial="scaled='600'"
 cssSpecial=" height:60%"
-src="Images/SettingsWindow.png"
+src="Images/SettingsWindowBasic.png"
 ></img
 ></chart
 ></example
@@ -694,7 +697,7 @@ type="tFlexx"
 ><li
 >Divide each word into its morphemes.</li
 ><li
->Accept the analysis of each word.</li
+>Approve the analysis of each word.</li
 ></ol
 ></li
 ></ol
@@ -758,10 +761,7 @@ src="Images/LinkerModule.png"
 >Click on the <object
 type="tButton"
 >Run</object
-> button to run the module. Click OK on the message box that comes up to confirm you want to change <object
-type="tFlexx"
-></object
-> data. You’ll now see the <object
+> button to run the module. You will now see the <object
 type="tSenseLinker"
 ></object
 > with no links yet established. The window will look something like this:<example
@@ -1029,9 +1029,7 @@ type="tFlexxTools"
 >, click on the <object
 type="tCollection"
 >Drafting</object
-> <?xxe-remark Sara
-2025-01-01T00:04:39Z
-Changed "All Steps" to "Drafting"?>tab and you’ll see <exampleRef
+> tab and you’ll see <exampleRef
 letter="xFirstStart"
 num="xFirstStart"
 ></exampleRef
@@ -1249,7 +1247,19 @@ type="tButton"
 > button to get an explanation of the setting. For file or folder names in the <object
 type="tSettingsTool"
 ></object
->, you can change the file to be used by simply typing the changes in the pertinent text box.</p
+>, you can change the file to be used by simply typing the changes in the pertinent text box. The <object
+type="tSettingsValue"
+>Basic</object
+> <object
+type="tButton"
+>View Mode</object
+> is seen here; other options are <object
+type="tSettingsValue"
+>Mini</object
+> and <object
+type="tSettingsValue"
+>Full</object
+>.</p
 ><example
 num="xSettings"
 ><chart
@@ -1257,7 +1267,7 @@ num="xSettings"
 XeLaTeXSpecial="scaled='600'"
 cssSpecial=" height:60%"
 height="60%"
-src="Images/SettingsWindow.png"
+src="Images/SettingsWindowBasic.png"
 ></img
 ><comment
 >For further detail about each setting, see [a section that hasn't been written yet].</comment
@@ -1343,9 +1353,7 @@ type="tSenseLinker"
 >The <object
 type="tSenseLinker"
 ></object
-> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists every sense that was analyzed in that text in order.<?xxe-remark Sara
-2025-01-01T00:08:07Z
-The phrase "every sense" could be understood in two ways 1) every unique sense, or 2) every instance of every sense. It would be helpful to clarify.?> Here’s a sample screen shot of the <object
+> is a tool for linking source senses to target senses. The tool looks through the text specified in the settings and lists each and every sense that was analyzed in that text in order. Here’s a sample screen shot of the <object
 type="tSenseLinker"
 ></object
 >:</p
@@ -1586,9 +1594,16 @@ id="sExportUnlinked"
 ><secTitle
 >Export Unlinked Senses</secTitle
 ><p
->Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word.<?xxe-remark Sara
-2025-01-01T00:03:21Z
-It could be useful to also add a comment regarding how this file can be used after completion - presumably there is no automatic addition of those target glosses anywhere, so new entries are probably needed in FLEx??> The file is in HTML format, it works well to open this in a word processor and save it as a document.</p
+>Use this check box to export a list of unlinked senses to a file (after clicking OK). If Hide Proper Nouns is checked, Proper Nouns will not be exported. The results pane will tell you where the file is and its name. This file can be useful to send to a colleague to fill out the correct target words for the given source word. The file is in HTML format, it works well to open this in a word processor and save it as a document. After the completed file is returned for use in <object
+type="tFlextrans"
+></object
+>, it may be necessary to create new <object
+type="tFlexx"
+></object
+> entries and use the <object
+type="tSenseLinker"
+></object
+>.</p
 ></section3
 ><section3
 id="sSenses2Link"
@@ -1634,9 +1649,7 @@ type="tLiveRuleTester"
 >.</p
 ><ol
 ><li
->First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and when you do<?xxe-remark Sara
-2025-01-01T00:29:44Z
-Commas before and after "when you do" would help the readability of this sentence?> the <genericRef
+>First you want to choose something from your source text that you want to test. When you first run the tool, the words of the first sentence are shown both in the drop down list at the top and in the peach-colored area. You can check one or more words and, when you do, the <genericRef
 gref="gDataStream"
 >data stream format</genericRef
 > of the words is shown in the blue-colored area. You can quickly select a whole sentence, by clicking on the <object
@@ -1650,9 +1663,13 @@ type="tButton"
 > button. Uncheck them all with the <object
 type="tButton"
 >Unselect All</object
-> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons.<?xxe-remark Sara
-2025-01-01T00:30:58Z
-Extra sentence about the fact that the rules will be run in the order they are listed??></li
+> button. Move a rule up or down by clicking on it and clicking the up or down arrow buttons. Moving the rules in the <object
+type="tLiveRuleTester"
+></object
+> will not affect the order of the rules in the transfer rules file, and is only possible here for testing purposes. Note that rules are run in the order that they are listed, both in the <object
+type="tLiveRuleTester"
+></object
+> and when the transfer rules file is in use.</li
 ><li
 >Now you are ready to test. Click the <object
 type="tButton"
@@ -1714,12 +1731,11 @@ id="sHover"
 >When you are in the <object
 type="tTab"
 >Select Words</object
-> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you have used the <sectionRef
+> tab in the top pane, you can hover over a word to see what the bilingual lexicon entry looks like for that word. As shown in the image above when you hover over the word ‘liebe’, use see that the bilingual lexicon maps ‘lieben’ to ‘älska’. This feature can be very useful when inflection features are present on the target word. These will show in the pop-up as well. If you have used <sectionRef
 sec="sReplEditTool"
+showTitle="full"
 ></sectionRef
-><?xxe-remark Sara
-2025-01-01T00:34:03Z
-this just lists a number in the help file; can it list the name of the tool instead? Then the user can more easily see what is being refered to.?>, you may see multiple mappings in the pop-up image.</p
+>, you may see multiple mappings in the pop-up image.</p
 ></section3
 ><section3
 id="sTesterOther"
@@ -1779,7 +1795,7 @@ type="tButton"
 > button will start the <object
 type="tTool"
 >Replacement Dictionary Editor</object
->.</p
+> module.</p
 ><p
 >If you change the target lexicon, click the <object
 type="tButton"
@@ -1812,9 +1828,7 @@ type="tTool"
 > and the test data shown in it will be from the source text that is currently shown in the <object
 type="tLiveRuleTester"
 ></object
->.<?xxe-remark Sara
-2025-01-01T00:41:39Z
-Need to submit Github issue as errors seen on using the button.?></p
+>.</p
 ><p
 >The <object
 type="tButton"
@@ -1873,18 +1887,7 @@ id="sViewSrcTgt"
 ><secTitle
 >The <object
 type="tViewSrcTgt"
-><?xxe-remark Sara
-2025-01-03T23:23:06Z
-This tool is now called "View Source/Target Apertium Text Tool".
-
-The tool is only usable after running:
-Extract Source Text
-(to create source_text-aper.txt)
-AND
-Run Apertium
-(to create target_text-aper.txt)
-
-If these modules haven't been run; and therefore the .txt file(s) do not exist, should the user be given help to know (from the program, not the help file) why the files don't exist / how to create the files??></object
+></object
 ></secTitle
 ><p
 >The <object
@@ -1898,19 +1901,11 @@ type="tTool"
 >Apertium</object
 > files <object
 type="tFilename"
->source_text.txt</object
-> <?xxe-remark Sara
-2025-01-03T23:20:52Z
-Filename:
-
-source_text-aper.txt?>or <object
+>source_text-aper.txt</object
+> or <object
 type="tFilename"
->target_text.txt</object
-> <?xxe-remark Sara
-2025-01-03T23:21:11Z
-Filename:
-
-target_text-aper.txt?>very often, but sometimes you may find it useful to see what got extracted from the source <object
+>target_text-aper.txt</object
+> very often, but sometimes you may find it useful to see what got extracted from the source <object
 type="tFlexx"
 ></object
 > project into <object
@@ -2262,7 +2257,7 @@ type="tTool"
 ><p
 >The <object
 type="tTool"
->Set Up Transfer Rule Grammatical Categories Tool</object
+>Set Up Transfer Rule Categories and Attributes Tool</object
 > will populate categories and attributes in your transfer rule file. Use this tool when you are first setting up your transfer rules. You are given a choice for populating attributes as shown in <exampleRef
 letter="xSetupCatAttrib"
 num="xSetupCatAttrib"
@@ -2502,7 +2497,10 @@ type="tSettingsValue"
 > and the list of surface words will go to <object
 type="tSettingsValue"
 >Output\target_text-syn.txt</object
->.</li
+>. The <object
+type="tSettingsValue"
+>Output\words-SIG.txt</object
+> file will contain text in SIGMORPHON format.</li
 ></ol
 ><p
 >If you wish to try this module out on the Swedish sample project, use the settings to limit the POS to Noun (n), since that is the only category with a template in this project. When you run it, the output will overgenerate. That is, it will create forms that are not valid forms in Swedish. However, this is a good example of what the output will look like when you have started setting up your template, but have not yet added all the constraints (such as Inflection Features or Inflection Classes) that will fine tune the output.</p
@@ -2805,7 +2803,7 @@ type="tFlextrans"
 > supports cluster projects by allowing you to define which <object
 type="tFlexx"
 ></object
-> projects are in your cluster. You do this in the <object
+> projects - both source and targets - are in your cluster. You do this in the <object
 type="tSettingsTool"
 ></object
 >. See <exampleRef
@@ -3010,7 +3008,7 @@ id="sApproach"
 ><secTitle
 >Approaching the Process of Writing Transfer Rules</secTitle
 ><p
->Think bottom up, not top down. Start with a question like “What is the simplest and best equivalent for dative in a language which does not have dative?” not “How can I change SOV order to SVO order?”</p
+>Think bottom up, not top down. Start with a detailed question like “How can I deal with the source language having possession indicated on nouns, but the target language having possession indicated on verbs?” not “How can I change SOV order to SVO order?”</p
 ></section3
 ><section3
 id="sLexicalStruct"
@@ -3066,7 +3064,7 @@ type="tXMLmindXMLEditor"
 ><p
 >A rule-of-thumb is, if the rule applies to all words in a category, it probably wants to be treated in the structural transfer; if it applies to just part of those words, then maybe it needs to be dealt with in the lexical transfer.</p
 ><p
->Lexical transfer for a three word text looks like <exampleRef
+>Lexical transfer for a three word lexicon looks like <exampleRef
 letter="xLexXfer"
 num="xLexXfer"
 ></exampleRef
@@ -3531,6 +3529,11 @@ lang="hr"
 type="tFlexxTools"
 ></object
 > app.</li
+><li
+>Ensure the <object
+type="tCollection"
+>Drafting</object
+> collection is selected.</li
 ><li
 >Click the <object
 type="tButton"
@@ -4226,7 +4229,7 @@ src="Images/RulesTutTesterStep0.PNG"
 ></chart
 ></example
 ><p
->In the blue box we have the input data stream for the first two (checked) Croatian words:</p
+>In the blue box, in the lower section of the Source Text area, we have the input data stream for the first two (checked) Croatian words:</p
 ><example
 num="xStep0Source"
 ><single
@@ -4260,7 +4263,7 @@ num="xCheatsheet"
 ></exampleRef
 >.</p
 ><p
->In the green box we have the output data stream after the sample rule is applied.</p
+>In the green box, in the Target Text area, we have the output data stream after the sample rule is applied.</p
 ><example
 num="xStep0Target"
 ><single
@@ -5019,7 +5022,10 @@ type="tluAffix"
 ></br
 ></li
 ><li
->Insert a new <object
+>In the <object
+type="tRuleElemInXXE"
+>output</object
+> section, insert a new <object
 type="tRuleElemInXXE"
 >lexical unit</object
 > before our current <object
@@ -5145,7 +5151,7 @@ type="tRuleElemInXXE"
 >literal tag</object
 > element and Insert After... and choose <object
 type="tItalic"
->clip(clip_source_language)</object
+>clip(clip_target_language)</object
 >. Do this twice.</p
 ><example
 num="xLexUnitPronPerNum"
@@ -5160,7 +5166,7 @@ src="Images/RulesTutLexUnitPronPerNum.PNG"
 letter="xLexUnitPronPerNum"
 num="xLexUnitPronPerNum"
 ></exampleRef
-> makes a copy of the part of the lexical unit in position 2, on the source language side, which matches one of the patterns defined in the attribute element “a_pers” (which can be either <langData
+> makes a copy of the part of the lexical unit in position 2, on the target language side, which matches one of the patterns defined in the attribute element “a_pers” (which can be either <langData
 lang="lVernacular"
 > 1</langData
 >, <langData
@@ -5694,9 +5700,18 @@ type="tTool"
 type="tCollection"
 >Run Testbed</object
 > collection. It initializes a test run and dumps all of the source lexical units in the testbed into the <object
+type="tSettingsProperty"
+>Analyzed Text Output</object
+> as defined in the <object
+type="tFlextrans"
+></object
+> <object
+type="tSettingsTool"
+></object
+> (the default is the<object
 type="tFilename"
 >source_text.txt</object
-> file.</p
+> file).</p
 ></section3
 ><section3
 id="sEndTestbed"
@@ -5783,7 +5798,7 @@ id="sAffixRef"
 ><secTitle
 >How do I refer to affix glosses in transfer rules?</secTitle
 ><p
->Important: if any of your affixes have a period in them, you refer to them replacing the period with an underscore. For example, <object
+>Important: if the glosses of any of your affixes have a period in them, you refer to them replacing the period with an underscore. For example, <object
 type="tluAffix"
 >3s.S</object
 > becomes <object
@@ -6023,16 +6038,19 @@ type="tTool"
 ><p
 >The transfer engine searches for matches in your words in sequential order starting with the first word. It will never find a match at some point in a text and then go back earlier in the text.</p
 ><p
->Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping manner. For example, if you have a rule that matches <object
+>Another important concept is that the transfer engine processes words just once for whatever pattern is matched. After they are processed, the words are not examined again for any other matches. In other words, patterns cannot apply in an overlapping manner. For example, if you only have two rules, one that matches <object
 type="tItalic"
 >determiner-noun</object
 > and another one that matches <object
 type="tItalic"
 >noun-adjective</object
->, when a sentence of the form <object
+>, when a phrase of the form <object
 type="tItalic"
 >determiner-noun-adjective</object
-> is processed. The engine uses the rule that is listed first and then discards the three words and continues on to other words. The second rule does not get applied. Another way to describe it is to say that the engine processes words in distinct chunks.</p
+> is processed, the engine uses the rule that is listed first and then discards the <object
+type="tItalic"
+>adjective</object
+> as there is no rule that matches this alone, and then the engine continues on to other words. The second rule does not get applied to that phrase. Another way to describe it is to say that the engine processes words in distinct chunks.</p
 ><p
 >If the <object
 type="tTool"
@@ -6093,7 +6111,7 @@ type="tRuleElemInXXE"
 > element and the text needs to be of the form word1.2. Where 1 would be the homograph number (if there isn’t one in <object
 type="tFlexx"
 ></object
->, use 1) and 2 would be the sense number. In this case the second sense of the word. <exampleRef
+>, use 1) and 2 would be the sense number - in this case the second sense of the word. <exampleRef
 letter="xInsertWord"
 num="xInsertWord"
 ></exampleRef
@@ -6204,6 +6222,7 @@ src="Images/VideoIcon.PNG"
 ><p
 >In the transfer rules you have the ability to use conditional logic. Please watch this <link
 href="https://vimeo.com/934390874"
+openInNewTab="yes"
 >video</link
 > for an explanation. Some conditional logic can be automatically created for you using the <object
 type="tTool"
@@ -6230,6 +6249,7 @@ src="Images/VideoIcon.PNG"
 ><p
 >In the transfer rules you have the ability to modularize your rules by putting repeated logic into a macro. Please watch this <link
 href="https://vimeo.com/934391130"
+openInNewTab="yes"
 >video</link
 > for an explanation.</p
 ></section3
@@ -6255,6 +6275,7 @@ type="tTool"
 >Rule Assistant</object
 > for some reason and you want to see how to do this ‘manually’ in a sample language pair, please watch this <link
 href="https://vimeo.com/934391317"
+openInNewTab="yes"
 >video</link
 >.</p
 ><p
@@ -6357,10 +6378,10 @@ type="tluAffix"
 >3</object
 > so that there is now two tags <object
 type="tluAffix"
->pl</object
+>3</object
 > and <object
 type="tluAffix"
->3</object
+>pl</object
 >. You can't create a combined tag of <object
 type="tluAffix"
 >3pl</object
@@ -6491,7 +6512,10 @@ type="tRuleElemInXXE"
 >concat</object
 ></secTitle
 ><p
->This element concatenates two or more things together.</p
+>This element concatenates two or more things together, with the example below giving an end result of <object
+type="tItalic"
+>v_sample = ab</object
+>.</p
 ><p
 >The same thing regarding tags and literal strings as discussed in <sectionRef
 sec="sApend"
@@ -7056,6 +7080,7 @@ type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
 href="https://vimeo.com/934391669"
+openInNewTab="yes"
 >video</link
 >.</p
 ><p
@@ -7082,6 +7107,7 @@ type="tFlextrans"
 ></object
 > can handle these kind of variants, please watch this <link
 href="https://vimeo.com/934391509"
+openInNewTab="yes"
 >video</link
 >.</p
 ><p
@@ -7116,7 +7142,7 @@ type="tFlextrans"
 ><p
 >A phrasal verb is a verb that consists of two or more words. Often there is a verbal component and a non-verbal component. This discussion assumes that a verbal component is present.</p
 ><p
->If the source and target language both use a phrasal verb for a verbal concept and the non-verbal component(s) and verbal component individually match between the languages. You have nothing to worry about. Just link each component sense in the source to appropriate target sense.</p
+>If the source and target language both use a phrasal verb for a verbal concept and the non-verbal component(s) and verbal component individually match between the languages, you have nothing to worry about. Just link each component sense in the source to appropriate target sense.</p
 ><p
 >If you have a situation where there isn't a match, there are steps you can take to have <object
 type="tFlextrans"
@@ -7274,7 +7300,7 @@ type="tSettingsProperty"
 >Target Complex Form Types with Inflection on 1st Element</object
 > or <object
 type="tSettingsProperty"
->Target Complex Form Types with Inflection on 1st Element</object
+>Target Complex Form Types with Inflection on 2nd Element</object
 > to <object
 type="tSettingsValue"
 >Phrasal Verb</object
@@ -7451,7 +7477,7 @@ type="tBold"
 >source</object
 > lemma with numbers instead of a correctly formed target word.</td
 ><td
->There was no link made to a</td
+>There was no link made to a target word.</td
 ><td
 >Check the target lexicon to see if the sense exists. Run the SL to check the link exists.</td
 ></tr
@@ -8155,7 +8181,7 @@ color="#990099"
 id="tTypeInFLEx"
 ></type
 ><type
-after="Source/Target Viewer Tool"
+after="View Source/Target Apertium Text Tool"
 id="tViewSrcTgt"
 types="tTool"
 ></type

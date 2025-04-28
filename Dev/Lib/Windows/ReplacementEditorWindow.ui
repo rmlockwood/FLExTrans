@@ -149,7 +149,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</string>
+     <string>Separate multiple features/classes and/or affixes with a period. For example f.sg for feminine singular.</string>
     </property>
    </widget>
   </widget>
