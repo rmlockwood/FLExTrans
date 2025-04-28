@@ -5,6 +5,9 @@
 #   SIL International
 #   1/20/2025
 #
+#   Version 3.13.1 - 4/25/25 - Ron Lockwood
+#    Fixes #971. Change the window title based on which projects are selected for export.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -56,7 +59,7 @@ import ChapterSelection
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export Text from Target FLEx to Paratext",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Export one or more texts that contain scripture from the target FLEx project to Paratext.",
         FTM_Help       : "",
@@ -75,6 +78,7 @@ class Main(QMainWindow):
         QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
+        self.targetDB = targetDB
         self.clusterProjects = clusterProjects
         self.scriptureTitles = scriptureTitles
         self.selectedTitles = []
@@ -107,6 +111,19 @@ class Main(QMainWindow):
         comboWidget.addItems(['...'] + self.ptxProjs)
     
     def clusterSelectionChanged(self):
+
+        # Set the window title based on the selected project(s)
+        if len(selProjs := self.ui.clusterProjectsComboBox.currentData()) == 1:
+
+            self.setWindowTitle(f"Export from {selProjs[0]} to Paratext")
+
+        elif len(selProjs) > 1:
+
+            self.setWindowTitle(f"Export from multiple FLEx projects to Paratext")
+        
+        # Otherwise, use the default title
+        else:
+            self.setWindowTitle(f"Export from {self.targetDB.ProjectName()} to Paratext")
 
         ClusterUtils.showClusterWidgets(self)
 

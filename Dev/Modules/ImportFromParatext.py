@@ -5,6 +5,10 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.13.2 - 4/25/25 - Ron Lockwood
+#    Fixes #969. Convert \fig data to the new USFM 3.0 syntax. This helps make the vernacular part - the caption -
+#    which the first thing in the new format easy to identify.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -152,7 +156,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -386,9 +390,6 @@ def do_import(DB, report, chapSelectObj, tree):
 
     importText = matchObj.group(1)
     
-    # Remove newlines
-    #importText = re.sub(r'\n', '', importText)
-        
     # Do user-defined search/replace rules if needed
     if tree:
 
@@ -401,6 +402,11 @@ def do_import(DB, report, chapSelectObj, tree):
         else:
             report.Info(f"{str(TextInOutUtils.numRules(tree))} 'Text In' rules applied.")
             
+    # Convert old USFM 1.0 or 2.0 \fig syntax to 3.0
+    # old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
+    # new format: \\fig CAP|alt="DESC" src="FILE" size="SIZE" loc="LOC" copy="COPY" ref="REF"\\fig*
+    importText = re.sub(r'\\fig ([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\\fig\*', r'\\fig \6|alt="\1" src="\2" size="\3" loc="\4" copy="\5" ref="\7"\\fig*', importText)
+
     # Remove footnotes if necessary
     if chapSelectObj.includeFootnotes == False:
         
