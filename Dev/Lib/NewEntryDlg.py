@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.13.2 - 4/28/25 - Ron Lockwood
+#    Fixes #975. Initialize the return value to False.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -27,7 +30,6 @@ from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from SIL.LCModel import ( # type: ignore
     ILexEntryFactory,
     IMoStemAllomorphFactory,
@@ -62,6 +64,7 @@ class NewEntryDlg(QDialog):
         self.lexemeForm = ''
         self.POS = ''
         self.gloss = ''
+        self.retVal = False
         self.nonInitalLexemeFormChanged = False
         self.settingsMap = {}
 
@@ -308,6 +311,3 @@ class NewEntryDlg(QDialog):
 
             # Set the gloss
             mySense.Gloss.set_String(TargetDB.project.DefaultAnalWs, self.ui.glossEdit.text())
-
-            #self.retVal = True
-
