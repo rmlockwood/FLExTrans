@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>TextInOutMainWindow</class>
+ <widget class="QMainWindow" name="TextInOutMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -550,7 +550,7 @@ p, li { white-space: pre-wrap; }
         <string>Treat the search and replace text as regular expressions.</string>
        </property>
        <property name="text">
-        <string>Regular Expression</string>
+        <string notr="true">Regular Expression</string>
        </property>
       </widget>
      </item>
