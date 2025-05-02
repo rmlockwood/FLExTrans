@@ -34,15 +34,23 @@ import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                          
 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
-import FTPaths
+from FTPaths import TRANSL_DIR
 import ReadConfig
 import TextInOutUtils
 
-from TextInOut import Ui_MainWindow
+app = QApplication(sys.argv)
+
+# Load translations
+translator = QTranslator()
+langCode = 'es'
+if translator.load(TRANSL_DIR+f"/TextInOut_{langCode}.qm"):
+    QCoreApplication.installTranslator(translator)
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -50,13 +58,14 @@ from TextInOut import Ui_MainWindow
 docs = {FTM_Name       : "Text In Rules",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : 'Define and test a set of Paratext-import search and replace operations.' ,
+        FTM_Synopsis   : _translate("TextInOut", 'Define and test a set of Paratext-import search and replace operations.') ,
         FTM_Help   : "",
-        FTM_Description: 
-"""
-This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-Paratext. Regular expressions and Wildebeest normalization can be used if desired.
-"""}
+        FTM_Description: _translate("TextInOut",
+"""This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
+Paratext. Regular expressions and Wildebeest normalization can be used if desired.""")}
+
+app.quit()
+del app
 
 DEFAULT_PATH_TEXT_IN = 'Output\\fixup_paratext_rules.xml'
 
@@ -76,6 +85,15 @@ def MainFunction(DB, report, modify=True):
     # Get the path to the search-replace rules file
     textInRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_IN_RULES_FILE, DEFAULT_PATH_TEXT_IN)
 
+    app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/TextInOut_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
     try:
         # Check if the file exists, if not, create it.
         if os.path.exists(textInRulesFile) == False:
@@ -90,12 +108,11 @@ def MainFunction(DB, report, modify=True):
             # Make a backup copy of the search-replace rule file
             shutil.copy2(textInRulesFile, textInRulesFile+'.bak')
     except:
-        report.Error('There was a problem creating or backing up the rules file. Check your configuration.')
+        report.Error(QCoreApplication.translate('TextInOut', 'There was a problem creating or backing up the rules file. Check your configuration.'))
         return
 
     # Show the window to get the options the user wants
-    app = QApplication(sys.argv)
-    window = TextInOutUtils.TextInOutRulesWindow(textInRulesFile, textIn=True)
+    window = TextInOutUtils.TextInOutRulesWindow(textInRulesFile, textIn=True, winTitle=docs[FTM_Name])
     window.show()
     app.exec_()
     

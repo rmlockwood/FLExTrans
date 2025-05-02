@@ -60,7 +60,7 @@
      <rect>
       <x>10</x>
       <y>110</y>
-      <width>231</width>
+      <width>251</width>
       <height>31</height>
      </rect>
     </property>
@@ -206,7 +206,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>91</x>
-      <y>436</y>
+      <y>430</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -329,7 +329,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>550</y>
-      <width>71</width>
+      <width>81</width>
       <height>23</height>
      </rect>
     </property>
@@ -353,7 +353,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>330</y>
-      <width>70</width>
+      <width>211</width>
       <height>16</height>
      </rect>
     </property>
@@ -371,7 +371,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>450</y>
-      <width>70</width>
+      <width>211</width>
       <height>16</height>
      </rect>
     </property>
@@ -389,13 +389,13 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>100</x>
       <y>550</y>
-      <width>331</width>
+      <width>431</width>
       <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>8</pointsize>
      </font>
     </property>
     <property name="text">
@@ -429,9 +429,9 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>210</x>
       <y>280</y>
-      <width>181</width>
+      <width>321</width>
       <height>17</height>
      </rect>
     </property>
@@ -499,7 +499,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>70</y>
-      <width>521</width>
+      <width>662</width>
       <height>31</height>
      </rect>
     </property>
@@ -511,6 +511,12 @@ p, li { white-space: pre-wrap; }
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="commentLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>65</width>
@@ -529,6 +535,24 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QLineEdit" name="commentTextBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>230</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <pointsize>10</pointsize>
@@ -540,6 +564,24 @@ p, li { white-space: pre-wrap; }
       <widget class="QCheckBox" name="regexCheckBox">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>110</width>
+         <height>16777215</height>
+        </size>
        </property>
        <property name="font">
         <font>
@@ -559,6 +601,12 @@ p, li { white-space: pre-wrap; }
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>8</pointsize>
@@ -574,40 +622,24 @@ p, li { white-space: pre-wrap; }
      </item>
     </layout>
    </widget>
-   <widget class="QLabel" name="WBlinkLabel">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>279</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="textFormat">
-     <enum>Qt::RichText</enum>
-    </property>
-    <property name="openExternalLinks">
-     <bool>true</bool>
-    </property>
-    <property name="textInteractionFlags">
-     <set>Qt::TextBrowserInteraction</set>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>220</x>
       <y>298</y>
-      <width>261</width>
+      <width>311</width>
       <height>24</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QRadioButton" name="WBstepsDefaultRadio">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -627,6 +659,12 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QRadioButton" name="WBstepsAllRadio">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -640,6 +678,12 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QRadioButton" name="WBstepsNoneRadio">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>16777215</width>
@@ -653,6 +697,12 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <widget class="QLabel" name="WBlangLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -671,16 +721,28 @@ p, li { white-space: pre-wrap; }
         </font>
        </property>
        <property name="text">
-        <string>Lang:</string>
+        <string>Language:</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="WBlangCodeTextBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -701,9 +763,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QWidget" name="horizontalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>220</x>
       <y>320</y>
-      <width>261</width>
+      <width>311</width>
       <height>24</height>
      </rect>
     </property>
@@ -770,14 +832,30 @@ Separate steps with spaces or commas.</string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="WBlinkLabel">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextBrowserInteraction</set>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
    <widget class="QLabel" name="WBstepsLabel">
     <property name="geometry">
      <rect>
-      <x>229</x>
-      <y>302</y>
-      <width>44</width>
+      <x>180</x>
+      <y>306</y>
+      <width>41</width>
       <height>31</height>
      </rect>
     </property>

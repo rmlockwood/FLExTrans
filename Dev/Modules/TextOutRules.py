@@ -40,9 +40,23 @@ import sys
 from flextoolslib import *                                          
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
+from FTPaths import TRANSL_DIR
 
 import ReadConfig
 import TextInOutUtils
+
+app = QApplication(sys.argv)
+
+# Load translations
+translator = QTranslator()
+langCode = 'de'
+if translator.load(TRANSL_DIR+f"/TextInOut_{langCode}.qm"):
+    QCoreApplication.installTranslator(translator)
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -50,15 +64,16 @@ import TextInOutUtils
 docs = {FTM_Name       : "Text Out Rules",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
+        FTM_Synopsis   : _translate("TextInOut", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
-        FTM_Description: 
-"""
-This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
+        FTM_Description: _translate("TextInOut",
+"""This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the Fix Up Synthesis Text module.
 This module is not in the Drafting collection of modules by default. You need to add Fix Up Synthesis Text to the Drafting collection 
-and move it to be after the Synthesize Text module.
-"""}
+and move it to be after the Synthesize Text module.""")}
+
+app.quit()
+del app
 
 DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
 
@@ -78,6 +93,13 @@ def MainFunction(DB, report, modify=True):
     # Get the path to the search-replace rules file
     textOutRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_OUT_RULES_FILE, DEFAULT_PATH_TEXT_OUT)
     
+    app = QApplication(sys.argv)
+
+    # Load translations
+    translator = QTranslator()
+    if translator.load(TRANSL_DIR+"/TextInOut_de.qm"):
+
+        QCoreApplication.installTranslator(translator)
     try:
         # Check if the file exists, if not, create it.
         if os.path.exists(textOutRulesFile) == False:
@@ -92,12 +114,11 @@ def MainFunction(DB, report, modify=True):
             # Make a backup copy of the search-replace rule file
             shutil.copy2(textOutRulesFile, textOutRulesFile+'.bak')
     except:
-        report.Error('There was a problem creating or backing up the rules file. Check your configuration.')
+        report.Error(QCoreApplication.translate('TextInOut', 'There was a problem creating or backing up the rules file. Check your configuration.'))
         return
 
     # Show the window to get the options the user wants
-    app = QApplication(sys.argv)
-    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False)
+    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False, winTitle=docs[FTM_Name])
     window.show()
     app.exec_()
     
