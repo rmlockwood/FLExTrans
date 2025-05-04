@@ -183,7 +183,7 @@ import time
 from fuzzywuzzy import fuzz
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QCoreApplication, QTranslator
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 import InterlinData
@@ -1004,39 +1004,39 @@ class Main(QMainWindow):
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
-        # Stretch the table view to fit
-        self.ui.tableView.setGeometry(10, 50, self.width() - 20, self.height() - self.ui.OKButton.height() - 85)
+        # # Stretch the table view to fit
+        # self.ui.tableView.setGeometry(10, 50, self.width() - 20, self.height() - self.ui.OKButton.height() - 85)
         
-        # Move the OK and Cancel buttons up and down as the window gets resized
-        x = 10
-        if x < 0:
-            x = 0
+        # # Move the OK and Cancel buttons up and down as the window gets resized
+        # x = 10
+        # if x < 0:
+        #     x = 0
         
-        self.positionControl(self.ui.OKButton, x, self.ui.tableView.height() + 60)
-        self.positionControl(self.ui.CancelButton, x + self.ui.OKButton.width() + 10, self.ui.tableView.height() + 60)
+        # self.positionControl(self.ui.OKButton, x, self.ui.tableView.height() + 60)
+        # self.positionControl(self.ui.CancelButton, x + self.ui.OKButton.width() + 10, self.ui.tableView.height() + 60)
         
-        # Set position of other controls all the same height and 10 pixels between each other
-        startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
+        # # Set position of other controls all the same height and 10 pixels between each other
+        # startX = self.ui.CancelButton.x() + self.ui.CancelButton.width() + 10
         
-        # Make a list of all the controls that need to move up or down
-        controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, 
-                       self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox, self.ui.exportUnlinkedCheckBox]
+        # # Make a list of all the controls that need to move up or down
+        # controlList = [self.ui.ShowOnlyUnlinkedCheckBox, self.ui.HideProperNounsCheckBox, self.ui.ZoomLabel, self.ui.ZoomIncrease, self.ui.ZoomDecrease, 
+        #                self.ui.FontButton, self.ui.FontNameLabel, self.ui.RebuildBilingCheckBox, self.ui.exportUnlinkedCheckBox]
 
-        for myControl in controlList:
+        # for myControl in controlList:
             
-            self.positionControl(myControl, startX, self.ui.OKButton.y())
-            startX += myControl.width() + 10
+        #     self.positionControl(myControl, startX, self.ui.OKButton.y())
+        #     startX += myControl.width() + 10
         
-        self.positionControl(self.ui.SensesToLinkLabel, 10, self.ui.OKButton.y() + 27)
-        self.positionControl(self.ui.SensesRemainingLabel, self.ui.SensesToLinkLabel.x() + self.ui.SensesToLinkLabel.width() + 5, self.ui.OKButton.y() + 27)
+        # self.positionControl(self.ui.SensesToLinkLabel, 10, self.ui.OKButton.y() + 27)
+        # self.positionControl(self.ui.SensesRemainingLabel, self.ui.SensesToLinkLabel.x() + self.ui.SensesToLinkLabel.width() + 5, self.ui.OKButton.y() + 27)
         
         
         firstColWidth = 45
         secondColWidth = 45
         
         # Set the column widths
-        colCount = self.cols # self.ui.tableView.columnCount()
-        colWidth = ((self.ui.tableView.width() - firstColWidth - secondColWidth) // (colCount - 2)) - 4 # don't include 1st 2 columns
+        colCount = self.cols 
+        colWidth = ((self.width() - 20 - firstColWidth - secondColWidth) // (colCount - 2)) - 4 # don't include 1st 2 columns
 
         if colWidth < 40:
             colWidth = 40
@@ -1045,6 +1045,7 @@ class Main(QMainWindow):
         self.ui.tableView.setColumnWidth(COL_VERSE_NUM, secondColWidth)
 
         for i in range(COL_SRC_HEADWORD, colCount):
+
             self.ui.tableView.setColumnWidth(i, colWidth)
 
     def ComboClicked(self):
@@ -1877,6 +1878,14 @@ def RunModule(DB, report, configMap):
     else:
         # Show the window
         app = QApplication(sys.argv)
+
+        # Load translations
+        langCode = 'es'
+        translator = QTranslator()
+
+        if translator.load(FTPaths.TRANSL_DIR+f"/Linker_{langCode}.qm"):
+
+            QCoreApplication.installTranslator(translator)
         
         myHeaderData = ["Link It!", 'V #', 'Source Head Word', 'Source Cat.', 'Source Gloss', 'Target Head Word', 'Target Cat.', 'Target Gloss']
         

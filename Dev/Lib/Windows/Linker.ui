@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1156</width>
+    <width>1133</width>
     <height>490</height>
    </rect>
   </property>
@@ -17,333 +17,422 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>FLExTrans Sense Linker Tool</string>
+   <string notr="true">FLExTrans Sense Linker Tool</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="tableView">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>1131</width>
-      <height>351</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Arial</family>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="OKButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>410</y>
-      <width>90</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>OK</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="CancelButton">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>410</y>
-      <width>90</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Cancel</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="targetLexCombo">
-    <property name="geometry">
-     <rect>
-      <x>526</x>
-      <y>10</y>
-      <width>271</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</string>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="ShowOnlyUnlinkedCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>410</y>
-      <width>121</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Show Only Unlinked</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>430</x>
-      <y>16</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>All Target Senses:</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="HideProperNounsCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>410</y>
-      <width>115</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hide Proper Nouns</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="searchTargetEdit">
-    <property name="geometry">
-     <rect>
-      <x>810</x>
-      <y>10</y>
-      <width>101</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>Type the beginning of an entry or any text (if 'Filter on all fields' is checked), 
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Source Text:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="SourceTextCombo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>2</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="maxVisibleItems">
+           <number>30</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>All Target Senses:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="targetLexCombo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>2</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it.</string>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="searchTargetEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Type the beginning of an entry or any text (if 'Filter on all fields' is checked), 
 then double-click in the Target Head Word column for the desired row to link to it.</string>
-    </property>
-    <property name="placeholderText">
-     <string>Search here</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="SourceTextCombo">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>10</y>
-      <width>331</width>
-      <height>29</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
-    <property name="maxVisibleItems">
-     <number>30</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>16</y>
-      <width>65</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Source Text:</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="SearchAnythingCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>930</x>
-      <y>13</y>
-      <width>121</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Filter on all fields</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ZoomDecrease">
-    <property name="geometry">
-     <rect>
-      <x>540</x>
-      <y>412</y>
-      <width>21</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>–</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ZoomIncrease">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>412</y>
-      <width>21</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>+</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="ZoomLabel">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>414</y>
-      <width>32</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Zoom:</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="FontNameLabel">
-    <property name="geometry">
-     <rect>
-      <x>674</x>
-      <y>414</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Arial</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="FontButton">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>410</y>
-      <width>90</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Font</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="RebuildBilingCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>410</y>
-      <width>151</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Rebuild Bilingual Lexicon</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="SensesToLinkLabel">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>442</y>
-      <width>71</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Senses to link:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="SensesRemainingLabel">
-    <property name="geometry">
-     <rect>
-      <x>82</x>
-      <y>442</y>
-      <width>31</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>888</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="exportUnlinkedCheckBox">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>410</y>
-      <width>151</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Export a list of unlinked senses to a file. If Hide Proper Nouns 
+          </property>
+          <property name="placeholderText">
+           <string>Search here</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="SearchAnythingCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Filter on all fields</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="AddEntryButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Add a new entry to the target lexicon.</string>
+          </property>
+          <property name="text">
+           <string>Add Entry</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableView" name="tableView">
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QPushButton" name="OKButton">
+          <property name="text">
+           <string>OK</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="CancelButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Cancel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="ShowOnlyUnlinkedCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Show Only Unlinked</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="HideProperNounsCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Hide Proper Nouns</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="ZoomLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Zoom:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ZoomIncrease">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">+</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ZoomDecrease">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>20</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">–</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="FontButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Font</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="FontNameLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">Arial</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="RebuildBilingCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Rebuild Bilingual Lexicon</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="exportUnlinkedCheckBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Export a list of unlinked senses to a file. If Hide Proper Nouns 
 is checked, Proper Nouns will not be exported.</string>
-    </property>
-    <property name="text">
-     <string>Export Unlinked Senses</string>
-    </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="AddEntryButton">
-    <property name="geometry">
-     <rect>
-      <x>1050</x>
-      <y>15</y>
-      <width>90</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>Add a new entry to the target lexicon.</string>
-    </property>
-    <property name="text">
-     <string>Add Entry</string>
-    </property>
-   </widget>
+          </property>
+          <property name="text">
+           <string>Export Unlinked Senses</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="SensesToLinkLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Senses to link:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="SensesRemainingLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>15</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string notr="true">888</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1156</width>
+     <width>1133</width>
      <height>21</height>
     </rect>
    </property>
