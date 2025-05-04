@@ -30,6 +30,8 @@
 #    First version
 
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter
+from PyQt5.QtGui import QFontMetrics
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from ReplacementEditorWindow import Ui_MainWindow
 from flextoolslib import (
@@ -40,6 +42,7 @@ from flextoolslib import (
 
 import xml.etree.ElementTree as ET
 
+import FTPaths
 import Utils
 
 docs = {
@@ -404,33 +407,56 @@ class Main(QMainWindow):
         QMainWindow.resizeEvent(self, event)
 
         # Stretch the table view to fit
-        self.ui.tableWidget.setGeometry(10, 10, self.width() - 20, self.height() - self.ui.addButton.height() - 70)
+        self.ui.tableWidget.setGeometry(10, 10, self.width() - 20, self.height() - self.ui.addButton.height() - 45)
 
-        y = self.ui.tableWidget.height() + 20
+        # y = self.ui.tableWidget.height() + 20
 
-        self.positionControl(self.ui.infoLabel, 10, y)
+        # self.positionControl(self.ui.infoLabel, 10, y)
 
-        # Move the buttons up and down as the window gets resized
-        x = 10
-        y = y + 35
+        # # Move the buttons up and down as the window gets resized
+        # x = 10
+        # y = y + 35
 
-        self.positionControl(self.ui.addButton, x, y)
-        self.positionControl(self.ui.deleteButton, x + self.ui.addButton.width() + 10, y)
-        x = x + self.ui.addButton.width() + 10
-        self.positionControl(self.ui.saveButton, x + self.ui.deleteButton.width() + 10, y)
-        x = x + self.ui.deleteButton.width() + 10
-        self.positionControl(self.ui.closeButton, x + self.ui.saveButton.width() + 10, y)
-        x = x + self.ui.saveButton.width() + 10
-        self.positionControl(self.ui.saveLabel, x + self.ui.closeButton.width() + 10, y)
+        # self.positionControl(self.ui.addButton, x, y)
+        # self.positionControl(self.ui.deleteButton, x + self.ui.addButton.width() + 10, y)
+        # x = x + self.ui.addButton.width() + 10
+        # self.positionControl(self.ui.saveButton, x + self.ui.deleteButton.width() + 10, y)
+        # x = x + self.ui.deleteButton.width() + 10
+        # self.positionControl(self.ui.closeButton, x + self.ui.saveButton.width() + 10, y)
+        # x = x + self.ui.saveButton.width() + 10
+        # self.positionControl(self.ui.saveLabel, x + self.ui.closeButton.width() + 10, y)
 
-        widthAffix = 50
-        widthGramCat = 80
-        self.ui.tableWidget.setColumnWidth(4, 1) # the column with the arrow
-        self.ui.tableWidget.setColumnWidth(3, widthAffix) # first affix column
-        self.ui.tableWidget.setColumnWidth(8, widthAffix) # 2nd affix column
-        self.ui.tableWidget.setColumnWidth(1, widthGramCat) # 1st gram cat column
-        self.ui.tableWidget.setColumnWidth(6, widthGramCat) # 2nd gram cat column
-        self.ui.tableWidget.setColumnWidth(9, 160) # comment column
+        # Get the default font metrics
+        font = self.ui.tableWidget.font()
+        metrics = QFontMetrics(font)
+
+        # Adjust column widths based on header text
+        for col in range(self.ui.tableWidget.columnCount()):
+
+            headerText = self.ui.tableWidget.horizontalHeaderItem(col).text()
+            textWidth = metrics.width(headerText) + 20  # Adding padding
+
+            if col == 9:  # Comment column:
+
+                textWidth = textWidth * 3  # Wider column for comments
+
+            self.ui.tableWidget.setColumnWidth(col, textWidth)
+
+        # # Calculate total width based on column widths
+        # totalWidth = sum(self.ui.tableWidget.columnWidth(col) for col in range(self.ui.tableWidget.columnCount())) + 20  # Add padding
+
+        # # Set table width dynamically
+        # self.ui.tableWidget.resize(totalWidth, self.ui.tableWidget.height())  
+
+
+        # widthAffix = 50
+        # widthGramCat = 80
+        # self.ui.tableWidget.setColumnWidth(4, 1) # the column with the arrow
+        # self.ui.tableWidget.setColumnWidth(3, widthAffix) # first affix column
+        # self.ui.tableWidget.setColumnWidth(8, widthAffix) # 2nd affix column
+        # self.ui.tableWidget.setColumnWidth(1, widthGramCat) # 1st gram cat column
+        # self.ui.tableWidget.setColumnWidth(6, widthGramCat) # 2nd gram cat column
+        # self.ui.tableWidget.setColumnWidth(9, 160) # comment column
 
     def setWindowIcon(self):
         from PyQt5 import QtGui
@@ -566,7 +592,7 @@ class Main(QMainWindow):
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
-        self.ui.saveLabel.setText('Replacement file saved.')
+        self.ui.saveLabel.setText('Replacement dictionary file saved.')
         self.unsaved = False
 
     def closeEvent(self, event):
@@ -608,6 +634,15 @@ def MainFunction(DB, report, modifyAllowed):
     composed = (composed == 'y')
 
     app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/ReplacementEditorWindow_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = Main(replaceFile, DB, targetDB, report, composed)
     window.show()
     app.exec_()
