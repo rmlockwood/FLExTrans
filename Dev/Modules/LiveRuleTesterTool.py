@@ -214,6 +214,7 @@ from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
 
 from Testbed import *
@@ -2617,6 +2618,14 @@ def RunModule(DB, report, configMap, ruleCount=None):
         # Create the qt app
         app = QApplication(sys.argv)
 
+        # Load translations
+        langCode = 'es'
+        translator = QTranslator()
+
+        if translator.load(FTPaths.TRANSL_DIR+f"/LiveRuleTester_{langCode}.qm"):
+
+            QCoreApplication.installTranslator(translator)
+        
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
             pass
