@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
+    <width>626</width>
     <height>283</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
      <rect>
       <x>10</x>
       <y>130</y>
-      <width>191</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -42,9 +42,9 @@
    <widget class="QLabel" name="bookAbbrevLabel">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>110</x>
       <y>37</y>
-      <width>191</width>
+      <width>251</width>
       <height>21</height>
      </rect>
     </property>
@@ -58,7 +58,7 @@
    <widget class="QSpinBox" name="fromChapterSpinBox">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>280</x>
       <y>70</y>
       <width>42</width>
       <height>22</height>
@@ -74,9 +74,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>110</x>
       <y>7</y>
-      <width>191</width>
+      <width>251</width>
       <height>21</height>
      </rect>
     </property>
@@ -90,9 +90,9 @@
    <widget class="QLabel" name="toLabel">
     <property name="geometry">
      <rect>
-      <x>225</x>
+      <x>325</x>
       <y>70</y>
-      <width>26</width>
+      <width>31</width>
       <height>21</height>
      </rect>
     </property>
@@ -100,7 +100,7 @@
      <string>to</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QCheckBox" name="useFullBookNameForTitleCheckBox">
@@ -108,7 +108,7 @@
      <rect>
       <x>10</x>
       <y>150</y>
-      <width>191</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -125,9 +125,9 @@
    <widget class="QCheckBox" name="footnotesCheckBox">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>320</x>
       <y>110</y>
-      <width>211</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -138,7 +138,7 @@
    <widget class="QLineEdit" name="ptxProjAbbrevLineEdit">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>370</x>
       <y>7</y>
       <width>51</width>
       <height>20</height>
@@ -148,7 +148,7 @@
    <widget class="QLineEdit" name="bookAbbrevLineEdit">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>370</x>
       <y>37</y>
       <width>51</width>
       <height>20</height>
@@ -158,7 +158,7 @@
    <widget class="QLabel" name="chapterLabel">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>170</x>
       <y>70</y>
       <width>101</width>
       <height>21</height>
@@ -174,7 +174,7 @@
    <widget class="QSpinBox" name="toChapterSpinBox">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>360</x>
       <y>70</y>
       <width>42</width>
       <height>22</height>
@@ -190,7 +190,7 @@
    <widget class="QPushButton" name="OKButton">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>230</x>
       <y>223</y>
       <width>81</width>
       <height>23</height>
@@ -203,7 +203,7 @@
    <widget class="QPushButton" name="CancelButton">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>320</x>
       <y>223</y>
       <width>81</width>
       <height>23</height>
@@ -216,9 +216,9 @@
    <widget class="QCheckBox" name="crossrefsCheckBox">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>320</x>
       <y>130</y>
-      <width>211</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -234,7 +234,7 @@
      <rect>
       <x>10</x>
       <y>110</y>
-      <width>191</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -248,9 +248,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>320</x>
       <y>150</y>
-      <width>211</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
@@ -261,7 +261,7 @@
    <widget class="QComboBox" name="clusterProjectsComboBox">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>320</x>
       <y>190</y>
       <width>221</width>
       <height>22</height>
@@ -271,9 +271,9 @@
    <widget class="QLabel" name="clusterProjectsLabel">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>40</x>
       <y>190</y>
-      <width>191</width>
+      <width>271</width>
       <height>21</height>
      </rect>
     </property>
@@ -289,13 +289,13 @@
      <rect>
       <x>10</x>
       <y>170</y>
-      <width>191</width>
+      <width>301</width>
       <height>17</height>
      </rect>
     </property>
     <property name="toolTip">
      <string>Overwrite a text that has the same name. For example, 
-if John 01 already exists, it will delete it and create John 01 again.</string>
+if JHN 01 already exists, it will delete it and create JHN 01 again.</string>
     </property>
     <property name="text">
      <string>Overwrite existing text</string>
@@ -310,9 +310,9 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>110</x>
       <y>170</y>
-      <width>341</width>
+      <width>511</width>
       <height>20</height>
      </rect>
     </property>
@@ -323,9 +323,9 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
    <widget class="QLabel" name="scriptureTextsLabel">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>40</x>
       <y>250</y>
-      <width>191</width>
+      <width>271</width>
       <height>21</height>
      </rect>
     </property>
@@ -339,7 +339,7 @@ if John 01 already exists, it will delete it and create John 01 again.</string>
    <widget class="QComboBox" name="scriptureTextsComboBox">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>320</x>
       <y>250</y>
       <width>221</width>
       <height>22</height>

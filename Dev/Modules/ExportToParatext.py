@@ -82,6 +82,7 @@ from flextoolslib import *
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 import ReadConfig
 import FTPaths
@@ -228,6 +229,14 @@ def doExportToParatext(DB, configMap, report):
     # Show the window
     app = QApplication(sys.argv)
 
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/ParatextChapSelectionDlg_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()

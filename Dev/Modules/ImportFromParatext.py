@@ -138,8 +138,9 @@ from SIL.LCModel import ( # type: ignore
 from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 import FTPaths
 import ReadConfig
@@ -545,6 +546,15 @@ def MainFunction(DB, report, modify=True):
         
     # Show the window
     app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/ParatextChapSelectionDlg_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = Main(clusterProjects)
     window.show()
     app.exec_()

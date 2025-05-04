@@ -17,7 +17,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QLabel, QComboBox
 
 IMP_EXP_WINDOW_HEIGHT = 260
-IMP_EXP_WINDOW_WIDTH = 440
+IMP_EXP_WINDOW_WIDTH = 626
 
 def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, width, specialProcessFunc=None):
 
@@ -31,7 +31,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
 
         # Create the label
         labelWidget = QLabel(parentWin)
-        labelWidget.setGeometry(QtCore.QRect(10, 190, 191, 21))
+        labelWidget.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 21))
         labelWidget.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         labelWidget.setObjectName(f"label{x}")
         labelWidget.setText(self.clusterProjects[x])
@@ -56,8 +56,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         font = QtGui.QFont()
         font.setUnderline(True)
         self.headWidg1 = QLabel(parentWin)
-        self.headWidg1.setGeometry(QtCore.QRect(10, 190, 191, 22))
-        self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.headWidg1.setGeometry(QtCore.QRect(10, 190, self.ui.clusterProjectsLabel.width(), 22))
         self.headWidg1.setObjectName("headerLabel1")
         self.headWidg1.setText(header1TextStr)
         self.headWidg1.setVisible(False)
@@ -109,6 +108,7 @@ def showClusterWidgets(self):
     if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
 
         self.headWidg1.setGeometry(labelStartXpos, startYpos+10, self.headWidg1.width(), self.headWidg1.height())
+        self.headWidg1.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.headWidg1.setVisible(True)
         self.headWidg2.setGeometry(comboStartXpos, startYpos+10, self.headWidg2.width(), self.headWidg2.height())
         self.headWidg2.setVisible(True)
