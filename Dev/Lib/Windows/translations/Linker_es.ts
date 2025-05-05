@@ -97,4 +97,47 @@ luego haga doble clic en la columna "Palabra principal objetivo" para la fila de
         <translation>Sentidos para vincular:</translation>
     </message>
 </context>
+<context>
+    <name>Dialog</name>
+    <message>
+        <location filename="../NewEntry.ui" line="38"/>
+        <source>Lexeme Form</source>
+        <translation>Forma del lexema</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="54"/>
+        <source>Morpheme Type</source>
+        <translation>Tipo de morfema</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="70"/>
+        <source>Grammatical Category</source>
+        <translation>Categoría gramatical</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="180"/>
+        <source>Add an entry to the target lexicon.</source>
+        <translation>Agregar una entrada al léxico objetivo.</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="112"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="146"/>
+        <source>Cancel</source>
+        <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="159"/>
+        <source>Gloss</source>
+        <translation>Glosa</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="196"/>
+        <source>Cluster Projects to Apply to</source>
+        <translation>Proyectos de clúster a los que aplicar</translation>
+    </message>
+</context>
 </TS>

@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add New Target Entry</string>
+   <string notr="true">Add New Target Entry</string>
   </property>
   <property name="whatsThis">
    <string/>

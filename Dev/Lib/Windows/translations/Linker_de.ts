@@ -97,4 +97,47 @@ und doppelklicken Sie dann in der Spalte &quot;Ziel-Stichwort&quot; auf die gew�
         <translation>Zu verknüpfende Bedeutungen:</translation>
     </message>
 </context>
+<context>
+    <name>Dialog</name>
+    <message>
+        <location filename="../NewEntry.ui" line="38"/>
+        <source>Lexeme Form</source>
+        <translation>Lexemform</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="54"/>
+        <source>Morpheme Type</source>
+        <translation>Morphemtyp</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="70"/>
+        <source>Grammatical Category</source>
+        <translation>Grammatische Kategorie</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="180"/>
+        <source>Add an entry to the target lexicon.</source>
+        <translation>Einen Eintrag zum Ziellexikon hinzufügen.</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="112"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="146"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="159"/>
+        <source>Gloss</source>
+        <translation>Glosse</translation>
+    </message>
+    <message>
+        <location filename="../NewEntry.ui" line="196"/>
+        <source>Cluster Projects to Apply to</source>
+        <translation>Cluster-Projekte, auf die angewendet werden soll</translation>
+    </message>
+</context>
 </TS>
