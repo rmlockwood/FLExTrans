@@ -68,6 +68,7 @@ from flextoolslib import *
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 import FTPaths
 import Utils
@@ -537,6 +538,15 @@ def MainFunction(DB, report, modify=True):
     
     # Show the window to get the options the user wants
     app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/RuleCatsAndAttribs_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = Main()
     window.show()
     app.exec_()
