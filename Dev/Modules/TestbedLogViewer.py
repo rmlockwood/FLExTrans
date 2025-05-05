@@ -49,6 +49,7 @@ from subprocess import call
 from PyQt5 import QtGui, QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from SIL.LCModel import *                                                   
  
@@ -634,6 +635,14 @@ def RunTestbedLogViewer(report):
 
     app = QApplication(sys.argv)
 
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/TestbedLog_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = LogViewerMain(resultsXMLObj, testbedPath)
     
     window.show()

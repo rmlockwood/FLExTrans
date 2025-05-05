@@ -61,6 +61,7 @@ from flextoolslib import *
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from SrcTgtViewer import Ui_MainWindow
 import FTPaths
@@ -142,29 +143,29 @@ class Main(QMainWindow):
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
-        buttonHeight = self.ui.OKButton.height()
-        buttonWidth = self.ui.OKButton.width()
+        # buttonHeight = self.ui.OKButton.height()
+        # buttonWidth = self.ui.OKButton.width()
         
         # Stretch the view to fit
         self.ui.largeTextEdit.setGeometry(10, 10, self.width() - 20, \
-                                    self.height() - 90)
+                                    self.height() - 84)
         
-        # Change the y value of widgets depending on the window size
-        y = self.ui.largeTextEdit.height() + 35
+        # # Change the y value of widgets depending on the window size
+        # y = self.ui.largeTextEdit.height() + 35
         
-        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), y, buttonWidth, buttonHeight)
-        self.ui.FontButton.setGeometry(self.ui.FontButton.x(), y, buttonWidth, buttonHeight)
-        self.ui.ZoomIncrease.setGeometry(self.ui.ZoomIncrease.x(), y, self.ui.ZoomIncrease.width(), buttonHeight)
-        self.ui.ZoomDecrease.setGeometry(self.ui.ZoomDecrease.x(), y, self.ui.ZoomDecrease.width(), buttonHeight)
-        self.ui.FontNameLabel.setGeometry(self.ui.FontNameLabel.x(), y+2, self.ui.FontNameLabel.width(), self.ui.FontNameLabel.height())
-        self.ui.ZoomLabel.setGeometry(self.ui.ZoomLabel.x(), y+2, self.ui.ZoomLabel.width(), self.ui.ZoomLabel.height())
-        self.ui.SourceRadio.setGeometry(self.ui.SourceRadio.x(), y+2, self.ui.SourceRadio.width(), self.ui.SourceRadio.height())
-        self.ui.TargetRadio.setGeometry(self.ui.TargetRadio.x(), y+2, self.ui.TargetRadio.width(), self.ui.TargetRadio.height())
-        self.ui.targetRadio1.setGeometry(self.ui.targetRadio1.x(), y+2-20, self.ui.targetRadio1.width(), self.ui.targetRadio1.height())
-        self.ui.targetRadio2.setGeometry(self.ui.targetRadio2.x(), y+2, self.ui.targetRadio2.width(), self.ui.targetRadio2.height())
-        self.ui.targetRadio3.setGeometry(self.ui.targetRadio3.x(), y+2+20, self.ui.targetRadio3.width(), self.ui.targetRadio3.height())
-        self.ui.RTL.setGeometry(self.ui.RTL.x(), y+2, self.ui.RTL.width(), self.ui.RTL.height())
-        self.ui.linkLabel.setGeometry(self.ui.linkLabel.x(), y+2, self.ui.linkLabel.width(), self.ui.linkLabel.height())
+        # self.ui.OKButton.setGeometry(self.ui.OKButton.x(), y, buttonWidth, buttonHeight)
+        # self.ui.FontButton.setGeometry(self.ui.FontButton.x(), y, buttonWidth, buttonHeight)
+        # self.ui.ZoomIncrease.setGeometry(self.ui.ZoomIncrease.x(), y, self.ui.ZoomIncrease.width(), buttonHeight)
+        # self.ui.ZoomDecrease.setGeometry(self.ui.ZoomDecrease.x(), y, self.ui.ZoomDecrease.width(), buttonHeight)
+        # self.ui.FontNameLabel.setGeometry(self.ui.FontNameLabel.x(), y+2, self.ui.FontNameLabel.width(), self.ui.FontNameLabel.height())
+        # self.ui.ZoomLabel.setGeometry(self.ui.ZoomLabel.x(), y+2, self.ui.ZoomLabel.width(), self.ui.ZoomLabel.height())
+        # self.ui.SourceRadio.setGeometry(self.ui.SourceRadio.x(), y+2, self.ui.SourceRadio.width(), self.ui.SourceRadio.height())
+        # self.ui.TargetRadio.setGeometry(self.ui.TargetRadio.x(), y+2, self.ui.TargetRadio.width(), self.ui.TargetRadio.height())
+        # self.ui.targetRadio1.setGeometry(self.ui.targetRadio1.x(), y+2-20, self.ui.targetRadio1.width(), self.ui.targetRadio1.height())
+        # self.ui.targetRadio2.setGeometry(self.ui.targetRadio2.x(), y+2, self.ui.targetRadio2.width(), self.ui.targetRadio2.height())
+        # self.ui.targetRadio3.setGeometry(self.ui.targetRadio3.x(), y+2+20, self.ui.targetRadio3.width(), self.ui.targetRadio3.height())
+        # self.ui.RTL.setGeometry(self.ui.RTL.x(), y+2, self.ui.RTL.width(), self.ui.RTL.height())
+        # self.ui.linkLabel.setGeometry(self.ui.linkLabel.x(), y+2, self.ui.linkLabel.width(), self.ui.linkLabel.height())
 
     def ZoomIncreaseClicked(self):
         myFont = self.ui.largeTextEdit.font()
@@ -365,6 +366,14 @@ def MainFunction(DB, report, modify=True):
     
     # Show the window
     app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/SrcTgtViewer_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
 
     window = Main(srcFile, tgtFile, htmlFile, advanced)
     
