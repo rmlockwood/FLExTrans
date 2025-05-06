@@ -129,6 +129,8 @@ import Utils
 import ReadConfig
 import FTPaths
 
+_t = QtCore.QCoreApplication.translate
+
 # ----------------------------------------------------------------
 # This won't be seen anymore by the user since it gets launced from the menu
 
@@ -554,8 +556,6 @@ def makeOpenFile(wind, myWidgInfo):
         
     return open_file
     
-    doBrowse(wind, myWidgInfo)
-    
 def makeOpenFolder(wind, myWidgInfo):
     
     # create a new function that will call doFolderBrowse with the given parameters
@@ -574,7 +574,8 @@ def doBrowse(wind, myWidgInfo):
     if not os.path.isdir(startDir):
         
         startDir = ""
-                   
+
+    # TODO: bring up language specific file dialog               
     filename, _ = QFileDialog.getOpenFileName(wind, "Select file", startDir, "(*.*)")
     
     if filename:
@@ -590,6 +591,7 @@ def doFolderBrowse(wind, myWidgInfo):
         
         startDir = ""
                    
+    # TODO: bring up language specific file dialog               
     dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.ShowDirsOnly)
     
     if dirName:
@@ -622,7 +624,7 @@ class Ui_MainWindow(object):
         # Create a group box for the radio buttons
         self.radioGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.radioGroupBox.setObjectName("radioGroupBox")
-        self.radioGroupBox.setTitle("View Mode")
+        self.radioGroupBox.setTitle(_t("SettingsWindow", "View Mode"))
         self.radioGroupBox.setFixedHeight(47)  # Set a fixed height for the group box
 
         # Create a horizontal layout for the radio buttons
@@ -632,18 +634,18 @@ class Ui_MainWindow(object):
         # Create the radio buttons
         self.miniRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.miniRadioButton.setObjectName("miniRadioButton")
-        self.miniRadioButton.setText("Mini")
+        self.miniRadioButton.setText(_t("SettingsWindow", "Mini"))
         self.miniRadioButton.setChecked(True)  # Set the default mode to Mini
         self.radioLayout.addWidget(self.miniRadioButton)
 
         self.basicRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.basicRadioButton.setObjectName("basicRadioButton")
-        self.basicRadioButton.setText("Basic")
+        self.basicRadioButton.setText(_t("SettingsWindow", "Basic"))
         self.radioLayout.addWidget(self.basicRadioButton)
 
         self.fullRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.fullRadioButton.setObjectName("fullRadioButton")
-        self.fullRadioButton.setText("Full")
+        self.fullRadioButton.setText(_t("SettingsWindow", "Full"))
         self.radioLayout.addWidget(self.fullRadioButton)
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
@@ -665,7 +667,6 @@ class Ui_MainWindow(object):
         self.scrollArea.setObjectName("scrollArea")
 
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-#        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 847, 1046))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
 
         self.gridLayout_2 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -676,20 +677,23 @@ class Ui_MainWindow(object):
 
         # Set up scroll area
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.gridLayout.addWidget(self.scrollArea, 1, 0, 1, 6) # span 6 columns
+        self.gridLayout.addWidget(self.scrollArea, 1, 0, 1, 6)  # span 6 columns
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
-        self.gridLayout.addWidget(self.apply_button, 2, 3, 1, 1) # put the buttons at columns 3-5 so they are on the right side
+        self.apply_button.setText(_t("SettingsWindow", "Apply"))
+        self.gridLayout.addWidget(self.apply_button, 2, 3, 1, 1)  # put the buttons at columns 3-5 so they are on the right side
 
         self.applyClose_button = QtWidgets.QPushButton(self.centralwidget)
         self.applyClose_button.setObjectName("applyClose_button")
+        self.applyClose_button.setText(_t("SettingsWindow", "Apply and Close"))
         self.gridLayout.addWidget(self.applyClose_button, 2, 4, 1, 1)
 
         self.Close_button = QtWidgets.QPushButton(self.centralwidget)
         self.Close_button.setObjectName("Close_button")
+        self.Close_button.setText(_t("SettingsWindow", "Close"))
         self.gridLayout.addWidget(self.Close_button, 2, 5, 1, 1)
-
+        
         # Set the radio button based on the loaded view setting
         if MainWindow.viewSetting == MINI_VIEW:
 
@@ -851,8 +855,8 @@ class Ui_MainWindow(object):
             newObj.hide()
 
     def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "FLExTrans Settings"))
+
+        MainWindow.setWindowTitle("FLExTrans Settings")
 
         for i in range(0, len(widgetList)):
             
@@ -862,41 +866,36 @@ class Ui_MainWindow(object):
             if widgInfo[HIDE_SETTING] == HIDE_FROM_USER:
                 continue
 
-            widgInfo[LABEL_OBJ].setText(_translate("MainWindow", widgInfo[LABEL_TEXT]))
-
+            widgInfo[LABEL_OBJ].setText(widgInfo[LABEL_TEXT])
             if widgInfo[WIDGET_TYPE] == SECTION_TITLE:
                 continue
 
             if widgInfo[WIDGET_TYPE] == FILE:
                 
-                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse file..."))
+                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "Browse file..."))
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 
             if widgInfo[WIDGET_TYPE] == FOLDER:
                 
-                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "Browse folder..."))
+                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "Browse folder..."))
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].setItemText(0, _translate("MainWindow", "..."))
-                widgInfo[WIDGET2_OBJ].setItemText(0, _translate("MainWindow", "..."))
+                widgInfo[WIDGET1_OBJ].setItemText(0, "MainWindow", "...")
+                widgInfo[WIDGET2_OBJ].setItemText(0, "MainWindow", "...")
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].setText(_translate("MainWindow", "Yes"))
-                widgInfo[WIDGET2_OBJ].setText(_translate("MainWindow", "No"))
+                widgInfo[WIDGET1_OBJ].setText(_t("SettingsWindow", "Yes"))
+                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "No"))
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
             else:
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
-
-        self.apply_button.setText(_translate("MainWindow", "Apply"))
-        self.applyClose_button.setText(_translate("MainWindow", "Apply and Close"))
-        self.Close_button.setText(_translate("MainWindow", "Close"))
 
 class Main(QMainWindow):
 
@@ -1181,16 +1180,16 @@ class Main(QMainWindow):
         return self.getLabelForName(nameStr) in self.changedSettingsSet
     
     def reportChangedSettings(self, updatedConfigMap):
-        
+
         labelsList = []
         msgStr = ''
 
         refreshStatusbar()
 
         if len(self.changedSettingsSet) > 0:
-        
-            msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
-            msgStr = '\n'.join(msgList)    
+
+            msgList = [_t("SettingsWindow", "{} setting changed.").format(myStr) for myStr in list(self.changedSettingsSet)]
+            msgStr = '\n'.join(msgList)
 
         # See if we changed anything that wasn't a user change
         for key in updatedConfigMap:
@@ -1204,17 +1203,16 @@ class Main(QMainWindow):
                 labelsList.append(self.getLabelForName(key))
 
         if labelsList:
-
-            flexTransChanges = 'FLExTrans made changed these settings for you:\n' + '\n'.join(labelsList)
+            flexTransChanges = _t("SettingsWindow", "FLExTrans made these changes for you:\n") + '\n'.join(labelsList)
 
             if msgStr:
                 msgStr += '\n\n'
-                
+
             msgStr += flexTransChanges
-        
+
         if msgStr:
-            QMessageBox.information(self, 'FLExTrans Settings', msgStr)
-        
+            QMessageBox.information(self, "FLExTrans Settings", msgStr)
+
     def save(self):
 
         updatedConfigMap = {}
@@ -1291,9 +1289,11 @@ class Main(QMainWindow):
 
 def giveDBErrorMessageBox(myProj):
     
-    errMsg = f"Failed to open the '{myProj}' database. This could be because you have the project open "+\
-        "and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. "+\
+    errMsg = _t("SettingsWindow",
+        "Failed to open the '{projectName}' database. This could be because you have the project open ".format(projectName=myProj)+\
+        "and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. "
         "This is found under File > Project Management > Fieldworks Project Properties on the menu."
+    )
     MessageBox.Show(errMsg, "FLExTrans", MessageBoxButtons.OK)
 
 def MainFunction(DB, report, modify=True): 
@@ -1303,7 +1303,7 @@ def MainFunction(DB, report, modify=True):
     # Read the configuration file
     configMap = ReadConfig.readConfig(report=None)
     if not configMap:
-        MessageBox.Show("Error reading configuration file.", "FLExTrans", MessageBoxButtons.OK)
+        MessageBox.Show(_t("SettingsWindow","Error reading configuration file."), "FLExTrans", MessageBoxButtons.OK)
         return
 
     # Open the source database
@@ -1343,7 +1343,7 @@ def MainFunction(DB, report, modify=True):
     # Prompt the user to save changes, if needed
     if window.modified == True:
         
-        if QMessageBox.question(window, 'Save Changes', "Do you want to save your changes?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        if QMessageBox.question(window, _t("SettingsWindow", 'Save Changes'), _t("SettingsWindow", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
             window.save()
     
