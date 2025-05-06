@@ -65,6 +65,8 @@ from fuzzywuzzy import fuzz
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QInputDialog, QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QMessageBox
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
 from fuzzywuzzy import fuzz
 
 from ClusterAdHoc import Ui_AdHocMainWindow
@@ -858,6 +860,14 @@ def MainFunction(DB, report, modify=True):
     # Show the window
     app = QApplication(sys.argv)
 
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/ClusterAdHoc_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = AdHocMain(report, DB, composed, projects)
     
     window.show()

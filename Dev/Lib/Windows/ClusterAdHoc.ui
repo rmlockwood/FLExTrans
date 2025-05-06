@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add Cluster Ad Hoc Rules</string>
+   <string notr="true">Add Cluster Ad Hoc Rules</string>
   </property>
   <property name="animated">
    <bool>false</bool>
@@ -23,9 +23,9 @@
    <widget class="QLabel" name="sourceProjectLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>10</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -41,7 +41,7 @@
      <rect>
       <x>230</x>
       <y>100</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -49,9 +49,9 @@
    <widget class="QPushButton" name="addButton">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>120</x>
       <y>380</y>
-      <width>81</width>
+      <width>101</width>
       <height>23</height>
      </rect>
     </property>
@@ -64,7 +64,7 @@
      <rect>
       <x>230</x>
       <y>380</y>
-      <width>81</width>
+      <width>101</width>
       <height>23</height>
      </rect>
     </property>
@@ -77,7 +77,7 @@
      <rect>
       <x>230</x>
       <y>10</y>
-      <width>221</width>
+      <width>231</width>
       <height>22</height>
      </rect>
     </property>
@@ -85,9 +85,9 @@
    <widget class="QLabel" name="adHocGroupLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>40</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -103,7 +103,7 @@
      <rect>
       <x>230</x>
       <y>40</y>
-      <width>141</width>
+      <width>131</width>
       <height>22</height>
      </rect>
     </property>
@@ -111,9 +111,9 @@
    <widget class="QLabel" name="adHocTypeLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>70</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -129,7 +129,7 @@
      <rect>
       <x>230</x>
       <y>70</y>
-      <width>141</width>
+      <width>131</width>
       <height>22</height>
      </rect>
     </property>
@@ -137,9 +137,9 @@
    <widget class="QLabel" name="KeyMorphAllomorphLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>100</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -155,7 +155,7 @@
      <rect>
       <x>230</x>
       <y>160</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -166,9 +166,9 @@
    <widget class="QLabel" name="otherMorphsAllomorphsLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>160</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -184,7 +184,7 @@
      <rect>
       <x>230</x>
       <y>190</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -197,7 +197,7 @@
      <rect>
       <x>230</x>
       <y>220</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -210,7 +210,7 @@
      <rect>
       <x>230</x>
       <y>130</y>
-      <width>141</width>
+      <width>231</width>
       <height>22</height>
      </rect>
     </property>
@@ -218,9 +218,9 @@
    <widget class="QLabel" name="cannotOccurLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>130</y>
-      <width>191</width>
+      <width>216</width>
       <height>21</height>
      </rect>
     </property>
@@ -236,7 +236,7 @@
      <rect>
       <x>230</x>
       <y>250</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -249,7 +249,7 @@
      <rect>
       <x>230</x>
       <y>280</y>
-      <width>221</width>
+      <width>231</width>
       <height>20</height>
      </rect>
     </property>
@@ -260,9 +260,9 @@
    <widget class="QLabel" name="clusterProjectsLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>330</y>
-      <width>191</width>
+      <x>0</x>
+      <y>320</y>
+      <width>471</width>
       <height>21</height>
      </rect>
     </property>
@@ -270,15 +270,15 @@
      <string>Cluster Projects to Apply to</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QComboBox" name="clusterProjectsComboBox">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>330</y>
-      <width>221</width>
+      <x>10</x>
+      <y>340</y>
+      <width>451</width>
       <height>22</height>
      </rect>
     </property>
@@ -286,9 +286,9 @@
    <widget class="QPushButton" name="newGroupButton">
     <property name="geometry">
      <rect>
-      <x>380</x>
+      <x>370</x>
       <y>40</y>
-      <width>81</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
@@ -301,12 +301,12 @@
      <rect>
       <x>10</x>
       <y>410</y>
-      <width>301</width>
+      <width>451</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>This is where feedback is given to the user.</string>
+     <string notr="true">This is where feedback is given to the user.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
