@@ -4,6 +4,8 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   25 Apr 2025 dm re-organized structure. Deleted old methods that weren't being used. 
+#
 #   28 Mar 2025 dm created GenWord class for encapsulation, very rudementary gloss printing
 # 
 #   24 Feb 2025 dm GenStc now uses the settings to determine substituable words and grabs words,
@@ -31,6 +33,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from flextoolslib import *
 from flexlibs import FLExProject
 from SIL.LCModel import IMoStemMsa
+from TextClasses import TextSentence, TextWord
 import ReadConfig
 import Utils
 import InterlinData
@@ -260,6 +263,13 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     
     return wordListN, wordList1, wordList2
 
+def getMatchingLemmaWords(match_x_lem, subListX):
+    words = []
+    for word in subListX:
+        if word.lemma in match_x_lem:
+            words.append(word)
+    return words
+
 #----------------------------------------------------------------
 # Sentence Processing Functions
 def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
@@ -316,10 +326,56 @@ def _writeSentence(stc, f_out):
     stc.write(f_out)
     f_out.write('\n')
 
-def processFreeTranslation(f_out, stc):
-    """Write the free translation to the output file."""
-    f_out.write(stc.getFreeTranslation())
-    f_out.write('\n')
+def processFreeTranslation(translation, subListN, subList1, subList2, genwordsN, genwords1, genwords2, f_out2):
+    """
+    Find target words in free translation by matching glosses, then iteratively replace them
+    with glosses from the corresponding subLists.
+    """
+    if not translation:
+        return
+    
+    words = translation.split()
+    if not words:
+        return
+    
+    # Find target words and their replacement lists
+    targets = []
+    for i, word in enumerate(words):
+        # Check if word matches any gloss in genwordsN, genwords1, or genwords2
+        replacement_list = None
+        for genWord in genwordsN:
+            if word == genWord.gloss:
+                replacement_list = subListN
+                break
+        if not replacement_list:
+            for genWord in genwords1:
+                if word == genWord.gloss:
+                    replacement_list = subList1
+                    break
+        if not replacement_list:
+            for genWord in genwords2:
+                if word == genWord.gloss:
+                    replacement_list = subList2
+                    break
+        
+        if replacement_list:
+            targets.append((i, replacement_list))
+    
+    # Generate all possible combinations of replacements
+    replacement_combinations = []
+    for pos, replacement_list in targets:
+        replacement_combinations.append([(pos, genWord) for genWord in replacement_list])
+    
+    # Generate and write all modified translations
+    if replacement_combinations:
+        for combo in itertools.product(*replacement_combinations):
+            modified_words = words.copy()
+            for pos, genWord in combo:
+                modified_words[pos] = genWord.gloss
+            f_out2.write(" ".join(modified_words) + "\n")
+    else:
+        # If no replacements found, just write original
+        f_out2.write(translation + "\n")
 
 #----------------------------------------------------------------
 # Main Function
@@ -394,9 +450,14 @@ def MainFunction(DB, report, modifyAllowed):
                 idx2_list.append(idx)
 
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
-        if translationFile:
-            processFreeTranslation(f_out2, stc)
+        
+        # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
+        genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
+        genwords1 = getMatchingLemmaWords(match_1_lem, subList1)
+        genwords2 = getMatchingLemmaWords(match_2_lem, subList2)
 
+        if translationFile:
+            processFreeTranslation(stc.getFreeTranslation(), subListN, subList1, subList2, genwordsN, genwords1, genwords2, f_out2)
     # Clean up
     f_out.close()
     if f_out2:
