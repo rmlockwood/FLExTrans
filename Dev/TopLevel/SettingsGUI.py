@@ -1374,6 +1374,7 @@ widgetList = [
 
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
    [_t("SettingsWindow", "Source Text Name"), "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
+   # tooltip text 
     _t("SettingsWindow", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
    
    [_t("SettingsWindow", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
@@ -1555,7 +1556,7 @@ widgetList = [
     _t("SettingsWindow", "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_t("SettingsWindow", "TreeTran Rules File"), "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
-    _t("SettingsWindow",
+    _t("SettingsWindow", "The path and name of the TreeTran rules file"), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
    [_t("SettingsWindow", "Cluster Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
@@ -1576,8 +1577,8 @@ widgetList = [
     _t("SettingsWindow", "The (probably) unique ID for this project which gets logged to Mixpanel."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [_t("SettingsWindow", "Usage Statistics Opt Out Question Asked"), "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
-    _t("SettingsWindow", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],]
-
+    _t("SettingsWindow", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],
+]
 # ----------------------------------------------------------------
 # The main processing function
 if __name__ == '__main__':
