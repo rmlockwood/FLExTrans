@@ -116,11 +116,10 @@ from flextoolslib import FlexToolsModuleClass
 from flextoolslib import *
 
 from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
-from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
+from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
@@ -129,7 +128,7 @@ import Utils
 import ReadConfig
 import FTPaths
 
-_t = QtCore.QCoreApplication.translate
+tr = QtCore.QCoreApplication.translate
 
 # ----------------------------------------------------------------
 # This won't be seen anymore by the user since it gets launced from the menu
@@ -611,7 +610,7 @@ class Ui_MainWindow(object):
         
         self.MW = MainWindow
 
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("SettingsWindow")
         MainWindow.resize(800, 630)
         MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
 
@@ -624,7 +623,7 @@ class Ui_MainWindow(object):
         # Create a group box for the radio buttons
         self.radioGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.radioGroupBox.setObjectName("radioGroupBox")
-        self.radioGroupBox.setTitle(_t("SettingsWindow", "View Mode"))
+        self.radioGroupBox.setTitle(tr("SettingsWindow", "View Mode"))
         self.radioGroupBox.setFixedHeight(47)  # Set a fixed height for the group box
 
         # Create a horizontal layout for the radio buttons
@@ -634,18 +633,18 @@ class Ui_MainWindow(object):
         # Create the radio buttons
         self.miniRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.miniRadioButton.setObjectName("miniRadioButton")
-        self.miniRadioButton.setText(_t("SettingsWindow", "Mini"))
+        self.miniRadioButton.setText(tr("SettingsWindow", "Mini"))
         self.miniRadioButton.setChecked(True)  # Set the default mode to Mini
         self.radioLayout.addWidget(self.miniRadioButton)
 
         self.basicRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.basicRadioButton.setObjectName("basicRadioButton")
-        self.basicRadioButton.setText(_t("SettingsWindow", "Basic"))
+        self.basicRadioButton.setText(tr("SettingsWindow", "Basic"))
         self.radioLayout.addWidget(self.basicRadioButton)
 
         self.fullRadioButton = QtWidgets.QRadioButton(self.radioGroupBox)
         self.fullRadioButton.setObjectName("fullRadioButton")
-        self.fullRadioButton.setText(_t("SettingsWindow", "Full"))
+        self.fullRadioButton.setText(tr("SettingsWindow", "Full"))
         self.radioLayout.addWidget(self.fullRadioButton)
 
         self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
@@ -681,17 +680,17 @@ class Ui_MainWindow(object):
 
         self.apply_button = QtWidgets.QPushButton(self.centralwidget)
         self.apply_button.setObjectName("apply_button")
-        self.apply_button.setText(_t("SettingsWindow", "Apply"))
+        self.apply_button.setText(tr("SettingsWindow", "Apply"))
         self.gridLayout.addWidget(self.apply_button, 2, 3, 1, 1)  # put the buttons at columns 3-5 so they are on the right side
 
         self.applyClose_button = QtWidgets.QPushButton(self.centralwidget)
         self.applyClose_button.setObjectName("applyClose_button")
-        self.applyClose_button.setText(_t("SettingsWindow", "Apply and Close"))
+        self.applyClose_button.setText(tr("SettingsWindow", "Apply and Close"))
         self.gridLayout.addWidget(self.applyClose_button, 2, 4, 1, 1)
 
         self.Close_button = QtWidgets.QPushButton(self.centralwidget)
         self.Close_button.setObjectName("Close_button")
-        self.Close_button.setText(_t("SettingsWindow", "Close"))
+        self.Close_button.setText(tr("SettingsWindow", "Close"))
         self.gridLayout.addWidget(self.Close_button, 2, 5, 1, 1)
         
         # Set the radio button based on the loaded view setting
@@ -872,25 +871,25 @@ class Ui_MainWindow(object):
 
             if widgInfo[WIDGET_TYPE] == FILE:
                 
-                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "Browse file..."))
+                widgInfo[WIDGET2_OBJ].setText(tr("SettingsWindow", "Browse file..."))
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 
             if widgInfo[WIDGET_TYPE] == FOLDER:
                 
-                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "Browse folder..."))
+                widgInfo[WIDGET2_OBJ].setText(tr("SettingsWindow", "Browse folder..."))
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 
             elif widgInfo[WIDGET_TYPE] == SIDE_BY_SIDE_COMBO_BOX:
                 
-                widgInfo[WIDGET1_OBJ].setItemText(0, "MainWindow", "...")
-                widgInfo[WIDGET2_OBJ].setItemText(0, "MainWindow", "...")
+                widgInfo[WIDGET1_OBJ].setItemText(0, "...")
+                widgInfo[WIDGET2_OBJ].setItemText(0, "...")
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].setText(_t("SettingsWindow", "Yes"))
-                widgInfo[WIDGET2_OBJ].setText(_t("SettingsWindow", "No"))
+                widgInfo[WIDGET1_OBJ].setText(tr("SettingsWindow", "Yes"))
+                widgInfo[WIDGET2_OBJ].setText(tr("SettingsWindow", "No"))
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
@@ -1188,7 +1187,7 @@ class Main(QMainWindow):
 
         if len(self.changedSettingsSet) > 0:
 
-            msgList = [_t("SettingsWindow", "{} setting changed.").format(myStr) for myStr in list(self.changedSettingsSet)]
+            msgList = [tr("SettingsWindow", "{} setting changed.").format(myStr) for myStr in list(self.changedSettingsSet)]
             msgStr = '\n'.join(msgList)
 
         # See if we changed anything that wasn't a user change
@@ -1203,7 +1202,7 @@ class Main(QMainWindow):
                 labelsList.append(self.getLabelForName(key))
 
         if labelsList:
-            flexTransChanges = _t("SettingsWindow", "FLExTrans made these changes for you:\n") + '\n'.join(labelsList)
+            flexTransChanges = tr("SettingsWindow", "FLExTrans made these changes for you:\n") + '\n'.join(labelsList)
 
             if msgStr:
                 msgStr += '\n\n'
@@ -1289,7 +1288,7 @@ class Main(QMainWindow):
 
 def giveDBErrorMessageBox(myProj):
     
-    errMsg = _t("SettingsWindow",
+    errMsg = tr("SettingsWindow",
         "Failed to open the '{projectName}' database. This could be because you have the project open ".format(projectName=myProj)+\
         "and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. "
         "This is found under File > Project Management > Fieldworks Project Properties on the menu."
@@ -1303,7 +1302,7 @@ def MainFunction(DB, report, modify=True):
     # Read the configuration file
     configMap = ReadConfig.readConfig(report=None)
     if not configMap:
-        MessageBox.Show(_t("SettingsWindow","Error reading configuration file."), "FLExTrans", MessageBoxButtons.OK)
+        MessageBox.Show(tr("SettingsWindow","Error reading configuration file."), "FLExTrans", MessageBoxButtons.OK)
         return
 
     # Open the source database
@@ -1334,6 +1333,15 @@ def MainFunction(DB, report, modify=True):
     # Show the window
     app = QApplication(sys.argv)
 
+
+    # Load translations
+    langCode = 'es'
+    translator = QTranslator()
+
+    if translator.load(FTPaths.TRANSL_DIR+f"/SettingsGUI_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+        
     window = Main(configMap, TargetDB, sourceDB)
 
     window.show()
@@ -1343,7 +1351,7 @@ def MainFunction(DB, report, modify=True):
     # Prompt the user to save changes, if needed
     if window.modified == True:
         
-        if QMessageBox.question(window, _t("SettingsWindow", 'Save Changes'), _t("SettingsWindow", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+        if QMessageBox.question(window, tr("SettingsWindow", 'Save Changes'), tr("SettingsWindow", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
 
             window.save()
     
@@ -1359,6 +1367,18 @@ def MainFunction(DB, report, modify=True):
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
+app = QApplication(sys.argv)
+
+langCode = 'es'
+translator = QTranslator()
+
+if translator.load(FTPaths.TRANSL_DIR+f"/SettingsGUI_{langCode}.qm"):
+
+    QCoreApplication.installTranslator(translator)
+
+# Define _translate for convenience
+tr = QCoreApplication.translate
+
 #### Instructions for adding a new setting ####
 #
 # Copy and paste an existing line that has the same type as the new setting you want.
@@ -1366,220 +1386,225 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 # If necessary write a new load function at the top of this file.
 # Set the config key name to a value from the ReadConfig.py file.
 # If a new type of widget is needed, more work is needed to add to each part of the code where the widgetList is iterated
-
 widgetList = [
 
-   [_t("SettingsWindow", "Project Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Project Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, MINI_VIEW],\
 
    # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
-   [_t("SettingsWindow", "Source Text Name"), "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
+   [tr("SettingsWindow", "Source Text Name"), "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
    # tooltip text 
-    _t("SettingsWindow", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
+    tr("SettingsWindow", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
    
-   [_t("SettingsWindow", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
-    _t("SettingsWindow", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
+   [tr("SettingsWindow", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
+    tr("SettingsWindow", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
-   [_t("SettingsWindow", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
-    _t("SettingsWindow", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+    tr("SettingsWindow", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
    
-   [_t("SettingsWindow", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
-    _t("SettingsWindow", "The name of the grammatical category that you use for proper nouns in your \nsource FLEx project. It is possible to choose not to translate proper nouns."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
+    tr("SettingsWindow", "The name of the grammatical category that you use for proper nouns in your\nsource FLEx project. It is possible to choose not to translate proper nouns."), DONT_GIVE_ERROR, BASIC_VIEW],\
    
-   [_t("SettingsWindow", "Hide warnings for unanalyzed Proper Nouns"), "unanalyzed_proper_noun_yes", "unanalyzed_proper_noun_no", YES_NO, object, object, object, loadYesNo, ReadConfig.NO_PROPER_NOUN_WARNING,\
-    _t("SettingsWindow", "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Hide warnings for unanalyzed Proper Nouns"), "unanalyzed_proper_noun_yes", "unanalyzed_proper_noun_no", YES_NO, object, object, object, loadYesNo, ReadConfig.NO_PROPER_NOUN_WARNING,\
+    tr("SettingsWindow", "Don't show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence."), DONT_GIVE_ERROR, BASIC_VIEW],\
    
-   [_t("SettingsWindow", "Cache data for faster processing?"), "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
-    _t("SettingsWindow", "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."), GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Cache data for faster processing?"), "cache_yes", "cache_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CACHE_DATA, \
+    tr("SettingsWindow", "Indicates if the system should avoid regenerating data that hasn't changed.\nUse the CleanFiles module to force the regeneration of data."), GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Use composed characters in editing?"), "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
-    _t("SettingsWindow", "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD)."),\
+   [tr("SettingsWindow", "Use composed characters in editing?"), "composed_yes", "composed_no", YES_NO, object, object, object, loadYesNo, ReadConfig.COMPOSED_CHARACTERS, \
+    tr("SettingsWindow", "When editing the transfer rules file or the testbed, if Yes, characters with \ndiacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD)."),\
           GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Sentence Punctuation"), "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
-    _t("SettingsWindow", "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."), GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Sentence Punctuation"), "punctuation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SENTENCE_PUNCTUATION, \
+    tr("SettingsWindow", "A list of punctuation that ends a sentence.\nIn transfer rules you can check for the end of a sentence."), GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Source Morpheme Types Counted As Roots"), "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
-    _t("SettingsWindow", "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Source Morpheme Types Counted As Roots"), "choose_source_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceMorphemeTypes, ReadConfig.SOURCE_MORPHNAMES,\
+    tr("SettingsWindow", "Morpheme types in the source FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Morpheme Types Counted As Roots"), "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
-    _t("SettingsWindow", "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Morpheme Types Counted As Roots"), "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
+    tr("SettingsWindow", "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Source Complex Form Types"), "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    _t("SettingsWindow", "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Source Complex Form Types"), "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+    tr("SettingsWindow", "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Source Discontiguous Complex Form Types"), "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
-    _t("SettingsWindow", "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Source Discontiguous Complex Form Types"), "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
+    tr("SettingsWindow", "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms"), "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
-    _t("SettingsWindow", "One or more grammatical categories that can intervene in the above complex types."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms"), "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
+    tr("SettingsWindow", "One or more grammatical categories that can intervene in the above complex types."), GIVE_ERROR, FULL_VIEW],\
     
-   [_t("SettingsWindow", "Target Complex Form Types\nwith inflection on 1st Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
-    _t("SettingsWindow", "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Complex Form Types\nwith inflection on 1st Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
+    tr("SettingsWindow", "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Complex Form Types\nwith inflection on 2nd Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    _t("SettingsWindow", "Same as above. Use this property for the types that have inflection\non the second element of the complex form."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Complex Form Types\nwith inflection on 2nd Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
+    tr("SettingsWindow", "Same as above. Use this property for the types that have inflection\non the second element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Linker Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Linker Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, BASIC_VIEW],\
     
-   [_t("SettingsWindow", "Default to rebuilding the bilingual\nlexicon after linking senses?"), "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
-    _t("SettingsWindow", "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Default to rebuilding the bilingual\nlexicon after linking senses?"), "rebuild_bl_yes", "rebuild_bl_no", YES_NO, object, object, object, loadYesNo, ReadConfig.REBUILD_BILING_LEX_BY_DEFAULT, \
+    tr("SettingsWindow", "In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon."), DONT_GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Default to filtering on all fields?"), "filter_all_yes", "filter_all_yno", YES_NO, object, object, object, loadYesNo, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, \
-    _t("SettingsWindow", "In the Sense Linker tool by default check the checkbox for filtering on all fields."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Default to filtering on all fields?"), "filter_all_yes", "filter_all_yno", YES_NO, object, object, object, loadYesNo, ReadConfig.LINKER_SEARCH_ANYTHING_BY_DEFAULT, \
+    tr("SettingsWindow", "In the Sense Linker tool by default check the checkbox for filtering on all fields."), DONT_GIVE_ERROR, BASIC_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Transfer Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Transfer Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Transfer Rules File"), "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
-    _t("SettingsWindow", "The path and name of the file containing the transfer rules."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Transfer Rules File"), "transfer_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE, \
+    tr("SettingsWindow", "The path and name of the file containing the transfer rules."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Transfer Rules File 2 (Advanced Transfer)"), "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
-    _t("SettingsWindow", "The path and name of the file containing the 2nd transfer rules for use in advanced transfer."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Transfer Rules File 2 (Advanced Transfer)"), "transfer_rules_filename2", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE2, \
+    tr("SettingsWindow", "The path and name of the file containing the 2nd transfer rules for use in advanced transfer."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Transfer Rules File 3 (Advanced Transfer)"), "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
-    _t("SettingsWindow", "The path and name of the file containing the 3rd transfer rules for use in advanced transfer."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Transfer Rules File 3 (Advanced Transfer)"), "transfer_rules_filename3", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RULES_FILE3, \
+    tr("SettingsWindow", "The path and name of the file containing the 3rd transfer rules for use in advanced transfer."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Category Abbreviation Pairs"), "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
-    _t("SettingsWindow", "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Category Abbreviation Pairs"), "category_abbreviation_one", "category_abbreviation_two", SIDE_BY_SIDE_COMBO_BOX, object, object, object, loadCategorySubLists, ReadConfig.CATEGORY_ABBREV_SUB_LIST,\
+    tr("SettingsWindow", "One or more pairs of grammatical categories where the first category\nis the “from” category in the source FLEx project and the second category\nis the “to” category in the target FLEx project. Use the abbreviations of\nthe FLEx categories. The substitution happens in the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Analyzed Text Output File"), "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
-    _t("SettingsWindow", "The path and name of the file which holds\nthe extracted source text."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Analyzed Text Output File"), "output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TEXT_FILE,\
+    tr("SettingsWindow", "The path and name of the file which holds\nthe extracted source text."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Bilingual Dictionary Output File"), "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
-    _t("SettingsWindow", "The path and name of the file which holds the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Bilingual Dictionary Output File"), "bilingual_dictionary_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICTIONARY_FILE,\
+    tr("SettingsWindow", "The path and name of the file which holds the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Bilingual Dictionary Replacement File"), "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
-    _t("SettingsWindow", "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Bilingual Dictionary Replacement File"), "bilingual_dictionary_replace_filename", "", FILE, object, object, object, loadFile, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, \
+    tr("SettingsWindow", "The path and name of the file which holds replacement\nentry pairs for the bilingual lexicon."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Transfer Results File"), "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
-    _t("SettingsWindow", "The path and name of the file which holds the text contents\nafter going through the transfer process."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Transfer Results File"), "transfer_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TRANSFER_RESULTS_FILE, \
+    tr("SettingsWindow", "The path and name of the file which holds the text contents\nafter going through the transfer process."), GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Synthesis Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Synthesis Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Use HermitCrab synthesis?"), "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
-    _t("SettingsWindow", "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection."), DONT_GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Use HermitCrab synthesis?"), "hc_synthesis_yes", "hc_synthesis_no", YES_NO, object, object, object, loadYesNo, ReadConfig.HERMIT_CRAB_SYNTHESIS, \
+    tr("SettingsWindow", "Use the HermitCrab phonological synthesizer. This applies if you have\nHermitCrab parsing set up for your target project. You also need to have the\nSynthesize Text with HermitCrab module in your AllSteps collection."), DONT_GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Clean Up Unknown Target Words?"), "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
-    _t("SettingsWindow", "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."), GIVE_ERROR, BASIC_VIEW],\
+   [tr("SettingsWindow", "Clean Up Unknown Target Words?"), "cleanup_yes", "cleanup_no", YES_NO, object, object, object, loadYesNo, ReadConfig.CLEANUP_UNKNOWN_WORDS, \
+    tr("SettingsWindow", "Indicates if the system should remove preceding @ signs\nand numbers in the form N.N following words in the target text."), GIVE_ERROR, BASIC_VIEW],\
 
-   [_t("SettingsWindow", "Target Lexicon Files Folder"), "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
-    _t("SettingsWindow", "The path where lexicon files and other STAMP files are created"), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Lexicon Files Folder"), "lexicon_files_folder", "", FOLDER, object, object, object, loadFile, ReadConfig.TARGET_LEXICON_FILES_FOLDER, \
+    tr("SettingsWindow", "The path where lexicon files and other STAMP files are created"), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Output ANA File"), "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
-    _t("SettingsWindow", "The path and name of the file holding\nthe intermediary text in STAMP format."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Output ANA File"), "output_ANA_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_ANA_FILE,\
+    tr("SettingsWindow", "The path and name of the file holding\nthe intermediary text in STAMP format."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Hermit Crab Master File"), "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
-    _t("SettingsWindow", "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Hermit Crab Master File"), "hermit_crab_master_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_MASTER_FILE,\
+    tr("SettingsWindow", "The path and name of the HermitCrab master file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Hermit Crab Configuration File"), "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
-    _t("SettingsWindow", "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Hermit Crab Configuration File"), "hermit_crab_config_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_CONFIG_FILE,\
+    tr("SettingsWindow", "The path and name of the HermitCrab configuration file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Hermit Crab Parses File"), "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
-    _t("SettingsWindow", "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Hermit Crab Parses File"), "hermit_crab_parses_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_PARSES_FILE,\
+    tr("SettingsWindow", "The path and name of the HermitCrab parses file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Hermit Crab Surface Forms File"), "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
-    _t("SettingsWindow", "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Hermit Crab Surface Forms File"), "hermit_crab_surface_forms_filename", "", FILE, object, object, object, loadFile, ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,\
+    tr("SettingsWindow", "The path and name of the HermitCrab surface forms file. \nThis is only needed if you are using HermitCrab Synthesis."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Output Synthesis File"), "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
-    _t("SettingsWindow", "The path and name of the file holding\nthe intermediary synthesized file."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Output Synthesis File"), "output_syn_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_SYNTHESIS_FILE,\
+    tr("SettingsWindow", "The path and name of the file holding\nthe intermediary synthesized file."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Target Affix Gloss List File"), "target_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
-    _t("SettingsWindow", "The ancillary file that hold a list of affix\nglosses from the target FLEx project."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Target Affix Gloss List File"), "target_affix_gloss_list_filename", "", FILE, object, object, object, loadFile, ReadConfig.TARGET_AFFIX_GLOSS_FILE, \
+    tr("SettingsWindow", "The ancillary file that hold a list of affix\nglosses from the target FLEx project."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Text Out Rules File"), "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
-    _t("SettingsWindow", "The file that holds the search/replace rules to fix up the synthesis result text."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Text Out Rules File"), "fixup_synth_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_OUT_RULES_FILE, \
+    tr("SettingsWindow", "The file that holds the search/replace rules to fix up the synthesis result text."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Text In Rules File"), "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
-    _t("SettingsWindow", "The file that holds the search/replace rules to fix up the Paratext import text."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Text In Rules File"), "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
+    tr("SettingsWindow", "The file that holds the search/replace rules to fix up the Paratext import text."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
-   [_t("SettingsWindow", "Synthesis Test Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Synthesis Test Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Limit to specific POS values"), "limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
-    _t("SettingsWindow", "One or more grammatical categories. The synthesis test will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Limit to specific POS values"), "limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
+    tr("SettingsWindow", "One or more grammatical categories. The synthesis test will be limited to using only these categories."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Limit number of stems"), "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
-    _t("SettingsWindow", "Limit the generation to a specified number of stems.\nStems chosen may seem random."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Limit number of stems"), "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
+    tr("SettingsWindow", "Limit the generation to a specified number of stems.\nStems chosen may seem random."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Limit to specific Citation Form"), "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
-    _t("SettingsWindow", "Limit the generation to one or more specified Citation Form(s)."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Limit to specific Citation Form"), "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
+    tr("SettingsWindow", "Limit the generation to one or more specified Citation Form(s)."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Parses Output File"), "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE,\
-    _t("SettingsWindow", "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Parses Output File"), "output_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_PARSES_OUTPUT_FILE,\
+    tr("SettingsWindow", "The path and name of the file for the generated parse forms in human readable\nform, with glosses of roots and affixes."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "SIGMORPHON Output File"), "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE,\
-    _t("SettingsWindow", "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "SIGMORPHON Output File"), "sigmorphon_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_SIGMORPHON_OUTPUT_FILE,\
+    tr("SettingsWindow", "The path and name of the file for the generated parse forms in SIGMORPHON\nformat, with no roots, and affixes separated by semicolons."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Synthesis test log file"), "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOG_FILE,\
-    _t("SettingsWindow", "The path and name of the file for the log output\nof the synthesis test."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Synthesis test log file"), "log_syn_test", "", FILE, object, object, object, loadFile, ReadConfig.SYNTHESIS_TEST_LOG_FILE,\
+    tr("SettingsWindow", "The path and name of the file for the log output\nof the synthesis test."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Testbed Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Testbed Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Testbed File"), "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
-    _t("SettingsWindow", "The path and name of the testbed file."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Testbed File"), "testbed_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_FILE, \
+    tr("SettingsWindow", "The path and name of the testbed file."), GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Testbed Results Log File"), "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
-    _t("SettingsWindow", "The path and name of the testbed results log file."), GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Testbed Results Log File"), "testbed_result_filename", "", FILE, object, object, object, loadFile, ReadConfig.TESTBED_RESULTS_FILE, \
+    tr("SettingsWindow", "The path and name of the testbed results log file."), GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Rule Assistant"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Rule Assistant"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Rule Assistant Rule File"), "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
-    _t("SettingsWindow", "The path and name of the rule assistant rule definition file."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Rule Assistant Rule File"), "rule_assistant_filename", "", FILE, object, object, object, loadFile, ReadConfig.RULE_ASSISTANT_FILE, \
+    tr("SettingsWindow", "The path and name of the rule assistant rule definition file."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "TreeTran Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "TreeTran Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "TreeTran Insert Words File"), "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
-    _t("SettingsWindow", "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "TreeTran Insert Words File"), "treetran_insert_words_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_INSERT_WORDS_FILE, \
+    tr("SettingsWindow", "The path and name of the file that has a list of\nwords that can be inserted with a TreeTran rule."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "TreeTran Rules File"), "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
-    _t("SettingsWindow", "The path and name of the TreeTran rules file"), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "TreeTran Rules File"), "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
+    tr("SettingsWindow", "The path and name of the TreeTran rules file"), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
-   [_t("SettingsWindow", "Cluster Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Cluster Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Projects to treat together as a cluster"), "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
-    _t("SettingsWindow", "Indicate the cluster projects you would like to run some modules on together."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Projects to treat together as a cluster"), "cluster_projects", "", CHECK_COMBO_BOX, object, object, object, loadAllProjects, ReadConfig.CLUSTER_PROJECTS, \
+    tr("SettingsWindow", "Indicate the cluster projects you would like to run some modules on together."), DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
-   [_t("SettingsWindow", "Privacy"), "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
+   [tr("SettingsWindow", "Privacy"), "sec_title", "link_str", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, MINI_VIEW],\
 
-   [_t("SettingsWindow", "Send usage statistics to FLExTrans developers"), "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
-    _t("SettingsWindow", "No personally identifiable information is sent. These anonymous statistics will help with future development."), DONT_GIVE_ERROR, MINI_VIEW],\
+   [tr("SettingsWindow", "Send usage statistics to FLExTrans developers"), "log_stats_yes", "log_stats_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS, \
+    tr("SettingsWindow", "No personally identifiable information is sent. These anonymous statistics will help with future development."), DONT_GIVE_ERROR, MINI_VIEW],\
 
-   [_t("SettingsWindow", "Mixpanel User ID"), "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
-    _t("SettingsWindow", "The (probably) unique ID for this project which gets logged to Mixpanel."), DONT_GIVE_ERROR, FULL_VIEW],\
+   [tr("SettingsWindow", "Mixpanel User ID"), "mixpanel_id", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.LOG_STATISTICS_USER_ID, \
+    tr("SettingsWindow", "The (probably) unique ID for this project which gets logged to Mixpanel."), DONT_GIVE_ERROR, FULL_VIEW],\
 
-   [_t("SettingsWindow", "Usage Statistics Opt Out Question Asked"), "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
-    _t("SettingsWindow", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],
+   [tr("SettingsWindow", "Usage Statistics Opt Out Question Asked"), "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
+    tr("SettingsWindow", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],
 ]
+
+app.quit()
+del app
+
 # ----------------------------------------------------------------
 # The main processing function
 if __name__ == '__main__':
     FlexToolsModule.Help()
+
+
