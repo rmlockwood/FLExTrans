@@ -69,9 +69,10 @@ from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from fuzzywuzzy import fuzz
 
+import FTPaths
 from ClusterAdHoc import Ui_AdHocMainWindow
 from ComboBox import CheckableComboBox
-import FTPaths
+
 import ReadConfig
 import Utils
 
@@ -839,6 +840,9 @@ class AdHocMain(QMainWindow):
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
+    # Show the window
+    app = QApplication(sys.argv)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -850,6 +854,7 @@ def MainFunction(DB, report, modify=True):
 
     # Get the cluster projects
     projects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report)
+
     if not projects:
         report.Info("No cluster projects found. Define them in Settings.")
         return
@@ -857,11 +862,8 @@ def MainFunction(DB, report, modify=True):
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS, report)
     composed = (composed == 'y')
 
-    # Show the window
-    app = QApplication(sys.argv)
-
     # Load translations
-    langCode = 'es'
+    langCode = 'de'
     translator = QTranslator()
 
     if translator.load(FTPaths.TRANSL_DIR+f"/ClusterAdHoc_{langCode}.qm"):

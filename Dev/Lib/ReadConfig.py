@@ -114,7 +114,7 @@ import re
 import os
 import unicodedata
 
-from FTPaths import CONFIG_PATH, WORK_DIR
+from FTPaths import CONFIG_PATH, WORK_DIR, TRANSL_DIR
 
 CONFIG_FILE = 'FlexTrans.config'
 
@@ -187,7 +187,23 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              CLUSTER_PROJECTS,
                              ]
 
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+def getInterfaceLangCode():
+    return 'de'
+
 def openConfigFile(report, info):
+    
+    # Load translations
+    langCode = getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
     
     try:
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
@@ -199,11 +215,19 @@ def openConfigFile(report, info):
     except:
         if report is not None:
             
-            report.Error('Error reading the file: "' + CONFIG_PATH+ '/' + CONFIG_FILE + '". Check that it exists.')
+            report.Error(_translate("ReadConfig", 'Error reading the file: "{path}/{file}". Check that it exists.').format(path=os.path.dirname(CONFIG_PATH), file=CONFIG_FILE))
             
         return None
 
 def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
+    
+    # Load translations
+    langCode = getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
     
     f_handle = openConfigFile(report, 'r')
     
@@ -236,7 +260,7 @@ def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
         else:
             if report is not None:
                 
-                report.Error(f'Setting: {settingName} not found in the configuration file.')
+                report.Error(_translate("ReadConfig", 'Setting: "{setting}" not found in the configuration file.').format(setting=settingName))
             
             f_outHandle.close()
             return False
@@ -245,6 +269,14 @@ def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     return True
     
 def readConfig(report):
+    
+    # Load translations
+    langCode = getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
     
     f_handle = openConfigFile(report, 'r')
     
@@ -269,20 +301,26 @@ def readConfig(report):
         if not re.search('=', line):
 
             if report is not None:
-                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without "=" was found.')
+
+                report.Warning(_translate("ReadConfig", 'Problem reading the file: "{file}". A line without "=" was found.').format(file=CONFIG_FILE))
+
             continue
         
         try:
             (prop, value) = line.split('=')
+
         except:
             if report is not None:
-                report.Warning('Problem reading the file: "' + CONFIG_FILE + '". A line without more than one "=" was found.')
+
+                report.Warning(_translate("ReadConfig", 'Problem reading the file: "{file}". A line with more than one "=" was found.').format(file=CONFIG_FILE))
+
             continue
         
         value = value.rstrip()
         
         # if the value has commas and it is in the set of properties that can have multiple values, save it as a list
         if re.search(',', value) and prop in PROPERTIES_THAT_ARE_LISTS:
+
             my_list = value.split(',')
             my_map[prop] = my_list
         else:
@@ -291,10 +329,23 @@ def readConfig(report):
     return my_map
 
 def getConfigVal(my_map, key, report, giveError=True):
+
+    # Load translations
+    langCode = getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+    
     if key not in my_map:
+
         if report is not None:
+
             if giveError:
-                report.Error('Error in the file: "' + CONFIG_FILE + '". A value for "'+key+'" was not found.')
+
+                report.Error(_translate("ReadConfig", 'Error in the file: "{file}". A value for "{key}" was not found.').format(file=CONFIG_FILE, key=key))
+        
         return None
     else:
         # If the key value has the word 'File' or 'Folder then change the path accordingly.
@@ -311,9 +362,21 @@ def getConfigVal(my_map, key, report, giveError=True):
         return my_map[key]
 
 def configValIsList(my_map, key, report):
+
+    # Load translations
+    langCode = getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+    
     if isinstance(my_map[key], list) is False:
+
         if report is not None:
-            report.Error('Error in the file: "' + CONFIG_FILE + '". The value for "'+key+'" is supposed to be a comma separated list. For a single value, end it with a comma.')
+
+            report.Error(_translate("ReadConfig", 'Error in the file: "{file}". The value for "{key}" is supposed to be a comma separated list. For a single value, end it with a comma.').format(file=CONFIG_FILE, key=key))
+        
         return False
     else:
         return True

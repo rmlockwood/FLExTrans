@@ -30,22 +30,26 @@ from FTPaths import HELP_DIR, TRANSL_DIR
 import Version
 import ReadConfig
 
-app = QApplication(sys.argv)
-
-# Load translations
-translator = QTranslator()
-langCode = 'de'
-if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
-    QCoreApplication.installTranslator(translator)
-
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
 def RunSettings(sender, event):
+
     SettingsGUI.MainFunction(None, None)
 
 
 def RunEditTransferRules(sender, event):
+
+    app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = ReadConfig.getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+    
     configMap = ReadConfig.readConfig(None)
 
     if not configMap:
@@ -55,34 +59,53 @@ def RunEditTransferRules(sender, event):
     xferRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report=None, giveError=True)
 
     if not xferRulesFile or os.path.exists(xferRulesFile) == False:
-        MessageBox.Show(
-            _translate("FLExTransMenu", "Transfer rule file: {xferRulesFile} does not exist.").format(
-                xferRulesFile=xferRulesFile
-            ),
-            _translate("FLExTransMenu", "Not Found Error"),
-            MessageBoxButtons.OK,
-        )
+
+        MessageBox.Show(_translate("FLExTransMenu", "Transfer rule file: {xferRulesFile} does not exist.").format(xferRulesFile=xferRulesFile),
+                        _translate("FLExTransMenu", "Not Found Error"),
+                        MessageBoxButtons.OK)
         return
 
     progFilesFolder = os.environ["ProgramFiles(x86)"]
     xxe = progFilesFolder + "\\XMLmind_XML_Editor\\bin\\xxe.exe"
     call([xxe, xferRulesFile])
 
+    app.quit()
+    del app
 
 def RunHelp(sender, event):
+
     HelpFile = os.path.join(HELP_DIR, "UserDoc.htm")
     os.startfile(HelpFile)
 
-
 def RunAbout(sender, event):
-    MessageBox.Show(
-        _translate("FLExTransMenu", "{name} version {version}\n\nsoftware.sil.org/flextrans").format(
-            name=Version.Name, version=Version.Version
-        ),
-        _translate("FLExTransMenu", "About FLExTrans"),
-        MessageBoxButtons.OK,
-    )
 
+    app = QApplication(sys.argv)
+
+    # Load translations
+    langCode = ReadConfig.getInterfaceLangCode()
+    translator = QTranslator()
+
+    if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
+
+        QCoreApplication.installTranslator(translator)
+    
+    MessageBox.Show(
+        _translate("FLExTransMenu", "{name} version {version}\n\nsoftware.sil.org/flextrans").format(name=Version.Name, version=Version.Version),
+        _translate("FLExTransMenu", "About FLExTrans"),
+        MessageBoxButtons.OK)
+
+    app.quit()
+    del app
+
+app = QApplication(sys.argv)
+
+# Load translations
+langCode = ReadConfig.getInterfaceLangCode()
+translator = QTranslator()
+
+if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
+    
+    QCoreApplication.installTranslator(translator)
 
 customMenu = (
     "FLExTrans",
