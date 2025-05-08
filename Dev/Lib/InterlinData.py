@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.13.5 - 5/8/25 - Ron Lockwood
+#    Added parameter to check for valid characters function for error message.
+#
 #   Version 3.13.4 - 4/15/25 - Ron Lockwood
 #    Fixes #964. Get the free translation for each segment.
 #
@@ -336,7 +339,7 @@ def getSenseNumber(entry, bundle, myInfo):
             return senseNum
     return -1
 
-def checkForValidChars(report, myStr, tempEntry):
+def checkForValidChars(DB, report, myStr, tempEntry):
 
     if Utils.containsInvalidLemmaChars(myStr):
 
@@ -604,7 +607,7 @@ def getInterlinData(DB, report, params):
             # We have an affix or clitic (but not an enclitic that is standing alone which we will treat as a root)
             if bundle.MsaRA.ClassName != Utils.MO_STEM_MSA or (Utils.isClitic(tempEntry) and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False)):
 
-                if checkForValidChars(report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
+                if checkForValidChars(DB, report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
 
                     return myInfo.myText
                 
@@ -626,7 +629,7 @@ def getInterlinData(DB, report, params):
                     report.Warning('No grammatical category found for the source word: '+ myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                     break
 
-                if checkForValidChars(report, Utils.getHeadwordStr(tempEntry), tempEntry) == False:
+                if checkForValidChars(DB, report, Utils.getHeadwordStr(tempEntry), tempEntry) == False:
 
                     return myInfo.myText
 
