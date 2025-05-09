@@ -29,29 +29,29 @@ if configMap is None:
 else:
     FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
 
+app = QApplication(sys.argv)
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+# Load translations
+translator = QTranslator()
+
+if translator.load(FTPaths.TRANSL_DIR+f"/ReadConfig_{ReadConfig.getInterfaceLangCode()}.qm"):
+
+    QCoreApplication.installTranslator(translator)
+
+try:
+    sourceText = FTPaths.CURRENT_SRC_TEXT 
+except AttributeError:
+    sourceText = ""
+
+# return a string that gets added to the status bar
+retStr = _translate("StatusBar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
+
+app.quit()
+del app
+
 def statusbarCallback():
-
-    try:
-        sourceText = FTPaths.CURRENT_SRC_TEXT 
-    except AttributeError:
-        sourceText = ""
-
-    app = QApplication(sys.argv)
-
-    # Define _translate for convenience
-    _translate = QCoreApplication.translate
-
-    # Load translations
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/ReadConfig_{ReadConfig.getInterfaceLangCode()}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-
-    # return a string that gets added to the status bar
-    retStr = _translate("StatusBar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
-
-    app.quit()
-    del app
 
     return retStr
