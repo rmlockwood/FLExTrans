@@ -6,104 +6,104 @@
     <message>
         <location filename="../AdHocConstrForCluster.py" line="114"/>
         <source>Group Input</source>
-        <translation>Gruppeneingabe</translation>
+        <translation>Entrada de grupo</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="355"/>
         <source>(Choose Type)</source>
-        <translation>(Typ auswählen)</translation>
+        <translation>(Elegir tipo)</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="496"/>
         <source>Morpheme</source>
-        <translation>Morphem</translation>
+        <translation>Morfema</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="277"/>
         <source>Allomorph</source>
-        <translation>Allomorph</translation>
+        <translation>Alomorfo</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="370"/>
         <source>You need to set the key field and at least the 1st other field!</source>
-        <translation>Sie müssen das Schlüsselfeld und mindestens das 1. andere Feld festlegen!</translation>
+        <translation>¡Debe establecer el campo clave y al menos el primer otro campo!</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="391"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{key}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-        <translation>Es scheint, dass Sie die Auto-Vervollständigungswerte nicht verwendet haben. &quot;{key}&quot; allein kann nicht gefunden werden. Geben Sie das Morphem/Allomorph in der Volkssprache ein und wählen Sie den automatisch vervollständigten Wert aus.</translation>
+        <translation>Parece que no ha utilizado los valores de autocompletar. &quot;{key}&quot; por sí solo no se puede encontrar. Escriba el morfema/alomorfo en la lengua vernácula y seleccione el valor autocompletado.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="415"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{otherStr}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
-        <translation>Es scheint, dass Sie die Auto-Vervollständigungswerte nicht verwendet haben. &quot;{otherStr}&quot; allein kann nicht gefunden werden. Geben Sie das Morphem/Allomorph in der Volkssprache ein und wählen Sie den automatisch vervollständigten Wert aus.</translation>
+        <translation>Parece que no ha utilizado los valores de autocompletar. &quot;{otherStr}&quot; por sí solo no se puede encontrar. Escriba el morfema/alomorfo en la lengua vernácula y seleccione el valor autocompletado.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="525"/>
         <source>Added ad hoc rule to project {proj}.
 </source>
-        <translation>Ad-hoc-Regel zum Projekt {proj} hinzugefügt.
+        <translation>Regla ad hoc añadida al proyecto {proj}.
 </translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="584"/>
         <source>NEW: {sourceGroupName}</source>
-        <translation>NEU: {sourceGroupName}</translation>
+        <translation>NUEVO: {sourceGroupName}</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="716"/>
         <source>Select Group</source>
-        <translation>Gruppe auswählen</translation>
+        <translation>Seleccionar grupo</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="716"/>
         <source>Similar groups in {projectName}:</source>
-        <translation>Ähnliche Gruppen in {projectName}:</translation>
+        <translation>Grupos similares en {projectName}:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="99"/>
         <source>Add an ad hoc constraint to multiple cluster projects.</source>
-        <translation>Fügen Sie eine Ad-hoc-Beschränkung zu mehreren Cluster-Projekten hinzu.</translation>
+        <translation>Agregar una restricción ad hoc a múltiples proyectos de clúster.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="118"/>
         <source>This new group name will be created in all the selected cluster projects.</source>
-        <translation>Dieser neue Gruppenname wird in allen ausgewählten Cluster-Projekten erstellt.</translation>
+        <translation>Este nuevo nombre de grupo se creará en todos los proyectos de clúster seleccionados.</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="121"/>
         <source>Group Name:</source>
-        <translation>Gruppenname:</translation>
+        <translation>Nombre del grupo:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="126"/>
         <source>Group Description:</source>
-        <translation>Gruppenbeschreibung:</translation>
+        <translation>Descripción del grupo:</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="162"/>
         <source>anywhere around</source>
-        <translation>irgendwo um</translation>
+        <translation>en cualquier lugar alrededor</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="163"/>
         <source>somewhere after</source>
-        <translation>irgendwo nach</translation>
+        <translation>en algún lugar después</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="164"/>
         <source>somewhere before</source>
-        <translation>irgendwo vor</translation>
+        <translation>en algún lugar antes</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="165"/>
         <source>adjacent after</source>
-        <translation>angrenzend nach</translation>
+        <translation>adyacente después</translation>
     </message>
     <message>
         <location filename="../AdHocConstrForCluster.py" line="166"/>
         <source>adjacent before</source>
-        <translation>angrenzend vor</translation>
+        <translation>adyacente antes</translation>
     </message>
 </context>
 </TS>

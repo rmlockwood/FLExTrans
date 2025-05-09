@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.13.1 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -187,7 +190,7 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              CLUSTER_PROJECTS,
                              ]
 
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -196,14 +199,6 @@ def getInterfaceLangCode():
     return 'de'
 
 def openConfigFile(report, info):
-    
-    # Load translations
-    langCode = getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
     
     try:
         # CONFIG_PATH holds the full path to the flextools.ini file which should be in the WorkProjects/xyz/Config folder. That's where we find FLExTools.config
@@ -220,14 +215,6 @@ def openConfigFile(report, info):
         return None
 
 def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
-    
-    # Load translations
-    langCode = getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
     
     f_handle = openConfigFile(report, 'r')
     
@@ -269,14 +256,6 @@ def writeConfigValue(report, settingName, settingValue, createIfMissing=False):
     return True
     
 def readConfig(report):
-    
-    # Load translations
-    langCode = getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
     
     f_handle = openConfigFile(report, 'r')
     
@@ -330,14 +309,6 @@ def readConfig(report):
 
 def getConfigVal(my_map, key, report, giveError=True):
 
-    # Load translations
-    langCode = getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-    
     if key not in my_map:
 
         if report is not None:
@@ -363,14 +334,6 @@ def getConfigVal(my_map, key, report, giveError=True):
 
 def configValIsList(my_map, key, report):
 
-    # Load translations
-    langCode = getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/ReadConfig_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-    
     if isinstance(my_map[key], list) is False:
 
         if report is not None:

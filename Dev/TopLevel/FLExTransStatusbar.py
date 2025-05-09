@@ -1,6 +1,9 @@
 #
 #   Custom status bar callback for FLExTrans
 #
+#   Version 3.13.1 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -18,8 +21,6 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
 
-app = QApplication(sys.argv)
-
 # We need to set CURRENT_SRC_TEXT at the beginning so the statusbar can show the right thing.
 configMap = ReadConfig.readConfig(None)
 
@@ -27,9 +28,6 @@ if configMap is None:
     FTPaths.CURRENT_SRC_TEXT = "ERROR: NO CONFIG FILE FOUND!!"
 else:
     FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
-
-app.quit()
-del app
 
 def statusbarCallback():
 

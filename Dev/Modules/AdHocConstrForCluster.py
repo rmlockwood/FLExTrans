@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.13.2 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -63,7 +66,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 
 from fuzzywuzzy import fuzz
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLibraryInfo
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QInputDialog, QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox, QMessageBox
 from PyQt5.QtCore import QCoreApplication, QTranslator
 
@@ -76,26 +79,30 @@ from ComboBox import CheckableComboBox
 import ReadConfig
 import Utils
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+librariesToTranslate = ['ReadConfig', 'Utils'] 
+
+app = QApplication(sys.argv)
+translatorForGlobals = QTranslator()
+
+if translatorForGlobals.load(f"AdHocConstrForCluster_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+    QCoreApplication.installTranslator(translatorForGlobals)
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Add an ad hoc constraint to multiple cluster projects.",    
+        FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),    
         FTM_Help   : "",
-        FTM_Description: 
-"""
-Add an ad hoc constraint to multiple cluster projects. 
-""" }
+        FTM_Description: _translate("AdHocConstrForCluster",
+"""Add an ad hoc constraint to multiple cluster projects.""")}
 
-adjacencyMap = {
-    'anywhere around':  0,
-    'somewhere after':  1,
-    'somewhere before': 2,
-    'adjacent after':   3,
-    'adjacent before':  4,
-}
+app.quit()
+del app
 
 glossPOSMap = {}
 
@@ -104,20 +111,21 @@ EM_SPACE = '\u2003'
 
 class GroupInputDialog(QDialog):
     def __init__(self, parent=None):
+
         super().__init__(parent)
-        self.setWindowTitle("Group Input")
+        self.setWindowTitle(_translate("AdHocConstrForCluster", "Group Input"))
 
         layout = QVBoxLayout(self)
 
-        self.explanatoryLabel = QLabel("This new group name will be created in all the selected cluster projects.")
+        self.explanatoryLabel = QLabel(_translate("AdHocConstrForCluster", "This new group name will be created in all the selected cluster projects."))
         layout.addWidget(self.explanatoryLabel)
 
-        self.groupNameLabel = QLabel("Group Name:")
+        self.groupNameLabel = QLabel(_translate("AdHocConstrForCluster", "Group Name:"))
         self.groupNameEdit = QLineEdit(self)
         layout.addWidget(self.groupNameLabel)
         layout.addWidget(self.groupNameEdit)
 
-        self.groupDescLabel = QLabel("Group Description:")
+        self.groupDescLabel = QLabel(_translate("AdHocConstrForCluster", "Group Description:"))
         self.groupDescEdit = QLineEdit(self)
         layout.addWidget(self.groupDescLabel)
         layout.addWidget(self.groupDescEdit)
@@ -152,6 +160,14 @@ class AdHocMain(QMainWindow):
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
+        adjacencyMap = {
+            _translate("AdHocConstrForCluster", 'anywhere around'):  0,
+            _translate("AdHocConstrForCluster", 'somewhere after'):  1,
+            _translate("AdHocConstrForCluster", 'somewhere before'): 2,
+            _translate("AdHocConstrForCluster", 'adjacent after'):   3,
+            _translate("AdHocConstrForCluster", 'adjacent before'):  4,
+        }
+
         self.autoCompleteWidgets = [
             self.ui.KeyMorphAllomorphLineEdit,
             self.ui.otherMorphsAllomorphsLineEdit1,
@@ -177,8 +193,11 @@ class AdHocMain(QMainWindow):
             self.ui.clusterProjectsComboBox.check(projectName)
 
         # Initialize the types combo
-        self.ui.adHocTypeComboBox.addItems(['(Choose Type)', 'Morpheme', 'Allomorph'])
-
+        self.ui.adHocTypeComboBox.addItems([
+            _translate("AdHocConstrForCluster", "(Choose Type)"),
+            _translate("AdHocConstrForCluster", "Morpheme"),
+            _translate("AdHocConstrForCluster", "Allomorph")
+        ])
         # Load the source project combo
         self.ui.sourceProjectComboBox.addItems(AllProjectNames())
 
@@ -253,13 +272,13 @@ class AdHocMain(QMainWindow):
 
         selectedType = self.ui.adHocTypeComboBox.currentText()
         
-        if selectedType == 'Morpheme':
+        if selectedType == _translate("AdHocConstrForCluster", "Morpheme"):
 
             completer = QCompleter(sorted(list(self.morphGuidMap.keys()), key=lambda x: x.lower()))
 
-        elif selectedType == 'Allomorph':
+        elif selectedType == _translate("AdHocConstrForCluster", "Allomorph"):
         
-            completer = QCompleter(sorted(list(self.allomorphGuidMap.keys()), key=lambda x: x.lower()))
+            completer = QCompleter(sorted(list(self.allomorphGuidMap.keys()), key=lambda x: x.lower()))        
         else:
             return # still on (Choose Type)
         
@@ -335,7 +354,7 @@ class AdHocMain(QMainWindow):
         self.ui.addButton.setEnabled(False)
 
         # Set the type back to (choose)
-        index = self.ui.adHocTypeComboBox.findText('(Choose Type)') 
+        index = self.ui.adHocTypeComboBox.findText(_translate("AdHocConstrForCluster", "(Choose Type)")) 
         if index >= 0:      
 
             self.ui.adHocTypeComboBox.setCurrentIndex(index)
@@ -350,7 +369,7 @@ class AdHocMain(QMainWindow):
         # Don't add anything if the key morph and 1st other morph are blank
         if self.ui.KeyMorphAllomorphLineEdit.text() == '' or self.ui.otherMorphsAllomorphsLineEdit1.text() == '':
 
-            self.ui.feedbackLabel.setText('You need to set the key field and at least the 1st other field!')
+            self.ui.feedbackLabel.setText(_translate("AdHocConstrForCluster", "You need to set the key field and at least the 1st other field!"))
             return
 
         feedbackStr = ''
@@ -361,7 +380,7 @@ class AdHocMain(QMainWindow):
         # Determine the type of ad hoc rule
         selectedType = self.ui.adHocTypeComboBox.currentText()
                     
-        guidMap = self.morphGuidMap if selectedType == 'Morpheme' else self.allomorphGuidMap
+        guidMap = self.morphGuidMap if selectedType == _translate("AdHocConstrForCluster", "Morpheme") else self.allomorphGuidMap
 
         # Lookup the msa/or allomorph for the key item
         key = self.ui.KeyMorphAllomorphLineEdit.text()
@@ -371,7 +390,14 @@ class AdHocMain(QMainWindow):
 
         except KeyError:
             QApplication.restoreOverrideCursor()       
-            QMessageBox.critical(self, 'Ad Hoc Rules', f'It looks like you may not have used the Auto Complete values. "{key}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.')
+            QMessageBox.critical(
+                self,
+                'Ad Hoc Rules',
+                _translate(
+                    "AdHocConstrForCluster",
+                    'It looks like you may not have used the Auto Complete values. "{key}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.'
+                ).format(key=key)
+            )            
             return
 
         otherGuidList = []
@@ -388,7 +414,14 @@ class AdHocMain(QMainWindow):
 
                 except KeyError:
                     QApplication.restoreOverrideCursor()       
-                    QMessageBox.critical(self, 'Ad Hoc Rules', f'It looks like you may not have used the Auto Complete values. "{otherStr}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.')
+                    QMessageBox.critical(
+                        self,
+                        'Ad Hoc Rules',
+                        _translate(
+                            "AdHocConstrForCluster",
+                            'It looks like you may not have used the Auto Complete values. "{otherStr}" by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.'
+                        ).format(otherStr=otherStr)
+                    )
                     return
         
         # Duplicate the list to save it for later
@@ -401,20 +434,6 @@ class AdHocMain(QMainWindow):
             isSourceProject = (proj == self.sourceDB.ProjectName())
             isOrigSourceProject = (proj == self.origSourceDB.ProjectName())
 
-            # Open the project (if not the current source project or the original source - these are already open)
-            # if isOrigSourceProject:
-
-            #     myDB = self.origSourceDB
-
-            # elif isSourceProject:
-
-            #     myDB = self.sourceDB
-            # else:
-            #     myDB = Utils.openProject(self.report, proj)
-
-            #     if not myDB:
-            #         continue
-            
             myDB = Utils.openProject(self.report, proj)
 
             if not myDB:
@@ -437,7 +456,7 @@ class AdHocMain(QMainWindow):
                     _ = repo.GetObject(Guid(String(origKeyGuid)))
                 except:
                     # If it's a morpheme we can try finding the msa other ways. 
-                    if selectedType == 'Morpheme':
+                    if selectedType == _translate("AdHocConstrForCluster", "Morpheme"):
 
                         keyGuid = self.findObject(self.sourceDB, myDB, origKeyGuid, key)
 
@@ -458,7 +477,7 @@ class AdHocMain(QMainWindow):
                     try:
                         _ = repo.GetObject(Guid(String(othGuid)))
                     except:
-                        if selectedType == 'Morpheme':
+                        if selectedType == _translate("AdHocConstrForCluster", "Morpheme"):
 
                             newGuid = self.findObject(self.sourceDB, myDB, othGuid, otherStr)
 
@@ -476,7 +495,7 @@ class AdHocMain(QMainWindow):
 
             if not problemFound:
 
-                if selectedType == 'Morpheme':
+                if selectedType == _translate("AdHocConstrForCluster", "Morpheme"):
 
                     # Get a factory for the ad hoc rule object and add the object 
                     adHocObj = myDB.project.ServiceLocator.GetService(IMoMorphAdhocProhibFactory).Create()
@@ -505,7 +524,7 @@ class AdHocMain(QMainWindow):
                         adHocObj.RestOfAllosRS.Add(IMoForm(repo.GetObject(Guid(String(othGuid)))))
 
                 adHocObj.Adjacency = self.ui.cannotOccurComboBox.currentData()
-                feedbackStr += f'Added ad hoc rule to project {proj}.\n'
+                feedbackStr += _translate("AdHocConstrForCluster", "Added ad hoc rule to project {proj}.\n").format(proj=proj)
                 
                 validGroup = False
                 groupGuid = self.ui.adHocGroupComboBox.currentData()
@@ -552,7 +571,7 @@ class AdHocMain(QMainWindow):
                         if not validGroup:
 
                             filteredGroupNames = [name for name, _ in groupList if fuzz.ratio(sourceGroupName, name) >= SIMILARITY_THRESHOLD]
-                            filteredGroupNames.append(f'NEW: {sourceGroupName}')
+                            filteredGroupNames.append(_translate("AdHocConstrForCluster", 'NEW: {sourceGroupName}').format(sourceGroupName=sourceGroupName))
 
                             # Revert back to the default cursor 
                             QApplication.restoreOverrideCursor()       
@@ -564,7 +583,7 @@ class AdHocMain(QMainWindow):
                             QApplication.setOverrideCursor(Qt.WaitCursor) 
 
                             # Create a new group named the same as the source one when the user chooses NEW ...
-                            if selectedGroupName == f'NEW: {sourceGroupName}':
+                            if selectedGroupName == _translate("AdHocConstrForCluster", 'NEW: {sourceGroupName}').format(sourceGroupName=sourceGroupName):
 
                                 try:
                                     desc = Utils.as_string(IMoAdhocProhibGr(repo.GetObject(Guid(String(self.ui.adHocGroupComboBox.currentData())))).Description)
@@ -696,8 +715,16 @@ class AdHocMain(QMainWindow):
     def promptUserForGroupName(self, groupNames, projectName):
 
         # Create an input dialog with a list of group names
-        item, ok = QInputDialog.getItem(None, "Select Group", f"Similar groups in {projectName}:", groupNames, 0, False)
+        item, ok = QInputDialog.getItem(
+                    None,
+                    _translate("AdHocConstrForCluster", "Select Group"),
+                    _translate("AdHocConstrForCluster", "Similar groups in {projectName}:").format(projectName=projectName),
+                    groupNames,
+                    0,
+                    False
+                )
         
+        # If the user pressed cancel, return an empty string        
         # If the user made a selection, return the selected item
         if ok and item:
             
@@ -840,8 +867,26 @@ class AdHocMain(QMainWindow):
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+
     # Show the window
     app = QApplication(sys.argv)
+
+    # Load the Qt base translation for standard dialogs
+    qt_translator = QTranslator()
+    qt_translator.load(f"qtbase_{Utils.getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+    QCoreApplication.installTranslator(qt_translator)
+    translators.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
+
+    # Load translations (libraries, for the windows and this file.)
+    for lib in librariesToTranslate + ['ClusterAdHoc', 'AdHocConstrForCluster']:
+
+        translator = QTranslator()
+
+        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+            QCoreApplication.installTranslator(translator)
+            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -862,19 +907,14 @@ def MainFunction(DB, report, modify=True):
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS, report)
     composed = (composed == 'y')
 
-    # Load translations
-    langCode = 'de'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/ClusterAdHoc_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
     window = AdHocMain(report, DB, composed, projects)
     
     window.show()
     app.exec_()
     
+    app.quit()
+    del app
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.13.7 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.6 - 4/3/25 - Ron Lockwood
 #    Replaced magic strings with constants.
 #
@@ -270,6 +273,10 @@ from SIL.LCModel.DomainServices import StringServices   # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig
+from PyQt5.QtCore import QCoreApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 CIRCUMFIX_TAG_A = '_cfx_part_a'
 CIRCUMFIX_TAG_B = '_cfx_part_b'
@@ -369,8 +376,8 @@ morphTypeReverseMap = {
 
 
 # Invalid category characters & descriptions & messages & replacements
-catProbData = [['space', 'converted to an underscore', '_', reSpace],
-           ['period', 'removed', '', rePeriod],
+catProbData = [[_translate("Utils", 'space'), _translate("Utils", 'converted to an underscore'), '_', reSpace],
+           [_translate("Utils", 'period'), _translate("Utils", 'removed'), '', rePeriod],
 #          ['x char', 'fatal', '']
           ]
 
@@ -436,7 +443,7 @@ def createUniqueTitle(DB, title):
 
     if title in sourceTextList:
 
-        title += ' - Copy'
+        title += _translate("Utils", ' - Copy')
 
         if title in sourceTextList:
 
@@ -465,7 +472,7 @@ def decompose(myFile):
         # Open the file and read all the lines
         f = open(myFile , "r", encoding='utf-8')
     except:
-        raise ValueError(f'Could not open the file {myFile} when converting to NFD.')
+        raise ValueError(_translate("Utils", "Could not open the file {myFile} when converting to NFD.").format(myFile=myFile))
 
     lines = f.readlines()
     f.close()
@@ -644,7 +651,7 @@ def openProject(report, DBname):
         myDB.OpenProject(DBname, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error('There was an error opening database: '+DBname+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
+            report.Error(_translate("Utils", "There was an error opening database: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(DBname=DBname))
         return None
 
     return myDB
@@ -661,18 +668,15 @@ def openTargetProject(configMap, report):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         if report:
-            report.Error('The Target Database does not exist. Please check the configuration file.')
+            report.Error(_translate("Utils", "The Target Database does not exist. Please check the configuration file."))
         return
-
+    
     try:
         TargetDB.OpenProject(targetProj, True)
-    except: #FDA_DatabaseError, e:
+    except:
         if report:
-            report.Error('There was an error opening target database: '+targetProj+'. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.')
+            report.Error(_translate("Utils", "There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
         raise
-
-    # if report:
-    #     report.Info('Using: '+targetProj+' as the target database.')
 
     return TargetDB
 
@@ -698,12 +702,12 @@ def get_sub_inflection_classes(mySubClasses):
 def get_categories(DB, report, posMap, TargetDB=None, numCatErrorsToShow=1, addInflectionClasses=True):
 
     haveError = False
-    dbList = [(DB, 'source')]
+    dbList = [(DB, _translate("Utils", 'source'))]
 
     # Sometime the caller may just want source categories
     if TargetDB:
 
-        dbList.append((TargetDB, 'target'))
+        dbList.append((TargetDB, _translate("Utils", 'target')))
 
     for dbTup in dbList:
 
@@ -768,7 +772,7 @@ def process_inflection_classes(posMap, pos):
 
             posMap[icAbbr] = icName
 
-def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow, myType='category'):
+def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, numCatErrorsToShow, myType=_translate("Utils", 'category')):
 
     haveError = False
 
@@ -787,8 +791,9 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if message == 'fatal':
 
                 if report:
-                    report.Error(f"The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, please correct this {myType} in the {dbType} database.")
-                haveError = True
+                    report.Error(_translate("Utils", "The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+\
+                                            'please correct this {myType} in the {dbType} database.").format(posAbbrStr=posAbbrStr, myType=myType, posFullNameStr=posFullNameStr, charName=charName, dbType=dbType))                
+                    haveError = True
 
                 # show all fatal errors
                 continue
@@ -802,14 +807,15 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
 
                 if report:
-                    report.Warning(f"The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName}" + \
-                                   f" has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.")
+                    report.Warning(_translate("Utils", "The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName} '+\
+                                              'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.").
+                                              format(oldAbbrStr=oldAbbrStr, myType=myType, posFullNameStr=posFullNameStr, dbType=dbType, charName=charName, message=message, posAbbrStr=posAbbrStr))
 
             # Give suppressing message when we go 1 beyond the max
             elif countList[i] == numCatErrorsToShow:
 
                 if report:
-                    report.Info("Suppressing further warnings of this type.")
+                    report.Info(_translate("Utils", "Suppressing further warnings of this type."))
 
             countList[i] += 1
 
@@ -946,8 +952,8 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     except:
         headWord = getHeadwordStr(entry)
         if report:
-            report.Error(f'Invalid url link or url not found in the target database while processing source headword: {headWord}.',\
-                        DB.BuildGotoURL(entry))
+            report.Error(_translate("Utils", "Invalid url link or url not found in the target database while processing source headword: {headWord}.").format(headWord=headWord),
+            DB.BuildGotoURL(entry))
         return retVal
 
     if targetObj:
@@ -1060,7 +1066,7 @@ def writeSenseHyperLink(DB, TargetDB, sourceSense, targetEntry, targetSense, sen
     glossStr = as_string(targetSense.Gloss)
 
     # Put the string we want for the link name into a tsString
-    linkName = f'linked to entry: {headWordStr}, sense: {glossStr} in the {TargetDB.ProjectName()} project.'
+    linkName = _translate("Utils", "linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.").format(headWordStr=headWordStr, glossStr=glossStr, projectName=TargetDB.ProjectName())
 
     # Make the string in the analysis writing system
     tss = TsStringUtils.MakeString(linkName, DB.project.DefaultAnalWs)
@@ -1366,3 +1372,8 @@ def getPathRelativeToWorkProjectsDir(fullPath):
         
     # Return the path starting from 'WorkProjects'
     return "..."+fullPath[index:]
+
+def getInterfaceLangCode():
+
+    return 'de'
+
