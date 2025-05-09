@@ -50,7 +50,11 @@
 
 import os
 import re
+import sys
 from datetime import datetime
+
+from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtWidgets import QApplication
 
 from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString    # type: ignore
@@ -61,23 +65,35 @@ from flexlibs import FLExProject
 import ReadConfig
 import Utils
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+librariesToTranslate = ['ReadConfig', 'Utils'] 
+
+app = QApplication(sys.argv)
+translatorForGlobals = QTranslator()
+
+if translatorForGlobals.load(f"AdHocConstrForCluster_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+    QCoreApplication.installTranslator(translatorForGlobals)
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Catalog Target Affixes",
         FTM_Version    : "3.13.1",        
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates a list of all the affix glosses and morpheme types in the target database.",
+        FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target database."),
         FTM_Help  : "",
-        FTM_Description:
-"""
-This module creates a file which has a list of all the affix glosses and morpheme types in the target database. 
+        FTM_Description: _translate("CatalogTargetAffixes", 
+"""This module creates a file which has a list of all the affix glosses and morpheme types in the target database. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.
 The catalog will be created in the file specified by the Target Affix Gloss List File setting.
-This is typically called target_affix_glosses.txt and is usually in the Build folder.
-""" }
+This is typically called target_affix_glosses.txt and is usually in the Build folder.""")}
+
+app.quit()
+del app
 
 
 #----------------------------------------------------------------
