@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.13.1 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -44,23 +47,38 @@ import os
 from pathlib import Path
 import tempfile
 import re
+
 from flextoolslib import *
+
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
 import ReadConfig
 import Utils
 import FTPaths
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+app = QApplication([])
+translatorForGlobals = QTranslator()
+
+if translatorForGlobals.load(f"CleanFiles_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+    QCoreApplication.installTranslator(translatorForGlobals)
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-descr = "Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders."
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Remove generated files to force each FLExTrans module to regenerate everything",
+        FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help  : "",  
-        FTM_Description:    descr}     
-#----------------------------------------------------------------
+        FTM_Description: _translate("CleanFiles",
+"""Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.""")}
 
-OUTPUT = "Output\\"
+app.quit()
+del app
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -280,14 +298,10 @@ def MainFunction(DB, report, modify=True):
     except:
         pass # ignore errors
 
-
-
 #----------------------------------------------------------------
 # define the FlexToolsModule
-
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
                                        docs = docs)
-            
 
 #----------------------------------------------------------------
 if __name__ == '__main__':
