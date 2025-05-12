@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.13.3 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Move the Mixpanel logging to the main function. Callers should do it.
 # 
@@ -118,14 +121,34 @@ from SIL.LCModel import *                                                    # t
 from flextoolslib import *                                                 
 from flexlibs import FLExProject, FWProjectsDir
 
+from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtWidgets import QApplication
+
 import ReadConfig
 import Utils
 import FTPaths
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+librariesToTranslate = ['ReadConfig', 'Utils'] 
+
+app = QApplication([])
+translatorForGlobals = QTranslator()
+
+if translatorForGlobals.load(f"DoHermitCrabSynthesis_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+    QCoreApplication.installTranslator(translatorForGlobals)
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-description = """
-This module runs HermitCrab to create the
+docs = {FTM_Name       : "Synthesize Text with HermitCrab",
+        FTM_Version    : "3.13.3",
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
+        FTM_Help       :"",
+        FTM_Description: _translate("DoHermitCrabSynthesis", 
+"""This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like 'target_text-syn.txt'. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
@@ -135,15 +158,12 @@ NOTE: Messages will say the SOURCE database
 is being used. Actually the target database is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
 produce surface forms ('target_words-surface.txt'). 
-These forms are then used to create the target text.
-"""
+These forms are then used to create the target text.""")}
 
-docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.13.2",
-        FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
-        FTM_Help       :"",
-        FTM_Description: description}
+description = docs[FTM_Description]
+
+app.quit()
+del app
 
 SUCCESS = 'Success!'
 
@@ -179,7 +199,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
 
     if not targetProj:
-        errorList.append(('Configuration file problem with TargetProject.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Configuration file problem with TargetProject."), 2))
         return errorList
     
     TargetDB = FLExProject()
@@ -190,7 +210,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
 
     except: #FDA_DatabaseError, e:
 
-        errorList.append((f'Failed to open the target database: {targetProj}', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target database: {targetProj}.").format(targetProj=targetProj), 2))
         return errorList
 
     # Get fwdata file path
@@ -199,7 +219,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
 
     if not cacheData:
-        errorList.append((f'A value for {ReadConfig.CACHE_DATA} not found in the configuration file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "A value for {cacheData} not found in the configuration file.").format(cacheData=ReadConfig.CACHE_DATA), 2))
         return errorList
     
     if cacheData == 'y':
@@ -214,10 +234,10 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
         if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
 
             if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)"), 2))
                 return errorList
 
-        errorList.append(("The HermitCrab configuration file is up to date.", 0))
+        errorList.append((_translate("DoHermitCrabSynthesis", "The HermitCrab configuration file is up to date."), 0))
         return errorList
     else:
         # Run the HermitCrab config generator
@@ -227,15 +247,15 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if result.returncode == 0:
 
                 gatherWarnings(result, errorList)
-                errorList.append((f'Generated the HermitCrab config. file: {Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)}', 0))
+                errorList.append((_translate("DoHermitCrabSynthesis", "Generated the HermitCrab config. file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(HCconfigPath)), 0))
             else:
-                errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
                 
                 # Check for KeyNotFoundException from FLEx
                 if re.search('KeyNotFoundException', result.stderr.decode()):
 
-                    errorList.append((f'The error contains a "KeyNotFoundException" and this often indicates that the FLEx Find and Fix utility should be run on the {TargetDB.ProjectName()} database.', 2))
-                    errorList.append(('The full error message is:', 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} database.").format(projectName=TargetDB.ProjectName()), 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
 
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
@@ -244,12 +264,12 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             if DLLobj:
 
                 if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)', 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)"), 2))
                     return errorList
 
         except subprocess.CalledProcessError as e:
 
-            errorList.append((f'An error happened when running the Generate HermitCrab Configuration tool.', 2))
+            errorList.append((_translate("DoHermitCrabSynthesis", "An error happened when running the Generate HermitCrab Configuration tool."), 2))
             errorList.append((e.stderr.decode(), 2))
 
     return errorList
@@ -658,6 +678,21 @@ def doHermitCrab(DB, report, configMap=None):
     
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
+
+    # Show the window
+    app = QApplication([])
+
+    # Load translations (libraries, for the windows and this file.)
+    for lib in librariesToTranslate + ['DoHermitCrabSynthesis']:
+
+        translator = QTranslator()
+
+        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+            QCoreApplication.installTranslator(translator)
+            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
@@ -668,6 +703,9 @@ def MainFunction(DB, report, modifyAllowed):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     doHermitCrab(DB, report, configMap)
+
+    app.quit()
+    del app
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
