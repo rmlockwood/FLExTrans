@@ -71,16 +71,14 @@ import FTPaths
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
-globalTranslatorsMap = {}
 librariesToTranslate = ['ReadConfig', 'Utils'] 
 
 app = QApplication(sys.argv)
 translatorForGlobals = QTranslator()
 
-if 'CatalogTargetAffixes' not in globalTranslatorsMap and translatorForGlobals.load(f"CatalogTargetAffixes_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+if translatorForGlobals.load(f"CatalogTargetAffixes_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
 
     QCoreApplication.installTranslator(translatorForGlobals)
-    globalTranslatorsMap['CatalogTargetAffixes'] = translatorForGlobals     
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -314,7 +312,6 @@ def MainFunction(DB, report, modifyAllowed):
 
     app.quit()
     del app
-
                  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
