@@ -55,6 +55,11 @@ import TestbedValidator
 import ReadConfig 
 import Utils
 
+from PyQt5.QtCore import QCoreApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
 FLEXTRANS_TESTBED_RESULTS = 'FLExTransTestbedResults'
@@ -645,7 +650,7 @@ class TestbedTestXMLObject():
             # each test goes on its own line
             line = f_out.readline()
         except:
-            raise ValueError('No more lines to read in the synthesis file.')
+            raise ValueError(_translate("Testbed", 'No more lines to read in the synthesis file.'))
         
         # Remove the dummy EOL lexical unit at the end. STAMP results.
         line = re.sub(r' @*EOL', '', line)
@@ -863,12 +868,12 @@ class FlexTransTestbedFile():
                 f.close()
                 
             except:
-                raise ValueError('The testbed file: ' + self.__testbedPath + ' could not be read or written.')
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=self.__testbedPath))
             
             try:
                 self.__testbedTree = ET.parse(self.__testbedPath)
             except:
-                raise ValueError('The testbed file: ' + self.__testbedPath + ' is invalid.')
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=self.__testbedPath))
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -1100,7 +1105,7 @@ class FlexTransTestbedResultsFile():
             try:
                 self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError(f'The testbed results file: {resultsPath} is invalid.')
+                raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=resultsPath))
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     
@@ -1442,4 +1447,3 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
     retStr += '</p>'
     
     return retStr
-

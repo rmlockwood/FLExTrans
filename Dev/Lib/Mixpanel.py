@@ -21,6 +21,12 @@
 import ReadConfig
 import functools
 
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
 # Only retrieve the IP address once per session
 @functools.cache
 def GetIPAddress():
@@ -35,14 +41,21 @@ def GetUserID(configMap, report):
                                           None, giveError=False)
     if opt_out_asked == 'n' or opt_out_asked is None:
 
-        from System.Windows.Forms import (MessageBox, MessageBoxButtons, MessageBoxIcon, DialogResult)
-
-        result = MessageBox.Show("FLExTrans would like to send usage statistics to FLExTrans developers. "+\
+        app = QApplication([])
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Question)
+        msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
                                     "No personally identifiable information is sent. These anonymous statistics will help with future development. "+\
-                                    "Do you want to opt out of sending usage statistics?", "FLExTrans Usage",
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    "Do you want to opt out of sending usage statistics?"))
+        msgBox.setWindowTitle("FLExTrans Usage")
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-        if result == DialogResult.Yes:
+        result = msgBox.exec_()
+        
+        app.quit()
+        del app
+
+        if result == QMessageBox.Yes:
 
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n', createIfMissing=True)
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, 'y', createIfMissing=True)

@@ -32,13 +32,30 @@
 #   log and start the log viewer. Put in an end time in the log.
 #
 
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-
+from SIL.LCModel import * # type: ignore
 from flextoolslib import *                                                 
 
-import ReadConfig
+from PyQt5.QtCore import QLibraryInfo
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
 from Testbed import *
+import Mixpanel
+import ReadConfig
+import Utils
+import FTPaths
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel'] 
+
+app = QApplication([])
+translatorForGlobals = QTranslator()
+
+if translatorForGlobals.load(f"EndTestbed_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+    QCoreApplication.installTranslator(translatorForGlobals)
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -46,16 +63,38 @@ from Testbed import *
 docs = {FTM_Name       : "End Testbed",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Conclude a testbed log result.",
+        FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help   : "",
-        FTM_Description:  
-"""
-Conclude a testbed log result..
-""" }
+        FTM_Description: _translate("EndTestbed",  
+"""Conclude a testbed log result.""")}
+
+app.quit()
+del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modifyAllowed):
+
+    translators = []
+
+    # Show the window
+    app = QApplication([])
+
+    # Load the Qt base translation for standard dialogs
+    qt_translator = QTranslator()
+    qt_translator.load(f"qtbase_{Utils.getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+    QCoreApplication.installTranslator(qt_translator)
+    translators.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
+
+    # Load translations (libraries, for the windows and this file.)
+    for lib in librariesToTranslate + ['EndTestbed']:
+
+        translator = QTranslator()
+
+        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+            QCoreApplication.installTranslator(translator)
+            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -63,7 +102,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the synthesis file name
@@ -75,9 +113,8 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_out = open(outFileVal, encoding='utf-8')
     except IOError:
-        report.Error('There is a problem with the Synthesis Output File path: '+outFileVal+'. Please check the configuration file setting.')
+        report.Error(_translate("EndTestbed", "There is a problem with the Synthesis Output File path: {outFileVal}. Please check the configuration file setting.").format(outFileVal=outFileVal))
         return
-    
     
     # Create an object for the testbed results file and get the associated
     # XML object
@@ -94,8 +131,11 @@ def MainFunction(DB, report, modifyAllowed):
         resultsFileObj.write()
     
     # Let the user know how many valid/invalid test were dumped
-    report.Info(str(count) + ' results extracted.')
-               
+    report.Info(_translate("EndTestbed", "{count} results extracted.").format(count=count))
+
+    app.quit()
+    del app
+
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,
