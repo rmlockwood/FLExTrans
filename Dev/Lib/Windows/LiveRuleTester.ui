@@ -362,7 +362,7 @@
      </font>
     </property>
     <property name="text">
-     <string notr="true">☒</string>
+     <string notr="true">☑</string>
     </property>
    </widget>
    <widget class="QPushButton" name="upButton">
@@ -756,7 +756,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      <string>Do not clean up unknown words</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>640</x>
@@ -825,7 +825,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>330</x>
@@ -875,7 +875,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>470</x>
@@ -913,7 +913,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>730</x>
