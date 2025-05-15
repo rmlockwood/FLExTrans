@@ -41,7 +41,6 @@ def GetUserID(configMap, report):
                                           None, giveError=False)
     if opt_out_asked == 'n' or opt_out_asked is None:
 
-        app = QApplication([])
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setText(_translate('Mixpanel', "FLExTrans would like to send usage statistics to FLExTrans developers. "+\
@@ -52,9 +51,6 @@ def GetUserID(configMap, report):
 
         result = msgBox.exec_()
         
-        app.quit()
-        del app
-
         if result == QMessageBox.Yes:
 
             ReadConfig.writeConfigValue(report, ReadConfig.LOG_STATISTICS, 'n', createIfMissing=True)
