@@ -35,31 +35,28 @@
 from SIL.LCModel import * # type: ignore
 from flextoolslib import *                                                 
 
-from PyQt5.QtCore import QLibraryInfo
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
 from Testbed import *
 import Mixpanel
 import ReadConfig
 import Utils
-import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
-librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel'] 
-
+translators = []
 app = QApplication([])
-translatorForGlobals = QTranslator()
 
-if translatorForGlobals.load(f"EndTestbed_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['StartTestbed'], translators)
 
-    QCoreApplication.installTranslator(translatorForGlobals)
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "End Testbed",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
@@ -76,25 +73,9 @@ del app
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-
-    # Show the window
     app = QApplication([])
-
-    # Load the Qt base translation for standard dialogs
-    qt_translator = QTranslator()
-    qt_translator.load(f"qtbase_{Utils.getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-    QCoreApplication.installTranslator(qt_translator)
-    translators.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
-
-    # Load translations (libraries, for the windows and this file.)
-    for lib in librariesToTranslate + ['EndTestbed']:
-
-        translator = QTranslator()
-
-        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-            QCoreApplication.installTranslator(translator)
-            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
+    Utils.loadTranslations(librariesToTranslate + ['EndTestbed'], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)

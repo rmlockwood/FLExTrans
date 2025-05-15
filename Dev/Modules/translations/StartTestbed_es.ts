@@ -6,12 +6,12 @@
     <message>
         <location filename="../StartTestbed.py" line="50"/>
         <source>Start Testbed</source>
-        <translation type="obsolete">Testbed starten</translation>
+        <translation type="obsolete">Iniciar Testbed</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="84"/>
         <source>Initialize the testbed log and create source text from the testbed.</source>
-        <translation>Initialisieren Sie das Testbed-Protokoll und erstellen Sie Quelltext aus dem Testbed.</translation>
+        <translation>Inicialice el registro del testbed y cree texto fuente desde el testbed.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="86"/>
@@ -19,23 +19,23 @@
         Initialize the testbed log and create source text from the testbed.
         </source>
         <translation>
-        Initialisieren Sie das Testbed-Protokoll und erstellen Sie Quelltext aus dem Testbed.
+        Inicialice el registro del testbed y cree texto fuente desde el testbed.
         </translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="105"/>
         <source>Testbed does not exist. Please add tests to the testbed.</source>
-        <translation>Das Testbed existiert nicht. Bitte fügen Sie dem Testbed Tests hinzu.</translation>
+        <translation>El testbed no existe. Por favor, agregue pruebas al testbed.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="151"/>
         <source>There is a problem with the Analyzed Text Output File path: {outFileVal}. Please check the configuration file setting.</source>
-        <translation>Es gibt ein Problem mit dem Pfad der analysierten Textausgabedatei: {outFileVal}. Bitte überprüfen Sie die Einstellung der Konfigurationsdatei.</translation>
+        <translation>Hay un problema con la ruta del archivo de salida del texto analizado: {outFileVal}. Por favor, revise la configuración del archivo de configuración.</translation>
     </message>
     <message>
         <location filename="../StartTestbed.py" line="169"/>
         <source>{count} tests prepared for testing.</source>
-        <translation>{count} Tests für das Testen vorbereitet.</translation>
+        <translation>{count} pruebas preparadas para el testeo.</translation>
     </message>
 </context>
 </TS>

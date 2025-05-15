@@ -54,28 +54,28 @@
 #   source text can be fed into the normal FLExTrans process.
 #
 
-import sys
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
-from SIL.LCModel import *                                                   
-from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr         
-
+from SIL.LCModel import * # type: ignore
 from flextoolslib import *                                                 
-from FTPaths import TRANSL_DIR
 
-import ReadConfig
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
+
 from Testbed import *
-
-app = QApplication(sys.argv)
-
-# Load translations
-translator = QTranslator()
-if translator.load(TRANSL_DIR+"/StartTestbed_de.qm"):
-    QCoreApplication.installTranslator(translator)
+import Mixpanel
+import ReadConfig
+import Utils
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['StartTestbed'], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -128,15 +128,10 @@ def init_new_result(DB, report):
 # The main processing function
 def MainFunction(DB, report, modifyAllowed):
     
-    app = QApplication(sys.argv)
-
-    # Load translations
-    translator = QTranslator()
-    if translator.load(TRANSL_DIR+"/StartTestbed_de.qm"):
-        QCoreApplication.installTranslator(translator)
-
-    # Define _translate for convenience
-    _translate = QCoreApplication.translate
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + ['StartTestbed'], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -149,7 +144,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Open the output file

@@ -248,6 +248,9 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
+from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QLibraryInfo
+
 from System import Guid   # type: ignore
 from System import String # type: ignore
 
@@ -273,7 +276,7 @@ from SIL.LCModel.DomainServices import StringServices   # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
 import ReadConfig as MyReadConfig
-from PyQt5.QtCore import QCoreApplication
+import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -1375,5 +1378,24 @@ def getPathRelativeToWorkProjectsDir(fullPath):
 
 def getInterfaceLangCode():
 
-    return 'de'
+    return 'es'
 
+def loadTranslations(libList, translatorsList, loadBase=False):
+
+    if loadBase:
+
+        # Load the Qt base translation for standard dialogs
+        qt_translator = QTranslator()
+        qt_translator.load(f"qtbase_{getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        QCoreApplication.installTranslator(qt_translator)
+        translatorsList.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
+
+    # Load translations (libraries, for the windows and this file.)
+    for lib in libList:
+
+        translator = QTranslator()
+
+        if translator.load(f"{lib}_{getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+
+            QCoreApplication.installTranslator(translator)
+            translatorsList.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
