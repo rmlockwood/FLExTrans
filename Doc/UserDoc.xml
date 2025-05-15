@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->28 April 2025</date
+>15 May 2025</date
 ><version
 >3.13</version
 ><contents
@@ -7568,6 +7568,25 @@ type="tFlextrans"
 > is interpreting mana1.1 and the 2nd prep as affixes, likely because they were outputted in the same lexical unit as the first word.</td
 ><td
 >Correct the transfer rule that produced this to give a lexical unit block for each word.</td
+></tr
+><tr
+><td
+>An error happened when running the Apertium tools. </td
+><td
+></td
+><td
+>The rule engine failed when applying the rules. </td
+><td
+>Close the <object
+type="tLiveRuleTester"
+></object
+>. Run the <object
+type="tTool"
+>Clean Files</object
+> module. Rebuild the bilingual lexicon. Re-open the <object
+type="tLiveRuleTester"
+></object
+>. </td
 ></tr
 ></table
 ></example
