@@ -74,7 +74,7 @@ tags="pro.*"
 ></def-cat
 ><def-cat
 n="c_sample"
-><!--This tags element will match words (lexical units) that have 'samp' for the grammatical category (always the first tag) and no other tags. I.e. 'samp' alone.--><cat-item
+><!--This tags element will match words (lexical units) that have 'samp' for the grammatical category (always the first tag) and no other tags, i.e. 'samp' alone.--><cat-item
 tags="samp"
 ></cat-item
 ><!--This tags element will match words (lexical units) that have 'word1.2' for the lemma and 'samp' for the grammatical category (no other tags.)--><cat-item
@@ -87,7 +87,7 @@ tags="samp.*"
 ><!--This tags element will match words that have 'samp' for the grammatical category, 'pst' for the next tag and any number of further tags.--><cat-item
 tags="samp.pst.*"
 ></cat-item
-><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in th subsequent tags. I.e. any tags before and any tags after it.--><cat-item
+><!--This tags element will match words that have 'samp' for the grammatical category, and 'pst' somewhere in the subsequent tags. i.e. any tags before 'pst' and any tags after it.--><cat-item
 tags="samp.*.pst.*"
 ></cat-item
 ></def-cat
@@ -207,14 +207,14 @@ tags="xyz"
 ></def-attr
 ><def-attr
 n="a_sample2"
-><!--The attribute a_sample2 is defined as the collection of the following tags (symbols): 'abc', 'uvw', 'xyz'. You can use this attribute to refer to any tag in this set of tags.--><attr-item
+><!--The attribute a_sample2 is defined as the collection of the following tags (symbols): 'agr1', 'agr2', 'agr3'. You can use this attribute to refer to any tag in this set of tags.--><attr-item
 tags="agr1"
 ></attr-item
 ><attr-item
 tags="agr2"
 ></attr-item
 ><attr-item
-tags="agr???"
+tags="agr3"
 ></attr-item
 ></def-attr
 ></section-def-attrs
@@ -245,13 +245,27 @@ npar="1"
 ><clip
 part="a_gram_cat"
 pos="1"
-side="sl"
+side="tl"
 ></clip
 ><lit-tag
 v="sg"
 ></lit-tag
 ></equal
 ></test
+><out
+><lu
+><clip
+part="lem"
+pos="1"
+side="tl"
+></clip
+><clip
+part="a_gram_cat"
+pos="1"
+side="tl"
+></clip
+></lu
+></out
 ></when
 ></choose
 ></def-macro
@@ -271,7 +285,7 @@ part="a_sample"
 pos="1"
 side="tl"
 ></clip
-><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><lit
+><!--Then give the 'value' you want to give the thing. In this case an empty string which deletes it from the output.--><!--Note using an empty literal tag would still add the < and > that surround tags, and hence literal string should be used to delete a tag--><lit
 v=""
 ></lit
 ></let
@@ -341,7 +355,7 @@ part="whole"
 pos="1"
 side="tl"
 ></clip
-><!--The fact that we are not putting out item 2 (2nd word) essentially means we are deleting it from the output.--></lu
+></lu
 ></out
 ></action
 ></rule
@@ -367,8 +381,6 @@ side="tl"
 ><!--You normally will want to output a space between lexical units.--><b
 ></b
 ><lu
-><b
-></b
 ><!--Note that the 2nd word is item 2 in the 2-word pattern matched above--><clip
 part="whole"
 pos="2"
@@ -415,7 +427,7 @@ n="c_sample"
 ><action
 ><!--Output a new word (ignoring the input items)--><out
 ><lu
-><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><!--In place of using clip...lem we can use the literal string element to put out a lemma of our choice. This lemma should match the target FLEx project.--><lit
+><!--In FLExTrans the minimum lexical unit you should output is the lemma (e.g. word2.3) plus the grammatical category--><!--In place of using clip...lem we can use the literal string element to put out a lemma of our choice. This lemma should match the target FLEx project.--><!--Here we output the 4th sense of the 1st homograph for 'word'--><lit
 v="word1.4"
 ></lit
 ><!--In place of clip...a_gram_cat, this should be the grammatical category that corresponds to word1.4 in the target FLEx project. Here we are saying the category is verb.--><lit-tag
@@ -436,8 +448,8 @@ n="c_sample"
 ></pattern-item
 ></pattern
 ><action
-><!--Change the case of the first thing (lemma) to match the case of the second thing. You could use a variable to have the lemma match the case of the variable.
-This following will capitalize the lemma. Using 'aa' will make it lowercase. 'AA' would make the lemma all uppercase.--><modify-case
+><!--Change the case of the first thing (lemma) to match the case of the second thing (literal string). 
+This following will capitalize the lemma. Using 'aa' will make it lowercase. 'AA' would make the lemma all uppercase.--><!--Instead of using a literal string, you could alternatively use a variable to have the lemma match the case of the variable.--><modify-case
 ><clip
 part="lem"
 pos="1"
@@ -472,7 +484,7 @@ v="uvw"
 ></equal
 ></test
 ><!--  Whatever follows the test block will be done if the above things are equal
-  This specific example outputs the target word by parts, with a specific literal tag for the affix).--><out
+  This specific example outputs the target word by parts, with a specific literal tag for the affix.--><out
 ><lu
 ><clip
 part="lem"
@@ -491,7 +503,7 @@ v="agr1"
 ></out
 ></when
 ><!-- If all the when blocks above fail, do this logic below--><otherwise
-><!--  This specific example outputs the target word by parts, with a different literal tag for the affix).--><out
+><!--  This specific example outputs the target word by parts, with a different literal tag for the affix.--><out
 ><lu
 ><clip
 part="lem"
@@ -550,7 +562,7 @@ v="agr1"
 ><test
 ><equal
 ><clip
-part="a_sample2"
+part="a_sample"
 pos="1"
 side="tl"
 ></clip
@@ -561,7 +573,7 @@ v="xyz"
 ></test
 ><let
 ><clip
-part="a_sample"
+part="a_sample2"
 pos="1"
 side="tl"
 ></clip
@@ -573,12 +585,12 @@ v="agr2"
 ><!--If all the when blocks above fail, do this logic below--><!--This particular example sets a value that indicates something unexpected was encountered.--><!--It is a good "elsewhere" condition.--><otherwise
 ><let
 ><clip
-part="a_sample"
+part="a_sample2"
 pos="1"
 side="tl"
 ></clip
 ><lit-tag
-v="agr???"
+v="agr3"
 ></lit-tag
 ></let
 ></otherwise
@@ -627,7 +639,7 @@ v="ing1.1"
 ></lit
 ></ends-with
 ><begins-with-list
-><!--Use begins with list if you want to match the beginning of the first thing. The text to match can be anything in the given list. The list is defined above.--><var
+><!--Use begins with something in list if you want to match the beginning of the first thing. The text to match can be anything in the given list. The list is defined above.--><var
 n="v_sample"
 ></var
 ><list
@@ -635,7 +647,7 @@ n="l_sample"
 ></list
 ></begins-with-list
 ><ends-with-list
-><!--Use ends with list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
+><!--Use ends with something in list if you want to match the end of the first thing. The match can be anything in the given list. The list is defined above.--><clip
 part="lem"
 pos="1"
 side="tl"
@@ -644,14 +656,6 @@ side="tl"
 n="l_sample"
 ></list
 ></ends-with-list
-><contains-substring
-><!--With contains substring you can check if the second listed string is somewhere in the first thing.--><var
-n="v_sample"
-></var
-><lit
-v="abc"
-></lit
-></contains-substring
 ><in
 ><!--Use in list to see if the first thing is one of the things in the given list.--><clip
 part="lem"
@@ -662,9 +666,17 @@ side="tl"
 n="l_sample"
 ></list
 ></in
+><contains-substring
+><!--When you use contains substring you can check if the second listed string is somewhere in the first thing.--><var
+n="v_sample"
+></var
+><lit
+v="abc"
+></lit
+></contains-substring
 ></and
 ></test
-><!--Whatever follows the test block will be done if the above condition is true--><out
+><!--Whatever follows the test block will be done if the above condition is true. In this case, all of the above checks would need to be true in order to do the output.--><out
 ><lu
 ><clip
 part="whole"
@@ -708,7 +720,7 @@ v="uvw"
 ><equal
 ><clip
 part="a_sample"
-pos="1"
+pos="2"
 side="tl"
 ></clip
 ><lit-tag
@@ -717,10 +729,15 @@ v="xyz"
 ></equal
 ></and
 ></test
-><!-- Whatever follows the test block will be done if the above --><!-- condition is true--><out
+><!-- Whatever follows the test block will be done if the above condition is true--><out
 ><lu
 ><clip
-part="whole"
+part="lem"
+pos="1"
+side="tl"
+></clip
+><clip
+part="a_gram_cat"
 pos="1"
 side="tl"
 ></clip
@@ -748,7 +765,7 @@ v="uvw"
 ><equal
 ><clip
 part="a_sample"
-pos="1"
+pos="2"
 side="tl"
 ></clip
 ><lit-tag
@@ -760,12 +777,17 @@ v="xyz"
 ><!-- Whatever follows the test block will be done if the above condition is true--><out
 ><lu
 ><clip
-part="whole"
+part="lem"
+pos="1"
+side="tl"
+></clip
+><clip
+part="a_gram_cat"
 pos="1"
 side="tl"
 ></clip
 ><lit-tag
-v="agr1"
+v="agr2"
 ></lit-tag
 ></lu
 ></out
@@ -790,17 +812,38 @@ v="uvw"
 ><!-- Whatever follows the test block will be done if the above condition is true--><out
 ><lu
 ><clip
-part="whole"
+part="lem"
+pos="1"
+side="tl"
+></clip
+><clip
+part="a_gram_cat"
 pos="1"
 side="tl"
 ></clip
 ><lit-tag
-v="agr1"
+v="agr3"
 ></lit-tag
 ></lu
 ></out
 ></when
 ></choose
+></action
+></rule
+><rule
+comment="Sample - Call a macro to test a condition and output"
+><pattern
+><pattern-item
+n="c_sample"
+></pattern-item
+></pattern
+><action
+><!--This calls a macro with one item; if the pattern contains 2 items, it might be needed to call the macro with 2 items--><call-macro
+n="m_sample"
+><with-param
+pos="1"
+></with-param
+></call-macro
 ></action
 ></rule
 ></section-rules
