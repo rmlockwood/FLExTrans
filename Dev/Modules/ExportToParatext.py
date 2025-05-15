@@ -86,7 +86,7 @@ from PyQt5.QtCore import QCoreApplication, QTranslator
 
 import ReadConfig
 import FTPaths
-from ParatextChapSelectionDlg import Ui_MainWindow
+from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
 
 #----------------------------------------------------------------
@@ -115,7 +115,7 @@ class Main(QMainWindow):
     def __init__(self, bookAbbrev, fromChap, toChap, clusterProjects):
         QMainWindow.__init__(self)
 
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ParatextChapSelectionWindow()
         self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         

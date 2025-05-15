@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>MainWindow</name>
+    <name>ParatextChapSelectionWindow</name>
     <message>
         <location filename="../ParatextChapSelectionDlg.ui" line="17"/>
         <source>Choose Chapters</source>

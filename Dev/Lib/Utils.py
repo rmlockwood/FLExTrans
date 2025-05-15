@@ -1378,7 +1378,7 @@ def getPathRelativeToWorkProjectsDir(fullPath):
 
 def getInterfaceLangCode():
 
-    return 'es'
+    return 'de'
 
 def loadTranslations(libList, translatorsList, loadBase=False):
 

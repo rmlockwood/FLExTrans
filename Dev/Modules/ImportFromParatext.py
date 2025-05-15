@@ -148,7 +148,7 @@ import ClusterUtils
 import Utils
 import ChapterSelection
 import TextInOutUtils
-from ParatextChapSelectionDlg import Ui_MainWindow
+from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 
 #----------------------------------------------------------------
 # Configurables:
@@ -185,7 +185,7 @@ class Main(QMainWindow):
     def __init__(self, clusterProjects):
         QMainWindow.__init__(self)
 
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ParatextChapSelectionWindow()
         self.clusterProjects = clusterProjects
         self.ui.setupUi(self)
         self.toChap = 0
