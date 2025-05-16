@@ -34,6 +34,7 @@ VIAddVersionKey "FileDescription" ""
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
+; Always 4 numerals
 VIProductVersion 3.13.0.${BUILD_NUM}
 
 ; MUI Settings
@@ -150,20 +151,6 @@ InitPluginsDir
   
   # Copy and rename the file in the Template folder to not have -Swedish
   File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
-  
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
-
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
-  File "${GIT_FOLDER}\Drafting.ini"
-  File "${GIT_FOLDER}\Run Testbed.ini"
-  File "${GIT_FOLDER}\Tools.ini"
-  File "${GIT_FOLDER}\Synthesis Test.ini"
-  File "${GIT_FOLDER}\FLExTrans.ini"
 
   SetOverwrite on
   
@@ -295,7 +282,25 @@ InitPluginsDir
   done1:
     FindClose $0
     
-  # Attempt to run pip to install FlexTools dependencies
+  SetOverwrite off
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
+  File "${GIT_FOLDER}\Drafting.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+  File "${GIT_FOLDER}\FLExTrans.ini"
+
+  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
+  File "${GIT_FOLDER}\Drafting.ini"
+  File "${GIT_FOLDER}\Run Testbed.ini"
+  File "${GIT_FOLDER}\Tools.ini"
+  File "${GIT_FOLDER}\Synthesis Test.ini"
+  File "${GIT_FOLDER}\FLExTrans.ini"
+
+  SetOverwrite on
+  
+# Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"

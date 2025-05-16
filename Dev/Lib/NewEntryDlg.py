@@ -5,6 +5,10 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.13.3 - 5/15/25 - Ron Lockwood
+#    Fixes crash when no cluster projects are defined in the settings file and you
+#    attempt to add a new entry.
+#
 #   Version 3.13.2 - 4/28/25 - Ron Lockwood
 #    Fixes #975. Initialize the return value to False.
 #
@@ -196,7 +200,7 @@ class NewEntryDlg(QDialog):
         with open(self.settingsPath, 'w') as f:
             json.dump(self.settingsMap, f, indent=4)
 
-        if len(self.ui.clusterProjectsComboBox.currentData()) > 0:
+        if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
 
             save = False
 
