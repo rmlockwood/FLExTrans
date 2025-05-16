@@ -5,7 +5,7 @@
 #   SIL International
 #   1/20/2025
 #
-#   Version 3.13.2 - 5/9/25 - Ron Lockwood
+#   Version 3.13.2 - 5/16/25 - Ron Lockwood
 #    Added localization capability.
 #
 #   Version 3.13.1 - 4/25/25 - Ron Lockwood
@@ -67,11 +67,10 @@ app = QApplication([])
 Utils.loadTranslations(['ExportFlexToParatext'], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'Mixpanel', 'ParatextChapSelectionDlg'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Export Text from Target FLEx to Paratext",
         FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,

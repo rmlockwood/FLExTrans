@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.13.2 - 5/16/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/19/25 - Ron Lockwood
 #    Put the export logic in a separate function. So it can be called from other modules.
 #
@@ -75,38 +78,53 @@
 
 import os
 import re
-import sys
+
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtCore import QCoreApplication
 
 from SIL.LCModel import * # type: ignore                                                  
 from flextoolslib import *                                                 
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
-
+import Mixpanel
 import ReadConfig
 import FTPaths
+import Utils
 from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
 
 #----------------------------------------------------------------
 # Configurables:
-PTXPATH = 'C:\\My Paratext 8 Projects'
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['ExportToParatext'], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Export the draft that has been translated with FLExTrans to Paratext.",
+        FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",
-        FTM_Description:
+        FTM_Description: _translate("ExportToParatext", 
 """
 After chapters have been synthesized with the Synthesize Text module, the draft resides in the file specified
 by the setting 'Target Output Synthesis File' (typically called 'target_text-syn.txt'). This module
-takes the draft in this file and copies the chapters into Paratext to the project specified.""" }
+takes the draft in this file and copies the chapters into Paratext to the project specified.""")}
                  
+app.quit()
+del app
+
 #----------------------------------------------------------------
 # The main processing function
 
@@ -121,7 +139,7 @@ class Main(QMainWindow):
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
-        self.setWindowTitle("Export Chapters to Paratext")
+        self.setWindowTitle(_translate("ExportToParatext", "Export Chapters to Paratext"))
 
         # Get stuff from a paratext import/export settings file and set dialog controls as appropriate
         ChapterSelection.InitControls(self, export=True)
@@ -150,7 +168,7 @@ def parseSourceTextName(report, sourceText, infoMap):
     # Remove the - Copy ... so that a title like Ruth 01 - Copy (2) is still allowed
     sourceText = re.sub(r' - Copy.*', '', sourceText)
     
-    stdError = f'The text name "{sourceText}" is invalid it should be of the form GEN 01 or Genesis 23-38'
+    stdError = _translate("ExportToParatext", 'The text name "{sourceText}" is invalid it should be of the form GEN 01 or Genesis 23-38').format(sourceText=sourceText)
     
     # should have two main elements, book name (which can have spaces) and chapter number
     myList = sourceText.split()
@@ -165,7 +183,7 @@ def parseSourceTextName(report, sourceText, infoMap):
         
         # Now check if this is a full book name that is in the values part of the map (e.g. 'Genesis')
         if book not in ChapterSelection.bookMap.values():
-            report.Error(f'The book name or abbreviation {book} is invalid. It should match a Paratext book.')
+            report.Error(_translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book))
             return False
         else:
             for key, val in ChapterSelection.bookMap.items():
@@ -201,7 +219,7 @@ def parseSourceTextName(report, sourceText, infoMap):
             return False
             
         fromChap = toChap = int(chapters)               
-                    
+    
     infoMap['bookAbbrev'] = bookAbbrev
     infoMap['fromChap'] = fromChap
     infoMap['toChap'] = toChap
@@ -209,6 +227,11 @@ def parseSourceTextName(report, sourceText, infoMap):
     return True
 
 def doExportToParatext(DB, configMap, report):
+
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + ['ExportToParatext'], 
+                           translators, loadBase=True)
 
     # Find the desired text
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -225,22 +248,10 @@ def doExportToParatext(DB, configMap, report):
     clusterProjects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report, giveError=False)
     if not clusterProjects:
         clusterProjects = []
-        
-    # Show the window
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/ParatextChapSelectionDlg_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
+               
     window = Main(infoMap['bookAbbrev'], infoMap['fromChap'], infoMap['toChap'], clusterProjects)
     
     window.show()
-    
     app.exec_()
     
     if window.retVal == True:
@@ -254,7 +265,7 @@ def doExportToParatext(DB, configMap, report):
         try:
             f = open(synFile, 'r', encoding='utf-8')
         except:
-            report.Error(f'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.')
+            report.Error(_translate("ExportToParatext", 'Could not find the synthesis file. Have you run the Synthesize Text module? Missing file: {synFile}.').format(synFile=synFile))
             return None
             
         synFileContents = f.read()
@@ -264,7 +275,7 @@ def doExportToParatext(DB, configMap, report):
 
         return 1
     else:
-        report.Warning(f'Export cancelled.')
+        report.Warning(_translate("ExportToParatext", 'Export cancelled.'))
         return None
 
 def MainFunction(DB, report, modify):
@@ -275,7 +286,6 @@ def MainFunction(DB, report, modify):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     doExportToParatext(DB, configMap, report)
