@@ -48,7 +48,7 @@ from SIL.LCModel import ( # type: ignore
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
 import Mixpanel
 import ReadConfig

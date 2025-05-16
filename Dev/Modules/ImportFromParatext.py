@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.13.3 - 5/16/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 4/25/25 - Ron Lockwood
 #    Fixes #969. Convert \fig data to the new USFM 3.0 syntax. This helps make the vernacular part - the caption -
 #    which the first thing in the new format easy to identify.
@@ -140,38 +143,50 @@ from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 from flextoolslib import *                                                 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QComboBox
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
-import FTPaths
-import ReadConfig
 import ClusterUtils
+import Mixpanel
+import ReadConfig
+import FTPaths
 import Utils
+from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
 import TextInOutUtils
-from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['ImportFromParatext'], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'TextInOutUtils'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Import chapters from Paratext.",
+        FTM_Synopsis   : _translate("ExportFlexToParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
-        FTM_Description:
-"""
-This module asks you which Paratext project, which book and which chapters should be 
+        FTM_Description: _translate("ExportFlexToParatext", 
+"""This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
 new text. If you want to include various things, click the appropriate check box. 
 If you want to use the English full name of the book in the text name, instead of the abbreviation, click the check box. 
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
 Importing into multiple FLEx projects from multiple Paratext projects is possible. First select
-cluster projects in the main FLExTrans Settings, then come back to this module.""" }
-                 
+cluster projects in the main FLExTrans Settings, then come back to this module.""")}
+
+app.quit()
+del app
+
 #----------------------------------------------------------------
 # The main processing function
 
@@ -289,7 +304,7 @@ def setSourceNameInConfigFile(report, title):
         f = open(myConfig, encoding='utf-8')
         
     except:
-        report.Error(f'Could not open the configuration file: {myConfig}') 
+        report.Error(_translate("ImportFromParatext", "Could not open the configuration file: {myConfig}").format(myConfig=myConfig)) 
         return
     
     configLines = f.readlines()
@@ -320,7 +335,7 @@ def do_import(DB, report, chapSelectObj, tree):
 
     if not bookPath:
 
-        report.Error(f'Could not find the book file: {bookPath}')
+        report.Error(_translate("ImportFromParatext", "Could not find the book file: {bookPath}").format(bookPath=bookPath))
         return
     
     # Open the Paratext file and read the contents
@@ -334,7 +349,7 @@ def do_import(DB, report, chapSelectObj, tree):
     # Give error if we can't find the starting chapter
     if str(chapSelectObj.fromChap) not in chapList:
         
-        report.Error('Starting chapter not found.')
+        report.Error(_translate("ImportFromParatext", "Starting chapter not found."))
         return
     
     # If the user wants full name, look it up
@@ -365,7 +380,7 @@ def do_import(DB, report, chapSelectObj, tree):
 
         if not re.search(reStr, bookContents):
 
-            report.Error('Cannot find main title (\mt or \mtN). This is needed for importing introductory material.')
+            report.Error(_translate("ImportFromParatext", "Cannot find main title (\\mt or \\mtN). This is needed for importing introductory material."))
             return
     else:
         # Build the search regex. It starts the search at the fromChapter
@@ -386,7 +401,7 @@ def do_import(DB, report, chapSelectObj, tree):
     # Check for nothing found
     if not matchObj:
 
-        report.Error('Cannot find the range of chapters specified.')
+        report.Error(_translate("ImportFromParatext", "Cannot find the range of chapters specified."))
         return
 
     importText = matchObj.group(1)
@@ -401,7 +416,7 @@ def do_import(DB, report, chapSelectObj, tree):
             report.Error(errMsg)
             return
         else:
-            report.Info(f"{str(TextInOutUtils.numRules(tree))} 'Text In' rules applied.")
+            report.Info(_translate("ImportFromParatext", "{numRules} 'Text In' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
             
     # Convert old USFM 1.0 or 2.0 \fig syntax to 3.0
     # old format: \fig DESC|FILE|SIZE|LOC|COPY|CAP|REF\fig*
@@ -455,15 +470,8 @@ def do_import(DB, report, chapSelectObj, tree):
         ChapterSelection.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
 
         # Build the title string from book abbreviation and chapter.
-        title = bibleBook + ' ' + str(titleChapNum).zfill(2)
-        
-        # Possibly add to the title if we are putting multiple chapters into one text
-        if chapSelectObj.oneTextPerChapter == False:
-
-            if chapSelectObj.fromChap < chapSelectObj.toChap:
-                
-                #  E.g. EXO 03-04
-                title += '-' + str(chapSelectObj.toChap).zfill(2)
+        title = _translate("ImportFromParatext", "{bibleBook} {chapter}").format(bibleBook=bibleBook, chapter=str(titleChapNum).zfill(2))
+        title += "-{toChap}".format(toChap=str(chapSelectObj.toChap).zfill(2)) if chapSelectObj.oneTextPerChapter == False and chapSelectObj.fromChap < chapSelectObj.toChap else ""
 
         # If the user wants to overwrite the existing text, delete it.
         if chapSelectObj.overwriteText:
@@ -491,7 +499,7 @@ def do_import(DB, report, chapSelectObj, tree):
         # Set metadata for the text
         ChapterSelection.setTextMetaData(DB, text)
 
-        report.Info(f'Text: "{title}" created in the {DB.ProjectName()} project.')
+        report.Info(_translate("ImportFromParatext", "Text: \"{title}\" created in the {projectName} project.").format(title=title, projectName=DB.ProjectName()))
 
         titleChapNum += 1
         
@@ -506,11 +514,11 @@ def do_import(DB, report, chapSelectObj, tree):
     
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + ['ImportFromParatext'], 
+                           translators, loadBase=True)
     tree = None
-
-    if not modify:
-        report.Error('You need to run this module in "modify mode."')
-        return
 
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
@@ -518,7 +526,6 @@ def MainFunction(DB, report, modify=True):
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the search-replace rules file
@@ -533,7 +540,7 @@ def MainFunction(DB, report, modify=True):
             try:
                 tree = ET.parse(textInRulesFile)
             except:
-                report.Error(f'The rules file: {textInRulesFile} has invalid XML data.')
+                report.Error(_translate("ImportFromParatext", "The rules file: {textInRulesFile} has invalid XML data.").format(textInRulesFile=textInRulesFile))
                 return
 
     # Get the cluster projects
@@ -543,17 +550,6 @@ def MainFunction(DB, report, modify=True):
     else:
         # Remove blank ones
         clusterProjects = [x for x in clusterProjects if x]
-        
-    # Show the window
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/ParatextChapSelectionDlg_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
         
     window = Main(clusterProjects)
     window.show()
