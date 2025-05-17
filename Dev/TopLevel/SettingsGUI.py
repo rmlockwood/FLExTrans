@@ -121,6 +121,7 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: igno
 from PyQt5.QtCore import Qt
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
+from PyQt5.QtGui import QIcon
 
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
@@ -1213,7 +1214,13 @@ class Main(QMainWindow):
             msgStr += flexTransChanges
         
         if msgStr:
-            QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+            # QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+            msg = QMessageBox()
+            msg.setWindowTitle("FLExTrans Settings")
+            msg.setText(msgStr)
+            msg.setIcon(QMessageBox.NoIcon)  # <- Suppresses the sound
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec_()
         
     def save(self):
 
