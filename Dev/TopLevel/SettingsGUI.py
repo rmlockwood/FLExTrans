@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.13.6 - 5/17/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.5 - 5/17/25 - Sara Mason
 #   Fixes #981. Removes the ding sound when the Settings dialog is closed.
 #
