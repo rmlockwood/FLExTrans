@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>15 May 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>17 May 2025</small></center>
       <center><small>Version: 3.13</small></center>
       <hr>
       <div>
@@ -138,6 +138,7 @@
                      <li><a href="#step6">6.2.4.6&nbsp;Step 6</a></li>
                   </ul>
                </ul>
+               <li><a href="#sBestPractices">6.3&nbsp;Best Practices</a></li>
             </ul>
             <li><a href="#sTestbed">7&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></a></li>
             <ul>
@@ -206,6 +207,7 @@
             <ul>
                <li><a href="#sSynFail">9.1&nbsp;Synthesis Troubleshooting</a></li>
                <li><a href="#sErrorCond">9.2&nbsp;Error Conditions</a></li>
+               <li><a href="#sOtherTips">9.3&nbsp;Other Troubleshooting Hints</a></li>
             </ul>
             <li><a href="#sReferenceDocs">10&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
@@ -2754,6 +2756,36 @@
          Croatian past tense construction that occurs in a text will correctly be translated to English and every indefinite noun will
          also be handled.
       </p>
+      <h2 style=""><a name="sBestPractices"></a>6.3&nbsp;Best Practices
+      </h2>
+      <p>Here are some tips for best practices when writing rules.</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Check that the categories and attributes contain all the needed tags. Failure to do this may mean that the rules cannot apply
+            to all situations.
+         </li>
+         <li>Use categories to screen out which rules get run rather than having complex conditional logic in one rule. For example, a
+            category could be used to group together all the words from different grammatical categories that have a locational suffix.
+         </li>
+         <li>Use a macro when sections of rules are repeated. This makes the rules easier to maintain, and read.</li>
+         <li>Add comments into complex rules in order to help yourself, and others, know/remember how the different sections are being
+            used. Insert comments from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> menus - Edit / Comment / Insert Comment.
+         </li>
+         <li>Use literal string (blank) when deleting something (not literal tag). If literal tag is used, then the start tag marker (&lt;)
+            and end tag marker (&gt;) will be used, essentially creating a blank tag rather than 'nothing'.
+         </li>
+         <li>In a choose statement, remember that all the blocks of logic below the test block will get run. Check the indentation levels
+            to ensure that all required blocks are inside the choose statement.
+         </li>
+         <li>It is helpful to group rules together by categories. e.g. keep all the verb rules together, and all the noun rules together.
+            This makes it easier to find the required rule.
+         </li>
+         <li>Remember it is possible to test re-ordering the rules in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Changing the order here does not change the order in the rules file, so if the re-ordering in the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span> is successful, the rules file should also be re-ordered in the same manner.
+         </li>
+         <li>Once a rule is working for some sample data, add it to the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span>. This allows tests to be easily re-run on the same data later on, after the addition of rules, or changes to rules.
+         </li>
+         <li>After making changes to a rule, re-run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> to ensure that all the rules are still producing the expected results.
+         </li>
+      </ol>
       <h1 style=""><a name="sTestbed"></a>7&nbsp;The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span></h1>
       <p>The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> <span style="font-family:Courier New; font-weight:bold; color:navy; ">Testbed</span> is a system designed to help you maintain the quality of your translations. It not uncommon, as you add new transfer rules
          to the system or change the lexicons, you mess up the results you were getting before. To help prevent this, it is very helpful
@@ -3548,10 +3580,10 @@
                            <td align="left" valign="top" style="padding-left:.2em">Correct the transfer rule that produced this to give a lexical unit block for each word.</td>
                         </tr>
                         <tr style="">
-                           <td align="left" valign="top" style="padding-left:.2em">An error happened when running the Apertium tools. </td>
+                           <td align="left" valign="top" style="padding-left:.2em">An error happened when running the Apertium tools.</td>
                            <td align="left" valign="top" style="padding-left:.2em"></td>
-                           <td align="left" valign="top" style="padding-left:.2em">The rule engine failed when applying the rules. </td>
-                           <td align="left" valign="top" style="padding-left:.2em">Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Clean Files</span> module. Rebuild the bilingual lexicon. Re-open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. 
+                           <td align="left" valign="top" style="padding-left:.2em">The rule engine failed when applying the rules.</td>
+                           <td align="left" valign="top" style="padding-left:.2em">Close the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>. Run the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Clean Files</span> module. Rebuild the bilingual lexicon. Re-open the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Live Rule Tester Tool</span>.
                            </td>
                         </tr>
                      </table>
@@ -3560,6 +3592,11 @@
             </tr>
          </table>
       </div>
+      <h2 style=""><a name="sOtherTips"></a>9.3&nbsp;Other Troubleshooting Hints
+      </h2>
+      <p>If a rule doesn't appear to be working, first check to see that the rule is listed in the <span style="font-style:italic; ">Rule Execution Information</span> area. If not, there is a problem with the category definition. Check your category definition to make sure it correctly matches
+         the incoming data.
+      </p>
       <h1 style=""><a name="sReferenceDocs"></a>10&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
