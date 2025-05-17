@@ -10,7 +10,7 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define PRODUCT_VERSION "3.13"
+!define PRODUCT_VERSION "3.13.1"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
@@ -35,7 +35,7 @@ VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
 ; Always 4 numerals
-VIProductVersion 3.13.0.${BUILD_NUM}
+VIProductVersion 3.13.1.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -290,6 +290,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
   File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
   File "${GIT_FOLDER}\Drafting.ini"
@@ -297,6 +298,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
   File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
 
   SetOverwrite on
   

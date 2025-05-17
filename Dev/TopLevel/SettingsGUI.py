@@ -3,6 +3,8 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.13.5 - 5/17/25 - Sara Mason
+#   Fixes #981. Removes the ding sound when the Settings dialog is closed.
 #
 #   Version 3.13.4 - 4/9/25 - Sara Mason
 #   Fixes #953. Sort proper nouns, changed proper nouns tooltip
@@ -120,6 +122,7 @@ from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
 from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtGui import QIcon
 
 from ComboBox import CheckableComboBox
 from flexlibs import FLExProject, AllProjectNames
@@ -1210,8 +1213,14 @@ class Main(QMainWindow):
             msgStr += flexTransChanges
 
         if msgStr:
-            QMessageBox.information(self, "FLExTrans Settings", msgStr)
-
+            # QMessageBox.information(self, 'FLExTrans Settings', msgStr)
+            msg = QMessageBox()
+            msg.setWindowTitle("FLExTrans Settings")
+            msg.setText(msgStr)
+            msg.setIcon(QMessageBox.NoIcon)  # <- Suppresses the sound
+            msg.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msg.exec_()
+        
     def save(self):
 
         updatedConfigMap = {}
