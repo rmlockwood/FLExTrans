@@ -95,4 +95,4 @@ class Ui_MainWindow(object):
         self.saveButton.setText(_translate("MainWindow", "Save"))
         self.closeButton.setText(_translate("MainWindow", "Close"))
         self.saveLabel.setText(_translate("MainWindow", "Saved"))
-        self.infoLabel.setText(_translate("MainWindow", "Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular."))
+        self.infoLabel.setText(_translate("MainWindow", "Separate multiple features/classes and/or affixes with a period. For example f.sg for feminine singular."))
