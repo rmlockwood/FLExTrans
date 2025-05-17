@@ -170,7 +170,7 @@ app = QApplication([])
 Utils.loadTranslations(['ExtractBilingualLexicon'], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
