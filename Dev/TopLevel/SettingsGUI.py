@@ -131,6 +131,9 @@ import Utils
 import ReadConfig
 import FTPaths
 
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils'] 
+
 tr = QtCore.QCoreApplication.translate
 
 # ----------------------------------------------------------------
@@ -1339,22 +1342,13 @@ def MainFunction(DB, report, modify=True):
         giveDBErrorMessageBox(targetProj)
         TargetDB = None
     
-    # Show the window
-    app = QApplication(sys.argv)
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + ['SettingsGUI'], 
+                           translators, loadBase=True)
 
-
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/SettingsGUI_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
     window = Main(configMap, TargetDB, sourceDB)
-
     window.show()
-
     app.exec_()
     
     # Prompt the user to save changes, if needed
@@ -1376,17 +1370,11 @@ def MainFunction(DB, report, modify=True):
 FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
-app = QApplication(sys.argv)
+translators = []
+app = QApplication([])
 
-langCode = 'es'
-translator = QTranslator()
-
-if translator.load(FTPaths.TRANSL_DIR+f"/SettingsGUI_{langCode}.qm"):
-
-    QCoreApplication.installTranslator(translator)
-
-# Define _translate for convenience
-tr = QCoreApplication.translate
+# This is just for translating the docs dictionary below
+Utils.loadTranslations(['SettingsGUI'], translators)
 
 #### Instructions for adding a new setting ####
 #
@@ -1586,6 +1574,8 @@ widgetList = [
    [tr("SettingsWindow", "TreeTran Rules File"), "treetran_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TREETRAN_RULES_FILE, \
     tr("SettingsWindow", "The path and name of the TreeTran rules file"), DONT_GIVE_ERROR, FULL_VIEW],\
 
+   [tr("SettingsWindow", "Analyzed Text TreeTran Output File"), "treetran_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, \
+    tr("SettingsWindow", "The path and name of the file that holds the output from TreeTran."), DONT_GIVE_ERROR, FULL_VIEW],\
 
    [tr("SettingsWindow", "Cluster Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
