@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.13.3 - 5/17/25 - Sara Mason
+#   Fixes #973 Warns the user not to be in the Text & Words section when overwriting a text.
+#
 #   Version 3.13.2 - 4/25/25 - Ron Lockwood
 #    Fixes #969. Convert \fig data to the new USFM 3.0 syntax. This helps make the vernacular part - the caption -
 #    which the first thing in the new format easy to identify.
@@ -140,6 +143,7 @@ from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 from flextoolslib import *                                                 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox
+from PyQt5.QtGui import QIcon
 
 import FTPaths
 import ReadConfig
@@ -156,7 +160,7 @@ from ParatextChapSelectionDlg import Ui_MainWindow
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Import chapters from Paratext.",
         FTM_Help       : "",
@@ -464,8 +468,15 @@ def do_import(DB, report, chapSelectObj, tree):
                 #  E.g. EXO 03-04
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
-        # If the user wants to overwrite the existing text, delete it.
+        # If the user wants to overwrite the existing text, remind them not to be in the Text and Words section. 
         if chapSelectObj.overwriteText:
+             # Create a QMessageBox instance 
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+            msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx. \n \n Are you sure you want to continue with overwriting the text in FLEx?')
+            msgBox.setWindowTitle("Overwriting FLEx text")
+            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
             # Find the text
             for interlinText in DB.ObjectsIn(ITextRepository):
