@@ -470,13 +470,20 @@ def do_import(DB, report, chapSelectObj, tree):
 
         # If the user wants to overwrite the existing text, remind them not to be in the Text and Words section. 
         if chapSelectObj.overwriteText:
-             # Create a QMessageBox instance 
+            
+            # Create a QMessageBox instance 
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Question)
             msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
             msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?')
             msgBox.setWindowTitle("Overwriting FLEx text")
             msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+            # Display the message box and wait for user interaction
+            ret = msgBox.exec_()
+
+        #check if overwriteText is true, and the confirmation from the messagebox is also true
+        if chapSelectObj.overwriteText and ret == QMessageBox.Yes:
 
             # Find the text
             for interlinText in DB.ObjectsIn(ITextRepository):
