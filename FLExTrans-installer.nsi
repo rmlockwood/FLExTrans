@@ -290,6 +290,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
   File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\Config\Collections"
   File "${GIT_FOLDER}\Drafting.ini"
@@ -297,6 +298,7 @@ InitPluginsDir
   File "${GIT_FOLDER}\Tools.ini"
   File "${GIT_FOLDER}\Synthesis Test.ini"
   File "${GIT_FOLDER}\FLExTrans.ini"
+  File "${GIT_FOLDER}\Clusters.ini"
 
   SetOverwrite on
   
