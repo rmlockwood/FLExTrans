@@ -80,13 +80,20 @@
 #   Classes that model text objects from whole text down to word.
 
 import re
+
+from PyQt5.QtCore import QCoreApplication
+
 from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IWfiMorphBundleRepository,
     ILexEntry,
     )
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
+
 import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 MAX_SKIPPED_WORDS = 4
 
@@ -564,8 +571,8 @@ class TextSentence():
                         continue
 
                     # Give the warning
-                    self.__report.Warning('No analysis found for the word: '+ word.getSurfaceForm() + ' Treating this is an unknown word.')
-                    
+                    self.__report.Warning(_translate("TextClasses", "No analysis found for the word: ") + word.getSurfaceForm() + _translate("TextClasses", " Treating this as an unknown word."))
+
                     # Check if we've had this unknown word already
                     if word.getSurfaceForm() not in unknownWordMap:
 
@@ -778,7 +785,7 @@ class TextWord():
         try:
             bundleObject = repo.GetObject(bundleGuid)
         except:
-            self.__report.Error('Could not find bundle Guid for word in the inserted word list.')
+            self.__report.Error(_translate("TextClasses", "Could not find bundle Guid for word in the inserted word list."))
             return 
         
         # get the entry object and add it
@@ -807,7 +814,7 @@ class TextWord():
             self.addLemma(lem)
             self.__surfaceForm = re.sub(r'\d', '', headword)
         else:
-            self.__report.Error('Could not find the sense for word in the inserted word list.')
+            self.__report.Error(_translate("TextClasses", "Could not find the sense for word in the inserted word list."))
             return    
 
     def isSentPunctutationWord(self):

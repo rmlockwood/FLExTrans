@@ -612,5 +612,14 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
 <message>
     <source>Opt out of sending usage statistics.</source>
     <translation>Excluirse del envío de estadísticas de uso.</translation>
-</message></context>
+</message>
+<message>
+    <source>Analyzed Text TreeTran Output File</source>
+    <translation>Archivo de salida de texto analizado de TreeTran</translation>
+</message>
+<message>
+    <source>The path and name of the file that holds the output from TreeTran.</source>
+    <translation>La ruta y el nombre del archivo que contiene la salida de TreeTran.</translation>
+</message>
+</context>
 </TS>

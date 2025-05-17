@@ -612,5 +612,14 @@ die mit einer TreeTran-Regel eingefügt werden können.</translation>
 <message>
     <source>Opt out of sending usage statistics.</source>
     <translation>Vom Senden von Nutzungsstatistiken abmelden.</translation>
-</message></context>
+</message>
+<message>
+    <source>Analyzed Text TreeTran Output File</source>
+    <translation>Analysierte Text-TreeTran-Ausgabedatei</translation>
+</message>
+<message>
+    <source>The path and name of the file that holds the output from TreeTran.</source>
+    <translation>Der Pfad und der Name der Datei, die die Ausgabe von TreeTran enthält.</translation>
+</message>
+</context>
 </TS>

@@ -67,10 +67,10 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication
 
+import InterlinData
 from SIL.LCModel import * # type: ignore
 from flextoolslib import *
 
-import InterlinData
 import Mixpanel
 import ReadConfig
 import Utils
@@ -87,7 +87,7 @@ app = QApplication([])
 Utils.loadTranslations(['ExtractSourceText'], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'TextClasses'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
