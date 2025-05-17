@@ -474,7 +474,7 @@ def do_import(DB, report, chapSelectObj, tree):
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Question)
             msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-            msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx. \n \n Are you sure you want to continue with overwriting the text in FLEx?')
+            msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?')
             msgBox.setWindowTitle("Overwriting FLEx text")
             msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
