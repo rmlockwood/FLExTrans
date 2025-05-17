@@ -7632,6 +7632,19 @@ type="tLiveRuleTester"
 ></table
 ></example
 ></section2
+><section2
+id="sOtherTips"
+><secTitle
+>Other Troubleshooting Hints</secTitle
+><p
+>If you are using the <object
+type="tLiveRuleTester"
+>Live Rule Tester Tool</object
+>, check that the expected rule is listed, in the <object
+type="tArea"
+>Rule Execution Information</object
+> area, as being used in the transfer process. </p
+></section2
 ></section1
 ><section1
 id="sReferenceDocs"
