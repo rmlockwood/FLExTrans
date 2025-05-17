@@ -399,7 +399,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         fullRApath = os.path.join(os.environ['PROGRAMFILES'], FTPaths.RULE_ASSISTANT_DIR, FTPaths.RULE_ASSISTANT)
 
         params = [fullRApath, ruleAssistantFile, ruleAssistGUIinputfile,
-                  testDataFile, 'y' if fromLRT else 'n']
+                  testDataFile, 'y' if fromLRT else 'n', Utils.getInterfaceLangCode()]
 
         result = subprocess.run(params, capture_output=True)
 
