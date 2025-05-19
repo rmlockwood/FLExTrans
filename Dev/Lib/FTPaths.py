@@ -41,6 +41,7 @@ TOOLS_DIR   = os.path.join(ROOT_DIR, "FlexTools", "Tools")
 MODUL_FT_DIR= os.path.join(ROOT_DIR, "FlexTools", "Modules", "FLExTrans")
 TRANSL_DIR  = os.path.join(MODUL_FT_DIR, "translations")
 HELP_DIR    = os.path.join(ROOT_DIR, "FLExTrans Documentation")
+SAMPLE_PROJECTS_DIR  = os.path.join(ROOT_DIR, "SampleFLExProjects")
 
 MAKE_EXE    = os.path.join(TOOLS_DIR, 'make.exe')
 STAMP_EXE   = os.path.join(TOOLS_DIR, 'stamp64.exe')
