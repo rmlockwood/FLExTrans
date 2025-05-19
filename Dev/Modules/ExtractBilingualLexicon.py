@@ -189,8 +189,7 @@ The bilingual lexicon will be stored in the file specified by the Bilingual Dict
 This is typically called bilingual.dix and is usually in the Output folder.
 
 You can make custom changes to the bilingual lexicon by using Replacement Dictionary Editor. See the help
-document for more details.
-""")}
+document for more details.""")}
 
 app.quit()
 del app
