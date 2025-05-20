@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.13.1 - 5/20/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -62,7 +65,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut'] # the st
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
