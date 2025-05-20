@@ -50,43 +50,58 @@
 #   SIL International
 #
 
-import re
-import copy
 from dataclasses import dataclass
 import itertools
 from collections import defaultdict
 import random
 import logging
 
-from SIL.LCModel import (
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
+
+from SIL.LCModel import ( # type: ignore
     IMoStemMsa,
     IMoInflAffMsa,
     IMoDerivAffMsa,
     )
 from flextoolslib import *
 
-import Utils
+import Mixpanel
 import ReadConfig
+import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'GenerateParses'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Generate All Parses",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Creates all possible parses from a FLEx project, in Apertium format.",
-        FTM_Help       :"",
-        FTM_Description:
-"""
-This module creates an Apertium file (that can be converted for input to a Synthesizer process) with
+        FTM_Synopsis   : _translate("GenerateParses", "Creates all possible parses from a FLEx project, in Apertium format."),
+        FTM_Help       : "",
+        FTM_Description:_translate("GenerateParses", 
+"""This module creates an Apertium file (that can be converted for input to a Synthesizer process) with
 all the parses that can be generated from the target FLEx project, based on its inflectional templates.
 (It doesn't generate based on derivation information in the project and it doesn't yet handle
 clitics or variants.)
 In FLExTrans > Settings, under Synthesis Test settings, it is possible to limit output to
 a single POS or Citation Form, or to a specified number of stems (stems will be chosen
 randomly). This module also outputs a human readable version of the parses (with glosses of roots
-and affixes) to the Parses Output File specified in the settings.
-""" }
+and affixes) to the Parses Output File specified in the settings.""")}
+
+app.quit()
+del app
 
 #----------------------------------------------------------------
 
@@ -138,7 +153,7 @@ class Template:
                 if not slot.required:
                     tags.append('')
                 if not tags:
-                    logger.info(f'No tags found for slot {slot.name} of template {self.name}. Skipping.')
+                    logger.info(_translate("GenerateParses", "No tags found for slot {slotName} of template {templateName}. Skipping.").format(slotName=slot.name, templateName=self.name))
                     self.valid = False
                     return
                 self.slot_tags.append(sorted(tags))
@@ -212,11 +227,11 @@ def get_templ_list(myDB, cat2focus, report):
             # that will be processed later
             if templ.Disabled == True:
                 #report.Info("Not adding template "+templName+' for Category '+catAbbrev)
-                logger.info("  Not adding Inactive template "+Utils.as_string(templ.Name)+' for Category '+catAbbrev)
+                logger.info(_translate("GenerateParses", "  Not adding Inactive template {templateName} for Category {categoryAbbrev}").format(templateName=Utils.as_string(templ.Name), categoryAbbrev=catAbbrev))
                 continue
 
             templObj = Template.fromDB(templ)
-            logger.info("  Adding template "+templObj.name+' for Category '+catAbbrev)
+            logger.info(_translate("GenerateParses", "  Adding template {templateName} for Category {categoryAbbrev}").format(templateName=templObj.name, categoryAbbrev=catAbbrev))
             for c in cats:
                 cat2templ[c].append(templObj.name)
             templates[templObj.name] = templObj
@@ -250,10 +265,16 @@ def get_stems(standardSpellList, derivAffixList, maxStems, outputCats):
                 break
 
 def MainFunction(DB, report, modifyAllowed):
+
     slot2AffixList = defaultdict(list)
     cat2CliticList = defaultdict(set)
     derivAffixList = defaultdict(list)
     standardSpellList = []
+
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -261,7 +282,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Open the target project
@@ -275,24 +295,24 @@ def MainFunction(DB, report, modifyAllowed):
     logFile = Utils.build_path_default_to_temp(targetLOG)
     try:
         logger.addHandler(logging.FileHandler(logFile, mode='w', encoding='utf-8'))
-        report.Info('Logging to '+logFile)
+        report.Info(_translate("GenerateParses", "Logging to {logFile}").format(logFile=logFile))
     except:
-        report.Error('There was a problem creating the log file: '+logFile+'.')
+        report.Error(_translate("GenerateParses", "There was a problem creating the log file: {logFile}.").format(logFile=logFile))
 
     ## Generate for only a specified POS  (This needs work)
     focusPOS = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_POS, report)
     if focusPOS == "":
-        report.Error('  No focus POS. Please select at least one POS with a template.')
+        report.Error(_translate("GenerateParses", '  No focus POS. Please select at least one POS with a template.'))
         return
     else:
         # last POS is likely empty
         if focusPOS[-1] == '':
             focusPOS.pop()
-        report.Info('  Only collecting templates for these POS: '+str(focusPOS))
+        report.Info(_translate("GenerateParses", "  Only collecting templates for these POS: {focusPOS}").format(focusPOS=str(focusPOS)))
 
     cat2focus, outputCats = get_cat2focus(DB, focusPOS)
 
-    report.Info("Collecting templates from FLEx project...")
+    report.Info(_translate("GenerateParses", "Collecting templates from FLEx project..."))
 
     # Get maps related to templates
     # cat2templ will come back with a list of the Active templates that were added
@@ -303,15 +323,15 @@ def MainFunction(DB, report, modifyAllowed):
     maxStems = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, report)
     if maxStems == "":
         maxStems = DB.LexiconNumberOfEntries()
-        report.Info('  Not limiting number of stems')
+        report.Info(_translate("GenerateParses", '  Not limiting number of stems'))
     else:
         maxStems = int(maxStems)
-        report.Info('  Only generating on the first '+str(maxStems)+' stems')
+        report.Info(_translate("GenerateParses", "  Only generating on the first {maxStems} stems").format(maxStems=str(maxStems)))
 
     ## Generate for only a specified Lexeme Form  (This needs work)
     focusLex = ReadConfig.getConfigVal(configMap, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, report)
 
-    logger.info('Processing entries')
+    logger.info(_translate("GenerateParses", 'Processing entries'))
     report.ProgressStart(DB.LexiconNumberOfEntries())
 
     # Loop through all the entries
@@ -341,7 +361,7 @@ def MainFunction(DB, report, modifyAllowed):
                 if lex != focusLex:
                     continue
                 else:
-                    report.Info('  Only generating on stem ['+lex+']\n')
+                    report.Info(_translate("GenerateParses", "  Only generating on stem [{lex}]\n").format(lex=lex))
 
             # Add Homograph.SenseNum to use it as an underlying form for STAMP
             ## (Really need to get the actual HM and SN from FLEx, and use all of them.)
@@ -351,7 +371,7 @@ def MainFunction(DB, report, modifyAllowed):
             # The "continue" makes it skip; the "GetEntryWithSense(e) tries to find the appropriate
             # sense for this variant.  But it wasn't working right.
             if e.SensesOS.Count < 1:
-                logger.info('  Skipping Variant with '+str(e.SensesOS.Count)+' Senses: '+lex)
+                logger.info(_translate("GenerateParses", "  Skipping Variant with {count} Senses: {lex}").format(count=str(e.SensesOS.Count), lex=lex))
                 continue
 
             # Also store the Gloss of the root (first sense only, so far)
@@ -384,11 +404,11 @@ def MainFunction(DB, report, modifyAllowed):
                     break
 
             if lex and catAndGuid:
-                logger.info(f'  Adding [{thisGloss}]{lex}<{pos}> to roots list')
+                logger.info(_translate("GenerateParses", "  Adding [{thisGloss}]{lex}<{pos}> to roots list").format(thisGloss=thisGloss, lex=lex, pos=pos))
                 standardSpellList.append((lex, thisGloss, pos, catAndGuid))
                 # If one of these words is missing a gloss, report it to the Messages window
                 if thisGloss == 'NoGloss':
-                    report.Info('  Using NoGloss as the gloss for ' + lex +'\n')
+                    report.Info(_translate("GenerateParses", "Using NoGloss as the gloss for {lex}.").format(lex=lex))
 
         else: # non-stems
 
@@ -409,7 +429,7 @@ def MainFunction(DB, report, modifyAllowed):
 
                         msa = IMoStemMsa(msa)
                     else:
-                        logger.info("Skipping deriv MSA for "+lex)
+                        logger.info(_translate("GenerateParses", "Skipping deriv MSA for {lex}").format(lex=lex))
                         continue
 
                     for s in e.SensesOS:
@@ -463,26 +483,27 @@ def MainFunction(DB, report, modifyAllowed):
 
                         # First get the POS for this MSA, just for debug output
                         if msa.PartOfSpeechRA == None:
-                            report.Error('MSA missing POS in '+lexForm+' '+lex)
+                            report.Error(_translate("GenerateParses", "MSA missing POS in {lexForm} {lex}").format(lexForm=lexForm, lex=lex))
                             continue
                         if not Utils.as_string(msa.PartOfSpeechRA.Abbreviation):
-                            report.Error('POS msaPOS missing Abbreviation label')
+                            report.Error(_translate("GenerateParses", "POS msaPOS missing Abbreviation label"))
                         for slot in msa.Slots:
                             name = name2str(slot)
                             slot2AffixList[name].append(lex)
                             # BB: For debugging, log each time we add an affix to a slot
-                            logger.info('\n      Adding affix '+lexForm+' '+lex+' to slot ['+Utils.as_string(slot.Name)+']')
+                            logger.info(_translate("GenerateParses", "      Adding affix {lexForm} {lex} to slot [{slotName}]").format(lexForm=lexForm, lex=lex, slotName=Utils.as_string(slot.Name)))
 
             # Report if it's a morph type we don't handle
             else:
-                logger.info('\nMorph type ' + morphType + ' ignored')
+                logger.info(_translate("GenerateParses", "Morph type {morphType} ignored.").format(morphType=morphType))
 
     if len(standardSpellList) > maxStems:
         random.shuffle(standardSpellList)
         standardSpellList = standardSpellList[:maxStems]
         standardSpellList.sort()
 
-    report.Info('Finished collecting templates.  Now generating words.')
+    report.Info(_translate("GenerateParses", "Finished collecting templates. Now generating words."))
+
     ## Open output files, before constructing parses
 
     ## First get the filenames from the config file
@@ -498,7 +519,7 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_aper = open(aperFile, 'w', encoding='utf-8')
     except IOError as e:
-        report.Error('There was a problem creating the Apertium file: '+aperFile+'.')
+        report.Error(_translate("GenerateParses", "There was a problem creating the Apertium file: {aperFile}.").format(aperFile=aperFile))
 
     # Open another file where the results can be formatted as an end product itself (showing the parses
     # in human readable form)
@@ -506,7 +527,7 @@ def MainFunction(DB, report, modifyAllowed):
     try:
         f_out = open(outFile, 'w', encoding='utf-8')
     except IOError as e:
-        report.Error('There was a problem creating the words file: '+outFile+'.')
+        report.Error(_translate("GenerateParses", "There was a problem creating the words file: {outFile}.").format(outFile=outFile))
     # We need a blank line at the beginning of the file, to match the synthesized file.
     f_out.write('\n')
 
@@ -534,11 +555,11 @@ def MainFunction(DB, report, modifyAllowed):
                 f_out.write(gForm + '\n')
 
     ## Output final counts to the log file.
-    logger.info('\n\n'+str(wrdCount)+' words generated.'+'\n')
+    logger.info('\n\n' + _translate("GenerateParses", "{wrdcnt} words generated.").format(wrdcnt=str(wrdCount)) + '\n')
 
-#    report.Info('Creation complete to the file: '+sigFile+'.')
-    report.Info('Creation complete to the file: '+outFile+'.')
-    report.Info(str(wrdCount)+' words generated.')
+    # report.Info('Creation complete to the file: '+sigFile+'.')
+    report.Info(_translate("GenerateParses", "Creation complete to the file: {outFile}.").format(outFile=outFile))
+    report.Info(_translate("GenerateParses", "{wrdCount} words generated.").format(wrdCount=str(wrdCount)))
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
