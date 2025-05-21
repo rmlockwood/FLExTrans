@@ -69,10 +69,14 @@ import winreg
 import glob
 import json
 from PyQt5.QtWidgets import QMessageBox, QCheckBox
+from PyQt5.QtCore import QCoreApplication
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 PTXIMPORT_SETTINGS_FILE = 'ParatextImportSettings.json'
 EXP_SHRINK_WINDOW_PIXELS = 120
@@ -403,18 +407,18 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     ## Validate some stuff
     
     # Check if the book is valid
-    if checkBookAbbrev and bookAbbrev not in bookMap:
+    if checkBookAbbrev and bookAbbrev not in bookMap: 
         
-        QMessageBox.warning(self, 'Invalid Book Error', f'The book abbreviation: {bookAbbrev} is invalid.')
+        QMessageBox.warning(self, _translate("ChapterSelection", "Invalid Book Error"), _translate("ChapterSelection", "The book abbreviation: {bookAbbrev} is invalid.").format(bookAbbrev=bookAbbrev))
         return
     
     # Get the Paratext path
     paratextPath = getParatextPath()
 
     # Check if Paratext path exists
-    if not os.path.exists(paratextPath):
-        
-        QMessageBox.warning(self, 'Not Found Error', f'Could not find the Paratext path: {paratextPath}.')
+    if not os.path.exists(paratextPath): 
+
+        QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find the Paratext path: {paratextPath}.").format(paratextPath=paratextPath))
         return
 
     # If we have cluster projects, we don't check a couple of these things, error checking will have to be done for each project
@@ -422,9 +426,9 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
 
         # Check if project path exists under Paratext
         projPath = os.path.join(paratextPath, projectAbbrev)
-        if not os.path.exists(projPath):
+        if not os.path.exists(projPath): 
             
-            QMessageBox.warning(self, 'Not Found Error', f'Could not find that project at: {projPath}.')
+            QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that project at: {projPath}.").format(projPath=projPath))
             return
 
         if not fromFLEx:
@@ -436,7 +440,7 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
             
             if checkBookPath and len(fileList) < 1:
                 
-                QMessageBox.warning(self, 'Not Found Error', f'Could not find that book file at: {bookPath}.')
+                QMessageBox.warning(self, _translate("ChapterSelection", "Not Found Error"), _translate("ChapterSelection", "Could not find that book file at: {bookPath}.").format(bookPath=bookPath))
                 return
 
     if self.ui.clusterProjectsComboBox.isHidden():
@@ -524,9 +528,9 @@ def doExport(textContents, report, chapSelectObj, parent):
     myChapList = re.findall(r'\\c (\d+)', textContents, flags=re.RegexFlag.DOTALL)
     
     # Check that we have chapters in the syn. file
-    if len(myChapList) < 1:
-
-        report.Error(f'No chapters found in the text.')
+    if len(myChapList) < 1: 
+        
+        report.Error(_translate("ChapterSelection", "No chapters found in the text."))
         return None
     
     elif len(myChapList) > 1:
@@ -543,14 +547,14 @@ def doExport(textContents, report, chapSelectObj, parent):
         # Create a QMessageBox instance
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Question)
-        msgBox.setText(f'Are you sure you want to overwrite {chapStr} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} in the {chapSelectObj.exportProjectAbbrev} project?')
-        msgBox.setWindowTitle("Overwrite chapters")
+        msgBox.setText(_translate("ChapterSelection", "Are you sure you want to overwrite {chapStr} {digitsStr} of {bookName} in the {projAbbrev} project?").format(chapStr=chapStr, digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
+        msgBox.setWindowTitle(_translate("ChapterSelection", "Overwrite chapters"))
         msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         
         # Add checkbox to the QMessageBox if we have multiple projects
         if len(chapSelectObj.clusterProjects) > 0:
 
-            checkBox = QCheckBox("Do not show this message again.")
+            checkBox = QCheckBox(_translate("ChapterSelection", "Do not show this message again."))
             msgBox.setCheckBox(checkBox)
         
         # Display the message box and wait for user interaction
@@ -563,14 +567,14 @@ def doExport(textContents, report, chapSelectObj, parent):
 
         if ret == QMessageBox.No:
 
-            report.Info('Export cancelled.')
+            report.Info(_translate("ChapterSelection", 'Export cancelled.'))
             return None
         
     bookPath = chapSelectObj.getBookPath()
 
     if not bookPath:
 
-        report.Error(f'Could not find the book file: {bookPath}')
+        report.Error(_translate("ChapterSelection", 'Could not find the book file: {bookPath}').format(bookPath=bookPath))
         return None
     
     # Create a backup of the paratext file
@@ -652,118 +656,117 @@ def doExport(textContents, report, chapSelectObj, parent):
     f.close()
 
     # Report what got exported
-    report.Info(f'{chapStr.capitalize()} {digitsStr} of {bookMap[chapSelectObj.bookAbbrev]} exported to the {chapSelectObj.exportProjectAbbrev} project.')
-
+    report.Info(_translate("ChapterSelection", "{chapStr} {digitsStr} of {bookName} exported to the {projAbbrev} project.").format(chapStr=chapStr.capitalize(), digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
     return 1
     
-bookMap = {\
-'GEN':'Genesis',\
-'EXO':'Exodus',\
-'LEV':'Leviticus',\
-'NUM':'Numbers',\
-'DEU':'Deuteronomy',\
-'JOS':'Joshua',\
-'JDG':'Judges',\
-'RUT':'Ruth',\
-'1SA':'1 Samuel',\
-'2SA':'2 Samuel',\
-'1KI':'1 Kings',\
-'2KI':'2 Kings',\
-'1CH':'1 Chronicles',\
-'2CH':'2 Chronicles',\
-'EZR':'Ezra',\
-'NEH':'Nehemiah',\
-'EST':'Esther',\
-'JOB':'Job',\
-'PSA':'Psalms',\
-'PRO':'Proverbs',\
-'ECC':'Ecclesiastes',\
-'SNG':'Song of Solomon',\
-'ISA':'Isaiah',\
-'JER':'Jeremiah',\
-'LAM':'Lamentations',\
-'EZK':'Ezekiel',\
-'DAN':'Daniel',\
-'HOS':'Hosea',\
-'JOL':'Joel',\
-'AMO':'Amos',\
-'OBA':'Obadiah',\
-'JON':'Jonah',\
-'MIC':'Micah',\
-'NAM':'Nahum',\
-'HAB':'Habakkuk',\
-'ZEP':'Zephaniah',\
-'HAG':'Haggai',\
-'ZEC':'Zechariah',\
-'MAL':'Malachi',\
-'MAT':'Matthew',\
-'MRK':'Mark',\
-'LUK':'Luke',\
-'JHN':'John',\
-'ACT':'Acts',\
-'ROM':'Romans',\
-'1CO':'1 Corinthians',\
-'2CO':'2 Corinthians',\
-'GAL':'Galatians',\
-'EPH':'Ephesians',\
-'PHP':'Philippians',\
-'COL':'Colossians',\
-'1TH':'1 Thessalonians',\
-'2TH':'2 Thessalonians',\
-'1TI':'1 Timothy',\
-'2TI':'2 Timothy',\
-'TIT':'Titus',\
-'PHM':'Philemon',\
-'HEB':'Hebrews',\
-'JAS':'James',\
-'1PE':'1 Peter',\
-'2PE':'2 Peter',\
-'1JN':'1 John',\
-'2JN':'2 John',\
-'3JN':'3 John',\
-'JUD':'Jude',\
-'REV':'Revelation',\
-'TOB':'Tobit',\
-'JDT':'Judith',\
-'ESG':'Esther Greek',\
-'WIS':'Wisdom of Solomon',\
-'SIR':'Sirach',\
-'BAR':'Baruch',\
-'LJE':'Letter of Jeremiah',\
-'S3Y':'Song of the 3 Young Men',\
-'SUS':'Susanna',\
-'BEL':'Bel and the Dragon',\
-'1MA':'1 Maccabees',\
-'2MA':'2 Maccabees',\
-'3MA':'3 Maccabees',\
-'4MA':'4 Maccabees',\
-'1ES':'1 Esdras (Greek)',\
-'2ES':'2 Esdras (Latin)',\
-'MAN':'Prayer of Manasseh',\
-'PS2':'Psalm 151',\
-'ODA':'Odae/Odes',\
-'PSS':'Psalms of Solomon',\
-'EZA':'Ezra Apocalypse',\
-'5EZ':'5 Ezra',\
-'6EZ':'6 Ezra',\
-'DAG':'Daniel Greek',\
-'PS3':'Psalms 152-155',\
-'2BA':'2 Baruch (Apocalypse)',\
-'LBA':'Letter of Baruch',\
-'JUB':'Jubilees',\
-'ENO':'Enoch',\
-'1MQ':'1 Meqabyan/Mekabis',\
-'REP':'Reproof',\
-'4BA':'4 Baruch',\
-'LAO':'Letter to the Laodiceans',\
-'XXA':'Extra A',\
-'XXB':'Extra B',\
-'XXC':'Extra C',\
-'XXD':'Extra D',\
-'XXE':'Extra E',\
-'XXF':'Extra F',\
-'XXG':'Extra G',\
-'INT':'Introduction',\
-'GLO':'Glossary',\
+bookMap = {
+    'GEN': _translate("ChapterSelection", "Genesis"),
+    'EXO': _translate("ChapterSelection", "Exodus"),
+    'LEV': _translate("ChapterSelection", "Leviticus"),
+    'NUM': _translate("ChapterSelection", "Numbers"),
+    'DEU': _translate("ChapterSelection", "Deuteronomy"),
+    'JOS': _translate("ChapterSelection", "Joshua"),
+    'JDG': _translate("ChapterSelection", "Judges"),
+    'RUT': _translate("ChapterSelection", "Ruth"),
+    '1SA': _translate("ChapterSelection", "1 Samuel"),
+    '2SA': _translate("ChapterSelection", "2 Samuel"),
+    '1KI': _translate("ChapterSelection", "1 Kings"),
+    '2KI': _translate("ChapterSelection", "2 Kings"),
+    '1CH': _translate("ChapterSelection", "1 Chronicles"),
+    '2CH': _translate("ChapterSelection", "2 Chronicles"),
+    'EZR': _translate("ChapterSelection", "Ezra"),
+    'NEH': _translate("ChapterSelection", "Nehemiah"),
+    'EST': _translate("ChapterSelection", "Esther"),
+    'JOB': _translate("ChapterSelection", "Job"),
+    'PSA': _translate("ChapterSelection", "Psalms"),
+    'PRO': _translate("ChapterSelection", "Proverbs"),
+    'ECC': _translate("ChapterSelection", "Ecclesiastes"),
+    'SNG': _translate("ChapterSelection", "Song of Solomon"),
+    'ISA': _translate("ChapterSelection", "Isaiah"),
+    'JER': _translate("ChapterSelection", "Jeremiah"),
+    'LAM': _translate("ChapterSelection", "Lamentations"),
+    'EZK': _translate("ChapterSelection", "Ezekiel"),
+    'DAN': _translate("ChapterSelection", "Daniel"),
+    'HOS': _translate("ChapterSelection", "Hosea"),
+    'JOL': _translate("ChapterSelection", "Joel"),
+    'AMO': _translate("ChapterSelection", "Amos"),
+    'OBA': _translate("ChapterSelection", "Obadiah"),
+    'JON': _translate("ChapterSelection", "Jonah"),
+    'MIC': _translate("ChapterSelection", "Micah"),
+    'NAM': _translate("ChapterSelection", "Nahum"),
+    'HAB': _translate("ChapterSelection", "Habakkuk"),
+    'ZEP': _translate("ChapterSelection", "Zephaniah"),
+    'HAG': _translate("ChapterSelection", "Haggai"),
+    'ZEC': _translate("ChapterSelection", "Zechariah"),
+    'MAL': _translate("ChapterSelection", "Malachi"),
+    'MAT': _translate("ChapterSelection", "Matthew"),
+    'MRK': _translate("ChapterSelection", "Mark"),
+    'LUK': _translate("ChapterSelection", "Luke"),
+    'JHN': _translate("ChapterSelection", "John"),
+    'ACT': _translate("ChapterSelection", "Acts"),
+    'ROM': _translate("ChapterSelection", "Romans"),
+    '1CO': _translate("ChapterSelection", "1 Corinthians"),
+    '2CO': _translate("ChapterSelection", "2 Corinthians"),
+    'GAL': _translate("ChapterSelection", "Galatians"),
+    'EPH': _translate("ChapterSelection", "Ephesians"),
+    'PHP': _translate("ChapterSelection", "Philippians"),
+    'COL': _translate("ChapterSelection", "Colossians"),
+    '1TH': _translate("ChapterSelection", "1 Thessalonians"),
+    '2TH': _translate("ChapterSelection", "2 Thessalonians"),
+    '1TI': _translate("ChapterSelection", "1 Timothy"),
+    '2TI': _translate("ChapterSelection", "2 Timothy"),
+    'TIT': _translate("ChapterSelection", "Titus"),
+    'PHM': _translate("ChapterSelection", "Philemon"),
+    'HEB': _translate("ChapterSelection", "Hebrews"),
+    'JAS': _translate("ChapterSelection", "James"),
+    '1PE': _translate("ChapterSelection", "1 Peter"),
+    '2PE': _translate("ChapterSelection", "2 Peter"),
+    '1JN': _translate("ChapterSelection", "1 John"),
+    '2JN': _translate("ChapterSelection", "2 John"),
+    '3JN': _translate("ChapterSelection", "3 John"),
+    'JUD': _translate("ChapterSelection", "Jude"),
+    'REV': _translate("ChapterSelection", "Revelation"),
+    'TOB': _translate("ChapterSelection", "Tobit"),
+    'JDT': _translate("ChapterSelection", "Judith"),
+    'ESG': _translate("ChapterSelection", "Esther Greek"),
+    'WIS': _translate("ChapterSelection", "Wisdom of Solomon"),
+    'SIR': _translate("ChapterSelection", "Sirach"),
+    'BAR': _translate("ChapterSelection", "Baruch"),
+    'LJE': _translate("ChapterSelection", "Letter of Jeremiah"),
+    'S3Y': _translate("ChapterSelection", "Song of the 3 Young Men"),
+    'SUS': _translate("ChapterSelection", "Susanna"),
+    'BEL': _translate("ChapterSelection", "Bel and the Dragon"),
+    '1MA': _translate("ChapterSelection", "1 Maccabees"),
+    '2MA': _translate("ChapterSelection", "2 Maccabees"),
+    '3MA': _translate("ChapterSelection", "3 Maccabees"),
+    '4MA': _translate("ChapterSelection", "4 Maccabees"),
+    '1ES': _translate("ChapterSelection", "1 Esdras (Greek)"),
+    '2ES': _translate("ChapterSelection", "2 Esdras (Latin)"),
+    'MAN': _translate("ChapterSelection", "Prayer of Manasseh"),
+    'PS2': _translate("ChapterSelection", "Psalm 151"),
+    'ODA': _translate("ChapterSelection", "Odae/Odes"),
+    'PSS': _translate("ChapterSelection", "Psalms of Solomon"),
+    'EZA': _translate("ChapterSelection", "Ezra Apocalypse"),
+    '5EZ': _translate("ChapterSelection", "5 Ezra"),
+    '6EZ': _translate("ChapterSelection", "6 Ezra"),
+    'DAG': _translate("ChapterSelection", "Daniel Greek"),
+    'PS3': _translate("ChapterSelection", "Psalms 152-155"),
+    '2BA': _translate("ChapterSelection", "2 Baruch (Apocalypse)"),
+    'LBA': _translate("ChapterSelection", "Letter of Baruch"),
+    'JUB': _translate("ChapterSelection", "Jubilees"),
+    'ENO': _translate("ChapterSelection", "Enoch"),
+    '1MQ': _translate("ChapterSelection", "1 Meqabyan/Mekabis"),
+    'REP': _translate("ChapterSelection", "Reproof"),
+    '4BA': _translate("ChapterSelection", "4 Baruch"),
+    'LAO': _translate("ChapterSelection", "Letter to the Laodiceans"),
+    'XXA': _translate("ChapterSelection", "Extra A"),
+    'XXB': _translate("ChapterSelection", "Extra B"),
+    'XXC': _translate("ChapterSelection", "Extra C"),
+    'XXD': _translate("ChapterSelection", "Extra D"),
+    'XXE': _translate("ChapterSelection", "Extra E"),
+    'XXF': _translate("ChapterSelection", "Extra F"),
+    'XXG': _translate("ChapterSelection", "Extra G"),
+    'INT': _translate("ChapterSelection", "Introduction"),
+    'GLO': _translate("ChapterSelection", "Glossary"),
 }
 

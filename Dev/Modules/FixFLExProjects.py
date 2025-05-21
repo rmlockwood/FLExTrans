@@ -22,7 +22,6 @@
 #
 
 import os.path
-import sys
 import clr
 
 from flextoolslib import *
