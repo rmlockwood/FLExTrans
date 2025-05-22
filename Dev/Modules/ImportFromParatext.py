@@ -160,12 +160,13 @@ import TextInOutUtils
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ImportFromParatext'
 
 translators = []
 app = QApplication([])
 
 # This is just for translating the docs dictionary below
-Utils.loadTranslations(['ImportFromParatext'], translators)
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection', 'TextInOutUtils'] 
@@ -534,7 +535,7 @@ def MainFunction(DB, report, modify=True):
     
     translators = []
     app = QApplication([])
-    Utils.loadTranslations(librariesToTranslate + ['ImportFromParatext'], 
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     tree = None
 

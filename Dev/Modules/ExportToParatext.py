@@ -98,15 +98,16 @@ import ChapterSelection
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ExportToParatext'
 
 translators = []
 app = QApplication([])
 
 # This is just for translating the docs dictionary below
-Utils.loadTranslations(['ExportToParatext'], translators)
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -230,9 +231,8 @@ def doExportToParatext(DB, configMap, report):
 
     translators = []
     app = QApplication([])
-    Utils.loadTranslations(librariesToTranslate + ['ExportToParatext'], 
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
-
     # Find the desired text
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     if not sourceText:

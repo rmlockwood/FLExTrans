@@ -59,15 +59,16 @@ import ChapterSelection
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ExportFlexToParatext'
 
 translators = []
 app = QApplication([])
 
 # This is just for translating the docs dictionary below
-Utils.loadTranslations(['ExportFlexToParatext'], translators)
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -243,7 +244,7 @@ def MainFunction(DB, report, modify):
     
     translators = []
     app = QApplication([])
-    Utils.loadTranslations(librariesToTranslate + ['ExportFlexToParatext'], 
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
     # Read the configuration file 
