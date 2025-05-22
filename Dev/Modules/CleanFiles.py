@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.13.1 - 5/22/25 - Ron Lockwood
+#    Fixed aperitum error file path.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -45,6 +48,7 @@ from pathlib import Path
 import tempfile
 import re
 from flextoolslib import *
+import RunApertium
 import ReadConfig
 import Utils
 import FTPaths
@@ -157,7 +161,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(buildFolder+Utils.APERTIUM_ERROR_FILE)
+        os.remove(buildFolder+RunApertium.APERTIUM_ERROR_FILE)
     except:
         pass # ignore errors
 
@@ -168,7 +172,7 @@ def MainFunction(DB, report, modify=True):
         pass # ignore errors
 
     try:
-        os.remove(buildFolder+Utils.DO_MAKE_SCRIPT_FILE)
+        os.remove(buildFolder+RunApertium.DO_MAKE_SCRIPT_FILE)
     except:
         pass # ignore errors
     
