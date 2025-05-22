@@ -68,11 +68,13 @@ from shutil import copyfile
 import winreg
 import glob
 import json
-from PyQt5.QtWidgets import QMessageBox, QCheckBox
+from PyQt5.QtWidgets import QMessageBox, QCheckBox, QApplication
 from PyQt5.QtCore import QCoreApplication
+
 import ClusterUtils
 from ComboBox import CheckableComboBox
 import FTPaths
+import Utils
 from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 
 # Define _translate for convenience
@@ -658,7 +660,12 @@ def doExport(textContents, report, chapSelectObj, parent):
     # Report what got exported
     report.Info(_translate("ChapterSelection", "{chapStr} {digitsStr} of {bookName} exported to the {projAbbrev} project.").format(chapStr=chapStr.capitalize(), digitsStr=digitsStr, bookName=bookMap[chapSelectObj.bookAbbrev], projAbbrev=chapSelectObj.exportProjectAbbrev))
     return 1
-    
+
+translators = []
+app = QApplication([])
+
+Utils.loadTranslations(['ChapterSelection'], translators)
+
 bookMap = {
     'GEN': _translate("ChapterSelection", "Genesis"),
     'EXO': _translate("ChapterSelection", "Exodus"),
@@ -770,3 +777,5 @@ bookMap = {
     'GLO': _translate("ChapterSelection", "Glossary"),
 }
 
+app.quit()
+del app

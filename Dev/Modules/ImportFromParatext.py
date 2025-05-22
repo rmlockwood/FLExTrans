@@ -168,7 +168,7 @@ app = QApplication([])
 Utils.loadTranslations(['ImportFromParatext'], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'TextInOutUtils'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectionDlg', 'ChapterSelection', 'TextInOutUtils'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:

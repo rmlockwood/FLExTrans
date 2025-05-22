@@ -39,11 +39,6 @@
         <translation>De lo contrario, solo usaremos la abreviatura del libro.</translation>
     </message>
     <message>
-        <location filename="../ParatextChapSelectionDlg.py" line="131"/>
-        <source>Use full English book name for title</source>
-        <translation>Usar el nombre completo del libro en inglés para el título</translation>
-    </message>
-    <message>
         <location filename="../ParatextChapSelectionDlg.py" line="132"/>
         <source>Include footnotes</source>
         <translation>Incluir notas al pie</translation>
@@ -108,7 +103,7 @@ si JHN 01 ya existe, se eliminará y se creará JHN 01 nuevamente.</translation>
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="131"/>
         <source>Use full book name for title</source>
-        <translation></translation>
+        <translation>Usar el nombre completo del libro para el título</translation>
     </message>
 </context>
 </TS>

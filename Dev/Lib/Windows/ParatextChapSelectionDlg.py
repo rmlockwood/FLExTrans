@@ -128,7 +128,7 @@ class Ui_ParatextChapSelectionWindow(object):
         self.label.setText(_translate("ParatextChapSelectionWindow", "Paratext Project Abbreviation"))
         self.toLabel.setText(_translate("ParatextChapSelectionWindow", "to"))
         self.useFullBookNameForTitleCheckBox.setToolTip(_translate("ParatextChapSelectionWindow", "Otherwise we will just use the book abbreviation."))
-        self.useFullBookNameForTitleCheckBox.setText(_translate("ParatextChapSelectionWindow", "Use full English book name for title"))
+        self.useFullBookNameForTitleCheckBox.setText(_translate("ParatextChapSelectionWindow", "Use full book name for title"))
         self.footnotesCheckBox.setText(_translate("ParatextChapSelectionWindow", "Include footnotes"))
         self.chapterLabel.setText(_translate("ParatextChapSelectionWindow", "Chapter"))
         self.OKButton.setText(_translate("ParatextChapSelectionWindow", "OK"))

@@ -4,12 +4,12 @@
 <context>
     <name>ExportFlexToParatext</name>
     <message>
-        <location filename="../ImportFromParatext.py" line="171"/>
+        <location filename="../ImportFromParatext.py" line="179"/>
         <source>Import chapters from Paratext.</source>
         <translation>Kapitel aus Paratext importieren.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="173"/>
+        <location filename="../ImportFromParatext.py" line="181"/>
         <source>This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
@@ -24,47 +24,47 @@ cluster projects in the main FLExTrans Settings, then come back to this module.<
 <context>
     <name>ImportFromParatext</name>
     <message>
-        <location filename="../ImportFromParatext.py" line="303"/>
+        <location filename="../ImportFromParatext.py" line="311"/>
         <source>Could not open the configuration file: {myConfig}</source>
         <translation>Die Konfigurationsdatei konnte nicht geöffnet werden: {myConfig}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="334"/>
+        <location filename="../ImportFromParatext.py" line="342"/>
         <source>Could not find the book file: {bookPath}</source>
         <translation>Die Buchdatei konnte nicht gefunden werden: {bookPath}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="348"/>
+        <location filename="../ImportFromParatext.py" line="356"/>
         <source>Starting chapter not found.</source>
         <translation>Startkapitel nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="379"/>
+        <location filename="../ImportFromParatext.py" line="387"/>
         <source>Cannot find main title (\mt or \mtN). This is needed for importing introductory material.</source>
         <translation>Haupttitel (\mt oder \mtN) konnte nicht gefunden werden. Dies wird für den Import von Einleitungsmaterial benötigt.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="400"/>
+        <location filename="../ImportFromParatext.py" line="408"/>
         <source>Cannot find the range of chapters specified.</source>
         <translation>Der angegebene Kapitelbereich konnte nicht gefunden werden.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="415"/>
+        <location filename="../ImportFromParatext.py" line="423"/>
         <source>{numRules} &apos;Text In&apos; rules applied.</source>
-        <translation>{numRules} &apos;Text In&apos;-Regeln angewendet.</translation>
+        <translation>{numRules} 'Text In'-Regeln angewendet.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="469"/>
+        <location filename="../ImportFromParatext.py" line="477"/>
         <source>{bibleBook} {chapter}</source>
         <translation>{bibleBook} {chapter}</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="498"/>
+        <location filename="../ImportFromParatext.py" line="520"/>
         <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
         <translation>Text: &quot;{title}&quot; im Projekt {projectName} erstellt.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="539"/>
+        <location filename="../ImportFromParatext.py" line="561"/>
         <source>The rules file: {textInRulesFile} has invalid XML data.</source>
         <translation>Die Regeldatei: {textInRulesFile} enthält ungültige XML-Daten.</translation>
     </message>

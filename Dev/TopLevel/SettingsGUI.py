@@ -1376,7 +1376,6 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 translators = []
 app = QApplication([])
 
-# This is just for translating the docs dictionary below
 Utils.loadTranslations(['SettingsGUI'], translators)
 
 #### Instructions for adding a new setting ####

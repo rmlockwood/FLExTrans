@@ -116,7 +116,7 @@
      <string>Otherwise we will just use the book abbreviation.</string>
     </property>
     <property name="text">
-     <string>Use full English book name for title</string>
+     <string>Use full book name for title</string>
     </property>
     <property name="checked">
      <bool>true</bool>

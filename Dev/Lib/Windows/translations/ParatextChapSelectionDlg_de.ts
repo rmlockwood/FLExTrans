@@ -108,7 +108,7 @@ wenn JHN 01 bereits existiert, wird er gelöscht und JHN 01 wird erneut erstellt
     <message>
         <location filename="../ParatextChapSelectionDlg.py" line="131"/>
         <source>Use full book name for title</source>
-        <translation type="unfinished"></translation>
+        <translation>Vollständigen Buchnamen für den Titel verwenden</translation>
     </message>
 </context>
 </TS>
