@@ -11,17 +11,17 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1133, 490)
+class Ui_SenseLinkerWindow(object):
+    def setupUi(self, SenseLinkerWindow):
+        SenseLinkerWindow.setObjectName("SenseLinkerWindow")
+        SenseLinkerWindow.resize(1133, 490)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setWindowTitle("FLExTrans Sense Linker Tool")
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        sizePolicy.setHeightForWidth(SenseLinkerWindow.sizePolicy().hasHeightForWidth())
+        SenseLinkerWindow.setSizePolicy(sizePolicy)
+        SenseLinkerWindow.setWindowTitle("FLExTrans Sense Linker Tool")
+        self.centralwidget = QtWidgets.QWidget(SenseLinkerWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -232,34 +232,34 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        SenseLinkerWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(SenseLinkerWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1133, 21))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
+        SenseLinkerWindow.setMenuBar(self.menubar)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(SenseLinkerWindow)
+        QtCore.QMetaObject.connectSlotsByName(SenseLinkerWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, SenseLinkerWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.label_4.setText(_translate("MainWindow", "Source Text:"))
-        self.label.setText(_translate("MainWindow", "All Target Senses:"))
-        self.targetLexCombo.setToolTip(_translate("MainWindow", "After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it."))
-        self.searchTargetEdit.setToolTip(_translate("MainWindow", "Type the beginning of an entry or any text (if \'Filter on all fields\' is checked), \n"
+        self.label_4.setText(_translate("SenseLinkerWindow", "Source Text:"))
+        self.label.setText(_translate("SenseLinkerWindow", "All Target Senses:"))
+        self.targetLexCombo.setToolTip(_translate("SenseLinkerWindow", "After selecting the desired sense here, double-click in the Target Head Word column for the desired row to link to it."))
+        self.searchTargetEdit.setToolTip(_translate("SenseLinkerWindow", "Type the beginning of an entry or any text (if \'Filter on all fields\' is checked), \n"
 "then double-click in the Target Head Word column for the desired row to link to it."))
-        self.searchTargetEdit.setPlaceholderText(_translate("MainWindow", "Search here"))
-        self.SearchAnythingCheckBox.setText(_translate("MainWindow", "Filter on all fields"))
-        self.AddEntryButton.setToolTip(_translate("MainWindow", "Add a new entry to the target lexicon."))
-        self.AddEntryButton.setText(_translate("MainWindow", "Add Entry"))
-        self.OKButton.setText(_translate("MainWindow", "OK"))
-        self.CancelButton.setText(_translate("MainWindow", "Cancel"))
-        self.ShowOnlyUnlinkedCheckBox.setText(_translate("MainWindow", "Show Only Unlinked"))
-        self.HideProperNounsCheckBox.setText(_translate("MainWindow", "Hide Proper Nouns"))
-        self.ZoomLabel.setText(_translate("MainWindow", "Zoom:"))
-        self.FontButton.setText(_translate("MainWindow", "Font"))
-        self.RebuildBilingCheckBox.setText(_translate("MainWindow", "Rebuild Bilingual Lexicon"))
-        self.exportUnlinkedCheckBox.setToolTip(_translate("MainWindow", "Export a list of unlinked senses to a file. If Hide Proper Nouns \n"
+        self.searchTargetEdit.setPlaceholderText(_translate("SenseLinkerWindow", "Search here"))
+        self.SearchAnythingCheckBox.setText(_translate("SenseLinkerWindow", "Filter on all fields"))
+        self.AddEntryButton.setToolTip(_translate("SenseLinkerWindow", "Add a new entry to the target lexicon."))
+        self.AddEntryButton.setText(_translate("SenseLinkerWindow", "Add Entry"))
+        self.OKButton.setText(_translate("SenseLinkerWindow", "OK"))
+        self.CancelButton.setText(_translate("SenseLinkerWindow", "Cancel"))
+        self.ShowOnlyUnlinkedCheckBox.setText(_translate("SenseLinkerWindow", "Show Only Unlinked"))
+        self.HideProperNounsCheckBox.setText(_translate("SenseLinkerWindow", "Hide Proper Nouns"))
+        self.ZoomLabel.setText(_translate("SenseLinkerWindow", "Zoom:"))
+        self.FontButton.setText(_translate("SenseLinkerWindow", "Font"))
+        self.RebuildBilingCheckBox.setText(_translate("SenseLinkerWindow", "Rebuild Bilingual Lexicon"))
+        self.exportUnlinkedCheckBox.setToolTip(_translate("SenseLinkerWindow", "Export a list of unlinked senses to a file. If Hide Proper Nouns \n"
 "is checked, Proper Nouns will not be exported."))
-        self.exportUnlinkedCheckBox.setText(_translate("MainWindow", "Export Unlinked Senses"))
-        self.SensesToLinkLabel.setText(_translate("MainWindow", "Senses to link:"))
+        self.exportUnlinkedCheckBox.setText(_translate("SenseLinkerWindow", "Export Unlinked Senses"))
+        self.SensesToLinkLabel.setText(_translate("SenseLinkerWindow", "Senses to link:"))
