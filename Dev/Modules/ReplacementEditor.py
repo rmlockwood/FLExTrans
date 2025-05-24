@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.13.2 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -29,38 +32,60 @@
 #   Version 3.11 - 8/7/24 - Daniel Swanson
 #    First version
 
-from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter
-from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtCore import QCoreApplication, QTranslator
+import xml.etree.ElementTree as ET
+import os
+from unicodedata import normalize
+from collections import defaultdict
 
-from ReplacementEditorWindow import Ui_MainWindow
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem, QItemDelegate, QCompleter, QApplication, QMessageBox
+from PyQt5.QtGui import QFontMetrics, QIcon
+from PyQt5.QtCore import QCoreApplication, Qt
+
+from SIL.LCModel import IMoStemMsa                      # type: ignore
+from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
+from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
+
 from flextoolslib import (
     FlexToolsModuleClass,
     FTM_Name, FTM_Version, FTM_ModifiesDB,
     FTM_Synopsis, FTM_Help, FTM_Description,
 )
 
-import xml.etree.ElementTree as ET
-
+import ReadConfig
 import FTPaths
+import Mixpanel
 import Utils
 
+from ReplacementEditorWindow import Ui_MainWindow
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ReplacementEditor'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
+
 docs = {
-    FTM_Name: "Replacement Dictionary Editor",
-    FTM_Version    : "3.13.1",
-    FTM_ModifiesDB: False,
-    FTM_Synopsis: "Edit manual overrides for the bilingual dictionary.",
-    FTM_Help: "",
-    FTM_Description:
-"""
-This module provides an interface for editing the replacement dictionary
+    FTM_Name:        "Replacement Dictionary Editor",
+    FTM_Version:     "3.13.2",
+    FTM_ModifiesDB:  False,
+    FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
+    FTM_Help:        "",
+    FTM_Description: _translate("ReplacementEditor", 
+"""This module provides an interface for editing the replacement dictionary
 which allows you to override the links created by the Sense Linker Tool
 in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
-vocative singular, you can specify that here.
-"""
-}
+vocative singular, you can specify that here.""")}
 
+app.quit()
+del app
 
 class TableRow:
     def __init__(self, window, table):
@@ -349,7 +374,6 @@ class CompleterDelegate(QItemDelegate):
             comp = SegmentedCompleter(self.values, ret)
         else:
             comp = QCompleter(self.values)
-        from PyQt5.QtCore import Qt
         comp.setCaseSensitivity(Qt.CaseInsensitive)
         ret.setCompleter(comp)
         return ret
@@ -409,23 +433,6 @@ class Main(QMainWindow):
         # Stretch the table view to fit
         self.ui.tableWidget.setGeometry(10, 10, self.width() - 20, self.height() - self.ui.addButton.height() - 45)
 
-        # y = self.ui.tableWidget.height() + 20
-
-        # self.positionControl(self.ui.infoLabel, 10, y)
-
-        # # Move the buttons up and down as the window gets resized
-        # x = 10
-        # y = y + 35
-
-        # self.positionControl(self.ui.addButton, x, y)
-        # self.positionControl(self.ui.deleteButton, x + self.ui.addButton.width() + 10, y)
-        # x = x + self.ui.addButton.width() + 10
-        # self.positionControl(self.ui.saveButton, x + self.ui.deleteButton.width() + 10, y)
-        # x = x + self.ui.deleteButton.width() + 10
-        # self.positionControl(self.ui.closeButton, x + self.ui.saveButton.width() + 10, y)
-        # x = x + self.ui.saveButton.width() + 10
-        # self.positionControl(self.ui.saveLabel, x + self.ui.closeButton.width() + 10, y)
-
         # Get the default font metrics
         font = self.ui.tableWidget.font()
         metrics = QFontMetrics(font)
@@ -442,27 +449,8 @@ class Main(QMainWindow):
 
             self.ui.tableWidget.setColumnWidth(col, textWidth)
 
-        # # Calculate total width based on column widths
-        # totalWidth = sum(self.ui.tableWidget.columnWidth(col) for col in range(self.ui.tableWidget.columnCount())) + 20  # Add padding
-
-        # # Set table width dynamically
-        # self.ui.tableWidget.resize(totalWidth, self.ui.tableWidget.height())  
-
-
-        # widthAffix = 50
-        # widthGramCat = 80
-        # self.ui.tableWidget.setColumnWidth(4, 1) # the column with the arrow
-        # self.ui.tableWidget.setColumnWidth(3, widthAffix) # first affix column
-        # self.ui.tableWidget.setColumnWidth(8, widthAffix) # 2nd affix column
-        # self.ui.tableWidget.setColumnWidth(1, widthGramCat) # 1st gram cat column
-        # self.ui.tableWidget.setColumnWidth(6, widthGramCat) # 2nd gram cat column
-        # self.ui.tableWidget.setColumnWidth(9, 160) # comment column
-
     def setWindowIcon(self):
-        from PyQt5 import QtGui
-        import os
-        import FTPaths
-        super().setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
+        super().setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
     def loadEntries(self):
 
@@ -487,10 +475,7 @@ class Main(QMainWindow):
             self.deleteRow(lastRow)
 
     def gatherCompletionData(self, DB, composed):
-        from SIL.LCModel import IMoStemMsa                      # type: ignore
-        from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
         if composed:
-            from unicodedata import normalize
             def norm(s): return normalize('NFC', s)
         else:
             def norm(s): return s
@@ -523,14 +508,12 @@ class Main(QMainWindow):
         return lemmas, affixes
 
     def gatherPOSTags(self, DB):
-        from Utils import get_categories
         posMap = {}
-        get_categories(DB, self.report, posMap, TargetDB=None,
+        Utils.get_categories(DB, self.report, posMap, TargetDB=None,
                        numCatErrorsToShow=1, addInflectionClasses=False)
         return sorted(posMap.keys())
 
     def gatherTags(self, DB):
-        from SIL.LCModel import IFsClosedFeatureRepository # type: ignore
         tags = set()
         for feature in DB.ObjectsIn(IFsClosedFeatureRepository):
             tags.update(Utils.as_tag(val) for val in feature.ValuesOC)
@@ -558,11 +541,10 @@ class Main(QMainWindow):
         if row >= len(self.rows):
             return
         self.unsaved = True
-        self.ui.saveLabel.setText('There are unsaved changes.')
+        self.ui.saveLabel.setText(_translate("ReplacementEditor", 'There are unsaved changes.'))
         self.rows[row].checkCellUpdate(column)
 
     def checkTable(self):
-        from collections import defaultdict
         duplicateSource = defaultdict(list)
         noAffixes = []
         for rowNumber, row in enumerate(self.rows, 1):
@@ -574,13 +556,12 @@ class Main(QMainWindow):
         dupPairs = [val for val in duplicateSource.values() if len(val) > 1]
         message = []
         if dupPairs:
-            message.append(f'The following sets of rows are identical on the source side and only the first one will have any effect:\n' + '\n'.join(f'- ' + ', '.join(map(str, pair)) for pair in dupPairs))
+            message.append(_translate("ReplacementEditor", 'The following sets of rows are identical on the source side and only the first one will have any effect:\n') + '\n'.join(f'- ' + ', '.join(map(str, pair)) for pair in dupPairs))
         if noAffixes:
-            message.append(f'The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: ' + ', '.join(map(str, noAffixes)))
+            message.append(_translate("ReplacementEditor", 'The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: ') + ', '.join(map(str, noAffixes)))
 
         if message:
-            from PyQt5.QtWidgets import QMessageBox
-            QMessageBox.warning(self, 'Useless Lines', '\n\n'.join(message))
+            QMessageBox.warning(self, _translate("ReplacementEditor", 'Useless Lines:'), '\n\n'.join(message))
 
     def save(self):
         self.checkTable()
@@ -592,15 +573,14 @@ class Main(QMainWindow):
             fout.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             fout.write(b'<!DOCTYPE dictionary PUBLIC "-//XMLmind//DTD dictionary//EN" "dix.dtd">\n')
             fout.write(ET.tostring(dix, encoding='utf-8'))
-        self.ui.saveLabel.setText('Replacement dictionary file saved.')
+        self.ui.saveLabel.setText(_translate("ReplacementEditor", 'Replacement dictionary file saved.'))
         self.unsaved = False
 
     def closeEvent(self, event):
-        from PyQt5.QtWidgets import QMessageBox
 
         if self.unsaved:
             confirm = QMessageBox.question(
-                self, 'Unsaved Changes', 'Save changes before exiting?',
+                self, _translate("ReplacementEditor", 'Unsaved Changes'), _translate("ReplacementEditor", 'Save changes before exiting?'),
                 QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel,
             )
             if confirm == QMessageBox.Save:
@@ -609,22 +589,18 @@ class Main(QMainWindow):
                 event.ignore()
 
 def MainFunction(DB, report, modifyAllowed):
-    import ReadConfig
-    import sys
-    from PyQt5.QtWidgets import QApplication
 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     replaceFile = ReadConfig.getConfigVal(
         configMap, ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE, report)
     if not replaceFile:
-        report.Error(f'A value for {ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE} not found in the configuration file.')
+        report.Error(_translate("ReplacementEditor", 'A value for {configValue} not found in the configuration file.').format(configValue=ReadConfig.BILINGUAL_DICT_REPLACEMENT_FILE))
         return
 
     targetDB = Utils.openTargetProject(configMap, report)
@@ -633,16 +609,11 @@ def MainFunction(DB, report, modifyAllowed):
                                        report)
     composed = (composed == 'y')
 
-    app = QApplication(sys.argv)
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/ReplacementEditorWindow_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
     window = Main(replaceFile, DB, targetDB, report, composed)
     window.show()
     app.exec_()
