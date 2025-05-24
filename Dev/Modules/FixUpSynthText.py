@@ -60,7 +60,7 @@ app = QApplication([])
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut'] # the strings in TextInOutUtils are translated in TextInOut_xx.ts
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInOutUtils']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
