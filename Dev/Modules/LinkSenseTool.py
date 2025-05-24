@@ -218,7 +218,7 @@ app = QApplication([])
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntry', 'ExtractBilingualLexicon', 'InterlinData'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntry', 'ExtractBilingualLexicon', 'TextClasses', 'InterlinData'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -1261,7 +1261,7 @@ def getGlossMapAndTgtLexList(TargetDB, report, glossMap, targetMorphNames, tgtLe
 
                     if glossWarnings == MAX_GLOSS_WARNINGS:
 
-                        report.Warning(_translate("LinkSenseTool", 'More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.')).format(num_warnings=MAX_GLOSS_WARNINGS)
+                        report.Warning(_translate("LinkSenseTool", 'More than {num_warnings} empty glosses found. Suppressing further warnings for empty target glosses.').format(num_warnings=MAX_GLOSS_WARNINGS))
                         glossWarnings += 1
     return True
 

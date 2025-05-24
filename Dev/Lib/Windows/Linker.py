@@ -39,7 +39,7 @@ class Ui_SenseLinkerWindow(object):
         self.horizontalLayout.addWidget(self.label_4)
         self.SourceTextCombo = QtWidgets.QComboBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(2)
+        sizePolicy.setHorizontalStretch(3)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.SourceTextCombo.sizePolicy().hasHeightForWidth())
         self.SourceTextCombo.setSizePolicy(sizePolicy)
