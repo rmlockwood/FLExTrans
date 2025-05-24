@@ -402,7 +402,6 @@ class Main(QMainWindow):
         self.startReplacementEditor = False
         self.HCdllObj = None
 
-
         # Reset icon images
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -606,7 +605,7 @@ class Main(QMainWindow):
             # always name the local version bilingual.dix which is what the Makefile has
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, BILING_FILE_IN_TESTER_FOLDER))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
             return
 
@@ -738,7 +737,7 @@ class Main(QMainWindow):
 
         except IOError:
 
-            QMessageBox.warning(self, 'Read Error', f'Bilingual file: {self.__biling_file} could not be read.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Read Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} could not be read.').format(self.__biling_file))
             return False
 
         # Get the root node
@@ -784,7 +783,7 @@ class Main(QMainWindow):
 
         if os.path.exists(self.__biling_file) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Bilingual file: {self.__biling_file} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Bilingual file: {0} does not exist.').format(self.__biling_file))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -797,7 +796,7 @@ class Main(QMainWindow):
 
         if os.path.exists(self.__transfer_rules_file) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Transfer rule file: {self.__transfer_rules_file} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Transfer rule file: {0} does not exist.').format(self.__transfer_rules_file))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -835,7 +834,7 @@ class Main(QMainWindow):
 
         # Check for badly formed lexical units
         if lexParser.isWellFormed() == False:
-            QMessageBox.warning(self, 'Lexical unit error', 'The lexical unit(s) is/are incorrectly formed.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Lexical unit error'), _translate('LiveRuleTesterTool', 'The lexical unit(s) is/are incorrectly formed.'))
             return None
 
         # Get the lexical units from the parser
@@ -860,10 +859,10 @@ class Main(QMainWindow):
         fatal, msg = Utils.checkForFatalError(errorList, None)
 
         if fatal:
-            QMessageBox.warning(self, 'Extract Bilingual Lexicon Error', f'{msg}\nRun the Extract Bilingual Lexicon module separately for more details.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Extract Bilingual Lexicon Error'), _translate('LiveRuleTesterTool', '{0}\nRun the Extract Bilingual Lexicon module separately for more details.').format(msg))
             return False
 
-        self.__report.Info('Built the bilingual lexicon.')
+        self.__report.Info(_translate('LiveRuleTesterTool', 'Built the bilingual lexicon.'))
         return True
 
     def RebuildBilingLexButtonClicked(self):
@@ -909,7 +908,7 @@ class Main(QMainWindow):
             # always name the local version bilingual.dix which is what the Makefile has
             shutil.copy(self.__biling_file, os.path.join(self.testerFolder, 'bilingual.dix'))
         except:
-            QMessageBox.warning(self, 'Copy Error', 'Could not copy the bilingual file to the folder: '+self.testerFolder+'. Please check that it exists.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Copy Error'), _translate('LiveRuleTesterTool', 'Could not copy the bilingual file to the folder: {0}. Please check that it exists.').format(self.testerFolder))
             self.retVal = False
             return
 
@@ -942,7 +941,7 @@ class Main(QMainWindow):
 
         if os.path.exists(self.__testbedPath) == False:
 
-            QMessageBox.warning(self, 'Not Found Error', f'Testbed file: {self.__testbedPath} does not exist.')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Testbed file: {0} does not exist.').format(self.__testbedPath))
             return
 
         progFilesFolder = os.environ['ProgramFiles(x86)']
@@ -954,8 +953,8 @@ class Main(QMainWindow):
     def ShowOverwritePrompt(self, luStr, showAllButtons=True):
 
         msgBox = QMessageBox(self)
-        msgBox.setWindowTitle("Test Exists")
-        msgBox.setText(f'There is a test that already exists in the testbed that matches the lexical unit:\n\n{luStr}\n\nDo you want to overwrite it?')
+        msgBox.setWindowTitle(_translate('LiveRuleTesterTool', 'Test Exists'))
+        msgBox.setText(_translate('LiveRuleTesterTool', 'There is a test that already exists in the testbed that matches the lexical unit:\n\n{0}\n\nDo you want to overwrite it?').format(luStr))
         
         # Add custom buttons based on the parameter
         if showAllButtons:
@@ -1025,7 +1024,7 @@ class Main(QMainWindow):
         try:
             fileObj = FlexTransTestbedFile(direction, self.__report)
         except:
-            QMessageBox.warning(self, 'Not Found Error', f'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Not Found Error'), _translate('LiveRuleTesterTool', 'Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\\testbed.xml'))
             return
 
         testbedObj = fileObj.getFLExTransTestbedXMLObject()
@@ -1049,7 +1048,7 @@ class Main(QMainWindow):
         synResult, errMsg = self.removeNonSentencePunctuation(synResult, self.__sentPunc)
 
         if errMsg:
-            QMessageBox.warning(self, 'Testbed Error', errMsg)
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Testbed Error'), errMsg)
             return
         
         cnt = 0
@@ -1071,7 +1070,7 @@ class Main(QMainWindow):
 
             # Check for an equal amount of lexical units as synthesis results
             if len(luObjList) != len(resultList):
-                QMessageBox.warning(self, 'Testbed Error', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Testbed Error'), _translate('LiveRuleTesterTool', 'There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.'))
                 return
 
             retVal = None
@@ -1153,9 +1152,9 @@ class Main(QMainWindow):
         # Tell the user how many tests were added.
         if cnt == 1:
 
-            feedbackStr = str(cnt) + ' test added.'
+            feedbackStr = _translate('LiveRuleTesterTool', '{0} test added.').format(str(cnt))
         else:
-            feedbackStr = str(cnt) + ' tests added.'
+            feedbackStr = _translate('LiveRuleTesterTool', '{0} tests added.').format(str(cnt))
 
         self.ui.TestsAddedLabel.setText(feedbackStr)
 
@@ -1200,7 +1199,7 @@ class Main(QMainWindow):
 
             if not HCconfigPath:
 
-                QMessageBox.warning(self, 'Configuration Error', 'HermitCrab settings not found.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
                 return
             
             useHCsynthDll = True
@@ -1228,8 +1227,8 @@ class Main(QMainWindow):
             try:
                 errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
-                QMessageBox.warning(self, 'Locked DB?', 'The database could be locked. Check if sharing is checked for the target project. \
-                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The database could be locked. Check if sharing is checked for the target project. \
+                                    If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.'))
                 self.unsetCursor()
                 return
 
@@ -1237,7 +1236,7 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, 'Catalog Prefix Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Catalog Prefix Error'), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
                 self.unsetCursor()
                 return
 
@@ -1254,7 +1253,7 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, 'Convert to STAMP Error', f'{msg}\nRun the Convert to {ConvertTextToSTAMPformat.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Convert to STAMP Error'), _translate('LiveRuleTesterTool', '{0}\nRun the Convert to {1} module separately for more details.').format(msg, ConvertTextToSTAMPformat.docs[FTM_Name]))
                 self.unsetCursor()
                 return
 
@@ -1276,8 +1275,8 @@ class Main(QMainWindow):
                 if fatal:
                     errorStr = msg
                     if not self.HCdllObj:
-                        errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
-                    QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
+                        errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
                     self.unsetCursor()
                     return
             else:
@@ -1290,7 +1289,7 @@ class Main(QMainWindow):
                     fatal, msg = Utils.checkForFatalError(errorList, None)
 
                     if fatal:
-                        QMessageBox.warning(self, f'{CatalogTargetAffixes.docs[FTM_Name]} Error', f'{msg}\nRun the {CatalogTargetAffixes.docs[FTM_Name]} module separately for more details.')
+                        QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(CatalogTargetAffixes.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, CatalogTargetAffixes.docs[FTM_Name]))
                         self.unsetCursor()
                         return
 
@@ -1301,9 +1300,9 @@ class Main(QMainWindow):
                 fatal, msg = Utils.checkForFatalError(errorList, None)
 
                 if fatal:
-                        QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
-                        self.unsetCursor()
-                        return
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoStampSynthesis.docs[FTM_Name]), _translate('LiveRuleTesterTool', '{0}\nRun the {1} module separately for more details.').format(msg, DoStampSynthesis.docs[FTM_Name]))
+                    self.unsetCursor()
+                    return
 
         ## SYNTHESIZE
         # We have two possible syntheses, one for STAMP and one for HermitCrab
@@ -1321,8 +1320,8 @@ class Main(QMainWindow):
             if fatal:
                 errorStr = msg
                 if not self.HCdllObj:
-                    errorStr += f'\nRun the {DoHermitCrabSynthesis.docs[FTM_Name]} module separately for more details.'
-                QMessageBox.warning(self, f'{DoHermitCrabSynthesis.docs[FTM_Name]} Error', errorStr)
+                    errorStr += _translate('LiveRuleTesterTool', '\nRun the {0} module separately for more details.').format(DoHermitCrabSynthesis.docs[FTM_Name])
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{0} Error').format(DoHermitCrabSynthesis.docs[FTM_Name]), errorStr)
                 self.unsetCursor()
                 return
         else:
