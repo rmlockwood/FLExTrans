@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.13.3 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 4/9/25 - Ron Lockwood
 #    Delete non-sentence-ending punctuation from the synthesis result before adding it to the testbed.
 #    Also, apply Text Out rules to the sentence-ending punctuation if necessary.
@@ -215,7 +218,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication, QTranslator
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialog, QDialogButtonBox, QToolTip
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip
 
 from Testbed import *
 import RunApertium
@@ -231,20 +234,29 @@ import TestbedLogViewer
 from LiveRuleTester import Ui_MainWindow
 import FTPaths
 
-#----------------------------------------------------------------
-# Configurables:
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'LiveRuleTesterTool'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'NewEntry', 'Testbed', 'CatalogTargetAffixes', 
+                        'ConvertTextToSTAMPformat', 'DoStampSynthesis', 'DoHermitCrabSynthesis', 'ExtractBilingualLexicon', 'TestbedLogViewer'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Test transfer rules and synthesis live against specific words.",
-        FTM_Help   : "",
-        FTM_Description:
-"""
-The Live Rule Tester Tool is a tool that allows you to test source words or
+        FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
+        FTM_Help       : "", 
+        FTM_Description: _translate("LiveRuleTesterTool", 
+"""The Live Rule Tester Tool is a tool that allows you to test source words or
 sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do.
 You can zero in on the problem by selecting just one source word and applying
@@ -252,8 +264,10 @@ the pertinent transfer rule. In this way you don't have to run the whole system
 against the whole text file and all transfer rules. You can also test that the
 transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
-You can run the testbed to check that you are getting the results you expect.
-""" }
+You can run the testbed to check that you are getting the results you expect.""")}
+
+app.quit()
+del app
 
 ZOOM_INCREASE_FACTOR = 1.15
 SAMPLE_LOGIC = 'Sample logic'
@@ -2459,7 +2473,7 @@ START_LOG_VIEWER = 3
 START_RULE_ASSISTANT = 4
 START_REPLACEMENT_EDITOR = 5
 
-def RunModule(DB, report, configMap, ruleCount=None):
+def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
     # Get needed configuration file properties
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -2615,17 +2629,7 @@ def RunModule(DB, report, configMap, ruleCount=None):
             segment_list = myText.getSurfaceAndDataTupleListBySent()
 
     if len(segment_list) > 0:
-        # Create the qt app
-        app = QApplication(sys.argv)
 
-        # Load translations
-        langCode = 'es'
-        translator = QTranslator()
-
-        if translator.load(FTPaths.TRANSL_DIR+f"/LiveRuleTester_{langCode}.qm"):
-
-            QCoreApplication.installTranslator(translator)
-        
         # if the bilingual file path is relative, add on the current directory
         if re.search(':', bilingFile):
             pass
@@ -2667,6 +2671,11 @@ def RunModule(DB, report, configMap, ruleCount=None):
 
 def MainFunction(DB, report, modify=False, ruleCount=None):
 
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     retVal = RESTART_MODULE
     loggedStart = False
 
@@ -2685,7 +2694,7 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 
-        retVal = RunModule(DB, report, configMap, ruleCount)
+        retVal = RunModule(DB, report, configMap, ruleCount, app)
 
         if retVal == START_RULE_ASSISTANT:
 
