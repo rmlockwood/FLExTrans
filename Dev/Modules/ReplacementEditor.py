@@ -590,6 +590,11 @@ class Main(QMainWindow):
 
 def MainFunction(DB, report, modifyAllowed):
 
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
@@ -608,11 +613,6 @@ def MainFunction(DB, report, modifyAllowed):
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS,
                                        report)
     composed = (composed == 'y')
-
-    translators = []
-    app = QApplication([])
-    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
-                           translators, loadBase=True)
 
     window = Main(replaceFile, DB, targetDB, report, composed)
     window.show()
