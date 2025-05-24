@@ -207,8 +207,6 @@ import xml.etree.ElementTree as ET
 import shutil
 from subprocess import call
 
-import InterlinData
-from Modules.FLExTrans.Lib import TextInOutUtils
 from SIL.LCModel import * # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr # type: ignore
 
@@ -217,9 +215,11 @@ from flexlibs import FLExProject
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip
 
+import InterlinData
+import TextInOutUtils
 from Testbed import *
 import RunApertium
 import Utils
@@ -245,7 +245,7 @@ app = QApplication([])
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'NewEntry', 'Testbed', 'CatalogTargetAffixes', 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'TextClasses', 'InterlinData', 'TextInOutUtils', 'Testbed', 'CatalogTargetAffixes', 
                         'ConvertTextToSTAMPformat', 'DoStampSynthesis', 'DoHermitCrabSynthesis', 'ExtractBilingualLexicon', 'TestbedLogViewer'] 
 
 #----------------------------------------------------------------
@@ -1331,7 +1331,8 @@ class Main(QMainWindow):
             fatal, msg = Utils.checkForFatalError(errorList, None)
 
             if fatal:
-                QMessageBox.warning(self, f'{DoStampSynthesis.docs[FTM_Name]} Error', f'{msg}\nRun the {DoStampSynthesis.docs[FTM_Name]} module separately for more details.')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', '{moduleName} Error').format(moduleName=DoStampSynthesis.docs[FTM_Name]), 
+                     _translate('LiveRuleTesterTool', f'{msg}\n' + 'Run the {moduleName} module separately for more details.').format(moduleName=DoStampSynthesis.docs[FTM_Name]))
                 self.unsetCursor()
                 return
 
@@ -1965,8 +1966,8 @@ class Main(QMainWindow):
             self.ui.listTransferRules.setModel(self.__transferModel)
 
         else:
-            QMessageBox.warning(self, 'Invalid Rules File', \
-            'The transfer file has no transfer element or no section-rules element')
+            QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Rules File'), \
+            _translate('LiveRuleTesterTool', 'The transfer file has no transfer element or no section-rules element'))
             return False
 
         # Check if the interchunk file exists. If it does, we assume we have advanced transfer going on
@@ -1989,8 +1990,8 @@ class Main(QMainWindow):
                 # Initialize the model for the rule list control
                 self.ui.listInterChunkRules.setModel(self.__interChunkModel)
             else:
-                QMessageBox.warning(self, 'Invalid Interchunk Rules File', \
-                'The interchunk transfer file has no transfer element or no section-rules element')
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid Interchunk Rules File'), \
+                _translate('LiveRuleTesterTool', 'The interchunk transfer file has no transfer element or no section-rules element'))
                 return False
 
             postchunk_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE3, self.__report, giveError=False)
@@ -2013,8 +2014,8 @@ class Main(QMainWindow):
                     # Initialize the model for the rule list control
                     self.ui.listPostChunkRules.setModel(self.__postChunkModel)
                 else:
-                    QMessageBox.warning(self, 'Invalid postchunk Rules File', \
-                    'The postchunk transfer file has no transfer element or no section-rules element')
+                    QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Invalid postchunk Rules File'), \
+                    _translate('LiveRuleTesterTool', 'The postchunk transfer file has no transfer element or no section-rules element'))
                     return False
 
                 # if we have interchunk and postchunk transfer rules files we are in advanced mode
@@ -2055,11 +2056,11 @@ class Main(QMainWindow):
             ruleText = el.get('comment')
 
             if ruleText == None:
-                ruleText = 'missing comment'
+                ruleText = _translate('LiveRuleTesterTool', 'missing comment')
 
             # If active add text with the active rule #
             if self.__ruleModel.item(i).checkState():
-                self.__ruleModel.item(i).setText(ruleText + ' - Active Rule ' + str(active_rules))
+                self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                 active_rules += 1
             else:
                 self.__ruleModel.item(i).setText(ruleText)
@@ -2073,7 +2074,7 @@ class Main(QMainWindow):
             comment = rule_el.get('comment')
 
             if comment == None:
-                comment = 'missing comment'
+                comment = _translate('LiveRuleTesterTool', 'missing comment')
 
             # Create an item object
             item = QStandardItem(comment)
@@ -2153,7 +2154,7 @@ class Main(QMainWindow):
 
         if len(myStr) < 1:
 
-            self.ui.TargetTextEdit.setPlainText('Nothing selected. Select at least one word or sentence.')
+            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.'))
             self.unsetCursor()
             return
 
@@ -2252,7 +2253,7 @@ class Main(QMainWindow):
         ret = RunApertium.run_makefile(self.buildFolder+'\\LiveRuleTester', self.__report)
 
         if ret:
-            self.ui.TargetTextEdit.setPlainText('An error happened when running the Apertium tools.')
+            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'An error happened when running the Apertium tools.'))
             self.unsetCursor()
             return
 
@@ -2269,7 +2270,7 @@ class Main(QMainWindow):
         except FileNotFoundError: # if file doesn't exist try .aper (old name) insted of .txt
 
             tgt_file = re.sub('\.txt', '.aper', tgt_file)
-            err_msg = f'Cannot find file: {tgt_file}.'
+            err_msg = _translate('LiveRuleTesterTool', 'Cannot find file: {tgt_file}.').format(tgt_file=tgt_file)
 
             try:
                 tgtf = open(tgt_file, encoding='utf-8')
@@ -2318,7 +2319,7 @@ class Main(QMainWindow):
         # If we only have a paragraph element, we got no output.
         if htmlVal == '<p />':
 
-            htmlVal = 'The rules produced no output.'
+            htmlVal = _translate('LiveRuleTesterTool', 'The rules produced no output.')
 
         self.ui.TargetTextEdit.setText(htmlVal)
 
@@ -2378,6 +2379,9 @@ class Main(QMainWindow):
                 matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
                 ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
                 lexUnitsStr = matchObj.group(5).strip()
+
+                # Translate the word 'Rule' to the localized version
+                ruleStr = re.sub('Rule ', _translate('LiveRuleTesterTool', 'Rule '), ruleStr)
 
                 # Put a delimeter between multiple lexical units
                 lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
@@ -2490,7 +2494,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
     if sourceText not in sourceTextList:
 
-        report.Error('The text named: '+sourceText+' not found.')
+        report.Error(_translate('LiveRuleTesterTool', 'The text named: {name} not found.').format(name=sourceText))
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceText)]
@@ -2522,7 +2526,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
             f_treeTranResultFile = open(treeTranResultFile, encoding='utf-8')
             f_treeTranResultFile.close()
         except:
-            report.Error('There is a problem with the Tree Tran Result File path: '+treeTranResultFile+'. Please check the configuration file setting.')
+            report.Error(_translate('LiveRuleTesterTool', 'There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.').format(file=treeTranResultFile))
             return ERROR_HAPPENED
 
         # get the list of guids from the TreeTran results file
@@ -2570,7 +2574,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
                 myFLExSent = myText.getSent(sentNum)
                 if myFLExSent is None:
-                    report.Error('Sentence ' + str(sentNum) + ' from TreeTran not found')
+                    report.Error(_translate('LiveRuleTesterTool', 'Sentence {sentNum} from TreeTran not found').format(sentNum=sentNum))
                     return ERROR_HAPPENED
 
                 # Output any punctuation preceding the sentence.
@@ -2582,7 +2586,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
                     myGuid = myTreeSent.getNextGuidAndIncrement()
 
                     if not myGuid:
-                        report.Error('Null Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                        report.Error(_translate('LiveRuleTesterTool', 'Null Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                         break
 
                     # If we couldn't find the guid, see if there's a reason
@@ -2590,7 +2594,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
                         # Check if the reason we didn't have a guid found is that it got replaced as part of a complex form replacement
                         nextGuid = myTreeSent.getNextGuid()
                         if nextGuid is None or myFLExSent.notPartOfAdjacentComplexForm(myGuid, nextGuid) == True:
-                            report.Warning('Could not find the desired Guid in sentence ' + str(sentNum+1) + ', word ' + str(wrdNum+1))
+                            report.Warning(_translate('LiveRuleTesterTool', 'Could not find the desired Guid in sentence ') + str(sentNum+1) + ', word ' + str(wrdNum+1))
                     else:
                         surface, data = myFLExSent.getSurfaceAndDataForGuid(myGuid)
                         tupList.append((surface,data))
@@ -2610,17 +2614,17 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
                 if myFLExSent == None:
 
-                    report.Error('Sentence: ' + str(sentNum) + ' not found. Check that the right parses are present.')
+                    report.Error(_translate('LiveRuleTesterTool', 'Sentence: {sentNum} not found. Check that the right parses are present.').format(sentNum=sentNum))
                     continue
 
                 myFLExSent.getSurfaceAndDataTupleList(tupList)
 
             segment_list.append(tupList)
 
-        report.Info("Exported: " + str(len(logInfo)) + " sentence(s) using TreeTran results.")
+        report.Info(_translate('LiveRuleTesterTool', "Exported: {num} sentence(s) using TreeTran results.").format(num=str(len(logInfo))))
 
         if noParseSentCount > 0:
-            report.Warning('No parses found for ' + str(noParseSentCount) + ' sentence(s).')
+            report.Warning(_translate('LiveRuleTesterTool', 'No parses found for {num} sentence(s).')).format(num=str(noParseSentCount))
 
     else:
         # Normal, non-TreeTran processing
@@ -2640,7 +2644,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         window = Main(segment_list, bilingFile, sourceText, DB, configMap, report, sourceTextList, ruleCount=ruleCount, sentPunc=sentPunc)
 
         if window.retVal == False:
-            report.Error('An error occurred getting things initialized.')
+            report.Error(_translate('LiveRuleTesterTool', 'An error occurred getting things initialized.'))
             return ERROR_HAPPENED
 
         window.show()
@@ -2663,7 +2667,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 
             return START_REPLACEMENT_EDITOR
     else:
-        report.Error('This text has no data.')
+        report.Error(_translate('LiveRuleTesterTool', 'This text has no data.'))
         return ERROR_HAPPENED
 
     return NO_ERRORS
@@ -2699,11 +2703,11 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
 
             from RuleAssistant import MainFunction as RA
             from RuleAssistant import docs as RA_docs
-            report.Info(f'Running {RA_docs[FTM_Name]} (version {RA_docs[FTM_Version]})...')
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=RA_docs[FTM_Name], version=RA_docs[FTM_Version]))
             ruleCount = RA(DB, report, modify, fromLRT=True)
 
             # Show we are re-running the LRT
-            report.Info(f'Running {docs[FTM_Name]} (version {docs[FTM_Version]})...')
+            report.Info(_translate('LiveRuleTesterTool', 'Running {name} (version {version})...').format(name=docs[FTM_Name], version=docs[FTM_Version]))
             retVal = RESTART_MODULE
         else:
             ruleCount = None
