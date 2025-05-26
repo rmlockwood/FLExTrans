@@ -186,7 +186,7 @@ import time
 from fuzzywuzzy import fuzz
 
 from PyQt5 import QtGui, QtCore
-from PyQt5.QtCore import QTimer, QCoreApplication, QTranslator
+from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QFontDialog
 
 from SIL.LCModel import ( # type: ignore
