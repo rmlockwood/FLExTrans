@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13.1 - 5/26/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -601,7 +604,7 @@ class RuleGenerator:
             # If there's a default value, we still need to check for the empty
             # case, but we can skip the rest of the conditional.
 
-            macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+            macid = self.GetAvailableID(_translate("CreateApertiumRules", 'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}').format(srcSpec=srcSpec, trgSpec=trgSpec))
             varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
             self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))
             macro = ET.SubElement(self.GetSection('section-def-macros'),
@@ -619,7 +622,7 @@ class RuleGenerator:
             return MacroSpec(macid, varid, [srcSpec.category])
 
         # Create the macro
-        macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+        macid = self.GetAvailableID(_translate("CreateApertiumRules", 'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}').format(srcSpec=srcSpec, trgSpec=trgSpec))
         varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
         self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
@@ -804,9 +807,10 @@ class RuleGenerator:
         if lookupKey in self.lemmaMacros:
             return self.lemmaMacros[lookupKey]
 
-        macType = 'lemma' if isLemma else 'affix'
-        label = '{destCategory}_{macType}_from_{catSequence}'.format(
-            destCategory=destCategory, macType=macType, catSequence='-'.join(catSequence))
+        macType =  _translate("CreateApertiumRules", 'lemma') if isLemma else  _translate("CreateApertiumRules", 'affix')
+        fromStr = _translate("CreateApertiumRules", 'from')
+        label = '{destCategory}_{macType}_{fromStr}_{catSequence}'.format(
+            destCategory=destCategory, macType=macType, fromStr=fromStr, catSequence='-'.join(catSequence))
         macid = self.GetAvailableID('m_' + label)
         varid = self.GetAvailableID('v_' + label)
         self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))

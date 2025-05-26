@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13.2 - 5/21/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -85,7 +88,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
         FTM_Help  : "",
