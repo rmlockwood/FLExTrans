@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.13.1 - 5/27/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -46,30 +49,47 @@ import xml.etree.ElementTree as ET
 import tempfile
 from subprocess import call
 
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
+
 from flextoolslib import *                                                 
 
+import Mixpanel
 import Utils
 import ReadConfig
 import FTPaths
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'RunTreeTran'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.13.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Run the TreeTran Tool.",    
+        FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),    
         FTM_Help   : "",
-        FTM_Description: 
-"""
-This module will run the TreeTran program to modify a syntax tree. The resulting
+        FTM_Description: _translate("RunTreeTran",  
+"""This module will run the TreeTran program to modify a syntax tree. The resulting
 file is placed in the Output folder which is then used by the ExtractSourceText
 module to modify the word order of the sentence according to the TreeTran rules
 file. The TreeTran Rules file is in the Output folder also. This module assumes
 that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
-button is used. 
-""" }
+button is used. """)}
+
+app.quit()
+del app
                  
 INVOKER_FILE = 'Invoker.xml'   
 VALID_PARSES_FILE = 'valid_parses_for_tree_tran.xml'
@@ -85,7 +105,7 @@ def filterAndLogInvokerParses(inputFilename):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
+        raise ValueError(_translate("RunTreeTran", 'The Tree Tran Result File has invalid XML content.') + ' (' + inputFilename + ')')
     
     myRoot = myETree.getroot()
     
@@ -137,13 +157,17 @@ def filterAndLogInvokerParses(inputFilename):
 
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if configMap is None:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Check if we are using TreeTran for sorting the text output
@@ -151,7 +175,7 @@ def MainFunction(DB, report, modify=True):
     # i.e. set to nothing
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
     if not treeTranResultFile:
-        report.Error(f'You have not specified a value in the configuration file for {ReadConfig.ANALYZED_TREETRAN_TEXT_FILE}.')
+        report.Error(_translate("RunTreeTran", 'You have not specified a value in the configuration file for {file}.').format(file=ReadConfig.ANALYZED_TREETRAN_TEXT_FILE))
         return 
     
     # Create a path to the temporary folder + invoker file
@@ -162,13 +186,13 @@ def MainFunction(DB, report, modify=True):
     
     # verify the filtered file exists
     if os.path.exists(filteredFile) == False:
-        report.Error('There is a problem with the TreeTran input file: '+filteredFile+'. Has the PC-PATR with FLEx program been run correctly?')
+        report.Error(_translate("RunTreeTran", 'There is a problem with the TreeTran input file: {filteredFile}. Has the PC-PATR with FLEx program been run correctly?').format(filteredFile=filteredFile))
         return
     
     # Get the TreeTran rules file path
     treeTranRules = ReadConfig.getConfigVal(configMap, ReadConfig.TREETRAN_RULES_FILE, report)
     if not treeTranRules:
-        report.Error(f'You have not specified a value in the configuration file for {ReadConfig.TREETRAN_RULES_FILE}.')
+        report.Error(_translate("RunTreeTran", 'You have not specified a value in the configuration file for {file}.').format(file=ReadConfig.TREETRAN_RULES_FILE))
         return 
     
     # Get parent folder of the folder flextools.ini (Config) is in. This should give us the working project folder. E.g. German-Swedish
@@ -177,13 +201,13 @@ def MainFunction(DB, report, modify=True):
 
     # verify the filtered file exists
     if os.path.exists(rulesFilePath) == False:
-        report.Error(f'Can\'t find the TreeTran rules file: {rulesFilePath}.')
+        report.Error(_translate("RunTreeTran", 'Can\'t find the TreeTran rules file: {rulesFilePath}.').format(rulesFilePath=rulesFilePath))
         return
     
     # run TreeTran
     call([FTPaths.TREETRAN_EXE, rulesFilePath, filteredFile, treeTranResultFile])
     
-    report.Info(str(sentCount) + ' sentence(s) processed.')
+    report.Info(_translate("RunTreeTran", '{num} sentence(s) processed.').format(num=str(sentCount)))
     
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
