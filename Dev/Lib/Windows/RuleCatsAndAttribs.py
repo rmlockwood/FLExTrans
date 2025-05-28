@@ -11,14 +11,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.setWindowModality(QtCore.Qt.ApplicationModal)
-        MainWindow.resize(414, 262)
-        MainWindow.setWindowTitle("Set Up Transfer Rule Categories & Attributes")
-        MainWindow.setAnimated(False)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_CatsAndAttribsWindow(object):
+    def setupUi(self, CatsAndAttribsWindow):
+        CatsAndAttribsWindow.setObjectName("CatsAndAttribsWindow")
+        CatsAndAttribsWindow.setWindowModality(QtCore.Qt.ApplicationModal)
+        CatsAndAttribsWindow.resize(414, 262)
+        CatsAndAttribsWindow.setWindowTitle("Set Up Transfer Rule Categories & Attributes")
+        CatsAndAttribsWindow.setAnimated(False)
+        self.centralwidget = QtWidgets.QWidget(CatsAndAttribsWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.overrideFeaturesCheckbox = QtWidgets.QCheckBox(self.centralwidget)
         self.overrideFeaturesCheckbox.setEnabled(True)
@@ -60,26 +60,26 @@ class Ui_MainWindow(object):
         self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.label.setWordWrap(True)
         self.label.setObjectName("label")
-        MainWindow.setCentralWidget(self.centralwidget)
+        CatsAndAttribsWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        MainWindow.setTabOrder(self.PopulateFeaturesCheckbox, self.overrideFeaturesCheckbox)
-        MainWindow.setTabOrder(self.overrideFeaturesCheckbox, self.PopulateClassesCheckbox)
-        MainWindow.setTabOrder(self.PopulateClassesCheckbox, self.overrideClassesCheckbox)
-        MainWindow.setTabOrder(self.overrideClassesCheckbox, self.PopulateSlotsCheckbox)
-        MainWindow.setTabOrder(self.PopulateSlotsCheckbox, self.overrideSlotsCheckbox)
-        MainWindow.setTabOrder(self.overrideSlotsCheckbox, self.OKButton)
-        MainWindow.setTabOrder(self.OKButton, self.CancelButton)
+        self.retranslateUi(CatsAndAttribsWindow)
+        QtCore.QMetaObject.connectSlotsByName(CatsAndAttribsWindow)
+        CatsAndAttribsWindow.setTabOrder(self.PopulateFeaturesCheckbox, self.overrideFeaturesCheckbox)
+        CatsAndAttribsWindow.setTabOrder(self.overrideFeaturesCheckbox, self.PopulateClassesCheckbox)
+        CatsAndAttribsWindow.setTabOrder(self.PopulateClassesCheckbox, self.overrideClassesCheckbox)
+        CatsAndAttribsWindow.setTabOrder(self.overrideClassesCheckbox, self.PopulateSlotsCheckbox)
+        CatsAndAttribsWindow.setTabOrder(self.PopulateSlotsCheckbox, self.overrideSlotsCheckbox)
+        CatsAndAttribsWindow.setTabOrder(self.overrideSlotsCheckbox, self.OKButton)
+        CatsAndAttribsWindow.setTabOrder(self.OKButton, self.CancelButton)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, CatsAndAttribsWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.overrideFeaturesCheckbox.setText(_translate("MainWindow", "Overwrite existing inflection feature attributes"))
-        self.PopulateFeaturesCheckbox.setText(_translate("MainWindow", "Populate inflection features as attributes"))
-        self.OKButton.setText(_translate("MainWindow", "OK"))
-        self.CancelButton.setText(_translate("MainWindow", "Cancel"))
-        self.overrideClassesCheckbox.setText(_translate("MainWindow", "Overwrite existing inflection class attributes"))
-        self.PopulateClassesCheckbox.setText(_translate("MainWindow", "Populate inflection classes as attributes"))
-        self.PopulateSlotsCheckbox.setText(_translate("MainWindow", "Populate template slots as attributes"))
-        self.overrideSlotsCheckbox.setText(_translate("MainWindow", "Overwrite existing template slot attributes"))
-        self.label.setText(_translate("MainWindow", "Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten."))
+        self.overrideFeaturesCheckbox.setText(_translate("CatsAndAttribsWindow", "Overwrite existing inflection feature attributes"))
+        self.PopulateFeaturesCheckbox.setText(_translate("CatsAndAttribsWindow", "Populate inflection features as attributes"))
+        self.OKButton.setText(_translate("CatsAndAttribsWindow", "OK"))
+        self.CancelButton.setText(_translate("CatsAndAttribsWindow", "Cancel"))
+        self.overrideClassesCheckbox.setText(_translate("CatsAndAttribsWindow", "Overwrite existing inflection class attributes"))
+        self.PopulateClassesCheckbox.setText(_translate("CatsAndAttribsWindow", "Populate inflection classes as attributes"))
+        self.PopulateSlotsCheckbox.setText(_translate("CatsAndAttribsWindow", "Populate template slots as attributes"))
+        self.overrideSlotsCheckbox.setText(_translate("CatsAndAttribsWindow", "Overwrite existing template slot attributes"))
+        self.label.setText(_translate("CatsAndAttribsWindow", "Source categories and the a_gram_cat attribute are populated automatically. Existing source categories are not overwritten."))

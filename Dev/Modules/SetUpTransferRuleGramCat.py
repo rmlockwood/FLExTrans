@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.13.2 - 5/28/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -68,24 +71,36 @@ from flextoolslib import *
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
+import Mixpanel
 import FTPaths
 import Utils
 import ReadConfig
-from RuleCatsAndAttribs import Ui_MainWindow
+from RuleCatsAndAttribs import Ui_CatsAndAttribsWindow
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'SetUpTransferRuleGramCat'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.' ,
+        FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.') ,
         FTM_Help   : "",
-        FTM_Description: 
-"""
-This module first goes through both the source and target FLEx databases and extracts
+        FTM_Description: _translate("SetUpTransferRuleGramCat", 
+"""This module first goes through both the source and target FLEx databases and extracts
 the grammatical category lists. It will replace what is currently listed for the
 tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
 will be discarded. Also naming conventions will be followed like in the bilingual
@@ -94,9 +109,11 @@ This module will also populate the categories section of the transfer rule file 
 grammatical categories from the source FLEx project. This module will also create
 attributes in the transfer rule file from FLEx inflection features, inflection classes
 and template slots. You can decide which of these are used and whether existing attributes
-should be overwritten.
-"""}
+should be overwritten.""")}
 
+app.quit()
+del app
+                 
 slot2AffixListMap = {}
 GRAM_CAT = 'a_gram_cat'
 
@@ -105,7 +122,7 @@ class Main(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
 
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_CatsAndAttribsWindow()
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -522,7 +539,7 @@ def checkFormat(linesList, report):
             
     if '><def-attr' not in ''.join(linesList):
         
-        report.Error('The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.')
+        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.'))
         return True
     
     return False
@@ -531,22 +548,16 @@ def checkFormat(linesList, report):
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     masterAttribList = {}
     srcPOSmap = {}
     POSmap = {}
     defCatStart = defAttrStart = sectDefAttrEnd = 0
     
-    # Show the window to get the options the user wants
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/RuleCatsAndAttribs_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
     window = Main()
     window.show()
     app.exec_()
@@ -557,7 +568,6 @@ def MainFunction(DB, report, modify=True):
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Open the target database
@@ -601,7 +611,7 @@ def MainFunction(DB, report, modify=True):
     try:
         shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
     except:
-        report.Error('There was a problem finding the transfer rules file. Check your configuration.')
+        report.Error(_translate("SetUpTransferRuleGramCat", 'There was a problem finding the transfer rules file. Check your configuration.'))
         TargetDB.CloseProject()
         return
 
@@ -640,7 +650,7 @@ def MainFunction(DB, report, modify=True):
         remainLines = linesList[sectDefAttrEnd+1:]
         
     except:
-        report.Error('The transfer rules file is malformed.')
+        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is malformed.'))
         TargetDB.CloseProject()
         return 
 
@@ -680,9 +690,9 @@ def MainFunction(DB, report, modify=True):
     
     tr_out_f.close()
     
-    report.Info(str(attrCount) + ' attributes added to the attributes section.')
-    report.Info(str(len(POSmap)) + ' categories created for the a_gram_cat attribute.')
-    report.Info(str(catCount) + ' categories added to the categories section.')
+    report.Info(_translate("SetUpTransferRuleGramCat", '{attrCount} attributes added to the attributes section.').format(attrCount=attrCount))
+    report.Info(_translate("SetUpTransferRuleGramCat", '{num} categories created for the a_gram_cat attribute.').format(num=len(POSmap)))
+    report.Info(_translate("SetUpTransferRuleGramCat", '{catCount} categories added to the categories section.').format(catCount=catCount))
 
 #----------------------------------------------------------------
 # define the FlexToolsModule
