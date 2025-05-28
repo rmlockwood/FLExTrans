@@ -11,7 +11,7 @@
     <message>
         <location filename="../TextInOutUtils.py" line="329"/>
         <source>Run the {wildebeest} cleanup tool</source>
-        <translation>Ejecutar la herramienta de limpieza {wildebeest}</translation>
+        <translation>Ejecutar la herr. de limpieza {wildebeest}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="330"/>

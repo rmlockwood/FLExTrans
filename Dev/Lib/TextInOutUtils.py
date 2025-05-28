@@ -54,7 +54,6 @@ from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 
-from FTPaths import TRANSL_DIR
 from TextInOut import Ui_TextInOutMainWindow
 
 # Define _translate for convenience

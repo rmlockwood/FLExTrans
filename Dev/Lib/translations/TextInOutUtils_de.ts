@@ -6,32 +6,32 @@
     <message>
         <location filename="../TextInOutUtils.py" line="235"/>
         <source>Test stopped on failure of rule: {ruleString}</source>
-        <translation>Prueba detenida debido a un error en la regla: {ruleString}</translation>
+        <translation>Test wegen Regelfehlers abgebrochen: {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="327"/>
-        <source>Run the {wildebeest} cleanup tool</source>
-        <translation>Ejecutar la herramienta de limpieza {wildebeest}</translation>
+            <source>Run the {wildebeest} cleanup tool</source>
+        <translation>Führen Sie das {wildebeest}-Bereinigungstool aus</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="328"/>
         <source>help</source>
-        <translation>ayuda</translation>
+        <translation>Hilfe</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="526"/>
         <source>Test stopped on failure of rule {ruleNumber}: {ruleString}</source>
-        <translation>Prueba detenida debido a un error en la regla {ruleNumber}: {ruleString}</translation>
+        <translation>Test wegen Nichterfüllung der Regel {ruleNumber} abgebrochen: {ruleString}</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="695"/>
         <source>Invalid File</source>
-        <translation>Archivo inválido</translation>
+        <translation>Ungültige Datei</translation>
     </message>
     <message>
         <location filename="../TextInOutUtils.py" line="713"/>
         <source>Invalid Rules File</source>
-        <translation>Archivo de reglas inválido</translation>
+        <translation>Ungültige Regeldatei</translation>
     </message>
 </context>
 </TS>

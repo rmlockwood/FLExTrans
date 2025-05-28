@@ -164,6 +164,13 @@
     <property name="styleSheet">
      <string notr="true">background-color: rgb(225, 255, 255);</string>
     </property>
+    <property name="html">
+     <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
    </widget>
    <widget class="QTextEdit" name="outputText">
     <property name="geometry">
@@ -189,7 +196,7 @@
      <string/>
     </property>
     <property name="html">
-     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+     <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -255,7 +262,7 @@ p, li { white-space: pre-wrap; }
         <string>Check all rules.</string>
        </property>
        <property name="text">
-        <string>☑</string>
+        <string notr="true">☑</string>
        </property>
       </widget>
      </item>
@@ -276,7 +283,7 @@ p, li { white-space: pre-wrap; }
         <string>Uncheck all rules.</string>
        </property>
        <property name="text">
-        <string>☐</string>
+        <string notr="true">☐</string>
        </property>
       </widget>
      </item>
@@ -353,7 +360,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>330</y>
-      <width>70</width>
+      <width>211</width>
       <height>16</height>
      </rect>
     </property>
@@ -371,7 +378,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>10</x>
       <y>450</y>
-      <width>70</width>
+      <width>221</width>
       <height>16</height>
      </rect>
     </property>
@@ -389,7 +396,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>100</x>
       <y>550</y>
-      <width>331</width>
+      <width>431</width>
       <height>20</height>
      </rect>
     </property>
@@ -429,9 +436,9 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>210</x>
       <y>280</y>
-      <width>181</width>
+      <width>241</width>
       <height>17</height>
      </rect>
     </property>
@@ -444,7 +451,7 @@ p, li { white-space: pre-wrap; }
      <string>This tool will run before other rules.</string>
     </property>
     <property name="text">
-     <string>Run the Wildebeest cleanup tool</string>
+     <string notr="true">Run the Wildebeest cleanup tool</string>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget_4">
@@ -577,17 +584,20 @@ p, li { white-space: pre-wrap; }
    <widget class="QLabel" name="WBlinkLabel">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>440</x>
       <y>279</y>
-      <width>81</width>
+      <width>91</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="textFormat">
      <enum>Qt::RichText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
     <property name="openExternalLinks">
      <bool>true</bool>
@@ -599,9 +609,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>250</x>
       <y>298</y>
-      <width>261</width>
+      <width>281</width>
       <height>24</height>
      </rect>
     </property>
@@ -701,9 +711,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QWidget" name="horizontalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>250</x>
       <y>320</y>
-      <width>261</width>
+      <width>281</width>
       <height>24</height>
      </rect>
     </property>
@@ -775,9 +785,9 @@ Separate steps with spaces or commas.</string>
    <widget class="QLabel" name="WBstepsLabel">
     <property name="geometry">
      <rect>
-      <x>229</x>
+      <x>210</x>
       <y>302</y>
-      <width>44</width>
+      <width>36</width>
       <height>31</height>
      </rect>
     </property>
