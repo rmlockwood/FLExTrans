@@ -186,8 +186,7 @@ in Settings to the name of your target project.
 This module builds the bilingual lexicon based on the links from source senses to target senses
 that are in your source project. Use the Sense Linker Module to create these links.
 The bilingual lexicon will be stored in the file specified by the Bilingual Dictionary Output File setting.
-This is typically called bilingual.dix and is usually in the Output folder.
-
+This is typically called bilingual.dix and is usually in the Output folder.\n
 You can make custom changes to the bilingual lexicon by using Replacement Dictionary Editor. See the help
 document for more details.""")}
 
