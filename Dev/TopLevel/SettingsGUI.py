@@ -694,7 +694,7 @@ class Ui_MainWindow(object):
 
         self.applyClose_button = QtWidgets.QPushButton(self.centralwidget)
         self.applyClose_button.setObjectName("applyClose_button")
-        self.applyClose_button.setText(tr("SettingsWindow", "Apply and Close"))
+        self.applyClose_button.setText(tr("SettingsWindow", " Apply and Close "))
         self.gridLayout.addWidget(self.applyClose_button, 2, 4, 1, 1)
 
         self.Close_button = QtWidgets.QPushButton(self.centralwidget)

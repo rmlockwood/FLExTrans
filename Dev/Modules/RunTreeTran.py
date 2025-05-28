@@ -90,7 +90,7 @@ button is used. """)}
 
 app.quit()
 del app
-                 
+
 INVOKER_FILE = 'Invoker.xml'   
 VALID_PARSES_FILE = 'valid_parses_for_tree_tran.xml'
 

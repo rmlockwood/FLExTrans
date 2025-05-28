@@ -24,8 +24,8 @@
         <translation>Anwenden</translation>
     </message>
     <message>
-        <source>Apply and Close</source>
-        <translation>Anwenden und Schließen</translation>
+        <source> Apply and Close </source>
+        <translation> Anwenden und Schließen </translation>
     </message>
     <message>
         <source>Close</source>

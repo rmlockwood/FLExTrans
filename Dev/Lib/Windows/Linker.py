@@ -251,7 +251,7 @@ class Ui_SenseLinkerWindow(object):
         self.searchTargetEdit.setPlaceholderText(_translate("SenseLinkerWindow", "Search here"))
         self.SearchAnythingCheckBox.setText(_translate("SenseLinkerWindow", "Filter on all fields"))
         self.AddEntryButton.setToolTip(_translate("SenseLinkerWindow", "Add a new entry to the target lexicon."))
-        self.AddEntryButton.setText(_translate("SenseLinkerWindow", "Add Entry"))
+        self.AddEntryButton.setText(_translate("SenseLinkerWindow", " Add Entry "))
         self.OKButton.setText(_translate("SenseLinkerWindow", "OK"))
         self.CancelButton.setText(_translate("SenseLinkerWindow", "Cancel"))
         self.ShowOnlyUnlinkedCheckBox.setText(_translate("SenseLinkerWindow", "Show Only Unlinked"))

@@ -87,14 +87,14 @@ luego haga doble clic en la columna &quot;Palabra principal objetivo&quot; para 
         <translation>Agregar una nueva entrada al léxico objetivo.</translation>
     </message>
     <message>
-        <location filename="../Linker.py" line="254"/>
-        <source>Add Entry</source>
-        <translation>Agregar entrada</translation>
-    </message>
-    <message>
         <location filename="../Linker.py" line="265"/>
         <source>Senses to link:</source>
         <translation>Sentidos para vincular:</translation>
+    </message>
+    <message>
+        <location filename="../Linker.py" line="254"/>
+        <source> Add Entry </source>
+        <translation> Agregar entrada </translation>
     </message>
 </context>
 </TS>

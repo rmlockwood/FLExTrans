@@ -158,7 +158,7 @@ then double-click in the Target Head Word column for the desired row to link to 
            <string>Add a new entry to the target lexicon.</string>
           </property>
           <property name="text">
-           <string>Add Entry</string>
+           <string> Add Entry </string>
           </property>
          </widget>
         </item>

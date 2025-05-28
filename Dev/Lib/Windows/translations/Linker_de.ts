@@ -88,8 +88,8 @@ und doppelklicken Sie dann in der Spalte &quot;Ziel-Stichwort&quot; auf die gew�
     </message>
     <message>
         <location filename="../Linker.py" line="254"/>
-        <source>Add Entry</source>
-        <translation>Eintrag hinzufügen</translation>
+        <source> Add Entry </source>
+        <translation> Eintrag hinzufügen </translation>
     </message>
     <message>
         <location filename="../Linker.py" line="265"/>
