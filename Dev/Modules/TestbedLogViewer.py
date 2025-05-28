@@ -49,32 +49,43 @@ from subprocess import call
 from PyQt5 import QtGui, QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QDialogButtonBox, QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication, QDateTime
 
-from SIL.LCModel import *                                                   
- 
+from SIL.LCModel import *   # type: ignore
 from flextoolslib import *                                                 
 
+import Mixpanel
 import FTPaths
 import Utils
 import ReadConfig
 from Testbed import *
-from TestbedLog import Ui_MainWindow
+from TestbedLog import Ui_TestbedLogWindow
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'TestbedLogViewer'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbed', 'TestbedValidator'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Testbed Log Viewer",
         FTM_Version    : "3.13",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "View testbed run results.",
+        FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help   : "", 
-        FTM_Description:  
-"""
-View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.
-""" }
+        FTM_Description: _translate("TestbedLogViewer", 
+"""View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
                  
-#----------------------------------------------------------------
+app.quit()
+del app
 
 GREEN_CHECK =     'Light_green_check.png'        
 RED_X =           'Red_x.png'
@@ -95,14 +106,12 @@ class Stats():
     def getTestElapsedSeconds(self):
         try:
             # Turn the strings into datetime objects
-            startDT = datetime.strptime(self.dateTimeStart, XML_DATETIME_FORMAT)
-            endDT = datetime.strptime(self.dateTimeEnd, XML_DATETIME_FORMAT)
+            startDT = QDateTime.fromString(self.dateTimeStart, XML_DATETIME_FORMAT_QT)
+            endDT = QDateTime.fromString(self.dateTimeEnd, XML_DATETIME_FORMAT_QT)
         except:
             return 0
         
-        elapsedSecs = endDT - startDT
-        
-        return elapsedSecs.seconds
+        return startDT.secsTo(endDT)
         
     def getTestResultSummary(self):
         if self.numFailed > 0:
@@ -112,7 +121,7 @@ class Stats():
         else:
             myColor = AFFIX_COLOR
 
-        myStr = str(self.totalTests) + ' Tests, ' + str(self.numFailed) + ' Failed, ' + str(self.numInvalid) + ' Invalid'
+        myStr = _translate("TestbedLogViewer", '{total} Tests, {failed} Failed, {invalid} Invalid').format(total=self.totalTests, failed=self.numFailed, invalid=self.numInvalid)
 
         p = ET.Element('p')
         outputLUSpan(p, myColor, myStr, False) #rtl
@@ -145,10 +154,10 @@ class BaseTreeItem(object):
         return self.parent
     
     def ColumnCount(self):
-        raise Exception("Column Count Not Specified!!")
+        raise Exception(_translate("TestbedLogViewer", "Column Count Not Specified!!"))
     
     def Data(self, inColumn):
-        raise Exception("Data gather method not implemented!")
+        raise Exception(_translate("TestbedLogViewer", "Data gather method not implemented!"))
     
     def Parent(self):
         return self.parent
@@ -171,11 +180,11 @@ class RootTreeItem(BaseTreeItem):
     def Data(self, inColumn):
         # These become the column headers
         if inColumn == 0:
-            return "Source Lexical Unit(s)"
+            return _translate("TestbedLogViewer", "Source Lexical Unit(s)")
         if inColumn == 1:
-            return "Expected Result"
+            return _translate("TestbedLogViewer", "Expected Result")
         if inColumn == 2:
-            return "Actual Result"
+            return _translate("TestbedLogViewer", "Actual Result")
         return ""
     
 class TestStatsItem(BaseTreeItem):
@@ -183,6 +192,7 @@ class TestStatsItem(BaseTreeItem):
         
         super(TestStatsItem, self).__init__(inParent, rtl)
         self.statsObj = statsObj
+        self.localizedDTformatter = Utils.LocalizedDateTimeFormatter()
         
     def ColumnCount(self):
         return 3
@@ -192,11 +202,11 @@ class TestStatsItem(BaseTreeItem):
         if inColumn == 0:
             
             try:
-                # Reformat the time string
-                startDT = datetime.strptime(self.statsObj.dateTimeStart, XML_DATETIME_FORMAT)
-                retStr = startDT.strftime('%d %b %Y %H:%M:%S')
+                # Reformat the time string according the locale
+                startDT = QDateTime.fromString(self.statsObj.dateTimeStart, XML_DATETIME_FORMAT_QT)
+                retStr = self.localizedDTformatter.formatDateTime(startDT)
             except:
-                retStr = "Date format error."
+                retStr = _translate("TestbedLogViewer", "Date format error.")
             return retStr
         # Results summary
         elif inColumn == 1:
@@ -211,23 +221,15 @@ class TestStatsItem(BaseTreeItem):
         
         # Create the elapsed time tooltip
         total_secs = self.statsObj.getTestElapsedSeconds()
-        
         minutes = total_secs // 60
         sec = total_secs % 60
         
         if minutes == 1:
-            myStr = '1 minute and '
-        elif minutes > 1:
-            myStr = str(minutes) + ' minutes and ' 
+            tipStr = _translate("TestbedLogViewer", 'Test completed in 1 minute and {seconds} seconds').format(seconds=sec)
         else:
-            myStr = ''
-            
-        myStr += str(sec) + ' seconds'
-        
-        tipStr = 'Test completed in ' + myStr
+            tipStr = _translate("TestbedLogViewer", 'Test completed in {minutes} minute and {seconds} seconds').format(seconds=sec, minutes=minutes)
         
         myLabel.setToolTip(tipStr)
-        
         return myLabel
 
 class TestResultItem(BaseTreeItem):
@@ -544,7 +546,7 @@ class LogViewerMain(QMainWindow):
 
     def __init__(self, resultsXMLObj, testbedPath):
         QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_TestbedLogWindow()
         self.ui.setupUi(self)
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
@@ -606,13 +608,17 @@ class LogViewerMain(QMainWindow):
     
 def RunTestbedLogViewer(report):
         
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file 
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     testbedPath = ReadConfig.getConfigVal(configMap, ReadConfig.TESTBED_FILE, report)
@@ -622,7 +628,7 @@ def RunTestbedLogViewer(report):
     
     # We can't do anything if there is no testbed
     if os.path.exists(testbedPath) == False:
-        report.Error(f'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.')
+        report.Error(_translate("TestbedLogViewer", 'Testbed file: {testbedPath} does not exist. Please add tests to the testbed.').format(testbedPath=testbedPath))
         return None
     
     ## Load the testbed results
@@ -633,16 +639,6 @@ def RunTestbedLogViewer(report):
     # Get previous results
     resultsXMLObj = resultsFileObj.getResultsXMLObj()
 
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = 'es'
-    translator = QTranslator()
-
-    if translator.load(FTPaths.TRANSL_DIR+f"/TestbedLog_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
-        
     window = LogViewerMain(resultsXMLObj, testbedPath)
     
     window.show()

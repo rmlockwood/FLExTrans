@@ -55,7 +55,7 @@ import TestbedValidator
 import ReadConfig 
 import Utils
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QDateTime
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -99,6 +99,7 @@ YES = 'yes'
 NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+XML_DATETIME_FORMAT_QT = 'yyyy-MM-dd hh:mm:ss' # Qt format for date time
 
 ## Viewer constants
 # Main color of the headwords
@@ -973,10 +974,10 @@ class TestbedResultXMLObject():
         return False
    
     def endTest(self):
-        self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
+        self.__rootNode.attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
 
     def startTest(self, testbedXMLObj):
-        self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
+        self.__rootNode.attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
         self.__rootNode.attrib[END_DATE_TIME] = ''
         
         # add the <FLExTransTestbed> element below the <testResult> element

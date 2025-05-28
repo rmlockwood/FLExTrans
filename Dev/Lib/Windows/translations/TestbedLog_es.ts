@@ -2,19 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>MainWindow</name>
+    <name>TestbedLogWindow</name>
     <message>
-        <location filename="../TestbedLog.ui" line="54"/>
+        <location filename="../TestbedLog.py" line="77"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../TestbedLog.ui" line="86"/>
+        <location filename="../TestbedLog.py" line="78"/>
         <source>Edit Testbed</source>
         <translation>Editar banco de pruebas</translation>
     </message>
     <message>
-        <location filename="../TestbedLog.ui" line="115"/>
+        <location filename="../TestbedLog.py" line="79"/>
         <source>Font Size:</source>
         <translation>Tamaño de fuente:</translation>
     </message>

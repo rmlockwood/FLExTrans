@@ -11,13 +11,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(900, 546)
-        MainWindow.setWindowTitle("Testbed Log")
-        MainWindow.setDocumentMode(False)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_TestbedLogWindow(object):
+    def setupUi(self, TestbedLogWindow):
+        TestbedLogWindow.setObjectName("TestbedLogWindow")
+        TestbedLogWindow.resize(900, 546)
+        TestbedLogWindow.setWindowTitle("Testbed Log")
+        TestbedLogWindow.setDocumentMode(False)
+        self.centralwidget = QtWidgets.QWidget(TestbedLogWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -67,13 +67,13 @@ class Ui_MainWindow(object):
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem3)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        MainWindow.setCentralWidget(self.centralwidget)
+        TestbedLogWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(TestbedLogWindow)
+        QtCore.QMetaObject.connectSlotsByName(TestbedLogWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, TestbedLogWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.OKButton.setText(_translate("MainWindow", "OK"))
-        self.editTestbedButton.setText(_translate("MainWindow", "Edit Testbed"))
-        self.ZoomLabel.setText(_translate("MainWindow", "Font Size:"))
+        self.OKButton.setText(_translate("TestbedLogWindow", "OK"))
+        self.editTestbedButton.setText(_translate("TestbedLogWindow", "Edit Testbed"))
+        self.ZoomLabel.setText(_translate("TestbedLogWindow", "Font Size:"))

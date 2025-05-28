@@ -248,8 +248,7 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
-from PyQt5.QtCore import QCoreApplication, QTranslator
-from PyQt5.QtCore import QLibraryInfo
+from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale, QDateTime
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -1399,3 +1398,28 @@ def loadTranslations(libList, translatorsList, loadBase=False):
 
             QCoreApplication.installTranslator(translator)
             translatorsList.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
+
+class LocalizedDateTimeFormatter:
+
+    def __init__(self):
+        self.localeCache = {}
+    
+    def getLocale(self, langCode):
+        """Get QLocale object for language code with caching"""
+
+        if langCode not in self.localeCache:
+
+            localeMap = {
+                'de': QLocale(QLocale.German, QLocale.Germany),
+                'es': QLocale(QLocale.Spanish, QLocale.Spain),
+                'en': QLocale(QLocale.English, QLocale.UnitedStates),
+            }
+            self.localeCache[langCode] = localeMap.get(langCode, QLocale())
+        
+        return self.localeCache[langCode]
+    
+    def formatDateTime(self, datetimeObj, formatType="d MMM yyyy hh:mm:ss"):
+        """Format datetime according to language locale"""
+
+        locale = self.getLocale(getInterfaceLangCode())
+        return locale.toString(datetimeObj, formatType)
