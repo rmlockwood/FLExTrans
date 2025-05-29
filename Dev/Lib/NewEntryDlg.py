@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.3 - 5/15/25 - Ron Lockwood
 #    Fixes crash when no cluster projects are defined in the settings file and you
 #    attempt to add a new entry.
@@ -31,6 +34,7 @@ import os
 
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
+from PyQt5.QtCore import QCoreApplication
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
@@ -53,6 +57,9 @@ NEW_ENTRY_SETTINGS_FILE = 'NewEntrySettings.json'
 MORPHEME_TYPE = 'morphemeType'
 GRAMM_CAT = 'grammaticalCategory'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 class NewEntryDlg(QDialog):
 
@@ -79,15 +86,15 @@ class NewEntryDlg(QDialog):
         self.ui.OKButton.clicked.connect(self.OKClicked)
         self.ui.CancelButton.clicked.connect(self.CancelClicked)
 
-        header1TextStr = "Target FLEx project name"
-        header2TextStr = "Lexeme Form"
+        header1TextStr = _translate("NewEntryDlg", "Target FLEx project name")
+        header2TextStr = _translate("NewEntryDlg", "Lexeme Form")
 
         # Set the top two widgets that need to be disabled
         self.topWidget1 = self.ui.lexemeFormEdit
         self.topWidget2 = self.ui.label
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, 130)
+        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=None, originalWinHeight=self.height())
 
         # Load saved settings
         try:
@@ -186,7 +193,7 @@ class NewEntryDlg(QDialog):
         # Give an error if they didn't give a gloss
         if not self.ui.glossEdit.text():
 
-            QMessageBox.warning(self, 'Error Check', "You must enter a Gloss.")
+            QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter a Gloss."))
         
             self.retVal = False
             return
@@ -207,8 +214,8 @@ class NewEntryDlg(QDialog):
             # Give an error if they didn't choose the default target proj
             if self.TargetDB.ProjectName() not in self.ui.clusterProjectsComboBox.currentData():
 
-                QMessageBox.warning(self, 'Cluster Project Selection Error', \
-                f"You must at least select the default target project, {self.TargetDB.ProjectName()}, among your cluster projects.")
+                QMessageBox.warning(self, _translate("NewEntryDlg", 'Cluster Project Selection Error'), \
+                _translate("NewEntryDlg", "You must at least select the default target project, {proj}, among your cluster projects.").format(proj=self.TargetDB.ProjectName()))
             
                 self.retVal = False
                 return
@@ -220,7 +227,7 @@ class NewEntryDlg(QDialog):
 
                 if not self.keyWidgetList[i].text():
 
-                    QMessageBox.warning(self, 'Error Check', "You must enter all the Lexeme Forms.")
+                    QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter all the Lexeme Forms."))
                 
                     self.retVal = False
                     return
@@ -240,7 +247,7 @@ class NewEntryDlg(QDialog):
 
                     if not myTargetDB:
 
-                        QMessageBox.warning(self, 'Not Found Error', "Failed to open the project: " + proj)
+                        QMessageBox.warning(self, _translate("NewEntryDlg", 'Not Found Error'), _translate("NewEntryDlg", "Failed to open the project: {proj}").format(proj=proj))
                         self.unsetCursor()
                         self.retVal = False
                         return
@@ -261,7 +268,7 @@ class NewEntryDlg(QDialog):
             # Give an error if they didn't give a lexeme form
             if not lexemeFormStr:
 
-                QMessageBox.warning(self, 'Error Check', "You must enter a Lexeme Form.")
+                QMessageBox.warning(self, _translate("NewEntryDlg", 'Error Check'), _translate("NewEntryDlg", "You must enter a Lexeme Form."))
             
                 self.retVal = False
                 return

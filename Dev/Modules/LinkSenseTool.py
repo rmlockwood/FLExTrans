@@ -218,7 +218,7 @@ app = QApplication([])
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntry', 'ExtractBilingualLexicon', 'TextClasses', 'InterlinData'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDlg', 'NewEntry', 'ExtractBilingualLexicon', 'TextClasses', 'InterlinData'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
