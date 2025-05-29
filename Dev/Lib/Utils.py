@@ -248,7 +248,7 @@ import unicodedata
 import itertools
 from collections import defaultdict
 
-from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale, QDateTime
+from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo, QLocale
 
 from System import Guid   # type: ignore
 from System import String # type: ignore
