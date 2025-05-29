@@ -2,39 +2,34 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>MainWindow</name>
+    <name>SrcTgtWindow</name>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="51"/>
+        <location filename="../SrcTgtViewer.py" line="148"/>
         <source>Font</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="83"/>
+        <location filename="../SrcTgtViewer.py" line="149"/>
         <source>Source</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="99"/>
+        <location filename="../SrcTgtViewer.py" line="150"/>
         <source>Target</source>
         <translation>Objetivo</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="146"/>
+        <location filename="../SrcTgtViewer.py" line="151"/>
         <source>Right to Left</source>
         <translation>De derecha a izquierda</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="159"/>
+        <location filename="../SrcTgtViewer.py" line="152"/>
         <source>Zoom:</source>
         <translation>Zoom:</translation>
     </message>
     <message>
-        <location filename="../SrcTgtViewer.ui" line="201"/>
-        <source>&lt;a href=&quot;file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html&quot;&gt;Open in Browser&lt;/a&gt;</source>
-        <translation>&lt;a href=&quot;file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html&quot;&gt;Abrir en el navegador&lt;/a&gt;</translation>
-    </message>
-    <message>
-        <location filename="../SrcTgtViewer.ui" line="223"/>
+        <location filename="../SrcTgtViewer.py" line="153"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>

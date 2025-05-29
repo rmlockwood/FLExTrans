@@ -11,12 +11,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(891, 670)
-        MainWindow.setWindowTitle("Source/Target Viewer")
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+class Ui_SrcTgtWindow(object):
+    def setupUi(self, SrcTgtWindow):
+        SrcTgtWindow.setObjectName("SrcTgtWindow")
+        SrcTgtWindow.resize(891, 670)
+        SrcTgtWindow.setWindowTitle("Source/Target Viewer")
+        self.centralwidget = QtWidgets.QWidget(SrcTgtWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
@@ -28,6 +28,11 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.largeTextEdit.setFont(font)
         self.largeTextEdit.setReadOnly(True)
+        self.largeTextEdit.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Arial\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>")
         self.largeTextEdit.setObjectName("largeTextEdit")
         self.verticalLayout_2.addWidget(self.largeTextEdit)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -47,6 +52,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.FontNameLabel.sizePolicy().hasHeightForWidth())
         self.FontNameLabel.setSizePolicy(sizePolicy)
         self.FontNameLabel.setMinimumSize(QtCore.QSize(100, 0))
+        self.FontNameLabel.setText("Arial")
         self.FontNameLabel.setObjectName("FontNameLabel")
         self.horizontalLayout.addWidget(self.FontNameLabel)
         self.SourceRadio = QtWidgets.QRadioButton(self.centralwidget)
@@ -70,12 +76,15 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName("verticalLayout")
         self.targetRadio1 = QtWidgets.QRadioButton(self.centralwidget)
+        self.targetRadio1.setText("1")
         self.targetRadio1.setObjectName("targetRadio1")
         self.verticalLayout.addWidget(self.targetRadio1)
         self.targetRadio2 = QtWidgets.QRadioButton(self.centralwidget)
+        self.targetRadio2.setText("2")
         self.targetRadio2.setObjectName("targetRadio2")
         self.verticalLayout.addWidget(self.targetRadio2)
         self.targetRadio3 = QtWidgets.QRadioButton(self.centralwidget)
+        self.targetRadio3.setText("3")
         self.targetRadio3.setObjectName("targetRadio3")
         self.verticalLayout.addWidget(self.targetRadio3)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -99,10 +108,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.ZoomLabel)
         self.ZoomIncrease = QtWidgets.QPushButton(self.centralwidget)
         self.ZoomIncrease.setMaximumSize(QtCore.QSize(20, 16777215))
+        self.ZoomIncrease.setText("+")
         self.ZoomIncrease.setObjectName("ZoomIncrease")
         self.horizontalLayout.addWidget(self.ZoomIncrease)
         self.ZoomDecrease = QtWidgets.QPushButton(self.centralwidget)
         self.ZoomDecrease.setMaximumSize(QtCore.QSize(20, 16777215))
+        self.ZoomDecrease.setText("–")
         self.ZoomDecrease.setObjectName("ZoomDecrease")
         self.horizontalLayout.addWidget(self.ZoomDecrease)
         self.linkLabel = QtWidgets.QLabel(self.centralwidget)
@@ -111,6 +122,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.linkLabel.sizePolicy().hasHeightForWidth())
         self.linkLabel.setSizePolicy(sizePolicy)
+        self.linkLabel.setText("<a href=\"file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html\">Open in Browser</a>")
         self.linkLabel.setTextFormat(QtCore.Qt.RichText)
         self.linkLabel.setOpenExternalLinks(True)
         self.linkLabel.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
@@ -126,23 +138,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.OKButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.gridLayout.addLayout(self.verticalLayout_2, 0, 0, 1, 1)
-        MainWindow.setCentralWidget(self.centralwidget)
+        SrcTgtWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.retranslateUi(SrcTgtWindow)
+        QtCore.QMetaObject.connectSlotsByName(SrcTgtWindow)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, SrcTgtWindow):
         _translate = QtCore.QCoreApplication.translate
-        self.FontButton.setText(_translate("MainWindow", "Font"))
-        self.FontNameLabel.setText(_translate("MainWindow", "Arial"))
-        self.SourceRadio.setText(_translate("MainWindow", "Source"))
-        self.TargetRadio.setText(_translate("MainWindow", "Target"))
-        self.targetRadio1.setText(_translate("MainWindow", "1"))
-        self.targetRadio2.setText(_translate("MainWindow", "2"))
-        self.targetRadio3.setText(_translate("MainWindow", "3"))
-        self.RTL.setText(_translate("MainWindow", "Right to Left"))
-        self.ZoomLabel.setText(_translate("MainWindow", "Zoom:"))
-        self.ZoomIncrease.setText(_translate("MainWindow", "+"))
-        self.ZoomDecrease.setText(_translate("MainWindow", "–"))
-        self.linkLabel.setText(_translate("MainWindow", "<a href=\"file:///C:/Users/Ron/AppData/Local/Temp/FlexTransFileViewer.html\">Open in Browser</a>"))
-        self.OKButton.setText(_translate("MainWindow", "OK"))
+        self.FontButton.setText(_translate("SrcTgtWindow", "Font"))
+        self.SourceRadio.setText(_translate("SrcTgtWindow", "Source"))
+        self.TargetRadio.setText(_translate("SrcTgtWindow", "Target"))
+        self.RTL.setText(_translate("SrcTgtWindow", "Right to Left"))
+        self.ZoomLabel.setText(_translate("SrcTgtWindow", "Zoom:"))
+        self.OKButton.setText(_translate("SrcTgtWindow", "OK"))
