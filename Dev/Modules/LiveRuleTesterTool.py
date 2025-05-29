@@ -231,7 +231,7 @@ import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 import TestbedLogViewer
 
-from LiveRuleTester import Ui_MainWindow
+from LiveRuleTester import Ui_LRTWindow
 import FTPaths
 
 # Define _translate for convenience
@@ -349,7 +349,7 @@ class Main(QMainWindow):
 
     def __init__(self, sentence_list, biling_file, sourceText, DB, configMap, report, sourceTextList, ruleCount=None, sentPunc=''):
         QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_LRTWindow()
         self.ui.setupUi(self)
 
         self.__biling_file = biling_file
