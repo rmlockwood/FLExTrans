@@ -82,7 +82,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",

@@ -62,7 +62,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "End Testbed",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("EndTestbed", "Conclude a testbed log result."),
         FTM_Help   : "",

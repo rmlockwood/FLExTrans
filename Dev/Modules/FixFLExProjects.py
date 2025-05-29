@@ -64,7 +64,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation for the user:
 docs = {FTM_Name       : "Fix FLEx Projects",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,

@@ -53,7 +53,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),    
         FTM_Help   : "",

@@ -55,7 +55,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Restore Multiple FLEx Projects",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
         FTM_Help       :"",

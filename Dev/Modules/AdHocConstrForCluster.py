@@ -96,7 +96,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),    
         FTM_Help   : "",

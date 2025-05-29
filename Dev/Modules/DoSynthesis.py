@@ -60,7 +60,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoSynthesis", "Synthesizes the target text with either STAMP or HermitCrab."),
         FTM_Help       :"",

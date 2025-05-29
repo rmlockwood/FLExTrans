@@ -113,7 +113,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Export FLExTrans Draft to Paratext",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExportToParatext", "Export the draft that has been translated with FLExTrans to Paratext."),
         FTM_Help       : "",

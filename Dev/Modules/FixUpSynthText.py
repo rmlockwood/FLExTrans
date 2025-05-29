@@ -65,7 +65,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",

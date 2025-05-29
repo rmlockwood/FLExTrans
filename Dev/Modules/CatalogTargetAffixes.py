@@ -85,7 +85,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.13.2",        
+        FTM_Version    : "3.14",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target database."),
         FTM_Help  : "",

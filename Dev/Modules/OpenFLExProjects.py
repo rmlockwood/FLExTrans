@@ -53,7 +53,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Open Multiple FLEx Projects",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",

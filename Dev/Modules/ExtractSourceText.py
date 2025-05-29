@@ -92,7 +92,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'Text
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.13.3",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB: False,
         FTM_Synopsis   : _translate("ExtractSourceText", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help : '',

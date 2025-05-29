@@ -91,7 +91,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),    
         FTM_Help   : "",

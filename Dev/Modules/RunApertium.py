@@ -91,7 +91,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.13.3",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help  : "",  

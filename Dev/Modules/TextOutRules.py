@@ -63,7 +63,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",

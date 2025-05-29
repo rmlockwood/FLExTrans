@@ -74,7 +74,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
         FTM_Help  : "",  

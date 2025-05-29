@@ -154,7 +154,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.""")
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.13.4",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       :"",

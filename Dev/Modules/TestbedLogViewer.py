@@ -77,7 +77,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
         FTM_Help   : "", 

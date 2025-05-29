@@ -175,7 +175,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.13.3",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
