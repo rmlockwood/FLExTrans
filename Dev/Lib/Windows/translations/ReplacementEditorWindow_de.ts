@@ -2,59 +2,59 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>MainWindow</name>
+    <name>ReplacementEditorWindow</name>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="24"/>
+        <location filename="../ReplacementEditorWindow.py" line="110"/>
         <source>Source Lemma</source>
         <translation>Quelllemma</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="49"/>
+        <location filename="../ReplacementEditorWindow.py" line="118"/>
         <source>Target Lemma</source>
         <translation>Ziellemma</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="54"/>
+        <location filename="../ReplacementEditorWindow.py" line="120"/>
         <source>Gramm. Cat.</source>
         <translation>Gramm. Kat.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="59"/>
+        <location filename="../ReplacementEditorWindow.py" line="122"/>
         <source>Features/Classes</source>
         <translation>Merkmale/Klassen</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="64"/>
+        <location filename="../ReplacementEditorWindow.py" line="124"/>
         <source>Affixes</source>
         <translation>Affixe</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="69"/>
+        <location filename="../ReplacementEditorWindow.py" line="126"/>
         <source>Comment</source>
         <translation>Kommentar</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="77"/>
+        <location filename="../ReplacementEditorWindow.py" line="127"/>
         <source>Separate multiple features/classes and/or affixes with a period. For example f.sg for femine singular.</source>
         <translation>Trennen Sie mehrere Merkmale/Klassen und/oder Affixe mit einem Punkt. Zum Beispiel f.sg für feminin Singular.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="92"/>
+        <location filename="../ReplacementEditorWindow.py" line="128"/>
         <source>Add Row</source>
         <translation>Zeile hinzufügen</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="105"/>
+        <location filename="../ReplacementEditorWindow.py" line="129"/>
         <source>Delete Selected Rows</source>
         <translation>Ausgewählte Zeilen löschen</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="118"/>
+        <location filename="../ReplacementEditorWindow.py" line="130"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditorWindow.ui" line="131"/>
+        <location filename="../ReplacementEditorWindow.py" line="131"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>

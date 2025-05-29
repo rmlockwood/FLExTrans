@@ -56,7 +56,7 @@ import FTPaths
 import Mixpanel
 import Utils
 
-from ReplacementEditorWindow import Ui_MainWindow
+from ReplacementEditorWindow import Ui_ReplacementEditorWindow
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -387,7 +387,7 @@ class Main(QMainWindow):
         self.report = report
 
         self.unsaved = False
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_ReplacementEditorWindow()
         self.ui.setupUi(self)
         self.setWindowIcon()
         self.rows = []
