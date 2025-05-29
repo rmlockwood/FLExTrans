@@ -15,7 +15,6 @@
 #
 #   Version 3.8 - 4/20/23 - Ron Lockwood
 #    Settings are now launched from the menu
-import sys
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
@@ -32,26 +31,31 @@ import SettingsGUI
 from FTPaths import HELP_DIR, TRANSL_DIR
 import Version
 import ReadConfig
-
-# Define _translate for convenience
-_translate = QCoreApplication.translate
+import Utils
 
 def RunSettings(sender, event):
 
     SettingsGUI.MainFunction(None, None)
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'FLExTransMenu'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig'] 
 
 def RunEditTransferRules(sender, event):
 
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = ReadConfig.getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=False)
     
     configMap = ReadConfig.readConfig(None)
 
@@ -82,15 +86,10 @@ def RunHelp(sender, event):
 
 def RunAbout(sender, event):
 
-    app = QApplication(sys.argv)
-
-    # Load translations
-    langCode = ReadConfig.getInterfaceLangCode()
-    translator = QTranslator()
-
-    if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
-
-        QCoreApplication.installTranslator(translator)
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=False)
     
     MessageBox.Show(
         _translate("FLExTransMenu", "{name} version {version}\n\nsoftware.sil.org/flextrans").format(name=Version.Name, version=Version.Version),
@@ -99,16 +98,6 @@ def RunAbout(sender, event):
 
     app.quit()
     del app
-
-app = QApplication(sys.argv)
-
-# Load translations
-langCode = ReadConfig.getInterfaceLangCode()
-translator = QTranslator()
-
-if translator.load(TRANSL_DIR+f"/FLExTransMenu_{langCode}.qm"):
-    
-    QCoreApplication.installTranslator(translator)
 
 customMenu = (
     "FLExTrans",
@@ -122,3 +111,4 @@ customMenu = (
 
 app.quit()
 del app
+
