@@ -903,7 +903,7 @@ class Main(QMainWindow):
         tv.setGeometry(tv.x()-1,tv.y()-1,tv.width(),tv.height()-1)
 
     def FontClicked(self):
-        (font, ret) = QFontDialog.getFont()
+        (font, ret) = QFontDialog.getFont(self.__model.getFont(), parent=self)
         if ret:
             myFont = self.__model.getFont()
             myFont.setFamily(font.family())
