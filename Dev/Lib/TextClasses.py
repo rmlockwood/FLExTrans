@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.3 - 4/15/25 - Ron Lockwood
 #    Fixes #964. Get the free translation for each segment.
 #

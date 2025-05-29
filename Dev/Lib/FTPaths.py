@@ -3,6 +3,9 @@
 #
 #   Define all the paths used by FlexTrans in one place. 
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.11.2 - 6/3/24 - Ron Lockwood
 #    RA folder and exe names now have no spaces.
 #

@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.2 - 4/22/25 - Ron Lockwood
 #    Fixes #967. Handle \xt until \xt*. Sometimes \xt gets terminated with \x* and sometimes with \xt*.
 #

@@ -5,6 +5,9 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.5 - 5/8/25 - Ron Lockwood
 #    Added parameter to check for valid characters function for error message.
 #

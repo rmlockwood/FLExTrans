@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -19,10 +22,15 @@ from PyQt5.QtWidgets import QLabel, QComboBox
 IMP_EXP_WINDOW_HEIGHT = 260
 IMP_EXP_WINDOW_WIDTH = 626
 
-def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, width, specialProcessFunc=None):
+def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, originalWinHeight=0):
 
     self.originalOKyPos = self.ui.OKButton.y()
-    self.originalMainWinHeight = IMP_EXP_WINDOW_HEIGHT
+
+    if originalWinHeight > 0:
+        self.originalMainWinHeight = originalWinHeight  
+    else:
+        self.originalMainWinHeight = IMP_EXP_WINDOW_HEIGHT
+
     self.widgetList = []
     self.keyWidgetList = []
 
@@ -39,7 +47,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         
         # Create the combo box
         keyWidget = widgetClass(parentWin) 
-        keyWidget.setGeometry(QtCore.QRect(210, 190, width, 22))
+        keyWidget.setGeometry(QtCore.QRect(210, 190, comboWidth, 22))
         keyWidget.setObjectName(f"combo{x}")
         keyWidget.setVisible(False)
 
