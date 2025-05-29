@@ -144,6 +144,7 @@ from flexlibs import FLExProject
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
 
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
@@ -1481,7 +1482,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     convertToSynthesizerFormat(DB, configMap, report)

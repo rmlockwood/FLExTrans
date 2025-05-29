@@ -21,11 +21,13 @@
 #
 #   Usage statistics logging with the online service Mixpanel
 #
-import ReadConfig
 import functools
+import mixpanel
 
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QMessageBox, QApplication
+
+import ReadConfig
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -88,7 +90,6 @@ def LogModuleStarted(configMap, report, module_name, module_version):
         if userid is None:
             return
 
-        import mixpanel
         mp = mixpanel.Mixpanel(TOKEN)
 
         import Version

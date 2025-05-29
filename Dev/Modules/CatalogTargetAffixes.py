@@ -64,6 +64,7 @@ from SIL.LCModel import * # type: ignore
 from flextoolslib import *
 from flexlibs import FLExProject
 
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
@@ -291,7 +292,6 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Build an output path using the system temp directory.

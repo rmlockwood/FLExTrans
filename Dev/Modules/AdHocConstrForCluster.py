@@ -72,6 +72,7 @@ from PyQt5.QtCore import QCoreApplication, QTranslator
 
 from fuzzywuzzy import fuzz
 
+import Mixpanel
 import FTPaths
 from ClusterAdHoc import Ui_AdHocMainWindow
 from ComboBox import CheckableComboBox
@@ -894,7 +895,6 @@ def MainFunction(DB, report, modify=True):
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the cluster projects

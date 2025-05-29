@@ -34,6 +34,7 @@
 
 from flextoolslib import *                                                 
 
+import Mixpanel
 import ReadConfig
 import Utils
 import DoHermitCrabSynthesis
@@ -100,14 +101,12 @@ def MainFunction(DB, report, modifyAllowed):
     if hermitCrabSynthesisYesNo == 'y':
 
         # Log the start of this module on the analytics server if the user allows logging.
-        import Mixpanel
         Mixpanel.LogModuleStarted(configMap, report, DoHermitCrabSynthesis.docs[FTM_Name], DoHermitCrabSynthesis.docs[FTM_Version])
 
         report.Info(_translate("DoSynthesis", "Using HermitCrab for synthesis."))
         DoHermitCrabSynthesis.doHermitCrab(DB, report, configMap)
     else:
         # Log the start of this module on the analytics server if the user allows logging.
-        import Mixpanel
         Mixpanel.LogModuleStarted(configMap, report, DoStampSynthesis.docs[FTM_Name], DoStampSynthesis.docs[FTM_Version])
 
         report.Info(_translate("DoSynthesis", "Using STAMP for synthesis."))

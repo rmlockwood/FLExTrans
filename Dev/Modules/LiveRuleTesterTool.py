@@ -218,6 +218,7 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip
 
+import Mixpanel
 import InterlinData
 import TextInOutUtils
 from Testbed import *
@@ -2693,7 +2694,6 @@ def MainFunction(DB, report, modify=False, ruleCount=None):
         if not loggedStart:
 
             # Log the start of this module on the analytics server if the user allows logging.
-            import Mixpanel
             Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
             loggedStart = True
 

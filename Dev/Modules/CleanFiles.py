@@ -53,6 +53,7 @@ from flextoolslib import *
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
 
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
@@ -92,7 +93,6 @@ def MainFunction(DB, report, modify=True):
         return
 
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report, giveError=False)
