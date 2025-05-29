@@ -185,7 +185,7 @@ class Main(QMainWindow):
         self.close()
 
     def FontClicked(self):
-        (font, ret) = QFontDialog.getFont(self.ui.largeTextEdit.font())
+        (font, ret) = QFontDialog.getFont(self.ui.largeTextEdit.font(), parent=self)
         if ret:
             self.font_family = str(font.family())
             self.ui.FontNameLabel.setText(font.family())
