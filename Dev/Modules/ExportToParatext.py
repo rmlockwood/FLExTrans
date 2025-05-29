@@ -182,17 +182,19 @@ def parseSourceTextName(report, sourceText, infoMap):
     # Check first if this is an abbreviation that is in the book map
     if book.upper() not in ChapterSelection.bookMap:
         
-        # Now check if this is a full book name that is in the values part of the map (e.g. 'Genesis')
-        if book not in ChapterSelection.bookMap.values():
+        # If it is not an abbreviation, then we need to find the abbreviation
+        for key, val in ChapterSelection.bookMap.items():
+            
+            if book == val:
+                bookAbbrev = key
+                break
+        
+        # If we didn't find it (bookAbbrev didn't change), then the book is not valid
+        if bookAbbrev == book:
+            
             report.Error(_translate("ExportToParatext", 'The book name or abbreviation {book} is invalid. It should match a Paratext book.').format(book=book))
             return False
-        else:
-            for key, val in ChapterSelection.bookMap.items():
-                
-                if book == val:
-                    bookAbbrev = key
-                    break
-    
+        
     if re.search('-', chapters):
         
         bList = chapters.split('-')
