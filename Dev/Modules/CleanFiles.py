@@ -7,7 +7,7 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
-#   Version 3.13.1 - 5/9/25 - Ron Lockwood
+#   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
 #   Version 3.13 - 3/10/25 - Ron Lockwood
