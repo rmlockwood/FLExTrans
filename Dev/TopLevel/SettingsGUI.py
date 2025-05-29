@@ -109,7 +109,6 @@
 #
 
 import os
-import sys
 import json
 
 from System import Guid # type: ignore
@@ -117,27 +116,27 @@ from System import String # type: ignore
 
 from System.Windows.Forms import (MessageBox, MessageBoxButtons) # type: ignore
 
-from flextoolslib import FlexToolsModuleClass
-from flextoolslib import *
-
-from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QFileDialog
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication, QTranslator, QLibraryInfo
 from PyQt5.QtGui import QIcon
 
-from ComboBox import CheckableComboBox
+from flextoolslib import FlexToolsModuleClass
+from flextoolslib import *
 from flexlibs import FLExProject, AllProjectNames
+from SIL.LCModel import IMoMorphType, ICmObjectRepository, ICmPossibility # type: ignore
 
+from ComboBox import CheckableComboBox
 import Utils
 import ReadConfig
 import FTPaths
 
-# libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils'] 
+# Define _translate for convenience
+tr = QCoreApplication.translate
+TRANSL_TS_NAME = 'SettingsWindow'
 
-tr = QtCore.QCoreApplication.translate
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'SettingsGUI'] 
 
 # ----------------------------------------------------------------
 # This won't be seen anymore by the user since it gets launced from the menu
@@ -583,8 +582,10 @@ def doBrowse(wind, myWidgInfo):
         
         startDir = ""
 
-    # TODO: bring up language specific file dialog               
-    filename, _ = QFileDialog.getOpenFileName(wind, "Select file", startDir, "(*.*)")
+    # This will bring up the native file dialog for Windows using the current Windows locale.
+    # We could use options=QFileDialog.DontUseNativeDialog as an additional parameter to force it to be in the selected UI language, 
+    # but this QT dialog would look unfamiliar to the user. Chances are that the user is using the same language as the OS, so we don't need to force it.
+    filename, _ = QFileDialog.getOpenFileName(wind, tr("SettingsWindow", "Basic"), startDir, "(*.*)")
     
     if filename:
         
@@ -599,7 +600,9 @@ def doFolderBrowse(wind, myWidgInfo):
         
         startDir = ""
                    
-    # TODO: bring up language specific file dialog               
+    # As above, this will bring up the native file dialog for Windows using the current Windows locale.
+    # We could use options=QFileDialog.DontUseNativeDialog to force it to be in the selected UI language, 
+    # but this QT dialog would look unfamiliar to the user. Chances are that the user is using the same language as the OS, so we don't need to force it.
     dirName = QFileDialog.getExistingDirectory(wind, "Select Folder", startDir, options=QFileDialog.ShowDirsOnly)
     
     if dirName:
@@ -1347,7 +1350,7 @@ def MainFunction(DB, report, modify=True):
     
     translators = []
     app = QApplication([])
-    Utils.loadTranslations(librariesToTranslate + ['SettingsGUI'], 
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
     window = Main(configMap, TargetDB, sourceDB)
@@ -1376,7 +1379,8 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
 translators = []
 app = QApplication([])
 
-Utils.loadTranslations(['SettingsGUI'], translators)
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 #### Instructions for adding a new setting ####
 #
