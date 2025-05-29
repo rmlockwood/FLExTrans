@@ -71,15 +71,16 @@ import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'CatalogTargetAffixes'
 
-librariesToTranslate = ['ReadConfig', 'Utils'] 
+translators = []
+app = QApplication([])
 
-app = QApplication(sys.argv)
-translatorForGlobals = QTranslator()
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
-if translatorForGlobals.load(f"CatalogTargetAffixes_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-    QCoreApplication.installTranslator(translatorForGlobals)
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -272,19 +273,9 @@ def catalog_affixes(DB, configMap, filePath, report=None, useCacheIfAvailable=Fa
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-
-    # Show the window
-    app = QApplication(sys.argv)
-
-    # Load translations (libraries, for the windows and this file.)
-    for lib in librariesToTranslate + ['CatalogTargetAffixes']:
-
-        translator = QTranslator()
-
-        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-            QCoreApplication.installTranslator(translator)
-            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -310,8 +301,7 @@ def MainFunction(DB, report, modifyAllowed):
     # output info, warnings, errors and url links
     Utils.processErrorList(error_list, report)
 
-    app.quit()
-    del app
+
                  
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

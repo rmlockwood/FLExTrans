@@ -175,8 +175,7 @@ def MainFunction(DB, report, modifyAllowed):
         _translate("StartTestbed", "{count} tests prepared for testing.").format(count=count)
     )
 
-    app.quit()
-    del app
+
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

@@ -76,8 +76,7 @@ def RunEditTransferRules(sender, event):
     xxe = progFilesFolder + "\\XMLmind_XML_Editor\\bin\\xxe.exe"
     call([xxe, xferRulesFile])
 
-    app.quit()
-    del app
+
 
 def RunHelp(sender, event):
 
@@ -96,8 +95,7 @@ def RunAbout(sender, event):
         _translate("FLExTransMenu", "About FLExTrans"),
         MessageBoxButtons.OK)
 
-    app.quit()
-    del app
+
 
 customMenu = (
     "FLExTrans",

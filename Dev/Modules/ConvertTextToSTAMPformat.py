@@ -151,15 +151,16 @@ import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ConvertTextToSTAMPformat'
 
-librariesToTranslate = ['ReadConfig', 'Utils'] 
-
+translators = []
 app = QApplication([])
-translatorForGlobals = QTranslator()
 
-if translatorForGlobals.load(f"ConvertTextToSTAMPformat_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
-    QCoreApplication.installTranslator(translatorForGlobals)
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -1462,19 +1463,9 @@ def convertToSynthesizerFormat(DB, configMap, report):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-
-    # Show the window
     app = QApplication([])
-
-    # Load translations (libraries, for the windows and this file.)
-    for lib in librariesToTranslate + ['ConvertTextToSTAMPformat']:
-
-        translator = QTranslator()
-
-        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-            QCoreApplication.installTranslator(translator)
-            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -1486,8 +1477,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     convertToSynthesizerFormat(DB, configMap, report)
 
-    app.quit()
-    del app
+
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

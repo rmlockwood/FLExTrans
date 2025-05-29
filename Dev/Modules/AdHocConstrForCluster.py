@@ -82,15 +82,16 @@ import Utils
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'AdHocConstrForCluster'
 
-librariesToTranslate = ['ReadConfig', 'Utils'] 
+translators = []
+app = QApplication([])
 
-app = QApplication(sys.argv)
-translatorForGlobals = QTranslator()
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
-if translatorForGlobals.load(f"AdHocConstrForCluster_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-    QCoreApplication.installTranslator(translatorForGlobals)
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
@@ -869,25 +870,10 @@ class AdHocMain(QMainWindow):
 def MainFunction(DB, report, modify=True):
     
     translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
-    # Show the window
-    app = QApplication(sys.argv)
-
-    # Load the Qt base translation for standard dialogs
-    qt_translator = QTranslator()
-    qt_translator.load(f"qtbase_{Utils.getInterfaceLangCode()}", QLibraryInfo.location(QLibraryInfo.TranslationsPath))
-    QCoreApplication.installTranslator(qt_translator)
-    translators.append(qt_translator) # Keep this instance around to avoid garbage collection and the object being deleted
-
-    # Load translations (libraries, for the windows and this file.)
-    for lib in librariesToTranslate + ['ClusterAdHoc', 'AdHocConstrForCluster']:
-
-        translator = QTranslator()
-
-        if translator.load(f"{lib}_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
-
-            QCoreApplication.installTranslator(translator)
-            translators.append(translator) # Keep this instance around to avoid garbage collection and the object being deleted
 
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
@@ -912,9 +898,6 @@ def MainFunction(DB, report, modify=True):
     window.show()
     app.exec_()
     
-    app.quit()
-    del app
-
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 FlexToolsModule = FlexToolsModuleClass(runFunction = MainFunction,

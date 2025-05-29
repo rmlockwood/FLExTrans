@@ -118,8 +118,7 @@ def MainFunction(DB, report, modifyAllowed):
     # Let the user know how many valid/invalid test were dumped
     report.Info(_translate("EndTestbed", "{count} results extracted.").format(count=count))
 
-    app.quit()
-    del app
+
 
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:

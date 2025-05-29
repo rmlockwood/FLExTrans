@@ -60,13 +60,16 @@ import FTPaths
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'CleanFiles'
 
+translators = []
 app = QApplication([])
-translatorForGlobals = QTranslator()
 
-if translatorForGlobals.load(f"CleanFiles_{Utils.getInterfaceLangCode()}.qm", FTPaths.TRANSL_DIR):
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
-    QCoreApplication.installTranslator(translatorForGlobals)
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
