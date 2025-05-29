@@ -18,9 +18,8 @@ import ReadConfig
 import FTPaths 
 import Utils
 
-#import sys
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication #, QTranslator
+from PyQt5.QtCore import QCoreApplication 
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
