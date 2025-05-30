@@ -1,0 +1,636 @@
+/* CSS for formating Apertium Transfer in XXE */ 
+
+@property-value def-attr-background-color() #F5DEB3; /* wheat */
+@property-value def-cat-background-color() #FFB6C1; /* lightpink */
+@property-value def-list-background-color() #CCFFCC; /* lightgreen */
+@property-value def-macro-background-color() #F09FF0; /* violet */
+@property-value def-rule-background-color() #BFD0FF; /* paleblue */
+@property-value def-var-background-color() #AFEEEE; /* paleturquoise */
+@property-value def-pos-background-color() #FFDAB9; /* peach puff */
+@property-value def-literal-background-color() #98FB98; /* pale green */
+@property-value def-literal-tag-background-color() #FFFFB5; /* pale yellow */
+@property-value def-chunk-background-color() #AEC6CF; /* pastel blue */
+
+@property-group isCollapsible( is-collapsed, head-level )
+{
+    collapsible: yes;
+    collapsed: is-collapsed;
+    not-collapsible-head: head-level;
+}
+
+action:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Aktion: ";
+}
+action
+{
+    display:block;
+    padding-left:.175in;
+    collapsible:yes;
+    collapsed:no;
+    not-collapsible-head:1;
+}
+
+and:before
+{
+    content: " und: ";
+}
+and
+{
+    display:block;
+    padding-left:.125in;
+}
+
+append:before
+{
+    content: " anhängen an: "
+    text-field(attribute,n,background-color,def-var-background-color(),columns,25);
+}
+append
+{
+    display:block;
+    padding-left:.125in;
+}
+attr-item:before
+{
+    content:"Tags: ";
+} 
+attr-item[tags]
+{
+    display:block;
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,16);
+    margin-left:.2in;
+}
+
+b:before
+{
+    content: " Leerzeichen: ";
+}
+b
+{
+    display:block;
+    padding-left:.125in;
+}
+
+begins-with:before
+{
+    content: " beginnt mit: "check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+begins-with
+{
+    display:block;
+    padding-left:.125in;
+}
+
+begins-with-list:before
+{
+    content: " beginnt mit etwas aus Liste: "check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+begins-with-list
+{
+    display:block;
+    padding-left:.125in;
+}
+
+call-macro:before
+{
+    content:"Makro aufrufen: "
+    text-field(attribute,n,background-color,def-macro-background-color(),columns,30);;
+}
+call-macro
+{
+    display:block;
+    padding-left:.125in;
+}
+
+case-of:before
+{
+    content: " Fall von - ";
+}
+case-of[side=sl]
+{
+    display:block;
+    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  seite: "  combo-box(attribute, side, 
+                           color, #ff0000,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
+    padding-left:.125in;
+}
+case-of
+{
+    display:block;
+    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  seite: "  combo-box(attribute, side, 
+                           color, #ce901b,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
+    padding-left:.125in;
+}
+
+cat-item:before
+{
+    content:"Tags: ";
+}
+cat-item[tags]
+{
+    display:block;
+    content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,16) 
+      " lemma: " text-field(attribute,lemma,background-color,def-chunk-background-color(),columns,10);
+    margin-left:.2in;
+}
+
+choose:before
+{
+    content: "wählen: ";
+}
+choose
+{
+    display:block;
+    padding-left:.125in;
+}
+
+chunk[namefrom]:before
+{
+    content: " Chunk - Name aus Variable holen: "
+             text-field(attribute,namefrom,background-color,def-var-background-color(),columns,25);;
+             ;
+}
+chunk:before
+{
+    content: " Chunk - Name: "
+             text-field(attribute,name,background-color,def-chunk-background-color(),columns,16);;
+;
+}
+chunk
+{
+    display:block;
+    padding-left:.125in;
+}
+
+clip:before
+{
+    content: " Clip - ";
+}
+clip[side=sl]
+{
+    display:block;
+    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " seite: "  combo-box(attribute, side, 
+                           color, #ff0000,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
+     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
+    padding-left:.125in;
+}
+
+clip
+{
+    display:block;
+    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " seite: "  combo-box(attribute, side, 
+                           color, #ce901b,
+                           labels, "source lang.\A target lang.", 
+                           values, "sl\A tl")
+     " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
+     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
+    padding-left:.125in;
+}
+
+concat:before
+{
+    content: " verketten: ";
+}
+concat
+{
+    display:block;
+    padding-left:.125in;
+}
+
+contains-substring:before
+{
+    content: " enthält Teilzeichenkette: " check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+contains-substring
+{
+    display:block;
+    padding-left:.125in;
+}
+
+def-attr:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " Attribut: " text-field(attribute,n,background-color,def-attr-background-color(),columns,25);
+}
+def-attr
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-cat:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " Kategorie: " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
+}
+def-cat
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible(yes, 1);
+}
+
+def-list:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " Liste: " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
+}
+def-list
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-macro:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Makro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,30)
+    " Anzahl der Elemente = " 
+    text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
+}
+def-macro
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+def-var:before
+{
+    content: " Variable: " 
+    text-field(attribute,n,background-color,def-var-background-color(),columns,25);
+}
+def-var
+{
+    display:block;
+    padding-left:.125in;
+}
+
+ends-with:before
+{
+    content: " endet mit: "check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+ends-with
+{
+    display:block;
+    padding-left:.125in;
+}
+
+ends-with-list:before
+{
+    content: " endet mit etwas aus Liste: "check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+ends-with-list
+{
+    display:block;
+    padding-left:.125in;
+}
+
+equal:before
+{
+    content: " gleich: " check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+equal
+{
+    display:block;
+    padding-left:.125in;
+}
+
+get-case-from:before
+{
+    content: " Fall holen von " 
+    " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+}
+get-case-from
+{
+    display:block;
+    padding-left:.125in;
+}
+
+in:before
+{
+    content: " in Liste: " check-box(attribute, caseless, label, "Groß-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+}
+in
+{
+    display:block;
+    padding-left:.125in;
+}
+
+let:before
+{
+    content: " lassen: ";
+}
+let
+{
+    display:block;
+    padding-left:.125in;
+}
+
+list:before
+{
+    content: " Liste: ";
+}
+list
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
+    padding-left:.125in;
+}
+
+list-item:before
+{
+    content:"Element: ";
+}
+list-item[v]
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,16);
+    margin-left:.2in;
+}
+
+lit:before
+{
+    content:" Literalzeichenkette: ";
+}
+lit
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-literal-background-color(),columns,20);
+    padding-left: .125in;
+}
+
+lit-tag:before
+{
+    content:" Literal-Tag: ";
+}
+lit-tag
+{
+    display:block;
+    content: " " text-field(attribute,v,background-color,def-literal-tag-background-color(),columns,20);
+    padding-left: .125in;
+}
+
+lu:before
+{
+    content: " lexikalische Einheit: ";
+}
+lu
+{
+    display:block;
+    padding-left:.125in;
+}
+
+mlu:before
+{
+    content: " Mehrwort: ";
+}
+mlu
+{
+    display:block;
+    padding-left:.125in;
+}
+
+modify-case:before
+{
+    content: " Fall ändern: ";
+}
+modify-case
+{
+    display:block;
+    padding-left:.125in;
+}
+
+not:before
+{
+    content: " nicht: ";
+}
+not
+{
+    display:block;
+    padding-left:.125in;
+}
+
+or:before
+{
+    content: " oder: ";
+}
+or
+{
+    display:block;
+    padding-left:.125in;
+}
+
+otherwise:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " ansonsten: ";
+}
+otherwise
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+out:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Ausgabe: ";
+}
+out
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+pattern:before
+{
+    content: " Muster: ";
+}
+pattern
+{
+    display:block;
+    padding-left:.125in;
+}
+
+pattern-item:before
+{
+    content:"Element: ";
+}
+pattern-item
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
+    margin-left:.4in;
+}
+
+rule:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " Regel: " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
+}
+rule
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+section-def-attrs:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Attribute: ";
+}
+section-def-attrs
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
+
+section-def-cats:before
+{
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Kategorien: ";
+}
+section-def-cats
+{
+    display:block;
+    property-group:isCollapsible(yes, 1);
+}
+
+section-def-lists:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Listen: ";
+}
+section-def-lists
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+
+section-def-macros:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Makros: ";
+}
+section-def-macros
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+
+section-def-vars:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Variablen: ";
+}
+section-def-vars
+{
+    display:block;
+    property-group:isCollapsible(yes, 0);
+}
+section-rules:before
+{
+   display:block;
+   content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
+    " Regeln: ";
+}
+section-rules
+{
+    display:block;
+    property-group:isCollapsible(no, 0);
+}
+
+tag:before
+{
+    display:block;
+    padding-left:.125in;
+    content: " Tag: " ;
+}
+tag
+{
+    display:block;
+    padding-left:.125in;
+}
+
+tags:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " Tags: " ;
+}
+tags
+{
+    display:block;
+    padding-left:.125in;
+    property-group: isCollapsible( yes, 1);
+}
+
+test:before
+{
+    content: " Test: " label(attribute,c);
+}
+test
+{
+    display:block;
+    padding-left:.125in;
+}
+
+transfer
+{
+    display:block;
+}
+
+var:before
+{
+    content:" Variable: ";
+}
+var
+{
+    display:block;
+    content: " " text-field(attribute,n,background-color,def-var-background-color(),columns,25);
+   padding-left:.125in;
+}
+
+when:before
+{
+    content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
+    " wenn: ";
+}
+when
+{
+    display:block;
+    padding-left:.125in;
+    property-group:isCollapsible(yes, 1);
+}
+
+with-param:before
+{
+    content: " mit Element: " 
+    text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+}
+with-param
+{
+    display:block;
+    padding-left:.125in;
+}
