@@ -4,106 +4,134 @@
 <context>
     <name>AdHocConstrForCluster</name>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="114"/>
+        <location filename="../AdHocConstrForCluster.py" line="118"/>
         <source>Group Input</source>
         <translation>Gruppeneingabe</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="355"/>
+        <location filename="../AdHocConstrForCluster.py" line="359"/>
         <source>(Choose Type)</source>
         <translation>(Typ auswählen)</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="496"/>
+        <location filename="../AdHocConstrForCluster.py" line="500"/>
         <source>Morpheme</source>
         <translation>Morphem</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="277"/>
+        <location filename="../AdHocConstrForCluster.py" line="281"/>
         <source>Allomorph</source>
         <translation>Allomorph</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="370"/>
+        <location filename="../AdHocConstrForCluster.py" line="374"/>
         <source>You need to set the key field and at least the 1st other field!</source>
         <translation>Sie müssen das Schlüsselfeld und mindestens das 1. andere Feld festlegen!</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="391"/>
+        <location filename="../AdHocConstrForCluster.py" line="395"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{key}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
         <translation>Es scheint, dass Sie die Auto-Vervollständigungswerte nicht verwendet haben. &quot;{key}&quot; allein kann nicht gefunden werden. Geben Sie das Morphem/Allomorph in der Volkssprache ein und wählen Sie den automatisch vervollständigten Wert aus.</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="415"/>
+        <location filename="../AdHocConstrForCluster.py" line="419"/>
         <source>It looks like you may not have used the Auto Complete values. &quot;{otherStr}&quot; by itself cannot be found. Type the morpheme/allomorph in the vernacular and select the auto-completed value.</source>
         <translation>Es scheint, dass Sie die Auto-Vervollständigungswerte nicht verwendet haben. &quot;{otherStr}&quot; allein kann nicht gefunden werden. Geben Sie das Morphem/Allomorph in der Volkssprache ein und wählen Sie den automatisch vervollständigten Wert aus.</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="525"/>
+        <location filename="../AdHocConstrForCluster.py" line="529"/>
         <source>Added ad hoc rule to project {proj}.
 </source>
         <translation>Ad-hoc-Regel zum Projekt {proj} hinzugefügt.
 </translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="584"/>
+        <location filename="../AdHocConstrForCluster.py" line="588"/>
         <source>NEW: {sourceGroupName}</source>
         <translation>NEU: {sourceGroupName}</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="716"/>
+        <location filename="../AdHocConstrForCluster.py" line="720"/>
         <source>Select Group</source>
         <translation>Gruppe auswählen</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="716"/>
+        <location filename="../AdHocConstrForCluster.py" line="720"/>
         <source>Similar groups in {projectName}:</source>
         <translation>Ähnliche Gruppen in {projectName}:</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="99"/>
+        <location filename="../AdHocConstrForCluster.py" line="103"/>
         <source>Add an ad hoc constraint to multiple cluster projects.</source>
         <translation>Fügen Sie eine Ad-hoc-Beschränkung zu mehreren Cluster-Projekten hinzu.</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="118"/>
+        <location filename="../AdHocConstrForCluster.py" line="122"/>
         <source>This new group name will be created in all the selected cluster projects.</source>
         <translation>Dieser neue Gruppenname wird in allen ausgewählten Cluster-Projekten erstellt.</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="121"/>
+        <location filename="../AdHocConstrForCluster.py" line="125"/>
         <source>Group Name:</source>
         <translation>Gruppenname:</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="126"/>
+        <location filename="../AdHocConstrForCluster.py" line="130"/>
         <source>Group Description:</source>
         <translation>Gruppenbeschreibung:</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="162"/>
+        <location filename="../AdHocConstrForCluster.py" line="166"/>
         <source>anywhere around</source>
         <translation>irgendwo um</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="163"/>
+        <location filename="../AdHocConstrForCluster.py" line="167"/>
         <source>somewhere after</source>
         <translation>irgendwo nach</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="164"/>
+        <location filename="../AdHocConstrForCluster.py" line="168"/>
         <source>somewhere before</source>
         <translation>irgendwo vor</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="165"/>
+        <location filename="../AdHocConstrForCluster.py" line="169"/>
         <source>adjacent after</source>
         <translation>angrenzend nach</translation>
     </message>
     <message>
-        <location filename="../AdHocConstrForCluster.py" line="166"/>
+        <location filename="../AdHocConstrForCluster.py" line="170"/>
         <source>adjacent before</source>
         <translation>angrenzend vor</translation>
+    </message>
+    <message>
+        <location filename="../AdHocConstrForCluster.py" line="467"/>
+        <source>The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AdHocConstrForCluster.py" line="472"/>
+        <source>The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AdHocConstrForCluster.py" line="487"/>
+        <source>The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AdHocConstrForCluster.py" line="623"/>
+        <source>Ad Hoc Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../AdHocConstrForCluster.py" line="890"/>
+        <source>No cluster projects found. Define them in Settings.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
