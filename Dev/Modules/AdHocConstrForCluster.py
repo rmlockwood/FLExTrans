@@ -464,12 +464,12 @@ class AdHocMain(QMainWindow):
 
                         if not keyGuid:
 
-                            feedbackStr += f'The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n'
+                            feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {key} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n').format(selectedType=selectedType, key=key, proj=proj)
                             problemFound = True
                     
                     # We can't reliably locate allomorphs by looking for links, or glosses and POSs, so don't do find Object, just give an error.
                     else:
-                        feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
+                        feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n').format(selectedType=selectedType, otherStr=key, proj=proj)
                         problemFound = True
 
                 # Loop through all the other values
@@ -484,7 +484,7 @@ class AdHocMain(QMainWindow):
                             newGuid = self.findObject(self.sourceDB, myDB, othGuid, otherStr)
 
                             if not newGuid:
-                                feedbackStr += f'The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n'
+                                feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {otherStr} could not be found in the project {proj}. If the morpheme was a stem, it could be the link url to that stem was not valid.\n').format(selectedType=selectedType, otherStr=otherStr, proj=proj)
                                 problemFound = True
                             
                             # Replace this object in the list
@@ -492,7 +492,7 @@ class AdHocMain(QMainWindow):
 
                         # Again, give up if it's an allomorph
                         else:
-                            feedbackStr += f'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n'
+                            feedbackStr += _translate("AdHocConstrForCluster", 'The {selectedType} {otherStr} with the same ID does not exist in the project {proj}.\n', format(selectedType=selectedType, otherStr=otherStr, proj=proj))
                             problemFound = True
 
             if not problemFound:
@@ -620,7 +620,7 @@ class AdHocMain(QMainWindow):
         QApplication.restoreOverrideCursor()       
 
         # Give some feedback
-        QMessageBox.information(self, 'Ad Hoc Rules', feedbackStr)
+        QMessageBox.information(self, _translate("AdHocConstrForCluster", 'Ad Hoc Rules'), feedbackStr)
 
     def findObject(self, sourceDB, targetDB, myGuidStr, keyStr):
 
@@ -887,7 +887,7 @@ def MainFunction(DB, report, modify=True):
     projects = ReadConfig.getConfigVal(configMap, ReadConfig.CLUSTER_PROJECTS, report)
 
     if not projects:
-        report.Info("No cluster projects found. Define them in Settings.")
+        report.Info(_translate("AdHocConstrForCluster", "No cluster projects found. Define them in Settings."))
         return
         
     composed = ReadConfig.getConfigVal(configMap, ReadConfig.COMPOSED_CHARACTERS, report)
