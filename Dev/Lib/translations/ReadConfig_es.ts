@@ -34,12 +34,4 @@
         <translation>Error en el archivo: &quot;{file}&quot;. El valor para &quot;{key}&quot; debe ser una lista separada por comas. Para un solo valor, termínelo con una coma.</translation>
     </message>
 </context>
-<context>
-    <name>StatusBar</name>
-    <message>
-        <location filename="../FLExTransStatusbar.py" line="52"/>
-        <source>  Work Project: {project}    Source Text: {source_text}</source>
-        <translation>  Proyecto de trabajo: {project}    Texto fuente: {source_text}</translation>
-    </message>
-</context>
 </TS>

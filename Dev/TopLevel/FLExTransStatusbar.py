@@ -23,7 +23,7 @@ from PyQt5.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
-TRANSL_TS_NAME = 'ReadConfig'
+TRANSL_TS_NAME = 'FLExTransStatusBar'
 
 translators = []
 app = QApplication([])
@@ -39,18 +39,6 @@ if configMap is None:
     FTPaths.CURRENT_SRC_TEXT = "ERROR: NO CONFIG FILE FOUND!!"
 else:
     FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
-
-# app = QApplication(sys.argv)
-
-# # Define _translate for convenience
-# _translate = QCoreApplication.translate
-
-# # Load translations
-# translator = QTranslator()
-
-# if translator.load(FTPaths.TRANSL_DIR+f"/ReadConfig_{ReadConfig.getInterfaceLangCode()}.qm"):
-
-#     QCoreApplication.installTranslator(translator)
 
 try:
     sourceText = FTPaths.CURRENT_SRC_TEXT 
