@@ -71,61 +71,61 @@
 </translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1323"/>
+        <location filename="../SettingsGUI.py" line="1321"/>
         <source>Error reading configuration file.</source>
         <translation>Fehler beim Lesen der Konfigurationsdatei.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1363"/>
+        <location filename="../SettingsGUI.py" line="1356"/>
         <source>Save Changes</source>
         <translation>Änderungen speichern</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1363"/>
+        <location filename="../SettingsGUI.py" line="1356"/>
         <source>Do you want to save your changes?</source>
         <translation>Möchten Sie Ihre Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1394"/>
+        <location filename="../SettingsGUI.py" line="1387"/>
         <source>Project Settings</source>
         <translation>Projekteinstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1398"/>
+        <location filename="../SettingsGUI.py" line="1391"/>
         <source>Source Text Name</source>
         <translation>Quelltextname</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1400"/>
+        <location filename="../SettingsGUI.py" line="1393"/>
         <source>The name of the text (in the first analysis writing system)
 in the source FLEx project to be translated.</source>
         <translation>Der Name des Textes (im ersten Analyse-Schreibsystem)
 im Quell-FLEx-Projekt, der übersetzt werden soll.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1402"/>
+        <location filename="../SettingsGUI.py" line="1395"/>
         <source>Target Project</source>
         <translation>Zielprojekt</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1403"/>
+        <location filename="../SettingsGUI.py" line="1396"/>
         <source>The name of the target FLEx project.</source>
         <translation>Der Name des Ziel-FLEx-Projekts.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1405"/>
+        <location filename="../SettingsGUI.py" line="1398"/>
         <source>Source Custom Field for Entry Link</source>
         <translation>Benutzerdefiniertes Quellfeld für Eintragsverknüpfung</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1406"/>
+        <location filename="../SettingsGUI.py" line="1399"/>
         <source>The name of the sense-level custom field in the source FLEx project that
 holds the link information to entries in the target FLEx project.</source>
         <translation>Der Name des benutzerdefinierten Feldes auf Bedeutungsebene im Quell-FLEx-Projekt,
 das die Verknüpfungsinformationen zu Einträgen im Ziel-FLEx-Projekt enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1408"/>
+        <location filename="../SettingsGUI.py" line="1401"/>
         <source>Category that Represents Proper Noun</source>
         <translation>Kategorie, die ein Eigenname darstellt</translation>
     </message>
@@ -137,87 +137,87 @@ source FLEx project. It is possible to choose not to translate proper nouns.</so
 Quell-FLEx-Projekt verwenden. Es ist möglich, Eigennamen nicht zu übersetzen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1411"/>
+        <location filename="../SettingsGUI.py" line="1404"/>
         <source>Hide warnings for unanalyzed Proper Nouns</source>
         <translation>Warnungen für nicht analysierte Eigennamen ausblenden</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1412"/>
+        <location filename="../SettingsGUI.py" line="1405"/>
         <source>Don&apos;t show warnings for capitalized words (Proper Nouns) that are left unanalyzed. Except at the beginning of a sentence.</source>
         <translation>Keine Warnungen für großgeschriebene Wörter (Eigennamen) anzeigen, die nicht analysiert wurden. Außer am Satzanfang.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1414"/>
+        <location filename="../SettingsGUI.py" line="1407"/>
         <source>Cache data for faster processing?</source>
         <translation>Daten für schnellere Verarbeitung zwischenspeichern?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1415"/>
+        <location filename="../SettingsGUI.py" line="1408"/>
         <source>Indicates if the system should avoid regenerating data that hasn&apos;t changed.
 Use the CleanFiles module to force the regeneration of data.</source>
         <translation>Gibt an, ob das System die Neuerstellung von Daten vermeiden soll, die sich nicht geändert haben.
 Verwenden Sie das CleanFiles-Modul, um die Neuerstellung von Daten zu erzwingen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1417"/>
+        <location filename="../SettingsGUI.py" line="1410"/>
         <source>Use composed characters in editing?</source>
         <translation>Zusammengesetzte Zeichen beim Bearbeiten verwenden?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1418"/>
+        <location filename="../SettingsGUI.py" line="1411"/>
         <source>When editing the transfer rules file or the testbed, if Yes, characters with 
 diacritics will be composed (NFC) to single characters (where possible). If No, characters will be decomposed (NFD).</source>
         <translation>Beim Bearbeiten der Übertragungsregeldatei oder des Testbeds, wenn Ja, werden Zeichen mit
 Diakritika zu Einzelzeichen (NFC) zusammengesetzt (wo möglich). Wenn Nein, werden Zeichen zerlegt (NFD).</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1421"/>
+        <location filename="../SettingsGUI.py" line="1414"/>
         <source>Sentence Punctuation</source>
         <translation>Satzzeichen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1422"/>
+        <location filename="../SettingsGUI.py" line="1415"/>
         <source>A list of punctuation that ends a sentence.
 In transfer rules you can check for the end of a sentence.</source>
         <translation>Eine Liste von Satzzeichen, die einen Satz beenden.
 In Übertragungsregeln können Sie das Satzende überprüfen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1424"/>
+        <location filename="../SettingsGUI.py" line="1417"/>
         <source>Source Morpheme Types Counted As Roots</source>
         <translation>Quellmorphemtypen, die als Wurzeln gezählt werden</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1425"/>
+        <location filename="../SettingsGUI.py" line="1418"/>
         <source>Morpheme types in the source FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
         <translation>Morphemtypen im Quell-FLEx-Projekt, die als eine Art Wurzel betrachtet werden sollen.
 Mit anderen Worten, keine Affixe und keine Klitika.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1427"/>
+        <location filename="../SettingsGUI.py" line="1420"/>
         <source>Target Morpheme Types Counted As Roots</source>
         <translation>Zielmorphemtypen, die als Wurzeln gezählt werden</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1428"/>
+        <location filename="../SettingsGUI.py" line="1421"/>
         <source>Morpheme types in the target FLEx project that are to be considered
 as some kind of root. In other words, non-affixes and non-clitics.</source>
         <translation>Morphemtypen im Ziel-FLEx-Projekt, die als eine Art Wurzel betrachtet werden sollen.
 Mit anderen Worten, keine Affixe und keine Klitika.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1432"/>
+        <location filename="../SettingsGUI.py" line="1425"/>
         <source>Complex Forms</source>
         <translation>Komplexe Formen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1435"/>
+        <location filename="../SettingsGUI.py" line="1428"/>
         <source>Source Complex Form Types</source>
         <translation>Quellkomplexe Formtypen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1436"/>
+        <location filename="../SettingsGUI.py" line="1429"/>
         <source>One or more complex types from the source FLEx project.
 These types will be treated as a lexical unit in FLExTrans and whenever
 the components that make up this type of complex form are found sequentially
@@ -228,12 +228,12 @@ die Komponenten, die diese Art von komplexer Form bilden, im Quelltext nacheinan
 werden sie in eine lexikalische Einheit umgewandelt.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1438"/>
+        <location filename="../SettingsGUI.py" line="1431"/>
         <source>Source Discontiguous Complex Form Types</source>
         <translation>Quellkomplexe Formtypen mit Unterbrechung</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1439"/>
+        <location filename="../SettingsGUI.py" line="1432"/>
         <source>One or more complex types from the source FLEx project.
 These types will allow one intervening word between the first
 and second words of the complex type, yet will still be treated
@@ -244,26 +244,26 @@ und zweiten Wort des komplexen Typs, werden jedoch weiterhin
 als lexikalische Einheit behandelt.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1441"/>
+        <location filename="../SettingsGUI.py" line="1434"/>
         <source>Source Skipped Word Grammatical
 Categories for Discontiguous Complex Forms</source>
         <translation>Grammatikalische Kategorien übersprungener Wörter
 für nicht zusammenhängende komplexe Formen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1442"/>
+        <location filename="../SettingsGUI.py" line="1435"/>
         <source>One or more grammatical categories that can intervene in the above complex types.</source>
         <translation>Eine oder mehrere grammatikalische Kategorien, die in den oben genannten komplexen Typen eingreifen können.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1444"/>
+        <location filename="../SettingsGUI.py" line="1437"/>
         <source>Target Complex Form Types
 with inflection on 1st Element</source>
         <translation>Zielkomplexe Formtypen
 mit Flexion auf dem ersten Element</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1445"/>
+        <location filename="../SettingsGUI.py" line="1438"/>
         <source>One or more complex types from the target FLEx project.
 These types, when occurring in the text file to be synthesized,
 will be broken down into their constituent entries. Use this property
@@ -274,88 +274,88 @@ in ihre Bestandteile zerlegt. Verwenden Sie diese Eigenschaft
 für Typen, die eine Flexion auf dem ersten Element der komplexen Form haben.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1447"/>
+        <location filename="../SettingsGUI.py" line="1440"/>
         <source>Target Complex Form Types
 with inflection on 2nd Element</source>
         <translation>Zielkomplexe Formtypen
 mit Flexion auf dem zweiten Element</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1448"/>
+        <location filename="../SettingsGUI.py" line="1441"/>
         <source>Same as above. Use this property for the types that have inflection
 on the second element of the complex form.</source>
         <translation>Wie oben. Verwenden Sie diese Eigenschaft für Typen, die eine Flexion
 auf dem zweiten Element der komplexen Form haben.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1452"/>
+        <location filename="../SettingsGUI.py" line="1445"/>
         <source>Linker Settings</source>
         <translation>Verknüpfungseinstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1455"/>
+        <location filename="../SettingsGUI.py" line="1448"/>
         <source>Default to rebuilding the bilingual
 lexicon after linking senses?</source>
         <translation>Standardmäßig das zweisprachige Lexikon
 nach der Verknüpfung von Bedeutungen neu erstellen?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1456"/>
+        <location filename="../SettingsGUI.py" line="1449"/>
         <source>In the Sense Linker tool by default check the checkbox for rebuilding the bilingual lexicon.</source>
         <translation>Im Sense Linker-Tool standardmäßig das Kontrollkästchen für die Neuerstellung des zweisprachigen Lexikons aktivieren.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1458"/>
+        <location filename="../SettingsGUI.py" line="1451"/>
         <source>Default to filtering on all fields?</source>
         <translation>Standardmäßig auf alle Felder filtern?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1459"/>
+        <location filename="../SettingsGUI.py" line="1452"/>
         <source>In the Sense Linker tool by default check the checkbox for filtering on all fields.</source>
         <translation>Im Sense Linker-Tool standardmäßig das Kontrollkästchen für das Filtern auf alle Felder aktivieren.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1463"/>
+        <location filename="../SettingsGUI.py" line="1456"/>
         <source>Transfer Settings</source>
         <translation>Übertragungseinstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1466"/>
+        <location filename="../SettingsGUI.py" line="1459"/>
         <source>Transfer Rules File</source>
         <translation>Datei mit Übertragungsregeln</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1467"/>
+        <location filename="../SettingsGUI.py" line="1460"/>
         <source>The path and name of the file containing the transfer rules.</source>
         <translation>Der Pfad und Name der Datei, die die Übertragungsregeln enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1469"/>
+        <location filename="../SettingsGUI.py" line="1462"/>
         <source>Transfer Rules File 2 (Advanced Transfer)</source>
         <translation>Datei mit Übertragungsregeln 2 (Erweiterte Übertragung)</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1470"/>
+        <location filename="../SettingsGUI.py" line="1463"/>
         <source>The path and name of the file containing the 2nd transfer rules for use in advanced transfer.</source>
         <translation>Der Pfad und Name der Datei, die die zweiten Übertragungsregeln für die erweiterte Übertragung enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1472"/>
+        <location filename="../SettingsGUI.py" line="1465"/>
         <source>Transfer Rules File 3 (Advanced Transfer)</source>
         <translation>Datei mit Übertragungsregeln 3 (Erweiterte Übertragung)</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1473"/>
+        <location filename="../SettingsGUI.py" line="1466"/>
         <source>The path and name of the file containing the 3rd transfer rules for use in advanced transfer.</source>
         <translation>Der Pfad und Name der Datei, die die dritten Übertragungsregeln für die erweiterte Übertragung enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1475"/>
+        <location filename="../SettingsGUI.py" line="1468"/>
         <source>Category Abbreviation Pairs</source>
         <translation>Kategorie-Abkürzungspaare</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1476"/>
+        <location filename="../SettingsGUI.py" line="1469"/>
         <source>One or more pairs of grammatical categories where the first category
 is the “from” category in the source FLEx project and the second category
 is the “to” category in the target FLEx project. Use the abbreviations of
@@ -366,60 +366,60 @@ die „Zu“-Kategorie im Ziel-FLEx-Projekt ist. Verwenden Sie die Abkürzungen 
 FLEx-Kategorien. Die Ersetzung erfolgt im zweisprachigen Lexikon.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1478"/>
+        <location filename="../SettingsGUI.py" line="1471"/>
         <source>Analyzed Text Output File</source>
         <translation>Ausgabedatei für analysierten Text</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1479"/>
+        <location filename="../SettingsGUI.py" line="1472"/>
         <source>The path and name of the file which holds
 the extracted source text.</source>
         <translation>Der Pfad und Name der Datei, die den extrahierten Quelltext enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1481"/>
+        <location filename="../SettingsGUI.py" line="1474"/>
         <source>Bilingual Dictionary Output File</source>
         <translation>Ausgabedatei für zweisprachiges Wörterbuch</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1482"/>
+        <location filename="../SettingsGUI.py" line="1475"/>
         <source>The path and name of the file which holds the bilingual lexicon.</source>
         <translation>Der Pfad und Name der Datei, die das zweisprachige Lexikon enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1484"/>
+        <location filename="../SettingsGUI.py" line="1477"/>
         <source>Bilingual Dictionary Replacement File</source>
         <translation>Ersetzungsdatei für zweisprachiges Wörterbuch</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1485"/>
+        <location filename="../SettingsGUI.py" line="1478"/>
         <source>The path and name of the file which holds replacement
 entry pairs for the bilingual lexicon.</source>
         <translation>Der Pfad und Name der Datei, die Ersetzungseintragspaare für das zweisprachige Lexikon enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1487"/>
+        <location filename="../SettingsGUI.py" line="1480"/>
         <source>Target Transfer Results File</source>
         <translation>Ausgabedatei für Zielübertragungsergebnisse</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1488"/>
+        <location filename="../SettingsGUI.py" line="1481"/>
         <source>The path and name of the file which holds the text contents
 after going through the transfer process.</source>
         <translation>Der Pfad und Name der Datei, die den Textinhalt nach dem Übertragungsprozess enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1492"/>
+        <location filename="../SettingsGUI.py" line="1485"/>
         <source>Synthesis Settings</source>
         <translation>Synthese-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1495"/>
+        <location filename="../SettingsGUI.py" line="1488"/>
         <source>Use HermitCrab synthesis?</source>
         <translation>HermitCrab-Synthese verwenden?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1496"/>
+        <location filename="../SettingsGUI.py" line="1489"/>
         <source>Use the HermitCrab phonological synthesizer. This applies if you have
 HermitCrab parsing set up for your target project. You also need to have the
 Synthesize Text with HermitCrab module in your AllSteps collection.</source>
@@ -428,342 +428,342 @@ HermitCrab-Parsing für Ihr Zielprojekt eingerichtet haben. Sie müssen auch das
 „Text mit HermitCrab synthetisieren“-Modul in Ihrer AllSteps-Sammlung haben.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1498"/>
+        <location filename="../SettingsGUI.py" line="1491"/>
         <source>Clean Up Unknown Target Words?</source>
         <translation>Unbekannte Zielwörter bereinigen?</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1499"/>
+        <location filename="../SettingsGUI.py" line="1492"/>
         <source>Indicates if the system should remove preceding @ signs
 and numbers in the form N.N following words in the target text.</source>
         <translation>Gibt an, ob das System vorangestellte @-Zeichen und Zahlen im Format N.N
 nach Wörtern im Zieltext entfernen soll.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1501"/>
+        <location filename="../SettingsGUI.py" line="1494"/>
         <source>Target Lexicon Files Folder</source>
         <translation>Ziellexikon-Dateienordner</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1502"/>
+        <location filename="../SettingsGUI.py" line="1495"/>
         <source>The path where lexicon files and other STAMP files are created</source>
         <translation>Der Pfad, an dem Lexikondateien und andere STAMP-Dateien erstellt werden</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1504"/>
+        <location filename="../SettingsGUI.py" line="1497"/>
         <source>Target Output ANA File</source>
         <translation>Zielausgabe-ANA-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1505"/>
+        <location filename="../SettingsGUI.py" line="1498"/>
         <source>The path and name of the file holding
 the intermediary text in STAMP format.</source>
         <translation>Der Pfad und Name der Datei, die den Zwischentext im STAMP-Format enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1507"/>
+        <location filename="../SettingsGUI.py" line="1500"/>
         <source>Hermit Crab Master File</source>
         <translation>HermitCrab-Masterdatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1508"/>
+        <location filename="../SettingsGUI.py" line="1501"/>
         <source>The path and name of the HermitCrab master file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Der Pfad und Name der HermitCrab-Masterdatei.
 Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1510"/>
+        <location filename="../SettingsGUI.py" line="1503"/>
         <source>Hermit Crab Configuration File</source>
         <translation>HermitCrab-Konfigurationsdatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1511"/>
+        <location filename="../SettingsGUI.py" line="1504"/>
         <source>The path and name of the HermitCrab configuration file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Der Pfad und Name der HermitCrab-Konfigurationsdatei.
 Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1513"/>
+        <location filename="../SettingsGUI.py" line="1506"/>
         <source>Hermit Crab Parses File</source>
         <translation>HermitCrab-Parse-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1514"/>
+        <location filename="../SettingsGUI.py" line="1507"/>
         <source>The path and name of the HermitCrab parses file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Der Pfad und Name der HermitCrab-Parse-Datei.
 Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1516"/>
+        <location filename="../SettingsGUI.py" line="1509"/>
         <source>Hermit Crab Surface Forms File</source>
         <translation>HermitCrab-Oberflächenformen-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1517"/>
+        <location filename="../SettingsGUI.py" line="1510"/>
         <source>The path and name of the HermitCrab surface forms file. 
 This is only needed if you are using HermitCrab Synthesis.</source>
         <translation>Der Pfad und Name der HermitCrab-Oberflächenformen-Datei.
 Dies ist nur erforderlich, wenn Sie die HermitCrab-Synthese verwenden.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1519"/>
+        <location filename="../SettingsGUI.py" line="1512"/>
         <source>Target Output Synthesis File</source>
         <translation>Zielausgabe-Synthesedatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1520"/>
+        <location filename="../SettingsGUI.py" line="1513"/>
         <source>The path and name of the file holding
 the intermediary synthesized file.</source>
         <translation>Der Pfad und Name der Datei, die die zwischengespeicherte Synthesedatei enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1522"/>
+        <location filename="../SettingsGUI.py" line="1515"/>
         <source>Target Affix Gloss List File</source>
         <translation>Ziel-Affix-Glossar-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1523"/>
+        <location filename="../SettingsGUI.py" line="1516"/>
         <source>The ancillary file that hold a list of affix
 glosses from the target FLEx project.</source>
         <translation>Die Hilfsdatei, die eine Liste von Affix-Glossaren aus dem Ziel-FLEx-Projekt enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1525"/>
+        <location filename="../SettingsGUI.py" line="1518"/>
         <source>Text Out Rules File</source>
         <translation>Textausgabe-Regeln-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1526"/>
+        <location filename="../SettingsGUI.py" line="1519"/>
         <source>The file that holds the search/replace rules to fix up the synthesis result text.</source>
         <translation>Die Datei, die die Such-/Ersetzungsregeln enthält, um den Syntheseergebnistext zu korrigieren.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1528"/>
+        <location filename="../SettingsGUI.py" line="1521"/>
         <source>Text In Rules File</source>
         <translation>Texteingabe-Regeln-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1529"/>
+        <location filename="../SettingsGUI.py" line="1522"/>
         <source>The file that holds the search/replace rules to fix up the Paratext import text.</source>
         <translation>Die Datei, die die Such-/Ersetzungsregeln enthält, um den Paratext-Importtext zu korrigieren.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1532"/>
+        <location filename="../SettingsGUI.py" line="1525"/>
         <source>Synthesis Test Settings</source>
         <translation>Synthese-Testeinstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1535"/>
+        <location filename="../SettingsGUI.py" line="1528"/>
         <source>Limit to specific POS values</source>
         <translation>Auf bestimmte POS-Werte beschränken</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1536"/>
+        <location filename="../SettingsGUI.py" line="1529"/>
         <source>One or more grammatical categories. The synthesis test will be limited to using only these categories.</source>
         <translation>Eine oder mehrere grammatikalische Kategorien. Der Synthese-Test wird auf die Verwendung dieser Kategorien beschränkt.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1538"/>
+        <location filename="../SettingsGUI.py" line="1531"/>
         <source>Limit number of stems</source>
         <translation>Anzahl der Stämme begrenzen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1539"/>
+        <location filename="../SettingsGUI.py" line="1532"/>
         <source>Limit the generation to a specified number of stems.
 Stems chosen may seem random.</source>
         <translation>Die Generierung auf eine bestimmte Anzahl von Stämmen begrenzen.
 Die ausgewählten Stämme können zufällig erscheinen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1541"/>
+        <location filename="../SettingsGUI.py" line="1534"/>
         <source>Limit to specific Citation Form</source>
         <translation>Auf bestimmte Zitierformen beschränken</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1542"/>
+        <location filename="../SettingsGUI.py" line="1535"/>
         <source>Limit the generation to one or more specified Citation Form(s).</source>
         <translation>Die Generierung auf eine oder mehrere bestimmte Zitierformen beschränken.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1544"/>
+        <location filename="../SettingsGUI.py" line="1537"/>
         <source>Parses Output File</source>
         <translation>Ausgabedatei für Parses</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1545"/>
+        <location filename="../SettingsGUI.py" line="1538"/>
         <source>The path and name of the file for the generated parse forms in human readable
 form, with glosses of roots and affixes.</source>
         <translation>Der Pfad und Name der Datei für die generierten Parse-Formen in menschenlesbarer
 Form, mit Glossaren von Wurzeln und Affixen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1547"/>
+        <location filename="../SettingsGUI.py" line="1540"/>
         <source>SIGMORPHON Output File</source>
         <translation>SIGMORPHON-Ausgabedatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1548"/>
+        <location filename="../SettingsGUI.py" line="1541"/>
         <source>The path and name of the file for the generated parse forms in SIGMORPHON
 format, with no roots, and affixes separated by semicolons.</source>
         <translation>Der Pfad und Name der Datei für die generierten Parse-Formen im SIGMORPHON-Format,
 ohne Wurzeln und mit durch Semikolons getrennten Affixen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1550"/>
+        <location filename="../SettingsGUI.py" line="1543"/>
         <source>Synthesis test log file</source>
         <translation>Synthese-Test-Logdatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1551"/>
+        <location filename="../SettingsGUI.py" line="1544"/>
         <source>The path and name of the file for the log output
 of the synthesis test.</source>
         <translation>Der Pfad und Name der Datei für die Log-Ausgabe
 des Synthese-Tests.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1555"/>
+        <location filename="../SettingsGUI.py" line="1548"/>
         <source>Testbed Settings</source>
         <translation>Testbed-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1558"/>
+        <location filename="../SettingsGUI.py" line="1551"/>
         <source>Testbed File</source>
         <translation>Testbed-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1559"/>
+        <location filename="../SettingsGUI.py" line="1552"/>
         <source>The path and name of the testbed file.</source>
         <translation>Der Pfad und Name der Testbed-Datei.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1561"/>
+        <location filename="../SettingsGUI.py" line="1554"/>
         <source>Testbed Results Log File</source>
         <translation>Testbed-Ergebnis-Logdatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1562"/>
+        <location filename="../SettingsGUI.py" line="1555"/>
         <source>The path and name of the testbed results log file.</source>
         <translation>Der Pfad und Name der Testbed-Ergebnis-Logdatei.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1566"/>
+        <location filename="../SettingsGUI.py" line="1559"/>
         <source>Rule Assistant</source>
         <translation>Regelassistent</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1569"/>
+        <location filename="../SettingsGUI.py" line="1562"/>
         <source>Rule Assistant Rule File</source>
         <translation>Regelassistent-Regeldatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1570"/>
+        <location filename="../SettingsGUI.py" line="1563"/>
         <source>The path and name of the rule assistant rule definition file.</source>
         <translation>Der Pfad und Name der Regeldefinitionsdatei des Regelassistenten.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1574"/>
+        <location filename="../SettingsGUI.py" line="1567"/>
         <source>TreeTran Settings</source>
         <translation>TreeTran-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1577"/>
+        <location filename="../SettingsGUI.py" line="1570"/>
         <source>TreeTran Insert Words File</source>
         <translation>TreeTran-Wörter-Einfügedatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1578"/>
+        <location filename="../SettingsGUI.py" line="1571"/>
         <source>The path and name of the file that has a list of
 words that can be inserted with a TreeTran rule.</source>
         <translation>Der Pfad und Name der Datei, die eine Liste von Wörtern enthält,
 die mit einer TreeTran-Regel eingefügt werden können.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1580"/>
+        <location filename="../SettingsGUI.py" line="1573"/>
         <source>TreeTran Rules File</source>
         <translation>TreeTran-Regeln-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1581"/>
+        <location filename="../SettingsGUI.py" line="1574"/>
         <source>The path and name of the TreeTran rules file</source>
         <translation>Der Pfad und Name der TreeTran-Regeln-Datei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1586"/>
+        <location filename="../SettingsGUI.py" line="1579"/>
         <source>Cluster Settings</source>
         <translation>Cluster-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1589"/>
+        <location filename="../SettingsGUI.py" line="1582"/>
         <source>Projects to treat together as a cluster</source>
         <translation>Projekte, die als Cluster behandelt werden sollen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1590"/>
+        <location filename="../SettingsGUI.py" line="1583"/>
         <source>Indicate the cluster projects you would like to run some modules on together.</source>
         <translation>Geben Sie die Cluster-Projekte an, auf denen Sie einige Module gemeinsam ausführen möchten.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1594"/>
+        <location filename="../SettingsGUI.py" line="1587"/>
         <source>Privacy</source>
         <translation>Datenschutz</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1597"/>
+        <location filename="../SettingsGUI.py" line="1590"/>
         <source>Send usage statistics to FLExTrans developers</source>
         <translation>Nutzungsstatistiken an die FLExTrans-Entwickler senden</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1598"/>
+        <location filename="../SettingsGUI.py" line="1591"/>
         <source>No personally identifiable information is sent. These anonymous statistics will help with future development.</source>
         <translation>Es werden keine personenbezogenen Daten gesendet. Diese anonymen Statistiken helfen bei der zukünftigen Entwicklung.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1600"/>
+        <location filename="../SettingsGUI.py" line="1593"/>
         <source>Mixpanel User ID</source>
         <translation>Mixpanel-Benutzer-ID</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1601"/>
+        <location filename="../SettingsGUI.py" line="1594"/>
         <source>The (probably) unique ID for this project which gets logged to Mixpanel.</source>
         <translation>Die (wahrscheinlich) eindeutige ID für dieses Projekt, die in Mixpanel protokolliert wird.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1603"/>
+        <location filename="../SettingsGUI.py" line="1596"/>
         <source>Usage Statistics Opt Out Question Asked</source>
         <translation>Frage zum Opt-out von Nutzungsstatistiken gestellt</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1604"/>
+        <location filename="../SettingsGUI.py" line="1597"/>
         <source>Opt out of sending usage statistics.</source>
         <translation>Vom Senden von Nutzungsstatistiken abmelden.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1583"/>
+        <location filename="../SettingsGUI.py" line="1576"/>
         <source>Analyzed Text TreeTran Output File</source>
         <translation>Analysierte Text-TreeTran-Ausgabedatei</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1584"/>
+        <location filename="../SettingsGUI.py" line="1577"/>
         <source>The path and name of the file that holds the output from TreeTran.</source>
         <translation>Der Pfad und der Name der Datei, die die Ausgabe von TreeTran enthält.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1227"/>
+        <location filename="../SettingsGUI.py" line="1321"/>
         <source>FLExTrans Settings</source>
         <translation>FLExTrans-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1409"/>
+        <location filename="../SettingsGUI.py" line="1402"/>
         <source>The name of the grammatical category that you use for proper nouns in your
 source FLEx project. It is possible to choose not to translate proper nouns.</source>
         <translation>Der Name der grammatischen Kategorie, die Sie für Eigennamen in Ihrem 
 FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu übersetzen.</translation>
     </message>
     <message>
-        <location filename="../SettingsGUI.py" line="1309"/>
+        <location filename="../SettingsGUI.py" line="1308"/>
         <source>Failed to open the &apos;{projectName}&apos; database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
         <translation>Die Datenbank '{projectName}' konnte nicht geöffnet werden. Dies könnte daran liegen, dass Sie das Projekt geöffnet haben und die Freigabeoption im Reiter &quot;Freigabe&quot; des Fieldworks-Projekteigenschaften-Dialogs nicht aktiviert haben. Diese finden Sie unter Datei &gt; Projektverwaltung &gt; Fieldworks-Projekteigenschaften im Menü.</translation>
     </message>
