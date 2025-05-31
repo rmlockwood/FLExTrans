@@ -131,15 +131,15 @@ class Main(QMainWindow):
         # Set the window title based on the selected project(s)
         if len(selProjs := self.ui.clusterProjectsComboBox.currentData()) == 1:
 
-            self.setWindowTitle(f"Export from {selProjs[0]} to Paratext")
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {selProj} to Paratext").format(selProj=selProjs[0]))
 
         elif len(selProjs) > 1:
 
-            self.setWindowTitle(f"Export from multiple FLEx projects to Paratext")
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from multiple FLEx projects to Paratext"))
         
         # Otherwise, use the default title
         else:
-            self.setWindowTitle(f"Export from {self.targetDB.ProjectName()} to Paratext")
+            self.setWindowTitle(_translate("ExportFlexToParatext", "Export from {DB} to Paratext").format(DB=self.targetDB.ProjectName()))
 
         ClusterUtils.showClusterWidgets(self)
 
