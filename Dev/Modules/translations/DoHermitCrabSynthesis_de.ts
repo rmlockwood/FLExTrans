@@ -6,7 +6,7 @@
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="142"/>
         <source>Synthesize Text with HermitCrab</source>
-        <translation type="obsolete">Text mit HermitCrab synthetisieren</translation>
+        <translation>Text mit HermitCrab synthetisieren</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="150"/>
