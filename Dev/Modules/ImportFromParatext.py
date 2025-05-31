@@ -177,9 +177,9 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 docs = {FTM_Name       : "Import Text From Paratext",
         FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("ExportFlexToParatext", "Import chapters from Paratext."),
+        FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
-        FTM_Description: _translate("ExportFlexToParatext", 
+        FTM_Description: _translate("ImportFromParatext", 
 """This module asks you which Paratext project, which book and which chapters should be 
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
