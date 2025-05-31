@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>ExportFlexToParatext</name>
+    <name>ImportFromParatext</name>
     <message>
         <location filename="../ImportFromParatext.py" line="180"/>
         <source>Import chapters from Paratext.</source>
@@ -20,9 +20,6 @@ Importing into multiple FLEx projects from multiple Paratext projects is possibl
 cluster projects in the main FLExTrans Settings, then come back to this module.</source>
         <translation>Este módulo le pregunta qué proyecto de Paratext, qué libro y qué capítulos deben ser importados. El nombre del libro debe darse como una abreviatura de tres letras, tal como en Paratext. Esos capítulos se recopilan y se insertan en el proyecto FLEx actual como un nuevo texto. Si desea incluir varias cosas, haga clic en la casilla correspondiente. Si desea usar el nombre completo en inglés del libro en el nombre del texto, en lugar de la abreviatura, haga clic en la casilla. Si desea que el texto recién importado sea el texto activo en FLExTrans, haga clic en la casilla. Es posible importar en múltiples proyectos FLEx desde múltiples proyectos Paratext. Primero seleccione proyectos de clúster en la configuración principal de FLExTrans y luego regrese a este módulo.</translation>
     </message>
-</context>
-<context>
-    <name>ImportFromParatext</name>
     <message>
         <location filename="../ImportFromParatext.py" line="312"/>
         <source>Could not open the configuration file: {myConfig}</source>
