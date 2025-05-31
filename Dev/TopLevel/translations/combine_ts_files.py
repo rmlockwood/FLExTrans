@@ -1,15 +1,21 @@
 import os
 import re
-from xml.etree import ElementTree as ET
 
 def get_lang_code(filename):
-    # Match two-letter language code before .ts at end
     m = re.search(r'_([a-z]{2})\.ts$', filename)
     return m.group(1) if m else None
 
+def extract_contexts(ts_text):
+    # Find all <context>...</context> blocks, including newlines and inner tags
+    return re.findall(r'(<context>.*?</context>)', ts_text, re.DOTALL)
+
+def get_ts_version(ts_text):
+    m = re.search(r'<TS[^>]*version="([^"]+)"', ts_text)
+    return m.group(1) if m else '2.1'
+
 def main():
     cwd = os.getcwd()
-    parent_dir = os.path.basename(os.path.dirname(cwd))  # Get parent folder name
+    parent_dir = os.path.basename(os.path.dirname(cwd))
     ts_files = [f for f in os.listdir(cwd) if f.endswith('.ts')]
     lang_files = {}
     for f in ts_files:
@@ -18,23 +24,23 @@ def main():
             lang_files.setdefault(lang, []).append(f)
 
     for lang, files in lang_files.items():
-        contexts = []
+        all_contexts = []
         ts_version = None
         for fname in files:
-            tree = ET.parse(fname)
-            root = tree.getroot()
+            with open(fname, encoding='utf-8') as fin:
+                text = fin.read()
             if ts_version is None:
-                ts_version = root.attrib.get('version', '2.1')
-            for context in root.findall('context'):
-                contexts.append(context)
-        # Build new TS root
-        ts_root = ET.Element('TS', version=ts_version)
-        for context in contexts:
-            ts_root.append(context)
-        # Write output file
+                ts_version = get_ts_version(text)
+            all_contexts.extend(extract_contexts(text))
+        # Compose output
         out_name = f"{parent_dir}_{lang}.ts"
-        ET.ElementTree(ts_root).write(out_name, encoding='utf-8', xml_declaration=True, short_empty_elements=False, method='xml')
-        print(f"Wrote {out_name} with {len(contexts)} contexts.")
+        with open(out_name, 'w', encoding='utf-8') as fout:
+            fout.write('<?xml version="1.0" encoding="utf-8"?>\n')
+            fout.write(f'<!DOCTYPE TS>\n<TS version="{ts_version}">\n')
+            for ctx in all_contexts:
+                fout.write(ctx + '\n')
+            fout.write('</TS>\n')
+        print(f"Wrote {out_name} with {len(all_contexts)} contexts.")
 
 if __name__ == "__main__":
     main()
