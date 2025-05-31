@@ -4,7 +4,7 @@
 <context>
     <name>TextInOutUtils</name>
     <message>
-        <location filename="../TextInOutUtils.py" line="234"/>
+        <location filename="../TextInOutUtils.py" line="237"/>
         <source>Test stopped on failure of rule: {ruleString}</source>
         <translation>Prueba detenida debido a un error en la regla: {ruleString}</translation>
     </message>
