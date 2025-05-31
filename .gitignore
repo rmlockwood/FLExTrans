@@ -31,3 +31,8 @@ RuleAssistantTests/*.t1x
 RuleAssistantTests/*.bin
 __pycache__
 .vscode/launch.json
+Dev/TopLevel/translations/.vscode/launch.json
+Dev/TopLevel/translations/TopLevel_de.ts
+Dev/TopLevel/translations/TopLevel_es.ts
+Dev/Modules/translations/Modules_de.ts
+Dev/Modules/translations/Modules_es.ts

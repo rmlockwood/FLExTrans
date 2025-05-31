@@ -17,6 +17,11 @@ def main():
     cwd = os.getcwd()
     parent_dir = os.path.basename(os.path.dirname(cwd))
     ts_files = [f for f in os.listdir(cwd) if f.endswith('.ts')]
+    # Ignore any ts file named after the parent folder (e.g., ParentDir_xx.ts)
+    ts_files = [
+        f for f in ts_files
+        if not any(f == f"{parent_dir}_{lang}.ts" for lang in [get_lang_code(f)] if lang)
+    ]
     lang_files = {}
     for f in ts_files:
         lang = get_lang_code(f)

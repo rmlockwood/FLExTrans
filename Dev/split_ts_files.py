@@ -24,6 +24,7 @@ def main():
     if not ts_files:
         print(f"No .ts file found starting with '{parent_dir}_' in {cwd}")
         return
+    total_written = 0
     for ts_file in ts_files:
         lang = get_lang_code(ts_file)
         if not lang:
@@ -45,6 +46,8 @@ def main():
                 fout.write(context + '\n')
                 fout.write('</TS>\n')
             print(f"Wrote {out_name}")
+            total_written += 1
+    print(f"Total files written: {total_written}")
 
 if __name__ == "__main__":
     main()
