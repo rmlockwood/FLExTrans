@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>StatusBar</name>
+    <name>FLExTransStatusbar</name>
     <message>
         <location filename="../FLExTransStatusbar.py" line="49"/>
         <source>  Work Project: {project}    Source Text: {source_text}</source>
