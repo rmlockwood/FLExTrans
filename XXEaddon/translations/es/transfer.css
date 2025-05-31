@@ -21,7 +21,7 @@
 action:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Aktion: ";
+    " acción: ";
 }
 action
 {
@@ -34,7 +34,7 @@ action
 
 and:before
 {
-    content: " und: ";
+    content: " y: ";
 }
 and
 {
@@ -44,7 +44,7 @@ and
 
 append:before
 {
-    content: " anhÃ¤ngen an: "
+    content: " añadir a: "
     text-field(attribute,n,background-color,def-var-background-color(),columns,25);
 }
 append
@@ -54,7 +54,7 @@ append
 }
 attr-item:before
 {
-    content:"Tags: ";
+    content:"etiquetas: ";
 } 
 attr-item[tags]
 {
@@ -65,7 +65,7 @@ attr-item[tags]
 
 b:before
 {
-    content: " Leerzeichen: ";
+    content: " espacio en blanco: ";
 }
 b
 {
@@ -75,7 +75,7 @@ b
 
 begins-with:before
 {
-    content: " beginnt mit: "check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " comienza con: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 begins-with
 {
@@ -85,7 +85,7 @@ begins-with
 
 begins-with-list:before
 {
-    content: " beginnt mit etwas aus Liste: "check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " comienza con algo en la lista: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 begins-with-list
 {
@@ -95,7 +95,7 @@ begins-with-list
 
 call-macro:before
 {
-    content:"Makro aufrufen: "
+    content:"llamar macro: "
     text-field(attribute,n,background-color,def-macro-background-color(),columns,30);;
 }
 call-macro
@@ -106,46 +106,46 @@ call-macro
 
 case-of:before
 {
-    content: " Fall von - ";
+    content: " caso de - ";
 }
 case-of[side=sl]
 {
     display:block;
-    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  seite: "  combo-box(attribute, side, 
+    content: " elemento: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  lado: "  combo-box(attribute, side, 
                            color, #ff0000,
-                           labels, "source lang.\A target lang.", 
+                           labels, "idioma fuente\A idioma destino", 
                            values, "sl\A tl")
-     "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
+     "  parte: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
 }
 case-of
 {
     display:block;
-    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     "  seite: "  combo-box(attribute, side, 
+    content: " elemento: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     "  lado: "  combo-box(attribute, side, 
                            color, #ce901b,
-                           labels, "source lang.\A target lang.", 
+                           labels, "idioma fuente\A idioma destino", 
                            values, "sl\A tl")
-     "  teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
+     "  parte: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25);
     padding-left:.125in;
 }
 
 cat-item:before
 {
-    content:"Tags: ";
+    content:"etiquetas: ";
 }
 cat-item[tags]
 {
     display:block;
     content: " " text-field(attribute,tags,background-color,def-chunk-background-color(),columns,16) 
-      " lemma: " text-field(attribute,lemma,background-color,def-chunk-background-color(),columns,10);
+      " lema: " text-field(attribute,lemma,background-color,def-chunk-background-color(),columns,10);
     margin-left:.2in;
 }
 
 choose:before
 {
-    content: "wÃ¤hlen: ";
+    content: "elegir: ";
 }
 choose
 {
@@ -155,13 +155,13 @@ choose
 
 chunk[namefrom]:before
 {
-    content: " Chunk - Name aus Variable holen: "
+    content: " fragmento - obtener nombre de variable: "
              text-field(attribute,namefrom,background-color,def-var-background-color(),columns,25);;
              ;
 }
 chunk:before
 {
-    content: " Chunk - Name: "
+    content: " fragmento - nombre: "
              text-field(attribute,name,background-color,def-chunk-background-color(),columns,16);;
 ;
 }
@@ -173,37 +173,37 @@ chunk
 
 clip:before
 {
-    content: " Clip - ";
+    content: " recorte - ";
 }
 clip[side=sl]
 {
     display:block;
-    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     " seite: "  combo-box(attribute, side, 
+    content: " elemento: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " lado: "  combo-box(attribute, side, 
                            color, #ff0000,
-                           labels, "source lang.\A target lang.", 
+                           labels, "idioma fuente\A idioma destino", 
                            values, "sl\A tl")
-     " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
-     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
+     " parte: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
+     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' enlace-a: ',@link-to),'')");
     padding-left:.125in;
 }
 
 clip
 {
     display:block;
-    content: " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
-     " seite: "  combo-box(attribute, side, 
+    content: " elemento: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1)
+     " lado: "  combo-box(attribute, side, 
                            color, #ce901b,
-                           labels, "source lang.\A target lang.", 
+                           labels, "idioma fuente\A idioma destino", 
                            values, "sl\A tl")
-     " teil: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
-     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' link-to: ',@link-to),'')");
+     " parte: " text-field(attribute,part,background-color,def-attr-background-color(),columns,25)
+     label(xpath,"if(ancestor::lu and ancestor::chunk,concat(' enlace-a: ',@link-to),'')");
     padding-left:.125in;
 }
 
 concat:before
 {
-    content: " verketten: ";
+    content: " concatenar: ";
 }
 concat
 {
@@ -213,7 +213,7 @@ concat
 
 contains-substring:before
 {
-    content: " enthÃ¤lt Teilzeichenkette: " check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " contiene subcadena: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 contains-substring
 {
@@ -224,7 +224,7 @@ contains-substring
 def-attr:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Attribut: " text-field(attribute,n,background-color,def-attr-background-color(),columns,25);
+    " atributo: " text-field(attribute,n,background-color,def-attr-background-color(),columns,25);
 }
 def-attr
 {
@@ -236,7 +236,7 @@ def-attr
 def-cat:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Kategorie: " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
+    " categoría: " text-field(attribute,n,background-color,def-cat-background-color(),columns,16);
 }
 def-cat
 {
@@ -248,7 +248,7 @@ def-cat
 def-list:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Liste: " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
+    " lista: " text-field(attribute,n,background-color,def-list-background-color(),columns,16);
 }
 def-list
 {
@@ -260,8 +260,8 @@ def-list
 def-macro:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Makro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,30)
-    " Anzahl der Elemente = " 
+    " macro: " text-field(attribute,n,background-color,def-macro-background-color(),columns,30)
+    " número de elementos = " 
     text-field(attribute,npar,background-color,def-pos-background-color(),columns,1);
 }
 def-macro
@@ -273,7 +273,7 @@ def-macro
 
 def-var:before
 {
-    content: " Variable: " 
+    content: " variable: " 
     text-field(attribute,n,background-color,def-var-background-color(),columns,25);
 }
 def-var
@@ -284,7 +284,7 @@ def-var
 
 ends-with:before
 {
-    content: " endet mit: "check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " termina con: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 ends-with
 {
@@ -294,7 +294,7 @@ ends-with
 
 ends-with-list:before
 {
-    content: " endet mit etwas aus Liste: "check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " termina con algo en la lista: "check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 ends-with-list
 {
@@ -304,7 +304,7 @@ ends-with-list
 
 equal:before
 {
-    content: " gleich: " check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " igual: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 equal
 {
@@ -314,8 +314,8 @@ equal
 
 get-case-from:before
 {
-    content: " Fall holen von " 
-    " element: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
+    content: " obtener caso de " 
+    " elemento: " text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 get-case-from
 {
@@ -325,7 +325,7 @@ get-case-from
 
 in:before
 {
-    content: " in Liste: " check-box(attribute, caseless, label, "GroÃŸ-/Kleinschreibung beachten", unchecked-value, "nein", checked-value, "ja");
+    content: " en lista: " check-box(attribute, caseless, label, "distinguir mayúsculas", unchecked-value, "no", checked-value, "sí");
 }
 in
 {
@@ -335,7 +335,7 @@ in
 
 let:before
 {
-    content: " lassen: ";
+    content: " dejar: ";
 }
 let
 {
@@ -345,7 +345,7 @@ let
 
 list:before
 {
-    content: " Liste: ";
+    content: " lista: ";
 }
 list
 {
@@ -356,7 +356,7 @@ list
 
 list-item:before
 {
-    content:"Element: ";
+    content:"elemento: ";
 }
 list-item[v]
 {
@@ -367,7 +367,7 @@ list-item[v]
 
 lit:before
 {
-    content:" Literalzeichenkette: ";
+    content:" cadena literal: ";
 }
 lit
 {
@@ -378,7 +378,7 @@ lit
 
 lit-tag:before
 {
-    content:" Literal-Tag: ";
+    content:" etiqueta literal: ";
 }
 lit-tag
 {
@@ -389,7 +389,7 @@ lit-tag
 
 lu:before
 {
-    content: " lexikalische Einheit: ";
+    content: " unidad léxica: ";
 }
 lu
 {
@@ -399,7 +399,7 @@ lu
 
 mlu:before
 {
-    content: " Mehrwort: ";
+    content: " multi-palabra: ";
 }
 mlu
 {
@@ -409,7 +409,7 @@ mlu
 
 modify-case:before
 {
-    content: " Fall Ã¤ndern: ";
+    content: " modificar caso: ";
 }
 modify-case
 {
@@ -419,7 +419,7 @@ modify-case
 
 not:before
 {
-    content: " nicht: ";
+    content: " no: ";
 }
 not
 {
@@ -429,7 +429,7 @@ not
 
 or:before
 {
-    content: " oder: ";
+    content: " o: ";
 }
 or
 {
@@ -440,7 +440,7 @@ or
 otherwise:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " ansonsten: ";
+    " de lo contrario: ";
 }
 otherwise
 {
@@ -452,7 +452,7 @@ otherwise
 out:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Ausgabe: ";
+    " salida: ";
 }
 out
 {
@@ -463,7 +463,7 @@ out
 
 pattern:before
 {
-    content: " Muster: ";
+    content: " patrón: ";
 }
 pattern
 {
@@ -473,7 +473,7 @@ pattern
 
 pattern-item:before
 {
-    content:"Element: ";
+    content:"elemento: ";
 }
 pattern-item
 {
@@ -485,7 +485,7 @@ pattern-item
 rule:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Regel: " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
+    " regla: " text-field(attribute,comment,background-color,def-rule-background-color(),columns,35);
 }
 rule
 {
@@ -496,7 +496,7 @@ rule
 section-def-attrs:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Attribute: ";
+    " Atributos: ";
 }
 section-def-attrs
 {
@@ -507,7 +507,7 @@ section-def-attrs
 section-def-cats:before
 {
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Kategorien: ";
+    " Categorías: ";
 }
 section-def-cats
 {
@@ -519,7 +519,7 @@ section-def-lists:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Listen: ";
+    " Listas: ";
 }
 section-def-lists
 {
@@ -531,7 +531,7 @@ section-def-macros:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Makros: ";
+    " Macros: ";
 }
 section-def-macros
 {
@@ -543,7 +543,7 @@ section-def-vars:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Variablen: ";
+    " Variables: ";
 }
 section-def-vars
 {
@@ -554,7 +554,7 @@ section-rules:before
 {
    display:block;
    content:collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png)))
-    " Regeln: ";
+    " Reglas: ";
 }
 section-rules
 {
@@ -566,7 +566,7 @@ tag:before
 {
     display:block;
     padding-left:.125in;
-    content: " Tag: " ;
+    content: " etiqueta: " ;
 }
 tag
 {
@@ -577,7 +577,7 @@ tag
 tags:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " Tags: " ;
+    " etiquetas: " ;
 }
 tags
 {
@@ -588,7 +588,7 @@ tags
 
 test:before
 {
-    content: " Test: " label(attribute,c);
+    content: " prueba: " label(attribute,c);
 }
 test
 {
@@ -603,7 +603,7 @@ transfer
 
 var:before
 {
-    content:" Variable: ";
+    content:" variable: ";
 }
 var
 {
@@ -615,7 +615,7 @@ var
 when:before
 {
     content: collapser(collapsed-icon, icon(url(resources/plus-box.png)), expanded-icon, icon(url(resources/minus-box.png))) 
-    " wenn: ";
+    " cuando: ";
 }
 when
 {
@@ -626,7 +626,7 @@ when
 
 with-param:before
 {
-    content: " mit Element: " 
+    content: " con elemento: " 
     text-field(attribute,pos,background-color,def-pos-background-color(),columns,1);
 }
 with-param
