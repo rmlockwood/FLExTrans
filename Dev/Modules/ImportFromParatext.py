@@ -475,7 +475,7 @@ def do_import(DB, report, chapSelectObj, tree):
         ChapterSelection.insertParagraphs(DB, chapterContent, m_stTxtParaFactory, stText)
 
         # Build the title string from book abbreviation and chapter.
-        title = _translate("ImportFromParatext", "{bibleBook} {chapter}").format(bibleBook=bibleBook, chapter=str(titleChapNum).zfill(2))
+        title = "{bibleBook} {chapter}".format(bibleBook=bibleBook, chapter=str(titleChapNum).zfill(2))
         title += "-{toChap}".format(toChap=str(chapSelectObj.toChap).zfill(2)) if chapSelectObj.oneTextPerChapter == False and chapSelectObj.fromChap < chapSelectObj.toChap else ""
 
         # If the user wants to overwrite the existing text, remind them not to be in the Text and Words section. 
