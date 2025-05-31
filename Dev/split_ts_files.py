@@ -13,9 +13,15 @@ def extract_contexts(ts_text):
     # Find all <context>...</context> blocks, including newlines and inner tags
     return re.findall(r'(<context>.*?</context>)', ts_text, re.DOTALL)
 
-def get_context_name(context_text):
-    m = re.search(r'<name>(.*?)</name>', context_text, re.DOTALL)
-    return m.group(1).strip() if m else None
+def get_first_location_filename(context_text):
+    # Find the first <location filename="..."> property in the context
+    m = re.search(r'<location\s+filename="([^"]+)"', context_text)
+    if m:
+        # Only use the base filename (no path), and remove extension
+        base = os.path.basename(m.group(1))
+        name, _ = os.path.splitext(base)
+        return name
+    return None
 
 def main():
     cwd = os.getcwd()
@@ -35,11 +41,11 @@ def main():
         ts_version = get_ts_version(text)
         contexts = extract_contexts(text)
         for context in contexts:
-            context_name = get_context_name(context)
-            if not context_name:
-                print("Skipping context with no <name> element.")
+            base_filename = get_first_location_filename(context)
+            if not base_filename:
+                print("Skipping context with no <location filename=\"...\"> element.")
                 continue
-            out_name = f"{context_name}_{lang}.ts"
+            out_name = f"{base_filename}_{lang}.ts"
             with open(out_name, 'w', encoding='utf-8') as fout:
                 fout.write('<?xml version="1.0" encoding="utf-8"?>\n')
                 fout.write(f'<!DOCTYPE TS>\n<TS version="{ts_version}">\n')
