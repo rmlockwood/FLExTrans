@@ -24,27 +24,27 @@ preguntando si desea realizar cambios en el proyecto FUENTE. Esto no es cierto. 
 solo cambiará la base de datos de destino según lo especificado en el archivo de configuración.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="111"/>
+        <location filename="../InsertTargetText.py" line="114"/>
         <source>Failed to open the target database.</source>
         <translation>No se pudo abrir la base de datos de destino.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="114"/>
+        <location filename="../InsertTargetText.py" line="117"/>
         <source>Using: {targetProj} as the target database.</source>
         <translation>Usando: {targetProj} como la base de datos de destino.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="132"/>
+        <location filename="../InsertTargetText.py" line="135"/>
         <source>The Synthesize Text module must be run before this one. Could not open the synthesis file: &quot;</source>
-        <translation>El módulo "Sintetizar texto" debe ejecutarse antes que este. No se pudo abrir el archivo de síntesis: &quot;</translation>
+        <translation>El módulo &quot;Sintetizar texto&quot; debe ejecutarse antes que este. No se pudo abrir el archivo de síntesis: &quot;</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="161"/>
+        <location filename="../InsertTargetText.py" line="164"/>
         <source>Text: &quot;{sourceTextName} created in the {targetProj} project.</source>
         <translation>Texto: &quot;{sourceTextName} creado en el proyecto {targetProj}.</translation>
     </message>
     <message>
-        <location filename="../InsertTargetText.py" line="169"/>
+        <location filename="../InsertTargetText.py" line="172"/>
         <source>You need to run this module in &quot;modify mode.&quot;</source>
         <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
     </message>

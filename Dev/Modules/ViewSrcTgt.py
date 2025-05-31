@@ -224,11 +224,11 @@ class Main(QMainWindow):
             f = open(self.viewFile, encoding='utf-8')
         except IOError:
             if self.viewFile == self.src:
-                QMessageBox.warning(self, _translate("ReplacementEditor", 'File Error'), _translate("ReplacementEditor", 'There was a problem opening the Source Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
-                                    _translate("ReplacementEditor", 'Make sure you have run the {moduleName} module first.').format(moduleName=ExtractSourceText.docs[FTM_Name]))
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening the Source Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                                    _translate("ViewSrcTgt", 'Make sure you have run the {moduleName} module first.').format(moduleName=ExtractSourceText.docs[FTM_Name]))
             else:
-                QMessageBox.warning(self, _translate("ReplacementEditor", 'File Error'), _translate("ReplacementEditor", 'There was a problem opening a Target Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
-                                    _translate("ReplacementEditor", 'Make sure you have run the modules up through {moduleName} first.').format(moduleName=RunApertium.docs[FTM_Name]))
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening a Target Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                                    _translate("ViewSrcTgt", 'Make sure you have run the modules up through {moduleName} first.').format(moduleName=RunApertium.docs[FTM_Name]))
             return
         
         # Remove extra carriage returns apertium is giving us in the target file.

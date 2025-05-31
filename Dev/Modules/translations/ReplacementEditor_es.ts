@@ -4,12 +4,12 @@
 <context>
     <name>ReplacementEditor</name>
     <message>
-        <location filename="../ReplacementEditor.py" line="79"/>
+        <location filename="../ReplacementEditor.py" line="78"/>
         <source>Edit manual overrides for the bilingual dictionary.</source>
         <translation>Editar sobrescrituras manuales para el diccionario bilingüe.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="81"/>
+        <location filename="../ReplacementEditor.py" line="80"/>
         <source>This module provides an interface for editing the replacement dictionary
 which allows you to override the links created by the Sense Linker Tool
 in the presence of particular affixes. For example, if you have a noun that
@@ -22,44 +22,44 @@ generalmente se traduce de una manera, pero tiene una traducción diferente en e
 vocativo singular, puede especificarlo aquí.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="545"/>
+        <location filename="../ReplacementEditor.py" line="544"/>
         <source>There are unsaved changes.</source>
         <translation>Hay cambios no guardados.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="560"/>
+        <location filename="../ReplacementEditor.py" line="559"/>
         <source>The following sets of rows are identical on the source side and only the first one will have any effect:
 </source>
         <translation type="unfinished">Los siguientes conjuntos de filas son idénticos en el lado de origen y solo la primera tendrá algún efecto:
 </translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="562"/>
+        <location filename="../ReplacementEditor.py" line="561"/>
         <source>The following rows have no affixes and thus are redundant with the links created by Sense Linker Tool: </source>
         <translation>Las siguientes filas no tienen afijos y, por lo tanto, son redundantes con los enlaces creados por la herramienta Sense Linker: </translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="565"/>
+        <location filename="../ReplacementEditor.py" line="564"/>
         <source>Useless Lines:</source>
         <translation>Filas inútiles:</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="577"/>
+        <location filename="../ReplacementEditor.py" line="576"/>
         <source>Replacement dictionary file saved.</source>
         <translation>Archivo del diccionario de reemplazo guardado.</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="583"/>
+        <location filename="../ReplacementEditor.py" line="582"/>
         <source>Unsaved Changes</source>
         <translation>Cambios no guardados</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="583"/>
+        <location filename="../ReplacementEditor.py" line="582"/>
         <source>Save changes before exiting?</source>
         <translation>¿Guardar los cambios antes de salir?</translation>
     </message>
     <message>
-        <location filename="../ReplacementEditor.py" line="604"/>
+        <location filename="../ReplacementEditor.py" line="608"/>
         <source>A value for {configValue} not found in the configuration file.</source>
         <translation>No se encontró un valor para {configValue} en el archivo de configuración.</translation>
     </message>

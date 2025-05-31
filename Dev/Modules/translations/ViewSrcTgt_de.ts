@@ -4,12 +4,12 @@
 <context>
     <name>ViewSrcTgt</name>
     <message>
-        <location filename="../ViewSrcTgt.py" line="93"/>
+        <location filename="../ViewSrcTgt.py" line="96"/>
         <source>View an easy-to-read source or target text file.</source>
         <translation>Eine gut lesbare Quell- oder Zieltextdatei anzeigen.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="95"/>
+        <location filename="../ViewSrcTgt.py" line="98"/>
         <source>This module will display a more readable view of the Apertium source or target 
 file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
@@ -22,32 +22,32 @@ dunkelrosa-unbekanntes Lemma, rosa-unbekannte Kategorie, rot-Lemma nicht gefunde
 müssen die Module bis {RunApertium.docs[FTM_Name]} ausführen, bevor Sie dieses Modul starten.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="227"/>
+        <location filename="../ViewSrcTgt.py" line="230"/>
         <source>File Error</source>
         <translation>Dateifehler</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="224"/>
+        <location filename="../ViewSrcTgt.py" line="227"/>
         <source>There was a problem opening the Source Apertium Text file: {fileName}. </source>
         <translation>Es gab ein Problem beim Öffnen der Apertium-Quelltextdatei: {fileName}. </translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="224"/>
+        <location filename="../ViewSrcTgt.py" line="227"/>
         <source>Make sure you have run the {moduleName} module first.</source>
         <translation>Stellen Sie sicher, dass Sie zuerst das Modul {moduleName} ausgeführt haben.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="227"/>
+        <location filename="../ViewSrcTgt.py" line="230"/>
         <source>There was a problem opening a Target Apertium Text file: {fileName}. </source>
         <translation>Es gab ein Problem beim Öffnen einer Apertium-Zieltextdatei: {fileName}. </translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="227"/>
+        <location filename="../ViewSrcTgt.py" line="230"/>
         <source>Make sure you have run the modules up through {moduleName} first.</source>
         <translation>Stellen Sie sicher, dass Sie zuerst die Module bis einschließlich {moduleName} ausgeführt haben.</translation>
     </message>
     <message>
-        <location filename="../ViewSrcTgt.py" line="319"/>
+        <location filename="../ViewSrcTgt.py" line="322"/>
         <source>Open in Browser</source>
         <translation>Im Browser öffnen</translation>
     </message>

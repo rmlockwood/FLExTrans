@@ -54,12 +54,12 @@
         <translation>Export nach Paratext...</translation>
     </message>
     <message>
-        <location filename="../TranslateText.py" line="152"/>
+        <location filename="../TranslateText.py" line="163"/>
         <source>Inserting text into the target project...</source>
         <translation>Text wird in das Zielprojekt eingefügt...</translation>
     </message>
     <message>
-        <location filename="../TranslateText.py" line="157"/>
+        <location filename="../TranslateText.py" line="168"/>
         <source>Translation complete.</source>
         <translation>Übersetzung abgeschlossen.</translation>
     </message>
