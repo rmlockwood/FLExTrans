@@ -1375,10 +1375,6 @@ def getPathRelativeToWorkProjectsDir(fullPath):
     # Return the path starting from 'WorkProjects'
     return "..."+fullPath[index:]
 
-def getInterfaceLangCode():
-
-    return 'de'
-
 def loadTranslations(libList, translatorsList, loadBase=False):
 
     if loadBase:
@@ -1423,3 +1419,7 @@ class LocalizedDateTimeFormatter:
 
         locale = self.getLocale(getInterfaceLangCode())
         return locale.toString(datetimeObj, formatType)
+    
+def getInterfaceLangCode():
+
+    return 'es'
