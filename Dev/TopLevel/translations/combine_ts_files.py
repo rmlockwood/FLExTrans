@@ -9,7 +9,7 @@ def get_lang_code(filename):
 
 def main():
     cwd = os.getcwd()
-    dir_name = os.path.basename(cwd+'\\..')
+    parent_dir = os.path.basename(os.path.dirname(cwd))  # Get parent folder name
     ts_files = [f for f in os.listdir(cwd) if f.endswith('.ts')]
     lang_files = {}
     for f in ts_files:
@@ -32,8 +32,8 @@ def main():
         for context in contexts:
             ts_root.append(context)
         # Write output file
-        out_name = f"{dir_name}_{lang}.ts"
-        ET.ElementTree(ts_root).write(out_name, encoding='utf-8', xml_declaration=True)
+        out_name = f"{parent_dir}_{lang}.ts"
+        ET.ElementTree(ts_root).write(out_name, encoding='utf-8', xml_declaration=True, short_empty_elements=False, method='xml')
         print(f"Wrote {out_name} with {len(contexts)} contexts.")
 
 if __name__ == "__main__":
