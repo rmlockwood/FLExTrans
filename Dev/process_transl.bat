@@ -5,11 +5,11 @@ REM Define language codes
 set lang_codes=de es
 
 REM Define directories to process
-set directories=TopLevel
-rem Modules Lib Lib\Windows
+set directories=Lib\Windows
+rem TopLevel Modules Lib Lib\Windows
 
 REM Define excluded files
-set exclude_files=FLExTrans.py Version.py
+set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py
 
 REM Define target folder
 set destination="C:\Data\FLExTrans\Dev\Active Projects\FlexTools\Modules\FLExTrans"
