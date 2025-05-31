@@ -46,7 +46,7 @@ except AttributeError:
     sourceText = ""
 
 # return a string that gets added to the status bar
-retStr = _translate("StatusBar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
+retStr = _translate("FLExTransStatusbar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
 
 app.quit()
 del app
