@@ -47,5 +47,20 @@ de un número de capítulo o un rango de números de capítulo.</translation>
         <source>Exporting from the {proj} project...</source>
         <translation>Exportando desde el proyecto {proj}...</translation>
     </message>
+    <message>
+        <location filename="../ExportFlexToParatext.py" line="134"/>
+        <source>Export from {selProj} to Paratext</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ExportFlexToParatext.py" line="138"/>
+        <source>Export from multiple FLEx projects to Paratext</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ExportFlexToParatext.py" line="142"/>
+        <source>Export from {DB} to Paratext</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
