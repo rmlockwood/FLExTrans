@@ -5,8 +5,7 @@ REM Define language codes
 set lang_codes=de es
 
 REM Define directories to process
-set directories=Lib\Windows
-rem TopLevel Modules Lib Lib\Windows
+set directories=TopLevel Modules Lib Lib\Windows
 
 REM Define excluded files
 set exclude_files=FLExTrans.py Version.py ClusterUtils.py ComboBox.py FTPaths.py MyTableView.py
