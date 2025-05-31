@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>SettingsWindow</name>
+    <name>SettingsGUI</name>
     <message>
         <location filename="../SettingsGUI.py" line="638"/>
         <source>View Mode</source>
