@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.13.3 - 6/2/25 - Ron Lockwood
+#    Improved exception handling around use of the HermitCrab DLL.
+# 
 #   Version 3.13.2 - 3/20/25 - Ron Lockwood
 #    Move the Mixpanel logging to the main function. Callers should do it.
 # 
@@ -139,7 +142,7 @@ These forms are then used to create the target text.
 """
 
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.13.2",
+        FTM_Version    : "3.13.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : "Synthesizes the target text with the tool HermitCrab.",
         FTM_Help       :"",
@@ -211,11 +214,28 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
     # If the target FLEx project hasn't changed and useCache is true than don't run HermitCrab, just return
     if not DONT_CACHE and useCacheIfAvailable and not configFileOutOfDate(TargetDB, HCconfigPath):
 
-        if DLLobj and (xmlFile := DLLobj.get_HcXmlFile()) == '':
+        if DLLobj:
+            
+            try:
+                xmlFile = DLLobj.get_HcXmlFile()
 
-            if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+            except Exception as e:
+
+                errorList.append((f'An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}', 2))
                 return errorList
+            
+            if xmlFile == '':
+
+                try:
+                    if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                        errorList.append(('An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                        return errorList
+                
+                except Exception as e:
+
+                    errorList.append(('An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}'.format(e=e), 2))
+                    return errorList
 
         errorList.append(("The HermitCrab configuration file is up to date.", 0))
         return errorList
@@ -243,8 +263,15 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             # Reload the config file into the dll object.
             if DLLobj:
 
-                if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
-                    errorList.append((f'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)', 2))
+                try:
+                    if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
+
+                        errorList.append(('An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. This happened after the config file was generated. (DLL)', 2))
+                        return errorList
+                
+                except Exception as e:
+
+                    errorList.append(('An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}'.format(e=e), 2))
                     return errorList
 
         except subprocess.CalledProcessError as e:
@@ -532,14 +559,26 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
                 DLLobj.DoTracing = False
                 DLLobj.ShowTracing = False
 
-            if (ret := DLLobj.SetGlossFile(parsesFile)) != SUCCESS:
+            try:
+                if (ret := DLLobj.SetGlossFile(parsesFile)) != SUCCESS:
 
-                errorList.append((f'An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                    errorList.append((f'An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                    return errorList
+
+            except Exception as e:
+
+                errorList.append(('An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}'.format(e=e), 2))
                 return errorList
+            
+            try:
+                if (ret := DLLobj.Process()) != SUCCESS:
 
-            if (ret := DLLobj.Process()) != SUCCESS:
+                    errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                    return errorList
+            
+            except Exception as e:
 
-                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).', 2))
+                errorList.append(('An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}'.format(e=e), 2))
                 return errorList
         else:
             params = [FTPaths.HC_SYNTHESIZE, '-h', HCconfigPath, '-g', parsesFile, '-o', surfaceFormsFile]
@@ -552,6 +591,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             result = subprocess.run(params, capture_output=True, check=True)
 
             if result.returncode != 0:
+                
                 errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
