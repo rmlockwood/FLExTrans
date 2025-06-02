@@ -10,7 +10,9 @@ Do these things when making a new release (when a beta release is not already se
 -Change TeamCity 
  -Click on Build FLExTrans Installer
  -Click on Settings
- -Change artifact paths if going to a new major version
+ -Under Build Configurations, Build FLExTrans Installer, click Edit
+ -Change artifact paths for the new version
+ -Click Save
 -Build and test the install locally
 -Do another commit that has the install changes
 -Finish merging all pull requests
