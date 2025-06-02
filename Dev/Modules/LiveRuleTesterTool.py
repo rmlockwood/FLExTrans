@@ -8,6 +8,9 @@
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
+#   Version 3.13.3 - 6/2/25 - Ron Lockwood
+#    Improved exception handling around use of the HermitCrab DLL.
+# 
 #   Version 3.13.2 - 4/9/25 - Ron Lockwood
 #    Delete non-sentence-ending punctuation from the synthesis result before adding it to the testbed.
 #    Also, apply Text Out rules to the sentence-ending punctuation if necessary.
@@ -1208,7 +1211,15 @@ class Main(QMainWindow):
 
                 # Change to the Fieldworks folder for doing the dll operations
                 fieldworksDir = os.getenv(ENVIR_VAR_FIELDWORKSDIR)
-                os.chdir(fieldworksDir)
+
+                try:
+                    os.chdir(fieldworksDir)
+
+                except OSError as e:
+
+                    QMessageBox.warning(self, 'Directory Error', 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}'.format)
+                    self.unsetCursor()
+                    return
 
                 # Import the clr module from pythonnet
                 import clr 
@@ -1218,7 +1229,14 @@ class Main(QMainWindow):
                 from SIL.HCSynthByGloss2 import HCSynthByGlossDll # type: ignore
 
                 # Initialize the object with the output file name
-                self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
+                try:
+                    self.HCdllObj = HCSynthByGlossDll(self.surfaceFormsFile)
+
+                except Exception as e:
+
+                    QMessageBox.warning(self, 'DLL Error', 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}'.format(e=e))
+                    self.unsetCursor()
+                    return
 
         ## CATALOG
         # Catalog all the target affixes
