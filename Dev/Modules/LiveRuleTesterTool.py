@@ -1217,7 +1217,7 @@ class Main(QMainWindow):
 
                 except OSError as e:
 
-                    QMessageBox.warning(self, 'Directory Error', 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}'.format)
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'Directory Error'), _translate("LiveRuleTesterTool", 'Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}').format)
                     self.unsetCursor()
                     return
 
@@ -1234,7 +1234,7 @@ class Main(QMainWindow):
 
                 except Exception as e:
 
-                    QMessageBox.warning(self, 'DLL Error', 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}'.format(e=e))
+                    QMessageBox.warning(self, _translate("LiveRuleTesterTool", 'DLL Error'), _translate("LiveRuleTesterTool", 'An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}').format(e=e))
                     self.unsetCursor()
                     return
 
