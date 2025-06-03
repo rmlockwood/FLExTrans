@@ -321,14 +321,23 @@ def _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, genword
             words = translation.split()
             modified_words = words.copy()
             
-            # Replace words based on the current substitutions
-            for i, word in enumerate(words):
-                if genWordN and genwordsN and word in [gw.gloss for gw in genwordsN]:
-                    modified_words[i] = genWordN.gloss
-                elif genWord1 and genwords1 and word in [gw.gloss for gw in genwords1]:
-                    modified_words[i] = genWord1.gloss
-                elif genWord2 and genwords2 and word in [gw.gloss for gw in genwords2]:
-                    modified_words[i] = genWord2.gloss
+            # First handle noun substitutions (N)
+            if genWordN and genwordsN:
+                for i, word in enumerate(words):
+                    if word in [gw.gloss for gw in genwordsN]:
+                        modified_words[i] = genWordN.gloss
+            
+            # Then handle adjective substitutions (1)
+            if genWord1 and genwords1:
+                for i, word in enumerate(words):
+                    if word in [gw.gloss for gw in genwords1]:
+                        modified_words[i] = genWord1.gloss
+            
+            # Then handle any other substitutions (2)
+            if genWord2 and genwords2:
+                for i, word in enumerate(words):
+                    if word in [gw.gloss for gw in genwords2]:
+                        modified_words[i] = genWord2.gloss
             
             f_out2.write(" ".join(modified_words) + "\n")
         else:
