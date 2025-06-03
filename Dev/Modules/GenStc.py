@@ -502,7 +502,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         #processSentenceOld(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         if translationFile:
-            processSentence(wrdList, idxN_List, idx1_List, idx2_List, subListN, subList1, subList2, f_out, stc, report, f_out2, genwordsN, genwords1, genwords2)
+            processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report, f_out2, genwordsN, genwords1, genwords2)
             #processFreeTranslationOld(stc.getFreeTranslation(), subListN, subList1, subList2, genwordsN, genwords1, genwords2, f_out2)
 
             
