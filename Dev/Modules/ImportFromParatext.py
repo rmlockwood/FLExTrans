@@ -448,9 +448,6 @@ def do_import(DB, report, chapSelectObj, tree):
     # Set the starting chapter number for the title which may get incremented
     titleChapNum = chapSelectObj.fromChap
 
-    # Flag for overwriting mutliple chapters
-    overwriteAllChapters = False
-
     # Loop through each 'chapter'
     for chapterContent in byChapterList:
 
@@ -475,7 +472,7 @@ def do_import(DB, report, chapSelectObj, tree):
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
         # If the user wants to overwrite the existing text, remind them not to be in the Text and Words section. 
-        if chapSelectObj.overwriteText and not overwriteAllChapters:
+        if chapSelectObj.overwriteText and not chapSelectObj.overwriteAllChapters:
             
             # Create a QMessageBox instance 
             msgBox = QMessageBox()
@@ -489,13 +486,15 @@ def do_import(DB, report, chapSelectObj, tree):
 
             # Display the message box and wait for user interaction
             ret = msgBox.exec_()
+            if ret == QMessageBox.Yes:
+                    chapSelectObj.confirmContinueOverwrite = True
 
             # Check if the user wants to overwrite all chapters
             if checkbox.isChecked():
-                overwriteAllChapters = True
+                chapSelectObj.overwriteAllChapters = True
 
         #check if overwriteText is true, and the confirmation from the messagebox is also true
-        if chapSelectObj.overwriteText and ret == QMessageBox.Yes:
+        if chapSelectObj.overwriteText and chapSelectObj.confirmContinueOverwrite:
 
             # Find the text
             for interlinText in DB.ObjectsIn(ITextRepository):
@@ -580,6 +579,9 @@ def MainFunction(DB, report, modify=True):
     app.exec_()
     
     if window.retVal == True:
+
+        # Flag for overwriting multiple chapters
+        overwriteAllChapters = False
         
         if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
 
