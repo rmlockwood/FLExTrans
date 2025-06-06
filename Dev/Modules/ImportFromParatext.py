@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.13.4 - 5/29/25 - Sara Mason
+#   Fixes #997 Allows the user to choose if they want to overwrite all selected chapters, from the one message box.
+#
 #   Version 3.13.3 - 5/17/25 - Sara Mason
 #   Fixes #973 Warns the user not to be in the Text & Words section when overwriting a text.
 #
@@ -142,7 +145,7 @@ from SIL.LCModel.Core.Text import TsStringUtils # type: ignore
 
 from flextoolslib import *                                                 
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QComboBox, QMessageBox, QCheckBox
 from PyQt5.QtGui import QIcon
 
 import FTPaths
@@ -469,7 +472,7 @@ def do_import(DB, report, chapSelectObj, tree):
                 title += '-' + str(chapSelectObj.toChap).zfill(2)
 
         # If the user wants to overwrite the existing text, remind them not to be in the Text and Words section. 
-        if chapSelectObj.overwriteText:
+        if chapSelectObj.overwriteText and not chapSelectObj.overwriteAllChapters:
             
             # Create a QMessageBox instance 
             msgBox = QMessageBox()
@@ -478,12 +481,20 @@ def do_import(DB, report, chapSelectObj, tree):
             msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?')
             msgBox.setWindowTitle("Overwriting FLEx text")
             msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            checkbox = QCheckBox("Overwrite all selected chapters")
+            msgBox.setCheckBox(checkbox)
 
             # Display the message box and wait for user interaction
             ret = msgBox.exec_()
+            if ret == QMessageBox.Yes:
+                    chapSelectObj.confirmContinueOverwrite = True
+
+            # Check if the user wants to overwrite all chapters
+            if checkbox.isChecked():
+                chapSelectObj.overwriteAllChapters = True
 
         #check if overwriteText is true, and the confirmation from the messagebox is also true
-        if chapSelectObj.overwriteText and ret == QMessageBox.Yes:
+        if chapSelectObj.overwriteText and chapSelectObj.confirmContinueOverwrite:
 
             # Find the text
             for interlinText in DB.ObjectsIn(ITextRepository):
@@ -568,7 +579,7 @@ def MainFunction(DB, report, modify=True):
     app.exec_()
     
     if window.retVal == True:
-        
+
         if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
 
             for i, proj in enumerate(window.chapSel.clusterProjects):

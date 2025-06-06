@@ -87,6 +87,8 @@ class ChapterSelection(object):
     
         self.export = export
         self.dontShowWarning = False
+        self.overwriteAllChapters = False
+        self.confirmContinueOverwrite = False
 
         if self.export:
             self.exportProjectAbbrev = projectAbbrev  
