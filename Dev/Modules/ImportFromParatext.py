@@ -580,9 +580,6 @@ def MainFunction(DB, report, modify=True):
     
     if window.retVal == True:
 
-        # Flag for overwriting multiple chapters
-        overwriteAllChapters = False
-        
         if window.chapSel.clusterProjects and len(window.chapSel.clusterProjects) > 0:
 
             for i, proj in enumerate(window.chapSel.clusterProjects):
