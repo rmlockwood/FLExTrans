@@ -292,37 +292,24 @@ def processSentenceOld(wrdList, idxNList, idx1List, idx2List, subListN, subList1
 
 def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report, f_out2=None, genwordsN=None, genwords1=None, genwords2=None):
     """Process and substitute words in the sentence, writing to output file."""
-    # Get the original gloss words that correspond to our substitution points
-    original_gloss_words = {}
-    if f_out2:
-        translation = stc.getFreeTranslation()
-        if translation:
-            words = translation.split()
-            # Map from target language indices to gloss word indices
-            for idx in idxNList:
-                original_gloss_words[idx] = words[idx] if idx < len(words) else None
-            for idx in idx1List:
-                original_gloss_words[idx] = words[idx] if idx < len(words) else None
-            for idx in idx2List:
-                original_gloss_words[idx] = words[idx] if idx < len(words) else None
     
     for genWordN in subListN:
         _processWord(wrdList, idxNList, genWordN, report)
         
         if not idx1List:
-            _writeSentencePair(stc, f_out, f_out2, genWordN, None, None, original_gloss_words, idxNList, [], [])
+            _writeSentencePair(stc, f_out, f_out2, genWordN, None, None, idxNList, [], [])
         else:
             for genWord1 in subList1:
                 _processWord(wrdList, idx1List, genWord1, report)
                 
                 if not idx2List:
-                    _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, None, original_gloss_words, idxNList, idx1List, [])
+                    _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, None, idxNList, idx1List, [])
                 else:
                     for genWord2 in subList2:
                         _processWord(wrdList, idx2List, genWord2, report)
-                        _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, original_gloss_words, idxNList, idx1List, idx2List)
+                        _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, idxNList, idx1List, idx2List)
 
-def _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, original_gloss_words, idxNList, idx1List, idx2List):
+def _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, idxNList, idx1List, idx2List):
     """Write both target language sentence and English gloss, keeping them aligned."""
     # Write target language sentence
     stc.write(f_out)
