@@ -25,6 +25,12 @@
 !define TEXTIN "FLExTrans.Text In Rules"
 !define TEXTOUT "FLExTrans.Text Out Rules"
 !define EXPORTFROMFLEX "FLExTrans.Export Text from Target FLEx to Paratext"
+#!define DRAFTING_COL
+#!define RUN_TESTBED_COL
+#!define TOOLS_COL
+#!define SYNTHESIS_TEST_COL
+#!define CLUSTERS_COL
+#!define FLEXTRANS_COL
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -93,24 +99,24 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
-LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollk?stchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "?Instalar Python 3.11.7?$\n?IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opci?n 'Install now'."
-
+LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\\nUse la opción 'Install now'."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
-LangString InstallXMLmindMsg ${LANG_SPANISH} "?Instalar XMLmind?"
+LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
+# German
+LangString Drafting       ${LANG_GERMAN} "Entwerfen"
+LangString Run_Testbed    ${LANG_GERMAN} "Tests durchführen"
+LangString Tools          ${LANG_GERMAN} "Wekzeuge"
+LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest"
+LangString Clusters       ${LANG_GERMAN} "Clusters"
 
-LangString Drafting       ${LANG_GERMAN} "Entwerfen.ini"
-LangString Run_Testbed    ${LANG_GERMAN} "Tests durchfÃ¼hren.ini"
-LangString Tools          ${LANG_GERMAN} "Wekzeuge.ini"
-LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest.ini"
-LangString Clusters       ${LANG_GERMAN} "Clusters.ini"
-
-LangString Drafting       ${LANG_SPANISH} "RedacciÃ³n.ini"
-LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed.ini"
-LangString Tools          ${LANG_SPANISH} "Herramientas.ini"
-LangString Synthesis_Test ${LANG_SPANISH} "Prueba de sÃ­ntesis.ini"
-LangString Clusters       ${LANG_SPANISH} "Racimos.ini"
+# Spanish
+LangString Drafting       ${LANG_SPANISH} "Redacción"
+LangString Run_Testbed    ${LANG_SPANISH} "Ejecutar testbed"
+LangString Tools          ${LANG_SPANISH} "Herramientas"
+LangString Synthesis_Test ${LANG_SPANISH} "Prueba de síntesis"
+LangString Clusters       ${LANG_SPANISH} "Racimos"
 
 Section -Prerequisites
 InitPluginsDir
@@ -231,7 +237,7 @@ InitPluginsDir
     StrCmp $8 "" skip
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentproject = 'German-FLExTrans-Sample'" "currentproject = '$8'"
     !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "currentcollection = 'Drafting'" "currentcollection = '$9'"
-    
+			
     # Find all collection ini files (e.g. tools.ini)
     skip:
     FindFirst $3 $4 "${WORKPROJECTSDIR}\$1\Config\Collections\*.ini"
@@ -266,7 +272,7 @@ InitPluginsDir
 
 			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
 			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
-			
+
 		${Else}
 			# Rename modules in the all the .ini files (for old installs)
 			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
@@ -308,23 +314,51 @@ InitPluginsDir
   File "${GIT_FOLDER}\Clusters.ini"
 
   SetOverwrite on
-  
+
   # If we are not installing for English, rename the .ini files appropriately.
   # We are only supporting renaming from English to something else. For other situations they must delete their .ini files
   ${If} $LANGUAGE != ${LANG_ENGLISH}
-    StrCpy $0 "$(Drafting)"
-    Rename "$OUTDIR\Drafting.ini" "$OUTDIR\$0" 
-    StrCpy $0 "$(Run_Testbed)"
-    Rename "$OUTDIR\Run Testbed.ini" "$OUTDIR\$0" 
-    StrCpy $0 "$(Tools)"
-    Rename "$OUTDIR\Tools.ini" "$OUTDIR\$0" 
-    StrCpy $0 "$(Synthesis_Test)"
-    Rename "$OUTDIR\Synthesis Test.ini" "$OUTDIR\$0" 
-    StrCpy $0 "$(Clusters)"
-    Rename "$OUTDIR\Clusters.ini" "$OUTDIR\$0" 
+  
+    # Fix up ini files, for UI language chosen
+    SetOutPath ${WORKPROJECTSDIR}
+    FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
+    loop8:
+      StrCmp $1 "" done8
+      StrCmp $1 "." nextfolder8
+      StrCmp $1 ".." nextfolder8
+        
+      # Replace collection names that are in collectiontabs (or current) with the language equivalent
+      ${If} $LANGUAGE != ${LANG_ENGLISH}
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Tools" "$(Tools)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
+      ${EndIf}
+      
+      # Renaming
+      SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
+
+      StrCpy $R0 "$(Drafting)"
+      Rename "$OUTDIR\Drafting.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Run_Testbed)"
+      Rename "$OUTDIR\Run Testbed.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Tools)"
+      Rename "$OUTDIR\Tools.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Synthesis_Test)"
+      Rename "$OUTDIR\Synthesis Test.ini" "$OUTDIR\$R0.ini" 
+      StrCpy $R0 "$(Clusters)"
+      Rename "$OUTDIR\Clusters.ini" "$OUTDIR\$R0.ini" 
+
+      nextfolder8:  
+      FindNext $0 $1
+      Goto loop8
+    done8:
+      FindClose $0
+
   ${EndIf}
 
-# Attempt to run pip to install FlexTools dependencies
+  # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
   File "${GIT_FOLDER}\Command.bat"
@@ -448,9 +482,8 @@ SectionEnd
 
 # Define the string in each language
 LangString ChooseFolderText ${LANG_ENGLISH} "Choose where to put FLExTrans folder."
-LangString ChooseFolderText ${LANG_GERMAN} "W?hlen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
-LangString ChooseFolderText ${LANG_SPANISH} "Elija d?nde colocar la carpeta FLExTrans."
-
+LangString ChooseFolderText ${LANG_GERMAN} "Wählen Sie, wo der FLExTrans-Ordner abgelegt werden soll."
+LangString ChooseFolderText ${LANG_SPANISH} "Elija dónde colocar la carpeta FLExTrans."
 LangString BrowseText ${LANG_ENGLISH} "Browse"
 LangString BrowseText ${LANG_GERMAN} "Durchsuchen"
 LangString BrowseText ${LANG_SPANISH} "Navegar"
@@ -490,16 +523,15 @@ ${NSD_SetText} $DESTTEXT $OUT_FOLDER
 FunctionEnd
 
 LangString ProdModeLabelText ${LANG_ENGLISH} "Do you want to set FLExTrans up for production use? If you choose Yes, the installer will set up a simpler interface for production use. For normal development work with FLExTrans leave this as 'No'."
-LangString ProdModeLabelText ${LANG_GERMAN} "M?chten Sie FLExTrans f?r den Produktionseinsatz einrichten? Wenn Sie 'Ja' w?hlen, wird der Installer eine einfachere Oberfl?che f?r den Produktionseinsatz einrichten. F?r normale Entwicklungsarbeit mit FLExTrans lassen Sie dies auf 'Nein'."
-LangString ProdModeLabelText ${LANG_SPANISH} "?Desea configurar FLExTrans para uso en producci?n? Si elige S?, el instalador configurar? una interfaz m?s simple para el uso en producci?n. Para el trabajo de desarrollo normal con FLExTrans, deje esto en 'No'."
-
+LangString ProdModeLabelText ${LANG_GERMAN} "Möchten Sie FLExTrans für den Produktionseinsatz einrichten? Wenn Sie 'Ja' wählen, wird der Installer eine einfachere Oberfläche für den Produktionseinsatz einrichten. für normale Entwicklungsarbeit mit FLExTrans lassen Sie dies auf 'Nein'."
+LangString ProdModeLabelText ${LANG_SPANISH} "¿Desea configurar FLExTrans para uso en producción? Si elige Sí, el instalador configurará una interfaz más simple para el uso en producción. Para el trabajo de desarrollo normal con FLExTrans, deje esto en 'No'."
 LangString NoText ${LANG_ENGLISH} "No"
 LangString NoText ${LANG_GERMAN} "Nein"
 LangString NoText ${LANG_SPANISH} "No"
 
 LangString YesText ${LANG_ENGLISH} "Yes"
 LangString YesText ${LANG_GERMAN} "Ja"
-LangString YesText ${LANG_SPANISH} "S?"
+LangString YesText ${LANG_SPANISH} "Sí"
 
 Function ProdModeDialog
   nsDialogs::Create 1018
@@ -530,9 +562,9 @@ Function .onInit
 	Push ${LANG_ENGLISH}
 	Push English
 	Push ${LANG_SPANISH}
-	Push Spanish
+	Push Espanol
 	Push ${LANG_GERMAN}
-	Push German
+	Push Deutsch
 	Push A ; A means auto count languages
 	       ; for the auto count to work the first empty push (Push "") must remain
 	LangDLL::LangDialog "Installer Language" "Please select the language to use with FLExTrans."
