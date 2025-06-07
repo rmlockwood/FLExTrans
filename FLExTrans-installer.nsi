@@ -98,6 +98,11 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
+# XXE AddOn Zip file
+LangString AddOnLangZip ${LANG_ENGLISH} "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
+LangString AddOnLangZip ${LANG_GERMAN}  "AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
+LangString AddOnLangZip ${LANG_SPANISH} "AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
+
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
 LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
 LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
@@ -446,8 +451,21 @@ associate_extension:
   # Notify Windows of the change
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 
+
+  # Retrieve all the XXE addons, including the language specific ones
   File "${GIT_FOLDER}\${ADD_ON_ZIP_FILE}"
+  File "${GIT_FOLDER}\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
+  File "${GIT_FOLDER}\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
+  
+  # Install the English one first
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
+  
+  ${If} $LANGUAGE != ${LANG_ENGLISH}
+    # Now overwrite some of the files with the Language specific ones
+    nsisunz::Unzip "$INSTDIR\install_files\$(AddOnLangZip)" "$APPDATA\XMLmind\XMLEditor8\addon"
+  ${EndIf}
+  
+  # Install the XXE properties file
   SetOutPath "$APPDATA\XMLmind\XMLEditor8"
   File "${GIT_FOLDER}\preferences.properties"
   SetOutPath "$INSTDIR"

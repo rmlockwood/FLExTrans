@@ -1,7 +1,12 @@
 SET FLEXTRANS_VERSION=3.13.1
+
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
+
+rem User interface language codes
+set LANG_CODES=de es
+
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
@@ -87,6 +92,7 @@ rem SampleProjects
 copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
 copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
 
+rem Zip XXE AddOns
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
 7z a %ADD_ON_ZIP_FILE% ApertiumDictionaryXMLmind
@@ -100,8 +106,27 @@ cd XXEaddon
 copy /Y %ADD_ON_ZIP_FILE% ..
 copy /Y %ADD_ON_ZIP_FILE% ..\"previous versions"
 del %ADD_ON_ZIP_FILE%
+
+setlocal enabledelayedexpansion
+
+rem List of language codes
+set LANG_CODES=de es
+
+for %%L in (%LANG_CODES%) do (
+
+    cd translations\%%L
+    set "ADD_ON_ZIP_FILE_LANG=AddOnsForXMLmind_%%L%FLEXTRANS_VERSION%.zip"
+    7z a "!ADD_ON_ZIP_FILE_LANG!" ApertiumTransferXMLmind
+
+    copy /Y "!ADD_ON_ZIP_FILE_LANG!" ..\..\..
+    copy /Y "!ADD_ON_ZIP_FILE_LANG!" ..\..\..\"previous versions"
+    del "!ADD_ON_ZIP_FILE_LANG!"
+    cd ..\..
+)
+endlocal
 cd ..
 
+rem Zip the FlexTools folder
 SET ZIP_FILE=FLExToolsWithFLExTrans%FLEXTRANS_VERSION%.zip
 cd Install%INSTALL_FOLDER_VERSION%
 7z a %ZIP_FILE% FLExTrans
@@ -110,6 +135,7 @@ copy /Y %ZIP_FILE% ..\"previous versions"
 del %ZIP_FILE%
 cd ..
 
+rem Zip the HermitCrap tools
 SET HC_ZIP_FILE=HermitCrabTools%FLEXTRANS_VERSION%.zip
 cd HermitCrabSynthesis
 7z a %HC_ZIP_FILE% *
