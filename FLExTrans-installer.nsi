@@ -590,7 +590,7 @@ Function .onInit
 	Push ${LANG_ENGLISH}
 	Push English
 	Push ${LANG_SPANISH}
-	Push Espanol
+	Push Español
 	Push ${LANG_GERMAN}
 	Push Deutsch
 	Push A ; A means auto count languages
