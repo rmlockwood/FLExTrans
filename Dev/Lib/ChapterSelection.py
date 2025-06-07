@@ -8,6 +8,9 @@
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
+#   Version 3.13.3 - 6/6/25 - Ron Lockwood
+#    Fixes #1004. Handle any kind of unicode dash in verse references.
+#
 #   Version 3.13.2 - 4/22/25 - Ron Lockwood
 #    Fixes #967. Handle \xt until \xt*. Sometimes \xt gets terminated with \x* and sometimes with \xt*.
 #
@@ -66,7 +69,7 @@
 #
 
 import os
-import re
+import regex as re
 from shutil import copyfile
 import winreg
 import glob
@@ -96,6 +99,8 @@ class ChapterSelection(object):
     
         self.export = export
         self.dontShowWarning = False
+        self.overwriteAllChapters = False
+        self.confirmContinueOverwrite = False
 
         if self.export:
             self.exportProjectAbbrev = projectAbbrev  
@@ -165,19 +170,20 @@ def splitSFMs(inputStr):
                     r'\||'                  # verticle bar
                     r'\\\w+\*|'             # end marker
                     r'\\f \+ |'             # footnote with plus
-                    r'\\fr \d+[:.]\d+-\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                    r'\\fr \d+[:.]\d+[\p{Pd}]\d+|' # footnote reference with dash (either colon or dot separating chapter and verse)
+                                            # the \p{Pd} is any unicode dash (property=Pd), so it will match the en-dash, em-dash, hyphen, etc.
                     r'\\fr \d+[:.]\d+|'     # footnote reference
                     r'\\xt .+?\\xt\*|'      # target reference until target reference end marker
                     r'\\xt .+?\\x\*|'       # target reference until cross reference end marker
                     r'\\x \+ |'             # cross reference with plus
-                    r'\\xo \d+[:.]\d+-\d+|' # origin reference with dash
+                    r'\\xo \d+[:.]\d+[\p{Pd}]\d+|' # origin reference with dash
                     r'\\xo \d+[:.]\d+|'     # origin reference normal
-                    r'\\v \d+-\d+ |'        # verse with dash
+                    r'\\v \d+[\p{Pd}]\d+ |' # verse with dash
                     r'\\v \d+ |'            # verse
                     r'\\vp \S+ |'           # publication verse
                     r'\\c \d+|'             # chapter
                     r'\\rem.+?\n|'          # remark
-                    r'\d+[:.]\d+-\d+|'      # verse reference with dash
+                    r'\d+[:.]\d+[\p{Pd}]\d+|' # verse reference with dash
                     r'\d+[:.]\d+|'          # verse reference
                     r'\\\+\w+|'             # marker preceded by plus
                     r'\\\w+)',              # any other marker

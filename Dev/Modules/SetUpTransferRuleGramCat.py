@@ -8,6 +8,9 @@
 #   Version 3.14 - 5/28/25 - Ron Lockwood
 #    Added localization capability.
 #
+#   Version 3.13.2 - 6/04/25 - Sara Mason
+#    fixed a typo in the FTM_Synopsis
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -97,7 +100,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
         FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from souce and target FLEx projects.') ,
+        FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
         FTM_Description: _translate("SetUpTransferRuleGramCat", 
 """This module first goes through both the source and target FLEx databases and extracts

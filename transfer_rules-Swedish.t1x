@@ -124,7 +124,7 @@ npar="1"
 ><test
 ><equal
 ><clip
-part="a_"
+part="a_num_slot"
 pos="1"
 side="tl"
 ></clip
@@ -134,8 +134,6 @@ v="???"
 ></equal
 ></test
 ></when
-><otherwise
-></otherwise
 ></choose
 ></def-macro
 ></section-def-macros
