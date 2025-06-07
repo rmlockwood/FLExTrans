@@ -100,14 +100,22 @@ ShowUnInstDetails show
 
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
 LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
-LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\\nUse la opción 'Install now'."
+LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
 LangString InstallXMLmindMsg ${LANG_ENGLISH} "Install XMLmind?"
 LangString InstallXMLmindMsg ${LANG_GERMAN} "XMLmind installieren?"
 LangString InstallXMLmindMsg ${LANG_SPANISH} "¿Instalar XMLmind?"
+
+# English
+LangString Drafting       ${LANG_ENGLISH} "Drafting"
+LangString Run_Testbed    ${LANG_ENGLISH} "Run Testbed"
+LangString Tools          ${LANG_ENGLISH} "Tools"
+LangString Synthesis_Test ${LANG_ENGLISH} "Synthesis Test"
+LangString Clusters       ${LANG_ENGLISH} "Clusters"
+
 # German
 LangString Drafting       ${LANG_GERMAN} "Entwerfen"
 LangString Run_Testbed    ${LANG_GERMAN} "Tests durchführen"
-LangString Tools          ${LANG_GERMAN} "Wekzeuge"
+LangString Tools          ${LANG_GERMAN} "Werkzeuge"
 LangString Synthesis_Test ${LANG_GERMAN} "Synthesetest"
 LangString Clusters       ${LANG_GERMAN} "Clusters"
 
@@ -294,7 +302,24 @@ InitPluginsDir
     Goto loop1
   done1:
     FindClose $0
-    
+  
+  # if we are installing for the same language that is already there, skip adding/renaming files to the language
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+  
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Werkzeuge.ini"
+	
+	  Goto skip4
+    ${EndIf}
+  ${EndIf}
+	
+  ${If} $LANGUAGE == ${LANG_SPANISH}
+  
+    ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Herramientas.ini"
+	
+	  Goto skip4
+    ${EndIf}
+  ${EndIf}
+	
   SetOverwrite off
 
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\Config\Collections"
@@ -313,6 +338,9 @@ InitPluginsDir
   File "${GIT_FOLDER}\FLExTrans.ini"
   File "${GIT_FOLDER}\Clusters.ini"
 
+  skip4:
+  
+  
   SetOverwrite on
 
   # If we are not installing for English, rename the .ini files appropriately.
@@ -331,7 +359,7 @@ InitPluginsDir
       ${If} $LANGUAGE != ${LANG_ENGLISH}
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Drafting" "$(Drafting)"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Run Testbed" "$(Run_Testbed)"
-        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Tools" "$(Tools)"
+        !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "'Tools'" "'$(Tools)'"  # replace 'Tools' so we don't mistakenly match FlexTools
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Synthesis Test" "$(Synthesis_Test)"
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
       ${EndIf}
