@@ -22,12 +22,14 @@ set flextransfolder=Install%INSTALL_FOLDER_VERSION%\FLExTrans
   set flextoolsmodules=%flextoolsfolder%\Modules
    set modulesflextrans=%flextoolsmodules%\FLExTrans
     set flextranslib=    %modulesflextrans%\Lib
+    set translations=    %modulesflextrans%\translations
 
 rem Create the folder structure
 mkdir %toolsflextools%
 mkdir %flextransdoc%
 mkdir %sampleproject%
 mkdir %flextranslib%
+mkdir %translations%
 
 rem Create identical folder structures for two work project folders
 set workprojects=%flextransfolder%\WorkProjects
@@ -73,6 +75,9 @@ copy Dev\Lib\*.py %flextranslib%
 rem copy all window ui code files
 copy Dev\Lib\Windows\*.py %flextranslib%
 
+rem copy compiled translation files
+copy Dev\CompiledTranslations\*.qm %translations%
+pause
 rem UI resources and supporting executables to Tools
 copy Tools\* %toolsflextools%
 

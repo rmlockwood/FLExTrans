@@ -3,7 +3,7 @@
 "transfer.dtd">
 <transfer
 ><section-def-cats
-><!--   Si desea categorías adicionales basadas en su proyecto FLEx, ejecute el módulo FLExTrans: Configurar categorías y atributos de reglas de transferencia--><def-cat
+><!--   Wenn Sie zusätzliche Kategorien basierend auf Ihrem FLEx-Projekt wünschen, führen Sie das FLExTrans-Modul aus: Kategorien und Attribute für Transferregeln einrichten--><def-cat
 n="c_adj"
 ><cat-item
 tags="adj"
@@ -50,7 +50,7 @@ tags="v.*"
 ></def-cat
 ></section-def-cats
 ><section-def-attrs
-><!--   Si desea atributos adicionales basados en su proyecto FLEx, ejecute el módulo FLExTrans: Configurar categorías y atributos de reglas de transferencia--><def-attr
+><!--   Wenn Sie zusätzliche Attribute basierend auf Ihrem FLEx-Projekt wünschen, führen Sie das FLExTrans-Modul aus: Kategorien und Attribute für Transferregeln einrichten--><def-attr
 n="a_gender_feature"
 ><attr-item
 tags="com"
@@ -67,7 +67,7 @@ tags="neut"
 ></def-attr
 ><def-attr
 n="a_gram_cat"
-><!--Si desea que esta lista se complete automáticamente, ejecute el módulo FLExTrans: Configurar categorías y atributos de reglas de transferencia--><attr-item
+><!--Wenn Sie möchten, dass diese Liste automatisch ausgefüllt wird, führen Sie das FLExTrans-Modul aus: Kategorien und Attribute für Transferregeln einrichten--><attr-item
 tags="adj"
 ></attr-item
 ><attr-item
@@ -141,8 +141,8 @@ v="???"
 ></section-def-macros
 ><section-rules
 ><rule
-comment="Verbos - Sueco">
-<pattern
+comment="Verben - Schwedisch"
+><pattern
 ><pattern-item
 n="c_v"
 ></pattern-item

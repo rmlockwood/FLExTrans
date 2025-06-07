@@ -98,11 +98,6 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
-# XXE AddOn Zip file
-LangString AddOnLangZip ${LANG_ENGLISH} "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
-LangString AddOnLangZip ${LANG_GERMAN}  "AddOnsForXMLmind_de${PRODUCT_VERSION}.zip"
-LangString AddOnLangZip ${LANG_SPANISH} "AddOnsForXMLmind_es${PRODUCT_VERSION}.zip"
-
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
 LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
 LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
@@ -160,20 +155,42 @@ InitPluginsDir
 
   File "${GIT_FOLDER}\replace.dix"
 
-  SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  #SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+  SetOutPath "$INSTDIR\install_files"
   
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
+  
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_es.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${Else}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\German-Swedish"
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules.t1x"
+  ${EndIf}
   
   SetOutPath "${TEMPLATEDIR}\Output"
 
   File "${GIT_FOLDER}\replace.dix"
   
-  SetOutPath "${TEMPLATEDIR}"
+  #SetOutPath "${TEMPLATEDIR}"
+  SetOutPath "$INSTDIR\install_files"
 
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
+  File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
   
-  # Copy and rename the file in the Template folder to not have -Swedish
-  File "/oname=${TEMPLATEDIR}\transfer_rules.t1x" "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_es.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${Else}
+    CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
+  ${EndIf}
 
   SetOverwrite on
   
@@ -460,9 +477,11 @@ associate_extension:
   # Install the English one first
   nsisunz::Unzip "$INSTDIR\install_files\${ADD_ON_ZIP_FILE}" "$APPDATA\XMLmind\XMLEditor8\addon"
   
-  ${If} $LANGUAGE != ${LANG_ENGLISH}
-    # Now overwrite some of the files with the Language specific ones
-    nsisunz::Unzip "$INSTDIR\install_files\$(AddOnLangZip)" "$APPDATA\XMLmind\XMLEditor8\addon"
+  # Now overwrite some of the files with the Language specific ones
+  ${If} $LANGUAGE == ${LANG_GERMAN}
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_de${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
+  ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+    nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
   ${EndIf}
   
   # Install the XXE properties file
