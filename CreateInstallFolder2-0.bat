@@ -76,7 +76,7 @@ copy Dev\Lib\Windows\*.py %flextranslib%
 
 rem copy compiled translation files
 copy Dev\CompiledTranslations\*.qm %translations%
-pause
+
 rem UI resources and supporting executables to Tools
 copy Tools\* %toolsflextools%
 
