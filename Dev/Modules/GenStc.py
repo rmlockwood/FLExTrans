@@ -332,7 +332,7 @@ def _writeSentence(stc, f_out):
     stc.write(f_out)
     f_out.write('\n')
 
-def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out2=None, translation, report):
+def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, translation, report, f_out2=None):
     """
     Iteratively replace target words in the free translation with glosses from the corresponding subLists.
     """
@@ -460,7 +460,7 @@ def MainFunction(DB, report, modifyAllowed):
                 idxFT2_list.append(idx)
         
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
-        processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, f_out2, free_translation, report)
+        processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
 
             
     # Clean up
