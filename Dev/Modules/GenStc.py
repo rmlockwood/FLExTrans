@@ -273,7 +273,7 @@ def getMatchingLemmaWords(match_x_lem, subListX):
 def getGlossList(subListX): 
     glosses = []
     for word in subListX: 
-        glosses.append(word.gloss())
+        glosses.append(word.gloss)
     return glosses
 
 #----------------------------------------------------------------
@@ -340,22 +340,29 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
         return
         
     for genWordN in subListN:
-        _processWord(wrdList, idxNList, genWordN, report)
+        word = genWordN.gloss
+        for idx in idxN_list: 
+            wrdList[idx] = word
         
         if not idx1List:
-            f_out2.write(translation)
+            f_out2.write(" ".join(wrdList))
             f_out2.write('\n')
         else:
             for genWord1 in subList1:
-                _processWord(wrdList, idx1List, genWord1, report)
+                word = genWord1.gloss
+                for idx in idx1_list: 
+                    wrdList[idx] = word
                 
                 if not idx2List:
-                    f_out2.write(translation)
+                    f_out2.write(" ".join(wrdList)
                     f_out2.write('\n')
                 else:
                     for genWord2 in subList2:
-                        _processWord(wrdList, idx2List, genWord2, report)
-                        f_out2.write(translation)
+                        word = genWord2.gloss
+                        for idx in idx2_list: 
+                            wrdList[idx] = word
+
+                        f_out2.write(" ".join(wrdList)
                         f_out2.write('\n')
 
 #----------------------------------------------------------------
