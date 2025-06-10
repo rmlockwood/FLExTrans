@@ -270,9 +270,15 @@ def getMatchingLemmaWords(match_x_lem, subListX):
             words.append(word)
     return words
 
+def getGlossList(subListX): 
+    glosses = []
+    for word in subListX: 
+        glosses.append(word.gloss())
+    return glosses
+
 #----------------------------------------------------------------
 # Sentence Processing Functions
-def processSentenceOld(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
+def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
     """Process and substitute words in the sentence, writing to output file."""
     for genWordN in subListN:
         _processWord(wrdList, idxNList, genWordN, report)
@@ -289,189 +295,6 @@ def processSentenceOld(wrdList, idxNList, idx1List, idx2List, subListN, subList1
                     for genWord2 in subList2:
                         _processWord(wrdList, idx2List, genWord2, report)
                         _writeSentence(stc, f_out)
-
-def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report, f_out2=None, genwordsN=None, genwords1=None, genwords2=None):
-    """Process and substitute words in the sentence, writing to output file."""
-    
-    for genWordN in subListN:
-        _processWord(wrdList, idxNList, genWordN, report)
-        
-        if not idx1List:
-            _writeSentencePair(stc, f_out, f_out2, genWordN, None, None, idxNList, [], [])
-        else:
-            for genWord1 in subList1:
-                _processWord(wrdList, idx1List, genWord1, report)
-                
-                if not idx2List:
-                    _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, None, idxNList, idx1List, [])
-                else:
-                    for genWord2 in subList2:
-                        _processWord(wrdList, idx2List, genWord2, report)
-                        _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, idxNList, idx1List, idx2List)
-
-def _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, idxNList, idx1List, idx2List):
-    """Write both target language sentence and English gloss, keeping them aligned."""
-    # Write target language sentence
-    stc.write(f_out)
-    f_out.write('\n')
-    
-    # Write corresponding English gloss if output file exists
-    if f_out2:
-        translation = stc.getFreeTranslation()
-        if translation:
-            words = translation.split()
-            modified_words = words.copy()
-            
-            # Replace words at the specific indices we're substituting
-            if genWordN and idxNList:
-                for idx in idxNList:
-                    if idx < len(modified_words):
-                        modified_words[idx] = genWordN.gloss
-            
-            if genWord1 and idx1List:
-                for idx in idx1List:
-                    if idx < len(modified_words):
-                        modified_words[idx] = genWord1.gloss
-            
-            if genWord2 and idx2List:
-                for idx in idx2List:
-                    if idx < len(modified_words):
-                        modified_words[idx] = genWord2.gloss
-            
-            f_out2.write(" ".join(modified_words) + "\n")
-        else:
-            f_out2.write("\n")
-            
-def processSentenceWithMap(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report, f_out2=None, genwordsN=None, genwords1=None, genwords2=None):
-    """Process and substitute words in the sentence, writing to output file."""
-    # Create a mapping between target language words and their gloss words
-    gloss_mapping = {}
-    if f_out2:
-        translation = stc.getFreeTranslation()
-        if translation:
-            gloss_words = translation.split()
-            for idx, wrd in enumerate(wrdList):
-                if idx < len(gloss_words):
-                    gloss_mapping[idx] = {
-                        'original_gloss': gloss_words[idx],
-                        'original_lemma': wrd.getLemma(0),
-                        'original_pos': wrd.getPOS(0)
-                    }
-    
-    for genWordN in subListN:
-        _processWord(wrdList, idxNList, genWordN, report)
-        
-        if not idx1List:
-            _writeSentencePairWithMap(stc, f_out, f_out2, genWordN, None, None, gloss_mapping, idxNList, [], [])
-        else:
-            for genWord1 in subList1:
-                _processWord(wrdList, idx1List, genWord1, report)
-                
-                if not idx2List:
-                    _writeSentencePairWithMap(stc, f_out, f_out2, genWordN, genWord1, None, gloss_mapping, idxNList, idx1List, [])
-                else:
-                    for genWord2 in subList2:
-                        _processWord(wrdList, idx2List, genWord2, report)
-                        _writeSentencePairWithMap(stc, f_out, f_out2, genWordN, genWord1, genWord2, gloss_mapping, idxNList, idx1List, idx2List)
-
-def _writeSentencePairWithMap(stc, f_out, f_out2, genWordN, genWord1, genWord2, gloss_mapping, idxNList, idx1List, idx2List):
-    """Write both target language sentence and English gloss, keeping them aligned."""
-    # Write target language sentence
-    stc.write(f_out)
-    f_out.write('\n')
-    
-    # Write corresponding English gloss if output file exists
-    if f_out2:
-        translation = stc.getFreeTranslation()
-        if translation:
-            words = translation.split()
-            modified_words = words.copy()
-            
-            # Create a mapping of original gloss words to their replacements
-            replacement_map = {}
-            
-            # Handle noun substitutions (N)
-            if genWordN and idxNList:
-                for idx in idxNList:
-                    if idx in gloss_mapping:
-                        original_gloss = gloss_mapping[idx]['original_gloss']
-                        replacement_map[original_gloss] = genWordN.gloss
-            
-            # Handle adjective substitutions (1)
-            if genWord1 and idx1List:
-                for idx in idx1List:
-                    if idx in gloss_mapping:
-                        original_gloss = gloss_mapping[idx]['original_gloss']
-                        replacement_map[original_gloss] = genWord1.gloss
-            
-            # Handle other substitutions (2)
-            if genWord2 and idx2List:
-                for idx in idx2List:
-                    if idx in gloss_mapping:
-                        original_gloss = gloss_mapping[idx]['original_gloss']
-                        replacement_map[original_gloss] = genWord2.gloss
-            
-            # Apply the replacements to the gloss
-            for i, word in enumerate(words):
-                if word in replacement_map:
-                    modified_words[i] = replacement_map[word]
-            
-            f_out2.write(" ".join(modified_words) + "\n")
-        else:
-            f_out2.write("\n")
-                        
-def processSentenceDONTUSE(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report, f_out2=None, genwordsN=None, genwords1=None, genwords2=None):
-    """Process and substitute words in the sentence, writing to output file."""
-    for genWordN in subListN:
-        _processWord(wrdList, idxNList, genWordN, report)
-        
-        if not idx1List:
-            _writeSentencePair(stc, f_out, f_out2, genWordN, None, None, genwordsN, genwords1, genwords2)
-        else:
-            for genWord1 in subList1:
-                _processWord(wrdList, idx1List, genWord1, report)
-                
-                if not idx2List:
-                    _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, None, genwordsN, genwords1, genwords2)
-                else:
-                    for genWord2 in subList2:
-                        _processWord(wrdList, idx2List, genWord2, report)
-                        _writeSentencePair(stc, f_out, f_out2, genWordN, genWord1, genWord2, genwordsN, genwords1, genwords2)
-
-def _writeSentencePairDONTUSE(stc, f_out, f_out2, genWordN, genWord1, genWord2, genwordsN, genwords1, genwords2):
-    """Write both target language sentence and English gloss, keeping them aligned."""
-    # Write target language sentence
-    stc.write(f_out)
-    f_out.write('\n')
-    
-    # Write corresponding English gloss if output file exists
-    if f_out2:
-        translation = stc.getFreeTranslation()
-        if translation:
-            words = translation.split()
-            modified_words = words.copy()
-            
-            # First handle noun substitutions (N)
-            if genWordN and genwordsN:
-                for i, word in enumerate(words):
-                    if word in [gw.gloss for gw in genwordsN]:
-                        modified_words[i] = genWordN.gloss
-            
-            # Then handle adjective substitutions (1)
-            if genWord1 and genwords1:
-                for i, word in enumerate(words):
-                    if word in [gw.gloss for gw in genwords1]:
-                        modified_words[i] = genWord1.gloss
-            
-            # Then handle any other substitutions (2)
-            if genWord2 and genwords2:
-                for i, word in enumerate(words):
-                    if word in [gw.gloss for gw in genwords2]:
-                        modified_words[i] = genWord2.gloss
-            
-            f_out2.write(" ".join(modified_words) + "\n")
-        else:
-            f_out2.write("\n")
 
 def _processWord(wrdList, idxList, genWord, report):
     """Process a single word in the sentence."""
@@ -509,56 +332,31 @@ def _writeSentence(stc, f_out):
     stc.write(f_out)
     f_out.write('\n')
 
-def processFreeTranslationOld(translation, subListN, subList1, subList2, genwordsN, genwords1, genwords2, f_out2):
+def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out2=None, translation, report):
     """
-    Find target words in free translation by matching glosses, then iteratively replace them
-    with glosses from the corresponding subLists.
+    Iteratively replace target words in the free translation with glosses from the corresponding subLists.
     """
     if not translation:
         return
-    
-    words = translation.split()
-    if not words:
-        return
-    
-    # Find target words and their replacement lists
-    targets = []
-    for i, word in enumerate(words):
-        # Check if word matches any gloss in genwordsN, genwords1, or genwords2
-        replacement_list = None
-        for genWord in genwordsN:
-            if word == genWord.gloss:
-                replacement_list = subListN
-                break
-        if not replacement_list:
-            for genWord in genwords1:
-                if word == genWord.gloss:
-                    replacement_list = subList1
-                    break
-        if not replacement_list:
-            for genWord in genwords2:
-                if word == genWord.gloss:
-                    replacement_list = subList2
-                    break
         
-        if replacement_list:
-            targets.append((i, replacement_list))
-    
-    # Generate all possible combinations of replacements
-    replacement_combinations = []
-    for pos, replacement_list in targets:
-        replacement_combinations.append([(pos, genWord) for genWord in replacement_list])
-    
-    # Generate and write all modified translations
-    if replacement_combinations:
-        for combo in itertools.product(*replacement_combinations):
-            modified_words = words.copy()
-            for pos, genWord in combo:
-                modified_words[pos] = genWord.gloss
-            f_out2.write(" ".join(modified_words) + "\n")
-    else:
-        # If no replacements found, just write original
-        f_out2.write(translation + "\n")
+    for genWordN in subListN:
+        _processWord(wrdList, idxNList, genWordN, report)
+        
+        if not idx1List:
+            f_out2.write(translation)
+            f_out2.write('\n')
+        else:
+            for genWord1 in subList1:
+                _processWord(wrdList, idx1List, genWord1, report)
+                
+                if not idx2List:
+                    f_out2.write(translation)
+                    f_out2.write('\n')
+                else:
+                    for genWord2 in subList2:
+                        _processWord(wrdList, idx2List, genWord2, report)
+                        f_out2.write(translation)
+                        f_out2.write('\n')
 
 #----------------------------------------------------------------
 # Main Function
@@ -607,6 +405,16 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Get lexical entries and apply stem limit
     subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+
+    # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
+    genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
+    genwords1 = getMatchingLemmaWords(match_1_lem, subList1)
+    genwords2 = getMatchingLemmaWords(match_2_lem, subList2)
+
+    matchGlossesN = getGlossList(genwordsN)
+    matchGlosses1 = getGlossList(genwords1)
+    matchGlosses2 = getGlossList(genwords2)
+    
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
@@ -632,16 +440,20 @@ def MainFunction(DB, report, modifyAllowed):
             elif thisPOS in posFocus2 and thisLemma in match_2_lem:
                 idx2_list.append(idx)
 
-        # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
-        genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
-        genwords1 = getMatchingLemmaWords(match_1_lem, subList1)
-        genwords2 = getMatchingLemmaWords(match_2_lem, subList2)
+        free_translation = stc.getFreeTranslation()
+        freeT_wrdList = free_translation.split()
 
-        # To run the old code, comment out the new unmarked 'processSentence', and uncomment everything marked 'Old'. 
+        idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
+        for idxFT, wFT in enumerate(freeT_wrdList): 
+            if wFT in matchGlossesN: 
+                idxFTN_list.append(idx)
+            elif wFT in matchGlosses1: 
+                idxFT1_list.append(idx)
+            elif wFT in matchGlosses2: 
+                idxFT2_list.append(idx)
         
-        #processSentenceOld(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
-        processSentenceWithMap(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report, f_out2, genwordsN, genwords1, genwords2)
-        #processFreeTranslationOld(stc.getFreeTranslation(), subListN, subList1, subList2, genwordsN, genwords1, genwords2, f_out2)
+        processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
+        processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, f_out2, free_translation, report)
 
             
     # Clean up
