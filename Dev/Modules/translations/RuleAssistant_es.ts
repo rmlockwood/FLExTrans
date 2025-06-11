@@ -40,5 +40,10 @@
         <source>No rules created.</source>
         <translation>No se crearon reglas.</translation>
     </message>
+    <message>
+        <location filename="../RuleAssistant.py" line="374"/>
+        <source>&lt;p&gt;&lt;b&gt;Source Text:&lt;/b&gt; </source>
+        <translation>&lt;p&gt;&lt;b&gt;Texto fuente:&lt;/b&gt; </translation>
+    </message>
 </context>
 </TS>

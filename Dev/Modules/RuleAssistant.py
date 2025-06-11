@@ -371,7 +371,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 .num { vertical-align: sub; font-size: 50%; }
 </style></head><body>
 ''')
-            fout.write('<p><b>Source Text:</b> '+sourceText+'</p>\n')
+            fout.write(_translate('RuleAssistant', '<p><b>Source Text:</b> ')+sourceText+'</p>\n')
             line_count = 0
 
             for line in fin:
