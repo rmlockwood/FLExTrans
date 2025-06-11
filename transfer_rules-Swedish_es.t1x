@@ -124,7 +124,7 @@ npar="1"
 ><test
 ><equal
 ><clip
-part="a_"
+part="a_num_slot"
 pos="1"
 side="tl"
 ></clip
@@ -134,15 +134,13 @@ v="???"
 ></equal
 ></test
 ></when
-><otherwise
-></otherwise
 ></choose
 ></def-macro
 ></section-def-macros
 ><section-rules
 ><rule
-comment="Verbos - Sueco">
-<pattern
+comment="Verbos - Sueco"
+><pattern
 ><pattern-item
 n="c_v"
 ></pattern-item
