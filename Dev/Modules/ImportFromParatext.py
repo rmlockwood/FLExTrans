@@ -488,10 +488,11 @@ def do_import(DB, report, chapSelectObj, tree):
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Question)
             msgBox.setWindowIcon(QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
-            msgBox.setText(f'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?')
-            msgBox.setWindowTitle("Overwriting FLEx text")
+            msgBox.setText(_translate("ImportFromParatext",
+            'The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text & Words section of FLEx.\n\nAre you sure you want to continue with overwriting the text in FLEx?'))
+            msgBox.setWindowTitle(_translate("ImportFromParatext", "Overwriting FLEx text"))
             msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            checkbox = QCheckBox("Overwrite all selected chapters")
+            checkbox = QCheckBox(_translate("ImportFromParatext", "Overwrite all selected chapters"))
             msgBox.setCheckBox(checkbox)
 
             # Display the message box and wait for user interaction

@@ -1132,7 +1132,7 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     
     # Check that we have a valid folder
     if os.path.isdir(lexFolder) == False:
-        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Lexicon files folder: {folder} does not exist.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
     # Have all files start with targetProject

@@ -102,7 +102,7 @@ HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsä
         <translation>Problem mit der Konfigurationsdatei für {folder}.</translation>
     </message>
     <message>
-        <location filename="../DoStampSynthesis.py" line="1012"/>
+        <location filename="../DoStampSynthesis.py" line="1135"/>
         <source>Lexicon files folder: {folder} does not exist.</source>
         <translation>Lexikondateien-Ordner: {folder} existiert nicht.</translation>
     </message>

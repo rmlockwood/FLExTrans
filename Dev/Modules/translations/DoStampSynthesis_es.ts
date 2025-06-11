@@ -102,7 +102,7 @@ NOTA: Los mensajes indicarán que se está utilizando la base de datos FUENTE. E
         <translation>Problema con el archivo de configuración para {folder}.</translation>
     </message>
     <message>
-        <location filename="../DoStampSynthesis.py" line="1012"/>
+        <location filename="../DoStampSynthesis.py" line="1135"/>
         <source>Lexicon files folder: {folder} does not exist.</source>
         <translation>La carpeta de archivos de léxico: {folder} no existe.</translation>
     </message>

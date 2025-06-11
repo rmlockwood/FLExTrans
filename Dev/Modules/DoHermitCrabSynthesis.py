@@ -247,20 +247,20 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
             
             except Exception as e:
 
-                errorList.append((f'An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}').format(e=e), 2))
                 return errorList
-            
+
             if xmlFile == '':
 
                 try:
                     if (ret := DLLobj.SetHcXmlFile(HCconfigPath)) != SUCCESS:
 
-                        errorList.append(('An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)', 2))
+                        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when loading HermitCrab Configuration file for the HC Synthesis obj. (DLL)'), 2))
                         return errorList
-                
+    
                 except Exception as e:
 
-                    errorList.append(('An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}'.format(e=e), 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", 'An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}').format(e=e), 2))
                     return errorList
 
         errorList.append((_translate("DoHermitCrabSynthesis", "The HermitCrab configuration file is up to date."), 0))
@@ -332,16 +332,16 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab surface forms file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab surface forms file.'), 2))
         return errorList
-    
+
    # Open the transfer results file
     try:
         fResults = open(transferResultsFile, encoding='utf-8')
 
     except:
 
-        errorList.append((f'The file: {transferResultsFile} was not found. Did you run the Run Apertium module?', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the Run Apertium module?').format(transferResultsFile=transferResultsFile), 2))
         return errorList
     
     # Read the results file into a string
@@ -356,7 +356,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
     # Do a sanity check to see if the number of surface forms matches the number of Lexical unit strings
     if len(surfaceFormsList) != len(luInfoList):
 
-        errorList.append((f'The number of surface forms does not match the number of Lexical Units.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The number of surface forms does not match the number of Lexical Units.'), 2))
         return errorList
 
     # Loop through the surface forms file. Some lines will have multiple surface forms
@@ -386,7 +386,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
                 if errStr.strip() == '':
 
-                    errStr = f'Synthesis failed. ({saveStr})'
+                    errStr = _translate("DoHermitCrabSynthesis", 'Synthesis failed. ({saveStr})').format(saveStr=saveStr)
 
                 errorList.append((errStr, 1))
                 surfaceStr = saveStr
@@ -410,7 +410,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((f'Error writing the file: {synFile}.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Error writing the file: {synFile}.').format(synFile=synFile), 2))
 
     fSyn.close()
     fSurfaceForms.close()
@@ -427,7 +427,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab master file. Do you have the setting "Use HermitCrab Synthesis" turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}').format(parsesFile=parsesFile), 2))
         return errorList
 
     # Open parses file
@@ -436,7 +436,7 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
     except:
 
-        errorList.append((f'There was an error opening the HermitCrab parses file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'There was an error opening the HermitCrab parses file.'), 2))
         return errorList
 
     # Parse each line - format: LU,HCparse1;capitalizationCode|HCparse2;capitalizationCode|...
@@ -562,7 +562,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
     if HCcapitalLemmasMap is None:
 
-        errorList.append(('Unable to open the HC master file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Unable to open the HC master file.'), 2))
         return errorList
 
     errorList = createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
@@ -618,13 +618,13 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
 
             if result.returncode != 0:
                 
-                errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+                errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when running the HermitCrab Synthesize By Gloss tool.'), 2))
                 errorList.append((result.stderr.decode(), 2))
                 return errorList
 
     except subprocess.CalledProcessError as e:
 
-        errorList.append((f'An error happened when running the HermitCrab Synthesize By Gloss tool.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when running the HermitCrab Synthesize By Gloss tool.'), 2))
         errorList.append((e.stderr.decode(), 2))
         return errorList
 
@@ -636,10 +636,11 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
             nonEmptyLines = [line for line in lines if line.strip()]
             LUsCount = len(nonEmptyLines)
     except:
-        errorList.append((f'An error happened when trying to open the file: {parsesFile}', 2))
+
+        errorList.append((_translate("DoHermitCrabSynthesis", 'An error happened when trying to open the file: {parsesFile}').format(parsesFile=parsesFile), 2))
         return errorList
     
-    errorList.append((f'Processing {LUsCount} unique lexical units.', 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'Processing {LUsCount} unique lexical units.').format(LUsCount=LUsCount), 0))
 
     # Produce synthesis file
     errList = produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synFile)
@@ -654,7 +655,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
 
     if not clean: 
-        errorList.append((f'Configuration file problem with the value: {ReadConfig.CLEANUP_UNKNOWN_WORDS}.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'Configuration file problem with the value: {val}.').format(val=ReadConfig.CLEANUP_UNKNOWN_WORDS), 2))
         return errorList
     
     if clean[0].lower() == 'y':
@@ -669,8 +670,8 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     fix_up_text(synFile, cleanUpText)
 
     # Tell the user which file was created
-    errorList.append((f'The synthesized target text is in the file: {Utils.getPathRelativeToWorkProjectsDir(synFile)}.', 0))
-    errorList.append(('Synthesis complete.', 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'The synthesized target text is in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
+    errorList.append((_translate("DoHermitCrabSynthesis", 'Synthesis complete.'), 0))
     
     return errorList
 
@@ -708,8 +709,13 @@ def doHermitCrab(DB, report, configMap=None):
 
     if not (parsesFile and surfaceFormsFile and surfaceFormsFile and transferResultsFile):
 
-        errorList.append((f'{ReadConfig.HERMIT_CRAB_MASTER_FILE} or {ReadConfig.HERMIT_CRAB_PARSES_FILE} \
-                         or {ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE} or {ReadConfig.TRANSFER_RESULTS_FILE} not found in the configuration file.', 2))
+        errorList.append((_translate("DoHermitCrabSynthesis",
+        '{master} or {parses} or {surface} or {transfer} not found in the configuration file.').format(
+            master=ReadConfig.HERMIT_CRAB_MASTER_FILE,
+            parses=ReadConfig.HERMIT_CRAB_PARSES_FILE,
+            surface=ReadConfig.HERMIT_CRAB_SURFACE_FORMS_FILE,
+            transfer=ReadConfig.TRANSFER_RESULTS_FILE
+        ), 2))
         return None
 
     # Synthesize the new target text

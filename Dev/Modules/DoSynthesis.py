@@ -39,10 +39,9 @@ import ReadConfig
 import Utils
 import DoHermitCrabSynthesis
 import DoStampSynthesis
-import FTPaths
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -55,7 +54,7 @@ app = QApplication([])
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
 
 # libraries that we will load down in the main function
-librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesis', 'DoStampSynthesis'] 
 
 #----------------------------------------------------------------
 # Documentation that the user sees:

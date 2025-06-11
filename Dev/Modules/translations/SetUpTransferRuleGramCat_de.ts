@@ -6,10 +6,10 @@
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="100"/>
         <source>Set up the transfer rule file with categories and attributes from souce and target FLEx projects.</source>
-        <translation>Die Transferregeldatei mit Kategorien und Attributen aus Quell- und Ziel-FLEx-Projekten einrichten.</translation>
+        <translation type="obsolete">Die Transferregeldatei mit Kategorien und Attributen aus Quell- und Ziel-FLEx-Projekten einrichten.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="102"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="105"/>
         <source>This module first goes through both the source and target FLEx databases and extracts
 the grammatical category lists. It will replace what is currently listed for the
 tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
@@ -32,34 +32,39 @@ Sie können entscheiden, welche davon verwendet werden und ob vorhandene Attribu
 überschrieben werden sollen.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="542"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="545"/>
         <source>The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.</source>
         <translation>Die Transferregeldatei wurde noch nicht mit dem XML Mind-Editor gespeichert. Ändern Sie die Datei im Editor und führen Sie dieses Tool dann erneut aus.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="614"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="617"/>
         <source>There was a problem finding the transfer rules file. Check your configuration.</source>
         <translation>Es gab ein Problem beim Finden der Transferregeldatei. Überprüfen Sie Ihre Konfiguration.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="653"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="656"/>
         <source>The transfer rules file is malformed.</source>
         <translation>Die Transferregeldatei ist fehlerhaft.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="693"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="696"/>
         <source>{attrCount} attributes added to the attributes section.</source>
         <translation>{attrCount} Attribute zum Attributbereich hinzugefügt.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="694"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="697"/>
         <source>{num} categories created for the a_gram_cat attribute.</source>
         <translation>{num} Kategorien für das a_gram_cat-Attribut erstellt.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="695"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="698"/>
         <source>{catCount} categories added to the categories section.</source>
         <translation>{catCount} Kategorien zum Kategorienbereich hinzugefügt.</translation>
+    </message>
+    <message>
+        <location filename="../SetUpTransferRuleGramCat.py" line="103"/>
+        <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
