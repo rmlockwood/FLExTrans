@@ -3,7 +3,7 @@ rem It doesn't matter so much what this next version # is, 1) we get requirement
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
 
-rem User interface language codes
+rem User interface language codes 
 set LANG_CODES=de es
 
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
