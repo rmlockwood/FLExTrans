@@ -3,7 +3,6 @@
 !include "FileFunc.nsh"
 !include "LogicLib.nsh"
 !include "LangFile.nsh"
-!include "German.nsh"
 
 
 ; HM NIS Edit Wizard helper defines
