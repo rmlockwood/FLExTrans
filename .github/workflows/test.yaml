@@ -18,7 +18,7 @@ jobs:
            mkdir my_project && cd my_project
            python3 -m venv venv
            source venv/bin/activate
-           pip install pyqt5
+           pip install PyQt5
     - name: test
       run: python test_rule_assistant.py
   test-on-windows:
