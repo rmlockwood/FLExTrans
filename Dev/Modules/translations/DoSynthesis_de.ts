@@ -4,12 +4,12 @@
 <context>
     <name>DoSynthesis</name>
     <message>
-        <location filename="../DoSynthesis.py" line="65"/>
+        <location filename="../DoSynthesis.py" line="64"/>
         <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
         <translation>Synthetisiert den Zieltext entweder mit STAMP oder HermitCrab.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="67"/>
+        <location filename="../DoSynthesis.py" line="66"/>
         <source>This module synthesizes the target text. If in the settings you select &apos;Yes&apos; for &apos;Use HermitCrab synthesis?&apos;,
 then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}
 
@@ -24,17 +24,17 @@ Wenn Sie in den Einstellungen 'Nein' für 'HermitCrab-Synthese verwenden?' ausw�
 dann gilt die folgende Information aus dem Modul {stampModule}: {stampDescription}</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="90"/>
+        <location filename="../DoSynthesis.py" line="89"/>
         <source>Failed to read the configuration file.</source>
         <translation>Fehler beim Lesen der Konfigurationsdatei.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="100"/>
+        <location filename="../DoSynthesis.py" line="99"/>
         <source>Using HermitCrab for synthesis.</source>
         <translation>HermitCrab wird für die Synthese verwendet.</translation>
     </message>
     <message>
-        <location filename="../DoSynthesis.py" line="106"/>
+        <location filename="../DoSynthesis.py" line="105"/>
         <source>Using STAMP for synthesis.</source>
         <translation>STAMP wird für die Synthese verwendet.</translation>
     </message>
