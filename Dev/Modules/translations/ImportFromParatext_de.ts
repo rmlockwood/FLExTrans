@@ -70,17 +70,19 @@ cluster projects in the main FLExTrans Settings, then come back to this module.<
         <source>The option to overwrite the text in FLEx was chosen. If FLEx is open, make sure you are NOT in the Text &amp; Words section of FLEx.
 
 Are you sure you want to continue with overwriting the text in FLEx?</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Option, den Text in FLEx zu überschreiben, wurde gewählt. Wenn FLEx geöffnet ist, stellen Sie sicher, dass Sie sich NICHT im Bereich „Text &amp; Wörter“ von FLEx befinden.
+
+Sind Sie sicher, dass Sie mit dem Überschreiben des Textes in FLEx fortfahren möchten?</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="493"/>
         <source>Overwriting FLEx text</source>
-        <translation type="unfinished"></translation>
+        <translation>FLEx-Text wird überschrieben</translation>
     </message>
     <message>
         <location filename="../ImportFromParatext.py" line="495"/>
         <source>Overwrite all selected chapters</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle ausgewählten Kapitel überschreiben</translation>
     </message>
 </context>
 </TS>

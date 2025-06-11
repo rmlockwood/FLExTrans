@@ -87,107 +87,107 @@ Estas formas se utilizan luego para crear el texto objetivo.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="250"/>
         <source>An exception happened when trying to get the HermitCrab XML file from the DLL object: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió una excepción al intentar obtener el archivo XML de HermitCrab desde el objeto DLL: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="300"/>
         <source>An exception happened when trying to set the HermitCrab XML file in the DLL object. Error: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió una excepción al intentar establecer el archivo XML de HermitCrab en el objeto DLL. Error: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="335"/>
         <source>There was an error opening the HermitCrab surface forms file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al abrir el archivo de formas superficiales de HermitCrab.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="344"/>
         <source>The file: {transferResultsFile} was not found. Did you run the Run Apertium module?</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró el archivo: {transferResultsFile}. ¿Ejecutó el módulo Ejecutar Apertium?</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="359"/>
         <source>The number of surface forms does not match the number of Lexical Units.</source>
-        <translation type="unfinished"></translation>
+        <translation>El número de formas superficiales no coincide con el número de Unidades Léxicas.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="389"/>
         <source>Synthesis failed. ({saveStr})</source>
-        <translation type="unfinished"></translation>
+        <translation>La síntesis falló. ({saveStr})</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="413"/>
         <source>Error writing the file: {synFile}.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al escribir el archivo: {synFile}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="430"/>
         <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tiene activada la opción "Usar síntesis HermitCrab"? ¿Ejecutó el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="439"/>
         <source>There was an error opening the HermitCrab parses file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al abrir el archivo de análisis de HermitCrab.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="565"/>
         <source>Unable to open the HC master file.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se pudo abrir el archivo maestro de HC.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="591"/>
         <source>An error happened when setting the gloss file for the HermitCrab Synthesize By Gloss tool (DLL).</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al establecer el archivo de glosas para la herramienta HermitCrab Synthesize By Gloss (DLL).</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="596"/>
         <source>An exception happened when trying to set the gloss file for the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió una excepción al intentar establecer el archivo de glosas para la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="602"/>
         <source>An error happened when running the HermitCrab Synthesize By Gloss tool (DLL).</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al ejecutar la herramienta HermitCrab Synthesize By Gloss (DLL).</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="607"/>
         <source>An exception happened when trying to run (by calling Process) the HermitCrab Synthesize By Gloss tool (DLL). Error: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió una excepción al intentar ejecutar (llamando a Process) la herramienta HermitCrab Synthesize By Gloss (DLL). Error: {e}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="627"/>
         <source>An error happened when running the HermitCrab Synthesize By Gloss tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al ejecutar la herramienta HermitCrab Synthesize By Gloss.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="640"/>
         <source>An error happened when trying to open the file: {parsesFile}</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocurrió un error al intentar abrir el archivo: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="643"/>
         <source>Processing {LUsCount} unique lexical units.</source>
-        <translation type="unfinished"></translation>
+        <translation>Procesando {LUsCount} unidades léxicas únicas.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="658"/>
         <source>Configuration file problem with the value: {val}.</source>
-        <translation type="unfinished"></translation>
+        <translation>Problema con el archivo de configuración en el valor: {val}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="673"/>
         <source>The synthesized target text is in the file: {file}.</source>
-        <translation type="unfinished"></translation>
+        <translation>El texto objetivo sintetizado está en el archivo: {file}.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="674"/>
         <source>Synthesis complete.</source>
-        <translation type="unfinished"></translation>
+        <translation>Síntesis completa.</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="712"/>
         <source>{master} or {parses} or {surface} or {transfer} not found in the configuration file.</source>
-        <translation type="unfinished"></translation>
+        <translation>{master} o {parses} o {surface} o {transfer} no se encontró en el archivo de configuración.</translation>
     </message>
 </context>
 </TS>

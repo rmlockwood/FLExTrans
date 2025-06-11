@@ -5,8 +5,8 @@
     <name>SetUpTransferRuleGramCat</name>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="100"/>
-        <source>Set up the transfer rule file with categories and attributes from souce and target FLEx projects.</source>
-        <translation type="obsolete">Configurar el archivo de reglas de transferencia con categorías y atributos de los proyectos FLEx origen y destino.</translation>
+        <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
+        <translation>Configurar el archivo de reglas de transferencia con categorías y atributos de los proyectos FLEx origen y destino.</translation>
     </message>
     <message>
         <location filename="../SetUpTransferRuleGramCat.py" line="105"/>
@@ -60,11 +60,6 @@ existentes deben sobrescribirse.</translation>
         <location filename="../SetUpTransferRuleGramCat.py" line="698"/>
         <source>{catCount} categories added to the categories section.</source>
         <translation>{catCount} categorías agregadas a la sección de categorías.</translation>
-    </message>
-    <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="103"/>
-        <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

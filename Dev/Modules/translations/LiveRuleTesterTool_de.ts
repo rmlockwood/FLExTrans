@@ -331,22 +331,22 @@ Führen Sie das Modul {moduleName} separat aus, um weitere Details zu erhalten.<
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1220"/>
         <source>Directory Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Verzeichnisfehler</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1220"/>
         <source>Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Konnte nicht in das Fieldworks-Verzeichnis wechseln: {fieldworksDir}. Fehler: {e}</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1237"/>
         <source>DLL Error</source>
-        <translation type="unfinished"></translation>
+        <translation>DLL-Fehler</translation>
     </message>
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1237"/>
         <source>An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}</source>
-        <translation type="unfinished"></translation>
+        <translation>Eine Ausnahme ist aufgetreten. Die HermitCrab-Synthese-DLL konnte nicht initialisiert werden. Fehler: {e}</translation>
     </message>
 </context>
 </TS>
