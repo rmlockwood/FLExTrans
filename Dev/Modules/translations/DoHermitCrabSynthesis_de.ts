@@ -101,7 +101,7 @@ Diese Formen werden dann verwendet, um den Zieltext zu erstellen.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="344"/>
         <source>The file: {transferResultsFile} was not found. Did you run the Run Apertium module?</source>
-        <translation>Die Datei: {transferResultsFile} wurde nicht gefunden. Haben Sie das Modul "Run Apertium" ausgeführt?</translation>
+        <translation>Die Datei: {transferResultsFile} wurde nicht gefunden. Haben Sie das Modul &quot;Run Apertium&quot; ausgeführt?</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="359"/>
@@ -121,7 +121,7 @@ Diese Formen werden dann verwendet, um den Zieltext zu erstellen.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="430"/>
         <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-        <translation>Beim Öffnen der HermitCrab-Masterdatei ist ein Fehler aufgetreten. Ist die Einstellung "Use HermitCrab Synthesis" aktiviert? Haben Sie das Modul "Convert Text to Synthesizer Format" ausgeführt? Datei: {parsesFile}</translation>
+        <translation>Beim Öffnen der HermitCrab-Masterdatei ist ein Fehler aufgetreten. Ist die Einstellung &quot;Use HermitCrab Synthesis&quot; aktiviert? Haben Sie das Modul &quot;Convert Text to Synthesizer Format&quot; ausgeführt? Datei: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="439"/>

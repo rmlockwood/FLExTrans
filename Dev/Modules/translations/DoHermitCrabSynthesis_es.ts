@@ -122,7 +122,7 @@ Estas formas se utilizan luego para crear el texto objetivo.</translation>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="430"/>
         <source>There was an error opening the HermitCrab master file. Do you have the setting &quot;Use HermitCrab Synthesis&quot; turned on? Did you run the Convert Text to Synthesizer Format module? File: {parsesFile}</source>
-        <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tiene activada la opción "Usar síntesis HermitCrab"? ¿Ejecutó el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
+        <translation>Ocurrió un error al abrir el archivo maestro de HermitCrab. ¿Tiene activada la opción &quot;Usar síntesis HermitCrab&quot;? ¿Ejecutó el módulo Convertir texto a formato de sintetizador? Archivo: {parsesFile}</translation>
     </message>
     <message>
         <location filename="../DoHermitCrabSynthesis.py" line="439"/>

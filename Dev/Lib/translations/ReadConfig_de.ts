@@ -21,7 +21,7 @@
     <message>
         <location filename="../ReadConfig.py" line="288"/>
         <source>Problem reading the file: &quot;{file}&quot;. A line without more than one &quot;=&quot; was found.</source>
-        <translation>Problem beim Lesen der Datei: &quot;{file}&quot;. Es wurde eine Zeile ohne mehr als ein &quot;=&quot; gefunden.</translation>
+        <translation type="obsolete">Problem beim Lesen der Datei: &quot;{file}&quot;. Es wurde eine Zeile ohne mehr als ein &quot;=&quot; gefunden.</translation>
     </message>
     <message>
         <location filename="../ReadConfig.py" line="318"/>
