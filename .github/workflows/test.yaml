@@ -3,24 +3,24 @@ name: FLExTrans CI
 on: [push, pull_request]
 
 jobs:
-  test-with-validate:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: dependencies
-      run: |
-           sudo apt-get -qy update
-           sudo apt-get -qfy install wget ca-certificates
-           wget -q https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
-           sudo apt-get install apertium-all-dev
-           sudo apt update
-           sudo apt install python3-pip python3-venv
-           mkdir my_project && cd my_project
-           python3 -m venv venv
-           source venv/bin/activate
-           pip install PyQt5
-    - name: test
-      run: python test_rule_assistant.py
+#  test-with-validate:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v3
+#    - name: dependencies
+#      run: |
+#           sudo apt-get -qy update
+#           sudo apt-get -qfy install wget ca-certificates
+#           wget -q https://apertium.projectjj.com/apt/install-nightly.sh -O - | sudo bash
+#           sudo apt-get install apertium-all-dev
+#           sudo apt update
+#           sudo apt install python3-pip python3-venv
+#           mkdir my_project && cd my_project
+#           python3 -m venv venv
+#           source venv/bin/activate
+#           pip install PyQt5
+#    - name: test
+#      run: python test_rule_assistant.py
   test-on-windows:
     runs-on: windows-latest
     steps:
