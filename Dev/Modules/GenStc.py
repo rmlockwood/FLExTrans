@@ -344,7 +344,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
         for idx in idxN_list: 
             wrdList[idx] = word
         
-        if not idx1List:
+        if not idx1_list:
             f_out2.write(' '.join(wrdList))
             f_out2.write('\n')
         else:
@@ -353,7 +353,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
                 for idx in idx1_list: 
                     wrdList[idx] = word
                 
-                if not idx2List:
+                if not idx2_list:
                     f_out2.write(' '.join(wrdList))
                     f_out2.write('\n')
                 else:
