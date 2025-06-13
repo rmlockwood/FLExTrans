@@ -6,6 +6,14 @@
         <cfg:command name="setReference"/>
     </cfg:binding>
 
+    <cfg:command name="showFTDocumentation">
+        <cfg:macro>
+            <cfg:sequence>
+                <cfg:command name="start" parameter="helper(defaultViewer) &quot;%{P}%{S}..%{S}..%{S}FLExTrans Documentation%{S}UserDoc.htm&quot;"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+
     <cfg:command name="setReference">
         <cfg:macro trace="false">
             <cfg:sequence>

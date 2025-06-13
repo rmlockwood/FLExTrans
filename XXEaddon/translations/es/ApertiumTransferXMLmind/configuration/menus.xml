@@ -9,5 +9,8 @@
             <cfg:accelerator code="F11"/>
         </cfg:item>
         <cfg:separator/>
+       <cfg:item command="showFTDocumentation"
+         label="Mostrar _documentación del usuario de FLExTrans"/>
+        <cfg:separator/>
     </cfg:menu>
     </cfg:configuration>
