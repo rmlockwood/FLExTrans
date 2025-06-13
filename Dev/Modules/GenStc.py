@@ -453,11 +453,11 @@ def MainFunction(DB, report, modifyAllowed):
         idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
         for idxFT, wFT in enumerate(freeT_wrdList): 
             if wFT in matchGlossesN: 
-                idxFTN_list.append(idx)
+                idxFTN_list.append(idxFT)
             elif wFT in matchGlosses1: 
-                idxFT1_list.append(idx)
+                idxFT1_list.append(idxFT)
             elif wFT in matchGlosses2: 
-                idxFT2_list.append(idx)
+                idxFT2_list.append(idxFT)
         
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
