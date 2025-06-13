@@ -4,6 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   13 Jun 2025 dm limited generation in source language now supported. Source and target language
+#                                           sentences match one another. 
+#   
 #   25 Apr 2025 dm re-organized structure. Deleted old methods that weren't being used. 
 #
 #   28 Mar 2025 dm created GenWord class for encapsulation, very rudementary gloss printing
@@ -382,6 +385,7 @@ def MainFunction(DB, report, modifyAllowed):
         
     f_out2 = initializeOutputFile(configMap, report, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE)
     translationFile = bool(f_out2)
+    report.Info(f"Translation file check: {translationFile}")
 
     # Get source text data
     contents = getSourceText(DB, report, configMap)
@@ -447,7 +451,7 @@ def MainFunction(DB, report, modifyAllowed):
             elif thisPOS in posFocus2 and thisLemma in match_2_lem:
                 idx2_list.append(idx)
 
-        free_translation = stc.getFreeTranslation()
+        free_translation = stc.getFreeTranslation().rstrip(".").lower()
         freeT_wrdList = free_translation.split()
 
         idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
@@ -461,8 +465,7 @@ def MainFunction(DB, report, modifyAllowed):
         
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
-
-            
+       
     # Clean up
     f_out.close()
     if f_out2:

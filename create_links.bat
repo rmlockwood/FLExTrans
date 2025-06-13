@@ -12,8 +12,8 @@ REM This path must not have any spaces in it (in order for the symbolic linking 
 REM You will probably need to run this .bat file "as Administrator"
 REM This script now deletes all symbolic links in each folder before recreating them.
 
-set testing_folder=C:\Users\davidmckean\Documents\FLExTrans
-set git_repo=C:\Users\davidmckean\Documents\GitHub\FLExTrans
+set testing_folder=C:\Users\dmcke\Documents\FLExTrans
+set git_repo=C:\Users\dmcke\Documents\GitHub\FLExTrans
 
 REM add to the paths
 set modules_ft=%testing_folder%\FlexTools\Modules\FLExTrans
