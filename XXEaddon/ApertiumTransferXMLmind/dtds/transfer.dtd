@@ -19,7 +19,7 @@
 
     Draft of DTD for the structural transfer rule files 
      
-    Sergio Ortiz, Gema Ramírez-Sánchez, Mireia Ginestí, Mikel L. Forcada, 
+    Sergio Ortiz, Gema Ramï¿½rez-Sï¿½nchez, Mireia Ginestï¿½, Mikel L. Forcada, 
     2005.07.29. 
 -->    
 
@@ -27,6 +27,7 @@
 <!ENTITY % container "(var|clip)">
 <!ENTITY % sentence "(let|out|choose|modify-case|call-macro|append)">
 <!ENTITY % value "(b|clip|lit|lit-tag|var|get-case-from|case-of|concat|lu|mlu|chunk)">
+<!ENTITY % valueNoLu "(clip|lit|lit-tag|var|get-case-from|case-of|concat)">
 <!ENTITY % stringvalue "(clip|lit|var|get-case-from|case-of)">
 
 <!ELEMENT transfer (section-def-cats, section-def-attrs?, section-def-vars?, section-def-lists?, section-def-macros?, section-rules)>
@@ -417,7 +418,7 @@ representing a lexical form in the matched pattern
 
 <!ELEMENT get-case-from (clip|lit|var)> 
 <!ATTLIST get-case-from pos CDATA #REQUIRED>
-<!-- Atención, falta modificar todos los comentarios donde intervenga
+<!-- Atenciï¿½n, falta modificar todos los comentarios donde intervenga
 get-case-from -->
 
 <!ELEMENT case-of EMPTY>
@@ -448,7 +449,7 @@ get-case-from -->
 <!ELEMENT mlu (lu+)>
 <!-- Encloses a multiword -->
 
-<!ELEMENT lu (%value;)+>
+<!ELEMENT lu (%valueNoLu;)+>
 <!-- Encloses a word inside an 'out' element. -->
 
 <!ELEMENT chunk (tags,(mlu|lu|b|var)+)>
