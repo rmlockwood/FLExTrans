@@ -6,6 +6,9 @@
 #   Version 3.14 - 5/17/25 - Ron Lockwood
 #    Added localization capability.
 #
+#   Version 3.13.6 - 6/13/25 - Ron Lockwood
+#   Fixes #1008. Don't give change feedback again on Apply and Close.
+#
 #   Version 3.13.5 - 5/17/25 - Sara Mason
 #   Fixes #981. Removes the ding sound when the Settings dialog is closed.
 #
@@ -1295,6 +1298,7 @@ class Main(QMainWindow):
 
         self.modified = False
         self.changedSettingsSet.clear()
+        self.configMap = updatedConfigMap
         
     def addCommas(self, array):
         retStr = ''
