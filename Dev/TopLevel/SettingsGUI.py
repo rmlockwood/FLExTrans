@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.13.6 - 6/13/25 - Ron Lockwood
+#   Fixes #1008. Don't give change feedback again on Apply and Close.
+#
 #   Version 3.13.5 - 5/17/25 - Sara Mason
 #   Fixes #981. Removes the ding sound when the Settings dialog is closed.
 #
@@ -1193,7 +1196,7 @@ class Main(QMainWindow):
         if len(self.changedSettingsSet) > 0:
         
             msgList = [myStr +' setting changed.' for myStr in list(self.changedSettingsSet)]
-            msgStr = '\n'.join(msgList)    
+            msgStr = '\n'.join(msgList)
 
         # See if we changed anything that wasn't a user change
         for key in updatedConfigMap:
@@ -1208,7 +1211,7 @@ class Main(QMainWindow):
 
         if labelsList:
 
-            flexTransChanges = 'FLExTrans made changed these settings for you:\n' + '\n'.join(labelsList)
+            flexTransChanges = 'FLExTrans changed these settings for you:\n' + '\n'.join(labelsList)
 
             if msgStr:
                 msgStr += '\n\n'
@@ -1290,6 +1293,7 @@ class Main(QMainWindow):
 
         self.modified = False
         self.changedSettingsSet.clear()
+        self.configMap = updatedConfigMap
         
     def addCommas(self, array):
         retStr = ''
