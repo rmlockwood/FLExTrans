@@ -8,9 +8,12 @@
             icon="xxe-config:common/icons/link.png">
             <cfg:accelerator code="F11"/>
         </cfg:item>
-        <cfg:separator/>
+
        <cfg:item command="showFTDocumentation"
          label="FLExTrans _Benutzerdokumentation anzeigen"/>
-        <cfg:separator/>
+		 
+       <cfg:item command="openSampleRules"
+         label="Beispielregeldatei öffnen"/>
+		 
     </cfg:menu>
     </cfg:configuration>
