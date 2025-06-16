@@ -37,6 +37,7 @@ from flextoolslib import *
 from flexlibs import FLExProject
 from SIL.LCModel import IMoStemMsa
 from TextClasses import TextSentence, TextWord
+from dataclasses import dataclass
 import ReadConfig
 import Utils
 import InterlinData
@@ -55,56 +56,21 @@ docs = {
 }
 #----------------------------------------------------------------
 
+@dataclass
 class GenWord:
     """Represents a word with lemma, POS, gloss, and inflection features."""
-    def __init__(self, report):
-        self.__lemma = ""
-        self.__inflection_features = []
-        self.__pos = ""
-        self.__gloss = ""
-    
-    def __repr__(self):
-        return f"Word(lemma='{self.__lemma}', pos='{self.__pos}', gloss='{self.__gloss}', inflection_features={self.__inflection_features})"
-    
-    def __str__(self):
-        return f"{self.__lemma} ({self.__pos}): {self.__gloss} | Features: {', '.join(self.__inflection_features)}"
-    
+    lemma: str = ""
+    inflection_features: list = None
+    pos: str = ""
+    gloss: str = ""
+
+    def __post_init__(self):
+        if self.inflection_features is None:
+            self.inflection_features = []
+
     def writeGloss(self, fOut):
         """Write the gloss to the given file object."""
-        fOut.write(self.__gloss)
-
-    # Property getters and setters
-    @property
-    def lemma(self):
-        return self.__lemma
-    
-    @lemma.setter
-    def lemma(self, new_lemma):
-        self.__lemma = new_lemma
-    
-    @property
-    def inflection_features(self):
-        return self.__inflection_features
-    
-    @inflection_features.setter
-    def inflection_features(self, new_features):
-        self.__inflection_features = new_features
-    
-    @property
-    def pos(self):
-        return self.__pos
-    
-    @pos.setter
-    def pos(self, new_pos):
-        self.__pos = new_pos
-    
-    @property
-    def gloss(self):
-        return self.__gloss
-    
-    @gloss.setter
-    def gloss(self, new_gloss):
-        self.__gloss = new_gloss
+        fOut.write(self.gloss)
 
 #----------------------------------------------------------------
 # Configuration and Setup Functions
@@ -188,8 +154,7 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
     stcCount = myText.getSentCount()
     report.Info(f"Found {stcCount} sentences in the text")
 
-    for i in range(stcCount):
-        stc = myText.getSent(i)
+    for stc in (myText.getSent(i) for i in range(stcCount)):
         wrdList = stc.getWords()
 
         for w in wrdList:
@@ -232,6 +197,7 @@ def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
 def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     """Fetch lexical entries and return lists of GenWord objects."""
     wordListN, wordList1, wordList2 = [], [], []
+    valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
 
     for entry in DB.LexiconAllEntries():
         lex = (DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)) + '1.1'
@@ -244,7 +210,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
                 msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
                 if msa.PartOfSpeechRA:
                     pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
-                    if pos not in match_n_pos + match_1_pos + match_2_pos:
+                    if pos not in valid_pos:
                         continue
                         
                     word = GenWord(report)
@@ -267,32 +233,19 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     return wordListN, wordList1, wordList2
 
 #----------------------------------------------------------------
-# List Processing Functions
+# List Comprehension Functions
 
 def getMatchingLemmaWords(match_x_lem, subListX):
     """Returns genWord objects that match the target lemma."""
-    words = []
-    for word in subListX:
-        if word.lemma in match_x_lem:
-            words.append(word)
-    return words
+    return [word for word in subListX if word.lemma in match_x_lem]
 
 def getGlossList(subListX):
     """Returns a list of glosses given a list of genWord objects."""
-    glosses = []
-    for word in subListX: 
-        glosses.append(word.gloss)
-    return glosses
+    return [word.gloss for word in subListX]
 
 def cleanWordList(wrdList):
     """Cleans up a list of strings for printing."""
-    new_list = []
-    for word in wrdList:
-        if '.' in word:
-            new_list.extend(word.split('.'))
-        else:
-            new_list.append(word)
-    return new_list
+    return [part for word in wrdList for part in word.split('.')]
 
 #----------------------------------------------------------------
 # Sentence Processing Functions
@@ -469,14 +422,20 @@ def MainFunction(DB, report, modifyAllowed):
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
         freeT_wrdList = cleanWordList(free_translation.split())
 
-        idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
-        for idxFT, wFT in enumerate(freeT_wrdList): 
-            if wFT in matchGlossesN: 
-                idxFTN_list.append(idxFT)
-            elif wFT in matchGlosses1: 
-                idxFT1_list.append(idxFT)
-            elif wFT in matchGlosses2: 
-                idxFT2_list.append(idxFT)
+        idxFTN_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlossesN]
+        idxFT1_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses1]
+        idxFT2_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses2]
+
+        # same as above, but with one pass
+            # (use if performance bottleneck)
+        #idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
+        #for idxFT, wFT in enumerate(freeT_wrdList): 
+            #if wFT in matchGlossesN: 
+                #idxFTN_list.append(idxFT)
+            #elif wFT in matchGlosses1: 
+                #idxFT1_list.append(idxFT)
+            #elif wFT in matchGlosses2: 
+                #idxFT2_list.append(idxFT)
 
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
