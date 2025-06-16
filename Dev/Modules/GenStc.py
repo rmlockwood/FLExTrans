@@ -266,30 +266,33 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     
     return wordListN, wordList1, wordList2
 
+#----------------------------------------------------------------
+# List Processing Functions
+
 def getMatchingLemmaWords(match_x_lem, subListX):
+    """Returns genWord objects that match the target lemma."""
     words = []
     for word in subListX:
         if word.lemma in match_x_lem:
             words.append(word)
     return words
 
-def getGlossList(subListX): 
+def getGlossList(subListX):
+    """Returns a list of glosses given a list of genWord objects."""
     glosses = []
     for word in subListX: 
         glosses.append(word.gloss)
     return glosses
 
 def cleanWordList(wrdList):
+    """Cleans up a list of strings for printing."""
     new_list = []
     for word in wrdList:
         if '.' in word:
-            # Split the word and extend the new list with both parts
             new_list.extend(word.split('.'))
         else:
-            # Just add the word as is
             new_list.append(word)
     return new_list
-
 
 #----------------------------------------------------------------
 # Sentence Processing Functions
@@ -383,7 +386,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
 #----------------------------------------------------------------
 # Main Function
 def MainFunction(DB, report, modifyAllowed):
-    """Main function that orchestrates the entire process."""
+
     # Load configuration
     configMap = loadConfiguration(report)
     if not configMap:
