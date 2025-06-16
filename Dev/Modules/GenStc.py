@@ -279,6 +279,18 @@ def getGlossList(subListX):
         glosses.append(word.gloss)
     return glosses
 
+def cleanWordList(wrdList):
+    new_list = []
+    for word in wrdList:
+        if '.' in word:
+            # Split the word and extend the new list with both parts
+            new_list.extend(word.split('.'))
+        else:
+            # Just add the word as is
+            new_list.append(word)
+    return new_list
+
+
 #----------------------------------------------------------------
 # Sentence Processing Functions
 def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
@@ -306,7 +318,7 @@ def _processWord(wrdList, idxList, genWord, report):
     
     for idx in idxList:
         wrd = wrdList[idx]
-        report.Info(f"Testing idx {str(idx)} Match {wrd._TextWord__lemmaList[0]} Replace {word}")
+        #report.Info(f"Testing idx {str(idx)} Match {wrd._TextWord__lemmaList[0]} Replace {word}")
         wrd._TextWord__lemmaList[0] = word
         
         if info:
@@ -314,8 +326,8 @@ def _processWord(wrdList, idxList, genWord, report):
 
 def _applyInflectionFeatures(wrd, features, report):
     """Apply inflection features to a word."""
-    report.Info(f"Before modification: {wrd.getInflClass(0)}")
-    report.Info(f"Before modification: {wrd._TextWord__inflFeatAbbrevsList}")
+    #report.Info(f"Before modification: {wrd.getInflClass(0)}")
+    #report.Info(f"Before modification: {wrd._TextWord__inflFeatAbbrevsList}")
 
     wrd.setInflClass(str(features[0]))
     wrd.setIgnoreInflectionClass(False)
@@ -325,10 +337,10 @@ def _applyInflectionFeatures(wrd, features, report):
 
     if len(features) > 1:
         for i, feat in enumerate(features[1:]):
-            report.Info(f"Assigning feature {feat} at index {i}")
+            #report.Info(f"Assigning feature {feat} at index {i}")
             wrd._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
 
-    report.Info(f"After modification: {wrd._TextWord__inflFeatAbbrevsList}")
+    #report.Info(f"After modification: {wrd._TextWord__inflFeatAbbrevsList}")
 
 def _writeSentence(stc, f_out):
     """Write the sentence to the output file."""
@@ -348,7 +360,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
             wrdList[idx] = word
         
         if not idx1_list:
-            f_out2.write(' '.join(wrdList))
+            f_out2.write(' '.join(cleanWordList(wrdList)))
             f_out2.write('\n')
         else:
             for genWord1 in subList1:
@@ -357,7 +369,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
                     wrdList[idx] = word
                 
                 if not idx2_list:
-                    f_out2.write(' '.join(wrdList))
+                    f_out2.write(' '.join(cleanWordList(wrdList)))
                     f_out2.write('\n')
                 else:
                     for genWord2 in subList2:
@@ -365,7 +377,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
                         for idx in idx2_list: 
                             wrdList[idx] = word
 
-                        f_out2.write(' '.join(wrdList))
+                        f_out2.write(' '.join(cleanWordList(wrdList)))
                         f_out2.write('\n')
 
 #----------------------------------------------------------------
@@ -432,7 +444,7 @@ def MainFunction(DB, report, modifyAllowed):
 
     # Process each sentence
     stcCount = myText.getSentCount()
-    report.Info(f"Found {stcCount} sentences in the text")
+    #report.Info(f"Found {stcCount} sentences in the text")
 
     for i in range(stcCount):
         stc = myText.getSent(i)
@@ -452,7 +464,7 @@ def MainFunction(DB, report, modifyAllowed):
                 idx2_list.append(idx)
 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
-        freeT_wrdList = free_translation.split()
+        freeT_wrdList = cleanWordList(free_translation.split())
 
         idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
         for idxFT, wFT in enumerate(freeT_wrdList): 
@@ -462,7 +474,7 @@ def MainFunction(DB, report, modifyAllowed):
                 idxFT1_list.append(idxFT)
             elif wFT in matchGlosses2: 
                 idxFT2_list.append(idxFT)
-        
+
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
        
