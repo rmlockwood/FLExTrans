@@ -74,6 +74,7 @@ class GenWord:
 
 #----------------------------------------------------------------
 # Configuration and Setup Functions
+
 def loadConfiguration(report):
     """Read and load the configuration file."""
     return ReadConfig.readConfig(report)
@@ -116,6 +117,7 @@ def _getStemLimit(stemLimit):
 
 #----------------------------------------------------------------
 # File Handling Functions
+
 def initializeOutputFile(configMap, report, configKey):
     """Initialize an output file for writing."""
     filePath = ReadConfig.getConfigVal(configMap, configKey, report)
@@ -130,6 +132,7 @@ def initializeOutputFile(configMap, report, configKey):
 
 #----------------------------------------------------------------
 # Data Extraction Functions
+
 def getSourceText(DB, report, configMap):
     """Fetch the source text from the database."""
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
@@ -249,6 +252,7 @@ def cleanWordList(wrdList):
 
 #----------------------------------------------------------------
 # Sentence Processing Functions
+
 def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
     """Process and substitute words in the sentence, writing to output file."""
     for genWordN in subListN:
@@ -337,7 +341,6 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
                         f_out2.write('\n')
 
 #----------------------------------------------------------------
-# Main Function
 def MainFunction(DB, report, modifyAllowed):
 
     # Load configuration
