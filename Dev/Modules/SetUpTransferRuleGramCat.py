@@ -5,6 +5,9 @@
 #   SIL International
 #   2/22/18
 #
+#   Version 3.14.1 - 6/18/25 - Ron Lockwood
+#    Fixes #998. Use ElementTree to parse the transfer rules file.
+#
 #   Version 3.14 - 5/28/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -61,7 +64,7 @@
 import os
 import shutil
 import re
-import sys
+import xml.etree.ElementTree as ET
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeature,
@@ -98,7 +101,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'RuleCatsAndAttribs']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Set Up Transfer Rule Categories and Attributes",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("SetUpTransferRuleGramCat", 'Set up the transfer rule file with categories and attributes from source and target FLEx projects.') ,
         FTM_Help   : "",
@@ -178,201 +181,138 @@ class Main(QMainWindow):
         self.retVal = True
         self.close()
 
-def processDefCat(defCatLines, srcPOSmap, tr_out_f):
+def sortChildren(parentElement, childElementName):
+
+    # Group elements with preceding comments
+    groups = []
+    currentGroup = []
+
+    for child in list(parentElement):
+
+        if isinstance(child.tag, str) and child.tag == childElementName:
+
+            currentGroup.append(child)
+            groups.append(list(currentGroup))
+            currentGroup = []
+        else:
+            # Comment or processing instruction
+            currentGroup.append(child)
+
+    # Sort groups by the 'n' attribute of the element
+    def getSortKey(group):
+
+        for el in group:
+
+            if isinstance(el.tag, str) and el.tag == childElementName:
+
+                return el.get('n', '').lower()
+
+        return ''
+
+    groupsSorted = sorted(groups, key=getSortKey)
+
+    # Remove all children
+    for child in list(parentElement):
+
+        parentElement.remove(child)
+
+    # Re-append in sorted order
+    for group in groupsSorted:
+
+        for el in group:
+
+            parentElement.append(el)
+
+def processDefCat(sectionDefCats, srcPOSmap):
 
     ## Process the categories, adding them to the cat definitions. Don't change existing categories.
     ## Keep the categories in alphabetical order.
     
-    existCatMap = {}
-    existCatList = []
     i = 0
-    
-    # Process the existing category list
-    while i < len(defCatLines):
-        
-        # here's the start of the cat definition
-        if re.search('><def-cat', defCatLines[i]):
+
+    for tag in srcPOSmap:
             
-            start = i
+        def_cat = sectionDefCats.find(f"./def-cat[@n='c_{tag}']")
+
+        if def_cat is None:
+
+            def_cat = ET.SubElement(sectionDefCats, 'def-cat', n=f'c_{tag}')
+            def_cat_item1 = ET.SubElement(def_cat, 'cat-item', tags=tag)
+            def_cat_item2 = ET.SubElement(def_cat, 'cat-item', tags=f'{tag}.*') 
+            # sectionDefCats.append(def_cat)
             i += 1
-            
-            # capture the category name
-            matchObj = re.search('n="(.+)"', defCatLines[i])
-        
-            if not matchObj:
-                continue
-            else:
-                catName = matchObj.group(1)
-            
-            # Save the name    
-            existCatList.append(catName)
-            
-            # Loop through all remaining lines for this category
-            while True:
-                
-                i += 1
-                
-                # See if we hit the end of the def-cat
-                if re.search('></def-cat', defCatLines[i]):
-                    break
-            
-            # map the category name to all the lines that make up the definition
-            existCatMap[catName] = defCatLines[start:i+1]
-            
-        i += 1
-                
-    # For comparison, strip the c_ from the existing categories
-    strippedList = [re.sub('c_', '', tok) for tok in existCatList]
-    
-    # Use set subtraction to get all the FLEx categories that aren't in the existing category list
-    reducedFLExList = list(set(list(srcPOSmap.keys())) - set(strippedList))
-    
-    # Combine the existing list with the FLEx list so we can loop through it in alphabetical order
-    # Create a tuple list with the 2nd element identifying which list the category came from
-    combinedList = [(cat, 'existList') for cat in existCatList]
-    combinedList.extend([('c_' + cat, 'flexList') for cat in reducedFLExList])
-    
-    for cat, myType in sorted(combinedList, key=lambda k_v: (k_v[0], k_v[1])):
-        
-        if myType == 'existList':
-            
-            for catLine in existCatMap[cat]:
-            
-                tr_out_f.write(catLine)
-                
-        else: # flexList
-            
-            # write out the begin def-cat element
-            tr_out_f.write('><def-cat\n')
-            tr_out_f.write('n="' + cat + '"\n')
-            
-            # write out two tags elements, plain and with .* added.
-            tr_out_f.write('><cat-item\n')
-            tr_out_f.write('tags="' + cat[2:] + '"\n')
-            tr_out_f.write('></cat-item\n')
-            
-            tr_out_f.write('><cat-item\n')
-            tr_out_f.write('tags="' + cat[2:] + '.*"\n')
-            tr_out_f.write('></cat-item\n')
-            
-            # write out the end def-cat element
-            tr_out_f.write('></def-cat\n')
 
-    # close out the category section
-    tr_out_f.write('></section-def-cats\n')
-            
-    return len(reducedFLExList)
+    sortChildren(sectionDefCats, 'def-cat')
 
-def createAttrLines(attrib, valList, thingType):
-    
-    myAttrList = []
+    return i+1  # return the number of categories added
 
-    myAttrList.append('><def-attr\n')
-    myAttrList.append(f'n="' + formatAttrib(attrib, thingType) + '"\n')
-        
-    for val in sorted(valList):
-        
-        # Convert periods to underscores
-        val = Utils.underscores(val)
-        
-        myAttrList.append('><attr-item\n')
-        myAttrList.append(f'tags="{val}"\n')
-        myAttrList.append('></attr-item\n')
-        
-    myAttrList.append('></def-attr\n')
+def processGramCat(sectionDefAttrs, POSmap, nameStr):
 
-    return myAttrList
-    
-def processGramCat(POSmap, nameStr):  
+    # Delete the deff-attr labeled a_gram_cat
+    def_attr = sectionDefAttrs.find(f"./def-attr[@n='{nameStr}']")
 
-    linesList = []
-    
-    linesList.append('><def-attr\n')
-    linesList.append(f'n="{nameStr}"\n')
+    if def_attr is not None:
 
-    # Loop through all of the category abbreviations and names
+        sectionDefAttrs.remove(def_attr)
+
+    # Create a new def-attr for a_gram_cat
+    def_attr = ET.SubElement(sectionDefAttrs, 'def-attr', n=nameStr)
+
+    # Loop through all of the category abbreviations and names in alphabetical order
     for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(), k_v[1])):
-        
-        linesList.append('><attr-item\n')
-        linesList.append('c="' + pos_name + '"\n')
-        linesList.append('tags="' + pos_abbr + '"\n')
-        linesList.append('></attr-item\n')
 
-    linesList.append('></def-attr\n')
-    
-    return linesList
+        def_attr_item = ET.SubElement(def_attr, 'attr-item', c=pos_name, tags=Utils.underscores(pos_abbr))
+        # def_attr.append(def_attr_item)
+
+    return
         
 def formatAttrib(attrib, thingType):
     
     attrib = re.sub(' ', '_', attrib)
     return f'a_{attrib}_{thingType}'
 
-def processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f): 
+def processDefAttr(sectionDefAttrs, POSmap, masterAttribList): 
     
     count = 0
-    name2LinesMap = {}
-    attrLines = []
     
-    startLine = defAttrLines.pop(0)
-    
-    for line in defAttrLines:
-        
-        if re.search('><def-attr', line):
-            
-            attrLines = list()
-            
-        elif re.search('n=', line):
-            
-            matchObj = re.search('n="(.+)"', line)
-            
-            if matchObj:
-                
-                attrName = matchObj.group(1)
-                name2LinesMap[attrName] = attrLines
-     
-        attrLines.append(line)
-        
-    endLine = attrLines.pop()
-    
-    # go through the master list and add needed attributes to the names2LinesMap
+    # go through the master list 
     for attrib in masterAttribList.keys():
         
         thingType = masterAttribList[attrib][2] # third part of the tuple is the thing type, e.g. feat, class or slot
         
-        # Skip the attribute if it already exists and we are not supposed to override it
-        if formatAttrib(attrib, thingType) in name2LinesMap and not masterAttribList[attrib][0]: # 1st part of the tuple is the override flag
-            
+        # Skip the attribute if we are not supposed to override it
+        if not masterAttribList[attrib][0]:
+
+            continue # 1st part of the tuple is the override flag
+
+        def_attr = sectionDefAttrs.find(f"./def-attr[@n='a_{attrib}_{thingType}']")
+
+        # Skip the attribute if it already exists
+        if def_attr:
+
             continue
         else:
-            # produce the xml lines for the def-attr element
-            newList = createAttrLines(attrib, masterAttribList[attrib][1], thingType) # 2nd part is the list of values
-            name2LinesMap[formatAttrib(attrib, thingType)] = newList
+            # If the attribute doesn't exist, we need to create it.
+            def_attr = ET.SubElement(sectionDefAttrs, 'def-attr', n=f'a_{attrib}_{thingType}')
+
+            # Create attr-item elements for each value in the list
+            for val in masterAttribList[attrib][1]:
+
+                def_attr_item = ET.SubElement(def_attr, 'attr-item', tags=Utils.underscores(val))
 
             count += 1
                 
     # Process a_gram_cat
-    name2LinesMap[GRAM_CAT] = processGramCat(POSmap, GRAM_CAT)
-                    
-    # Write the lines to the file
-    tr_out_f.write(startLine)
-               
-    for attrib in sorted(name2LinesMap.keys(), key=lambda s: s.lower()):
-        
-        for line in name2LinesMap[attrib]:
-            
-            tr_out_f.write(line)
+    processGramCat(sectionDefAttrs, POSmap, GRAM_CAT)
 
-    tr_out_f.write(endLine) 
-        
+    sortChildren(sectionDefAttrs, 'def-attr')
+                    
     return count
 
 def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, countList, thingType):
     
     posFullNameStr = pos.ToString()
         
-    # Correct issues (like spaces or dots, etc.) in the POS full name. Also show warnings for each issue.
-    #countList, posFullNameStr = Utils.check_for_cat_errors(report, dbType, posFullNameStr, posFullNameStr, countList, 1, thingType) # 1 for numCatErrorsToShow
-
     if pos.InflectionClassesOC and len(pos.InflectionClassesOC.ToArray()) > 0:
         
         # Get a list of abbreviation and name tuples
@@ -397,8 +337,7 @@ def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, c
 
 def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countList, thingType):
     
-    # Only process closed features, i.e. features that don't have sub-features
-    
+    # Only process closed features, i.e. features that don't have sub-features    
     if feat.ClassID == FsClosedFeatureTags.kClassId:
     
         feat = IFsClosedFeature(feat)
@@ -536,16 +475,6 @@ def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thi
         return True
     else:
         return False
-
-# Check to see that we have the def-attr section in the format that XXE saves files in. Otherwise give an error.
-def checkFormat(linesList, report):
-            
-    if '><def-attr' not in ''.join(linesList):
-        
-        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.'))
-        return True
-    
-    return False
     
 #----------------------------------------------------------------
 # The main processing function
@@ -559,7 +488,7 @@ def MainFunction(DB, report, modify=True):
     masterAttribList = {}
     srcPOSmap = {}
     POSmap = {}
-    defCatStart = defAttrStart = sectDefAttrEnd = 0
+    # defCatStart = defAttrStart = sectDefAttrEnd = 0
     
     window = Main()
     window.show()
@@ -603,95 +532,75 @@ def MainFunction(DB, report, modify=True):
             return
 
     # Get the path to the transfer rules file
-    transfer_rules_file = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=True)
+    transferRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TRANSFER_RULES_FILE, report, giveError=True)
 
     # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
-    if not transfer_rules_file:
+    if not transferRulesFile:
         TargetDB.CloseProject()
         return
     
     # Make a backup copy of the transfer rule file
     try:
-        shutil.copy2(transfer_rules_file, transfer_rules_file+'.old')
+        shutil.copy2(transferRulesFile, transferRulesFile+'.old')
     except:
         report.Error(_translate("SetUpTransferRuleGramCat", 'There was a problem finding the transfer rules file. Check your configuration.'))
         TargetDB.CloseProject()
         return
 
-    # Read in the lines of the transfer rule file
-    tr_f = open(transfer_rules_file, encoding='utf-8')
-    linesList = tr_f.readlines()
-    tr_f.close()
-
-    # Check for an incorrect format
-    if checkFormat(linesList, report) == True:
-        TargetDB.CloseProject()
-        return 
-    
-    # Divide the lines of the file into chunks. Category lines, attribute lines and the rest
-    # Note: we are not using elementTree because it doesn't preserve comments
-    for i, line in enumerate(linesList):
-        
-        # start of categories
-        if re.search('><def-cat', line) and defCatStart == 0:
-            
-            defCatStart = i
-        
-        # start of attributes
-        elif re.search('><section-def-attrs', line) and defAttrStart == 0:
-            
-            defAttrStart = i
-            
-        elif re.search('></section-def-attrs', line):
-            
-            sectDefAttrEnd = i
-            
+    # Parse the XML file using ElementTree
     try:
-        initialLines = linesList[0:defCatStart]
-        defCatLines = linesList[defCatStart:defAttrStart]
-        defAttrLines = linesList[defAttrStart:sectDefAttrEnd+1]
-        remainLines = linesList[sectDefAttrEnd+1:]
-        
-    except:
-        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is malformed.'))
-        TargetDB.CloseProject()
-        return 
+        parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+        tree = ET.parse(transferRulesFile, parser=parser)
+        root = tree.getroot()
 
-    # Open the transfer file for writing
-    tr_out_f = open(transfer_rules_file, 'w', encoding='utf-8')
+    except Exception as e:
+
+        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is malformed or not valid XML.'))
+        TargetDB.CloseProject()
+        return
     
-    # Write the initial lines
-    for line in initialLines:
-        
-        tr_out_f.write(line)
-    
+    # Find the section-def-cats and section-def-attrs elements
+    sectionDefCats = root.find('section-def-cats')
+    sectionDefAttrs = root.find('section-def-attrs')
+
+    if sectionDefCats is None or sectionDefAttrs is None:
+
+        report.Error(_translate("SetUpTransferRuleGramCat", 'The transfer rules file is missing required sections.'))
+        TargetDB.CloseProject()
+        return
+
     # Get just source categories
     if Utils.get_categories(DB, report, srcPOSmap, TargetDB=None, numCatErrorsToShow=99, addInflectionClasses=False) == True:
 
-        tr_out_f.close()
+        TargetDB.CloseProject()
         return
-        
+
     # Process categories
-    catCount = processDefCat(defCatLines, srcPOSmap, tr_out_f)
+    catCount = processDefCat(sectionDefCats, srcPOSmap)
     
     # Get all source and target categories
     if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
         
         TargetDB.CloseProject()
-        tr_out_f.close()
         return
 
     TargetDB.CloseProject()
     
     # Process attributes
-    attrCount = processDefAttr(defAttrLines, POSmap, masterAttribList, tr_out_f)
-    
-    # Write the remaining lines
-    for line in remainLines:
-        
-        tr_out_f.write(line)
-    
-    tr_out_f.close()
+    attrCount = processDefAttr(sectionDefAttrs, POSmap, masterAttribList)
+
+    # Write the xml tree back to the transfer rules file
+    try:
+        with open(transferRulesFile, 'wb') as fout:
+            fout.write('<?xml version="1.0" encoding="utf-8"?>\n'.encode('utf-8'))
+            fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">\n'.encode('utf-8'))
+            ET.indent(root)
+            fout.write(ET.tostring(root, encoding='utf-8'))
+
+    except Exception as e:
+
+        report.Error(_translate("SetUpTransferRuleGramCat", 'There was a problem writing the transfer rules file: {error}').format(error=str(e)))
+        return
     
     report.Info(_translate("SetUpTransferRuleGramCat", '{attrCount} attributes added to the attributes section.').format(attrCount=attrCount))
     report.Info(_translate("SetUpTransferRuleGramCat", '{num} categories created for the a_gram_cat attribute.').format(num=len(POSmap)))
