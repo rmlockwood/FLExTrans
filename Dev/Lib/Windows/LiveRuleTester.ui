@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1273</width>
-    <height>703</height>
+    <width>1248</width>
+    <height>673</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>311</y>
+      <x>8</x>
+      <y>300</y>
       <width>657</width>
       <height>148</height>
      </rect>
@@ -33,7 +33,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_transfer_rules">
      <attribute name="title">
@@ -99,10 +99,10 @@
    <widget class="QTabWidget" name="tabSource">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>40</y>
+      <x>8</x>
+      <y>37</y>
       <width>1231</width>
-      <height>225</height>
+      <height>222</height>
      </rect>
     </property>
     <property name="tabPosition">
@@ -127,7 +127,7 @@
         <x>0</x>
         <y>0</y>
         <width>1225</width>
-        <height>29</height>
+        <height>22</height>
        </rect>
       </property>
       <property name="font">
@@ -143,7 +143,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>30</y>
+        <y>27</y>
         <width>1225</width>
         <height>103</height>
        </rect>
@@ -174,7 +174,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>135</y>
+        <y>132</y>
         <width>1225</width>
         <height>61</height>
        </rect>
@@ -264,10 +264,10 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>22</x>
-      <y>465</y>
+      <x>10</x>
+      <y>460</y>
       <width>221</width>
-      <height>23</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -277,10 +277,10 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>23</x>
+      <x>11</x>
       <y>20</y>
       <width>91</width>
-      <height>23</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -290,8 +290,8 @@
    <widget class="QTextEdit" name="LogEdit">
     <property name="geometry">
      <rect>
-      <x>680</x>
-      <y>311</y>
+      <x>668</x>
+      <y>300</y>
       <width>571</width>
       <height>122</height>
      </rect>
@@ -311,10 +311,10 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>22</x>
-      <y>291</y>
-      <width>261</width>
-      <height>23</height>
+      <x>10</x>
+      <y>282</y>
+      <width>271</width>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -324,10 +324,10 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>682</x>
-      <y>291</y>
+      <x>670</x>
+      <y>280</y>
       <width>311</width>
-      <height>23</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -337,10 +337,10 @@
    <widget class="QPushButton" name="refreshButton">
     <property name="geometry">
      <rect>
-      <x>504</x>
+      <x>492</x>
       <y>275</y>
       <width>166</width>
-      <height>31</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -350,10 +350,10 @@
    <widget class="QPushButton" name="selectAllButton">
     <property name="geometry">
      <rect>
-      <x>293</x>
+      <x>310</x>
       <y>275</y>
-      <width>45</width>
-      <height>31</height>
+      <width>35</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="font">
@@ -368,10 +368,10 @@
    <widget class="QPushButton" name="upButton">
     <property name="geometry">
      <rect>
-      <x>393</x>
+      <x>390</x>
       <y>275</y>
-      <width>45</width>
-      <height>31</height>
+      <width>35</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -385,10 +385,10 @@
    <widget class="QPushButton" name="downButton">
     <property name="geometry">
      <rect>
-      <x>443</x>
+      <x>431</x>
       <y>275</y>
-      <width>45</width>
-      <height>31</height>
+      <width>35</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -402,10 +402,10 @@
    <widget class="QPushButton" name="unselectAllButton">
     <property name="geometry">
      <rect>
-      <x>343</x>
+      <x>350</x>
       <y>275</y>
-      <width>45</width>
-      <height>31</height>
+      <width>35</width>
+      <height>23</height>
      </rect>
     </property>
     <property name="font">
@@ -420,8 +420,8 @@
    <widget class="QTextEdit" name="TargetTextEdit">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>485</y>
+      <x>8</x>
+      <y>478</y>
       <width>1231</width>
       <height>61</height>
      </rect>
@@ -441,10 +441,10 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>22</x>
-      <y>571</y>
+      <x>10</x>
+      <y>560</y>
       <width>201</width>
-      <height>23</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -454,8 +454,8 @@
    <widget class="QTextEdit" name="SynthTextEdit">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>591</y>
+      <x>8</x>
+      <y>578</y>
       <width>1231</width>
       <height>61</height>
      </rect>
@@ -475,10 +475,10 @@
    <widget class="QPushButton" name="addToTestbedButton">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>657</y>
+      <x>148</x>
+      <y>644</y>
       <width>171</width>
-      <height>31</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -488,10 +488,10 @@
    <widget class="QCheckBox" name="addMultipleCheckBox">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>660</y>
-      <width>391</width>
-      <height>25</height>
+      <x>338</x>
+      <y>647</y>
+      <width>381</width>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -504,10 +504,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>22</x>
-      <y>660</y>
+      <x>10</x>
+      <y>647</y>
       <width>131</width>
-      <height>20</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -517,10 +517,10 @@
    <widget class="QPushButton" name="editTransferRulesButton">
     <property name="geometry">
      <rect>
-      <x>1050</x>
+      <x>1038</x>
       <y>275</y>
       <width>201</width>
-      <height>31</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -530,10 +530,10 @@
    <widget class="QLabel" name="selectWordsHintLabel">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>243</y>
+      <x>388</x>
+      <y>240</y>
       <width>651</width>
-      <height>23</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -543,10 +543,10 @@
    <widget class="QLabel" name="warningLabel">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>440</y>
-      <width>1100</width>
-      <height>42</height>
+      <x>677</x>
+      <y>430</y>
+      <width>1101</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="palette">
@@ -602,10 +602,10 @@
    <widget class="QComboBox" name="SourceTextCombo">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>128</x>
       <y>10</y>
       <width>431</width>
-      <height>29</height>
+      <height>22</height>
      </rect>
     </property>
     <property name="font">
@@ -620,10 +620,10 @@
    <widget class="QCheckBox" name="traceHermitCrabSynthesisCheckBox">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>563</y>
+      <x>218</x>
+      <y>556</y>
       <width>231</width>
-      <height>30</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -636,10 +636,10 @@
    <widget class="QPushButton" name="ZoomIncreaseTarget">
     <property name="geometry">
      <rect>
-      <x>1200</x>
-      <y>659</y>
+      <x>1188</x>
+      <y>644</y>
       <width>21</width>
-      <height>25</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -649,10 +649,10 @@
    <widget class="QLabel" name="ZoomLabel">
     <property name="geometry">
      <rect>
-      <x>1091</x>
-      <y>661</y>
+      <x>1079</x>
+      <y>645</y>
       <width>100</width>
-      <height>20</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -665,10 +665,10 @@
    <widget class="QPushButton" name="ZoomDecreaseTarget">
     <property name="geometry">
      <rect>
-      <x>1230</x>
-      <y>659</y>
+      <x>1218</x>
+      <y>644</y>
       <width>21</width>
-      <height>25</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -678,10 +678,10 @@
    <widget class="QPushButton" name="ZoomIncreaseSource">
     <property name="geometry">
      <rect>
-      <x>1200</x>
-      <y>244</y>
+      <x>1188</x>
+      <y>240</y>
       <width>21</width>
-      <height>25</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -691,10 +691,10 @@
    <widget class="QLabel" name="ZoomLabel_2">
     <property name="geometry">
      <rect>
-      <x>1091</x>
-      <y>246</y>
+      <x>1079</x>
+      <y>241</y>
       <width>100</width>
-      <height>20</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
@@ -707,10 +707,10 @@
    <widget class="QPushButton" name="ZoomDecreaseSource">
     <property name="geometry">
      <rect>
-      <x>1230</x>
-      <y>244</y>
+      <x>1218</x>
+      <y>240</y>
       <width>21</width>
-      <height>25</height>
+      <height>23</height>
      </rect>
     </property>
     <property name="text">
@@ -723,10 +723,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>820</x>
-      <y>563</y>
+      <x>808</x>
+      <y>556</y>
       <width>211</width>
-      <height>30</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -742,10 +742,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>1030</x>
-      <y>563</y>
+      <x>1018</x>
+      <y>556</y>
       <width>241</width>
-      <height>30</height>
+      <height>17</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -759,10 +759,10 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>640</x>
-      <y>8</y>
+      <x>628</x>
+      <y>5</y>
       <width>611</width>
-      <height>33</height>
+      <height>31</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -777,7 +777,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -796,7 +796,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -815,7 +815,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -828,10 +828,10 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>440</y>
+      <x>318</x>
+      <y>450</y>
       <width>341</width>
-      <height>33</height>
+      <height>31</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -846,7 +846,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -865,7 +865,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -878,8 +878,8 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>554</y>
+      <x>458</x>
+      <y>547</y>
       <width>341</width>
       <height>33</height>
      </rect>
@@ -890,7 +890,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -903,7 +903,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -916,8 +916,8 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>730</x>
-      <y>657</y>
+      <x>718</x>
+      <y>639</y>
       <width>361</width>
       <height>33</height>
      </rect>
@@ -931,7 +931,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
@@ -947,7 +947,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>31</height>
+         <height>23</height>
         </size>
        </property>
        <property name="text">
