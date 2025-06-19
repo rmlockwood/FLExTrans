@@ -65,6 +65,8 @@ import os
 import shutil
 import re
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from typing import List
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeature,
@@ -123,6 +125,12 @@ del app
 slot2AffixListMap = {}
 GRAM_CAT = 'a_gram_cat'
 
+@dataclass
+class AttribInfo:
+    override: bool
+    abbrList: List[str]
+    thingType: str  # 'feat', 'class' or 'slot'
+
 class Main(QMainWindow):
 
     def __init__(self):
@@ -144,7 +152,6 @@ class Main(QMainWindow):
             if self.ui.PopulateFeaturesCheckbox.isChecked():
                 
                 self.ui.overrideFeaturesCheckbox.setEnabled(True)
-                
             else:
                 self.ui.overrideFeaturesCheckbox.setEnabled(False)
                 
@@ -153,7 +160,6 @@ class Main(QMainWindow):
             if self.ui.PopulateClassesCheckbox.isChecked():
                 
                 self.ui.overrideClassesCheckbox.setEnabled(True)
-                
             else:
                 self.ui.overrideClassesCheckbox.setEnabled(False)
                 
@@ -162,7 +168,6 @@ class Main(QMainWindow):
             if self.ui.PopulateSlotsCheckbox.isChecked():
                 
                 self.ui.overrideSlotsCheckbox.setEnabled(True)
-                
             else:
                 self.ui.overrideSlotsCheckbox.setEnabled(False)
                 
@@ -206,7 +211,6 @@ def sortChildren(parentElement, childElementName):
             if isinstance(el.tag, str) and el.tag == childElementName:
 
                 return el.get('n', '').lower()
-
         return ''
 
     groupsSorted = sorted(groups, key=getSortKey)
@@ -223,12 +227,12 @@ def sortChildren(parentElement, childElementName):
 
             parentElement.append(el)
 
-def processDefCat(sectionDefCats, srcPOSmap):
+def fillOutDefCat(sectionDefCats, srcPOSmap):
 
     ## Process the categories, adding them to the cat definitions. Don't change existing categories.
     ## Keep the categories in alphabetical order.
     
-    i = 0
+    count = 0
 
     for tag in srcPOSmap:
             
@@ -239,14 +243,12 @@ def processDefCat(sectionDefCats, srcPOSmap):
             def_cat = ET.SubElement(sectionDefCats, 'def-cat', n=f'c_{tag}')
             def_cat_item1 = ET.SubElement(def_cat, 'cat-item', tags=tag)
             def_cat_item2 = ET.SubElement(def_cat, 'cat-item', tags=f'{tag}.*') 
-            # sectionDefCats.append(def_cat)
-            i += 1
+            count += 1
 
     sortChildren(sectionDefCats, 'def-cat')
+    return count  # return the number of categories added
 
-    return i+1  # return the number of categories added
-
-def processGramCat(sectionDefAttrs, POSmap, nameStr):
+def fillOutGramCat(sectionDefAttrs, POSmap, nameStr):
 
     # Delete the deff-attr labeled a_gram_cat
     def_attr = sectionDefAttrs.find(f"./def-attr[@n='{nameStr}']")
@@ -261,50 +263,45 @@ def processGramCat(sectionDefAttrs, POSmap, nameStr):
     # Loop through all of the category abbreviations and names in alphabetical order
     for pos_abbr, pos_name in sorted(list(POSmap.items()), key=lambda k_v: (k_v[0].lower(), k_v[1])):
 
+        # We are setting the c (comment) attribute even though it doesn't get displayed in XXE.
         def_attr_item = ET.SubElement(def_attr, 'attr-item', c=pos_name, tags=Utils.underscores(pos_abbr))
-        # def_attr.append(def_attr_item)
 
     return
         
-def formatAttrib(attrib, thingType):
-    
-    attrib = re.sub(' ', '_', attrib)
-    return f'a_{attrib}_{thingType}'
-
-def processDefAttr(sectionDefAttrs, POSmap, masterAttribList): 
+def fillOutDefAttr(sectionDefAttrs, POSmap, masterAttribList): 
     
     count = 0
     
     # go through the master list 
     for attrib in masterAttribList.keys():
-        
-        thingType = masterAttribList[attrib][2] # third part of the tuple is the thing type, e.g. feat, class or slot
-        
-        # Skip the attribute if we are not supposed to override it
-        if not masterAttribList[attrib][0]:
 
-            continue # 1st part of the tuple is the override flag
-
+        thingType = masterAttribList[attrib].thingType 
         def_attr = sectionDefAttrs.find(f"./def-attr[@n='a_{attrib}_{thingType}']")
 
-        # Skip the attribute if it already exists
-        if def_attr:
+        # Skip the attribute if it already exists and we are not supposed to override it
+        if def_attr and not masterAttribList[attrib].override:
 
             continue
         else:
             # If the attribute doesn't exist, we need to create it.
-            def_attr = ET.SubElement(sectionDefAttrs, 'def-attr', n=f'a_{attrib}_{thingType}')
+            if not def_attr:
+
+                def_attr = ET.SubElement(sectionDefAttrs, 'def-attr', n=f'a_{attrib}_{thingType}')
+            else:
+                # If it does exist, we need to clear its children so we can add new ones
+                for child in list(def_attr):
+
+                    def_attr.remove(child)
 
             # Create attr-item elements for each value in the list
-            for val in masterAttribList[attrib][1]:
+            for val in masterAttribList[attrib].abbrList:  
 
                 def_attr_item = ET.SubElement(def_attr, 'attr-item', tags=Utils.underscores(val))
 
             count += 1
                 
-    # Process a_gram_cat
-    processGramCat(sectionDefAttrs, POSmap, GRAM_CAT)
-
+    # Process the special attribute a_gram_cat
+    fillOutGramCat(sectionDefAttrs, POSmap, GRAM_CAT)
     sortChildren(sectionDefAttrs, 'def-attr')
                     
     return count
@@ -318,22 +315,18 @@ def processClassesForPos(masterAttribList, overrideClass, pos, dbType, report, c
         # Get a list of abbreviation and name tuples
         AN_list = Utils.get_sub_inflection_classes(pos.InflectionClassesOC)
         
-        classAbbrList = []
+        classAbbrList = [an[0] for an in AN_list]  # Get the first part of the tuple, which is the abbreviation
         
-        for icAbbr, _ in AN_list: # 2nd part is name which we don't need
-            
-            classAbbrList.append(icAbbr)
-    
         # add the pos full name to the map along with the inflection class abbreviations that go with it
         if posFullNameStr not in masterAttribList:
             
-            masterAttribList[posFullNameStr] = (overrideClass, classAbbrList, thingType)
+            masterAttribList[posFullNameStr] = AttribInfo(overrideClass, classAbbrList, thingType)
             
         # add any new inflection class abbreviations
         else:
-            existinglist = masterAttribList[posFullNameStr][1] # 2nd part of the tuple
+            existinglist = masterAttribList[posFullNameStr].abbrList  
             newList = list(set(classAbbrList).union(set(existinglist)))
-            masterAttribList[posFullNameStr] = (overrideClass, newList, thingType)
+            masterAttribList[posFullNameStr] = AttribInfo(overrideClass, newList, thingType)
 
 def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countList, thingType):
     
@@ -356,13 +349,13 @@ def processFeatures(masterAttribList, overrideFeat, feat, dbType, report, countL
         # add the feature group name to the map along with the inflection feature abbreviations that go with it
         if featureGroupName not in masterAttribList:
             
-            masterAttribList[featureGroupName] = (overrideFeat, featList, thingType)
+            masterAttribList[featureGroupName] = AttribInfo(overrideFeat, featList, thingType)
             
         # add any new inflection feature abbreviations
         else:
-            existinglist = masterAttribList[featureGroupName][1] # 2nd part of the tuple
+            existinglist = masterAttribList[featureGroupName].abbrList 
             newList = list(set(featList).union(set(existinglist)))
-            masterAttribList[featureGroupName] = (overrideFeat, newList, thingType)
+            masterAttribList[featureGroupName] = AttribInfo(overrideFeat, newList, thingType)
             
 def processSlots(masterAttribList, override, slot, dbType, report, countList, thingType):
     
@@ -382,7 +375,7 @@ def processSlots(masterAttribList, override, slot, dbType, report, countList, th
     # if the slot name already exists, we skip it
     if slotName not in masterAttribList:
         
-        masterAttribList[slotName] = (override, affList, thingType)
+        masterAttribList[slotName] = AttribInfo(override, affList, thingType)
         
 def getSlot2AffixListMap(DB):
             
@@ -428,13 +421,11 @@ def getSlot2AffixListMap(DB):
                             if gloss not in existingAffixList:
                                 
                                 existingAffixList.append(gloss)
-    
     return
     
 def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thingType):        
         
     haveError = False
-    
     dbList = [(DB, 'source'), (TargetDB, 'target')]
     
     for dbTup in dbList:
@@ -471,11 +462,8 @@ def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thi
                 countList[0] = 0
                 haveError = True
     
-    if haveError == True:
-        return True
-    else:
-        return False
-    
+    return not haveError
+
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -488,7 +476,6 @@ def MainFunction(DB, report, modify=True):
     masterAttribList = {}
     srcPOSmap = {}
     POSmap = {}
-    # defCatStart = defAttrStart = sectDefAttrEnd = 0
     
     window = Main()
     window.show()
@@ -512,21 +499,21 @@ def MainFunction(DB, report, modify=True):
         
     if window.doFeat:
         
-        if getThings(masterAttribList, window.overrideFeat, DB, TargetDB, report, processFeatures, 'feature') == True:
+        if not getThings(masterAttribList, window.overrideFeat, DB, TargetDB, report, processFeatures, 'feature'):
         
             TargetDB.CloseProject()
             return
 
     if window.doClass:
         
-        if getThings(masterAttribList, window.overrideClass, DB, TargetDB, report, processClassesForPos, 'class') == True:
+        if not getThings(masterAttribList, window.overrideClass, DB, TargetDB, report, processClassesForPos, 'class'):
             
             TargetDB.CloseProject()
             return
 
     if window.doSlot:
         
-        if getThings(masterAttribList, window.overrideSlot, DB, TargetDB, report, processSlots, 'slot') == True:
+        if not getThings(masterAttribList, window.overrideSlot, DB, TargetDB, report, processSlots, 'slot'):
             
             TargetDB.CloseProject()
             return
@@ -536,6 +523,7 @@ def MainFunction(DB, report, modify=True):
 
     # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the Output folder.
     if not transferRulesFile:
+
         TargetDB.CloseProject()
         return
     
@@ -575,8 +563,8 @@ def MainFunction(DB, report, modify=True):
         TargetDB.CloseProject()
         return
 
-    # Process categories
-    catCount = processDefCat(sectionDefCats, srcPOSmap)
+    # Process source categories
+    catCount = fillOutDefCat(sectionDefCats, srcPOSmap)
     
     # Get all source and target categories
     if Utils.get_categories(DB, report, POSmap, TargetDB, numCatErrorsToShow=99, addInflectionClasses=False) == True:
@@ -587,11 +575,12 @@ def MainFunction(DB, report, modify=True):
     TargetDB.CloseProject()
     
     # Process attributes
-    attrCount = processDefAttr(sectionDefAttrs, POSmap, masterAttribList)
+    attrCount = fillOutDefAttr(sectionDefAttrs, POSmap, masterAttribList)
 
     # Write the xml tree back to the transfer rules file
     try:
         with open(transferRulesFile, 'wb') as fout:
+
             fout.write('<?xml version="1.0" encoding="utf-8"?>\n'.encode('utf-8'))
             fout.write('<!DOCTYPE transfer PUBLIC "-//XMLmind//DTD transfer//EN" "transfer.dtd">\n'.encode('utf-8'))
             ET.indent(root)
