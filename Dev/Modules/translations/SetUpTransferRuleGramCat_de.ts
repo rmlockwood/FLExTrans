@@ -4,12 +4,12 @@
 <context>
     <name>SetUpTransferRuleGramCat</name>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="103"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="108"/>
         <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
         <translation>Die Transferregeldatei mit Kategorien und Attributen aus Quell- und Ziel-FLEx-Projekten einrichten.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="105"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="110"/>
         <source>This module first goes through both the source and target FLEx databases and extracts
 the grammatical category lists. It will replace what is currently listed for the
 tags of the a_gram_cat attribute with the lists extracted. Duplicate categories
@@ -32,34 +32,39 @@ Sie können entscheiden, welche davon verwendet werden und ob vorhandene Attribu
 überschrieben werden sollen.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="545"/>
-        <source>The transfer rules file has not yet been saved with the XML Mind editor. Change the file in the editor and then run this tool again.</source>
-        <translation>Die Transferregeldatei wurde noch nicht mit dem XML Mind-Editor gespeichert. Ändern Sie die Datei im Editor und führen Sie dieses Tool dann erneut aus.</translation>
-    </message>
-    <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="617"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="534"/>
         <source>There was a problem finding the transfer rules file. Check your configuration.</source>
         <translation>Es gab ein Problem beim Finden der Transferregeldatei. Überprüfen Sie Ihre Konfiguration.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="656"/>
-        <source>The transfer rules file is malformed.</source>
-        <translation>Die Transferregeldatei ist fehlerhaft.</translation>
-    </message>
-    <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="696"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="594"/>
         <source>{attrCount} attributes added to the attributes section.</source>
         <translation>{attrCount} Attribute zum Attributbereich hinzugefügt.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="697"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="595"/>
         <source>{num} categories created for the a_gram_cat attribute.</source>
         <translation>{num} Kategorien für das a_gram_cat-Attribut erstellt.</translation>
     </message>
     <message>
-        <location filename="../SetUpTransferRuleGramCat.py" line="698"/>
+        <location filename="../SetUpTransferRuleGramCat.py" line="596"/>
         <source>{catCount} categories added to the categories section.</source>
         <translation>{catCount} Kategorien zum Kategorienbereich hinzugefügt.</translation>
+    </message>
+    <message>
+        <location filename="../SetUpTransferRuleGramCat.py" line="546"/>
+        <source>The transfer rules file is malformed or not valid XML.</source>
+        <translation>Die Transferregeldatei ist fehlerhaft oder kein gültiges XML.</translation>
+    </message>
+    <message>
+        <location filename="../SetUpTransferRuleGramCat.py" line="556"/>
+        <source>The transfer rules file is missing required sections.</source>
+        <translation>Der Transferregeldatei fehlen erforderliche Abschnitte.</translation>
+    </message>
+    <message>
+        <location filename="../SetUpTransferRuleGramCat.py" line="591"/>
+        <source>There was a problem writing the transfer rules file: {error}</source>
+        <translation>Beim Schreiben der Transferregeldatei ist ein Problem aufgetreten: {error}</translation>
     </message>
 </context>
 </TS>
