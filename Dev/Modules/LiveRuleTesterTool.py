@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.1 - 6/19/25 - Ron Lockwood
+#    Don't allow synthesis if the target text is empty or no words are selected.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -255,7 +258,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -372,6 +375,7 @@ class Main(QMainWindow):
         self.rulesChanged = True
         self.fixBilingLex = True
         self.__bilingMap = {}
+        self.nothingSelectedMsg = _translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.')
 
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
@@ -1017,7 +1021,15 @@ class Main(QMainWindow):
             return inputStr, errMsg
 
     def AddTestbedButtonClicked(self):
+        
         self.ui.TestsAddedLabel.setText('')
+        activeLexicalUnitsStr = self.getActiveLexicalUnits()
+
+        # If there are no lexical units, warn the user and return
+        if not activeLexicalUnitsStr.strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return
 
         # Set the direction attribute
         if self.__sent_model.getRTL():
@@ -1060,7 +1072,7 @@ class Main(QMainWindow):
         # Check if add-multiple was selected
         if self.ui.addMultipleCheckBox.isChecked():
 
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
             if luObjList == None:
                 return
 
@@ -1118,7 +1130,7 @@ class Main(QMainWindow):
                         cnt += 1
 
         else:
-            luObjList = self.getLexUnitObjsFromString(self.getActiveLexicalUnits())
+            luObjList = self.getLexUnitObjsFromString(activeLexicalUnitsStr)
 
             if luObjList == None:
                 return
@@ -1192,6 +1204,18 @@ class Main(QMainWindow):
         self.ui.TestsAddedLabel.setText('')
         errorList = []
 
+        # Check if the target text is empty give a warning
+        if not self.ui.TargetTextEdit.toPlainText().strip() or self.ui.TargetTextEdit.toPlainText() == self.nothingSelectedMsg:
+
+            self.ui.SynthTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'There are no target text morphemes. Click the Transfer button first.'))
+            return
+
+        # If there are no lexical units, warn the user and return
+        if not self.getActiveLexicalUnits().strip():
+
+            self.ui.SynthTextEdit.setPlainText(self.nothingSelectedMsg)
+            return        
+
         self.setCursor(QtCore.Qt.WaitCursor)
 
         # Make the text box blank to start out.
@@ -1204,6 +1228,7 @@ class Main(QMainWindow):
             if not HCconfigPath:
 
                 QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Configuration Error'), _translate('LiveRuleTesterTool', 'HermitCrab settings not found.'))
+                self.unsetCursor()
                 return
             
             useHCsynthDll = True
@@ -1671,14 +1696,6 @@ class Main(QMainWindow):
         self.ui.SentCombo.setVisible(isVisible)
         self.ui.scrollArea.setVisible(isVisible)
         self.ui.listSentences.setVisible(isVisible)
-
-    def __CopyStuff(self):
-
-        # copy text from results to the source boxes
-        self.ui.SelectedWordsEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.SelectedSentencesEdit.setText(self.ui.TargetTextEdit.toHtml())
-        self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-        self.__ClearStuff()
 
     def __ClearStuff(self):
 
@@ -2173,7 +2190,7 @@ class Main(QMainWindow):
 
         if len(myStr) < 1:
 
-            self.ui.TargetTextEdit.setPlainText(_translate('LiveRuleTesterTool', 'Nothing selected. Select at least one word or sentence.'))
+            self.ui.TargetTextEdit.setPlainText(self.nothingSelectedMsg)
             self.unsetCursor()
             return
 
