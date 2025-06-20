@@ -37,7 +37,7 @@
     </property>
     <widget class="QWidget" name="tab_transfer_rules">
      <attribute name="title">
-      <string notr="true">Transfer</string>
+      <string>Transfer</string>
      </attribute>
      <widget class="QListView" name="listTransferRules">
       <property name="geometry">
@@ -266,7 +266,7 @@
      <rect>
       <x>10</x>
       <y>460</y>
-      <width>221</width>
+      <width>131</width>
       <height>17</height>
      </rect>
     </property>
@@ -849,6 +849,12 @@ this keeps the clean up from happening so you can more easily see errors.</strin
          <height>23</height>
         </size>
        </property>
+       <property name="maximumSize">
+        <size>
+         <width>167</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>Transfer</string>
        </property>
@@ -956,6 +962,22 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QCheckBox" name="traceHermitCrabSynthesisCheckBox_2">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>460</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Only the last word will be traced.</string>
+    </property>
+    <property name="text">
+     <string>Advanced options</string>
+    </property>
    </widget>
   </widget>
  </widget>

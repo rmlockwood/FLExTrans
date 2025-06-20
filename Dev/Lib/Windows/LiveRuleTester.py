@@ -31,7 +31,7 @@ class Ui_LRTWindow(object):
         self.listTransferRules.setStyleSheet("background-color: rgb(240, 221, 255);")
         self.listTransferRules.setEditTriggers(QtWidgets.QAbstractItemView.EditKeyPressed)
         self.listTransferRules.setObjectName("listTransferRules")
-        self.tabRules.addTab(self.tab_transfer_rules, "Transfer")
+        self.tabRules.addTab(self.tab_transfer_rules, "")
         self.tab_interchunk_rules = QtWidgets.QWidget()
         self.tab_interchunk_rules.setObjectName("tab_interchunk_rules")
         self.listInterChunkRules = QtWidgets.QListView(self.tab_interchunk_rules)
@@ -111,7 +111,7 @@ class Ui_LRTWindow(object):
         self.ManualEdit.setObjectName("ManualEdit")
         self.tabSource.addTab(self.tab_manual_entry, "")
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(10, 460, 221, 17))
+        self.label_3.setGeometry(QtCore.QRect(10, 460, 131, 17))
         self.label_3.setObjectName("label_3")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setGeometry(QtCore.QRect(11, 20, 91, 17))
@@ -303,6 +303,7 @@ class Ui_LRTWindow(object):
         sizePolicy.setHeightForWidth(self.TestButton.sizePolicy().hasHeightForWidth())
         self.TestButton.setSizePolicy(sizePolicy)
         self.TestButton.setMinimumSize(QtCore.QSize(0, 23))
+        self.TestButton.setMaximumSize(QtCore.QSize(167, 16777215))
         self.TestButton.setObjectName("TestButton")
         self.horizontalLayout_2.addWidget(self.TestButton)
         self.startRuleAssistant = QtWidgets.QPushButton(self.layoutWidget1)
@@ -344,6 +345,9 @@ class Ui_LRTWindow(object):
         self.viewTestbedLogButton.setMinimumSize(QtCore.QSize(0, 23))
         self.viewTestbedLogButton.setObjectName("viewTestbedLogButton")
         self.horizontalLayout_4.addWidget(self.viewTestbedLogButton)
+        self.traceHermitCrabSynthesisCheckBox_2 = QtWidgets.QCheckBox(self.centralwidget)
+        self.traceHermitCrabSynthesisCheckBox_2.setGeometry(QtCore.QRect(150, 460, 161, 17))
+        self.traceHermitCrabSynthesisCheckBox_2.setObjectName("traceHermitCrabSynthesisCheckBox_2")
         LRTWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(LRTWindow)
@@ -353,6 +357,7 @@ class Ui_LRTWindow(object):
 
     def retranslateUi(self, LRTWindow):
         _translate = QtCore.QCoreApplication.translate
+        self.tabRules.setTabText(self.tabRules.indexOf(self.tab_transfer_rules), _translate("LRTWindow", "Transfer"))
         self.tabSource.setTabText(self.tabSource.indexOf(self.tab_select_words), _translate("LRTWindow", "Select Words"))
         self.tabSource.setTabText(self.tabSource.indexOf(self.tab_select_sentences), _translate("LRTWindow", "Select Sentences"))
         self.tabSource.setTabText(self.tabSource.indexOf(self.tab_manual_entry), _translate("LRTWindow", "Manual Entry"))
@@ -384,3 +389,5 @@ class Ui_LRTWindow(object):
         self.refreshTargetLexiconButton.setText(_translate("LRTWindow", "Refresh &Target Lexicon"))
         self.editTestbedButton.setText(_translate("LRTWindow", "&Edit Testbed"))
         self.viewTestbedLogButton.setText(_translate("LRTWindow", "&View Testbed Log"))
+        self.traceHermitCrabSynthesisCheckBox_2.setToolTip(_translate("LRTWindow", "Only the last word will be traced."))
+        self.traceHermitCrabSynthesisCheckBox_2.setText(_translate("LRTWindow", "Advanced options"))

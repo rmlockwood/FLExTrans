@@ -206,7 +206,6 @@
 import os
 import re
 import regex
-import sys
 import unicodedata
 import copy
 import xml.etree.ElementTree as ET
@@ -222,7 +221,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QSizePolicy
 
 import Mixpanel
 import InterlinData
@@ -409,6 +408,44 @@ class Main(QMainWindow):
         self.startRuleAssistant = False
         self.startReplacementEditor = False
         self.HCdllObj = None
+
+        policy = self.ui.TestButton.sizePolicy()
+        self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
+        #self.ui.startRuleAssistant.hide()
+
+        advancedWidgetsList = [
+            self.ui.rebuildBilingLexButton,
+            self.ui.startRuleAssistant,
+            self.ui.viewBilingualLexiconButton,
+            self.ui.editReplacementButton,
+            self.ui.selectAllButton,
+            self.ui.unselectAllButton,
+            self.ui.upButton,
+            self.ui.downButton,
+            self.ui.editTransferRulesButton,
+            self.ui.traceHermitCrabSynthesisCheckBox,
+            self.ui.startRuleAssistant,
+            self.ui.applyTextOutRulesCheckbox,
+            self.ui.DoNotCleanupCheckbox,
+            self.ui.addMultipleCheckBox,
+            self.ui.editTestbedButton,
+            self.ui.viewTestbedLogButton,
+        ]
+
+        # Hide the advanced widgets
+        for widget in advancedWidgetsList:
+
+            widget.hide()
+
+        self.ui.tabSource.removeTab(2) # Remove Manual tab
+
+        self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+        self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
+
+
+
+
+
 
         # Reset icon images
         icon = QtGui.QIcon()
