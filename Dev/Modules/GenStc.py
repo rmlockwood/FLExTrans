@@ -91,10 +91,15 @@ def setupSettings(configMap, report):
     lemmaFocus1 = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_1, report))
     lemmaFocus2 = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_2, report))
 
+    # WIP: limit generation to specific semantic domains (for sentences that make sense)
+    semanticDomainN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report)
+    semanticDomain1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report)
+    semanticDomain2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report)
+
     # Get stem limit setting
     stemLimit = _getStemLimit(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report))
 
-    return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit
+    return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit
 
 def _cleanConfigList(configList):
     """Remove empty strings from config lists."""
@@ -349,7 +354,7 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Initialize settings and files
-    posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, stemLimit = setupSettings(configMap, report)
+    posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit = setupSettings(configMap, report)
     f_out = initializeOutputFile(configMap, report, ReadConfig.ANALYZED_TEXT_FILE)
     if not f_out:
         return
