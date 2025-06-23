@@ -409,8 +409,8 @@ class Main(QMainWindow):
         self.startReplacementEditor = False
         self.HCdllObj = None
 
-        policy = self.ui.TestButton.sizePolicy()
-        self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
+        #policy = self.ui.TestButton.sizePolicy()
+        #self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
         #self.ui.startRuleAssistant.hide()
 
         advancedWidgetsList = [
@@ -433,14 +433,14 @@ class Main(QMainWindow):
         ]
 
         # Hide the advanced widgets
-        for widget in advancedWidgetsList:
+        # for widget in advancedWidgetsList:
 
-            widget.hide()
+        #     widget.hide()
 
-        self.ui.tabSource.removeTab(2) # Remove Manual tab
+        # self.ui.tabSource.removeTab(2) # Remove Manual tab
 
-        self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
-        self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
+        # self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+        # self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
 
 
 
@@ -743,6 +743,24 @@ class Main(QMainWindow):
 
         self.retVal = True
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.positionZoomWidgets()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.positionZoomWidgets()
+
+    def positionZoomWidgets(self):
+        mainWidth = self.width()
+        tabSourceGeom = self.ui.tabSource.geometry()
+        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
+        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+        self.ui.ZoomDecreaseSource.move(x, y)
+        self.ui.ZoomIncreaseSource.move(x-23, y)
+        self.ui.ZoomLabel_2.move(x-23-184, y)
+        self.ui.selectWordsHintLabel.move(x-23-184-340-70, y)
+        
     def sourceTextComboChanged(self):
 
         self.restartTester = True
@@ -1698,10 +1716,6 @@ class Main(QMainWindow):
 
         # Put the same thing into the manual edit, but in data stream format.
         self.ui.ManualEdit.setPlainText(self.__lexicalUnits)
-
-    def resizeEvent(self, event):
-
-        QMainWindow.resizeEvent(self, event)
 
     def getActiveLexicalUnits(self):
         if self.ui.tabSource.currentIndex() == 0:
