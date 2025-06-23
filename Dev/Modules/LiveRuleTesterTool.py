@@ -413,7 +413,7 @@ class Main(QMainWindow):
         #self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
         #self.ui.startRuleAssistant.hide()
 
-        advancedWidgetsList = [
+        self.advancedWidgetsList = [
             self.ui.rebuildBilingLexButton,
             self.ui.startRuleAssistant,
             self.ui.viewBilingualLexiconButton,
@@ -431,21 +431,6 @@ class Main(QMainWindow):
             self.ui.editTestbedButton,
             self.ui.viewTestbedLogButton,
         ]
-
-        # Hide the advanced widgets
-        # for widget in advancedWidgetsList:
-
-        #     widget.hide()
-
-        # self.ui.tabSource.removeTab(2) # Remove Manual tab
-
-        # self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
-        # self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
-
-
-
-
-
 
         # Reset icon images
         icon = QtGui.QIcon()
@@ -485,6 +470,7 @@ class Main(QMainWindow):
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
+        self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -562,6 +548,13 @@ class Main(QMainWindow):
                     # Set the checkboxes based on the values in the list
                     self.ui.applyTextOutRulesCheckbox.setChecked(checkBoxStateStr[0] == '1')
                     self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
+
+                # Read the 6th line which is the state of the advanced options checkbox
+                advancedOptionsStr = f.readline().strip()
+
+                if len(advancedOptionsStr) > 0:
+
+                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
         except:
             pass
 
@@ -571,14 +564,6 @@ class Main(QMainWindow):
 
         # Get the path to the transfer rules file
         self.__transfer_rules_file = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TRANSFER_RULES_FILE, self.__report, giveError=False)
-
-        # Show the Do not clean up... checkbox if the applicable setting is 'y'
-        if ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
-
-            self.ui.DoNotCleanupCheckbox.setVisible(True) 
-        else:
-            self.ui.DoNotCleanupCheckbox.setVisible(False) 
-            self.ui.DoNotCleanupCheckbox.setChecked(False)
 
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
@@ -719,29 +704,64 @@ class Main(QMainWindow):
 
         self.textOutElemTree = None
 
-        # Start out hiding this checkbox
-        self.ui.applyTextOutRulesCheckbox.setVisible(False)
+        self.manualTabText = self.ui.tabSource.tabText(2)
+        self.interChunkTabText = self.ui.tabRules.tabText(1)
+        self.postChunkTabText = self.ui.tabRules.tabText(2)
 
-        # Save the checkstate (above it was read from the window_settings) and uncheck it initially
-        myState = self.ui.applyTextOutRulesCheckbox.isChecked()
-        self.ui.applyTextOutRulesCheckbox.setChecked(False)
-
-        # See if we have a Text Out Rules file. 
-        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
-
-        if textOutRulesFile:
-            
-            # Check if the file exists.
-            if os.path.exists(textOutRulesFile):
-
-                try:
-                    self.textOutElemTree = ET.parse(textOutRulesFile)
-                    self.ui.applyTextOutRulesCheckbox.setVisible(True) 
-                    self.ui.applyTextOutRulesCheckbox.setChecked(myState)
-                except:
-                    pass 
+        # Hide the advanced widgets if needed
+        self.AdvancedOptionsCheckboxClicked()
 
         self.retVal = True
+
+    def AdvancedOptionsCheckboxClicked(self):
+
+        # Show or hide the advanced widgets and tabs
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            for widget in self.advancedWidgetsList:
+
+                widget.show()
+            
+            # Add advanced tabs
+            self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
+            self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
+            self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
+
+            # If we are doing HermitCrab synthesis, show the checkbox
+            if not self.doHermitCrabSynthesisBool:
+
+                self.ui.traceHermitCrabSynthesisCheckBox.hide()
+
+            # See if we have a Text Out Rules file so we know whether to show the text out checkbox
+            self.ui.applyTextOutRulesCheckbox.hide()
+            textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
+
+            if textOutRulesFile:
+                
+                # Check if the file exists.
+                if os.path.exists(textOutRulesFile):
+
+                    try:
+                        self.textOutElemTree = ET.parse(textOutRulesFile)
+                        self.ui.applyTextOutRulesCheckbox.show() 
+                    except:
+                        pass 
+
+            # Show the Do not clean up... checkbox if the applicable setting is not 'y'
+            if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
+
+                self.ui.DoNotCleanupCheckbox.hide()
+        
+        # Not advanced options, hide the widgets and tabs
+        else:
+            for widget in self.advancedWidgetsList:
+
+                widget.hide()
+
+            # Remove advanced tabs
+            self.ui.tabSource.removeTab(2) # Remove Manual tab
+            self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -2006,6 +2026,7 @@ class Main(QMainWindow):
         # Get checkbox values
         checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
         checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
+        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
 
         with open(self.windowsSettingsFile, 'w') as f:
 
@@ -2015,6 +2036,7 @@ class Main(QMainWindow):
             f.write(f'{checkedWordsState}\n')
             f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
             f.write(f'{checkboxStr1}{checkboxStr2}\n')
+            f.write(f'{checkboxStr3}\n')
 
         if self.HCdllObj:
 

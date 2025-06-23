@@ -1422,4 +1422,4 @@ class LocalizedDateTimeFormatter:
     
 def getInterfaceLangCode():
 
-    return 'de'
+    return 'en'
