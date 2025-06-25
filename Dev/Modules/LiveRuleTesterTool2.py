@@ -237,7 +237,7 @@ import DoHermitCrabSynthesis
 import ExtractBilingualLexicon
 import TestbedLogViewer
 
-from LiveRuleTester import Ui_LRTWindow
+from LiveRuleTester2 import Ui_LRTWindow
 import FTPaths
 
 # Define _translate for convenience
@@ -256,8 +256,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : "Live Rule Tester Tool2",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -470,7 +470,7 @@ class Main(QMainWindow):
         self.ui.ZoomIncreaseTarget.clicked.connect(self.ZoomIncreaseTargetClicked)
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
-        self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
+        # self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -550,11 +550,11 @@ class Main(QMainWindow):
                     self.ui.DoNotCleanupCheckbox.setChecked(checkBoxStateStr[1] == '1')
 
                 # Read the 6th line which is the state of the advanced options checkbox
-                advancedOptionsStr = f.readline().strip()
+                # advancedOptionsStr = f.readline().strip()
 
-                if len(advancedOptionsStr) > 0:
+                # if len(advancedOptionsStr) > 0:
 
-                    self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
+                #     self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
         except:
             pass
 
@@ -709,102 +709,77 @@ class Main(QMainWindow):
         self.postChunkTabText = self.ui.tabRules.tabText(2)
 
         # Hide the advanced widgets if needed
-        self.AdvancedOptionsCheckboxClicked()
+        # self.AdvancedOptionsCheckboxClicked()
 
         self.retVal = True
 
-    def AdvancedOptionsCheckboxClicked(self):
+    # def AdvancedOptionsCheckboxClicked(self):
 
-        # Show or hide the advanced widgets and tabs
-        if self.ui.advancedOptionsCheckbox.isChecked():
+    #     # Show or hide the advanced widgets and tabs
+    #     if self.ui.advancedOptionsCheckbox.isChecked():
 
-            for widget in self.advancedWidgetsList:
+    #         for widget in self.advancedWidgetsList:
 
-                widget.show()
+    #             widget.show()
             
-            # Move the log edit edit box beside the rules if needed
-            if self.ui.horizLayoutTransferRules.count() < 2:
+    #         # Add advanced tabs
+    #         self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
+    #         self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
+    #         self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
 
-                # Remove LogEdit from its current layout
-                self.ui.verticalLayout.removeWidget(self.ui.LogEdit)
+    #         # If we are doing HermitCrab synthesis, show the checkbox
+    #         if not self.doHermitCrabSynthesisBool:
 
-                # Add LogEdit to horizLayoutTransferRules at the desired position
-                self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
+    #             self.ui.traceHermitCrabSynthesisCheckBox.hide()
 
-            # Add advanced tabs
-            self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
-            self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
-            self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
+    #         # See if we have a Text Out Rules file so we know whether to show the text out checkbox
+    #         self.ui.applyTextOutRulesCheckbox.hide()
+    #         textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
 
-            self.resize(1256, self.height())  
-
-            # If we are doing HermitCrab synthesis, show the checkbox
-            if not self.doHermitCrabSynthesisBool:
-
-                self.ui.traceHermitCrabSynthesisCheckBox.hide()
-
-            # See if we have a Text Out Rules file so we know whether to show the text out checkbox
-            self.ui.applyTextOutRulesCheckbox.hide()
-            textOutRulesFile = ReadConfig.getConfigVal(self.__configMap, ReadConfig.TEXT_OUT_RULES_FILE, self.__report, giveError=False)
-
-            if textOutRulesFile:
+    #         if textOutRulesFile:
                 
-                # Check if the file exists.
-                if os.path.exists(textOutRulesFile):
+    #             # Check if the file exists.
+    #             if os.path.exists(textOutRulesFile):
 
-                    try:
-                        self.textOutElemTree = ET.parse(textOutRulesFile)
-                        self.ui.applyTextOutRulesCheckbox.show() 
-                    except:
-                        pass 
+    #                 try:
+    #                     self.textOutElemTree = ET.parse(textOutRulesFile)
+    #                     self.ui.applyTextOutRulesCheckbox.show() 
+    #                 except:
+    #                     pass 
 
-            # Show the Do not clean up... checkbox if the applicable setting is not 'y'
-            if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
+    #         # Show the Do not clean up... checkbox if the applicable setting is not 'y'
+    #         if not ReadConfig.getConfigVal(self.__configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, self.__report, giveError=False) == 'y':
 
-                self.ui.DoNotCleanupCheckbox.hide()
+    #             self.ui.DoNotCleanupCheckbox.hide()
         
-        # Not advanced options, hide the widgets and tabs
-        else:
-            for widget in self.advancedWidgetsList:
+    #     # Not advanced options, hide the widgets and tabs
+    #     else:
+    #         for widget in self.advancedWidgetsList:
 
-                widget.hide()
+    #             widget.hide()
 
-            # Move the log edit edit box below the rules if needed
-            if self.ui.horizLayoutTransferRules.count() > 1:
+    #         # Remove advanced tabs
+    #         self.ui.tabSource.removeTab(2) # Remove Manual tab
+    #         self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
+    #         self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
 
-                # Remove LogEdit from its current layout
-                self.ui.horizLayoutTransferRules.removeWidget(self.ui.LogEdit)
+    # def resizeEvent(self, event):
+    #     super().resizeEvent(event)
+    #     self.positionZoomWidgets()
 
-                # Add LogEdit to verticalLayout at the desired position
-                count = self.ui.verticalLayout.count()
-                insert_position = count - 4  # 4th from the bottom
-                self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
+    # def showEvent(self, event):
+    #     super().showEvent(event)
+    #     self.positionZoomWidgets()
 
-            # Set window width half the size
-            self.resize(628, self.height())  
-
-            # Remove advanced tabs
-            self.ui.tabSource.removeTab(2) # Remove Manual tab
-            self.ui.tabRules.removeTab(2)  # Remove the PostChunk tab
-            self.ui.tabRules.removeTab(1)  # Remove the InterChunk tab   
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.positionZoomWidgets()
-
-    def showEvent(self, event):
-        super().showEvent(event)
-        self.positionZoomWidgets()
-
-    def positionZoomWidgets(self):
-        mainWidth = self.width()
-        tabSourceGeom = self.ui.tabSource.geometry()
-        x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
-        y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
-        self.ui.ZoomDecreaseSource.move(x, y)
-        self.ui.ZoomIncreaseSource.move(x-23, y)
-        self.ui.ZoomLabel_2.move(x-23-184, y)
-        # self.ui.selectWordsHintLabel.move(x-23-184-340-70, y)
+    # def positionZoomWidgets(self):
+    #     mainWidth = self.width()
+    #     tabSourceGeom = self.ui.tabSource.geometry()
+    #     x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
+    #     y = tabSourceGeom.y() + tabSourceGeom.height() - self.ui.ZoomDecreaseSource.height()
+    #     self.ui.ZoomDecreaseSource.move(x, y)
+    #     self.ui.ZoomIncreaseSource.move(x-23, y)
+    #     self.ui.ZoomLabel_2.move(x-23-184, y)
+    #     self.ui.selectWordsHintLabel.move(x-23-184-340-70, y)
         
     def sourceTextComboChanged(self):
 
@@ -1812,7 +1787,7 @@ class Main(QMainWindow):
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
 
-            # self.ui.selectWordsHintLabel.setVisible(True)
+            self.ui.selectWordsHintLabel.setVisible(True)
 
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
 
@@ -1823,11 +1798,11 @@ class Main(QMainWindow):
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            # self.ui.selectWordsHintLabel.setVisible(False)
+            self.ui.selectWordsHintLabel.setVisible(False)
 
         else: # manual entry
-            pass
-            # self.ui.selectWordsHintLabel.setVisible(False)
+
+            self.ui.selectWordsHintLabel.setVisible(False)
 
     def rulesTabClicked(self):
 

@@ -232,6 +232,9 @@
        <bool>false</bool>
       </property>
       <widget class="QWidget" name="tab_select_words">
+       <property name="toolTip">
+        <string>Hover over a word to see its bilingual dictionary entry.</string>
+       </property>
        <attribute name="title">
         <string>Select Words</string>
        </attribute>
@@ -260,7 +263,7 @@
            <string notr="true">background-color: rgb(255, 220, 213);</string>
           </property>
           <property name="verticalScrollBarPolicy">
-           <enum>Qt::ScrollBarAlwaysOn</enum>
+           <enum>Qt::ScrollBarAsNeeded</enum>
           </property>
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustToContents</enum>
@@ -273,8 +276,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1215</width>
-             <height>57</height>
+             <width>1232</width>
+             <height>69</height>
             </rect>
            </property>
           </widget>
@@ -661,7 +664,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizLayoutTransferRules">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -891,7 +894,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>80</width>
+          <width>20</width>
           <height>20</height>
          </size>
         </property>
@@ -900,8 +903,8 @@
       <item>
        <widget class="QCheckBox" name="advancedOptionsCheckbox">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>1</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
@@ -914,23 +917,10 @@
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_10">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>80</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QPushButton" name="TestButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>1</horstretch>
+          <horstretch>2</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
@@ -955,7 +945,7 @@
        <widget class="QLabel" name="warningLabel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>4</horstretch>
+          <horstretch>3</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
@@ -1524,28 +1514,6 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      </layout>
     </item>
    </layout>
-   <widget class="QLabel" name="selectWordsHintLabel">
-    <property name="geometry">
-     <rect>
-      <x>1060</x>
-      <y>154</y>
-      <width>51</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="text">
-     <string>Hover over a word to see its bilingual dictionary entry.</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
    <widget class="QLabel" name="ZoomLabel_2">
     <property name="geometry">
      <rect>
@@ -1612,7 +1580,6 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <zorder>ZoomDecreaseSource</zorder>
    <zorder>ZoomIncreaseSource</zorder>
    <zorder>ZoomLabel_2</zorder>
-   <zorder>selectWordsHintLabel</zorder>
   </widget>
  </widget>
  <resources/>
