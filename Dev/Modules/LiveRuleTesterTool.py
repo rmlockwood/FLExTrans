@@ -711,6 +711,7 @@ class Main(QMainWindow):
         # Hide the advanced widgets if needed
         self.AdvancedOptionsCheckboxClicked()
 
+        self.setMinimumHeight(500)
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
@@ -797,6 +798,7 @@ class Main(QMainWindow):
         self.positionZoomWidgets()
 
     def positionZoomWidgets(self):
+
         mainWidth = self.width()
         tabSourceGeom = self.ui.tabSource.geometry()
         x = mainWidth - 8 - self.ui.ZoomDecreaseSource.width()
