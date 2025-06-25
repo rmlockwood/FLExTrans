@@ -226,7 +226,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="movable">
        <bool>false</bool>
@@ -259,6 +259,12 @@
           <property name="styleSheet">
            <string notr="true">background-color: rgb(255, 220, 213);</string>
           </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOn</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QAbstractScrollArea::AdjustToContents</enum>
+          </property>
           <property name="widgetResizable">
            <bool>true</bool>
           </property>
@@ -267,8 +273,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1232</width>
-             <height>69</height>
+             <width>1215</width>
+             <height>57</height>
             </rect>
            </property>
           </widget>
@@ -1521,9 +1527,9 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <widget class="QLabel" name="selectWordsHintLabel">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>1060</x>
       <y>154</y>
-      <width>541</width>
+      <width>51</width>
       <height>23</height>
      </rect>
     </property>
