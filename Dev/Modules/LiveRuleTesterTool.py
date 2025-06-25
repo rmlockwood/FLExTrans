@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.2 - 6/25/25 - Ron Lockwood
+#    Fix problem of check box scroll area not showing a scroll bar.
+#
 #   Version 3.14.1 - 6/19/25 - Ron Lockwood
 #    Don't allow synthesis if the target text is empty or no words are selected.
 #
@@ -221,7 +224,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QSizePolicy
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QSizePolicy, QScrollArea, QVBoxLayout, QHBoxLayout
 
 import Mixpanel
 import InterlinData
@@ -257,7 +260,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -309,6 +312,109 @@ def firstLower(myStr):
     else:
         return myStr
 
+class ZeroSizeWhenHiddenCheckBox(QCheckBox):
+    """A check box that has a size of 0 when it is not visible."""
+    def sizeHint(self):
+        if not self.isVisible():
+            return QtCore.QSize(0, 0)
+        return super().sizeHint()
+
+class FlowLayout(QLayout):
+    def __init__(self, parent=None, margin=1, spacing=3):
+        super().__init__(parent)
+        self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+        self.item_list = []
+
+    def addItem(self, item):
+        self.item_list.append(item)
+
+    def count(self):
+        return len(self.item_list)
+
+    def itemAt(self, index):
+        return self.item_list[index] if 0 <= index < len(self.item_list) else None
+
+    def takeAt(self, index):
+        return self.item_list.pop(index) if 0 <= index < len(self.item_list) else None
+
+    def expandingDirections(self):
+        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, width):
+        x, y, line_height = 0, 0, 0
+        for item in self.item_list:
+            w = item.widget().sizeHint().width()
+            h = item.widget().sizeHint().height()
+
+            if x + w > width and x > 0:
+                x = 0
+                y += line_height + self.spacing()
+                line_height = 0
+
+            x += w + self.spacing()
+            line_height = max(line_height, h)
+
+        return y + line_height
+
+    def setGeometry(self, rect):
+        super().setGeometry(rect)
+        is_rtl = self.parentWidget().layoutDirection() == QtCore.Qt.RightToLeft
+
+        x = rect.width() if is_rtl else 0
+        y = 0
+        line_height = 0
+
+        for item in self.item_list:
+            widget = item.widget()
+            hint = widget.sizeHint()
+
+            if is_rtl:
+                next_x = x - hint.width() - self.spacing()
+                if next_x < 0:
+                    x = rect.width()
+                    y += line_height + self.spacing()
+                    next_x = x - hint.width() - self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(next_x, y), hint))
+                x = next_x
+            else:
+                next_x = x + hint.width() + self.spacing()
+                if next_x > rect.width():
+                    x = 0
+                    y += line_height + self.spacing()
+                    next_x = x + hint.width() + self.spacing()
+                    line_height = 0
+                item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), hint))
+                x = next_x
+
+            line_height = max(line_height, hint.height())
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        return QtCore.QSize(20, self.heightForWidth(40))
+
+class FlowContainer(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = FlowLayout()
+        self.setLayout(self.layout)
+
+    def sizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+
+    def minimumSizeHint(self):
+        width = self.parent().width() if self.parent() else 40
+        height = self.layout.heightForWidth(width)
+        return QtCore.QSize(width, height)
+    
 # Model class for list of sentences.
 class SentenceList(QtCore.QAbstractListModel):
 
@@ -489,18 +595,31 @@ class Main(QMainWindow):
         # Create a bunch of check boxes to be arranged later
         self.__checkBoxList = []
 
+        self.content_widget = FlowContainer()
+
+            # if self.__sent_model.getRTL():
+
+            #     xval = self.ui.scrollArea.width() - x - width
+            #     myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
+        
+        #self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
+
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = QCheckBox(self.ui.scrollArea)
+            myCheck = ZeroSizeWhenHiddenCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
-            myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
+            # myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
+
+            self.content_widget.layout.addWidget(myCheck)
 
             # connect to a function
             myCheck.clicked.connect(self.SourceCheckBoxClicked)
 
             # add it to the list
             self.__checkBoxList.append(myCheck)
+
+        self.ui.scrollArea.setWidget(self.content_widget)
 
         # Make sure we are on right tabs
         ruleTab = 0
@@ -1910,6 +2029,10 @@ class Main(QMainWindow):
         self.__lexicalUnits = ''
         self.ui.ManualEdit.setPlainText('')
 
+        if self.__sent_model.getRTL():
+
+            self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
+
         i=0
         # Position a check box for each "word" in the sentence
         for i, wrdTup in enumerate(mySent):
@@ -1929,24 +2052,24 @@ class Main(QMainWindow):
             myCheck.setText(wrdTup[0])
 
             # get the width of the box and text (maybe have to add icon size)
-            width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5
+            # width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5
 
             # set the position, if it's too wide to fit make a new row
-            if width + x > self.ui.scrollArea.width():
+            # if width + x > self.ui.scrollArea.width():
 
-                y += y_spacing
-                x = x_margin
+            #     y += y_spacing
+            #     x = x_margin
 
-            if self.__sent_model.getRTL():
+            # if self.__sent_model.getRTL():
 
-                xval = self.ui.scrollArea.width() - x - width
-                myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
+            #     xval = self.ui.scrollArea.width() - x - width
+            #     myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
 
-            else:
-                xval = x
+            # else:
+            #     xval = x
 
-            myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
-            x += width + space_val
+            # myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
+            # x += width + space_val
 
             # If this word has a target(s) in the bilingual lexicon, show as a tooltip
             srcTrgPairsList = self.getTargetsInBilingMap(wrdTup)
