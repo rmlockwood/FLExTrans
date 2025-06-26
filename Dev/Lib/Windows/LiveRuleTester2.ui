@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
+    <width>956</width>
     <height>860</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_transfer_rules">
      <attribute name="title">
@@ -146,7 +146,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>30</y>
+        <y>26</y>
         <width>615</width>
         <height>103</height>
        </rect>
@@ -156,8 +156,14 @@
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Hover over a word to see its bilingual dictionary entry.</string>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(255, 220, 213);</string>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
@@ -177,7 +183,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>135</y>
+        <y>132</y>
         <width>615</width>
         <height>61</height>
        </rect>
@@ -295,7 +301,7 @@
      <rect>
       <x>20</x>
       <y>490</y>
-      <width>621</width>
+      <width>615</width>
       <height>122</height>
      </rect>
     </property>
@@ -431,7 +437,7 @@
      <rect>
       <x>18</x>
       <y>630</y>
-      <width>621</width>
+      <width>615</width>
       <height>61</height>
      </rect>
     </property>
@@ -465,7 +471,7 @@
      <rect>
       <x>20</x>
       <y>750</y>
-      <width>621</width>
+      <width>615</width>
       <height>61</height>
      </rect>
     </property>
@@ -504,7 +510,7 @@
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>740</y>
+      <y>710</y>
       <width>291</width>
       <height>51</height>
      </rect>
@@ -519,8 +525,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>830</x>
-      <y>705</y>
+      <x>650</x>
+      <y>750</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -644,7 +650,7 @@
    <widget class="QPushButton" name="ZoomIncreaseTarget">
     <property name="geometry">
      <rect>
-      <x>590</x>
+      <x>586</x>
       <y>820</y>
       <width>21</width>
       <height>23</height>
@@ -657,7 +663,7 @@
    <widget class="QLabel" name="ZoomLabel">
     <property name="geometry">
      <rect>
-      <x>481</x>
+      <x>477</x>
       <y>822</y>
       <width>100</width>
       <height>20</height>
@@ -673,7 +679,7 @@
    <widget class="QPushButton" name="ZoomDecreaseTarget">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>616</x>
       <y>820</y>
       <width>21</width>
       <height>23</height>
@@ -726,7 +732,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>180</y>
+      <y>160</y>
       <width>261</width>
       <height>23</height>
      </rect>
@@ -751,7 +757,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>220</y>
+      <y>200</y>
       <width>261</width>
       <height>23</height>
      </rect>
@@ -845,7 +851,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>80</y>
+      <y>70</y>
       <width>261</width>
       <height>23</height>
      </rect>
@@ -864,7 +870,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>40</y>
+      <y>30</y>
       <width>261</width>
       <height>23</height>
      </rect>
@@ -874,6 +880,9 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       <width>0</width>
       <height>0</height>
      </size>
+    </property>
+    <property name="toolTip">
+     <string>This button is not programmed yet, please close LRT and re-open.</string>
     </property>
     <property name="text">
      <string>Refresh &amp;Source Lexicon</string>
@@ -927,7 +936,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>650</x>
-      <y>140</y>
+      <y>120</y>
       <width>261</width>
       <height>23</height>
      </rect>
@@ -952,7 +961,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>477</x>
-      <y>263</y>
+      <y>246</y>
       <width>100</width>
       <height>20</height>
      </rect>
@@ -968,7 +977,7 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>616</x>
-      <y>261</y>
+      <y>244</y>
       <width>21</width>
       <height>23</height>
      </rect>
@@ -981,26 +990,13 @@ this keeps the clean up from happening so you can more easily see errors.</strin
     <property name="geometry">
      <rect>
       <x>586</x>
-      <y>261</y>
+      <y>244</y>
       <width>21</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
      <string notr="true">+</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="selectWordsHintLabel">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>242</y>
-      <width>611</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hover over a word to see its bilingual dictionary entry.</string>
     </property>
    </widget>
    <zorder>tabRules</zorder>
@@ -1042,7 +1038,6 @@ this keeps the clean up from happening so you can more easily see errors.</strin
    <zorder>ZoomLabel_2</zorder>
    <zorder>ZoomDecreaseSource</zorder>
    <zorder>ZoomIncreaseSource</zorder>
-   <zorder>selectWordsHintLabel</zorder>
    <zorder>label_6</zorder>
   </widget>
  </widget>
