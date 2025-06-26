@@ -2026,7 +2026,7 @@ class Main(QMainWindow):
         # Get checkbox values
         checkboxStr1 = '1' if self.ui.applyTextOutRulesCheckbox.isChecked() else '0'
         checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
-        checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
+        # checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
 
         with open(self.windowsSettingsFile, 'w') as f:
 
@@ -2036,7 +2036,7 @@ class Main(QMainWindow):
             f.write(f'{checkedWordsState}\n')
             f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
             f.write(f'{checkboxStr1}{checkboxStr2}\n')
-            f.write(f'{checkboxStr3}\n')
+            # f.write(f'{checkboxStr3}\n')
 
         if self.HCdllObj:
 

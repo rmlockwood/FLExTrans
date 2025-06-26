@@ -327,7 +327,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>22</x>
+      <x>21</x>
       <y>470</y>
       <width>311</width>
       <height>23</height>
@@ -1003,6 +1003,47 @@ this keeps the clean up from happening so you can more easily see errors.</strin
      <string>Hover over a word to see its bilingual dictionary entry.</string>
     </property>
    </widget>
+   <zorder>tabRules</zorder>
+   <zorder>tabSource</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>LogEdit</zorder>
+   <zorder>label_5</zorder>
+   <zorder>refreshButton</zorder>
+   <zorder>selectAllButton</zorder>
+   <zorder>upButton</zorder>
+   <zorder>downButton</zorder>
+   <zorder>unselectAllButton</zorder>
+   <zorder>TargetTextEdit</zorder>
+   <zorder>label_7</zorder>
+   <zorder>SynthTextEdit</zorder>
+   <zorder>addToTestbedButton</zorder>
+   <zorder>addMultipleCheckBox</zorder>
+   <zorder>TestsAddedLabel</zorder>
+   <zorder>editTransferRulesButton</zorder>
+   <zorder>warningLabel</zorder>
+   <zorder>SourceTextCombo</zorder>
+   <zorder>traceHermitCrabSynthesisCheckBox</zorder>
+   <zorder>ZoomIncreaseTarget</zorder>
+   <zorder>ZoomLabel</zorder>
+   <zorder>ZoomDecreaseTarget</zorder>
+   <zorder>applyTextOutRulesCheckbox</zorder>
+   <zorder>DoNotCleanupCheckbox</zorder>
+   <zorder>viewBilingualLexiconButton</zorder>
+   <zorder>editReplacementButton</zorder>
+   <zorder>TestButton</zorder>
+   <zorder>startRuleAssistant</zorder>
+   <zorder>synthesizeButton</zorder>
+   <zorder>refreshTargetLexiconButton</zorder>
+   <zorder>refreshSourceLexiconButton</zorder>
+   <zorder>editTestbedButton</zorder>
+   <zorder>viewTestbedLogButton</zorder>
+   <zorder>rebuildBilingLexButton</zorder>
+   <zorder>ZoomLabel_2</zorder>
+   <zorder>ZoomDecreaseSource</zorder>
+   <zorder>ZoomIncreaseSource</zorder>
+   <zorder>selectWordsHintLabel</zorder>
+   <zorder>label_6</zorder>
   </widget>
  </widget>
  <resources/>
