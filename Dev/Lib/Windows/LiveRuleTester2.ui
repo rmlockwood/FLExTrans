@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Live Rule Tester</string>
+   <string notr="true">Live Rule Tester</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTabWidget" name="tabRules">
@@ -105,19 +105,22 @@
       <height>225</height>
      </rect>
     </property>
-    <property name="leftMargin">
-     <number>8</number>
+    <property name="tabPosition">
+     <enum>QTabWidget::South</enum>
     </property>
-    <property name="topMargin">
-     <number>8</number>
+    <property name="tabShape">
+     <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
-    <property name="bottomMargin">
-     <number>8</number>
+    <property name="movable">
+     <bool>false</bool>
     </property>
     <widget class="QWidget" name="tab_select_words">
+     <property name="toolTip">
+      <string>Hover over a word to see its bilingual dictionary entry.</string>
+     </property>
      <attribute name="title">
       <string>Select Words</string>
      </attribute>
@@ -130,174 +133,13 @@
         <height>23</height>
        </rect>
       </property>
-      <property name="rightMargin">
-       <number>4</number>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Source Text</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="SourceTextCombo">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>2</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="maxVisibleItems">
-         <number>30</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="rebuildBilingLexButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Rebuild &amp;Bilingual Lexicon</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="viewBilingualLexiconButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&amp;View Bilingual Lexicon</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_8">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="editReplacementButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Replacement Dictionary Editor</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="tabSource">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
+      <property name="maxVisibleItems">
+       <number>30</number>
       </property>
      </widget>
      <widget class="QScrollArea" name="scrollArea">
@@ -309,14 +151,16 @@
         <height>103</height>
        </rect>
       </property>
-      <property name="tabPosition">
-       <enum>QTabWidget::South</enum>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
-      <property name="tabShape">
-       <enum>QTabWidget::Rounded</enum>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 220, 213);</string>
       </property>
-      <property name="currentIndex">
-       <number>0</number>
+      <property name="widgetResizable">
+       <bool>true</bool>
       </property>
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
@@ -343,8 +187,11 @@
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(229, 255, 236);</string>
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
       </property>
       <property name="readOnly">
        <bool>true</bool>
@@ -364,254 +211,8 @@
         <height>132</height>
        </rect>
       </property>
-      <item>
-       <widget class="QLabel" name="label_7">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Synthesized Text</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>67</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="traceHermitCrabSynthesisCheckBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Only the last word will be traced.</string>
-        </property>
-        <property name="text">
-         <string>Trace HermitCrab synthesis</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="synthesizeButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&amp;Synthesize</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_11">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="refreshTargetLexiconButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>250</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Refresh &amp;Target Lexicon</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_7">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="applyTextOutRulesCheckbox">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>Apply the search/replace rules defined in the Text Out Rules module.</string>
-        </property>
-        <property name="text">
-         <string>Apply Text Out rules</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_6">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>100</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="DoNotCleanupCheckbox">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>1</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>23</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>If you have checked the FLExTrans setting to clean up unknown words,
-this keeps the clean up from happening so you can more easily see errors.</string>
-        </property>
-        <property name="text">
-         <string>Do not clean up unknown words</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="SynthTextEdit">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>1</verstretch>
-       </sizepolicy>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(255, 220, 213);</string>
       </property>
      </widget>
      <widget class="QTextEdit" name="SelectedSentencesEdit">
@@ -628,8 +229,11 @@ this keeps the clean up from happening so you can more easily see errors.</strin
         <pointsize>9</pointsize>
        </font>
       </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(254, 194,194);</string>
+       <string notr="true">background-color: rgb(225, 255, 255);</string>
       </property>
       <property name="readOnly">
        <bool>true</bool>
@@ -1074,12 +678,6 @@ this keeps the clean up from happening so you can more easily see errors.</strin
       <width>21</width>
       <height>23</height>
      </rect>
-    </property>
-    <property name="maximumSize">
-     <size>
-      <width>21</width>
-      <height>16777215</height>
-     </size>
     </property>
     <property name="text">
      <string notr="true">–</string>

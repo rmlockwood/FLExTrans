@@ -1787,7 +1787,7 @@ class Main(QMainWindow):
                 self.ui.SentCombo.update()
                 self.listSentComboClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(True)
+            # self.ui.selectWordsHintLabel.setVisible(True)
 
         elif self.ui.tabSource.currentIndex() == 1: # sentence list
 
@@ -1798,11 +1798,11 @@ class Main(QMainWindow):
                 self.ui.listSentences.setCurrentIndex(qIndex)
                 self.listSentClicked()
 
-            self.ui.selectWordsHintLabel.setVisible(False)
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
         else: # manual entry
-
-            self.ui.selectWordsHintLabel.setVisible(False)
+            pass
+            # self.ui.selectWordsHintLabel.setVisible(False)
 
     def rulesTabClicked(self):
 
