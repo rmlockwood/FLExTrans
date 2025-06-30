@@ -4,12 +4,12 @@
 <context>
     <name>LiveRuleTesterTool</name>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="260"/>
+        <location filename="../LiveRuleTesterTool.py" line="265"/>
         <source>Test transfer rules and synthesis live against specific words.</source>
         <translation>Testen Sie Übertragungsregeln und Synthese live mit bestimmten Wörtern.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="262"/>
+        <location filename="../LiveRuleTesterTool.py" line="267"/>
         <source>The Live Rule Tester Tool is a tool that allows you to test source words or
 sentences live against transfer rules. This tool is especially helpful for
 finding out why transfer rules are not doing what you expect them to do.
@@ -31,79 +31,79 @@ einem Testbett hinzufügen. Sie können das Testbett ausführen, um zu überprü
 die erwarteten Ergebnisse erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="915"/>
+        <location filename="../LiveRuleTesterTool.py" line="1140"/>
         <source>Copy Error</source>
         <translation>Kopierfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="915"/>
+        <location filename="../LiveRuleTesterTool.py" line="1140"/>
         <source>Could not copy the bilingual file to the folder: {0}. Please check that it exists.</source>
         <translation>Die zweisprachige Datei konnte nicht in den Ordner kopiert werden: {0}. Bitte überprüfen Sie, ob sie existiert.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="744"/>
+        <location filename="../LiveRuleTesterTool.py" line="969"/>
         <source>Read Error</source>
         <translation>Lesefehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="744"/>
+        <location filename="../LiveRuleTesterTool.py" line="969"/>
         <source>Bilingual file: {0} could not be read.</source>
         <translation>Zweisprachige Datei: {0} konnte nicht gelesen werden.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1031"/>
+        <location filename="../LiveRuleTesterTool.py" line="1264"/>
         <source>Not Found Error</source>
         <translation>Nicht gefunden Fehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="790"/>
+        <location filename="../LiveRuleTesterTool.py" line="1015"/>
         <source>Bilingual file: {0} does not exist.</source>
         <translation>Zweisprachige Datei: {0} existiert nicht.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="803"/>
+        <location filename="../LiveRuleTesterTool.py" line="1028"/>
         <source>Transfer rule file: {0} does not exist.</source>
         <translation>Übertragungsregeldatei: {0} existiert nicht.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="841"/>
+        <location filename="../LiveRuleTesterTool.py" line="1066"/>
         <source>Lexical unit error</source>
         <translation>Lexikoneinheitenfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="841"/>
+        <location filename="../LiveRuleTesterTool.py" line="1066"/>
         <source>The lexical unit(s) is/are incorrectly formed.</source>
         <translation>Die Lexikoneinheit(en) ist/sind falsch formatiert.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="866"/>
+        <location filename="../LiveRuleTesterTool.py" line="1091"/>
         <source>Extract Bilingual Lexicon Error</source>
         <translation>Fehler beim Extrahieren des zweisprachigen Lexikons</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="866"/>
+        <location filename="../LiveRuleTesterTool.py" line="1091"/>
         <source>{0}
 Run the Extract Bilingual Lexicon module separately for more details.</source>
         <translation>{0}
 Führen Sie das Modul &quot;Zweisprachiges Lexikon extrahieren&quot; separat aus, um weitere Details zu erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="869"/>
+        <location filename="../LiveRuleTesterTool.py" line="1094"/>
         <source>Built the bilingual lexicon.</source>
         <translation>Das zweisprachige Lexikon wurde erstellt.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="948"/>
+        <location filename="../LiveRuleTesterTool.py" line="1173"/>
         <source>Testbed file: {0} does not exist.</source>
         <translation>Testbettdatei: {0} existiert nicht.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="960"/>
+        <location filename="../LiveRuleTesterTool.py" line="1185"/>
         <source>Test Exists</source>
         <translation>Test existiert</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="961"/>
+        <location filename="../LiveRuleTesterTool.py" line="1186"/>
         <source>There is a test that already exists in the testbed that matches the lexical unit:
 
 {0}
@@ -116,237 +116,242 @@ Do you want to overwrite it?</source>
 Möchten Sie ihn überschreiben?</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1031"/>
+        <location filename="../LiveRuleTesterTool.py" line="1264"/>
         <source>Problem with the testbedfile. Check that you have TestbedFile set to a value in your configuration file. Normally it is set to ..\testbed.xml</source>
         <translation>Problem mit der Testbettdatei. Überprüfen Sie, ob TestbedFile in Ihrer Konfigurationsdatei auf einen Wert gesetzt ist. Normalerweise ist es auf ..\testbed.xml gesetzt.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1077"/>
+        <location filename="../LiveRuleTesterTool.py" line="1310"/>
         <source>Testbed Error</source>
         <translation>Testbettfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1077"/>
+        <location filename="../LiveRuleTesterTool.py" line="1310"/>
         <source>There is not an equal number of synthesis results for the lexical units you have. Cannot add to the testbed.</source>
         <translation>Es gibt nicht die gleiche Anzahl von Syntheseergebnissen für die vorhandenen Lexikoneinheiten. Kann nicht zum Testbett hinzugefügt werden.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1159"/>
+        <location filename="../LiveRuleTesterTool.py" line="1392"/>
         <source>{0} test added.</source>
         <translation>{0} Test hinzugefügt.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1161"/>
+        <location filename="../LiveRuleTesterTool.py" line="1394"/>
         <source>{0} tests added.</source>
         <translation>{0} Tests hinzugefügt.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1206"/>
+        <location filename="../LiveRuleTesterTool.py" line="1451"/>
         <source>Configuration Error</source>
         <translation>Konfigurationsfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1206"/>
+        <location filename="../LiveRuleTesterTool.py" line="1451"/>
         <source>HermitCrab settings not found.</source>
         <translation>HermitCrab-Einstellungen nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1249"/>
+        <location filename="../LiveRuleTesterTool.py" line="1495"/>
         <source>Locked DB?</source>
         <translation>Datenbank gesperrt?</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1249"/>
+        <location filename="../LiveRuleTesterTool.py" line="1495"/>
         <source>The database could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
         <translation>Die Datenbank könnte gesperrt sein. Überprüfen Sie, ob die Freigabe für das Zielprojekt aktiviert ist. Wenn ja, führen Sie das Modul &quot;Dateien bereinigen&quot; und dann das Modul &quot;Ziel-Affixe katalogisieren&quot; aus und melden Sie etwaige Fehler den Entwicklern.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1258"/>
+        <location filename="../LiveRuleTesterTool.py" line="1504"/>
         <source>Catalog Prefix Error</source>
         <translation>Katalogpräfixfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1322"/>
+        <location filename="../LiveRuleTesterTool.py" line="1568"/>
         <source>{0}
 Run the {1} module separately for more details.</source>
         <translation>{0}
 Führen Sie das Modul {1} separat aus, um weitere Details zu erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1275"/>
+        <location filename="../LiveRuleTesterTool.py" line="1521"/>
         <source>Convert to STAMP Error</source>
         <translation>Fehler beim Konvertieren in STAMP</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1275"/>
+        <location filename="../LiveRuleTesterTool.py" line="1521"/>
         <source>{0}
 Run the Convert to {1} module separately for more details.</source>
         <translation>{0}
 Führen Sie das Modul &quot;In {1} konvertieren&quot; separat aus, um weitere Details zu erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1342"/>
+        <location filename="../LiveRuleTesterTool.py" line="1588"/>
         <source>
 Run the {0} module separately for more details.</source>
         <translation>
 Führen Sie das Modul {0} separat aus, um weitere Details zu erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1343"/>
+        <location filename="../LiveRuleTesterTool.py" line="1589"/>
         <source>{0} Error</source>
         <translation>{0} Fehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1353"/>
+        <location filename="../LiveRuleTesterTool.py" line="1599"/>
         <source>{moduleName} Error</source>
         <translation>{moduleName} Fehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1353"/>
+        <location filename="../LiveRuleTesterTool.py" line="1599"/>
         <source>{msg}
 Run the {moduleName} module separately for more details.</source>
         <translation>{msg}
 Führen Sie das Modul {moduleName} separat aus, um weitere Details zu erhalten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1988"/>
+        <location filename="../LiveRuleTesterTool.py" line="2228"/>
         <source>Invalid Rules File</source>
         <translation>Ungültige Regeldatei</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1988"/>
+        <location filename="../LiveRuleTesterTool.py" line="2228"/>
         <source>The transfer file has no transfer element or no section-rules element</source>
         <translation>Die Übertragungsdatei enthält kein Übertragungselement oder kein Abschnittsregel-Element</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2012"/>
+        <location filename="../LiveRuleTesterTool.py" line="2252"/>
         <source>Invalid Interchunk Rules File</source>
         <translation>Ungültige Interchunk-Regeldatei</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2012"/>
+        <location filename="../LiveRuleTesterTool.py" line="2252"/>
         <source>The interchunk transfer file has no transfer element or no section-rules element</source>
         <translation>Die Interchunk-Übertragungsdatei enthält kein Übertragungselement oder kein Abschnittsregel-Element</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2036"/>
+        <location filename="../LiveRuleTesterTool.py" line="2276"/>
         <source>Invalid postchunk Rules File</source>
         <translation>Ungültige Postchunk-Regeldatei</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2036"/>
+        <location filename="../LiveRuleTesterTool.py" line="2276"/>
         <source>The postchunk transfer file has no transfer element or no section-rules element</source>
         <translation>Die Postchunk-Übertragungsdatei enthält kein Übertragungselement oder kein Abschnittsregel-Element</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2096"/>
+        <location filename="../LiveRuleTesterTool.py" line="2336"/>
         <source>missing comment</source>
         <translation>fehlender Kommentar</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2082"/>
+        <location filename="../LiveRuleTesterTool.py" line="2322"/>
         <source> - Active Rule </source>
         <translation> - Aktive Regel </translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2176"/>
+        <location filename="../LiveRuleTesterTool.py" line="483"/>
         <source>Nothing selected. Select at least one word or sentence.</source>
         <translation>Nichts ausgewählt. Wählen Sie mindestens ein Wort oder einen Satz aus.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2275"/>
+        <location filename="../LiveRuleTesterTool.py" line="2515"/>
         <source>An error happened when running the Apertium tools.</source>
         <translation>Beim Ausführen der Apertium-Tools ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2292"/>
+        <location filename="../LiveRuleTesterTool.py" line="2532"/>
         <source>Cannot find file: {tgt_file}.</source>
         <translation>Datei nicht gefunden: {tgt_file}.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2341"/>
+        <location filename="../LiveRuleTesterTool.py" line="2581"/>
         <source>The rules produced no output.</source>
         <translation>Die Regeln haben keine Ausgabe erzeugt.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2516"/>
+        <location filename="../LiveRuleTesterTool.py" line="2756"/>
         <source>The text named: {name} not found.</source>
         <translation>Der Text mit dem Namen: {name} wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2548"/>
+        <location filename="../LiveRuleTesterTool.py" line="2788"/>
         <source>There is a problem with the Tree Tran Result File path: {file}. Please check the configuration file setting.</source>
         <translation>Es gibt ein Problem mit dem Pfad der Tree Tran-Ergebnisdatei: {file}. Bitte überprüfen Sie die Einstellung der Konfigurationsdatei.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2596"/>
+        <location filename="../LiveRuleTesterTool.py" line="2836"/>
         <source>Sentence {sentNum} from TreeTran not found</source>
         <translation>Satz {sentNum} von TreeTran nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2608"/>
+        <location filename="../LiveRuleTesterTool.py" line="2848"/>
         <source>Null Guid in sentence </source>
         <translation>Null-GUID im Satz </translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2616"/>
+        <location filename="../LiveRuleTesterTool.py" line="2856"/>
         <source>Could not find the desired Guid in sentence </source>
         <translation>Konnte die gewünschte GUID im Satz nicht finden </translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2636"/>
+        <location filename="../LiveRuleTesterTool.py" line="2876"/>
         <source>Sentence: {sentNum} not found. Check that the right parses are present.</source>
         <translation>Satz: {sentNum} nicht gefunden. Überprüfen Sie, ob die richtigen Analysen vorhanden sind.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2643"/>
+        <location filename="../LiveRuleTesterTool.py" line="2883"/>
         <source>Exported: {num} sentence(s) using TreeTran results.</source>
         <translation>Exportiert: {num} Satz/Sätze unter Verwendung der TreeTran-Ergebnisse.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2646"/>
+        <location filename="../LiveRuleTesterTool.py" line="2886"/>
         <source>No parses found for {num} sentence(s).</source>
         <translation>Keine Analysen für {num} Satz/Sätze gefunden.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2666"/>
+        <location filename="../LiveRuleTesterTool.py" line="2906"/>
         <source>An error occurred getting things initialized.</source>
         <translation>Beim Initialisieren ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2689"/>
+        <location filename="../LiveRuleTesterTool.py" line="2929"/>
         <source>This text has no data.</source>
         <translation>Dieser Text enthält keine Daten.</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2728"/>
+        <location filename="../LiveRuleTesterTool.py" line="2968"/>
         <source>Running {name} (version {version})...</source>
         <translation>Ausführung von {name} (Version {version})...</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="2403"/>
+        <location filename="../LiveRuleTesterTool.py" line="2643"/>
         <source>Rule </source>
         <translation>Regel </translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1220"/>
+        <location filename="../LiveRuleTesterTool.py" line="1466"/>
         <source>Directory Error</source>
         <translation>Verzeichnisfehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1220"/>
+        <location filename="../LiveRuleTesterTool.py" line="1466"/>
         <source>Could not change to the Fieldworks directory: {fieldworksDir}. Error: {e}</source>
         <translation>Konnte nicht in das Fieldworks-Verzeichnis wechseln: {fieldworksDir}. Fehler: {e}</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1237"/>
+        <location filename="../LiveRuleTesterTool.py" line="1483"/>
         <source>DLL Error</source>
         <translation>DLL-Fehler</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1237"/>
+        <location filename="../LiveRuleTesterTool.py" line="1483"/>
         <source>An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}</source>
         <translation>Eine Ausnahme ist aufgetreten. Die HermitCrab-Synthese-DLL konnte nicht initialisiert werden. Fehler: {e}</translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="1431"/>
+        <source>There are no target text morphemes. Click the Transfer button first.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
