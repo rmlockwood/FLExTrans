@@ -1589,13 +1589,13 @@ widgetList = [
     ["Limit to specific lemmas in dependent word 2", "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
     
-    ["Limit to specific semantic domains in head word", "genstc_limit_semdomain_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+    ["Limit to specific semantic domains in head word", "genstc_limit_semdomain_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
     
-    ["Limit to specific semantic domains in dependent word 1", "genstc_limit_semdomain_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
+    ["Limit to specific semantic domains in dependent word 1", "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
     
-    ["Limit to specific semantic domains in dependent word 2", "genstc_limit_semdomain_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
+    ["Limit to specific semantic domains in dependent word 2", "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
     
     ["Limit number of stems", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \

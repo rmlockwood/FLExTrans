@@ -92,9 +92,10 @@ def setupSettings(configMap, report):
     lemmaFocus2 = _formatLemmaSetting(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_LEMMA_2, report))
 
     # WIP: limit generation to specific semantic domains (for sentences that make sense)
-    semanticDomainN = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report)
-    semanticDomain1 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report)
-    semanticDomain2 = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report)
+    # Not sure if the senses/domains have a numerical key (e.g. 1.1) like the lemmas 
+    semanticDomainN = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report))
+    semanticDomain1 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report))
+    semanticDomain2 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report))
 
     # Get stem limit setting
     stemLimit = _getStemLimit(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report))
@@ -106,6 +107,14 @@ def _cleanConfigList(configList):
     if configList and configList[-1] == '':
         configList.pop()
     return configList or []
+
+# WILL PROBABLY DELETE LATER
+def _format(setting):
+    """Format settings that are user-inputed strings."""
+    if not setting: 
+        return "UNK"
+    return setting
+# WILL PROBABLY DELETE LATER
 
 def _formatLemmaSetting(lemmaSetting):
     """Format lemma settings consistently."""
@@ -239,6 +248,10 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
     random.shuffle(wordList2)
     
     return wordListN, wordList1, wordList2
+
+def getLexicalEntriesInDomains(DB, match_n_pos, match_1_pos, match_2_pos, semanticDomainN, semanticDomain1, semanticDomain2, report):
+    subListN, subList1, subList2 = [], [], []
+    return subListN, subList1, subList2
 
 #----------------------------------------------------------------
 # List Comprehension Functions
@@ -390,8 +403,18 @@ def MainFunction(DB, report, modifyAllowed):
         if lemmaFocus2 != 'UNK':
             match_2_lem = extracted_2_lem
 
-    # Get lexical entries and apply stem limit
-    subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+    # Get lexical entries
+
+    # if semantic domain is specified for one of the entries
+    report.Info(f"semanticDomainN: {semanticDomainN}")
+    report.Info(f"semanticDomain1: {semanticDomain1}")
+    report.Info(f"semanticDomain2: {semanticDomain2}")
+    if any(x != "UNK" for x in [semanticDomainN, semanticDomain1, semanticDomain2]): 
+        subListN, subList1, subList2 = getLexicalEntriesInDomains(DB, match_n_pos, match_1_pos, match_2_pos, semanticDomainN, semanticDomain1, semanticDomain2, report)
+
+    # if there are no semantic domains specified
+    else: 
+        subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
 
     # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
     genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
@@ -402,6 +425,7 @@ def MainFunction(DB, report, modifyAllowed):
     matchGlosses1 = getGlossList(genwords1)
     matchGlosses2 = getGlossList(genwords2)
     
+    # apply stemlimit
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
