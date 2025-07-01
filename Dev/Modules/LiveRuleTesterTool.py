@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.3 - 7/1/25 - Ron Lockwood
+#    Further fixes to elimnate blank space below checkboxes that caused a scroll bar to appear.
+#    Add checkboxes to the custom layout each time we display it.
+#
 #   Version 3.14.2 - 6/25/25 - Ron Lockwood
 #    Fix problem of check box scroll area not showing a scroll bar.
 #
@@ -224,7 +228,7 @@ from flexlibs import FLExProject
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout, QSizePolicy, QScrollArea, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QCheckBox, QDialogButtonBox, QToolTip, QWidget, QLayout
 
 import Mixpanel
 import InterlinData
@@ -260,7 +264,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -280,7 +284,7 @@ del app
 
 ZOOM_INCREASE_FACTOR = 1.15
 SAMPLE_LOGIC = 'Sample logic'
-MAX_CHECKBOXES = 80
+MAX_CHECKBOXES = 100
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
 TARGET_AFFIX_GLOSSES_FILE = 'target_affix_glosses.txt'
 ANA_FILE = 'myText.ana'
@@ -311,13 +315,6 @@ def firstLower(myStr):
         return myStr[0].lower() + myStr[1:]
     else:
         return myStr
-
-class ZeroSizeWhenHiddenCheckBox(QCheckBox):
-    """A check box that has a size of 0 when it is not visible."""
-    def sizeHint(self):
-        if not self.isVisible():
-            return QtCore.QSize(0, 0)
-        return super().sizeHint()
 
 class FlowLayout(QLayout):
     def __init__(self, parent=None, margin=1, spacing=3):
@@ -597,21 +594,11 @@ class Main(QMainWindow):
 
         self.content_widget = FlowContainer()
 
-            # if self.__sent_model.getRTL():
-
-            #     xval = self.ui.scrollArea.width() - x - width
-            #     myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
-        
-        #self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
-
         for i in range(0, MAX_CHECKBOXES):
 
-            myCheck = ZeroSizeWhenHiddenCheckBox(self.ui.scrollArea)
+            myCheck = QCheckBox(self.ui.scrollArea)
             myCheck.setVisible(False)
             myCheck.setProperty("myIndex", i)
-            # myCheck.setGeometry(QtCore.QRect(0,0, 35, 35)) # default position
-
-            self.content_widget.layout.addWidget(myCheck)
 
             # connect to a function
             myCheck.clicked.connect(self.SourceCheckBoxClicked)
@@ -686,6 +673,7 @@ class Main(QMainWindow):
 
         # If we don't find the transfer rules setting (from an older FLExTrans install perhaps), assume the transfer rules are in the top proj. folder.
         if not self.__transfer_rules_file:
+
             self.__transfer_rules_file = self.buildFolder + '\\..\\transfer_rules.t1x'
 
         # Parse the xml rules file and load the rules
@@ -699,12 +687,18 @@ class Main(QMainWindow):
 
         # Check within the first 5 sentences if we have any RTL data and set the sentence list direction if needed
         found_rtl = False
+
         for i,mySent in enumerate(sentence_list):
+
             if found_rtl == True or i >= 5:
                 break
+
             for myWordBundle in mySent:
+
                 surface_form = myWordBundle[0]
+
                 if self.hasRTLdata(surface_form):
+
                     self.ui.listSentences.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.ui.SentCombo.setLayoutDirection(QtCore.Qt.RightToLeft)
                     self.__sent_model.setRTL(True)
@@ -717,6 +711,7 @@ class Main(QMainWindow):
 
         # Read the bilingual lexicon into a map. this has to come before the combo box clicking for the first sentence
         if self.ReadBilingualLexicon() == False:
+
             self.retVal = False
             self.close()
             return
@@ -831,6 +826,7 @@ class Main(QMainWindow):
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
+
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
@@ -925,7 +921,6 @@ class Main(QMainWindow):
         self.ui.ZoomDecreaseSource.move(x, y)
         self.ui.ZoomIncreaseSource.move(x-23, y)
         self.ui.ZoomLabel_2.move(x-23-184, y)
-        # self.ui.selectWordsHintLabel.move(x-23-184-340-70, y)
         
     def sourceTextComboChanged(self):
 
@@ -2017,11 +2012,6 @@ class Main(QMainWindow):
 
         self.lastSentNum = self.ui.SentCombo.currentIndex()
         mySent = self.__sent_model.getSent(self.lastSentNum)
-        space_val = 10
-        y_spacing = 30
-        x_margin = 2
-        x = x_margin
-        y = 2
 
         # Clear stuff
         self.ui.SelectedWordsEdit.setPlainText('')
@@ -2033,7 +2023,14 @@ class Main(QMainWindow):
 
             self.ui.scrollArea.setLayoutDirection(QtCore.Qt.RightToLeft)
 
-        i=0
+        # Remove all widgets from self.content_widget
+        layout = self.content_widget.layout
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.setParent(None)  # Detach from parent (removes from UI)
+
         # Position a check box for each "word" in the sentence
         for i, wrdTup in enumerate(mySent):
 
@@ -2044,32 +2041,12 @@ class Main(QMainWindow):
             # Get the ith checkbox
             myCheck = self.__checkBoxList[i]
 
-            # Make it visible
-            myCheck.setVisible(True)
+            # Add widget to the content widget of the scroll area
+            self.content_widget.layout.addWidget(myCheck)
+            myCheck.show()
 
-            # set the text of the check box from the first tuple element
-            # this will be the surface form
+            # Set the text of the check box from the first tuple element. This will be the surface form.
             myCheck.setText(wrdTup[0])
-
-            # get the width of the box and text (maybe have to add icon size)
-            # width = myCheck.fontMetrics().boundingRect(wrdTup[0]).width() + 28 + 5
-
-            # set the position, if it's too wide to fit make a new row
-            # if width + x > self.ui.scrollArea.width():
-
-            #     y += y_spacing
-            #     x = x_margin
-
-            # if self.__sent_model.getRTL():
-
-            #     xval = self.ui.scrollArea.width() - x - width
-            #     myCheck.setLayoutDirection(QtCore.Qt.RightToLeft)
-
-            # else:
-            #     xval = x
-
-            # myCheck.setGeometry(QtCore.QRect(xval, y, width, 27))
-            # x += width + space_val
 
             # If this word has a target(s) in the bilingual lexicon, show as a tooltip
             srcTrgPairsList = self.getTargetsInBilingMap(wrdTup)
@@ -2081,11 +2058,6 @@ class Main(QMainWindow):
                 tipText = '---'
 
             self.__checkBoxList[i].setToolTip(tipText)
-
-        # Make the rest of the unused check boxes invisible
-        for j in range(i+1,len(self.__checkBoxList)):
-
-            self.__checkBoxList[j].setVisible(False)
 
     def getTargetsInBilingMap(self, wrdTup):
 
