@@ -87,10 +87,10 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 docs = {FTM_Name       : "Catalog Target Affixes",
         FTM_Version    : "3.14",        
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target database."),
+        FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",
         FTM_Description: _translate("CatalogTargetAffixes", 
-"""This module creates a file which has a list of all the affix glosses and morpheme types in the target database. 
+"""This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
 This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
 NOTE: messages in the output window will show the SOURCE project
 as being used. Actually the target project is being used.

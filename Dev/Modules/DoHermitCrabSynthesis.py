@@ -159,8 +159,8 @@ This will default to something like 'target_text-syn.txt'.
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
 It is named 'HermitCrab.config' and will be in the 'Build' folder. 
-NOTE: Messages will say the SOURCE database
-is being used. Actually the target database is being used.
+NOTE: Messages will say the source project
+is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
 produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.""")}

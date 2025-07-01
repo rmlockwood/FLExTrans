@@ -87,12 +87,12 @@ docs = {FTM_Name       : "Insert Target Text",
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
         FTM_Description: _translate("InsertTargetText", 
-"""The target database set in the configuration file will be used. This module will take
+"""The target project set in the configuration file will be used. This module will take
 the results of the synthesis process (Create Target Dictionaries and Synthesize module)
 and insert the text into the target FLEx project. The SourceTextName property in 
 the FlexTrans.config file will be used for the text name in the target project. NOTE: A message window
 will be displayed asking if you want to make changes to the SOURCE project. This is not true. This module
-will only change the target database as specified in the configuration file.""")}
+will only change the target project as specified in the configuration file.""")}
 
 app.quit()
 del app
@@ -111,10 +111,10 @@ def insertTargetText(DB, configMap, report):
             return None
         TargetDB.OpenProject(targetProj, True)
     except: 
-        report.Error(_translate("InsertTargetText", 'Failed to open the target database.'))
+        report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
         raise
 
-    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target database.').format(targetProj=targetProj))
+    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)

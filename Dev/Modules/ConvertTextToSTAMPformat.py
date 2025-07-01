@@ -180,7 +180,7 @@ HermitCrab synthesis. For STAMP, the file is what you specified by the Target Ou
 called target_text-ana.txt.
 For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder.
-NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
+NOTE: messages and the task bar will show the source project as being used. Actually the target project 
 is being used.""")}
 
 app.quit()
@@ -457,7 +457,7 @@ class ConversionData():
         try:
             TargetDB.OpenProject(targetProj, True)
         except: #FDA_DatabaseError, e:
-            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target database.'))
+            report.Error(_translate("ConvertTextToSTAMPformat", 'Failed to open the target project.'))
             raise
     
         self.project = TargetDB

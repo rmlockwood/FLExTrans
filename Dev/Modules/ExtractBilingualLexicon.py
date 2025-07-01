@@ -350,7 +350,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     else:
         DONT_CACHE = True
 
-    # If the target database hasn't changed since we created the affix file, don't do anything.
+    # If the target project hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and useCacheIfAvailable and bilingFileOutOfDate(DB, TargetDB, bilingFile) == False and replFileOutOfDate(bilingFile, replFile) == False:
 
         errorList.append((_translate("ExtractBilingualLexicon", "The bilingual dictionary is up to date."), 0))
