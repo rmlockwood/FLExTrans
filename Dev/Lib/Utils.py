@@ -680,14 +680,14 @@ def openTargetProject(configMap, report):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         if report:
-            report.Error(_translate("Utils", "The Target Database does not exist. Please check the configuration file."))
+            report.Error(_translate("Utils", "The target project does not exist. Please check the configuration file."))
         return
     
     try:
         TargetDB.OpenProject(targetProj, True)
     except:
         if report:
-            report.Error(_translate("Utils", "There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
+            report.Error(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
         raise
 
     return TargetDB
@@ -977,7 +977,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     except:
         headWord = getHeadwordStr(entry)
         if report:
-            report.Error(_translate("Utils", "Invalid url link or url not found in the target database while processing source headword: {headWord}.").format(headWord=headWord),
+            report.Error(_translate("Utils", "Invalid url link or url not found in the target project while processing source headword: {headWord}.").format(headWord=headWord),
             DB.BuildGotoURL(entry))
         return retVal
 

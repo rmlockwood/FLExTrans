@@ -151,7 +151,7 @@ roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesi
 are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
-NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.""")
+NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : "Synthesize Text with STAMP",
         FTM_Version    : "3.14",
@@ -1025,20 +1025,20 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
 
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
-        error_list.append((_translate("DoStampSynthesis", "The Target Database does not exist. Please check the configuration file."), 2))
+        error_list.append((_translate("DoStampSynthesis", "The target project does not exist. Please check the configuration file."), 2))
         return error_list
     try:
-        # Open the target database
+        # Open the target project
         if not targetProj:
             error_list.append((_translate("DoStampSynthesis", 'Problem accessing the target project.'), 2))
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error(_translate("DoStampSynthesis", 'Failed to open the target database.'))
+            report.Error(_translate("DoStampSynthesis", 'Failed to open the target project.'))
         raise
 
-    # If the target database hasn't changed since we created the root databse file, don't do anything.
+    # If the target project hasn't changed since we created the root databse file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         TargetDB.CloseProject()
         error_list.append((_translate("DoStampSynthesis", "Target lexicon files are up to date."), 0))

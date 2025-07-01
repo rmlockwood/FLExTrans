@@ -1873,17 +1873,17 @@ def RunModule(DB, report, configMap, app):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
 
-        report.Error(_translate("LinkSenseTool", 'The Target Database does not exist. Please check the configuration file.'))
+        report.Error(_translate("LinkSenseTool", 'The target project does not exist. Please check the configuration file.'))
         return ERROR_HAPPENED
 
-    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target database.').format(targetProj=targetProj))
+    report.Info(_translate("LinkSenseTool", 'Opening: {targetProj} as the target project.').format(targetProj=targetProj))
 
     try:
         TargetDB.OpenProject(targetProj, True)
 
     except: #FDA_DatabaseError, err:
 
-        report.Error(_translate("LinkSenseTool", 'Failed to open the target database.'))
+        report.Error(_translate("LinkSenseTool", 'Failed to open the target project.'))
         raise
 
     report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),

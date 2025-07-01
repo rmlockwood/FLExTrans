@@ -117,10 +117,10 @@ def insertTargetText(DB, configMap, report):
             return None
         TargetDB.OpenProject(targetProj, True)
     except: 
-        report.Error(_translate("InsertTargetText", 'Failed to open the target database.'))
+        report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
         raise
 
-    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target database.').format(targetProj=targetProj))
+    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
