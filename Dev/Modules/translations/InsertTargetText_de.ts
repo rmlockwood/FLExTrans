@@ -23,25 +23,25 @@
         <source>You need to run this module in &quot;modify mode.&quot;</source>
         <translation>Sie müssen dieses Modul im &quot;Änderungsmodus&quot; ausführen.</translation>
     </message>
-    <message>
-        <location filename="../InsertTargetText.py" line="89"/>
-        <source>The target project set in the configuration file will be used. This module will take
+<message>
+    <location filename="../InsertTargetText.py" line="89"/>
+    <source>The target project set in the configuration file will be used. This module will take
 the results of the synthesis process (Create Target Dictionaries and Synthesize module)
 and insert the text into the target FLEx project. The SourceTextName property in 
 the FlexTrans.config file will be used for the text name in the target project. NOTE: A message window
 will be displayed asking if you want to make changes to the SOURCE project. This is not true. This module
 will only change the target project as specified in the configuration file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../InsertTargetText.py" line="114"/>
-        <source>Failed to open the target project.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../InsertTargetText.py" line="117"/>
-        <source>Using: {targetProj} as the target project.</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <translation>Das im Konfigurationsfile festgelegte Zielprojekt wird verwendet. Dieses Modul übernimmt die Ergebnisse des Syntheseprozesses (Module „Zieldictionaries erstellen“ und „Synthese“) und fügt den Text in das Ziel-FLEx-Projekt ein. Die Eigenschaft „SourceTextName“ in der FlexTrans.config-Datei wird als Textname im Zielprojekt verwendet. HINWEIS: Es wird ein Nachrichtenfenster angezeigt, das fragt, ob Sie Änderungen am QUELL-Projekt vornehmen möchten. Das stimmt nicht. Dieses Modul ändert nur das Zielprojekt, wie in der Konfigurationsdatei angegeben.</translation>
+</message>
+<message>
+    <location filename="../InsertTargetText.py" line="114"/>
+    <source>Failed to open the target project.</source>
+    <translation>Das Zielprojekt konnte nicht geöffnet werden.</translation>
+</message>
+<message>
+    <location filename="../InsertTargetText.py" line="117"/>
+    <source>Using: {targetProj} as the target project.</source>
+    <translation>Verwende {targetProj} als Zielprojekt.</translation>
+</message>
 </context>
 </TS>

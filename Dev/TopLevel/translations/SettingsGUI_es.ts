@@ -755,10 +755,10 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
         <source>FLExTrans Settings</source>
         <translation>Configuración de FLExTrans</translation>
     </message>
-    <message>
-        <location filename="../SettingsGUI.py" line="1312"/>
-        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-        <translation type="unfinished"></translation>
-    </message>
+<message>
+    <location filename="../SettingsGUI.py" line="1312"/>
+    <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+    <translation>No se pudo abrir el proyecto «{projectName}». Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del cuadro de diálogo Propiedades del proyecto Fieldworks. Esta opción se encuentra en el menú Archivo &gt; Gestión de proyectos &gt; Propiedades del proyecto Fieldworks.</translation>
+</message>
 </context>
 </TS>

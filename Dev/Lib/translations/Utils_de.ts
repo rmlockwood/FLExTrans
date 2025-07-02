@@ -61,32 +61,32 @@
     <message>
         <location filename="../Utils.py" line="673"/>
         <source>The target project does not exist. Please check the configuration file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Zielprojekt existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="680"/>
         <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim Öffnen des Zielprojekts {targetProj} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="957"/>
         <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültiger URL-Link oder URL im Zielprojekt nicht gefunden beim Verarbeiten des Quell-Stichworts: {headWord}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="656"/>
         <source>There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim Öffnen des Projekts {DBname} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="796"/>
         <source>The abbreviation/name: &apos;{posAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; can&apos;t have a {charName} in it. Could not complete, &apos;+                                            &apos;please correct this {myType} in the {dbType} project.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Abkürzung/der Name: &apos;{posAbbrStr}&apos; für {myType}: &apos;{posFullNameStr}&apos; darf kein {charName} enthalten. Vorgang konnte nicht abgeschlossen werden, bitte korrigieren Sie dieses {myType} im Projekt {dbType}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="812"/>
         <source>The abbreviation/name: &apos;{oldAbbrStr}&apos; for {myType}: &apos;{posFullNameStr}&apos; in the {dbType} project can&apos;t have a {charName} in it. The {charName} &apos;+                                              &apos;has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Abkürzung/der Name: &apos;{oldAbbrStr}&apos; für {myType}: &apos;{posFullNameStr}&apos; im Projekt {dbType} darf kein {charName} enthalten. Das {charName} wurde {message}, wodurch {posAbbrStr} entstanden ist. Bitte beachten Sie dies bei der Verwendung dieses {myType} in Transferregeln.</translation>
     </message>
 </context>
 </TS>

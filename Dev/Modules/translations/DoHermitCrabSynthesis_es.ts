@@ -153,9 +153,9 @@
         <source>{master} or {parses} or {surface} or {transfer} not found in the configuration file.</source>
         <translation>{master} o {parses} o {surface} o {transfer} no se encontró en el archivo de configuración.</translation>
     </message>
-    <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="155"/>
-        <source>This module runs HermitCrab to create the
+<message>
+    <location filename="../DoHermitCrabSynthesis.py" line="155"/>
+    <source>This module runs HermitCrab to create the
 synthesized text. The results are put into the file designated in the Settings as Target Output Synthesis File.
 This will default to something like &apos;target_text-syn.txt&apos;. 
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
@@ -166,17 +166,22 @@ is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses (&apos;target_words-parses.txt&apos;) to
 produce surface forms (&apos;target_words-surface.txt&apos;). 
 These forms are then used to create the target text.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="218"/>
-        <source>Failed to open the target project: {targetProj}.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoHermitCrabSynthesis.py" line="283"/>
-        <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <translation>Este módulo ejecuta HermitCrab para crear el texto sintetizado. Los resultados se colocan en el archivo designado en la configuración como "Target Output Synthesis File". Por defecto, será algo como "target_text-syn.txt".
+Antes de crear el texto sintetizado, este módulo extrae el léxico del idioma de destino en forma de un archivo de configuración de HermitCrab.
+Se llama "HermitCrab.config" y estará en la carpeta "Build".
+NOTA: Los mensajes dirán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.
+Información avanzada: Este módulo ejecuta HermitCrab con una lista de análisis de destino ("target_words-parses.txt") para producir formas superficiales ("target_words-surface.txt").
+Estas formas luego se utilizan para crear el texto de destino.</translation>
+</message>
+<message>
+    <location filename="../DoHermitCrabSynthesis.py" line="218"/>
+    <source>Failed to open the target project: {targetProj}.</source>
+    <translation>No se pudo abrir el proyecto de destino: {targetProj}.</translation>
+</message>
+<message>
+    <location filename="../DoHermitCrabSynthesis.py" line="283"/>
+    <source>The error contains a &apos;KeyNotFoundException&apos; and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.</source>
+    <translation>El error contiene una 'KeyNotFoundException' y esto a menudo indica que se debe ejecutar la utilidad FLEx Find and Fix en el proyecto {projectName}.</translation>
+</message>
 </context>
 </TS>

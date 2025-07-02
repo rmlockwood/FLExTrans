@@ -73,9 +73,9 @@
         <source>Configuration file problem with: {fileType}.</source>
         <translation>Problema con el archivo de configuración para: {fileType}.</translation>
     </message>
-    <message>
-        <location filename="../ConvertTextToSTAMPformat.py" line="173"/>
-        <source>This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
+<message>
+    <location filename="../ConvertTextToSTAMPformat.py" line="173"/>
+    <source>This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
 for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
 synthesis program. 
@@ -86,12 +86,15 @@ For HermitCrab, the file is what you specified by the Hermit Crab Master File se
 target_words-HC.txt. Both files are usually in the Build folder.
 NOTE: messages and the task bar will show the source project as being used. Actually the target project 
 is being used.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ConvertTextToSTAMPformat.py" line="460"/>
-        <source>Failed to open the target project.</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <translation>Este módulo tomará el archivo de resultados de transferencia de destino creado por Apertium y lo convertirá a un formato adecuado para la síntesis, utilizando la información del proyecto de destino indicado en la configuración. Dependiendo de la configuración para la síntesis HermitCrab, el archivo de salida estará en formato STAMP o en un formato adecuado para el programa de síntesis HermitCrab.
+El archivo de salida se almacenará en diferentes archivos según si está realizando una síntesis STAMP (por defecto) o HermitCrab. Para STAMP, el archivo es el que especificó en la configuración "Target Output ANA File", normalmente llamado target_text-ana.txt.
+Para HermitCrab, el archivo es el que especificó en la configuración "Hermit Crab Master File", normalmente llamado target_words-HC.txt. Ambos archivos suelen estar en la carpeta Build.
+NOTA: Los mensajes y la barra de tareas mostrarán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.</translation>
+</message>
+<message>
+    <location filename="../ConvertTextToSTAMPformat.py" line="460"/>
+    <source>Failed to open the target project.</source>
+    <translation>No se pudo abrir el proyecto de destino.</translation>
+</message>
 </context>
 </TS>

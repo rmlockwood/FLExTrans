@@ -755,10 +755,10 @@ source FLEx project. It is possible to choose not to translate proper nouns.</so
         <translation>Der Name der grammatischen Kategorie, die Sie für Eigennamen in Ihrem 
 FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu übersetzen.</translation>
     </message>
-    <message>
-        <location filename="../SettingsGUI.py" line="1312"/>
-        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-        <translation type="unfinished"></translation>
-    </message>
+<message>
+    <location filename="../SettingsGUI.py" line="1312"/>
+    <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+    <translation>Das Projekt „{projectName}“ konnte nicht geöffnet werden. Dies könnte daran liegen, dass Sie das Projekt geöffnet haben und die Freigabeoption im Reiter „Freigabe“ des Dialogs „Fieldworks-Projekteigenschaften“ nicht aktiviert haben. Diese Option finden Sie im Menü unter Datei &gt; Projektverwaltung &gt; Fieldworks-Projekteigenschaften.</translation>
+</message>
 </context>
 </TS>

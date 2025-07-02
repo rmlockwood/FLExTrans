@@ -118,9 +118,9 @@
         <source>The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.</source>
         <translation>Das Modul 'Convert Text to STAMP Format' muss vor diesem Modul ausgeführt werden. Die Datei {fileType}: {filePath} existiert nicht.</translation>
     </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="147"/>
-        <source>This module runs STAMP to create the
+<message>
+    <location filename="../DoStampSynthesis.py" line="147"/>
+    <source>This module runs STAMP to create the
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
@@ -128,17 +128,21 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1028"/>
-        <source>The target project does not exist. Please check the configuration file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1038"/>
-        <source>Failed to open the target project.</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <translation>Dieses Modul führt STAMP aus, um den synthetisierten Text zu erstellen.
+Bevor der synthetisierte Text erstellt wird, extrahiert dieses Modul die Lexikondaten der Zielsprache, jeweils eine Datei für Wurzeln, Präfixe, Suffixe und Infixe. Diese liegen im STAMP-Format für die Synthese vor. Die Lexikondaten werden in den Ordner geschrieben, der in den Einstellungen als „Target Lexicon Files Folder“ angegeben ist. In der Regel ist dies der „Build“-Ordner.
+Der synthetisierte Text wird in der Datei gespeichert, die in den Einstellungen als „Target Output Synthesis File“ angegeben ist.
+Diese heißt typischerweise target_text-syn.txt und befindet sich normalerweise im Output-Ordner.
+HINWEIS: Die Meldungen geben an, dass das Quellprojekt verwendet wird. Tatsächlich wird aber das Zielprojekt verwendet.</translation>
+</message>
+<message>
+    <location filename="../DoStampSynthesis.py" line="1028"/>
+    <source>The target project does not exist. Please check the configuration file.</source>
+    <translation>Das Zielprojekt existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
+</message>
+<message>
+    <location filename="../DoStampSynthesis.py" line="1038"/>
+    <source>Failed to open the target project.</source>
+    <translation>Das Zielprojekt konnte nicht geöffnet werden.</translation>
+</message>
 </context>
 </TS>

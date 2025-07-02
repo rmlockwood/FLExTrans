@@ -343,15 +343,15 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
         <source>An exception occurred. Could not initialize the HermitCrab synthesis DLL. Error: {e}</source>
         <translation>Ocurrió una excepción. No se pudo inicializar la DLL de síntesis de HermitCrab. Error: {e}</translation>
     </message>
-    <message>
-        <location filename="../LiveRuleTesterTool.py" line="1426"/>
-        <source>There are no target text morphemes. Click the Transfer button first.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../LiveRuleTesterTool.py" line="1490"/>
-        <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-        <translation type="unfinished"></translation>
-    </message>
+<message>
+    <location filename="../LiveRuleTesterTool.py" line="1426"/>
+    <source>There are no target text morphemes. Click the Transfer button first.</source>
+    <translation>No hay morfemas de texto de destino. Haga clic primero en el botón Transferir.</translation>
+</message>
+<message>
+    <location filename="../LiveRuleTesterTool.py" line="1490"/>
+    <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
+    <translation>El proyecto podría estar bloqueado. Verifique si la opción de compartir está activada para el proyecto de destino. Si es así, ejecute el módulo Limpiar archivos y luego el módulo Catalogar afijos de destino, y reporte cualquier error a los desarrolladores.</translation>
+</message>
 </context>
 </TS>

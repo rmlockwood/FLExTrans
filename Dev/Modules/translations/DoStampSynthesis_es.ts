@@ -118,9 +118,9 @@
         <source>The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.</source>
         <translation>El módulo Convertir Texto al Formato STAMP debe ejecutarse antes de este módulo. El archivo {fileType}: {filePath} no existe.</translation>
     </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="147"/>
-        <source>This module runs STAMP to create the
+<message>
+    <location filename="../DoStampSynthesis.py" line="147"/>
+    <source>This module runs STAMP to create the
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
@@ -128,17 +128,21 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1028"/>
-        <source>The target project does not exist. Please check the configuration file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1038"/>
-        <source>Failed to open the target project.</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <translation>Este módulo ejecuta STAMP para crear el texto sintetizado.
+Antes de crear el texto sintetizado, este módulo extrae los archivos de léxico del idioma de destino, uno para raíces, prefijos, sufijos e infijos. Estos archivos están en formato STAMP para la síntesis. Los archivos de léxico se colocan en la carpeta designada en la configuración como "Target Lexicon Files Folder". Normalmente es la carpeta "Build".
+El texto sintetizado se almacenará en el archivo especificado por la configuración "Target Output Synthesis File".
+Normalmente se llama target_text-syn.txt y suele estar en la carpeta Output.
+NOTA: Los mensajes indicarán que se está utilizando el proyecto fuente. En realidad, se está utilizando el proyecto de destino.</translation>
+</message>
+<message>
+    <location filename="../DoStampSynthesis.py" line="1028"/>
+    <source>The target project does not exist. Please check the configuration file.</source>
+    <translation>El proyecto de destino no existe. Por favor, revise el archivo de configuración.</translation>
+</message>
+<message>
+    <location filename="../DoStampSynthesis.py" line="1038"/>
+    <source>Failed to open the target project.</source>
+    <translation>No se pudo abrir el proyecto de destino.</translation>
+</message>
 </context>
 </TS>
