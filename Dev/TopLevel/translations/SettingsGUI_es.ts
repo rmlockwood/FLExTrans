@@ -757,8 +757,8 @@ palabras que se pueden insertar con una regla de TreeTran.</translation>
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1312"/>
-        <source>Failed to open the &apos;{projectName}&apos; database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-        <translation>No se pudo abrir la base de datos '{projectName}'. Esto puede deberse a que tiene el proyecto abierto y no ha activado la opción de compartir en la pestaña Compartir del diálogo de Propiedades del Proyecto de Fieldworks. Esta se encuentra en Archivo &gt; Gestión de Proyectos &gt; Propiedades del Proyecto de Fieldworks en el menú.</translation>
+        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

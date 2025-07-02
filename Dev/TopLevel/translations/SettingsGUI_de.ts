@@ -130,12 +130,6 @@ das die Verknüpfungsinformationen zu Einträgen im Ziel-FLEx-Projekt enthält.<
         <translation>Kategorie, die ein Eigenname darstellt</translation>
     </message>
     <message>
-        <location filename="." line="0"/>
-        <source>The name of the grammatical category that you use for proper nouns in your 
-source FLEx project. It is possible to choose not to translate proper nouns.</source>
-        <translation type="obsolete">Der Name der grammatischen Kategorie, die Sie für Eigennamen in Ihrem FLEx-Quellprojekt verwenden. Es ist möglich, Eigennamen nicht zu übersetzen.</translation>
-    </message>
-    <message>
         <location filename="../SettingsGUI.py" line="1408"/>
         <source>Hide warnings for unanalyzed Proper Nouns</source>
         <translation>Warnungen für nicht analysierte Eigennamen ausblenden</translation>
@@ -763,8 +757,8 @@ FLEx-Quellprojekt verwenden. Es ist möglich zu wählen, Eigennamen nicht zu üb
     </message>
     <message>
         <location filename="../SettingsGUI.py" line="1312"/>
-        <source>Failed to open the &apos;{projectName}&apos; database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
-        <translation>Die Datenbank '{projectName}' konnte nicht geöffnet werden. Dies könnte daran liegen, dass Sie das Projekt geöffnet haben und die Freigabeoption im Reiter &quot;Freigabe&quot; des Fieldworks-Projekteigenschaften-Dialogs nicht aktiviert haben. Diese finden Sie unter Datei &gt; Projektverwaltung &gt; Fieldworks-Projekteigenschaften im Menü.</translation>
+        <source>Failed to open the &apos;{projectName}&apos; project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File &gt; Project Management &gt; Fieldworks Project Properties on the menu.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

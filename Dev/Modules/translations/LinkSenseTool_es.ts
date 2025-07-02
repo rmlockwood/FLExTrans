@@ -158,21 +158,6 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
         <translation>El campo {linkField} no existe. Por favor, lea las instrucciones.</translation>
     </message>
     <message>
-        <location filename="../LinkSenseTool.py" line="1845"/>
-        <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation type="obsolete">La base de datos de destino no existe. Por favor, revise el archivo de configuración.</translation>
-    </message>
-    <message>
-        <location filename="../LinkSenseTool.py" line="1848"/>
-        <source>Opening: {targetProj} as the target database.</source>
-        <translation type="obsolete">Abriendo: {targetProj} como la base de datos de destino.</translation>
-    </message>
-    <message>
-        <location filename="../LinkSenseTool.py" line="1855"/>
-        <source>Failed to open the target database.</source>
-        <translation type="obsolete">No se pudo abrir la base de datos de destino.</translation>
-    </message>
-    <message>
         <location filename="../LinkSenseTool.py" line="1858"/>
         <source>Starting {moduleName} for text: {sourceTextName}.</source>
         <translation>Iniciando {moduleName} para el texto: {sourceTextName}.</translation>

@@ -1346,7 +1346,7 @@ class Main(QMainWindow):
             try:
                 errorList = CatalogTargetAffixes.catalog_affixes(self.__DB, self.__configMap, self.affixGlossPath)
             except:
-                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The database could be locked. Check if sharing is checked for the target project. \
+                QMessageBox.warning(self, _translate('LiveRuleTesterTool', 'Locked DB?'), _translate('LiveRuleTesterTool', 'The project could be locked. Check if sharing is checked for the target project. \
                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.'))
                 self.unsetCursor()
                 return

@@ -4,25 +4,6 @@
 <context>
     <name>CatalogTargetAffixes</name>
     <message>
-        <location filename="../CatalogTargetAffixes.py" line="90"/>
-        <source>Creates a list of all the affix glosses and morpheme types in the target database.</source>
-        <translation>Crea una lista de todas las glosas de afijos y tipos de morfemas en la base de datos de destino.</translation>
-    </message>
-    <message>
-        <location filename="../CatalogTargetAffixes.py" line="92"/>
-        <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target database. 
-This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
-NOTE: messages in the output window will show the SOURCE project
-as being used. Actually the target project is being used.
-The catalog will be created in the file specified by the Target Affix Gloss List File setting.
-This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
-        <translation>Este módulo crea un archivo que contiene una lista de todas las glosas de afijos y tipos de morfemas en la base de datos de destino. 
-Esta lista se utiliza en módulos posteriores de FLExTrans para realizar conversiones y sintetizar el texto de destino.
-NOTA: los mensajes en la ventana de salida mostrarán el proyecto FUENTE como utilizado. En realidad, se está utilizando el proyecto de destino.
-El catálogo se creará en el archivo especificado por la configuración de la Lista de Glosas de Afijos de Destino.
-Este archivo generalmente se llama target_affix_glosses.txt y suele estar en la carpeta Build.</translation>
-    </message>
-    <message>
         <location filename="../CatalogTargetAffixes.py" line="138"/>
         <source>Problem reading the configuration file for the property: {property}</source>
         <translation>Problema al leer el archivo de configuración para la propiedad: {property}</translation>
@@ -71,6 +52,21 @@ Este archivo generalmente se llama target_affix_glosses.txt y suele estar en la 
         <location filename="../CatalogTargetAffixes.py" line="269"/>
         <source>{count} affixes/clitics exported to the catalog.</source>
         <translation>{count} afijos/clíticos exportados al catálogo.</translation>
+    </message>
+    <message>
+        <location filename="../CatalogTargetAffixes.py" line="90"/>
+        <source>Creates a list of all the affix glosses and morpheme types in the target project.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../CatalogTargetAffixes.py" line="92"/>
+        <source>This module creates a file which has a list of all the affix glosses and morpheme types in the target project. 
+This list is used in subsequent FLExTrans modules to do conversions and synthesize the target text.
+NOTE: messages in the output window will show the SOURCE project
+as being used. Actually the target project is being used.
+The catalog will be created in the file specified by the Target Affix Gloss List File setting.
+This is typically called target_affix_glosses.txt and is usually in the Build folder.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

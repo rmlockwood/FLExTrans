@@ -156,11 +156,6 @@ Do you want to overwrite it?</source>
         <translation>¿Base de datos bloqueada?</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1490"/>
-        <source>The database could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-        <translation>La base de datos podría estar bloqueada. Verifique si la opción de compartir está marcada para el proyecto objetivo. Si es así, ejecute el módulo Limpiar Archivos y luego el módulo Catalogar Afijos Objetivo e informe cualquier error a los desarrolladores.</translation>
-    </message>
-    <message>
         <location filename="../LiveRuleTesterTool.py" line="1499"/>
         <source>Catalog Prefix Error</source>
         <translation>Error de prefijo del catálogo</translation>
@@ -351,6 +346,11 @@ Ejecute el módulo {moduleName} por separado para obtener más detalles.</transl
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1426"/>
         <source>There are no target text morphemes. Click the Transfer button first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="1490"/>
+        <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

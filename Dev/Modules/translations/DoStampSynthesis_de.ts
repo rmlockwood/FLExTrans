@@ -4,24 +4,6 @@
 <context>
     <name>DoStampSynthesis</name>
     <message>
-        <location filename="../DoStampSynthesis.py" line="147"/>
-        <source>This module runs STAMP to create the
-synthesized text.
-Before creating the synthesized text, this module extracts the target language lexicon files, one each for
-roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
-are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the &apos;Build&apos; folder.
-The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
-This is typically called target_text-syn.txt and is usually in the Output folder.
-NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.</source>
-        <translation type="obsolete">Dieses Modul führt STAMP aus, um den synthetisierten Text zu erstellen. 
-Bevor der synthetisierte Text erstellt wird, extrahiert dieses Modul die Lexikondateien der Zielsprache, jeweils eine für 
-Wurzeln, Präfixe, Suffixe und Infixe. Sie befinden sich im STAMP-Format für die Synthese. Die Lexikondateien 
-werden in den Ordner gelegt, der in den Einstellungen als Ziellexikondateien-Ordner angegeben ist. Normalerweise ist dies der Ordner 'Build'. 
-Der synthetisierte Text wird in der Datei gespeichert, die in der Einstellung Zielausgabe-Synthesedatei angegeben ist. 
-Diese wird typischerweise target_text-syn.txt genannt und befindet sich normalerweise im Ordner 'Output'. 
-HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsächlich wird die Zieldatenbank verwendet.</translation>
-    </message>
-    <message>
         <location filename="../DoStampSynthesis.py" line="159"/>
         <source>Synthesizes the target text with the tool STAMP.</source>
         <translation>Synthetisiert den Zieltext mit dem Tool STAMP.</translation>
@@ -112,19 +94,9 @@ HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsä
         <translation>Problem mit der Konfigurationsdatei für {cacheData}.</translation>
     </message>
     <message>
-        <location filename="../DoStampSynthesis.py" line="1028"/>
-        <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation type="obsolete">Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
-    </message>
-    <message>
         <location filename="../DoStampSynthesis.py" line="1033"/>
         <source>Problem accessing the target project.</source>
         <translation>Problem beim Zugriff auf das Zielprojekt.</translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1038"/>
-        <source>Failed to open the target database.</source>
-        <translation type="obsolete">Die Zieldatenbank konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="1044"/>

@@ -158,21 +158,6 @@ Legen Sie in den Einstellungen fest, welches benutzerdefinierte Feld für die Ve
         <translation>Das Feld {linkField} existiert nicht. Bitte lesen Sie die Anweisungen.</translation>
     </message>
     <message>
-        <location filename="../LinkSenseTool.py" line="1845"/>
-        <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation type="obsolete">Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
-    </message>
-    <message>
-        <location filename="../LinkSenseTool.py" line="1848"/>
-        <source>Opening: {targetProj} as the target database.</source>
-        <translation type="obsolete">Öffnen von: {targetProj} als Zieldatenbank.</translation>
-    </message>
-    <message>
-        <location filename="../LinkSenseTool.py" line="1855"/>
-        <source>Failed to open the target database.</source>
-        <translation type="obsolete">Die Zieldatenbank konnte nicht geöffnet werden.</translation>
-    </message>
-    <message>
         <location filename="../LinkSenseTool.py" line="1858"/>
         <source>Starting {moduleName} for text: {sourceTextName}.</source>
         <translation>Starte {moduleName} für den Text: {sourceTextName}.</translation>

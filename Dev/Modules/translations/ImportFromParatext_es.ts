@@ -51,11 +51,6 @@ cluster projects in the main FLExTrans Settings, then come back to this module.<
         <translation>{numRules} reglas de 'Texto Entrante' aplicadas.</translation>
     </message>
     <message>
-        <location filename="../ImportFromParatext.py" line="478"/>
-        <source>{bibleBook} {chapter}</source>
-        <translation type="obsolete">{bibleBook} {chapter}</translation>
-    </message>
-    <message>
         <location filename="../ImportFromParatext.py" line="533"/>
         <source>Text: &quot;{title}&quot; created in the {projectName} project.</source>
         <translation>Texto: &quot;{title}&quot; creado en el proyecto {projectName}.</translation>

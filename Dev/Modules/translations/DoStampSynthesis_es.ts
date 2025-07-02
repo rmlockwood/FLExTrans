@@ -4,24 +4,6 @@
 <context>
     <name>DoStampSynthesis</name>
     <message>
-        <location filename="../DoStampSynthesis.py" line="147"/>
-        <source>This module runs STAMP to create the
-synthesized text.
-Before creating the synthesized text, this module extracts the target language lexicon files, one each for
-roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
-are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the &apos;Build&apos; folder.
-The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
-This is typically called target_text-syn.txt and is usually in the Output folder.
-NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.</source>
-        <translation type="obsolete">Este módulo ejecuta STAMP para crear el texto sintetizado. 
-Antes de crear el texto sintetizado, este módulo extrae los archivos de léxico del idioma objetivo, uno para 
-raíces, prefijos, sufijos e infijos. Están en el formato STAMP para la síntesis. Los archivos de léxico 
-se colocan en la carpeta designada en la configuración como Carpeta de Archivos de Léxico de Destino. Normalmente, esta es la carpeta 'Build'. 
-El texto sintetizado se almacenará en el archivo especificado por la configuración Archivo de Síntesis de Salida de Destino. 
-Este archivo se llama típicamente target_text-syn.txt y generalmente está en la carpeta 'Output'. 
-NOTA: Los mensajes indicarán que se está utilizando la base de datos FUENTE. En realidad, se está utilizando la base de datos de destino.</translation>
-    </message>
-    <message>
         <location filename="../DoStampSynthesis.py" line="159"/>
         <source>Synthesizes the target text with the tool STAMP.</source>
         <translation>Sintetiza el texto objetivo con la herramienta STAMP.</translation>
@@ -112,19 +94,9 @@ NOTA: Los mensajes indicarán que se está utilizando la base de datos FUENTE. E
         <translation>Problema con el archivo de configuración para {cacheData}.</translation>
     </message>
     <message>
-        <location filename="../DoStampSynthesis.py" line="1028"/>
-        <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation type="obsolete">La base de datos de destino no existe. Por favor, revise el archivo de configuración.</translation>
-    </message>
-    <message>
         <location filename="../DoStampSynthesis.py" line="1033"/>
         <source>Problem accessing the target project.</source>
         <translation>Problema al acceder al proyecto de destino.</translation>
-    </message>
-    <message>
-        <location filename="../DoStampSynthesis.py" line="1038"/>
-        <source>Failed to open the target database.</source>
-        <translation type="obsolete">No se pudo abrir la base de datos de destino.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="1044"/>

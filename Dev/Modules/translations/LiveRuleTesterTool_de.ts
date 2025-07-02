@@ -156,11 +156,6 @@ Möchten Sie ihn überschreiben?</translation>
         <translation>Datenbank gesperrt?</translation>
     </message>
     <message>
-        <location filename="../LiveRuleTesterTool.py" line="1490"/>
-        <source>The database could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
-        <translation>Die Datenbank könnte gesperrt sein. Überprüfen Sie, ob die Freigabe für das Zielprojekt aktiviert ist. Wenn ja, führen Sie das Modul &quot;Dateien bereinigen&quot; und dann das Modul &quot;Ziel-Affixe katalogisieren&quot; aus und melden Sie etwaige Fehler den Entwicklern.</translation>
-    </message>
-    <message>
         <location filename="../LiveRuleTesterTool.py" line="1499"/>
         <source>Catalog Prefix Error</source>
         <translation>Katalogpräfixfehler</translation>
@@ -351,6 +346,11 @@ Führen Sie das Modul {moduleName} separat aus, um weitere Details zu erhalten.<
     <message>
         <location filename="../LiveRuleTesterTool.py" line="1426"/>
         <source>There are no target text morphemes. Click the Transfer button first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../LiveRuleTesterTool.py" line="1490"/>
+        <source>The project could be locked. Check if sharing is checked for the target project.                                     If it is, run the Clean Files module and then the Catalog Target Affixes module and report any errors to the developers.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
