@@ -560,7 +560,7 @@ class Ui_LRTWindow(object):
         self.horizontalLayout_5.addWidget(self.viewTestbedLogButton)
         self.ZoomLabel = QtWidgets.QLabel(self.centralwidget)
         self.ZoomLabel.setMinimumSize(QtCore.QSize(0, 23))
-        self.ZoomLabel.setMaximumSize(QtCore.QSize(16777215, 17))
+        self.ZoomLabel.setMaximumSize(QtCore.QSize(16777215, 23))
         self.ZoomLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.ZoomLabel.setObjectName("ZoomLabel")
         self.horizontalLayout_5.addWidget(self.ZoomLabel)
