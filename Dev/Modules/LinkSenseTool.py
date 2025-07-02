@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.1 - 7/2/25 - Ron Lockwood
+#    Fixes #1015. Don't allow the user to type in the target headword column.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -224,7 +227,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -692,7 +695,7 @@ class LinkerTable(QtCore.QAbstractTableModel):
         # Add editable for the target headword column  
         elif index.column() == COL_TGT_HEADWORD:
             
-            val = val | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable 
+            val = val | QtCore.Qt.ItemIsEnabled #| QtCore.Qt.ItemIsEditable 
             
         return val
     
@@ -782,6 +785,7 @@ class Main(QMainWindow):
         self.ui.RebuildBilingCheckBox.clicked.connect(self.RebuildBilingChecked)
         self.ui.SearchAnythingCheckBox.clicked.connect(self.SearchAnythingChecked)
         self.ui.AddEntryButton.clicked.connect(self.AddTargetEntry)
+        self.ui.tableView.doubleClicked.connect(self.handleDoubleClick)
         self.ComboClicked()
         
         myHPG = self.__comboModel.getCurrentHPG()
@@ -799,6 +803,14 @@ class Main(QMainWindow):
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def handleDoubleClick(self, index):
+        if index.column() == COL_TGT_HEADWORD:
+            self.__model.data(index, QtCore.Qt.EditRole)
+            # Repaint the target headword, target POS, and target gloss columns
+            for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
+                idx = self.__model.index(index.row(), col)
+                self.__model.dataChanged.emit(idx, idx)
+            
     def AddTargetEntry(self):
 
         # Get cluster projects from settings;
