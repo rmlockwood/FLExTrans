@@ -74,7 +74,6 @@ Die beiden vorhergehenden Wörter waren: {prevWords}. Die beiden folgenden Wört
         <source>Configuration file problem with: {fileType}.</source>
         <translation>Problem mit der Konfigurationsdatei für: {fileType}.</translation>
     </message>
-    <message>
 <message>
     <location filename="../ConvertTextToSTAMPformat.py" line="173"/>
     <source>This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
