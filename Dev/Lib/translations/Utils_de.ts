@@ -41,12 +41,12 @@
     <message>
         <location filename="../Utils.py" line="673"/>
         <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation>Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
+        <translation type="obsolete">Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="680"/>
         <source>There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
-        <translation>Beim Öffnen der Zieldatenbank {targetProj} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
+        <translation type="obsolete">Beim Öffnen der Zieldatenbank {targetProj} ist ein Fehler aufgetreten. Vielleicht ist das Projekt geöffnet und die Freigabeoption unter den FieldWorks-Projekteigenschaften wurde nicht aktiviert.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="707"/>
@@ -81,12 +81,27 @@
     <message>
         <location filename="../Utils.py" line="957"/>
         <source>Invalid url link or url not found in the target database while processing source headword: {headWord}.</source>
-        <translation>Ungültiger URL-Link oder URL in der Zieldatenbank nicht gefunden beim Verarbeiten des Quell-Stichworts: {headWord}.</translation>
+        <translation type="obsolete">Ungültiger URL-Link oder URL in der Zieldatenbank nicht gefunden beim Verarbeiten des Quell-Stichworts: {headWord}.</translation>
     </message>
     <message>
         <location filename="../Utils.py" line="1071"/>
         <source>linked to entry: {headWordStr}, sense: {glossStr} in the {projectName} project.</source>
         <translation>verknüpft mit Eintrag: {headWordStr}, Bedeutung: {glossStr} im Projekt {projectName}.</translation>
+    </message>
+    <message>
+        <location filename="../Utils.py" line="673"/>
+        <source>The target project does not exist. Please check the configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utils.py" line="680"/>
+        <source>There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../Utils.py" line="957"/>
+        <source>Invalid url link or url not found in the target project while processing source headword: {headWord}.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

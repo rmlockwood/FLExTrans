@@ -13,7 +13,7 @@ are put into the folder designated in the Settings as Target Lexicon Files Folde
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.</source>
-        <translation>Dieses Modul führt STAMP aus, um den synthetisierten Text zu erstellen. 
+        <translation type="obsolete">Dieses Modul führt STAMP aus, um den synthetisierten Text zu erstellen. 
 Bevor der synthetisierte Text erstellt wird, extrahiert dieses Modul die Lexikondateien der Zielsprache, jeweils eine für 
 Wurzeln, Präfixe, Suffixe und Infixe. Sie befinden sich im STAMP-Format für die Synthese. Die Lexikondateien 
 werden in den Ordner gelegt, der in den Einstellungen als Ziellexikondateien-Ordner angegeben ist. Normalerweise ist dies der Ordner 'Build'. 
@@ -114,7 +114,7 @@ HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsä
     <message>
         <location filename="../DoStampSynthesis.py" line="1028"/>
         <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation>Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
+        <translation type="obsolete">Die Zieldatenbank existiert nicht. Bitte überprüfen Sie die Konfigurationsdatei.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="1033"/>
@@ -124,7 +124,7 @@ HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsä
     <message>
         <location filename="../DoStampSynthesis.py" line="1038"/>
         <source>Failed to open the target database.</source>
-        <translation>Die Zieldatenbank konnte nicht geöffnet werden.</translation>
+        <translation type="obsolete">Die Zieldatenbank konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location filename="../DoStampSynthesis.py" line="1044"/>
@@ -145,6 +145,28 @@ HINWEIS: Nachrichten zeigen an, dass die QUELLE-Datenbank verwendet wird. Tatsä
         <location filename="../DoStampSynthesis.py" line="1176"/>
         <source>The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.</source>
         <translation>Das Modul 'Convert Text to STAMP Format' muss vor diesem Modul ausgeführt werden. Die Datei {fileType}: {filePath} existiert nicht.</translation>
+    </message>
+    <message>
+        <location filename="../DoStampSynthesis.py" line="147"/>
+        <source>This module runs STAMP to create the
+synthesized text.
+Before creating the synthesized text, this module extracts the target language lexicon files, one each for
+roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
+are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the &apos;Build&apos; folder.
+The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
+This is typically called target_text-syn.txt and is usually in the Output folder.
+NOTE: Messages will say the source project is being used. Actually the target project is being used.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DoStampSynthesis.py" line="1028"/>
+        <source>The target project does not exist. Please check the configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../DoStampSynthesis.py" line="1038"/>
+        <source>Failed to open the target project.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

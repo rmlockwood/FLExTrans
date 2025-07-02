@@ -160,17 +160,17 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
     <message>
         <location filename="../LinkSenseTool.py" line="1845"/>
         <source>The Target Database does not exist. Please check the configuration file.</source>
-        <translation>La base de datos de destino no existe. Por favor, revise el archivo de configuración.</translation>
+        <translation type="obsolete">La base de datos de destino no existe. Por favor, revise el archivo de configuración.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1848"/>
         <source>Opening: {targetProj} as the target database.</source>
-        <translation>Abriendo: {targetProj} como la base de datos de destino.</translation>
+        <translation type="obsolete">Abriendo: {targetProj} como la base de datos de destino.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1855"/>
         <source>Failed to open the target database.</source>
-        <translation>No se pudo abrir la base de datos de destino.</translation>
+        <translation type="obsolete">No se pudo abrir la base de datos de destino.</translation>
     </message>
     <message>
         <location filename="../LinkSenseTool.py" line="1858"/>
@@ -221,6 +221,21 @@ Configure qué campo personalizado se utiliza para vincular en la configuración
         <location filename="../LinkSenseTool.py" line="1963"/>
         <source>You need to run this module in &quot;modify mode.&quot;</source>
         <translation>Debe ejecutar este módulo en &quot;modo de modificación&quot;.</translation>
+    </message>
+    <message>
+        <location filename="../LinkSenseTool.py" line="1845"/>
+        <source>The target project does not exist. Please check the configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../LinkSenseTool.py" line="1848"/>
+        <source>Opening: {targetProj} as the target project.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../LinkSenseTool.py" line="1855"/>
+        <source>Failed to open the target project.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
