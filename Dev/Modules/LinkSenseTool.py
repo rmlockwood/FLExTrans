@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.2 - 7/2/25 - Ron Lockwood
+#    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
+#
 #   Version 3.14.1 - 7/2/25 - Ron Lockwood
 #    Fixes #1015. Don't allow the user to type in the target headword column.
 #
@@ -227,7 +230,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -804,10 +807,14 @@ class Main(QMainWindow):
         self.calculateRemainingLinks()
         
     def handleDoubleClick(self, index):
+
         if index.column() == COL_TGT_HEADWORD:
+
             self.__model.data(index, QtCore.Qt.EditRole)
+            
             # Repaint the target headword, target POS, and target gloss columns
             for col in [COL_LINK_IT, COL_TGT_HEADWORD, COL_TGT_POS, COL_TGT_GLOSS]:
+                
                 idx = self.__model.index(index.row(), col)
                 self.__model.dataChanged.emit(idx, idx)
             
@@ -823,7 +830,14 @@ class Main(QMainWindow):
             # Remove blank ones
             clusterProjects = [x for x in clusterProjects if x]
 
-        dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects)
+        # Set the lexeme form to the string in the search box, if filtering isn't turned on.
+        if not self.ui.SearchAnythingCheckBox.isChecked():
+
+            lexemeForm = self.ui.searchTargetEdit.text()
+        else:
+            lexemeForm = ''
+
+        dlg = NewEntryDlg.NewEntryDlg(self.TargetDB, self.__report, self.targetMorphNames, clusterProjects, lexemeForm)
         dlg.exec_()
 
         if dlg.retVal == True:

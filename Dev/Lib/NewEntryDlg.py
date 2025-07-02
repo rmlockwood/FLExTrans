@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/24
 #
+#   Version 3.14.1 - 7/2/25 - Ron Lockwood
+#    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -63,7 +66,7 @@ _translate = QCoreApplication.translate
 
 class NewEntryDlg(QDialog):
 
-    def __init__(self, TargetDB, report, targetMorphNames, clusterProjects):
+    def __init__(self, TargetDB, report, targetMorphNames, clusterProjects, lexemeForm):
         
         QDialog.__init__(self)
         self.ui = Ui_Dialog()
@@ -72,7 +75,7 @@ class NewEntryDlg(QDialog):
         self.TargetDB = TargetDB
         self.report = report
         self.sense = None
-        self.lexemeForm = ''
+        self.lexemeForm = lexemeForm
         self.POS = ''
         self.gloss = ''
         self.retVal = False
@@ -89,12 +92,9 @@ class NewEntryDlg(QDialog):
         header1TextStr = _translate("NewEntryDlg", "Target FLEx project name")
         header2TextStr = _translate("NewEntryDlg", "Lexeme Form")
 
-        # Set the top two widgets that need to be disabled
+        # Set the top two widgets that need to be disabled. The disabling is done in ClusterUtils.showClusterWidgets()
         self.topWidget1 = self.ui.lexemeFormEdit
         self.topWidget2 = self.ui.label
-
-        # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=None, originalWinHeight=self.height())
 
         # Load saved settings
         try:
@@ -104,10 +104,21 @@ class NewEntryDlg(QDialog):
         except:
             pass
 
+        selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
+
+        # Start with the default lexeme form if it was passed in, if there are no cluster projects selected.
+        if not selectedClusterProjects and self.lexemeForm:
+
+            self.ui.lexemeFormEdit.setText(self.lexemeForm)
+            self.ui.lexemeFormEdit.selectAll()
+
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setLexemeBoxText, originalWinHeight=self.height())
+
         # Load cluster projects
         if len(self.clusterProjects) > 0:
 
-            ClusterUtils.initClusterProjects(self, self.clusterProjects, self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, []), self) # load last used cluster projects here
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self) # load last used cluster projects here
         else:
             # Hide cluster project widgets
             widgetsToHide = [
@@ -158,6 +169,16 @@ class NewEntryDlg(QDialog):
         if index >= 0:
 
             self.ui.gramCatCombo.setCurrentIndex(index)
+
+    def setLexemeBoxText(self, widget):
+        """
+        Set the lexeme form box to the current lexeme form if it exists and select it.
+        """
+        if self.lexemeForm:
+            widget.setText(self.lexemeForm)
+            widget.selectAll()
+        else:
+            widget.setText('')
 
     def updateAllForms(self):
 
