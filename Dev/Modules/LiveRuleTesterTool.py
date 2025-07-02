@@ -5,6 +5,10 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.4 - 7/2/25 - Ron Lockwood
+#    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
+#    combo box or list box is too narrow.
+#
 #   Version 3.14.3 - 7/1/25 - Ron Lockwood
 #    Further fixes to elimnate blank space below checkboxes that caused a scroll bar to appear.
 #    Add checkboxes to the custom layout each time we display it.
@@ -264,7 +268,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.14.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -430,12 +434,14 @@ class SentenceList(QtCore.QAbstractListModel):
     def rowCount(self, parent):
         return len(self.__localData)
     def data(self, index, role):
-        mySent = self.__localData[index.row()]
+        
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.ToolTipRole:
 
-        if role == QtCore.Qt.DisplayRole:
-            value = self.joinTupParts(mySent, 0)
+            value = self.joinTupParts(self.__localData[index.row()], 0)
 
             if self.getRTL():
+
+                # Add a Unicode Right-to-Left mark to the beginning and end of the string
                 value = '\u200F' + value + '\u200F'
 
             return value
