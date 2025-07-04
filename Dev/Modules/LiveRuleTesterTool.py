@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.5 - 7/4/25 - Ron Lockwood
+#    Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
+#
 #   Version 3.14.4 - 7/2/25 - Ron Lockwood
 #    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
 #    combo box or list box is too narrow.
@@ -268,7 +271,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.4",
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -517,6 +520,7 @@ class Main(QMainWindow):
         self.startRuleAssistant = False
         self.startReplacementEditor = False
         self.HCdllObj = None
+        self.lastSelectAllState = QtCore.Qt.Unchecked
 
         #policy = self.ui.TestButton.sizePolicy()
         #self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
@@ -527,8 +531,8 @@ class Main(QMainWindow):
             self.ui.startRuleAssistant,
             self.ui.viewBilingualLexiconButton,
             self.ui.editReplacementButton,
-            self.ui.selectAllButton,
-            self.ui.unselectAllButton,
+            # self.ui.selectAllButton,
+            # self.ui.unselectAllButton,
             self.ui.upButton,
             self.ui.downButton,
             self.ui.editTransferRulesButton,
@@ -560,8 +564,8 @@ class Main(QMainWindow):
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
-        self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
-        self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
+        # self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
+        # self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
@@ -580,6 +584,7 @@ class Main(QMainWindow):
         self.ui.ZoomDecreaseTarget.clicked.connect(self.ZoomDecreaseTargetClicked)
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
         self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
+        self.ui.selectAllCheckBox.clicked.connect(self.SelectAllCheckBoxClicked)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
@@ -832,7 +837,7 @@ class Main(QMainWindow):
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
-
+        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
@@ -1692,23 +1697,56 @@ class Main(QMainWindow):
             # redo the display
             self.rulesListClicked(myIndex)
 
-    def SelectAllClicked(self):
+    def SelectAllCheckBoxClicked(self):
+        
+        state = self.ui.selectAllCheckBox.checkState()
+
+        if state == QtCore.Qt.Checked:
+
+            newState = state
+
+        elif state == QtCore.Qt.Unchecked:
+
+            newState = QtCore.Qt.Unchecked
+
+        else: #state == QtCore.Qt.PartiallyChecked:
+            
+            newState = QtCore.Qt.Checked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+
+        if self.lastSelectAllState == QtCore.Qt.PartiallyChecked:
+
+            newState = QtCore.Qt.Unchecked
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+
         # Loop through all the items in the rule list model
         for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
+
+            # change each box
+            self.__ruleModel.item(i).setCheckState(newState)
+
+        # self.lastSelectAllState = newState
 
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
 
-    def UnselectAllClicked(self):
-        # Loop through all the items in the rule list model
-        for i in range(0, self.__ruleModel.rowCount()):
-            # Check each box
-            self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
+    # def SelectAllClicked(self):
+    #     # Loop through all the items in the rule list model
+    #     for i in range(0, self.__ruleModel.rowCount()):
+    #         # Check each box
+    #         self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
 
-        # Redo the numbering
-        self.rulesListClicked(self.TRIndex)
+    #     # Redo the numbering
+    #     self.rulesListClicked(self.TRIndex)
+
+    # def UnselectAllClicked(self):
+    #     # Loop through all the items in the rule list model
+    #     for i in range(0, self.__ruleModel.rowCount()):
+    #         # Check each box
+    #         self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
+
+    #     # Redo the numbering
+    #     self.rulesListClicked(self.TRIndex)
 
     def RefreshClicked(self):
         self.saveChecked()
@@ -2286,7 +2324,9 @@ class Main(QMainWindow):
 
         self.TRIndex = index
         active_rules = 1
-
+        oneBoxChecked = False
+        oneBoxUnchecked = False
+        
         self.rulesChanged = True
 
         for i, el in enumerate(self.__rulesElement):
@@ -2297,10 +2337,27 @@ class Main(QMainWindow):
 
             # If active add text with the active rule #
             if self.__ruleModel.item(i).checkState():
+
+                oneBoxChecked = True
                 self.__ruleModel.item(i).setText(ruleText + _translate('LiveRuleTesterTool', ' - Active Rule ') + str(active_rules))
                 active_rules += 1
             else:
+                oneBoxUnchecked = True
                 self.__ruleModel.item(i).setText(ruleText)
+
+        # If we have a mix of checked and unchecked boxes, set the select All CheckBox to partially checked
+        if oneBoxChecked and oneBoxUnchecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.PartiallyChecked)
+            self.lastSelectAllState = QtCore.Qt.PartiallyChecked
+
+        elif oneBoxChecked:
+
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Checked)
+            self.lastSelectAllState = QtCore.Qt.Checked
+        else:
+            self.ui.selectAllCheckBox.setCheckState(QtCore.Qt.Unchecked)
+            self.lastSelectAllState = QtCore.Qt.Unchecked
 
     def displayRules(self, rules_element, ruleModel):
 
