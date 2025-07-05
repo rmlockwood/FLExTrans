@@ -5,8 +5,12 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.6 - 7/5/25 - Ron Lockwood
+#    Fixes #1012. Connect a Refresh Source Lexicon button to the source text combo box.
+#    When clicked, the same source text will be reloaded.
+#
 #   Version 3.14.5 - 7/4/25 - Ron Lockwood
-#    Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
+#    Fixes #1018. Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
 #
 #   Version 3.14.4 - 7/2/25 - Ron Lockwood
 #    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
@@ -585,6 +589,7 @@ class Main(QMainWindow):
         self.ui.startRuleAssistant.clicked.connect(self.OpenRuleAssistantClicked)
         self.ui.advancedOptionsCheckbox.clicked.connect(self.AdvancedOptionsCheckboxClicked)
         self.ui.selectAllCheckBox.clicked.connect(self.SelectAllCheckBoxClicked)
+        self.ui.refreshSourceLexiconButton.clicked.connect(self.sourceTextComboChanged)
 
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
