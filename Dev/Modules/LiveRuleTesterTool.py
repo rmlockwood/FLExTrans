@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.7 - 7/5/25 - Ron Lockwood
+#    Save the height and width in advanced and standard mode and restore them.
+#
 #   Version 3.14.6 - 7/5/25 - Ron Lockwood
 #    Fixes #1012. Connect a Refresh Source Lexicon button to the source text combo box.
 #    When clicked, the same source text will be reloaded.
@@ -294,6 +297,8 @@ app.quit()
 del app
 
 ZOOM_INCREASE_FACTOR = 1.15
+ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
+STANDARD_MODE_DEFAULT_DIMENSIONS = (628, 656)
 SAMPLE_LOGIC = 'Sample logic'
 MAX_CHECKBOXES = 100
 LIVE_RULE_TESTER_FOLDER = 'LiveRuleTester'
@@ -525,6 +530,8 @@ class Main(QMainWindow):
         self.startReplacementEditor = False
         self.HCdllObj = None
         self.lastSelectAllState = QtCore.Qt.Unchecked
+        self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
+        self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
         #policy = self.ui.TestButton.sizePolicy()
         #self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
@@ -677,6 +684,21 @@ class Main(QMainWindow):
                 if len(advancedOptionsStr) > 0:
 
                     self.ui.advancedOptionsCheckbox.setChecked(advancedOptionsStr[0] == '1')
+
+                # Read the 7th and 8th lines which are the width and height of standard and advanced modes
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    standardWidth, standardHeight = dimensionsStr.split('|')
+                    self.standardModeDimensions = (int(standardWidth), int(standardHeight))
+
+                dimensionsStr = f.readline().strip()
+
+                if len(dimensionsStr) > 0:
+
+                    advancedWidth, advancedHeight = dimensionsStr.split('|')
+                    self.advancedModeDimensions = (int(advancedWidth), int(advancedHeight))
         except:
             pass
 
@@ -868,7 +890,7 @@ class Main(QMainWindow):
             self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
             self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
 
-            self.resize(1256, self.height())  
+            self.resize(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
 
             # If we are doing HermitCrab synthesis, show the checkbox
             if not self.doHermitCrabSynthesisBool:
@@ -913,7 +935,7 @@ class Main(QMainWindow):
                 self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
 
             # Set window width half the size
-            self.resize(628, self.height())  
+            self.resize(self.standardModeDimensions[0], self.standardModeDimensions[1])
 
             # Remove advanced tabs
             self.ui.tabSource.removeTab(2) # Remove Manual tab
@@ -922,6 +944,16 @@ class Main(QMainWindow):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+
+        if self.ui.advancedOptionsCheckbox.isChecked():
+
+            # Save the dimensions of the advanced mode
+            self.advancedModeDimensions = (self.width(), self.height())
+        else:
+
+            # Save the dimensions of the standard mode
+            self.standardModeDimensions = (self.width(), self.height()) 
+
         self.positionZoomWidgets()
 
     def showEvent(self, event):
@@ -2199,6 +2231,9 @@ class Main(QMainWindow):
         checkboxStr2 = '1' if self.ui.DoNotCleanupCheckbox.isChecked() else '0'
         checkboxStr3 = '1' if self.ui.advancedOptionsCheckbox.isChecked() else '0'
 
+        standardDimensionsStr = f'{self.standardModeDimensions[0]}|{self.standardModeDimensions[1]}'
+        advancedDimensionsStr = f'{self.advancedModeDimensions[0]}|{self.advancedModeDimensions[1]}'
+        
         with open(self.windowsSettingsFile, 'w') as f:
 
             # Save current rules tab, current source tab, last sentence # selected and the last source text
@@ -2208,6 +2243,8 @@ class Main(QMainWindow):
             f.write(f'{sourceFontSizeStr}|{targetFontSizeStr}\n')
             f.write(f'{checkboxStr1}{checkboxStr2}\n')
             f.write(f'{checkboxStr3}\n')
+            f.write(f'{standardDimensionsStr}\n')
+            f.write(f'{advancedDimensionsStr}\n')   
 
         if self.HCdllObj:
 
