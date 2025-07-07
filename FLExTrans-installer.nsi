@@ -590,9 +590,12 @@ Pop $OUT_FOLDER
 ${NSD_SetText} $DESTTEXT $OUT_FOLDER
 FunctionEnd
 
-LangString ProdModeLabelText ${LANG_ENGLISH} "Do you want to set FLExTrans up for production use? If you choose Yes, the installer will set up a simpler interface for production use. For normal development work with FLExTrans leave this as 'No'."
-LangString ProdModeLabelText ${LANG_GERMAN} "Möchten Sie FLExTrans für den Produktionseinsatz einrichten? Wenn Sie 'Ja' wählen, wird der Installer eine einfachere Oberfläche für den Produktionseinsatz einrichten. für normale Entwicklungsarbeit mit FLExTrans lassen Sie dies auf 'Nein'."
-LangString ProdModeLabelText ${LANG_SPANISH} "¿Desea configurar FLExTrans para uso en producción? Si elige Sí, el instalador configurará una interfaz más simple para el uso en producción. Para el trabajo de desarrollo normal con FLExTrans, deje esto en 'No'."
+LangString ProdModeLabelText1 ${LANG_ENGLISH} "Production use?"
+LangString ProdModeLabelText1 ${LANG_GERMAN}  "Produktivbetrieb?"
+LangString ProdModeLabelText1 ${LANG_SPANISH} "¿Uso en producción?"
+LangString ProdModeLabelText2 ${LANG_ENGLISH} "To install a simpler FLExTrans interface for production use, choose 'Yes'. For FLExTrans development work choose 'No'."
+LangString ProdModeLabelText2 ${LANG_GERMAN}  "Um eine einfachere FLExTrans-Oberfläche für den Produktivbetrieb zu installieren, wählen Sie „Ja“. Für die FLExTrans-Entwicklung wählen Sie „Nein“."
+LangString ProdModeLabelText2 ${LANG_SPANISH} "Para instalar una interfaz FLExTrans más sencilla para uso en producción, elija Sí. Para trabajo de desarrollo de FLExTrans, elija No"
 LangString NoText ${LANG_ENGLISH} "No"
 LangString NoText ${LANG_GERMAN} "Nein"
 LangString NoText ${LANG_SPANISH} "No"
@@ -605,13 +608,15 @@ Function ProdModeDialog
   nsDialogs::Create 1018
   Pop $Dialog
 
-  ${NSD_CreateLabel} 0 0 450 40 "$(ProdModeLabelText)"
+  ${NSD_CreateLabel} 0 0 450 40 "$(ProdModeLabelText1)"
+  Pop $Label
+  ${NSD_CreateLabel} 0 30 450 40 "$(ProdModeLabelText2)"
   Pop $Label
 
-  ${NSD_CreateRadioButton} 10 50 200 12 "$(YesText)"
+  ${NSD_CreateRadioButton} 10 80 200 12 "$(YesText)"
   Pop $RadioYes
 
-  ${NSD_CreateRadioButton} 10 70 200 12 "$(NoText)"
+  ${NSD_CreateRadioButton} 10 100 200 12 "$(NoText)"
   Pop $RadioNo
   SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
 
