@@ -4,7 +4,7 @@
 #
 
 FTName = "FLExTools"
-FTVersion = "2.3.1"
+FTVersion = "2.3.2"
 
 Name = "FLExTrans"
 
