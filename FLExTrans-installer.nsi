@@ -65,6 +65,7 @@ Var Label
 Var RadioYes
 Var RadioNo
 Var /GLOBAL PRODUCTION_MODE
+Var /GLOBAL LANGCODE
 
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -385,6 +386,9 @@ InitPluginsDir
         !insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "Clusters" "$(Clusters)"
       ${EndIf}
       
+	  # Change the interface language setting
+	  WriteINIStr "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "uilanguage" "'$LANGCODE'"
+	  
       # Renaming
       SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
 
@@ -623,7 +627,7 @@ Function .onInit
 	;Language selection dialog
 
 	Push ""
-	Push ${LANG_ENGLISH}
+	Push ${LANG_ENGLISH} 
 	Push English
 	Push ${LANG_SPANISH}
 	Push Español
@@ -636,5 +640,17 @@ Function .onInit
 	Pop $LANGUAGE
 	StrCmp $LANGUAGE "cancel" 0 +2
 		Abort
+		
+	; Assign two-character code for use elsewhere
+    ${If} $LANGUAGE == ${LANG_ENGLISH}
+        StrCpy $LANGCODE "en"
+    ${ElseIf} $LANGUAGE == ${LANG_GERMAN}
+        StrCpy $LANGCODE "de"
+    ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
+        StrCpy $LANGCODE "es"
+    ${Else}
+        StrCpy $LANGCODE "en" ; fallback
+    ${EndIf}
+	
 FunctionEnd
 
