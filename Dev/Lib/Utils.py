@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.1 - 7/11/25 - Ron Lockwood
+#    Use the new UI Language flextools ini file setting.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -273,6 +276,7 @@ from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.DomainServices import StringServices   # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
+from flextoolslib import FTConfig
 
 import ReadConfig as MyReadConfig
 import FTPaths
@@ -1422,4 +1426,4 @@ class LocalizedDateTimeFormatter:
     
 def getInterfaceLangCode():
 
-    return 'de'
+    return FTConfig.UILanguage 
