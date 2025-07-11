@@ -1,6 +1,9 @@
 #
 #   Custom menu functions for FLExTrans
 #
+#   Version 3.14.1 - 7/11/25 - Ron Lockwood
+#    Use new shortcuts system.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -19,7 +22,7 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QCoreApplication, QTranslator
 from System.Windows.Forms import (  # type: ignore
-    Shortcut,
+    Keys,
     MessageBox,
     MessageBoxButtons,
 )
@@ -28,14 +31,17 @@ import os
 from subprocess import call
 
 import SettingsGUI
-from FTPaths import HELP_DIR, TRANSL_DIR
+from FTPaths import HELP_DIR
 import Version
 import ReadConfig
 import Utils
 
 def RunSettings(sender, event):
+    form = sender.OwnerItem.Owner.Parent
 
+    form.Enabled = False
     SettingsGUI.MainFunction(None, None)
+    form.Enabled = True
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -76,8 +82,6 @@ def RunEditTransferRules(sender, event):
     xxe = progFilesFolder + "\\XMLmind_XML_Editor\\bin\\xxe.exe"
     call([xxe, xferRulesFile])
 
-
-
 def RunHelp(sender, event):
 
     HelpFile = os.path.join(HELP_DIR, "UserDoc.htm")
@@ -100,9 +104,9 @@ def RunAbout(sender, event):
 customMenu = (
     "FLExTrans",
     [
-        (RunHelp, _translate("FLExTransMenu", "Help"), Shortcut.CtrlH, None),
-        (RunSettings, _translate("FLExTransMenu", "Settings"), Shortcut.CtrlS, None),
-        (RunEditTransferRules, _translate("FLExTransMenu", "Edit Transfer Rules"), Shortcut.CtrlT, None),
+        (RunHelp, _translate("FLExTransMenu", "Help"), Keys.Control | Keys.H, None),
+        (RunSettings, _translate("FLExTransMenu", "Settings"), Keys.Control | Keys.S, None),
+        (RunEditTransferRules, _translate("FLExTransMenu", "Edit Transfer Rules"), Keys.Control | Keys.T, None),
         (RunAbout, _translate("FLExTransMenu", "About"), None, _translate("FLExTransMenu", "About FLExTrans")),
     ],
 )
