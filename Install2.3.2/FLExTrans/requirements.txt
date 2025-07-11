@@ -1,0 +1,9 @@
+# Runtime requirements for FlexTools
+flextoolslib >= 2025.6.12
+fuzzywuzzy 
+Levenshtein 
+mixpanel 
+PyQt5==5.15.9 
+regex 
+wildebeest-nlp 
+pygetwindow 
