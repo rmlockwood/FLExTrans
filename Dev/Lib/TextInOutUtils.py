@@ -49,19 +49,24 @@ import FTPaths
 import ReadConfig
 import regex
 import os
+import json
 import xml.etree.ElementTree as ET
 from wildebeest.wb_normalize import Wildebeest
 
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QLineEdit
 
 from TextInOut import Ui_TextInOutMainWindow
+
+import ClusterUtils
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
+TEXT_IN_OUT_SETTINGS_FILE = 'TextInOutSettings.json'
+SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
 SEARCH_REPL_RULE_ELEM = 'SearchReplaceRule' 
@@ -290,7 +295,9 @@ class TextInOutRulesWindow(QMainWindow):
         self.ruleFileXMLtree = ""
         self.rulesModel = None
         self.ruleIndex = None
+        self.settingsMap = {}
 
+        # Wildebeest widgets
         self.WBcontrols = [
             self.ui.WBlangCodeTextBox,
             self.ui.WBstepsDefaultRadio,
@@ -306,6 +313,37 @@ class TextInOutRulesWindow(QMainWindow):
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
 
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), TEXT_IN_OUT_SETTINGS_FILE)
+
+        header1TextStr = _translate("NewEntryDlg", "FLEx project name")
+        header2TextStr = _translate("NewEntryDlg", "WorkProject folder")
+
+        # Load saved settings
+        try:
+            with open(self.settingsPath, 'r') as f:
+
+                self.settingsMap = json.load(f)
+        except:
+            pass
+
+        selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
+
+        # Create all the possible widgets we need for all the cluster projects
+        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setLexemeBoxText, originalWinHeight=self.height())
+
+        # Load cluster projects
+        if len(self.clusterProjects) > 0:
+
+            ClusterUtils.initClusterProjects(self, self.clusterProjects, selectedClusterProjects, self) # load last used cluster projects here
+        else:
+            # Hide cluster project widgets
+            widgetsToHide = [
+                self.ui.clusterProjectsLabel,
+                self.ui.clusterProjectsComboBox,
+            ]
+            for wid in widgetsToHide:
+
+                wid.setVisible(False)
         # Reset icon images
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
