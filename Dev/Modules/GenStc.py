@@ -93,6 +93,9 @@ def setupSettings(configMap, report):
 
     # WIP: limit generation to specific semantic domains (for sentences that make sense)
     # Not sure if the senses/domains have a numerical key (e.g. 1.1) like the lemmas 
+
+    customField = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_SEM_CUSTOMFIELD, report)
+
     semanticDomainN = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report))
     semanticDomain1 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report))
     semanticDomain2 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report))
@@ -100,7 +103,7 @@ def setupSettings(configMap, report):
     # Get stem limit setting
     stemLimit = _getStemLimit(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report))
 
-    return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit
+    return posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, customField, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit
 
 def _cleanConfigList(configList):
     """Remove empty strings from config lists."""
@@ -211,25 +214,28 @@ def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
 
     return list(set(match_n_lem)), list(set(match_1_lem)), list(set(match_2_lem))
 
-def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
+def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report):
     """Fetch lexical entries and return lists of GenWord objects."""
     wordListN, wordList1, wordList2 = [], [], []
     valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
 
     for entry in DB.LexiconAllEntries():
         lex = (DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)) + '1.1'
-        
+
         if not lex or entry.SensesOS.Count == 0:
             continue
             
         for s in entry.SensesOS:
+            
+            #customFieldText = DB.LexiconGetFieldText(Utils.as_string(s), customField)
+
             if s.MorphoSyntaxAnalysisRA and s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                 msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
                 if msa.PartOfSpeechRA:
                     pos = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                     if pos not in valid_pos:
                         continue
-                        
+
                     word = GenWord(report)
                     word.lemma = lex
                     word.inflection_features = Utils.getInflectionTags(msa)
@@ -251,6 +257,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report):
 
 def getLexicalEntriesInDomains(DB, match_n_pos, match_1_pos, match_2_pos, semanticDomainN, semanticDomain1, semanticDomain2, report):
     subListN, subList1, subList2 = [], [], []
+
     return subListN, subList1, subList2
 
 #----------------------------------------------------------------
@@ -367,7 +374,8 @@ def MainFunction(DB, report, modifyAllowed):
         return
 
     # Initialize settings and files
-    posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit = setupSettings(configMap, report)
+    posFocusN, posFocus1, posFocus2, lemmaFocusN, lemmaFocus1, lemmaFocus2, customField, semanticDomainN, semanticDomain1, semanticDomain2, stemLimit = setupSettings(configMap, report)
+    report.Info(f"custom field: {customField}")
     f_out = initializeOutputFile(configMap, report, ReadConfig.ANALYZED_TEXT_FILE)
     if not f_out:
         return
@@ -414,21 +422,33 @@ def MainFunction(DB, report, modifyAllowed):
 
     # if there are no semantic domains specified
     else: 
-        subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, report)
+        subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report)
 
     # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
     genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
     genwords1 = getMatchingLemmaWords(match_1_lem, subList1)
     genwords2 = getMatchingLemmaWords(match_2_lem, subList2)
 
+    report.Info(f"genwordsN: {genwordsN}")
+    report.Info(f"genwords1: {genwords1}")
+    report.Info(f"genwords2: {genwords2}")
+
     matchGlossesN = getGlossList(genwordsN)
     matchGlosses1 = getGlossList(genwords1)
     matchGlosses2 = getGlossList(genwords2)
+
+    report.Info(f"matchGlossesN: {matchGlossesN}")
+    report.Info(f"matchGlosses1: {matchGlosses1}")
+    report.Info(f"matchGlosses2: {matchGlosses2}")
     
     # apply stemlimit
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
+
+    report.Info(f"subListN: {subListN}")
+    report.Info(f"subList1: {subList1}")
+    report.Info(f"subList2: {subList2}")
 
     # Process each sentence
     stcCount = myText.getSentCount()
@@ -454,20 +474,19 @@ def MainFunction(DB, report, modifyAllowed):
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
         freeT_wrdList = cleanWordList(free_translation.split())
 
-        idxFTN_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlossesN]
-        idxFT1_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses1]
-        idxFT2_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses2]
+        #idxFTN_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlossesN]
+        #idxFT1_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses1]
+        #idxFT2_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses2]
 
         # same as above, but with one pass
-            # (use if performance bottleneck)
-        #idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
-        #for idxFT, wFT in enumerate(freeT_wrdList): 
-            #if wFT in matchGlossesN: 
-                #idxFTN_list.append(idxFT)
-            #elif wFT in matchGlosses1: 
-                #idxFT1_list.append(idxFT)
-            #elif wFT in matchGlosses2: 
-                #idxFT2_list.append(idxFT)
+        idxFTN_list, idxFT1_list, idxFT2_list = [], [], []
+        for idxFT, wFT in enumerate(freeT_wrdList): 
+            if wFT in matchGlossesN: 
+                idxFTN_list.append(idxFT)
+            elif wFT in matchGlosses1: 
+                idxFT1_list.append(idxFT)
+            elif wFT in matchGlosses2: 
+                idxFT2_list.append(idxFT)
 
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)

@@ -1588,15 +1588,18 @@ widgetList = [
     
     ["Limit to specific lemmas in dependent word 2", "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
-    
+
+    ["Custom Field for semantic domain", "genstc_customfield", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+
     ["Limit to specific semantic domains in head word", "genstc_limit_semdomain_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
-    "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
     
     ["Limit to specific semantic domains in dependent word 1", "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
-    "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
     
     ["Limit to specific semantic domains in dependent word 2", "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
-    "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
     
     ["Limit number of stems", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
     "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, FULL_VIEW],\
