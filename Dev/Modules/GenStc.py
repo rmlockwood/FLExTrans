@@ -240,8 +240,8 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                     word.inflection_features = Utils.getInflectionTags(msa)
                     word.pos = pos
                     word.gloss = Utils.as_string(s.Gloss)
+                    
                     word.semDomain = DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField)).split(", ")
-                    report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
 
                     if pos in match_n_pos:
                         wordListN.append(word)
@@ -256,13 +256,8 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
     
     return wordListN, wordList1, wordList2
 
-def getLexicalEntriesInDomains(DB, match_n_pos, match_1_pos, match_2_pos, semanticDomainN, semanticDomain1, semanticDomain2, report):
-    subListN, subList1, subList2 = [], [], []
-
-    return subListN, subList1, subList2
-
 #----------------------------------------------------------------
-# List Comprehension Functions
+# List Comprehension and Processing Functions
 
 def getMatchingLemmaWords(match_x_lem, subListX):
     """Returns genWord objects that match the target lemma."""
@@ -275,6 +270,41 @@ def getGlossList(subListX):
 def cleanWordList(wrdList):
     """Cleans up a list of strings for printing."""
     return [part for word in wrdList for part in word.split('.')]
+
+def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, semanticDomain1, semanticDomain2, report):
+    semListN, semList1, semList2 = [], [], []
+
+    if (semanticDomainN != "UNK"):
+        _split_domainN = semanticDomainN.split(",")
+
+        for wordN in wordListN:
+            for entry in wordN.semDomain: 
+                if entry in _split_domainN:
+                    semListN.append(wordN)
+    else: 
+        semListN = wordListN
+
+    if (semanticDomain1 != "UNK"):
+        _split_domain1 = semanticDomain1.split(",")
+
+        for word1 in wordList1: 
+            for entry1 in word1.semDomain: 
+                if entry1 in _split_domain1:
+                    semList1.append(word1)
+    else: 
+        semList1 = wordList1
+
+    if (semanticDomain2 != "UNK"):
+        _split_domain2 = semanticDomain2.split(",")
+
+        for word2 in wordList2:
+            for entry2 in word2.semDomain:
+                if entry2 in _split_domain2:
+                    semList2.append(word2)
+    else: 
+        semList2 = wordList2
+
+    return semListN, semList1, semList2
 
 #----------------------------------------------------------------
 # Sentence Processing Functions
@@ -413,40 +443,35 @@ def MainFunction(DB, report, modifyAllowed):
             match_2_lem = extracted_2_lem
 
     # Get lexical entries
+    subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report)
 
-    # if semantic domain is specified for one of the entries
-    report.Info(f"semanticDomainN: {semanticDomainN}")
-    report.Info(f"semanticDomain1: {semanticDomain1}")
-    report.Info(f"semanticDomain2: {semanticDomain2}")
-    if any(x != "UNK" for x in [semanticDomainN, semanticDomain1, semanticDomain2]): 
-        subListN, subList1, subList2 = getLexicalEntriesInDomains(DB, match_n_pos, match_1_pos, match_2_pos, semanticDomainN, semanticDomain1, semanticDomain2, report)
-
-    # if there are no semantic domains specified
-    else: 
-        subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report)
-
+    # ----- Processing for LWC sentence generation -----
     # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
     genwordsN = getMatchingLemmaWords(match_n_lem, subListN)
     genwords1 = getMatchingLemmaWords(match_1_lem, subList1)
     genwords2 = getMatchingLemmaWords(match_2_lem, subList2)
 
-    report.Info(f"genwordsN: {genwordsN}")
-    report.Info(f"genwords1: {genwords1}")
-    report.Info(f"genwords2: {genwords2}")
-
     matchGlossesN = getGlossList(genwordsN)
     matchGlosses1 = getGlossList(genwords1)
     matchGlosses2 = getGlossList(genwords2)
+    #------------------------------------------------------
 
-    report.Info(f"matchGlossesN: {matchGlossesN}")
-    report.Info(f"matchGlosses1: {matchGlosses1}")
-    report.Info(f"matchGlosses2: {matchGlosses2}")
+    # semantic domain check (delete later)
+    report.Info(f"semanticDomainN: {semanticDomainN}")
+    report.Info(f"semanticDomain1: {semanticDomain1}")
+    report.Info(f"semanticDomain2: {semanticDomain2}")
+
+    # if semantic domain is specified for one of the entries
+    if any(x != "UNK" for x in [semanticDomainN, semanticDomain1, semanticDomain2]): 
+        subListN, subList1, subList2 = getWordsInSemDomains(
+            subListN, subList1, subList2, semanticDomainN, semanticDomain1, semanticDomain2, report)
     
     # apply stemlimit
     subListN = subListN[:stemLimit]
     subList1 = subList1[:stemLimit]
     subList2 = subList2[:stemLimit]
 
+    # debug check
     report.Info(f"subListN: {subListN}")
     report.Info(f"subList1: {subList1}")
     report.Info(f"subList2: {subList2}")
@@ -456,6 +481,8 @@ def MainFunction(DB, report, modifyAllowed):
     #report.Info(f"Found {stcCount} sentences in the text")
 
     for i in range(stcCount):
+        
+        # ---- target language ---
         stc = myText.getSent(i)
         wrdList = stc.getWords()
 
@@ -472,9 +499,11 @@ def MainFunction(DB, report, modifyAllowed):
             elif thisPOS in posFocus2 and thisLemma in match_2_lem:
                 idx2_list.append(idx)
 
+        # ---- language of wider communication ---- 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
         freeT_wrdList = cleanWordList(free_translation.split())
 
+        # not sure if I should do 3 passes or 1 pass for free translation
         #idxFTN_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlossesN]
         #idxFT1_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses1]
         #idxFT2_list = [i for i, w in enumerate(freeT_wrdList) if w in matchGlosses2]
@@ -489,7 +518,9 @@ def MainFunction(DB, report, modifyAllowed):
             elif wFT in matchGlosses2: 
                 idxFT2_list.append(idxFT)
 
+        # TL process
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
+        # LWC process
         processFreeTranslation(freeT_wrdList, idxFTN_list, idxFT1_list, idxFT2_list, subListN, subList1, subList2, free_translation, report, f_out2)
        
     # Clean up
