@@ -4,8 +4,9 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
-#   13 Jun 2025 dm limited generation in source language now supported. Source and target language
-#                                           sentences match one another. 
+#   15 Jul 2025 dm generation in LWC and target language can now be limited to specific semantic domains. 
+#
+#   13 Jun 2025 dm limited generation in LWC now supported. Sentence-to-sentence correspondence between languages. 
 #   
 #   25 Apr 2025 dm re-organized structure. Deleted old methods that weren't being used. 
 #
@@ -28,10 +29,12 @@
 #    SIL International
 #    31 May 2023
 #
+
 import re
 import os
 from datetime import datetime
 from SIL.LCModel import *
+from SIL.LCModel import ICmPossibilityRepository
 from SIL.LCModel.Core.KernelInterfaces import ITsString, ITsStrBldr
 from flextoolslib import *
 from flexlibs import FLExProject
@@ -66,8 +69,12 @@ class GenWord:
     semDomain: list = None
 
     def __post_init__(self):
+
         if self.inflection_features is None:
             self.inflection_features = []
+
+        if self.semDomain is None: 
+            self.semDomain = []
 
     def writeGloss(self, fOut):
         """Write the gloss to the given file object."""
@@ -215,7 +222,7 @@ def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
 
     return list(set(match_n_lem)), list(set(match_1_lem)), list(set(match_2_lem))
 
-def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report):
+def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, repo, cache, report):
     """Fetch lexical entries and return lists of GenWord objects."""
     wordListN, wordList1, wordList2 = [], [], []
     valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
@@ -241,7 +248,18 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                     word.pos = pos
                     word.gloss = Utils.as_string(s.Gloss)
                     
-                    word.semDomain = DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField)).split(", ")
+                    if cache.MetaDataCacheAccessor.GetFieldType(DB.LexiconGetSenseCustomFieldNamed(customField)) == 26: 
+                        count = cache.DomainDataByFlid.get_VecSize(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField))
+                        for i in range(count):
+                            hvo = cache.DomainDataByFlid.get_VecItem(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField), i)
+                            word.semDomain.append(repo.GetObject(hvo))
+                        
+                        report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
+                    else: 
+                        word.semDomain = DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField)).split(", ")
+
+                        
+
 
                     if pos in match_n_pos:
                         wordListN.append(word)
@@ -443,7 +461,9 @@ def MainFunction(DB, report, modifyAllowed):
             match_2_lem = extracted_2_lem
 
     # Get lexical entries
-    subListN, subList1, subList2 = getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, report)
+    subListN, subList1, subList2 = getLexicalEntries(
+        DB, match_n_pos, match_1_pos, match_2_pos, customField, 
+        DB.project.ServiceLocator.GetService(ICmPossibilityRepository), DB.project, report)
 
     # ----- Processing for LWC sentence generation -----
     # word search for the matching n, 1, 2 words (find the GenWord w/ gloss)
