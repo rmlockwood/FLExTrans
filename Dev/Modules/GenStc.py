@@ -63,6 +63,7 @@ class GenWord:
     inflection_features: list = None
     pos: str = ""
     gloss: str = ""
+    semDomain: list = None
 
     def __post_init__(self):
         if self.inflection_features is None:
@@ -226,9 +227,7 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
             continue
             
         for s in entry.SensesOS:
-            
-            #customFieldText = DB.LexiconGetFieldText(Utils.as_string(s), customField)
-
+                        
             if s.MorphoSyntaxAnalysisRA and s.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
                 msa = IMoStemMsa(s.MorphoSyntaxAnalysisRA)
                 if msa.PartOfSpeechRA:
@@ -241,6 +240,8 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                     word.inflection_features = Utils.getInflectionTags(msa)
                     word.pos = pos
                     word.gloss = Utils.as_string(s.Gloss)
+                    word.semDomain = DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField)).split(", ")
+                    report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
 
                     if pos in match_n_pos:
                         wordListN.append(word)
