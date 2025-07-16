@@ -22,7 +22,11 @@ from PyQt5.QtWidgets import QLabel, QComboBox
 IMP_EXP_WINDOW_HEIGHT = 260
 IMP_EXP_WINDOW_WIDTH = 626
 
-def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, originalWinHeight=0):
+def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2TextStr, comboWidth, specialProcessFunc=None, 
+                       originalWinHeight=0, noCancelButton=False, containerWidgetToMove=None):
+
+    self.noCancelButton = noCancelButton
+    self.containerWidgetToMove = containerWidgetToMove
 
     self.originalOKyPos = self.ui.OKButton.y()
 
@@ -164,11 +168,21 @@ def showClusterWidgets(self):
     # Move some widgets down
     widgetsToMove = [
         self.ui.OKButton,
-        self.ui.CancelButton,
     ]
+
+    # Include the cancel button for the move if it exists
+    if not self.noCancelButton:
+
+        widgetsToMove.append(self.ui.CancelButton) 
+
+    # Include the container widget to move if it exists
+    if self.containerWidgetToMove:
+        
+        widgetsToMove.append(self.containerWidgetToMove)
+    
     for wid in widgetsToMove:
 
         wid.setGeometry(wid.x(), self.originalOKyPos+pixels, wid.width(), wid.height())
 
     # Increase the height of the main window
-    self.resize(self.width(), self.originalMainWinHeight+pixels)
+    self.resize(self.width(), self.originalMainWinHeight+pixels + (self.containerWidgetToMove.height() if self.containerWidgetToMove else 0))

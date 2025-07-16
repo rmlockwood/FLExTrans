@@ -56,7 +56,7 @@ from wildebeest.wb_normalize import Wildebeest
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QLineEdit
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QComboBox
 
 from TextInOut import Ui_TextInOutMainWindow
 
@@ -315,8 +315,23 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), TEXT_IN_OUT_SETTINGS_FILE)
 
-        header1TextStr = _translate("NewEntryDlg", "FLEx project name")
-        header2TextStr = _translate("NewEntryDlg", "WorkProject folder")
+        # Get the work project folders
+        workProjPath = FTPaths.ROOT_DIR
+
+        for foldName in os.listdir(workProjPath):
+
+            foldPath = os.path.join(workProjPath, foldName)
+
+            if os.path.isdir(foldPath):
+
+                self.workProjFolders.append(foldName)
+
+        header1TextStr = _translate("TextInOutUtils", "FLEx project name")
+        header2TextStr = _translate("TextInOutUtils", "WorkProject folder")
+
+        # Set the top two widgets that need to be disabled. For this window, use dummy widgets since we don't have something to be disabled.
+        self.topWidget1 = self.ui.dummyLabel
+        self.topWidget2 = self.ui.dummyLabel
 
         # Load saved settings
         try:
@@ -329,7 +344,7 @@ class TextInOutRulesWindow(QMainWindow):
         selectedClusterProjects = self.settingsMap.get(SELECTED_CLUSTER_PROJECTS, [])
 
         # Create all the possible widgets we need for all the cluster projects
-        ClusterUtils.initClusterWidgets(self, QLineEdit, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setLexemeBoxText, originalWinHeight=self.height())
+        ClusterUtils.initClusterWidgets(self, QComboBox, self, header1TextStr, header2TextStr, comboWidth=130, specialProcessFunc=self.setWorkProjectComboBox, originalWinHeight=self.height(), noCancelButton=True, containerWidgetToMove=self.ui.widgetContainer)
 
         # Load cluster projects
         if len(self.clusterProjects) > 0:
@@ -370,7 +385,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.ui.addButton.clicked.connect(self.AddClicked)
         self.ui.checkAllButton.clicked.connect(self.CheckAllClicked)
-        self.ui.closeButton.clicked.connect(self.CloseClicked)
+        self.ui.OKButton.clicked.connect(self.CloseClicked)
         self.ui.deleteButton.clicked.connect(self.DeleteClicked)
         self.ui.moveDownButton.clicked.connect(self.DownButtonClicked)
         self.ui.moveUpButton.clicked.connect(self.UpButtonClicked)
@@ -382,9 +397,30 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.updateButton.clicked.connect(self.UpdateClicked)
         self.ui.wildebeestCheckBox.clicked.connect(self.WildebeestClicked)
 
+        self.ui.dummyLabel.setVisible(False)
+        self.ui.dummyLabel.setText('')
+
         # Load the rules
         self.loadRules()
     
+    def setWorkProjectComboBox(self, comboWidget):
+
+        # Fill the combo box
+        comboWidget.addItems(self.workProjFolders)
+    
+    def clusterSelectionChanged(self):
+
+        ClusterUtils.showClusterWidgets(self)
+
+        # Connect the first line edit widget to the updateAllForms slot, the rest to markChanged
+        for i, widget in enumerate(self.keyWidgetList):
+
+            pass
+            # if i == 0:
+            #     widget.textChanged.connect(self.updateAllForms)
+            # else:
+            #     widget.textEdited.connect(self.markChanged)
+
     def AddClicked(self):
         
         # Build the rule string for the rule list
