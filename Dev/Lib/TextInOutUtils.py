@@ -67,6 +67,7 @@ _translate = QCoreApplication.translate
 
 TEXT_IN_OUT_SETTINGS_FILE = 'TextInOutSettings.json'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
+WORK_PROJECTS = 'workProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
 SEARCH_REPL_RULE_ELEM = 'SearchReplaceRule' 
@@ -875,9 +876,23 @@ class TextInOutRulesWindow(QMainWindow):
 
     def writeXMLfile(self):
 
+        selectedWorkProjects = [myCombo.currentText() for myCombo in self.keyWidgetList]
+
+        # Save last used settings to a json file
+        self.settingsMap = {}
+        self.settingsMap[WORK_PROJECTS] = selectedWorkProjects
+        self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
+
         # Get all the wildebeest info. and save it in the element tree
         self.saveWBinfo()
 
         # Indent the xml to make it pretty then write it to a file.
         ET.indent(self.ruleFileXMLtree)
         self.ruleFileXMLtree.write(self.searchReplacefile, encoding='utf-8', xml_declaration=True)
+
+        with open(self.settingsPath, 'w') as f:
+            
+            json.dump(self.settingsMap, f, indent=4)
+
+        if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
+
