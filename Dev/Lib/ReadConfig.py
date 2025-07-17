@@ -260,8 +260,13 @@ def readConfig(report):
     f_handle = openConfigFile(report, 'r')
     
     if f_handle is None:
-        return 
+        
+        return None
     
+    return getConfigMap(f_handle, report)
+
+def getConfigMap(f_handle, report):
+
     my_map = {}
     for line in f_handle:
         

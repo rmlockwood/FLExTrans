@@ -883,16 +883,30 @@ class TextInOutRulesWindow(QMainWindow):
         self.settingsMap[WORK_PROJECTS] = selectedWorkProjects
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
 
-        # Get all the wildebeest info. and save it in the element tree
-        self.saveWBinfo()
-
-        # Indent the xml to make it pretty then write it to a file.
-        ET.indent(self.ruleFileXMLtree)
-        self.ruleFileXMLtree.write(self.searchReplacefile, encoding='utf-8', xml_declaration=True)
-
         with open(self.settingsPath, 'w') as f:
             
             json.dump(self.settingsMap, f, indent=4)
 
         if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
 
+            selectedProjects = self.ui.clusterProjectsComboBox.currentData()
+
+            # Loop through all of the cluster project lexeme form widgets
+            for i, proj in enumerate(selectedProjects):
+
+                # Build a path to the work project folder
+                workProjectFolder = os.path.join(FTPaths.WORK_PROJECTS_DIR, proj)
+
+                # Get the configuration file for this project
+
+                # Build a path to the search replace file for this project
+                searchReplacefilePath = os.path.join(FTPaths.CLUSTER_PROJECTS_DIR, proj, FTPaths.SEARCH_REPLACE_FILE)
+
+        else: # No cluster projects selected
+
+            # Get all the wildebeest info. and save it in the element tree
+            self.saveWBinfo()
+
+            # Indent the xml to make it pretty then write it to a file.
+            ET.indent(self.ruleFileXMLtree)
+            self.ruleFileXMLtree.write(self.searchReplacefile, encoding='utf-8', xml_declaration=True)
