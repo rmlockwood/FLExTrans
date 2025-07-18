@@ -104,9 +104,9 @@ def setupSettings(configMap, report):
 
     customField = ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_SEM_CUSTOMFIELD, report)
 
-    semanticDomainN = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report))
-    semanticDomain1 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report))
-    semanticDomain2 = _format(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report))
+    semanticDomainN = _formatSetting(_formatString(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, report)))
+    semanticDomain1 = _formatSetting(_formatString(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, report)))
+    semanticDomain2 = _formatSetting(_formatString(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, report)))
 
     # Get stem limit setting
     stemLimit = _getStemLimit(ReadConfig.getConfigVal(configMap, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, report))
@@ -120,7 +120,7 @@ def _cleanConfigList(configList):
     return configList or []
 
 # WILL PROBABLY DELETE LATER
-def _format(setting):
+def _formatSetting(setting):
     """Format settings that are user-inputed strings."""
     if not setting: 
         return "UNK"
@@ -256,7 +256,8 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                         
                         report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
                     else: 
-                        word.semDomain = DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField)).split(", ")
+                        word.semDomain = _formatString(DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField))).split(", ")
+                        report.Info(f"semDomain: {word.semDomain}")
 
                         
 
@@ -277,6 +278,9 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
 #----------------------------------------------------------------
 # List Comprehension and Processing Functions
 
+def _formatString(str):
+    return str.rstrip(".").lower()
+
 def getMatchingLemmaWords(match_x_lem, subListX):
     """Returns genWord objects that match the target lemma."""
     return [word for word in subListX if word.lemma in match_x_lem]
@@ -293,12 +297,15 @@ def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, seman
     semListN, semList1, semList2 = [], [], []
 
     if (semanticDomainN != "UNK"):
-        _split_domainN = semanticDomainN.split(",")
+        _split_domainN = semanticDomainN.split(", ")
+        report.Info(f"settings domain: {_split_domainN}")
 
         for wordN in wordListN:
-            for entry in wordN.semDomain: 
+            for entry in wordN.semDomain:
+                report.Info(f"entry: {entry}") 
                 if entry in _split_domainN:
                     semListN.append(wordN)
+                    report.Info(f"word appended: {wordN}")
     else: 
         semListN = wordListN
 
