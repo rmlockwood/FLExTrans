@@ -292,8 +292,8 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.searchReplacefile = searchReplacefile
         self.textIn = textIn
-        self.searchReplaceRulesElement = ""
-        self.ruleFileXMLtree = ""
+        self.searchReplaceRulesElement = None
+        self.ruleFileXMLtree = None
         self.rulesModel = None
         self.ruleIndex = None
         self.settingsMap = {}
@@ -360,6 +360,7 @@ class TextInOutRulesWindow(QMainWindow):
             for wid in widgetsToHide:
 
                 wid.setVisible(False)
+
         # Reset icon images
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(os.path.join(FTPaths.TOOLS_DIR, "UpArrow.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -411,16 +412,17 @@ class TextInOutRulesWindow(QMainWindow):
     
     def clusterSelectionChanged(self):
 
+        # Create needed widgets and position them
         ClusterUtils.showClusterWidgets(self)
 
-        # Connect the first line edit widget to the updateAllForms slot, the rest to markChanged
+        # Connect folder combo boxes to a function
         for i, widget in enumerate(self.keyWidgetList):
 
-            pass
-            # if i == 0:
-            #     widget.textChanged.connect(self.updateAllForms)
-            # else:
-            #     widget.textEdited.connect(self.markChanged)
+            widget.currentIndexChanged.connect(self.checkValidFolders)
+
+    def folderListChanged(self, index):
+
+        self.checkValidFolders()
 
     def AddClicked(self):
         
