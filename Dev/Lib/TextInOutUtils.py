@@ -100,16 +100,6 @@ class SearchReplaceRuleData():
         self.isInactive = isInactive
         self.comment = "" if comment is None else comment
 
-def getPath(report, configMap, settingName, defaultRelPath):
-
-    rulesFile = ReadConfig.getConfigVal(configMap, settingName, report, giveError=False)
-
-    if not rulesFile:
-
-        rulesFile = os.path.join(FTPaths.WORK_DIR, defaultRelPath)
-        ReadConfig.writeConfigValue(report, settingName, defaultRelPath, createIfMissing=True)
-
-    return rulesFile
 
 def getRuleFromElement(element):
 
@@ -297,6 +287,10 @@ class TextInOutRulesWindow(QMainWindow):
         self.rulesModel = None
         self.ruleIndex = None
         self.settingsMap = {}
+        self.xmlTreeList = []
+        self.fileHandleList = []
+        self.selectedFoldersList = []
+        self.workProjectFoldersList = []
 
         # Wildebeest widgets
         self.WBcontrols = [
@@ -325,7 +319,7 @@ class TextInOutRulesWindow(QMainWindow):
 
             if os.path.isdir(foldPath):
 
-                self.workProjFolders.append(foldName)
+                self.workProjectFoldersList.append(foldName)
 
         header1TextStr = _translate("TextInOutUtils", "FLEx project name")
         header2TextStr = _translate("TextInOutUtils", "WorkProject folder")
@@ -408,8 +402,39 @@ class TextInOutRulesWindow(QMainWindow):
     def setWorkProjectComboBox(self, comboWidget):
 
         # Fill the combo box
-        comboWidget.addItems(self.workProjFolders)
+        comboWidget.addItems(self.workProjectFoldersList)
     
+    def getPath(self):
+
+        # TODO: Which FLEx project corresponds to the work folder? Will they use the source or target project?
+        rulesFile = ReadConfig.getConfigVal(configMap, settingName, report, giveError=False)
+
+        workProjectFolder = FTPaths.WORK_DIR
+
+        try:
+            # Check if the file exists, if not, create it.
+            if os.path.exists(textInRulesFile) == False:
+
+                # Set a string for an empty rules list
+                xmlString = f"<?xml version='1.0' encoding='utf-8'?><{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}><{TextInOutUtils.SEARCH_REPLACE_RULES_ELEM}/></{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}>"
+
+                fOut = open(textInRulesFile, 'w', encoding='utf-8')
+                fOut.write(xmlString)
+                fOut.close()
+            else:
+                # Make a backup copy of the search-replace rule file
+                shutil.copy2(textInRulesFile, textInRulesFile+'.bak')
+        except:
+            self.reportError(_translate("TextInRules", 'There was a problem creating or backing up the rules file. Check your configuration.'))
+            return None
+
+        # if not rulesFile:
+
+        #     rulesFile = os.path.join(FTPaths.WORK_DIR, defaultRelPath)
+        #     ReadConfig.writeConfigValue(report, settingName, defaultRelPath, createIfMissing=True)
+
+        return rulesFile
+
     def clusterSelectionChanged(self):
 
         # Create needed widgets and position them
@@ -765,8 +790,45 @@ class TextInOutRulesWindow(QMainWindow):
 
                 self.ui.WBskipStepsTextBox.setText(skipStepsElem.text)
 
+    def checkForValidFolders(self) -> bool:
+
+        validFolders = True
+
+        for widget in self.keyWidgetList:
+
+            if widget.currentData() == '..':
+
+                validFolders = False
+                break
+
+        return validFolders
+    
     def loadRules(self):
+        
+        if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
+
+            if not self.checkForValidFolders():
+
+                # Give an error in the error text box
+                return
             
+            selectedProjects = self.ui.clusterProjectsComboBox.currentData()
+
+            # Loop through all of the cluster project lexeme form widgets
+            for i, proj in enumerate(selectedProjects):
+
+                # Verify we have a valid transfer file.
+                try:
+                    testTree = ET.parse(self.searchReplacefile)
+                except:
+                    QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid File'), 'The fix up synthesis text rules file you selected is invalid.')
+                    return False
+                
+                self.root = testTree.getroot()
+
+        else:
+            pass
+
         # Verify we have a valid transfer file.
         try:
             testTree = ET.parse(self.searchReplacefile)
@@ -897,11 +959,6 @@ class TextInOutRulesWindow(QMainWindow):
             for i, proj in enumerate(selectedProjects):
 
                 # Build a path to the work project folder
-                workProjectFolder = os.path.join(FTPaths.WORK_PROJECTS_DIR, proj)
-
-                # Get the configuration file for this project
-
-                # Build a path to the search replace file for this project
                 searchReplacefilePath = os.path.join(FTPaths.CLUSTER_PROJECTS_DIR, proj, FTPaths.SEARCH_REPLACE_FILE)
 
         else: # No cluster projects selected
