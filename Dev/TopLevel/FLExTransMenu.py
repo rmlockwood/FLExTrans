@@ -95,7 +95,7 @@ def RunAbout(sender, event):
                            translators, loadBase=False)
     
     MessageBox.Show(
-        _translate("FLExTransMenu", "{name} version {version}\n\nsoftware.sil.org/flextrans").format(name=Version.Name, version=Version.Version),
+        _translate("FLExTransMenu", "{name} version {version}\n\nBuild {build}, {build_date}\n\nsoftware.sil.org/flextrans").format(name=Version.Name, version=Version.Version, build=Version.Build, build_date=Version.BuildDate),
         _translate("FLExTransMenu", "About FLExTrans"),
         MessageBoxButtons.OK)
 

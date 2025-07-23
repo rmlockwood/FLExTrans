@@ -9,5 +9,7 @@ FTVersion = "2.3.2"
 Name = "FLExTrans"
 
 Version = "3.14"
+Build = "000"
+BuildDate = "Jan 1, 1964"
 
 Title = f"{FTName} {FTVersion} ({Name} {Version})"
