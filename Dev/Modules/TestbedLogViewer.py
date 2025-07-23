@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.14 - 7/23/25 - Ron Lockwood
+#    Fixes #1016. Repeat the expected result in the actual result column.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -119,7 +122,7 @@ class Stats():
         elif self.numInvalid > 0:
             myColor = PUNC_COLOR
         else:
-            myColor = AFFIX_COLOR
+            myColor = SUCCESS_COLOR
 
         myStr = _translate("TestbedLogViewer", '{total} Tests, {failed} Failed, {invalid} Invalid').format(total=self.totalTests, failed=self.numFailed, invalid=self.numInvalid)
 
@@ -292,13 +295,10 @@ class TestResultItem(BaseTreeItem):
                 outputLUSpan(p, NOT_FOUND_COLOR, self.actualStr, False) #rtl
                 return ET.tostring(p, encoding='unicode')
             else:
-                retStr = '---'
-                # keep ltr unless the expected data is rtl
-                if isinstance(self.expectedStr[0], str) == False and unicodedata.bidirectional(self.expectedStr[0]) in ('R', 'AL'):
-
-                    retStr = '\u200F' + retStr
-                    
-                return retStr
+                # Repeate the expected result in the actual result column
+                p = ET.Element('p')
+                outputLUSpan(p, SUCCESS_COLOR, self.expectedStr, False) #rtl
+                return ET.tostring(p, encoding='unicode')
         return ''
     
     def createTheWidget(self, col):

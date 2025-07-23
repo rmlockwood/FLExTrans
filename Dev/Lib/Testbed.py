@@ -5,6 +5,9 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.14.1 - 7/23/25 - Ron Lockwood
+#    Fixes #1016. Repeat the expected result in the actual result column.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -113,6 +116,7 @@ GRAM_CAT_COLOR = '0070C0' #blue
 CHUNK_GRAM_CAT_COLOR = '0000FF' #darker blue
 # The color of affixes or other things such as features, classes, etc.
 AFFIX_COLOR = '00B050' #green
+SUCCESS_COLOR = '00B050' #green
 CHUNK_AFFIX_COLOR = '00E000' #darker green
 # The color of non-sentence punctuation. Sentence punctuation will be in its
 # own lexical item with <sent> as the category
