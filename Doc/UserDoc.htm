@@ -10,8 +10,8 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>17 May 2025</small></center>
-      <center><small>Version: 3.13.1</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>23 July 2025</small></center>
+      <center><small>Version: 3.14</small></center>
       <hr>
       <div>
          <center><big><big><b>Contents</b></big></big></center>
@@ -209,7 +209,16 @@
                <li><a href="#sErrorCond">9.2&nbsp;Error Conditions</a></li>
                <li><a href="#sOtherTips">9.3&nbsp;Other Troubleshooting Hints</a></li>
             </ul>
-            <li><a href="#sReferenceDocs">10&nbsp;Reference documents</a></li>
+            <li><a href="#sLocalization">10&nbsp;Localization</a></li>
+            <ul>
+               <li><a href="#sChangingLanguages">10.1&nbsp;Changing The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface Language</a></li>
+               <ul>
+                  <li><a href="#sChangeFromEnglish">10.1.1&nbsp;Changing From English</a></li>
+                  <li><a href="#sChangeOtherLanguages">10.1.2&nbsp;Changing From Other Language</a></li>
+               </ul>
+               <li><a href="#sChangingXXELanguage">10.2&nbsp;Change User Interface Language of XMLmind XML Editor</a></li>
+            </ul>
+            <li><a href="#sReferenceDocs">11&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
                   <li><a href="#sStartFlextools">A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></a></li>
                   <li><a href="#sDataStreamFormat">A.2&nbsp;Data Stream Format</a></li>
@@ -221,7 +230,7 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract0">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">10</a> for other documentation.
+         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">11</a> for other documentation.
          </p>
          <p></p>
          <p></p>
@@ -3597,7 +3606,53 @@
       <p>If a rule doesn't appear to be working, first check to see that the rule is listed in the <span style="font-style:italic; ">Rule Execution Information</span> area. If not, there is a problem with the category definition. Check your category definition to make sure it correctly matches
          the incoming data.
       </p>
-      <h1 style=""><a name="sReferenceDocs"></a>10&nbsp;Reference documents
+      <h1 style=""><a name="sLocalization"></a>10&nbsp;Localization
+      </h1>
+      <p>From version 3.14 of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>, it has been possible to install <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> with a choice of user interface language. The following components will be localized:
+      </p>
+      <p>module descriptions, button labels, error messages, XXE labels for elements, sample transfer rule comments.</p>
+      <h2 style=""><a name="sChangingLanguages"></a>10.1&nbsp;Changing The <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Interface Language
+      </h2>
+      <p>If <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has been installed in one language, and it is now required to change the user interface language to a different language,
+         there are the following possibilities:
+      </p>
+      <h3 style=""><a name="sChangeFromEnglish"></a>10.1.1&nbsp;Changing From English
+      </h3>
+      <p>If the initially chosen installation language was English, and it is now required to change from English to a different language,
+         the software should just be reinstalled, choosing the required language.
+      </p>
+      <h3 style=""><a name="sChangeOtherLanguages"></a>10.1.2&nbsp;Changing From Other Language
+      </h3>
+      <p>If the initially chosen installation language was not English, and another language is now required, the <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> files should first be manually deleted. The <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> ini files are found in the WorkProjects\{ProjectName}\Config\Collections folder, and all of the files in that folder should
+         be deleted. After that, the software should be reinstalled, choosing the required language.
+      </p>
+      <h2 style=""><a name="sChangingXXELanguage"></a>10.2&nbsp;Change User Interface Language of XMLmind XML Editor
+      </h2>
+      <p>It is possible to change the user interface language of <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> from English to French or Spanish. These are the instructions from the <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span> <a href="https://software.sil.org/downloads/r/xlingpaper/resources/documentation/xxe7/UserDocXMLmind.htm#sFAQLocalization" target="_blank">webpage</a>:
+      </p>
+      <p>The default user interface for both the XMLmind XML Editor and XLingPaper is in English. There also are versions in French
+         and Spanish. (If you notice any error in these versions, please let us know.)
+      </p>
+      <p>To use one of these non-English versions of the user interface, do the following steps:</p>
+      <ol style="list-style-type:decimal; ">
+         <li>Use Options menu item / Install Add-ons</li>
+         <li>Look for the Translation you want and check the box before it.</li>
+         <li>Click OK.</li>
+         <li>Restart the XMLmind XML Editor.</li>
+         <li>Use the Options / Preferences... menu item.</li>
+         <li>In the ensuing dialog box, click on the word &#8220;General&#8221; in the left hand pane.</li>
+         <li>In the right hand pane, find the word &#8220;Locale&#8221; and click on the drop-down button.</li>
+         <li>Look for the language you want. Please note that both French (fran&ccedil;ais) and Spanish (espa&ntilde;ol) come after all the uppercase
+            languages in this list.
+         </li>
+         <li>Click on the OK button.</li>
+         <li>Restart the XMLmind XML Editor.</li>
+      </ol>
+      <p>You should now see the menu items using the language you chose.</p>
+      <p>Please note that these non-English versions are for the user interface only. The element names, attribute names, and some
+         of the validity messages will still be in English. Also the user documentation files are only in English.
+      </p>
+      <h1 style=""><a name="sReferenceDocs"></a>11&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
       </p>

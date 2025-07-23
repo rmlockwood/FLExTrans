@@ -15,9 +15,9 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->17 May 2025</date
+>23 July 2025</date
 ><version
->3.13.1</version
+>3.14</version
 ><contents
 showLevel="4"
 ></contents
@@ -7647,6 +7647,102 @@ type="tArea"
 ></section2
 ></section1
 ><section1
+excludeShortSubsectionsFromContents="yes"
+id="sLocalization"
+><secTitle
+>Localization</secTitle
+><p
+>From version 3.14 of <object
+type="tFlextrans"
+></object
+>, it has been possible to install <object
+type="tFlextrans"
+></object
+> with a choice of user interface language. The following components will be localized:</p
+><p
+>module descriptions, button labels, error messages, XXE labels for elements, sample transfer rule comments.</p
+><section2
+id="sChangingLanguages"
+><secTitle
+>Changing The <object
+type="tFlextrans"
+></object
+> User Interface Language</secTitle
+><p
+>If <object
+type="tFlextrans"
+></object
+> has been installed in one language, and it is now required to change the user interface language to a different language, there are the following possibilities:</p
+><section3
+id="sChangeFromEnglish"
+><secTitle
+>Changing From English</secTitle
+><p
+>If the initially chosen installation language was English, and it is now required to change from English to a different language, the software should just be reinstalled, choosing the required language.</p
+></section3
+><section3
+id="sChangeOtherLanguages"
+><secTitle
+>Changing From Other Language</secTitle
+><p
+>If the initially chosen installation language was not English, and another language is now required, the <object
+type="tCollections"
+></object
+> files should first be manually deleted. The <object
+type="tCollections"
+></object
+> ini files are found in the WorkProjects\{ProjectName}\Config\Collections folder, and all of the files in that folder should be deleted. After that, the software should be reinstalled, choosing the required language.</p
+></section3
+></section2
+><section2
+id="sChangingXXELanguage"
+><secTitle
+>Change User Interface Language of XMLmind XML Editor</secTitle
+><p
+>It is possible to change the user interface language of <object
+type="tXMLmindXMLEditor"
+></object
+> from English to French or Spanish. These are the instructions from the <object
+type="tXLingPaper"
+></object
+> <link
+href="https://software.sil.org/downloads/r/xlingpaper/resources/documentation/xxe7/UserDocXMLmind.htm#sFAQLocalization"
+openInNewTab="yes"
+>webpage</link
+>:</p
+><p
+>The default user interface for both the XMLmind XML Editor and XLingPaper is in English. There also are versions in French and Spanish. (If you notice any error in these versions, please let us know.)</p
+><p
+>To use one of these non-English versions of the user interface, do the following steps:</p
+><ol
+><li
+>Use Options menu item / Install Add-ons</li
+><li
+>Look for the Translation you want and check the box before it.</li
+><li
+>Click OK.</li
+><li
+>Restart the XMLmind XML Editor.</li
+><li
+>Use the Options / Preferences... menu item.</li
+><li
+>In the ensuing dialog box, click on the word “General” in the left hand pane.</li
+><li
+>In the right hand pane, find the word “Locale” and click on the drop-down button.</li
+><li
+>Look for the language you want. Please note that both French (français) and Spanish (español) come after all the uppercase languages in this list.</li
+><li
+>Click on the OK button.</li
+><li
+>Restart the XMLmind XML Editor.</li
+></ol
+><p
+>You should now see the menu items using the language you chose.</p
+><p
+>Please note that these non-English versions are for the user interface only. The element names, attribute names, and some of the validity messages will still be in English. Also the user documentation files are only in English.</p
+></section2
+></section1
+><section1
 id="sReferenceDocs"
 ><secTitle
 >Reference documents</secTitle
@@ -8094,6 +8190,11 @@ font-weight="bold"
 id="tCollection"
 ></type
 ><type
+after="Collections"
+id="tCollections"
+types="tTool"
+></type
+><type
 font-family="Courier New"
 font-size="100%"
 id="tCourier"
@@ -8256,6 +8357,11 @@ id="tTypeInFLEx"
 ><type
 after="View Source/Target Apertium Text Tool"
 id="tViewSrcTgt"
+types="tTool"
+></type
+><type
+after="XMLmind XML Editor"
+id="tXLingPaper"
 types="tTool"
 ></type
 ><type
