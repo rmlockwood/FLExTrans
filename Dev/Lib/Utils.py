@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.2 - 7/23/25 - Ron Lockwood
+#    Fixes #1013. Show duplicate affix gloss warnings.
+#
 #   Version 3.14.1 - 7/11/25 - Ron Lockwood
 #    Use the new UI Language flextools ini file setting.
 #
@@ -908,16 +911,24 @@ def processErrorList(error_list, report):
 
 def checkForFatalError(errorList, report):
 
-    fatal = False
+    return checkForError(errorList, report, 2)
+
+def checkForWarning(errorList, report):
+
+    return checkForError(errorList, report, 1)
+
+def checkForError(errorList, report, errValue):
+
+    found = False
     retMsgList = []
 
     for triplet in errorList:
 
         msg = triplet[0]
 
-        if triplet[1] == 2:
+        if triplet[1] == errValue:
 
-            fatal = True
+            found = True
             retMsgList.append(msg)
 
             if report == None:
@@ -925,7 +936,7 @@ def checkForFatalError(errorList, report):
             else:
                 report.Error(msg)
 
-    return fatal, '\n'.join(retMsgList)
+    return found, '\n'.join(retMsgList)
 
 def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
 
