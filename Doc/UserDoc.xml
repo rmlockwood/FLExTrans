@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->23 July 2025</date
+>24 July 2025</date
 ><version
 >3.14</version
 ><contents
@@ -7650,7 +7650,7 @@ type="tArea"
 excludeShortSubsectionsFromContents="yes"
 id="sLocalization"
 ><secTitle
->Localization</secTitle
+>User Interface Languages</secTitle
 ><p
 >From version 3.14 of <object
 type="tFlextrans"
@@ -7660,7 +7660,10 @@ type="tFlextrans"
 ></object
 > with a choice of user interface language. The following components will be localized:</p
 ><p
->module descriptions, button labels, error messages, XXE labels for elements, sample transfer rule comments.</p
+>button labels, module descriptions, collection names, error messages, <object
+type="tXMLmindXMLEditor"
+></object
+> labels for elements in the transfer rules, sample transfer rule comments, the FLExTools interface.</p
 ><section2
 id="sChangingLanguages"
 ><secTitle
@@ -7688,7 +7691,7 @@ id="sChangeOtherLanguages"
 >If the initially chosen installation language was not English, and another language is now required, the <object
 type="tCollections"
 ></object
-> files should first be manually deleted. The <object
+> ini files should first be manually deleted. The <object
 type="tCollections"
 ></object
 > ini files are found in the WorkProjects\{ProjectName}\Config\Collections folder, and all of the files in that folder should be deleted. After that, the software should be reinstalled, choosing the required language.</p
@@ -7702,7 +7705,9 @@ id="sChangingXXELanguage"
 >It is possible to change the user interface language of <object
 type="tXMLmindXMLEditor"
 ></object
-> from English to French or Spanish. These are the instructions from the <object
+> from English to French, Spanish, Chinese or various other languages. </p
+><p
+>The instructions below are modified from the  <object
 type="tXLingPaper"
 ></object
 > <link
@@ -7711,9 +7716,10 @@ openInNewTab="yes"
 >webpage</link
 >:</p
 ><p
->The default user interface for both the XMLmind XML Editor and XLingPaper is in English. There also are versions in French and Spanish. (If you notice any error in these versions, please let us know.)</p
-><p
->To use one of these non-English versions of the user interface, do the following steps:</p
+>The default user interface for <object
+type="tXMLmindXMLEditor"
+></object
+> is in English. To use one of these non-English versions of the user interface, do the following steps:</p
 ><ol
 ><li
 >Use Options menu item / Install Add-ons</li
@@ -7730,16 +7736,30 @@ openInNewTab="yes"
 ><li
 >In the right hand pane, find the word “Locale” and click on the drop-down button.</li
 ><li
->Look for the language you want. Please note that both French (français) and Spanish (español) come after all the uppercase languages in this list.</li
+>Look for the language you want. Please note that French (français), Spanish (español), and various other languages, come after all the uppercase languages in this list.</li
 ><li
 >Click on the OK button.</li
 ><li
 >Restart the XMLmind XML Editor.</li
 ></ol
 ><p
->You should now see the menu items using the language you chose.</p
+>You should now see the menu items using the language you chose. Please note that these non-English versions are for the user interface only. The attribute names and some of the validity messages will still be in English. Also the user documentation files are only in English. </p
 ><p
->Please note that these non-English versions are for the user interface only. The element names, attribute names, and some of the validity messages will still be in English. Also the user documentation files are only in English.</p
+>If the <object
+type="tFlextrans"
+></object
+> user interface has been changed to a non-English language that <object
+type="tXMLmindXMLEditor"
+></object
+> also supports, then the element names will be translated into the chosen language, otherwise they will remain in English.</p
+><p
+>Note that for <object
+type="tXLingPaper"
+></object
+>, which is a separate add-on to <object
+type="tXMLmindXMLEditor"
+></object
+>, there are only translations available in English, French and Spanish. </p
 ></section2
 ></section1
 ><section1
@@ -8360,7 +8380,7 @@ id="tViewSrcTgt"
 types="tTool"
 ></type
 ><type
-after="XMLmind XML Editor"
+after="XLingPaper"
 id="tXLingPaper"
 types="tTool"
 ></type
