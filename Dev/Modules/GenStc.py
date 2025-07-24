@@ -173,7 +173,7 @@ def getSourceText(DB, report, configMap):
         
     return matchingContentsObjList[sourceTextList.index(sourceTextName)]
 
-def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
+def extractLanguageVariablesOLD(myText, posFocusN, posFocus1, posFocus2, report):
     """Extract lemmas and POS for substituting from the source text."""
     match_n_lem, match_n_pos = [], []
     match_1_lem, match_1_pos = [], []
@@ -202,6 +202,31 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
     return (list(set(match_n_lem)), list(set(match_n_pos)),
             list(set(match_1_lem)), list(set(match_1_pos)),
             list(set(match_2_lem)), list(set(match_2_pos)))
+
+def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
+    """Optimized version with single pass through words"""
+    match_n_lem, match_n_pos = set(), set()
+    match_1_lem, match_1_pos = set(), set()
+    match_2_lem, match_2_pos = set(), set()
+
+    for stc in (myText.getSent(i) for i in range(myText.getSentCount())):
+        for w in stc.getWords():
+            thisLemma = w.getLemma(0)
+            thisPOS = w.getPOS(0)
+
+            if thisPOS in posFocusN:
+                match_n_lem.add(thisLemma)
+                match_n_pos.add(thisPOS)
+            elif thisPOS in posFocus1:
+                match_1_lem.add(thisLemma)
+                match_1_pos.add(thisPOS)
+            elif thisPOS in posFocus2:
+                match_2_lem.add(thisLemma)
+                match_2_pos.add(thisPOS)
+
+    return (list(match_n_lem), list(match_n_pos),
+            list(match_1_lem), list(match_1_pos),
+            list(match_2_lem), list(match_2_pos))
 
 def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
     """Extract lemmas from source text based on settings."""
@@ -260,9 +285,6 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                     else: 
                         word.semDomain = _formatString(DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField))).split(", ")
                         #report.Info(f"semDomain: {word.semDomain}")
-
-                        
-
 
                     if pos in match_n_pos:
                         wordListN.append(word)
@@ -333,7 +355,7 @@ def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, seman
 #----------------------------------------------------------------
 # Sentence Processing Functions
 
-def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
+def processSentenceOLD(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
     """Process and substitute words in the sentence, writing to output file."""
     for genWordN in subListN:
         _processWord(wrdList, idxNList, genWordN, report)
@@ -351,7 +373,37 @@ def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, s
                         _processWord(wrdList, idx2List, genWord2, report)
                         _writeSentence(stc, f_out)
 
-def _processWord(wrdList, idxList, genWord, report):
+def processSentence(wrdList, idxNList, idx1List, idx2List, subListN, subList1, subList2, f_out, stc, report):
+    """Optimized version using itertools.product for combinations"""
+
+    from itertools import product
+
+    # Prepare substitution sets (use [None] when no substitutions needed)
+    subs_n = subListN if idxNList else [None]
+    subs_1 = subList1 if idx1List else [None]
+    subs_2 = subList2 if idx2List else [None]
+    
+    # Generate all combinations
+    for genWordN, genWord1, genWord2 in product(subs_n, subs_1, subs_2):
+        # Apply N substitutions if they exist
+        if genWordN and idxNList:
+            for idx in idxNList:
+                _processWord(wrdList, idx, genWordN, report)
+        
+        # Apply 1 substitutions if they exist
+        if genWord1 and idx1List:
+            for idx in idx1List:
+                _processWord(wrdList, idx, genWord1, report)
+        
+        # Apply 2 substitutions if they exist
+        if genWord2 and idx2List:
+            for idx in idx2List:
+                _processWord(wrdList, idx, genWord2, report)
+        
+        # Write the modified sentence
+        _writeSentence(stc, f_out)
+
+def _processWordOLD(wrdList, idxList, genWord, report):
     """Process a single word in the sentence."""
     word = genWord.lemma
     info = genWord.inflection_features
@@ -381,6 +433,29 @@ def _applyInflectionFeatures(wrd, features, report):
             wrd._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
 
     #report.Info(f"After modification: {wrd._TextWord__inflFeatAbbrevsList}")
+
+def _processWord(wrdList, idx, genWord, report):
+    """Optimized single-word processor"""
+    wrd = wrdList[idx]
+    wrd._TextWord__lemmaList[0] = genWord.lemma
+    
+    if genWord.inflection_features:
+        features = genWord.inflection_features
+        wrd.setInflClass(str(features[0]))
+        wrd.setIgnoreInflectionClass(False)
+        wrd.setIgnoreStemFeatures(False)
+        wrd.setStemFeatAbbrevList([])
+        wrd._TextWord__inflFeatAbbrevsList = [[] for _ in wrd._TextWord__inflFeatAbbrevsList]
+        if len(features) > 1:
+            for i, feat in enumerate(features[1:]):
+                wrd._TextWord__inflFeatAbbrevsList[i] = [("None", feat)]
+
+def _resetWords(wrdList, indices, original_words):
+    """Reset words to their original state in the sentence"""
+    for idx in indices:
+        lemma, features = original_words[idx]
+        wrdList[idx]._TextWord__lemmaList[0] = lemma
+        wrdList[idx]._TextWord__inflFeatAbbrevsList = features
 
 def _writeSentence(stc, f_out):
     """Write the sentence to the output file."""
