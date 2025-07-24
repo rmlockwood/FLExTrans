@@ -252,12 +252,14 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
                         count = cache.DomainDataByFlid.get_VecSize(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField))
                         for i in range(count):
                             hvo = cache.DomainDataByFlid.get_VecItem(s.Hvo, DB.LexiconGetSenseCustomFieldNamed(customField), i)
-                            word.semDomain.append(repo.GetObject(hvo))
+                            name = (repo.GetObject(hvo)).Name
+                            word.semDomain.append(_formatString(name.get_String(cache.DefaultAnalWs).Text))
+
                         
-                        report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
+                        #report.Info(f"semDomain of {word.lemma}: {word.semDomain}")
                     else: 
                         word.semDomain = _formatString(DB.LexiconGetFieldText(s, DB.LexiconGetSenseCustomFieldNamed(customField))).split(", ")
-                        report.Info(f"semDomain: {word.semDomain}")
+                        #report.Info(f"semDomain: {word.semDomain}")
 
                         
 
@@ -297,15 +299,12 @@ def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, seman
     semListN, semList1, semList2 = [], [], []
 
     if (semanticDomainN != "UNK"):
-        _split_domainN = semanticDomainN.split(", ")
-        report.Info(f"settings domain: {_split_domainN}")
+        _split_domainN = semanticDomainN.split(",")
 
         for wordN in wordListN:
-            for entry in wordN.semDomain:
-                report.Info(f"entry: {entry}") 
-                if entry in _split_domainN:
+            for entry in _split_domainN:
+                if entry.strip() in wordN.semDomain:
                     semListN.append(wordN)
-                    report.Info(f"word appended: {wordN}")
     else: 
         semListN = wordListN
 
@@ -313,8 +312,8 @@ def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, seman
         _split_domain1 = semanticDomain1.split(",")
 
         for word1 in wordList1: 
-            for entry1 in word1.semDomain: 
-                if entry1 in _split_domain1:
+            for entry1 in _split_domain1: 
+                if entry1.strip() in word1.semDomain:
                     semList1.append(word1)
     else: 
         semList1 = wordList1
@@ -323,8 +322,8 @@ def getWordsInSemDomains(wordListN, wordList1, wordList2, semanticDomainN, seman
         _split_domain2 = semanticDomain2.split(",")
 
         for word2 in wordList2:
-            for entry2 in word2.semDomain:
-                if entry2 in _split_domain2:
+            for entry2 in _split_domain2:
+                if entry2.strip() in word2.semDomain:
                     semList2.append(word2)
     else: 
         semList2 = wordList2
