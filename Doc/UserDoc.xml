@@ -7663,7 +7663,10 @@ type="tFlextrans"
 >button labels, module descriptions, collection names, error messages, <object
 type="tXMLmindXMLEditor"
 ></object
-> labels for elements in the transfer rules, sample transfer rule comments, the FLExTools interface.</p
+> labels for elements in the transfer rules, sample transfer rule comments, the <object
+type="tFlexxTools"
+></object
+> interface.</p
 ><section2
 id="sChangingLanguages"
 ><secTitle
@@ -7705,9 +7708,9 @@ id="sChangingXXELanguage"
 >It is possible to change the user interface language of <object
 type="tXMLmindXMLEditor"
 ></object
-> from English to French, Spanish, Chinese or various other languages. </p
+> from English to French, Spanish, Chinese or various other languages.</p
 ><p
->The instructions below are modified from the  <object
+>The instructions below are modified from the <object
 type="tXLingPaper"
 ></object
 > <link
@@ -7743,7 +7746,7 @@ type="tXMLmindXMLEditor"
 >Restart the XMLmind XML Editor.</li
 ></ol
 ><p
->You should now see the menu items using the language you chose. Please note that these non-English versions are for the user interface only. The attribute names and some of the validity messages will still be in English. Also the user documentation files are only in English. </p
+>You should now see the menu items using the language you chose. Please note that these non-English versions are for the user interface only. The attribute names and some of the validity messages will still be in English. Also the user documentation files are only in English.</p
 ><p
 >If the <object
 type="tFlextrans"
@@ -7759,7 +7762,7 @@ type="tXLingPaper"
 >, which is a separate add-on to <object
 type="tXMLmindXMLEditor"
 ></object
->, there are only translations available in English, French and Spanish. </p
+>, there are only translations available in English, French and Spanish.</p
 ></section2
 ></section1
 ><section1
