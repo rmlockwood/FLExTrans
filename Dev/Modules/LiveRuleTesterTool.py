@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #1022. Use improved Apertium execution log.
+#
 #   Version 3.14.2 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -2401,18 +2404,20 @@ class Main(QMainWindow):
         for line in inputLines:
 
             # A typical line may look like this:
-            # apertium-transfer: Rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # apertium-transfer: Applied rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # or
+            # apertium-transfer: Matched rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
 
-            # If we have Rule N, process it
-            if re.search(r'Rule \d+', line):
+            # If we have a line matching 'Applied rule N', process it
+            if re.search(r'Applied rule \d+', line):
 
                 # Extract the rule # and the lexical units
-                matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
+                matchObj = re.search(r'(.+)(Applied rule )(\d+)( line \d+ )(.+)', line)
                 ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
                 lexUnitsStr = matchObj.group(5).strip()
 
                 # Translate the word 'Rule' to the localized version
-                ruleStr = re.sub('Rule ', _translate('LiveRuleTesterTool', 'Rule '), ruleStr)
+                ruleStr = re.sub('Applied rule ', _translate('LiveRuleTesterTool', 'Applied rule '), ruleStr)
 
                 # Put a delimeter between multiple lexical units
                 lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
