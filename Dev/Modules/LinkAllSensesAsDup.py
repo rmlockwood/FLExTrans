@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.14 - 5/27/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -31,39 +34,65 @@
 
 import re
 
+from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtWidgets import QApplication
+
 from System import Guid # type: ignore
 from System import String # type: ignore
 
 from SIL.LCModel import ICmObjectRepository, ILexSense # type: ignore
-
 from flextoolslib import *                                                 
 
+import Mixpanel
 import ReadConfig
 import Utils
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'LinkAllSensesAsDup'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : "Link all senses to the same ID in the target.",
+        FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",
-        FTM_Description:  
-"""
-This module will link all senses to the same ID in the target. CAUTION: This will 
+        FTM_Description: _translate("LinkAllSensesAsDup", 
+"""This module will link all senses to the same ID in the target. CAUTION: This will 
 overwrite all senses in the source project!
 This assumes the target project was copied from the source and all the senses have the same
-unique identifier (guid).
-""" }
-                 
+unique identifier (guid).""")}
+
+app.quit()
+del app
+
 def MainFunction(DB, report, modify=False):
 
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     if not modify:
-        report.Error('You need to run this module in "modify mode."')
+        report.Error(_translate("LinkAllSensesAsDup", 'You need to run this module in "modify mode."'))
         return
     
     configMap = ReadConfig.readConfig(report)
+    if not configMap:
+        return
+
+    # Log the start of this module on the analytics server if the user allows logging.
+    Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
         
     haveConfigError = False
     
@@ -75,12 +104,12 @@ def MainFunction(DB, report, modify=False):
 
     if not sourceTextName:
         
-        report.Error('No Source Text Name has been set. Please go to Settings and fix this.')
+        report.Error(_translate("LinkAllSensesAsDup", 'No Source Text Name has been set. Please go to Settings and fix this.'))
         haveConfigError = True
     
     if not linkField:
         
-        report.Error('No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.')
+        report.Error(_translate("LinkAllSensesAsDup", 'No Source Custom Field for Entry Link has been set. Please go to Settings and fix this.'))
         haveConfigError = True
     
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
@@ -88,7 +117,7 @@ def MainFunction(DB, report, modify=False):
     # Give an error if there are no morphnames
     if not sourceMorphNames or len(sourceMorphNames) < 1:
         
-        report.Error('No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.')
+        report.Error(_translate("LinkAllSensesAsDup", 'No Source Morpheme Types Counted As Roots have been selected. Please go to Settings and fix this.'))
         haveConfigError = True
     
     if haveConfigError:
@@ -126,13 +155,13 @@ def MainFunction(DB, report, modify=False):
                 try:
                     targetSense = ILexSense(repo.GetObject(guid))
                 except:
-                    report.Warning(f'Skipped this guid that was not found: {guidSubStr}.')
+                    report.Warning(_translate("LinkAllSensesAsDup", 'Skipped this guid that was not found: {guidSubStr}.').format(guidSubStr=guidSubStr))
                     continue
 
                 # write the hyperlink
-                Utils.writeSenseHyperLink(DB, TargetDB, mySense, targetSense.Entry, targetSense, senseEquivField, urlStr, myStyle) 
+                Utils.writeSenseHyperLink(DB, TargetDB, mySense, targetSense.Entry, targetSense, senseEquivField, urlStr, myStyle)
 
-    report.Info(f'{str(entryIndex)} entries processed.')
+    report.Info(_translate("LinkAllSensesAsDup", '{entryIndex} entries processed.').format(entryIndex=entryIndex))
     TargetDB.CloseProject()
 
 #----------------------------------------------------------------

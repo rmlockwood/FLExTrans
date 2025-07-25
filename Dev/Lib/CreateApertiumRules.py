@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14 - 5/26/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -28,8 +31,6 @@
 #
 #   Given an xml file defining the rules, create Apertium-style rules
 
-import Utils
-
 import re
 import os
 import shutil
@@ -39,6 +40,13 @@ from collections import defaultdict
 from typing import Optional
 from itertools import combinations, permutations
 import dataclasses
+
+from PyQt5.QtCore import QCoreApplication
+
+import Utils
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 BANTU_NOUN_CLASS_FROM_N = 'Bantu_noun_class_from_n'
 
@@ -422,7 +430,7 @@ class RuleGenerator:
         else:
             name = f'a_{spec.label}_feature'
         if not values:
-            self.report.Error(f'Could not find any tags for feature {spec.label} of part-of-speech {spec.category}.')
+            self.report.Error(_translate("CreateApertiumRules", 'Could not find any tags for feature {label} of part-of-speech {category}.').format(label=spec.label, category=spec.category))
         aid = self.AddSingleAttribute(name, values)
         self.featureToAttributeName[key] = aid
         return aid
@@ -558,7 +566,7 @@ class RuleGenerator:
             elif isinstance(value, str):
                 ET.SubElement(let, 'lit-tag', v=value)
             else:
-                let.append(ET.Comment(f"Other possible values: {', '.join(value[1:])}"))
+                let.append(ET.Comment(_translate('CreateApertiumRules', "Other possible values: {values}").format(values=', '.join(value[1:]))))
                 ET.SubElement(let, 'lit-tag', v=value[0])
 
         def MakeWhenClause(element, varid, value):
@@ -596,9 +604,9 @@ class RuleGenerator:
             # If there's a default value, we still need to check for the empty
             # case, but we can skip the rest of the conditional.
 
-            macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+            macid = self.GetAvailableID(_translate("CreateApertiumRules", 'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}').format(srcSpec=srcSpec, trgSpec=trgSpec))
             varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
-            self.AddVariable(varid, f'Used by macro {macid}')
+            self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))
             macro = ET.SubElement(self.GetSection('section-def-macros'),
                                   'def-macro', n=macid, npar='1')
             let1 = ET.SubElement(macro, 'let')
@@ -614,29 +622,29 @@ class RuleGenerator:
             return MacroSpec(macid, varid, [srcSpec.category])
 
         # Create the macro
-        macid = self.GetAvailableID(f'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}')
+        macid = self.GetAvailableID(_translate("CreateApertiumRules", 'm_{srcSpec.xmlLabel}-to-{trgSpec.xmlLabel}').format(srcSpec=srcSpec, trgSpec=trgSpec))
         varid = self.GetAvailableID(f'v_{trgSpec.xmlLabel}')
-        self.AddVariable(varid, f'Used by macro {macid}')
+        self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
                               n=macid, npar='1')
 
-        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
+        macro.append(ET.Comment(_translate('CreateApertiumRules', "Clear the variable to be sure we don't accidentally retain a prior value")))
         let1 = ET.SubElement(macro, 'let')
         ET.SubElement(let1, 'var', n=varid)
         ET.SubElement(let1, 'lit', v='')
 
         if len(trg) == 0:
-            self.report.Warning(f"No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.")
-            macro.append(ET.Comment("There are no target affixes, so there's nothing further to do here."))
+            self.report.Warning(_translate('CreateApertiumRules', "No target affixes found for feature '{trgSpec.label}' on part-of-speech {trgSpec.category}.").format(trgSpec=trgSpec))
+            macro.append(ET.Comment(_translate('CreateApertiumRules', "There are no target affixes, so there's nothing further to do here.")))
             return MacroSpec(macid, varid, [srcSpec.category])
 
         if bantu:
-            macro.append(ET.Comment('Determine the appropriate noun class'))
+            macro.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate noun class')))
             callmac = ET.SubElement(macro, 'call-macro', n=self.BantuMacro)
             ET.SubElement(callmac, 'with-param', pos='1')
 
         if all(s[1] == srcSpec.default for s in src):
-            macro.append(ET.Comment("All relevant target affixes have the default value"))
+            macro.append(ET.Comment(_translate('CreateApertiumRules', "All relevant target affixes have the default value")))
             otherwise = macro
         else:
             choose = ET.SubElement(macro, 'choose')
@@ -696,14 +704,13 @@ class RuleGenerator:
         input noun.'''
 
         if delete_old:
-
             # Remove the old hand-crafted Bantu macros and associated variables
             self.RemoveOldBantuMacrosVars()
 
         self.BantuMacro = self.GetAvailableID('m_'+BANTU_NOUN_CLASS_FROM_N)
         self.BantuVariable = self.GetAvailableID('v_'+BANTU_NOUN_CLASS_FROM_N)
 
-        # Manually create separate attributes so we don't accidentaly reuse
+        # Manually create separate attributes so we don't accidentally reuse
         # some existing attribute that contains both.
 
         sgAffixValues = self.GetAttributeValues(
@@ -716,20 +723,20 @@ class RuleGenerator:
             FeatureSpec('n', pluralFeature, isAffix=False))
 
         sgAffix = self.AddSingleAttribute('a_n_singular_class_slot',
-                                          sgAffixValues, reject=plAffixValues)
+                                        sgAffixValues, reject=plAffixValues)
         plAffix = self.AddSingleAttribute('a_n_plural_class_slot',
-                                          plAffixValues, reject=sgAffixValues)
+                                        plAffixValues, reject=sgAffixValues)
         sgStem = self.AddSingleAttribute('a_n_singular_class_feature',
-                                         sgStemValues, reject=plStemValues)
+                                        sgStemValues, reject=plStemValues)
         plStem = self.AddSingleAttribute('a_n_plural_class_feature',
-                                         plStemValues, reject=sgStemValues)
+                                        plStemValues, reject=sgStemValues)
 
         # Create the macro.
         self.AddVariable(self.BantuVariable)
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
-                              n=self.BantuMacro, npar='1')
+                            n=self.BantuMacro, npar='1')
 
-        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
+        macro.append(ET.Comment(_translate('CreateApertiumRules', "Clear the variable to be sure we don't accidentally retain a prior value")))
         let = ET.SubElement(macro, 'let')
         ET.SubElement(let, 'var', n=self.BantuVariable)
         ET.SubElement(let, 'lit', v='')
@@ -738,30 +745,30 @@ class RuleGenerator:
         whenSg = ET.SubElement(chooseNumber, 'when')
         testSg = ET.SubElement(whenSg, 'test')
         andSg = ET.SubElement(testSg, 'and')
-        andSg.append(ET.Comment('We should check for the appropriate singular noun class if one of the following is true:'))
+        andSg.append(ET.Comment(_translate('CreateApertiumRules', 'We should check for the appropriate singular noun class if one of the following is true:')))
         orSg = ET.SubElement(andSg, 'or')
-        orSg.append(ET.Comment("The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)"))
+        orSg.append(ET.Comment(_translate('CreateApertiumRules', "The source noun doesn't have a plural affix attached. (Likely it has a singular affix.)")))
         equalSg = ET.SubElement(orSg, 'equal')
         ET.SubElement(equalSg, 'clip', pos='1', part=plAffix, side='tl')
         ET.SubElement(equalSg, 'lit', v='')
-        orSg.append(ET.Comment("The target noun doesn't take plural agreement (marked as such)."))
+        orSg.append(ET.Comment(_translate('CreateApertiumRules', "The target noun doesn't take plural agreement (marked as such).")))
         equalSg2 = ET.SubElement(orSg, 'equal')
         ET.SubElement(equalSg2, 'clip', pos='1', part=plStem, side='tl')
         ET.SubElement(equalSg2, 'lit-tag', v='NApl')
-        andSg.append(ET.Comment("But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class."))
+        andSg.append(ET.Comment(_translate('CreateApertiumRules', "But if the target noun doesn't take singular agreement (marked as such), then we will have a plural noun class.")))
         notSg = ET.SubElement(andSg, 'not')
         equalSg3 = ET.SubElement(notSg, 'equal')
         ET.SubElement(equalSg3, 'clip', pos='1', part=sgStem, side='tl')
         ET.SubElement(equalSg3, 'lit-tag', v='NAsg')
 
         otherwisePl = ET.SubElement(chooseNumber, 'otherwise')
-        otherwisePl.append(ET.Comment('Check for the appropriate plural noun class.'))
+        otherwisePl.append(ET.Comment(_translate('CreateApertiumRules', 'Check for the appropriate plural noun class.')))
 
         sgTags = self.GetTags(FeatureSpec('n', singularFeature, isAffix=False))
         plTags = self.GetTags(FeatureSpec('n', pluralFeature, isAffix=False))
 
         trees = [(sgTags, sgStem, whenSg, 'sg'),
-                 (plTags, plStem, otherwisePl, 'pl')]
+                (plTags, plStem, otherwisePl, 'pl')]
 
         self.BantuValues = set()
 
@@ -800,18 +807,20 @@ class RuleGenerator:
         if lookupKey in self.lemmaMacros:
             return self.lemmaMacros[lookupKey]
 
-        macType = 'lemma' if isLemma else 'affix'
-        label = f'{destCategory}_{macType}_from_{"-".join(catSequence)}'
-        macid = self.GetAvailableID('m_'+label)
-        varid = self.GetAvailableID('v_'+label)
-        self.AddVariable(varid, f'Used by macro {macid}')
+        macType =  _translate("CreateApertiumRules", 'lemma') if isLemma else  _translate("CreateApertiumRules", 'affix')
+        fromStr = _translate("CreateApertiumRules", 'from')
+        label = '{destCategory}_{macType}_{fromStr}_{catSequence}'.format(
+            destCategory=destCategory, macType=macType, fromStr=fromStr, catSequence='-'.join(catSequence))
+        macid = self.GetAvailableID('m_' + label)
+        varid = self.GetAvailableID('v_' + label)
+        self.AddVariable(varid, _translate("CreateApertiumRules", 'Used by macro {macid}').format(macid=macid))
         code = ' '.join([destCategory] + catSequence)
         macro = ET.SubElement(self.GetSection('section-def-macros'), 'def-macro',
-                              n=macid, npar=str(len(catSequence)),
-                              c=f'FTM {varid} {code}')
+                            n=macid, npar=str(len(catSequence)),
+                            c='FTM {varid} {code}'.format(varid=varid, code=code))
 
         for n, cat in enumerate(catSequence, 1):
-            macro.append(ET.Comment(f'Item {n} is part-of-speech {cat}.'))
+            macro.append(ET.Comment(_translate('CreateApertiumRules', 'Item {n} is part-of-speech {cat}.').format(n=n, cat=cat)))
 
         def SetVar(parent, value):
             '''Create a <let> statement under `parent` that sets the return
@@ -821,9 +830,9 @@ class RuleGenerator:
             let = ET.SubElement(parent, 'let')
             ET.SubElement(let, 'var', n=varid)
             ET.SubElement(let, 'lit' if (isLemma or not value) else 'lit-tag',
-                          v=value)
+                        v=value)
 
-        macro.append(ET.Comment("Clear the variable to be sure we don't accidentally retain a prior value"))
+        macro.append(ET.Comment(_translate('CreateApertiumRules', "Clear the variable to be sure we don't accidentally retain a prior value")))
         SetVar(macro, '')
 
         # If all sources have a ranking, then we should go through them in order.
@@ -844,7 +853,7 @@ class RuleGenerator:
                     destCategory, source.label)
             else:
                 affixes = self.GetTags(FeatureSpec(destCategory, source.label,
-                                                   isAffix=True))
+                                                isAffix=True))
 
             featureValues = defaultdict(set)
             for affix, value in affixes:
@@ -852,7 +861,7 @@ class RuleGenerator:
                 allAffixes.add(affix)
             if source.default and not isLemma:
                 # If we're generating an affix, then the default can
-                # correspond to outputting now tag at all.
+                # correspond to outputting no tag at all.
                 featureValues[source.default].add('')
                 allAffixes.add('')
             affixesByFeatureValue.append(featureValues)
@@ -880,7 +889,7 @@ class RuleGenerator:
         labelSeq = [s.label for s in sourceList]
         for index, source in enumerate(sourceList):
             if source.category in catSequence:
-                clipPos = str(catSequence.index(source.category)+1)
+                clipPos = str(catSequence.index(source.category) + 1)
             else:
                 # anything not in catSequence should have non-empty value,
                 # so we shouldn't ever insert clipPos anywhere
@@ -902,7 +911,7 @@ class RuleGenerator:
                 for elem, possibleLemmas, path in locations:
                     newLocations.append(
                         (elem, possibleLemmas & valueDict[source.value],
-                         path+[source.value]))
+                        path + [source.value]))
                 locations = newLocations
                 continue
 
@@ -928,11 +937,11 @@ class RuleGenerator:
                 # empty or if the next step of the conditional would have no
                 # branches, then output an error value.
                 if not possibleLemmas or not tags:
-                    error = macType+'-for-'+'-'.join(path)
+                    error = '{macType}-for-{path}'.format(macType=macType, path='-'.join(path))
                     if not ranked or not possibleLemmas:
-                        SetVar(elem, 'no-'+error)
+                        SetVar(elem, 'no-{error}'.format(error=error))
                     elif len(possibleLemmas) > 1:
-                        SetVar(elem, 'multiple'+error)
+                        SetVar(elem, 'multiple-{error}'.format(error=error))
                     else:
                         SetVar(elem, list(possibleLemmas)[0])
                     continue
@@ -940,23 +949,24 @@ class RuleGenerator:
                 # Generate the label for the comments.
                 given = ''
                 if path:
-                    specs = [f'{label} = {value}' for label, value in zip(labelSeq, path)]
-                    given = f' given {", ".join(specs)}'
+                    specs = ['{label} = {value}'.format(label=label, value=value) for label, value in zip(labelSeq, path)]
+                    given = _translate('CreateApertiumRules', ' given {specs}').format(specs=', '.join(specs))
 
                 # If the default value is the only possible value, then
                 # don't generate a conditional for this step.
                 if len(tagsByValue) == 1 and source.default in tagsByValue:
                     otherwise = elem
-                    elem.append(ET.Comment(f'There is only one possible value for {source.label} here: {source.default}.'))
+                    elem.append(ET.Comment(_translate('CreateApertiumRules', 'There is only one possible value for {source.label} here: {source.default}.').format(source=source)))
                 else:
-                    elem.append(ET.Comment(f'Narrow the set of possible values based on {source.label} ({", ".join(sorted(set(t[1] for t in tags)))}){given}.'))
+                    elem.append(ET.Comment(_translate('CreateApertiumRules', 'Narrow the set of possible values based on {source.label} ({tags}){given}.').format(
+                        source=source, tags=', '.join(sorted(set(t[1] for t in tags))), given=given)))
                     choose = ET.SubElement(elem, 'choose')
                     for feature, tagSet in sorted(tagsByValue.items()):
                         if feature == source.default:
                             # Handle this in the <otherwise> block
                             continue
 
-                        choose.append(ET.Comment(f'Set {varid} based on {source.label} = {feature}.'))
+                        choose.append(ET.Comment(_translate('CreateApertiumRules', 'Set {varid} based on {source.label} = {feature}.').format(varid=varid, source=source, feature=feature)))
                         when = ET.SubElement(choose, 'when')
                         test = ET.SubElement(when, 'test')
                         side = 'tl'
@@ -973,15 +983,15 @@ class RuleGenerator:
                             ET.SubElement(eq, 'lit-tag', v=tag)
                         newLocations.append(
                             (when, possibleLemmas & valueDict[feature],
-                             path+[feature]))
+                            path + [feature]))
 
                     otherwise = ET.SubElement(choose, 'otherwise')
 
                 if source.default:
-                    otherwise.append(ET.Comment(f'Set {varid} based on {source.label} = {source.default}.'))
-                    newLocations.append((otherwise, possibleLemmas & valueDict[source.default], path+[source.default]))
+                    otherwise.append(ET.Comment(_translate('CreateApertiumRules', 'Set {varid} based on {source.label} = {source.default}.').format(varid=varid, source=source)))
+                    newLocations.append((otherwise, possibleLemmas & valueDict[source.default], path + [source.default]))
                 else:
-                    SetVar(otherwise, f'no-{macType}-for-'+'-'.join(path))
+                    SetVar(otherwise, 'no-{macType}-for-{path}'.format(macType=macType, path='-'.join(path)))
 
             # Swap locations to be the next level of nesting.
             locations = newLocations
@@ -989,23 +999,23 @@ class RuleGenerator:
         # After we've gone through all the features, assign the final values
         # to the ends of the branches.
         for elem, possibleLemmas, path in locations:
-            error = f'{macType}-for-' + '-'.join(path)
+            error = '{macType}-for-{path}'.format(macType=macType, path='-'.join(path))
             if possibleLemmas is None:
                 value = ''
             elif len(possibleLemmas) == 0:
-                value = 'no-'+error
+                value = 'no-{error}'.format(error=error)
             elif len(possibleLemmas) == 1:
                 value = list(possibleLemmas)[0]
             else:
                 lemmas = ', '.join(sorted(possibleLemmas))
-                elem.append(ET.Comment(f'Possible values with this combination of tags: {lemmas}'))
-                value = 'multiple-'+error
+                elem.append(ET.Comment(_translate('CreateApertiumRules', 'Possible values with this combination of tags: {lemmas}').format(lemmas=lemmas)))
+                value = 'multiple-{error}'.format(error=error)
             SetVar(elem, value)
 
         spec = MacroSpec(macid, varid, catSequence)
         self.lemmaMacros[lookupKey] = spec
-        return spec
-
+        return spec   
+     
     def FindOldRules(self, name: str, permutations: bool = True):
         '''Iterate over <section-rules> yielding an index and an element if the
         rule name could have been generated from a Rule Assistant rule named `name`.
@@ -1039,12 +1049,12 @@ class RuleGenerator:
         for word in rule.findall('.//Source//Word'):
             wid = word.get('id')
             if wid in sourceIDs:
-                self.report.Error(f'Multiple source words have ID {wid} in rule "{ruleName}".')
+                self.report.Error(_translate('CreateApertiumRules', 'Multiple source words have ID {wid} in rule "{ruleName}".').format(wid=wid, ruleName=ruleName))
                 return False
             sourceIDs.add(wid)
             cat = word.get('category')
             if cat is None:
-                self.report.Error(f'Source word {wid} in rule "{ruleName}" has no category.')
+                self.report.Error(_translate('CreateApertiumRules', 'Source word {wid} in rule "{ruleName}" has no category.').format(wid=wid, ruleName=ruleName))
                 return False
             features = set()
             affixes = set()
@@ -1057,7 +1067,7 @@ class RuleGenerator:
             sourceWords.append((wid, cat, features, affixes))
 
         if rule.find(".//Target//Word[@head='yes']") is None:
-            self.report.Error(f'No target word has been set as head in rule "{ruleName}".')
+            self.report.Error(_translate('CreateApertiumRules', 'No target word has been set as head in rule "{ruleName}".').format(ruleName=ruleName))
             return False
 
         # Determine the rule name
@@ -1080,7 +1090,7 @@ class RuleGenerator:
                 if altName not in self.ruleNames:
                     break
                 index += 1
-            self.report.Info(f'Rule name "{ruleName}" already exists in the rule file. Renaming added rule to "{altName}".')
+            self.report.Info(_translate('CreateApertiumRules', 'Rule name "{ruleName}" already exists in the rule file. Renaming added rule to "{altName}".').format(ruleName=ruleName, altName=altName))
             ruleName = altName
 
         # Create the rule element
@@ -1089,7 +1099,7 @@ class RuleGenerator:
         self.ruleNames.add(ruleName)
 
         for desc in rule.findall('.//Description'):
-            ruleEl.append(ET.Comment(f'Rule Assistant Description: {desc.text}'))
+            ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc=desc.text)))
 
         # Create the <pattern>
         wordCats = {}
@@ -1157,7 +1167,7 @@ class RuleGenerator:
                 elif not affix and cur is None:
                     cur = (wid, affix, default, isSource)
             if cur is None:
-                self.report.Error(f'Unable to determine source for {match} {label} in {ruleName}.')
+                self.report.Error(_translate('CreateApertiumRules', 'Unable to determine source for {match} {label} in {ruleName}.').format(match=match, label=label, ruleName=ruleName))
             else:
                 featureSources[(label, match)] = cur
 
@@ -1184,13 +1194,13 @@ class RuleGenerator:
                 if not cat:
                     # We don't have enough information to generate this word,
                     # so report an error and give up.
-                    self.report.Error(f'Missing category for inserted word {wid} in rule {ruleName}.')
+                    self.report.Error(_translate('CreateApertiumRules', 'Missing category for inserted word {wid} in rule {ruleName}.').format(wid=wid, ruleName=ruleName))
                     self.GetSection('section-rules').remove(ruleEl)
                     return False
             else:
                 cat = wordCats[pos]
 
-            actionEl.append(ET.Comment(f'Generate and output {cat}'))
+            actionEl.append(ET.Comment(_translate('CreateApertiumRules', 'Generate and output {cat}').format(cat=cat)))
 
             # If the stem features have a source that isn't this word,
             # we want to use a macro to check that we have the right lemma.
@@ -1214,7 +1224,7 @@ class RuleGenerator:
                     if value:
                         srcCat = cat
                     else:
-                        self.report.Error(f'Missing source for feature {label} on inserted word {wid} in rule {ruleName}.')
+                        self.report.Error(_translate('CreateApertiumRules', 'Missing source for feature {label} on inserted word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
                         self.GetSection('section-rules').remove(ruleEl)
                         return False
                 lemmaTags.append(FeatureSpec(srcCat, label, isAffix,
@@ -1226,7 +1236,7 @@ class RuleGenerator:
             shouldUseLemmaMacro = lemmaTags and lemmaLocs != {cat:pos}
 
             if pos is None and not shouldUseLemmaMacro:
-                self.report.Error(f'Unable to generate lemma for inserted word {wid} in rule {ruleName}.')
+                self.report.Error(_translate('CreateApertiumRules', 'Unable to generate lemma for inserted word {wid} in rule {ruleName}.').format(wid=wid, ruleName=ruleName))
                 self.GetSection('section-rules').reomve(ruleEl)
                 return False
 
@@ -1246,7 +1256,7 @@ class RuleGenerator:
             # Insert the lemma.
             if shouldUseLemmaMacro:
                 spec = self.GetMultiFeatureMacro(cat, True, lemmaTags)
-                actionEl.append(ET.Comment(f'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.'))
+                actionEl.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate lemma for {cat} and store it in a variable named {spec.varid}.').format(cat=cat, spec=spec)))
                 callmac = ET.SubElement(actionEl, 'call-macro', n=spec.macid)
                 for srcCat in spec.catSequence:
                     ET.SubElement(callmac, 'with-param',
@@ -1304,7 +1314,7 @@ class RuleGenerator:
                             if value:
                                 srcCat = cat
                             else:
-                                self.report.Error('Unable to find source for feature {label} on word {wid} in rule {ruleName}.')
+                                self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
                                 self.GetSection('section-rules').reomve(ruleEl)
                                 return False
                         default = tgtDefault or srcDefault
@@ -1317,7 +1327,7 @@ class RuleGenerator:
 
                     # Get the macro and variable name and call the macro.
                     spec = self.GetMultiFeatureMacro(cat, False, specList)
-                    actionEl.append(ET.Comment(f'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.'))
+                    actionEl.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate affix for {cat} and store it in a variable named {spec.varid}.').format(cat=cat, spec=spec)))
                     callmac = ET.SubElement(actionEl, 'call-macro',
                                             n=spec.macid)
                     for srcCat in spec.catSequence:
@@ -1341,7 +1351,7 @@ class RuleGenerator:
                     if tags:
                         ET.SubElement(lu, 'lit-tag', v=sorted(tags)[0][0])
                     else:
-                        self.report.Error(f'No tag found for value {value} of feature {label} in rule "{ruleName}".')
+                        self.report.Error(_translate('CreateApertiumRules', 'No tag found for value {value} of feature {label} in rule "{ruleName}".').format(value=value, label=label, ruleName=ruleName))
                         self.GetSection('section-rules').remove(ruleEl)
                         return False
                     continue
@@ -1350,7 +1360,7 @@ class RuleGenerator:
                 apos, isAffix, srcDefault, isSource = featureSources.get(
                     (label, match), (pos, True, None, False))
                 if apos is None:
-                    self.report.Error('Unable to find source for feature {label} on word {wid} in rule {ruleName}.')
+                    self.report.Error(_translate('CreateApertiumRules', 'Unable to find source for feature {label} on word {wid} in rule {ruleName}.').format(label=label, wid=wid, ruleName=ruleName))
                     self.GetSection('section-rules').reomve(ruleEl)
                     return False
                 default = tgtDefault or srcDefault
@@ -1367,7 +1377,7 @@ class RuleGenerator:
 
                     # We have a macro spec, so we should insert a <call-macro>.
                     if spec is not None:
-                        actionEl.append(ET.Comment(f'Determine the appropriate {label} tag for {cat} and store it in a variable named {spec.varid}.'))
+                        actionEl.append(ET.Comment(_translate('CreateApertiumRules', 'Determine the appropriate {label} tag for {cat} and store it in a variable named {varid}.').format(label=label, cat=cat, varid=spec.varid)))
                         callmac = ET.SubElement(actionEl, 'call-macro',
                                                 n=spec.macid)
                         ET.SubElement(callmac, 'with-param', pos=apos)
@@ -1508,7 +1518,7 @@ class RuleGenerator:
                 if self.ProcessRule(rule):
                     ruleCount += 1
 
-        self.report.Info(f'Added {ruleCount} rule(s) from {fileName}.')
+        self.report.Info(_translate('CreateApertiumRules', 'Added {ruleCount} rule(s) from {fileName}.').format(ruleCount=ruleCount, fileName=fileName))
 
         return ruleCount
 
@@ -1536,7 +1546,7 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
         with open(ruleAssistantFile, "r") as rulesAssistant:
             assistantTree = ET.parse(rulesAssistant)
     except:
-        report.Error("No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool")
+        report.Error(_translate('CreateApertiumRules', 'No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool'))
         return -1
 
     generator = RuleGenerator(sourceDB, targetDB, report, configMap)
@@ -1545,7 +1555,7 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
 
         datetimeStr = re.sub(':', '-', datetime.datetime.now().isoformat(sep=' ', timespec='seconds'))
         backupPath = f'{transferRulePath}.{datetimeStr}.bak'
-        report.Info(f'Copying prior version of transfer rules to {backupPath}.')
+        report.Info(_translate('CreateApertiumRules', 'Copying prior version of transfer rules to {backupPath}.').format(backupPath=backupPath))
         shutil.copy(transferRulePath, backupPath)
         generator.ProcessExistingTransferFile(transferRulePath)
 

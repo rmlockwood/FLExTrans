@@ -5,6 +5,12 @@
 #   SIL International
 #   12/24/2022
 #
+#   Version 3.14.1 - 7/23/25 - Ron Lockwood
+#    Fixes #1016. Repeat the expected result in the actual result column.
+#
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.1 - 3/24/25 - Ron Lockwood
 #    Reorganized to thin out Utils code.
 #
@@ -55,6 +61,11 @@ import TestbedValidator
 import ReadConfig 
 import Utils
 
+from PyQt5.QtCore import QCoreApplication, QDateTime
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+
 # Testbed XML constants
 FLEXTRANS_TESTBED = 'FLExTransTestbed'
 FLEXTRANS_TESTBED_RESULTS = 'FLExTransTestbedResults'
@@ -94,6 +105,7 @@ YES = 'yes'
 NO = 'no'
 DEFAULT = 'default'
 XML_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+XML_DATETIME_FORMAT_QT = 'yyyy-MM-dd hh:mm:ss' # Qt format for date time
 
 ## Viewer constants
 # Main color of the headwords
@@ -104,6 +116,7 @@ GRAM_CAT_COLOR = '0070C0' #blue
 CHUNK_GRAM_CAT_COLOR = '0000FF' #darker blue
 # The color of affixes or other things such as features, classes, etc.
 AFFIX_COLOR = '00B050' #green
+SUCCESS_COLOR = '00B050' #green
 CHUNK_AFFIX_COLOR = '00E000' #darker green
 # The color of non-sentence punctuation. Sentence punctuation will be in its
 # own lexical item with <sent> as the category
@@ -645,7 +658,7 @@ class TestbedTestXMLObject():
             # each test goes on its own line
             line = f_out.readline()
         except:
-            raise ValueError('No more lines to read in the synthesis file.')
+            raise ValueError(_translate("Testbed", 'No more lines to read in the synthesis file.'))
         
         # Remove the dummy EOL lexical unit at the end. STAMP results.
         line = re.sub(r' @*EOL', '', line)
@@ -863,12 +876,12 @@ class FlexTransTestbedFile():
                 f.close()
                 
             except:
-                raise ValueError('The testbed file: ' + self.__testbedPath + ' could not be read or written.')
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} could not be read or written.").format(filePath=self.__testbedPath))
             
             try:
                 self.__testbedTree = ET.parse(self.__testbedPath)
             except:
-                raise ValueError('The testbed file: ' + self.__testbedPath + ' is invalid.')
+                raise ValueError(_translate("Testbed", "The testbed file: {filePath} is invalid.").format(filePath=self.__testbedPath))
 
             self.__XMLObject = FLExTransTestbedXMLObject(self.__testbedTree.getroot(), direction)
     
@@ -968,10 +981,10 @@ class TestbedResultXMLObject():
         return False
    
     def endTest(self):
-        self.__rootNode.attrib[END_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
+        self.__rootNode.attrib[END_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
 
     def startTest(self, testbedXMLObj):
-        self.__rootNode.attrib[START_DATE_TIME] = datetime.now().strftime(XML_DATETIME_FORMAT)
+        self.__rootNode.attrib[START_DATE_TIME] = QDateTime.currentDateTime().toString(XML_DATETIME_FORMAT_QT)
         self.__rootNode.attrib[END_DATE_TIME] = ''
         
         # add the <FLExTransTestbed> element below the <testResult> element
@@ -1100,7 +1113,7 @@ class FlexTransTestbedResultsFile():
             try:
                 self.__testbedResultsTree = ET.parse(resultsPath)
             except:
-                raise ValueError(f'The testbed results file: {resultsPath} is invalid.')
+                raise ValueError(_translate("Testbed", "The testbed results file: {resultsPath} is invalid.").format(resultsPath=resultsPath))
 
             self.__XMLObject = FLExTransTestbedResultsXMLObject(self.__testbedResultsTree.getroot())
     
@@ -1442,4 +1455,3 @@ def convertXMLEntryToColoredString(entryElement, isRtl):
     retStr += '</p>'
     
     return retStr
-

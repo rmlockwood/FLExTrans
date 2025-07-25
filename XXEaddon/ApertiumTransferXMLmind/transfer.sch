@@ -3,6 +3,96 @@
     <xsl:key name="Attributes" match="def-attr" use="@n"/>
     <xsl:key name="Variables" match="def-var" use="@n"/>
     <xsl:key name="Macros" match="def-macro" use="@n"/>
+    <pattern id="def-cat-n-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in def-cat/@n</dir>
+        </title>
+        <rule context="def-cat">
+            <report test="contains(@n, ' ')">
+                Error: This category name cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="cat-item-tags-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in cat-item/@tags</dir>
+        </title>
+        <rule context="cat-item">
+            <report test="contains(@tags, ' ')">
+                Error: This tags definition cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="cat-item-lemma-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in cat-item/@lemma</dir>
+        </title>
+        <rule context="cat-item">
+            <report test="@lemma and (normalize-space(@lemma) != @lemma)">
+                Error: This lemma definition cannot have any preceding or trailing spaces. Also, medial double-spaces are not allowed.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="def-attr-n-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in def-attr/@n</dir>
+        </title>
+        <rule context="def-attr">
+            <report test="contains(@n, ' ')">
+                Error: This attribute name cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="attr-item-tags-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in attr-item/@tags</dir>
+        </title>
+        <rule context="attr-item">
+            <report test="contains(@tags, ' ')">
+                Error: This tags definition cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="def-var-n-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in def-var/@n</dir>
+        </title>
+        <rule context="def-var">
+            <report test="contains(@n, ' ')">
+                Error: This variable definition cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="def-list-n-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in def-list/@n</dir>
+        </title>
+        <rule context="def-list">
+            <report test="contains(@n, ' ')">
+                Error: This list name cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="list-item-v-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in list-item/@v</dir>
+        </title>
+        <rule context="list-item">
+            <report test="@v and (normalize-space(@v) != @v)">
+                Error: This list element cannot have any preceding or trailing spaces. Also, medial double-spaces are not allowed.
+            </report>
+        </rule>
+    </pattern>    
+    <pattern id="def-macro-n-no-spaces">
+        <title>
+            <dir value="ltr">No spaces in def-macro/@n</dir>
+        </title>
+        <rule context="def-macro">
+            <report test="contains(@n, ' ')">
+                Error: This macro name cannot contain any spaces.
+            </report>
+        </rule>
+    </pattern>    
     <pattern id="clip.pos">
         <title>
             <dir value="ltr">Well-formed attributes</dir>

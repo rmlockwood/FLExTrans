@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -61,8 +64,10 @@ from flextoolslib import *
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QFontDialog, QMessageBox, QMainWindow, QApplication
+from PyQt5.QtCore import QCoreApplication
 
-from SrcTgtViewer import Ui_MainWindow
+import Mixpanel
+from SrcTgtViewer import Ui_SrcTgtWindow
 import FTPaths
 from LiveRuleTesterTool import TARGET_FILE1, TARGET_FILE2
 import ReadConfig
@@ -70,25 +75,36 @@ import ExtractSourceText
 import RunApertium
 from Testbed import *
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'ViewSrcTgt'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "View an easy-to-read source or target text file.",    
+        FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),    
         FTM_Help   : "",
-        FTM_Description: 
-f"""
-This module will display a more readable view of the Apertium source or target 
+        FTM_Description: _translate("ViewSrcTgt", 
+f"""This module will display a more readable view of the Apertium source or target 
 file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
-must run the modules through {RunApertium.docs[FTM_Name]} before running this module.
-""" }
+must run the modules through {RunApertium.docs[FTM_Name]} before running this module.""")}
                  
-#----------------------------------------------------------------
-# The main processing function
+app.quit()
+del app
+
 class Main(QMainWindow):
 
     def __init__(self, srcFile, tgtFile, htmlFile, advanced):
@@ -100,7 +116,7 @@ class Main(QMainWindow):
         
         self.setWindowIcon(QtGui.QIcon(os.path.join(FTPaths.TOOLS_DIR, 'FLExTransWindowIcon.ico')))
         
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_SrcTgtWindow()
         self.ui.setupUi(self)
         
         if advanced:
@@ -134,37 +150,14 @@ class Main(QMainWindow):
         font = self.ui.largeTextEdit.font()
         self.font_family = str(font.family())
           
-        #self.ui.FontNameLabel.setText(font.family())
-          
         # load the viewer()
         self.load()
         
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self, event)
         
-        buttonHeight = self.ui.OKButton.height()
-        buttonWidth = self.ui.OKButton.width()
-        
         # Stretch the view to fit
-        self.ui.largeTextEdit.setGeometry(10, 10, self.width() - 20, \
-                                    self.height() - 90)
-        
-        # Change the y value of widgets depending on the window size
-        y = self.ui.largeTextEdit.height() + 35
-        
-        self.ui.OKButton.setGeometry(self.ui.OKButton.x(), y, buttonWidth, buttonHeight)
-        self.ui.FontButton.setGeometry(self.ui.FontButton.x(), y, buttonWidth, buttonHeight)
-        self.ui.ZoomIncrease.setGeometry(self.ui.ZoomIncrease.x(), y, self.ui.ZoomIncrease.width(), buttonHeight)
-        self.ui.ZoomDecrease.setGeometry(self.ui.ZoomDecrease.x(), y, self.ui.ZoomDecrease.width(), buttonHeight)
-        self.ui.FontNameLabel.setGeometry(self.ui.FontNameLabel.x(), y+2, self.ui.FontNameLabel.width(), self.ui.FontNameLabel.height())
-        self.ui.ZoomLabel.setGeometry(self.ui.ZoomLabel.x(), y+2, self.ui.ZoomLabel.width(), self.ui.ZoomLabel.height())
-        self.ui.SourceRadio.setGeometry(self.ui.SourceRadio.x(), y+2, self.ui.SourceRadio.width(), self.ui.SourceRadio.height())
-        self.ui.TargetRadio.setGeometry(self.ui.TargetRadio.x(), y+2, self.ui.TargetRadio.width(), self.ui.TargetRadio.height())
-        self.ui.targetRadio1.setGeometry(self.ui.targetRadio1.x(), y+2-20, self.ui.targetRadio1.width(), self.ui.targetRadio1.height())
-        self.ui.targetRadio2.setGeometry(self.ui.targetRadio2.x(), y+2, self.ui.targetRadio2.width(), self.ui.targetRadio2.height())
-        self.ui.targetRadio3.setGeometry(self.ui.targetRadio3.x(), y+2+20, self.ui.targetRadio3.width(), self.ui.targetRadio3.height())
-        self.ui.RTL.setGeometry(self.ui.RTL.x(), y+2, self.ui.RTL.width(), self.ui.RTL.height())
-        self.ui.linkLabel.setGeometry(self.ui.linkLabel.x(), y+2, self.ui.linkLabel.width(), self.ui.linkLabel.height())
+        self.ui.largeTextEdit.setGeometry(10, 10, self.width() - 20, self.height() - 84)
 
     def ZoomIncreaseClicked(self):
         myFont = self.ui.largeTextEdit.font()
@@ -184,7 +177,7 @@ class Main(QMainWindow):
         self.close()
 
     def FontClicked(self):
-        (font, ret) = QFontDialog.getFont(self.ui.largeTextEdit.font())
+        (font, ret) = QFontDialog.getFont(self.ui.largeTextEdit.font(), parent=self)
         if ret:
             self.font_family = str(font.family())
             self.ui.FontNameLabel.setText(font.family())
@@ -231,11 +224,11 @@ class Main(QMainWindow):
             f = open(self.viewFile, encoding='utf-8')
         except IOError:
             if self.viewFile == self.src:
-                QMessageBox.warning(self, 'File Error', f'There was a problem opening the Source Apertium Text file: {self.getLastFolderAndFile(self.viewFile)}. '\
-                                    f'Make sure you have run the {ExtractSourceText.docs[FTM_Name]} module first.')
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening the Source Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                                    _translate("ViewSrcTgt", 'Make sure you have run the {moduleName} module first.').format(moduleName=ExtractSourceText.docs[FTM_Name]))
             else:
-                QMessageBox.warning(self, 'File Error', f'There was a problem opening a Target Apertium Text file: {self.getLastFolderAndFile(self.viewFile)}. '\
-                                    f'Make sure you have run the modules up through {RunApertium.docs[FTM_Name]} first.')
+                QMessageBox.warning(self, _translate("ViewSrcTgt", 'File Error'), _translate("ViewSrcTgt", 'There was a problem opening a Target Apertium Text file: {fileName}. ').format(fileName=self.getLastFolderAndFile(self.viewFile)) + \
+                                    _translate("ViewSrcTgt", 'Make sure you have run the modules up through {moduleName} first.').format(moduleName=RunApertium.docs[FTM_Name]))
             return
         
         # Remove extra carriage returns apertium is giving us in the target file.
@@ -326,19 +319,23 @@ class Main(QMainWindow):
         self.ui.largeTextEdit.setText(myStr)
 
         # Set the link label address
-        rich_str = '<a href="file:///'+self.html+'">Open in Browser</a>'
-
+        labelStr = _translate("ViewSrcTgt", 'Open in Browser')
+        rich_str = '<a href="file:///' + self.html + f'">{labelStr}</a>'
         self.ui.linkLabel.setText(rich_str)
    
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file which we assume is in the current directory.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # get the path to the source file
@@ -363,9 +360,6 @@ def MainFunction(DB, report, modify=True):
     # get temporary file name for html results
     htmlFile = os.path.join(tempfile.gettempdir(), 'FlexTransFileViewer.html')
     
-    # Show the window
-    app = QApplication(sys.argv)
-
     window = Main(srcFile, tgtFile, htmlFile, advanced)
     
     window.show()

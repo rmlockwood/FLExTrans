@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Add New Target Entry</string>
+   <string notr="true">Add New Target Entry</string>
   </property>
   <property name="whatsThis">
    <string/>
@@ -186,7 +186,7 @@
   <widget class="QLabel" name="clusterProjectsLabel">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>130</y>
      <width>191</width>
      <height>21</height>

@@ -5,6 +5,12 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
+#   Version 3.13.5 - 5/8/25 - Ron Lockwood
+#    Added parameter to check for valid characters function for error message.
+#
 #   Version 3.13.4 - 4/15/25 - Ron Lockwood
 #    Fixes #964. Get the free translation for each segment.
 #
@@ -31,6 +37,8 @@ import xml.etree.ElementTree as ET
 import tempfile
 from dataclasses import dataclass
 
+from PyQt5.QtCore import QCoreApplication
+
 import Utils
 import ReadConfig
 from TextClasses import TextEntirety, TextParagraph, TextSentence, TextWord
@@ -47,6 +55,9 @@ from SIL.LCModel.DomainServices import SegmentServices  # type: ignore
 from SIL.LCModel.Core.KernelInterfaces import ITsString # type: ignore
 from System import Guid   # type: ignore
 from System import String # type: ignore
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 CHECK_DELIMITER = True
 DELIMITER_STR = '{'
@@ -136,7 +147,7 @@ def initProgress(contents, report):
 
     if obj_cnt == -1:
 
-        report.Warning('No analyses found.')
+        report.Warning(_translate("InterlinData", "No analyses found."))
     else:
         report.ProgressStart(obj_cnt+1)
 
@@ -147,7 +158,7 @@ def getInsertedWordsList(inputFilename, report, DB):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError('The Tree Tran Words to Insert File has invalid XML content.' + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Words to Insert File has invalid XML content.") + ' (' + inputFilename + ')')
 
     myRoot = myETree.getroot()
 
@@ -193,7 +204,7 @@ def getTreeSents(inputFilename, report):
     try:
         myETree = ET.parse(inputFilename)
     except:
-        raise ValueError('The Tree Tran Result File has invalid XML content.' + ' (' + inputFilename + ')')
+        raise ValueError(_translate("InterlinData", "The Tree Tran Result File has invalid XML content.") + ' (' + inputFilename + ')')
 
     myRoot = myETree.getroot()
 
@@ -238,7 +249,7 @@ def getGuidFromAnaRecord(anaRec, report):
     
         if pNode == None:
 
-            report.Error("Could not find a GUID in the TreeTran results file. Perhaps TreeTran is not putting out all that you expect. anaRec id=" + anaRec.attrib[Utils.ID_STR] + ". Exiting.")
+            report.Error(_translate("InterlinData", "Could not find a GUID in the TreeTran results file. Perhaps TreeTran is not putting out all that you expect. anaRec id=") + anaRec.attrib[Utils.ID_STR] + _translate("InterlinData", ". Exiting."))
             return None
     
         currGuid = Guid(String(pNode.text))
@@ -336,11 +347,11 @@ def getSenseNumber(entry, bundle, myInfo):
             return senseNum
     return -1
 
-def checkForValidChars(report, myStr, tempEntry):
+def checkForValidChars(DB, report, myStr, tempEntry):
 
     if Utils.containsInvalidLemmaChars(myStr):
 
-        report.Error(f'Invalid characters in the affix: {myStr}. The following characters are not allowed: {Utils.RAW_INVALID_LEMMA_CHARS}', DB.BuildGotoURL(tempEntry))
+        report.Error(_translate("InterlinData", "Invalid characters in the affix: {myStr}. The following characters are not allowed: {chars}").format(myStr=myStr, chars=Utils.RAW_INVALID_LEMMA_CHARS), DB.BuildGotoURL(tempEntry))
         return False
     
     return True
@@ -586,12 +597,12 @@ def getInterlinData(DB, report, params):
 
             if not bundle.SenseRA:
 
-                processInvalidObjError(report, myInfo, wfiAnalysis, 'No sense found for some part of the source word: ')
+                processInvalidObjError(report, myInfo, wfiAnalysis, _translate("InterlinData", "No sense found for some part of the source word: "))
                 break # go on to the next word
 
             if not (bundle.MsaRA and bundle.MorphRA):
 
-                processInvalidObjError(report, myInfo, wfiAnalysis, 'No morphosyntactic analysis found for some part of the source word: ')
+                processInvalidObjError(report, myInfo, wfiAnalysis, _translate("InterlinData", "No morphosyntactic analysis found for some part of the source word: "))
                 break # go on to the next word
 
             tempEntry = ILexEntry(bundle.MorphRA.Owner)
@@ -604,7 +615,7 @@ def getInterlinData(DB, report, params):
             # We have an affix or clitic (but not an enclitic that is standing alone which we will treat as a root)
             if bundle.MsaRA.ClassName != Utils.MO_STEM_MSA or (Utils.isClitic(tempEntry) and not (Utils.isEnclitic(tempEntry) and myInfo.myWord.hasEntries() == False)):
 
-                if checkForValidChars(report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
+                if checkForValidChars(DB, report, Utils.as_string(bundle.SenseRA.Gloss), tempEntry) == False:
 
                     return myInfo.myText
                 
@@ -623,10 +634,10 @@ def getInterlinData(DB, report, params):
             
                 if not msa.PartOfSpeechRA:
 
-                    report.Warning('No grammatical category found for the source word: '+ myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
+                    report.Warning(_translate("InterlinData", "No grammatical category found for the source word: ") + myInfo.myWord.getSurfaceForm(), DB.BuildGotoURL(tempEntry))
                     break
 
-                if checkForValidChars(report, Utils.getHeadwordStr(tempEntry), tempEntry) == False:
+                if checkForValidChars(DB, report, Utils.getHeadwordStr(tempEntry), tempEntry) == False:
 
                     return myInfo.myText
 
@@ -640,7 +651,7 @@ def getInterlinData(DB, report, params):
                     myInfo.myWord.buildLemmaAndAdd(analysisOccurance.BaselineText, senseNum)
                 else:
                     myInfo.myWord.addSense(None)
-                    report.Warning("Couldn't find the sense for source headword: "+Utils.getHeadwordStr(tempEntry))
+                    report.Warning(_translate("InterlinData", "Couldn't find the sense for source headword: ") + Utils.getHeadwordStr(tempEntry))
 
         # If after going through all the bundles, we don't have a root, give a warning
         if myInfo.myWord.getLemma(0) == '':
@@ -653,26 +664,24 @@ def getInterlinData(DB, report, params):
             else:
                 myInfo.myWord.addPlainTextAffix(ROOT_MISSING)
 
-            report.Warning('No root or stem found for source word: '+ myInfo.myWord.getSurfaceForm())
+            report.Warning(_translate("InterlinData", "No root or stem found for source word: ") + myInfo.myWord.getSurfaceForm())
 
     ## Done with all the words in the text. Now we need to do some final things.
 
     # Handle any final punctuation text at the end of the text in its own paragraph
     if len(myInfo.savedPrePunc) > 0:
-
-        myInfo.myWord.addFinalPunc('\n'+myInfo.savedPrePunc)
+        myInfo.myWord.addFinalPunc('\n' + myInfo.savedPrePunc)
 
     # Don't warn for sfm markers, but warn once for others
     if myInfo.myText.warnForUnknownWords(params.noWarningProperNoun) == True:
+        report.Warning(_translate("InterlinData", "One or more unknown words occurred multiple times."))
 
-        report.Warning('One or more unknown words occurred multiple times.')
-
-    # substitute a complex form when its components are found contiguous in the text
+    # Substitute a complex form when its components are found contiguous in the text
     myInfo.myText.processComplexForms(params.typesList)
 
-    # substitute a complex form when its components are found discontiguous in the text
+    # Substitute a complex form when its components are found discontiguous in the text
     if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and len(params.typesList) > 0:
-
+        
         myInfo.myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList)
 
     return myInfo.myText

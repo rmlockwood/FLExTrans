@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.14 - 5/29/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -50,10 +53,14 @@ import xml.etree.ElementTree as ET
 from wildebeest.wb_normalize import Wildebeest
 
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import QCoreApplication, QTranslator
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 
-from TextInOut import Ui_MainWindow
+from TextInOut import Ui_TextInOutMainWindow
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
 
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
 SEARCH_REPLACE_RULES_ELEM = 'SearchReplaceRules' 
@@ -227,7 +234,7 @@ def applySearchReplaceRules(inputStr, tree):
                     newStr = newStr.replace(newSearch, searchReplObj.replStr)
             except:
                 newStr = None
-                errorMsg = f'Test stopped on failure of rule: ' + buildRuleStringFromElement(ruleEl)
+                errorMsg = _translate("TextInOutUtils", "Test stopped on failure of rule: {ruleString}").format(ruleString=buildRuleStringFromElement(ruleEl))
                 break
 
     return newStr, errorMsg
@@ -271,10 +278,10 @@ def runWildebeest(root, inputStr):
 
 class TextInOutRulesWindow(QMainWindow):
 
-    def __init__(self, searchReplacefile, textIn):
+    def __init__(self, searchReplacefile, textIn, winTitle):
 
         QMainWindow.__init__(self)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_TextInOutMainWindow()
         self.ui.setupUi(self)
 
         self.searchReplacefile = searchReplacefile
@@ -310,17 +317,19 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.ui.errorLabel.setText('')
 
+        self.setWindowTitle(winTitle)
+
         # See if we are doing text in or out
         if not self.textIn:
 
             # If we are doing text out, don't show the wildebeest checkbox
             self.hideWildebeestStuff()
-
-            self.setWindowTitle('Text Out Rules')
         else:
-             
-             self.setWindowTitle('Text In Rules')
-           
+             # Translate the Wildebeest checkbox and help link
+             self.ui.wildebeestCheckBox.setText(_translate("TextInOutUtils", "Run the {wildebeest} cleanup tool").format(wildebeest="Wildebeest"))
+             helpText = _translate("TextInOutUtils", "help")
+             self.ui.WBlinkLabel.setText(f"<html><head/><body><p><a href=\"https://github.com/uhermjakob/wildebeest\"><span style=\" text-decoration: underline; color:#0000ff;\">wildebeest {helpText}</span></a></p></body></html>")
+
         self.ui.addButton.clicked.connect(self.AddClicked)
         self.ui.checkAllButton.clicked.connect(self.CheckAllClicked)
         self.ui.closeButton.clicked.connect(self.CloseClicked)
@@ -516,7 +525,11 @@ class TextInOutRulesWindow(QMainWindow):
                         else:
                             newStr = newStr.replace(searchReplDataObj.searchStr, searchReplDataObj.replStr)
                     except:
-                        self.ui.errorLabel.setText(f'Test stopped on failure of rule {str(ind+1)}: ' + buildRuleStringFromElement(ruleEl)) # it might be more efficient to get this from the rule model
+                        self.ui.errorLabel.setText(_translate(
+                                "TextInOutUtils",
+                                "Test stopped on failure of rule {ruleNumber}: {ruleString}"
+                            ).format(ruleNumber=str(ind + 1), ruleString=buildRuleStringFromElement(ruleEl))
+                        )
                         break
 
         self.ui.outputText.setText(newStr)
@@ -681,7 +694,7 @@ class TextInOutRulesWindow(QMainWindow):
         try:
             testTree = ET.parse(self.searchReplacefile)
         except:
-            QMessageBox.warning(self, 'Invalid File', 'The fix up synthesis text rules file you selected is invalid.')
+            QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid File'), 'The fix up synthesis text rules file you selected is invalid.')
             return False
         
         self.root = testTree.getroot()
@@ -699,7 +712,7 @@ class TextInOutRulesWindow(QMainWindow):
             self.ui.rulesList.setModel(self.rulesModel)
             
         else:
-            QMessageBox.warning(self, 'Invalid Rules File', \
+            QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid Rules File'),\
             'The fix up synthesis rule file has no SearchReplaceRules.')
             return False
         

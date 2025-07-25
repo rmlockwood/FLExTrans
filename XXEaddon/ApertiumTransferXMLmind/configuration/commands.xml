@@ -6,6 +6,22 @@
         <cfg:command name="setReference"/>
     </cfg:binding>
 
+	<cfg:command name="openSampleRules">
+		<cfg:macro>
+			<cfg:sequence>
+				<cfg:command name="XXE.open" parameter="%{P}%{S}..%{S}TemplateProject%{S}transfer_rules-Sample1.t1x"/>
+			</cfg:sequence>
+		</cfg:macro>
+	</cfg:command>
+	
+    <cfg:command name="showFTDocumentation">
+        <cfg:macro>
+            <cfg:sequence>
+                <cfg:command name="start" parameter="helper(defaultViewer) &quot;%{P}%{S}..%{S}..%{S}FLExTrans Documentation%{S}UserDoc.htm&quot;"/>
+            </cfg:sequence>
+        </cfg:macro>
+    </cfg:command>
+
     <cfg:command name="setReference">
         <cfg:macro trace="false">
             <cfg:sequence>

@@ -1,0 +1,70 @@
+#
+#   Custom Search.Find Matching Entries
+#
+#   Craig Farrow
+#   Nov 2024
+#
+
+from flextoolslib import *
+
+#----------------------------------------------------------------
+
+import re
+
+REGEX1 = r"\w*l[ou]"
+
+def build_match_string(lexeme):
+    return lexeme[:-2]
+    
+
+#----------------------------------------------------------------
+# Documentation for the user:
+
+docs = {FTM_Name       : "Find Matching Entries",
+        FTM_Version    : 1,
+        FTM_ModifiesDB : False,
+        FTM_Synopsis   : "Finds pairs of entries that match a certain pattern",
+        FTM_Help       : None,
+        FTM_Description: 
+f"""
+Finds all entries that match the regex '{REGEX1}' and then finds 
+any entries that match the root of that lexeme.
+""" }
+
+
+
+#----------------------------------------------------------------
+
+def Main(project, report, modifyAllowed):
+    
+    matchedEntries = []
+    wordsToFind = []
+
+    report.Info(f"Words matching Regex {REGEX1}:")
+    for e in project.LexiconAllEntries():
+        hw = project.LexiconGetHeadword(e)
+        if re.fullmatch(REGEX1, hw):
+            report.Info(f"  {hw}")
+            matchedEntries.append((hw,e))
+            wordsToFind.append(build_match_string(hw))
+            
+    partnersFound = 0
+    report.Info("Matching entries:")
+    for e in project.LexiconAllEntries():
+        hw = project.LexiconGetHeadword(e)
+        if hw in wordsToFind:
+            partnersFound += 1
+            report.Info(f"  '{hw}'", project.BuildGotoURL(e))
+            match, e1 = matchedEntries[wordsToFind.index(hw)]
+            report.Info(f"  ---> '{match}'", project.BuildGotoURL(e1))
+    
+    report.Info(f"{len(matchedEntries)} matches for regex {REGEX1}")
+    report.Info(f"{partnersFound} partner entries")        
+
+#----------------------------------------------------------------
+
+FlexToolsModule = FlexToolsModuleClass(Main, docs)
+
+#----------------------------------------------------------------
+if __name__ == '__main__':
+    print(FlexToolsModule.Help())

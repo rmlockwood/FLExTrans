@@ -40,25 +40,41 @@ import sys
 from flextoolslib import *                                          
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication
 
+import Mixpanel
+import Utils
 import ReadConfig
 import TextInOutUtils
 
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'TextOutRules'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInOutUtils'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.13",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : 'Define and test a set of post-synthesis search and replace operations.' ,
+        FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
-        FTM_Description: 
-"""
-This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
+        FTM_Description: _translate("TextOutRules",
+"""This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the Fix Up Synthesis Text module.
 This module is not in the Drafting collection of modules by default. You need to add Fix Up Synthesis Text to the Drafting collection 
-and move it to be after the Synthesize Text module.
-"""}
+and move it to be after the Synthesize Text module.""")}
+
+app.quit()
+del app
 
 DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
 
@@ -66,13 +82,17 @@ DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
+
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
     if not configMap:
         return
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Get the path to the search-replace rules file
@@ -92,12 +112,11 @@ def MainFunction(DB, report, modify=True):
             # Make a backup copy of the search-replace rule file
             shutil.copy2(textOutRulesFile, textOutRulesFile+'.bak')
     except:
-        report.Error('There was a problem creating or backing up the rules file. Check your configuration.')
+        report.Error(_translate('TextOutRules', 'There was a problem creating or backing up the rules file. Check your configuration.'))
         return
 
     # Show the window to get the options the user wants
-    app = QApplication(sys.argv)
-    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False)
+    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False, winTitle=docs[FTM_Name])
     window.show()
     app.exec_()
     

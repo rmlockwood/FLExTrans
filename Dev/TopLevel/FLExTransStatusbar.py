@@ -1,6 +1,9 @@
 #
 #   Custom status bar callback for FLExTrans
 #
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -13,18 +16,41 @@
 
 import ReadConfig
 import FTPaths 
+import Utils
+
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication 
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'FLExTransStatusBar'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
 
 # We need to set CURRENT_SRC_TEXT at the beginning so the statusbar can show the right thing.
 configMap = ReadConfig.readConfig(None)
-FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
+
+if configMap is None:
+    FTPaths.CURRENT_SRC_TEXT = "ERROR: NO CONFIG FILE FOUND!!"
+else:
+    FTPaths.CURRENT_SRC_TEXT = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, None)
+
+try:
+    sourceText = FTPaths.CURRENT_SRC_TEXT 
+except AttributeError:
+    sourceText = ""
+
+# return a string that gets added to the status bar
+retStr = _translate("FLExTransStatusbar","  Work Project: {project}    Source Text: {source_text}").format(project=FTPaths.WORK_PROJECT, source_text=sourceText)
+
+app.quit()
+del app
 
 def statusbarCallback():
-    try:
-        sourceText = FTPaths.CURRENT_SRC_TEXT 
-    except AttributeError:
-        sourceText = ""
 
-    # return a string that gets added to the status bar
-    return(f"  Work Project: {FTPaths.WORK_PROJECT}    Source Text: {sourceText}")
-  
- 
+    return retStr

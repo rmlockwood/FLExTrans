@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14 - 5/9/25 - Ron Lockwood
+#    Added localization capability.
+#
 #   Version 3.13.3 - 3/24/25 - Ron Lockwood
 #    use as string & as vern string functions
 #
@@ -118,28 +121,47 @@ from SIL.LCModel.Core.KernelInterfaces import ITsString                     # ty
 from flextoolslib import *                                                  # type: ignore
 from flexlibs import FLExProject, AllProjectNames
 
+import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
 
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QCoreApplication, QTranslator
+
+# Define _translate for convenience
+_translate = QCoreApplication.translate
+TRANSL_TS_NAME = 'DoStampSynthesis'
+
+translators = []
+app = QApplication([])
+
+# This is just for translating the docs dictionary below
+Utils.loadTranslations([TRANSL_TS_NAME], translators)
+
+# libraries that we will load down in the main function
+librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel'] 
+
 #----------------------------------------------------------------
 # Documentation that the user sees:
-description = """
-This module runs STAMP to create the
+description = _translate("DoStampSynthesis", """This module runs STAMP to create the
 synthesized text.
 Before creating the synthesized text, this module extracts the target language lexicon files, one each for
 roots, prefixes, suffixes and infixes. They are in the STAMP format for synthesis. The lexicon files
 are put into the folder designated in the Settings as Target Lexicon Files Folder. Usually this is the 'Build' folder.
 The synthesized text will be stored in the file specified by the Target Output Synthesis File setting.
 This is typically called target_text-syn.txt and is usually in the Output folder.
-NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.
-"""
+NOTE: Messages will say the SOURCE database is being used. Actually the target database is being used.""")
+
 docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.13.3",
+        FTM_Version    : "3.14",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : "Synthesizes the target text with the tool STAMP.",
+        FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       :"",
         FTM_Description: description}
+
+app.quit()
+del app
 
 DONT_CACHE = False
 CATEGORY_STR = 'category'
@@ -450,7 +472,7 @@ def writeNegEnvironments(f_handle, currAllomNum, currEnvironList, masterAlloList
             
 # A circumfix has two parts a prefix part and a suffix part
 # Write the 1st allomorph to the prefix file and the 2nd to the suffix file
-# Modify the glosses for each using the convention used in the module ConvertTextToSTAMPformat
+# Modify the glosses for each using the convention used in the module DoStampSynthesis
 # GLOSS_cfx_part_X where X is a or b
 def process_circumfix(e, f_pf, f_sf, myGloss, sense):
     
@@ -722,7 +744,7 @@ def output_nat_class_info(TargetDB, f_dec):
                     # Write out the grapheme string one after another on the line
                     grapheme = ITsString(graph.Representation.VernacularDefaultWritingSystem).Text
                     if not grapheme:
-                        err_list.append(('Null grapheme found for natural class: '+natClassName+'. Skipping.', 1))
+                        err_list.append((_translate("DoStampSynthesis", "Null grapheme found for natural class: {natClassName}. Skipping.").format(natClassName=natClassName), 1))
                         continue
                     else:
                         f_dec.write(' '+grapheme)
@@ -750,7 +772,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             
             if entry.HeadWord:
                 
-                err_list.append(('Skipping sense because the lexeme form is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                err_list.append((_translate("DoStampSynthesis", "Skipping sense because the lexeme form is unknown: while processing target headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                 
             continue
             
@@ -758,7 +780,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
             
             if entry.HeadWord:
                 
-                err_list.append(('Skipping sense because the morpheme type is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                err_list.append((_translate("DoStampSynthesis", "Skipping sense because the morpheme type is unknown: while processing target headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                 
             continue
             
@@ -833,13 +855,13 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                                           
                                 abbrev = Utils.as_string(msa.PartOfSpeechRA.Abbreviation)
                             else:
-                                err_list.append(('Skipping sense because the POS is unknown: while processing target headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                                err_list.append((_translate("DoStampSynthesis", "Skipping sense because the POS is unknown: while processing target headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                                 continue
                         else:
-                            err_list.append((f'Skipping sense that is of class: {msa.ClassName} for headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                            err_list.append((_translate("DoStampSynthesis", "Skipping sense that is of class: {className} for headword: {headword}.").format(className=msa.ClassName, headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                             continue
                     else:
-                        err_list.append(('Skipping sense that has no Morpho-syntax analysis. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                        err_list.append((_translate("DoStampSynthesis", "Skipping sense that has no Morpho-syntax analysis. Headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                         continue
     
                     # Write out morphname field
@@ -857,15 +879,15 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 else:
                     if gloss == None:
                         
-                        err_list.append(('No gloss. Skipping. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                        err_list.append((_translate("DoStampSynthesis", "No gloss. Skipping. Headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                         
                     elif entry.LexemeFormOA == None:
                         
-                        err_list.append(('No lexeme form. Skipping. Headword: '+ITsString(entry.HeadWord).Text, 1, TargetDB.BuildGotoURL(entry)))
+                        err_list.append((_translate("DoStampSynthesis", "No lexeme form. Skipping. Headword: {headword}.").format(headword=ITsString(entry.HeadWord).Text), 1, TargetDB.BuildGotoURL(entry)))
                         
                     elif entry.LexemeFormOA.MorphTypeRA == None:
                         
-                        err_list.append((f'No Morph Type. Skipping.{ITsString(entry.HeadWord).Text} Best Vern: {ITsString(entry.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text}', 1, TargetDB.BuildGotoURL(entry)))
+                        err_list.append((_translate("DoStampSynthesis", "No Morph Type. Skipping. {headword} Best Vern: {vernacular}.").format(headword=ITsString(entry.HeadWord).Text, vernacular=ITsString(entry.LexemeFormOA.Form.VernacularDefaultWritingSystem).Text), 1, TargetDB.BuildGotoURL(entry)))
                         
                     elif entry.LexemeFormOA.ClassName != 'MoStemAllomorph':
                         
@@ -875,7 +897,7 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             allAffixesList.append((entry, gloss, mySense, morphType))
 
                         else:
-                            err_list.append(('Skipping entry since the lexeme is of type: '+entry.LexemeFormOA.ClassName, 1, TargetDB.BuildGotoURL(entry)))
+                            err_list.append((_translate("DoStampSynthesis", "Skipping entry since the lexeme is of type: {className}.").format(className=entry.LexemeFormOA.ClassName), 1, TargetDB.BuildGotoURL(entry)))
                             
                     elif morphType not in morphNames:
                         
@@ -891,13 +913,13 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                             process_allomorphs(entry, f_sf, gloss, SUFFIX_TYPE, mySense)
                             sf_cnt += 1
                         else:
-                            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(entry)))
+                            err_list.append((_translate("DoStampSynthesis", "Skipping entry because the morph type is: {morphType}.").format(morphType=morphType), 1, TargetDB.BuildGotoURL(entry)))
 
     getRequiredFeaturesInfo(allAffixesList)   
 
     pf_cnt, sf_cnt, if_cnt = outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cnt, sf_cnt, if_cnt) 
 
-    err_list.append((f'STAMP dictionaries created. {str(rt_cnt)} roots, {str(pf_cnt)} prefixes, {str(sf_cnt)} suffixes and {str(if_cnt)} infixes.', 0))
+    err_list.append((_translate("DoStampSynthesis", "STAMP dictionaries created. {roots} roots, {prefixes} prefixes, {suffixes} suffixes and {infixes} infixes.").format(roots=str(rt_cnt), prefixes=str(pf_cnt), suffixes=str(sf_cnt), infixes=str(if_cnt)), 0))
     
     return err_list
 
@@ -961,7 +983,7 @@ def outputAllAffixes(allAffixesList, TargetDB, err_list, f_pf, f_if, f_sf, pf_cn
             pf_cnt += 1
             sf_cnt += 1
         else:
-            err_list.append(('Skipping entry because the morph type is: ' + morphType, 1, TargetDB.BuildGotoURL(e)))
+            err_list.append((_translate("DoStampSynthesis", "Skipping entry because the morph type is: {morphType}.").format(morphType=morphType), 1, TargetDB.BuildGotoURL(e)))
 
     return pf_cnt, sf_cnt, if_cnt
 
@@ -969,28 +991,25 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     error_list = []
         
     morphNames = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_MORPHNAMES, report)
-    if not morphNames: 
-        error_list.append(('Configuration file problem.', 2))
+    if not morphNames:
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem."), 2))
         return error_list
     
-    # Create a path to the temporary folder + project name
-#    partPath = os.path.join(tempfile.gettempdir(), targetProject)
-
     # Get the target project name
     targetProj = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     if not targetProj:
-        error_list.append(('Configuration file problem with TargetProject.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem with TargetProject."), 2))
         return error_list
     
     # Get lexicon files folder setting
     lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
     if not lexFolder:
-        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem with {folder}.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
     # Check that we have a valid folder
     if os.path.isdir(lexFolder) == False:
-        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Lexicon files folder: {folder} does not exist.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
     # Have all files start with targetProject
@@ -999,31 +1018,30 @@ def extract_target_lex(DB, configMap, report=None, useCacheIfAvailable=False):
     # Get cache data setting
     cacheData = ReadConfig.getConfigVal(configMap, ReadConfig.CACHE_DATA, report)
     if not cacheData:
-        error_list.append((f'Configuration file problem with {ReadConfig.CACHE_DATA}.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem with {cacheData}.").format(cacheData=ReadConfig.CACHE_DATA), 2))
         return error_list
 
     TargetDB = FLExProject()
 
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
-        error_list.append(('The Target Database does not exist. Please check the configuration file.', 2))
+        error_list.append((_translate("DoStampSynthesis", "The Target Database does not exist. Please check the configuration file."), 2))
         return error_list
-
     try:
         # Open the target database
         if not targetProj:
-            error_list.append(('Problem accessing the target project.', 2))
+            error_list.append((_translate("DoStampSynthesis", 'Problem accessing the target project.'), 2))
             return error_list
         TargetDB.OpenProject(targetProj, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error('Failed to open the target database.')
+            report.Error(_translate("DoStampSynthesis", 'Failed to open the target database.'))
         raise
 
     # If the target database hasn't changed since we created the root databse file, don't do anything.
     if useCacheIfAvailable and cacheData == 'y' and is_root_file_out_of_date(TargetDB, partPath+'_rt.dic') == False:
         TargetDB.CloseProject()
-        error_list.append(('Target lexicon files are up to date.', 0))
+        error_list.append((_translate("DoStampSynthesis", "Target lexicon files are up to date."), 0))
         return error_list
 
     # Create the dictionary files in a temp folder
@@ -1093,9 +1111,8 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
 
     targetProject = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_PROJECT, report)
     clean = ReadConfig.getConfigVal(configMap, ReadConfig.CLEANUP_UNKNOWN_WORDS, report)
-
-    if not (targetProject and clean): 
-        error_list.append(('Configuration file problem.', 2))
+    if not (targetProject and clean):
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem."), 2))
         return error_list
     
     if clean[0].lower() == 'y':
@@ -1110,12 +1127,12 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     # Get lexicon files folder setting
     lexFolder = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_LEXICON_FILES_FOLDER, report)
     if not lexFolder:
-        error_list.append((f'Configuration file problem with {ReadConfig.TARGET_LEXICON_FILES_FOLDER}.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Configuration file problem with {folder}.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
     
     # Check that we have a valid folder
     if os.path.isdir(lexFolder) == False:
-        error_list.append((f'Lexicon files folder: {ReadConfig.TARGET_LEXICON_FILES_FOLDER} does not exist.', 2))
+        error_list.append((_translate("DoStampSynthesis", "Lexicon files folder: {folder} does not exist.").format(folder=ReadConfig.TARGET_LEXICON_FILES_FOLDER), 2))
         return error_list
 
     # Have all files start with targetProject
@@ -1132,11 +1149,8 @@ def synthesize(configMap, anaFile, synFile, report=None, overrideClean=False):
     # Replace underscores with spaces in the Synthesized file
     # Underscores were added for multiword entries that contained a space
     fix_up_text(synFile, cleanUpText)
-
-    # Tell the user which file was created
-    error_list.append((f'The synthesized target text is in the file: {Utils.getPathRelativeToWorkProjectsDir(synFile)}.', 0))
-    error_list.append(('Synthesis complete.', 0))
-    
+    error_list.append((_translate("DoStampSynthesis", "The synthesized target text is in the file: {filePath}.").format(filePath=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
+    error_list.append((_translate("DoStampSynthesis", "Synthesis complete."), 0))
     return error_list
 
 def doStamp(DB, report, configMap=None):
@@ -1152,31 +1166,34 @@ def doStamp(DB, report, configMap=None):
     # Allow the synthesis and ana files to not be in the temp folder if a slash is present
     targetANA = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_ANA_FILE, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)
-    if not (targetANA and targetSynthesis):
-        return None 
     
-    # Verify that the ana file exists.
-    if os.path.exists(targetANA) == False:
-        report.Error(f'The Convert Text to STAMP Format module must be run before this module. The {ReadConfig.TARGET_ANA_FILE}: {targetANA} does not exist.')
+    if not (targetANA and targetSynthesis):
+
+        return None
+    
+    if not os.path.exists(targetANA):
+
+        report.Error(_translate("DoStampSynthesis", "The Convert Text to STAMP Format module must be run before this module. The {fileType}: {filePath} does not exist.").format(fileType=ReadConfig.TARGET_ANA_FILE, filePath=targetANA))
         return None
     
     anaFile = Utils.build_path_default_to_temp(targetANA)
     synFile = Utils.build_path_default_to_temp(targetSynthesis)
-    
-    # Extract the target lexicon
     error_list = extract_target_lex(DB, configMap, report, useCacheIfAvailable=True)
-
-    # Synthesize the new target text
     err_list = synthesize(configMap, anaFile, synFile, report)
     error_list.extend(err_list)
-    
-    # output info, warnings, errors and url links
+
     if not Utils.processErrorList(error_list, report):
+
         return None   
     
     return 1
 
 def MainFunction(DB, report, modifyAllowed):
+
+    translators = []
+    app = QApplication([])
+    Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
+                           translators, loadBase=True)
 
     # Read the configuration file.
     configMap = ReadConfig.readConfig(report)
@@ -1184,11 +1201,12 @@ def MainFunction(DB, report, modifyAllowed):
         return 
     
     # Log the start of this module on the analytics server if the user allows logging.
-    import Mixpanel
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     doStamp(DB, report, configMap)
 
+
+    
 #----------------------------------------------------------------
 # The name 'FlexToolsModule' must be defined like this:
 
