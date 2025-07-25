@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
 #   Version 3.14.2 - 7/23/25 - Ron Lockwood
 #    Fixes #1013. Show duplicate affix gloss warnings.
 #
@@ -834,7 +837,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
     return countList, posAbbrStr
 
-def getSourceTextList(DB, matchingContentsObjList=None):
+def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
 
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
@@ -845,6 +848,11 @@ def getSourceTextList(DB, matchingContentsObjList=None):
         if matchingContentsObjList != None:
 
             matchingContentsObjList.append(interlinText.ContentsOA)
+
+        # if the caller wants to get a list of text objects, add to the provided list
+        if textObjList != None:
+
+            textObjList.append(interlinText)
 
     return sourceList
 

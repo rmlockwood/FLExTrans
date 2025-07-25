@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.2 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
 #   Version 3.14.1 - 7/23/25 - Ron Lockwood
 #    Fixes #1013. Show duplicate affix gloss warnings.
 #
@@ -258,7 +261,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -2516,9 +2519,10 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         return ERROR_HAPPENED
 
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
 
     if sourceText not in sourceTextList:
 
@@ -2526,6 +2530,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceText)]
+        textObj = textObjList[sourceTextList.index(sourceText)]
 
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -2658,6 +2663,9 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         # Normal, non-TreeTran processing
         if myText.haveData() == True:
             segment_list = myText.getSurfaceAndDataTupleListBySent()
+
+    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText),
+                DB.BuildGotoURL(textObj))
 
     if len(segment_list) > 0:
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
 #   Version 3.14.2 - 7/2/25 - Ron Lockwood
 #    Fixes #1014. Pre-fill the New Entry lexeme form with the text that was in the search box.
 #
@@ -230,7 +233,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1832,9 +1835,10 @@ def RunModule(DB, report, configMap, app):
         return ERROR_HAPPENED
     
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
     
     if sourceTextName not in sourceTextList:
         
@@ -1842,6 +1846,7 @@ def RunModule(DB, report, configMap, app):
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceTextName)]
+        textObj = textObjList[sourceTextList.index(sourceTextName)]
     
     senseEquivField = DB.LexiconGetSenseCustomFieldNamed(linkField)
 
@@ -1881,7 +1886,8 @@ def RunModule(DB, report, configMap, app):
         report.Error(_translate("LinkSenseTool", 'Failed to open the target database.'))
         raise
 
-    report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName))
+    report.Info(_translate("LinkSenseTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceTextName),
+                DB.BuildGotoURL(textObj))
 
     preGuidStr = 'silfw://localhost/link?database%3d'
     preGuidStr += re.sub('\s','+', targetProj)
