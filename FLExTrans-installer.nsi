@@ -487,10 +487,12 @@ associate_extension:
     nsisunz::Unzip "$INSTDIR\install_files\AddOnsForXMLmind_es${PRODUCT_VERSION}.zip" "$APPDATA\XMLmind\XMLEditor8\addon"
   ${EndIf}
   
-  # Install the XXE properties file
-  SetOutPath "$APPDATA\XMLmind\XMLEditor8"
-  File "${GIT_FOLDER}\preferences.properties"
-  SetOutPath "$INSTDIR"
+  # Update the XXE properties file
+  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "checkForUpdates=true" "checkForUpdates=false"
+
+  # SetOutPath "$APPDATA\XMLmind\XMLEditor8"
+  # File "${GIT_FOLDER}\preferences.properties"
+  # SetOutPath "$INSTDIR"
 
   # Remove the install_files folder
   RMDir /r "$INSTDIR\install_files"
