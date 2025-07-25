@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.1 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -82,7 +85,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
@@ -161,7 +164,8 @@ def insertTargetText(DB, configMap, report):
     # Set metadata for the text
     ChapterSelection.setTextMetaData(DB, text)
 
-    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName} created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj))
+    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName} created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
+                TargetDB.BuildGotoURL(text))
     TargetDB.CloseProject()
 
     return 1
