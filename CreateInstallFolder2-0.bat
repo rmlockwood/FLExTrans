@@ -2,6 +2,16 @@ SET FLEXTRANS_VERSION=3.13.1
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
+
+rem THIS INSTALL IS FOR TASTE OF FLExTrans
+REM --------------------------------------
+set SUFF=TOFT
+set FLEXTRANS_VERSION=%FLEXTRANS_VERSION%%SUFF%
+set TOFT_DIR=TOFTinstall
+
+rem User interface language codes
+set LANG_CODES=de es
+
 rem Delete everything in Install%INSTALL_FOLDER_VERSION%
 rd /s /q Install%INSTALL_FOLDER_VERSION%
 
@@ -38,6 +48,9 @@ for %%d in (German-Swedish TemplateProject) do (
 	copy MakefileForLiveRuleTester %workprojects%\%%d\Build\LiveRuleTester\Makefile
 	copy MakefileForLiveRuleTester.advanced %workprojects%\%%d\Build\LiveRuleTester\Makefile.advanced
 )
+
+rem TOFT
+xcopy /s %TOFT_DIR%\WorkProjs\*.* %workprojects%
 
 rem copy the FlexTrans.config file and force it to be overwritten.
 copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.config
@@ -86,6 +99,7 @@ for %%d in (Images Agreement "Irregular Form" "Synthesis Self-Test" "Transfer Ru
 rem SampleProjects
 copy "Sample Projects\German-FLExTrans-Sample*.fwbackup" %sampleproject%
 copy "Sample Projects\Swedish-FLExTrans-Sample*.fwbackup" %sampleproject%
+copy %TOFT_DIR%\*.fwbackup %sampleproject%
 
 SET ADD_ON_ZIP_FILE=AddOnsForXMLmind%FLEXTRANS_VERSION%.zip
 cd XXEaddon
