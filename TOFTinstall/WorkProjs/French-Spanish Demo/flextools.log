@@ -1,0 +1,30 @@
+INFO:flextoolslib.code.FLExTools:FLExTools library version: 2025.7.11beta1
+INFO:flextoolslib.code.FTConfig:Current working directory: C:\Users\rlboo\Documents\FLExTrans\WorkProjects\French-Spanish Demo\Config
+INFO:flexlibs.code.FLExInit:flexlibs version: 1.2.6
+INFO:flexlibs.code.FLExInit:Python version: 3.11.7 (tags/v3.11.7:fa7a6f2, Dec  4 2023, 19:24:49) [MSC v.1937 64 bit (AMD64)]
+INFO:flexlibs.code.FLExGlobals:.NET version: 4.0.30319.42000
+INFO:flexlibs.code.FLExGlobals:Looking for FieldWorks 9, 64bit...
+INFO:flexlibs.code.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_CURRENT_USER\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.code.FLExGlobals:GetFWRegKey: SOFTWARE\SIL\FieldWorks\9 => HKEY_LOCAL_MACHINE\SOFTWARE\SIL\FieldWorks\9
+INFO:flexlibs.code.FLExGlobals:sys.path = 
+	C:\Users\rlboo\Documents\FLExTrans\FlexTools
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python311\python311.zip
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python311\DLLs
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python311\Lib
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python311
+	C:\Users\rlboo\AppData\Local\Programs\Python\Python311\Lib\site-packages
+	C:\Windows\Microsoft.NET\Framework64\v4.0.30319\
+	C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.code.FLExGlobals:Found FieldWorks installation
+INFO:flexlibs.code.FLExGlobals:FWCodeDir = C:\Program Files\SIL\FieldWorks 9\
+INFO:flexlibs.code.FLExGlobals:FWProjectsDir = C:\ProgramData\SIL\FieldWorks\Projects\
+INFO:flexlibs.code.FLExGlobals:FWShortVersion = 9.3.0
+INFO:flexlibs.code.FLExGlobals:FWLongVersion = Version: 9.3.0.1056 Alpha  2025-07-17  (64 bit)
+INFO:flextoolslib.code.FLExTools:flexlibs imported successfully
+INFO:flextoolslib.code.FTModules:Module libraries found: ['FLExTrans', '']
+INFO:flextoolslib.code.FTModules:From library 'FLExTrans': ['AdHocConstrForCluster.py', 'CatalogTargetAffixes.py', 'CleanFiles.py', 'ConvertTextToSTAMPformat.py', 'DoHermitCrabSynthesis.py', 'DoStampSynthesis.py', 'DoSynthesis.py', 'EndTestbed.py', 'ExportFlexToParatext.py', 'ExportToParatext.py', 'ExtractBilingualLexicon.py', 'ExtractSourceText.py', 'FixFLExProjects.py', 'FixUpSynthText.py', 'GenerateParses.py', 'ImportFromParatext.py', 'InsertTargetText.py', 'LinkAllSensesAsDup.py', 'LinkSenseTool.py', 'LiveRuleTesterTool.py', 'OpenFLExProjects.py', 'ReplacementEditor.py', 'RestoreFLExProjects.py', 'RuleAssistant.py', 'RunApertium.py', 'RunTreeTran.py', 'SetUpTransferRuleGramCat.py', 'StartTestbed.py', 'TestbedLogViewer.py', 'TextInRules.py', 'TextOutRules.py', 'TranslateText.py', 'ViewSrcTgt.py']
+INFO:flextoolslib.code.FTModules:From library '': []
+INFO:flextoolslib.code.FTModules:Module libraries found: ['FLExTrans', '']
+INFO:flextoolslib.code.FTModules:From library 'FLExTrans': ['AdHocConstrForCluster.py', 'CatalogTargetAffixes.py', 'CleanFiles.py', 'ConvertTextToSTAMPformat.py', 'DoHermitCrabSynthesis.py', 'DoStampSynthesis.py', 'DoSynthesis.py', 'EndTestbed.py', 'ExportFlexToParatext.py', 'ExportToParatext.py', 'ExtractBilingualLexicon.py', 'ExtractSourceText.py', 'FixFLExProjects.py', 'FixUpSynthText.py', 'GenerateParses.py', 'ImportFromParatext.py', 'InsertTargetText.py', 'LinkAllSensesAsDup.py', 'LinkSenseTool.py', 'LiveRuleTesterTool.py', 'OpenFLExProjects.py', 'ReplacementEditor.py', 'RestoreFLExProjects.py', 'RuleAssistant.py', 'RunApertium.py', 'RunTreeTran.py', 'SetUpTransferRuleGramCat.py', 'StartTestbed.py', 'TestbedLogViewer.py', 'TextInRules.py', 'TextOutRules.py', 'TranslateText.py', 'ViewSrcTgt.py']
+INFO:flextoolslib.code.FTModules:From library '': []
+INFO:flextoolslib.code.FTModules:Project opened: French-FLExTrans-Demo2025
