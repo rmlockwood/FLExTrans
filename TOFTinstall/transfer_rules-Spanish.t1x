@@ -789,7 +789,7 @@ v="gender-UNK"
 ></section-def-macros
 ><section-rules
 ><rule
-comment="det"
+comment="det "
 ><!--Rule Assistant Description: Rule for setting NP agreement when mapping from Spanish to Spanish (and we might be using a source string that had a different gender).--><pattern
 ><pattern-item
 n="c_det"
