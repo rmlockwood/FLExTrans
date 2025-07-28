@@ -411,6 +411,9 @@ InitPluginsDir
 
   ${EndIf}
 
+  # Set the folder permission to be writable by all
+  nsExec::Exec '"icacls" "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}" /grant *S-1-1-0:(OI)(CI)(M) /T /C'
+
   # Attempt to run pip to install FlexTools dependencies
   !define mycmd '"$LocalAppdata\Programs\Python\Python311\python.exe" -m pip install -r "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}\requirements.txt"'
   SetOutPath "$OUT_FOLDER\${FLEX_TOOLS_WITH_VERSION}"
