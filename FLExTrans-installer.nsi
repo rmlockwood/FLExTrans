@@ -485,7 +485,7 @@ associate_extension:
   ${EndIf}
   
   # Update the XXE properties file
-  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "checkForUpdates=true" "checkForUpdates=false"
+  !insertmacro _ReplaceInFile "$APPDATA\XMLmind\XMLEditor8\preferences.properties" "autoCheckForUpdates=true" "autoCheckForUpdates=false"
 
   # SetOutPath "$APPDATA\XMLmind\XMLEditor8"
   # File "${GIT_FOLDER}\preferences.properties"
