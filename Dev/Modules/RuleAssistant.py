@@ -444,7 +444,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(_translate('RuleAssistant', f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}'))
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=e.output.decode("utf-8"), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------

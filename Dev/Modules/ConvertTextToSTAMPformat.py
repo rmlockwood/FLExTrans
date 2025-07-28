@@ -174,7 +174,7 @@ docs = {FTM_Name       : "Convert Text to Synthesizer Format",
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format".format(runApert=RunApertDocs[FTM_Name])),
         FTM_Help  : "", 
         FTM_Description: _translate("ConvertTextToSTAMPformat",
-"""This module will take the Target Transfer Results File created by Apertium and convert it to a format suitable 
+"""This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable 
 for synthesis, using information from the Target Project indicated in the settings.  Depending on the setting for 
 HermitCrab synthesis, the output file will either be in STAMP format or in a format suitable for the HermitCrab 
 synthesis program. 
@@ -184,7 +184,7 @@ called target_text-ana.txt.
 For HermitCrab, the file is what you specified by the Hermit Crab Master File setting -- typically called 
 target_words-HC.txt. Both files are usually in the Build folder.
 NOTE: messages and the task bar will show the SOURCE database as being used. Actually the target database 
-is being used.""")}
+is being used.""").format(runApert=RunApertDocs[FTM_Name])}
 
 app.quit()
 del app

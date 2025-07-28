@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/17/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -178,7 +181,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",
@@ -187,9 +190,9 @@ docs = {FTM_Name       : "Import Text From Paratext",
 imported. The book name should be given as a three-letter abbreviation just like in
 Paratext. Those chapters are gathered and inserted into the current FLEx project as a 
 new text. If you want to include various things, click the appropriate check box. 
-If you want to use the English full name of the book in the text name, instead of the abbreviation, click the check box. 
+If you want to use the full name of the book in the text name, instead of the abbreviation, click the check box. 
 If you want to make the newly imported text, the active text in FLExTrans click the check box.
-Importing into multiple FLEx projects from multiple Paratext projects is possible. First select
+Importing into multiple FLEx projects from multiple Paratext projects is possible. First select your
 cluster projects in the main FLExTrans Settings, then come back to this module.""")}
 
 app.quit()
