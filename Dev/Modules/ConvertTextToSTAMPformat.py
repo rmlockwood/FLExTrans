@@ -171,7 +171,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 docs = {FTM_Name       : "Convert Text to Synthesizer Format",
         FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format".format(runApert=RunApertDocs[FTM_Name])),
+        FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
         FTM_Description: _translate("ConvertTextToSTAMPformat",
 """This module will take the Target Transfer Results File created by {runApert} and convert it to a format suitable 
