@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.2 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14.1 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -68,6 +71,7 @@ import ChapterSelection
 import Mixpanel
 import ReadConfig
 import Utils
+from DoSynthesis import docs as DoSynthesisDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -85,17 +89,16 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",
         FTM_Description: _translate("InsertTargetText", 
-"""The target database set in the configuration file will be used. This module will take
-the results of the synthesis process (Create Target Dictionaries and Synthesize module)
-and insert the text into the target FLEx project. The SourceTextName property in 
-the FlexTrans.config file will be used for the text name in the target project. NOTE: A message window
-will be displayed asking if you want to make changes to the SOURCE project. This is not true. This module
-will only change the target database as specified in the configuration file.""")}
+"""The target project specified in the settings will be used. This module will take
+the results of the {doSynthModule} module
+and insert the text into the target FLEx project. The Source Text Name setting
+will be used for the text name in the target project. An existing text of the 
+same name will not be overwritten. A copy will be created.""").format(doSynthModule=DoSynthesisDocs[FTM_Name])}
 
 app.quit()
 del app
@@ -114,10 +117,10 @@ def insertTargetText(DB, configMap, report):
             return None
         TargetDB.OpenProject(targetProj, True)
     except: 
-        report.Error(_translate("InsertTargetText", 'Failed to open the target database.'))
+        report.Error(_translate("InsertTargetText", 'Failed to open the target project.'))
         raise
 
-    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target database.').format(targetProj=targetProj))
+    report.Info(_translate("InsertTargetText", 'Using: {targetProj} as the target project.').format(targetProj=targetProj))
 
     sourceTextName = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
     targetSynthesis = ReadConfig.getConfigVal(configMap, ReadConfig.TARGET_SYNTHESIS_FILE, report)

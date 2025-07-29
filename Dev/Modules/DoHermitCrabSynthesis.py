@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -131,6 +134,7 @@ import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
+from RunApertium import docs as RunApertDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -148,7 +152,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -159,8 +163,8 @@ This will default to something like 'target_text-syn.txt'.
 Before creating the synthesized text, this module extracts the target language lexicon in the form of a HermitCrab
 configuration file. 
 It is named 'HermitCrab.config' and will be in the 'Build' folder. 
-NOTE: Messages will say the SOURCE database
-is being used. Actually the target database is being used.
+NOTE: Messages will say the source project
+is being used. Actually the target project is being used.
 Advanced Information: This module runs HermitCrab against a list of target parses ('target_words-parses.txt') to
 produce surface forms ('target_words-surface.txt'). 
 These forms are then used to create the target text.""")}
@@ -215,7 +219,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
 
     except: #FDA_DatabaseError, e:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target database: {targetProj}.").format(targetProj=targetProj), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
         return errorList
 
     # Get fwdata file path
@@ -280,7 +284,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
                 # Check for KeyNotFoundException from FLEx
                 if re.search('KeyNotFoundException', result.stderr.decode()):
 
-                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} database.").format(projectName=TargetDB.ProjectName()), 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.").format(projectName=TargetDB.ProjectName()), 2))
                     errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
 
                 errorList.append((result.stderr.decode(), 2))
@@ -341,7 +345,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the Run Apertium module?').format(transferResultsFile=transferResultsFile), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the {runApertium} module?').format(transferResultsFile=transferResultsFile, runApertium=RunApertDocs[FTM_Name]), 2))
         return errorList
     
     # Read the results file into a string

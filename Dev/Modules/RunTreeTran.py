@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/27/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -58,6 +61,7 @@ import Mixpanel
 import Utils
 import ReadConfig
 import FTPaths
+from ExtractSourceText import docs as ExtractSourceTextDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -75,18 +79,18 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),    
         FTM_Help   : "",
         FTM_Description: _translate("RunTreeTran",  
 """This module will run the TreeTran program to modify a syntax tree. The resulting
-file is placed in the Output folder which is then used by the ExtractSourceText
+file is placed in the Output folder which is then used by the {extractSourceTextModule}
 module to modify the word order of the sentence according to the TreeTran rules
 file. The TreeTran Rules file is in the Output folder also. This module assumes
 that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%). 
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
-button is used. """)}
+button is used. """).format(extractSourceTextModule=ExtractSourceTextDocs[FTM_Name])}
 
 app.quit()
 del app

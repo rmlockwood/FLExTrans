@@ -663,7 +663,7 @@ def openProject(report, DBname):
         myDB.OpenProject(DBname, True)
     except: #FDA_DatabaseError, e:
         if report:
-            report.Error(_translate("Utils", "There was an error opening database: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(DBname=DBname))
+            report.Error(_translate("Utils", "There was an error opening project: {DBname}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(DBname=DBname))
         return None
 
     return myDB
@@ -680,14 +680,14 @@ def openTargetProject(configMap, report):
     # See if the target project is a valid database name.
     if targetProj not in AllProjectNames():
         if report:
-            report.Error(_translate("Utils", "The Target Database does not exist. Please check the configuration file."))
+            report.Error(_translate("Utils", "The target project does not exist. Please check the configuration file."))
         return
     
     try:
         TargetDB.OpenProject(targetProj, True)
     except:
         if report:
-            report.Error(_translate("Utils", "There was an error opening target database: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
+            report.Error(_translate("Utils", "There was an error opening target project: {targetProj}. Perhaps the project is open and the sharing option under FieldWorks Project Properties has not been clicked.").format(targetProj=targetProj))
         raise
 
     return TargetDB
@@ -804,7 +804,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
                 if report:
                     report.Error(_translate("Utils", "The abbreviation/name: '{posAbbrStr}' for {myType}: '{posFullNameStr}' can't have a {charName} in it. Could not complete, '+\
-                                            'please correct this {myType} in the {dbType} database.").format(posAbbrStr=posAbbrStr, myType=myType, posFullNameStr=posFullNameStr, charName=charName, dbType=dbType))                
+                                            'please correct this {myType} in the {dbType} project.").format(posAbbrStr=posAbbrStr, myType=myType, posFullNameStr=posFullNameStr, charName=charName, dbType=dbType))                
                     haveError = True
 
                 # show all fatal errors
@@ -819,7 +819,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
             if countList[i] < numCatErrorsToShow:
 
                 if report:
-                    report.Warning(_translate("Utils", "The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} database can't have a {charName} in it. The {charName} '+\
+                    report.Warning(_translate("Utils", "The abbreviation/name: '{oldAbbrStr}' for {myType}: '{posFullNameStr}' in the {dbType} project can't have a {charName} in it. The {charName} '+\
                                               'has been {message}, forming {posAbbrStr}. Keep this in mind when referring to this {myType} in transfer rules.").
                                               format(oldAbbrStr=oldAbbrStr, myType=myType, posFullNameStr=posFullNameStr, dbType=dbType, charName=charName, message=message, posAbbrStr=posAbbrStr))
 
@@ -977,7 +977,7 @@ def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField,
     except:
         headWord = getHeadwordStr(entry)
         if report:
-            report.Error(_translate("Utils", "Invalid url link or url not found in the target database while processing source headword: {headWord}.").format(headWord=headWord),
+            report.Error(_translate("Utils", "Invalid url link or url not found in the target project while processing source headword: {headWord}.").format(headWord=headWord),
             DB.BuildGotoURL(entry))
         return retVal
 

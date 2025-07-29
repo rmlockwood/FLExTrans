@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/20/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -65,14 +68,14 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
         FTM_Description: _translate("FixUpSynthText", 
 """This module will run a set of search and replace operations to fix up the text that comes out of 
-synthesis. The operations are defined with the Text Out Rules module. The rules are stored in the
-Fix Up Synthesis Text Rules File as specified in the Settings.""")}
+synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
+Fix Up Synthesis Text Rules File as specified in the Settings.""").format(textOutRulesModule=TextInOutUtils.TEXTOUT_MODULENAME)}
 
 app.quit()
 del app

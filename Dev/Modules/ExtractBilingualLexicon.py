@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/16/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -154,6 +157,7 @@ from flextoolslib import *
 import Mixpanel
 import ReadConfig
 import Utils
+from ReplacementEditor import docs as ReplEditorDocs
 
 DONT_CACHE = True
 
@@ -175,7 +179,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Build Bilingual Lexicon",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ExtractBilingualLexicon", "Builds an Apertium-style bilingual lexicon."),
         FTM_Help   : "",
@@ -187,8 +191,8 @@ This module builds the bilingual lexicon based on the links from source senses t
 that are in your source project. Use the Sense Linker Module to create these links.
 The bilingual lexicon will be stored in the file specified by the Bilingual Dictionary Output File setting.
 This is typically called bilingual.dix and is usually in the Output folder.\n
-You can make custom changes to the bilingual lexicon by using Replacement Dictionary Editor. See the help
-document for more details.""")}
+You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
+document for more details.""").format(replEditorModule=ReplEditorDocs[FTM_Name])}
 
 app.quit()
 del app
@@ -350,7 +354,7 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
     else:
         DONT_CACHE = True
 
-    # If the target database hasn't changed since we created the affix file, don't do anything.
+    # If the target project hasn't changed since we created the affix file, don't do anything.
     if not DONT_CACHE and useCacheIfAvailable and bilingFileOutOfDate(DB, TargetDB, bilingFile) == False and replFileOutOfDate(bilingFile, replFile) == False:
 
         errorList.append((_translate("ExtractBilingualLexicon", "The bilingual dictionary is up to date."), 0))
