@@ -53,7 +53,7 @@ import xml.etree.ElementTree as ET
 from wildebeest.wb_normalize import Wildebeest
 
 from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 
@@ -81,6 +81,8 @@ WB_BASE_NONE = 'NONE'
 WB_LANG_CODE_ATTRIB = 'LangCode'
 WB_ADD_STEP_ATTRIB = 'AddStep'
 WB_SKIP_STEP_ATTRIB = 'SkipStep'
+
+TEXTOUT_MODULENAME = "Text Out Rules"
 
 ARROW_CHAR = '⭢'
 

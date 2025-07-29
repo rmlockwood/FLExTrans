@@ -51,7 +51,6 @@ import TextInOutUtils
 import Mixpanel
 import ReadConfig
 import Utils
-from TextOutRules import docs as TextOutRulesDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -76,7 +75,7 @@ docs = {FTM_Name       : "Fix Up Synthesis Text",
         FTM_Description: _translate("FixUpSynthText", 
 """This module will run a set of search and replace operations to fix up the text that comes out of 
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
-Fix Up Synthesis Text Rules File as specified in the Settings.""").format(textOutRulesModule=TextOutRulesDocs[FTM_Name])}
+Fix Up Synthesis Text Rules File as specified in the Settings.""").format(textOutRulesModule=TextInOutUtils.TEXTOUT_MODULENAME)}
 
 app.quit()
 del app
