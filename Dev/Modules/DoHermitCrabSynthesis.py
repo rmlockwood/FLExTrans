@@ -219,7 +219,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
 
     except: #FDA_DatabaseError, e:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target database: {targetProj}.").format(targetProj=targetProj), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", "Failed to open the target project: {targetProj}.").format(targetProj=targetProj), 2))
         return errorList
 
     # Get fwdata file path
@@ -284,7 +284,7 @@ def extractHermitCrabConfig(DB, configMap, HCconfigPath, report=None, useCacheIf
                 # Check for KeyNotFoundException from FLEx
                 if re.search('KeyNotFoundException', result.stderr.decode()):
 
-                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} database.").format(projectName=TargetDB.ProjectName()), 2))
+                    errorList.append((_translate("DoHermitCrabSynthesis", "The error contains a 'KeyNotFoundException' and this often indicates that the FLEx Find and Fix utility should be run on the {projectName} project.").format(projectName=TargetDB.ProjectName()), 2))
                     errorList.append((_translate("DoHermitCrabSynthesis", "The full error message is:"), 2))
 
                 errorList.append((result.stderr.decode(), 2))

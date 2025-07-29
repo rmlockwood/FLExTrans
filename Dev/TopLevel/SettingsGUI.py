@@ -1309,7 +1309,7 @@ class Main(QMainWindow):
 
 def giveDBErrorMessageBox(myProj):
     
-    errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' database. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
+    errMsg = _translate("SettingsGUI", "Failed to open the '{projectName}' project. This could be because you have the project open and you have not turned on the sharing option in the Sharing tab of the Fieldworks Project Properties dialog. This is found under File > Project Management > Fieldworks Project Properties on the menu.").format(projectName=myProj)
     MessageBox.Show(errMsg, _translate("SettingsGUI", "FLExTrans Settings"), MessageBoxButtons.OK)
 
 def MainFunction(DB, report, modify=True): 
