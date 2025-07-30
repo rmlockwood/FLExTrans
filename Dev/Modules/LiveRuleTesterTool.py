@@ -864,7 +864,7 @@ class Main(QMainWindow):
         self.AdvancedOptionsCheckboxClicked()
 
         self.setMinimumHeight(500)
-        self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
+        # self.ui.transferRuleButtonsHorizLayout.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
         self.retVal = True
 
     def AdvancedOptionsCheckboxClicked(self):
