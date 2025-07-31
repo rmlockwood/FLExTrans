@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1032. Space between lexical units in the Execution Log.
+#
 #   Version 3.14.3 - 7/25/25 - Ron Lockwood
 #    Fixes #1022. Use improved Apertium execution log.
 #
@@ -264,7 +267,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -2438,7 +2441,7 @@ class Main(QMainWindow):
                 for lexUnit in lexUnitList:
 
                     # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit, paragraphEl, self.__sent_model.getRTL(), True)
+                    processFunc(lexUnit+' ', paragraphEl, self.__sent_model.getRTL(), True)
 
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
