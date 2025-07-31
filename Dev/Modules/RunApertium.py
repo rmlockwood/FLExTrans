@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.14.2 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -96,7 +99,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help  : "",  
@@ -240,7 +243,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
     for tag in ['lit', 'list-item']:
         for node in tree.findall('.//test//'+tag):
             if 'v' in node.attrib:
-                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'])
+                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'], notAngleBrackets=True)
 
     outPath = os.path.join(buildFolder, strippedRulesFileName)
     with open(outPath, 'w', encoding='utf-8') as fout:
