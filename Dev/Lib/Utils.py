@@ -5,6 +5,9 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
 #   Version 3.14.3 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -299,6 +302,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # Don't list backslash here, it is handled in the functions that use the
 # reserved character list
 APERT_RESERVED = r'\[\]@/^${}<>*'
+APERT_RESERVED_NOT_ANGLE_BRACKETS = r'\[\]@/^${}*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -343,6 +347,7 @@ rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
 reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
+reApertReservedNotAngles = re.compile(rf'(?<!\\)([{APERT_RESERVED_NOT_ANGLE_BRACKETS}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
@@ -1354,10 +1359,14 @@ def unescapeReservedApertChars(inStr):
 
     return reApertReservedEscaped.sub(r'\1', inStr)
 
-def escapeReservedApertChars(inStr):
+def escapeReservedApertChars(inStr, notAngleBrackets=False):
     
     # Escape special characters that are not already escaped
-    inStr = reApertReserved.sub(r'\\\1', inStr)
+    if notAngleBrackets:
+        # Escape all reserved characters except angle brackets
+        inStr = reApertReservedNotAngles.sub(r'\\\1', inStr)
+    else:
+        inStr = reApertReserved.sub(r'\\\1', inStr)
 
     # Now escape backslashes that are not already escaped and aren't being used to escape a special char
     inStr = re.sub(rf'(?<!\\)\\([^{APERT_RESERVED}\\]|$)', r'\\\\\1', inStr)
