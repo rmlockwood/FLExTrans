@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/26/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -43,7 +46,10 @@ import dataclasses
 
 from PyQt5.QtCore import QCoreApplication
 
+from flextoolslib import FTM_Name                                                 
+
 import Utils
+from RuleAssistant import docs as RuleAssistDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -1099,7 +1105,7 @@ class RuleGenerator:
         self.ruleNames.add(ruleName)
 
         for desc in rule.findall('.//Description'):
-            ruleEl.append(ET.Comment(_translate('CreateApertiumRules', 'Rule Assistant Description: {desc}').format(desc=desc.text)))
+            ruleEl.append(ET.Comment(_translate('CreateApertiumRules', '{ruleAssistant} Description: {desc}').format(desc=desc.text, ruleAssistant=RuleAssistDocs[FTM_Name])))
 
         # Create the <pattern>
         wordCats = {}
@@ -1546,7 +1552,7 @@ def CreateRules(sourceDB, targetDB, report, configMap, ruleAssistantFile, transf
         with open(ruleAssistantFile, "r") as rulesAssistant:
             assistantTree = ET.parse(rulesAssistant)
     except:
-        report.Error(_translate('CreateApertiumRules', 'No Rule Assistant file found, please run the Set Up Transfer Rule Categories and Attributes tool'))
+        report.Error(_translate('CreateApertiumRules', 'No {ruleAssistant} file found, please run the Set Up Transfer Rule Categories and Attributes tool').format(ruleAssistant=RuleAssistDocs[FTM_Name]))
         return -1
 
     generator = RuleGenerator(sourceDB, targetDB, report, configMap)

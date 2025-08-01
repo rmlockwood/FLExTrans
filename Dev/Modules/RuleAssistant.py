@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -66,6 +69,7 @@ import Utils
 import ReadConfig
 import CreateApertiumRules
 import FTPaths
+from RunApertium import docs as RunApertDocs
 
 from SIL.LCModel import ( # type: ignore
     IFsClosedFeatureRepository, ITextRepository,
@@ -88,7 +92,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
 docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
         FTM_Help  : "",
@@ -330,7 +334,7 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     if not os.path.isfile(bidix):
 
-        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. Run the "Run Apertium" module to display test data in the Rule Assistant.'))
+        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. Run the "{runApert}" module to display test data in the {ruleAssistant}.').format(runApert=RunApertDocs[FTM_Name], ruleAssistant=docs[FTM_Name]))
         return False
 
     content = None
@@ -440,7 +444,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(_translate('RuleAssistant', f'An error happened when running the Rule Assistant tool: {e.output.decode("utf-8")}'))
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=e.output.decode("utf-8"), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------

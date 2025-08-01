@@ -1,7 +1,7 @@
 SET FLEXTRANS_VERSION=3.14
 rem It doesn't matter so much what this next version # is, 1) we get requirements.txt from it. So this folder, with flextools- prepended, has to exist
 rem  2) we create a folder named this in the install
-SET INSTALL_FOLDER_VERSION=2.2.1
+SET INSTALL_FOLDER_VERSION=2.3.2
 
 rem User interface language codes
 set LANG_CODES=de es
@@ -50,7 +50,7 @@ copy FlexTrans-Swedish.config %workprojects%\German-Swedish\Config\FlexTrans.con
 copy FlexTrans.config %workprojects%\TemplateProject\Config\FlexTrans.config
 
 rem build Python requirements file
-xcopy flextools-%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
+xcopy FlexTools_%INSTALL_FOLDER_VERSION%\FlexTools\scripts\requirements.txt %flextransfolder%
 echo fuzzywuzzy >> %flextransfolder%\requirements.txt
 echo Levenshtein >> %flextransfolder%\requirements.txt
 echo mixpanel >> %flextransfolder%\requirements.txt

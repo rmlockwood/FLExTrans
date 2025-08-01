@@ -5,6 +5,9 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -131,6 +134,7 @@ import Mixpanel
 import ReadConfig
 import Utils
 import FTPaths
+from RunApertium import docs as RunApertDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -148,7 +152,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Synthesize Text with HermitCrab",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -341,7 +345,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
 
     except:
 
-        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the Run Apertium module?').format(transferResultsFile=transferResultsFile), 2))
+        errorList.append((_translate("DoHermitCrabSynthesis", 'The file: {transferResultsFile} was not found. Did you run the {runApertium} module?').format(transferResultsFile=transferResultsFile, runApertium=RunApertDocs[FTM_Name]), 2))
         return errorList
     
     # Read the results file into a string

@@ -5,6 +5,12 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.14.2 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
+#   Version 3.14.1 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.14 - 5/27/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -68,6 +74,8 @@ import Mixpanel
 import Utils
 import ReadConfig
 import FTPaths
+from ExtractBilingualLexicon import docs as ExtrBilingDocs
+from ExtractSourceText import docs as ExtrSourceDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -91,7 +99,7 @@ The results of this module are found in the file you specified in the Target Tra
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
 docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
         FTM_Help  : "",  
@@ -235,7 +243,7 @@ def stripRulesFile(report, buildFolder, transferRulePath, strippedRulesFileName)
     for tag in ['lit', 'list-item']:
         for node in tree.findall('.//test//'+tag):
             if 'v' in node.attrib:
-                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'])
+                node.attrib['v'] = Utils.escapeReservedApertChars(node.attrib['v'], notAngleBrackets=True)
 
     outPath = os.path.join(buildFolder, strippedRulesFileName)
     with open(outPath, 'w', encoding='utf-8') as fout:
@@ -408,7 +416,7 @@ def runApertium(DB, configMap, report):
     
     # See if the dictionary file exists.
     if not os.path.exists(dictionaryPath):
-        report.Error(_translate("RunApertium", 'The bilingual dictionary file does not exist. You may need to run the Build Bilingual Lexicon module. The file should be: {file}').format(file=dictionaryPath))
+        report.Error(_translate("RunApertium", 'The bilingual dictionary file does not exist. You may need to run the {buildLex} module. The file should be: {file}').format(file=dictionaryPath, buildLex=ExtrBilingDocs[FTM_Name]))
         return True
     
     # Get the path to the analyzed text
@@ -418,7 +426,7 @@ def runApertium(DB, configMap, report):
     
     # See if the source text file exists.
     if not os.path.exists(analyzedTextPath):
-        report.Error(_translate("RunApertium", 'The analyzed text file does not exist. You may need to run the Extract Source Text module. The file should be: {file}').format(file=analyzedTextPath))
+        report.Error(_translate("RunApertium", 'The analyzed text file does not exist. You may need to run the {extrSource} module. The file should be: {file}').format(file=analyzedTextPath, extrSource=ExtrSourceDocs[FTM_Name]))
         return True
     
     # Get the path to the target apertium file

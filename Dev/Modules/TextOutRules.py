@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.14 - 7/28/25 - Ron Lockwood
+#    Reference module names by docs variable.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -46,6 +49,8 @@ import Mixpanel
 import Utils
 import ReadConfig
 import TextInOutUtils
+from FixUpSynthText import docs as FixUpSynthTextDocs
+from DoSynthesis import docs as DoSynthesisDocs
 
 # Define _translate for convenience
 _translate = QCoreApplication.translate
@@ -69,9 +74,9 @@ docs = {FTM_Name       : "Text Out Rules",
         FTM_Help   : "",
         FTM_Description: _translate("TextOutRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
-synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the Fix Up Synthesis Text module.
-This module is not in the Drafting collection of modules by default. You need to add Fix Up Synthesis Text to the Drafting collection 
-and move it to be after the Synthesize Text module.""")}
+synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the {fixUpSynthTextModule} module.
+This module is not in the Drafting collection of modules by default. You need to add {fixUpSynthTextModule} to the Drafting collection 
+and move it to be after the {synthModule} Text module.""").format(fixUpSynthTextModule=FixUpSynthTextDocs[FTM_Name], synthModule=DoSynthesisDocs[FTM_Name])}
 
 app.quit()
 del app

@@ -141,7 +141,7 @@
         <rule context="with-param[ancestor::def-macro]">
             <report test="number(@pos) &gt; ancestor::def-macro/@npar">Advertencia: el atributo item (pos) se refiere a un parámetro inexistente.</report>
         </rule>
-    </pattern}
+    </pattern>
     
     <pattern id="get-case-fromInRule">
         <title>

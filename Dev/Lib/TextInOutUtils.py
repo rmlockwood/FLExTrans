@@ -88,6 +88,8 @@ WB_LANG_CODE_ATTRIB = 'LangCode'
 WB_ADD_STEP_ATTRIB = 'AddStep'
 WB_SKIP_STEP_ATTRIB = 'SkipStep'
 
+TEXTOUT_MODULENAME = "Text Out Rules"
+
 ARROW_CHAR = '⭢'
 
 class SearchReplaceRuleData():

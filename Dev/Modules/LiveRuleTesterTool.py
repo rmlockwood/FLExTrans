@@ -5,29 +5,17 @@
 #   SIL International
 #   7/2/16
 #
-#   Version 3.14.7 - 7/5/25 - Ron Lockwood
-#    Save the height and width in advanced and standard mode and restore them.
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1032. Space between lexical units in the Execution Log.
 #
-#   Version 3.14.6 - 7/5/25 - Ron Lockwood
-#    Fixes #1012. Connect a Refresh Source Lexicon button to the source text combo box.
-#    When clicked, the same source text will be reloaded.
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #1022. Use improved Apertium execution log.
 #
-#   Version 3.14.5 - 7/4/25 - Ron Lockwood
-#    Fixes #1018. Use a tri-state checkbox above the Rule checkboxes to check or uncheck all.
+#   Version 3.14.2 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
-#   Version 3.14.4 - 7/2/25 - Ron Lockwood
-#    Show a tooltip when hovering over a source sentence. This will help the user see the full sentence, if the
-#    combo box or list box is too narrow.
-#
-#   Version 3.14.3 - 7/1/25 - Ron Lockwood
-#    Further fixes to elimnate blank space below checkboxes that caused a scroll bar to appear.
-#    Add checkboxes to the custom layout each time we display it.
-#
-#   Version 3.14.2 - 6/25/25 - Ron Lockwood
-#    Fix problem of check box scroll area not showing a scroll bar.
-#
-#   Version 3.14.1 - 6/19/25 - Ron Lockwood
-#    Don't allow synthesis if the target text is empty or no words are selected.
+#   Version 3.14.1 - 7/23/25 - Ron Lockwood
+#    Fixes #1013. Show duplicate affix gloss warnings.
 #
 #   Version 3.14 - 5/21/25 - Ron Lockwood
 #    Added localization capability.
@@ -278,7 +266,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.5",
+        FTM_Version    : "3.14.4",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -1548,6 +1536,12 @@ class Main(QMainWindow):
                 self.unsetCursor()
                 return
 
+            # Check for warnings. This should only be duplicate affix warnings.
+            warn, msgList = Utils.checkForWarning(errorList, None)
+
+            if warn:
+                self.ui.warningLabel.setText(msgList)
+
             self.__doCatalog = False
 
         ## CONVERT
@@ -2706,18 +2700,20 @@ class Main(QMainWindow):
         for line in inputLines:
 
             # A typical line may look like this:
-            # apertium-transfer: Rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # apertium-transfer: Applied rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
+            # or
+            # apertium-transfer: Matched rule 19 line 2 cat1.1<n><m><ez_pl> my1.1<nprop><m>
 
-            # If we have Rule N, process it
-            if re.search(r'Rule \d+', line):
+            # If we have a line matching 'Applied rule N', process it
+            if re.search(r'Applied rule \d+', line):
 
                 # Extract the rule # and the lexical units
-                matchObj = re.search(r'(.+)(Rule )(\d+)( line \d+ )(.+)', line)
+                matchObj = re.search(r'(.+)(Applied rule )(\d+)( line \d+ )(.+)', line)
                 ruleStr = matchObj.group(2) + matchObj.group(3).zfill(2)
                 lexUnitsStr = matchObj.group(5).strip()
 
                 # Translate the word 'Rule' to the localized version
-                ruleStr = re.sub('Rule ', _translate('LiveRuleTesterTool', 'Rule '), ruleStr)
+                ruleStr = re.sub('Applied rule ', _translate('LiveRuleTesterTool', 'Applied rule '), ruleStr)
 
                 # Put a delimeter between multiple lexical units
                 lexUnitsStr = re.sub(delimeter, f'{delimeter}\t ', lexUnitsStr)
@@ -2738,7 +2734,7 @@ class Main(QMainWindow):
                 for lexUnit in lexUnitList:
 
                     # Mark up the lexical unit with color, etc.
-                    processFunc(lexUnit, paragraphEl, self.__sent_model.getRTL(), True)
+                    processFunc(lexUnit+' ', paragraphEl, self.__sent_model.getRTL(), True)
 
                 # Convert the ET element to an html string
                 coloredLUStr = ET.tostring(paragraphEl, encoding='unicode')
@@ -2824,9 +2820,10 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         return ERROR_HAPPENED
 
     matchingContentsObjList = []
+    textObjList = []
 
     # Create a list of source text names
-    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList)
+    sourceTextList = Utils.getSourceTextList(DB, matchingContentsObjList, textObjList)
 
     if sourceText not in sourceTextList:
 
@@ -2834,6 +2831,7 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         return ERROR_HAPPENED
     else:
         contents = matchingContentsObjList[sourceTextList.index(sourceText)]
+        textObj = textObjList[sourceTextList.index(sourceText)]
 
     # Check if we are using TreeTran for sorting the text output
     treeTranResultFile = ReadConfig.getConfigVal(configMap, ReadConfig.ANALYZED_TREETRAN_TEXT_FILE, report)
@@ -2966,6 +2964,9 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
         # Normal, non-TreeTran processing
         if myText.haveData() == True:
             segment_list = myText.getSurfaceAndDataTupleListBySent()
+
+    report.Info(_translate("LiveRuleTesterTool", "Starting {moduleName} for text: {sourceTextName}.").format(moduleName=docs[FTM_Name], sourceTextName=sourceText),
+                DB.BuildGotoURL(textObj))
 
     if len(segment_list) > 0:
 

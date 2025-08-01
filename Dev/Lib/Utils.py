@@ -5,6 +5,18 @@
 #   SIL International
 #   7/23/2014
 #
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1033. Don't escape <> in literal strings in the rule file.
+#
+#   Version 3.14.3 - 7/25/25 - Ron Lockwood
+#    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
+#
+#   Version 3.14.2 - 7/23/25 - Ron Lockwood
+#    Fixes #1013. Show duplicate affix gloss warnings.
+#
+#   Version 3.14.1 - 7/11/25 - Ron Lockwood
+#    Use the new UI Language flextools ini file setting.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -273,6 +285,7 @@ from SIL.LCModel.Core.Text import TsStringUtils         # type: ignore
 from SIL.LCModel.DomainServices import StringServices   # type: ignore
 
 from flexlibs import FLExProject, AllProjectNames
+from flextoolslib import FTConfig
 
 import ReadConfig as MyReadConfig
 import FTPaths
@@ -289,6 +302,7 @@ CIRCUMFIX_TAG_B = '_cfx_part_b'
 # Don't list backslash here, it is handled in the functions that use the
 # reserved character list
 APERT_RESERVED = r'\[\]@/^${}<>*'
+APERT_RESERVED_NOT_ANGLE_BRACKETS = r'\[\]@/^${}*'
 INVALID_LEMMA_CHARS = r'([\^$><{}])'
 RAW_INVALID_LEMMA_CHARS = INVALID_LEMMA_CHARS[3:-2]
 NONE_HEADWORD = '**none**'
@@ -333,6 +347,7 @@ rePeriod = re.compile(r'\.')
 reHyphen = re.compile(r'-')
 reAsterisk = re.compile(r'\*')
 reApertReserved = re.compile(rf'(?<!\\)([{APERT_RESERVED}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
+reApertReservedNotAngles = re.compile(rf'(?<!\\)([{APERT_RESERVED_NOT_ANGLE_BRACKETS}])') # Use a negative lookbehind assertion to assure the letter is not already escaped
 reApertReservedEscaped = re.compile(rf'\\([{APERT_RESERVED}\\])')
 reBetweenCaretAndFirstAngleBracket = re.compile(r'(\^)(.*?)(?<!\\)(<)') # Use a negative lookbehind assertion to assure the < is not already escaped
 reInvalidLemmaChars = re.compile(INVALID_LEMMA_CHARS)
@@ -827,7 +842,7 @@ def check_for_cat_errors(report, dbType, posFullNameStr, posAbbrStr, countList, 
 
     return countList, posAbbrStr
 
-def getSourceTextList(DB, matchingContentsObjList=None):
+def getSourceTextList(DB, matchingContentsObjList=None, textObjList=None):
 
     sourceList = []
     for interlinText in DB.ObjectsIn(ITextRepository):
@@ -838,6 +853,11 @@ def getSourceTextList(DB, matchingContentsObjList=None):
         if matchingContentsObjList != None:
 
             matchingContentsObjList.append(interlinText.ContentsOA)
+
+        # if the caller wants to get a list of text objects, add to the provided list
+        if textObjList != None:
+
+            textObjList.append(interlinText)
 
     return sourceList
 
@@ -904,16 +924,24 @@ def processErrorList(error_list, report):
 
 def checkForFatalError(errorList, report):
 
-    fatal = False
+    return checkForError(errorList, report, 2)
+
+def checkForWarning(errorList, report):
+
+    return checkForError(errorList, report, 1)
+
+def checkForError(errorList, report, errValue):
+
+    found = False
     retMsgList = []
 
     for triplet in errorList:
 
         msg = triplet[0]
 
-        if triplet[1] == 2:
+        if triplet[1] == errValue:
 
-            fatal = True
+            found = True
             retMsgList.append(msg)
 
             if report == None:
@@ -921,7 +949,7 @@ def checkForFatalError(errorList, report):
             else:
                 report.Error(msg)
 
-    return fatal, '\n'.join(retMsgList)
+    return found, '\n'.join(retMsgList)
 
 def getTargetSenseInfo(entry, DB, TargetDB, mySense, tgtEquivUrl, senseNumField, report, remove1dot1Bool=False, rewriteEntryLinkAsSense=False, preGuidStr='', senseEquivField=None):
 
@@ -1331,10 +1359,14 @@ def unescapeReservedApertChars(inStr):
 
     return reApertReservedEscaped.sub(r'\1', inStr)
 
-def escapeReservedApertChars(inStr):
+def escapeReservedApertChars(inStr, notAngleBrackets=False):
     
     # Escape special characters that are not already escaped
-    inStr = reApertReserved.sub(r'\\\1', inStr)
+    if notAngleBrackets:
+        # Escape all reserved characters except angle brackets
+        inStr = reApertReservedNotAngles.sub(r'\\\1', inStr)
+    else:
+        inStr = reApertReserved.sub(r'\\\1', inStr)
 
     # Now escape backslashes that are not already escaped and aren't being used to escape a special char
     inStr = re.sub(rf'(?<!\\)\\([^{APERT_RESERVED}\\]|$)', r'\\\\\1', inStr)
@@ -1422,4 +1454,4 @@ class LocalizedDateTimeFormatter:
     
 def getInterfaceLangCode():
 
-    return 'en'
+    return FTConfig.UILanguage 
