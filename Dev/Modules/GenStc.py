@@ -288,9 +288,9 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
 
                     if pos in match_n_pos:
                         wordListN.append(word)
-                    elif pos in match_1_pos:
+                    if pos in match_1_pos:
                         wordList1.append(word)
-                    elif pos in match_2_pos:
+                    if pos in match_2_pos:
                         wordList2.append(word)
 
     random.shuffle(wordListN)
