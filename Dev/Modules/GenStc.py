@@ -587,18 +587,44 @@ def MainFunction(DB, report, modifyAllowed):
         stc = myText.getSent(i)
         wrdList = stc.getWords()
 
-        # Find indices of words to replace
         idxN_list, idx1_list, idx2_list = [], [], []
         for idx, w in enumerate(wrdList):
             thisLemma = w.getLemma(0)
             thisPOS = w.getPOS(0)
+    
+            # Check N slot first (priority if same POS appears in multiple slots)
+            if thisPOS in posFocusN:
+                if lemmaFocusN == 'UNK' or thisLemma == lemmaFocusN:
+                    if thisLemma in match_n_lem:  # Additional check if needed
+                        idxN_list.append(idx)
+                        continue
+    
+            # Then check 1 slot
+            if thisPOS in posFocus1:
+                if lemmaFocus1 == 'UNK' or thisLemma == lemmaFocus1:
+                    if thisLemma in match_1_lem:
+                        idx1_list.append(idx)
+                        continue
+    
+            # Finally check 2 slot
+            if thisPOS in posFocus2:
+                if lemmaFocus2 == 'UNK' or thisLemma == lemmaFocus2:
+                    if thisLemma in match_2_lem:
+                        idx2_list.append(idx)
 
-            if thisPOS in posFocusN and thisLemma in match_n_lem:
-                idxN_list.append(idx)
-            elif thisPOS in posFocus1 and thisLemma in match_1_lem:
-                idx1_list.append(idx)
-            elif thisPOS in posFocus2 and thisLemma in match_2_lem:
-                idx2_list.append(idx)
+        # OLD CODE (DO NOT DELETE)
+        # Find indices of words to replace
+        #idxN_list, idx1_list, idx2_list = [], [], []
+        #for idx, w in enumerate(wrdList):
+            #thisLemma = w.getLemma(0)
+            #thisPOS = w.getPOS(0)
+
+            #if thisPOS in posFocusN and thisLemma in match_n_lem:
+                #idxN_list.append(idx)
+            #elif thisPOS in posFocus1 and thisLemma in match_1_lem:
+                #idx1_list.append(idx)
+            #elif thisPOS in posFocus2 and thisLemma in match_2_lem:
+                #idx2_list.append(idx)
 
         # ---- language of wider communication ---- 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
