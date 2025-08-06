@@ -217,10 +217,10 @@ def extractLanguageVariables(myText, posFocusN, posFocus1, posFocus2, report):
             if thisPOS in posFocusN:
                 match_n_lem.add(thisLemma)
                 match_n_pos.add(thisPOS)
-            elif thisPOS in posFocus1:
+            if thisPOS in posFocus1:
                 match_1_lem.add(thisLemma)
                 match_1_pos.add(thisPOS)
-            elif thisPOS in posFocus2:
+            if thisPOS in posFocus2:
                 match_2_lem.add(thisLemma)
                 match_2_pos.add(thisPOS)
 
@@ -250,7 +250,11 @@ def extractFromLemmas(myText, lemmaFocusN, lemmaFocus1, lemmaFocus2, report):
 def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, repo, cache, report):
     """Fetch lexical entries and return lists of GenWord objects."""
     wordListN, wordList1, wordList2 = [], [], []
+    report.Info(f'match_n_pos: {match_n_pos}')
+    report.Info(f'match_1_pos: {match_1_pos}')
+    report.Info(f'match_2_pos: {match_2_pos}')
     valid_pos = {*match_n_pos, *match_1_pos, *match_2_pos}
+    report.Info(f'valid pos: {valid_pos}')
 
     for entry in DB.LexiconAllEntries():
         lex = (DB.LexiconGetCitationForm(entry) or DB.LexiconGetLexemeForm(entry)) + '1.1'
@@ -296,6 +300,10 @@ def getLexicalEntries(DB, match_n_pos, match_1_pos, match_2_pos, customField, re
     random.shuffle(wordListN)
     random.shuffle(wordList1)
     random.shuffle(wordList2)
+
+    report.Info(f'wordListN: {wordListN}')
+    report.Info(f'wordList1: {wordList1}')
+    report.Info(f'wordList2: {wordList2}')
     
     return wordListN, wordList1, wordList2
 
@@ -525,9 +533,15 @@ def MainFunction(DB, report, modifyAllowed):
         return
     myText = InterlinData.getInterlinData(DB, report, interlinParams)
 
+    report.Info(f'posFocusN: {posFocusN}')
+    report.Info(f'posFocus1: {posFocus1}')
+
     # Extract language variables
     match_n_lem, match_n_pos, match_1_lem, match_1_pos, match_2_lem, match_2_pos = extractLanguageVariables(
         myText, posFocusN, posFocus1, posFocus2, report)
+
+    report.Info(f'match_n_pos: {match_n_pos}')
+    report.Info(f'match_1_pos: {match_1_pos}')
 
     # Handle lemma focus if specified
     if any(lemma != 'UNK' for lemma in [lemmaFocusN, lemmaFocus1, lemmaFocus2]):
@@ -584,47 +598,49 @@ def MainFunction(DB, report, modifyAllowed):
     for i in range(stcCount):
         
         # ---- target language ---
+
         stc = myText.getSent(i)
         wrdList = stc.getWords()
 
-        idxN_list, idx1_list, idx2_list = [], [], []
-        for idx, w in enumerate(wrdList):
-            thisLemma = w.getLemma(0)
-            thisPOS = w.getPOS(0)
-    
-            # Check N slot first (priority if same POS appears in multiple slots)
-            if thisPOS in posFocusN:
-                if lemmaFocusN == 'UNK' or thisLemma == lemmaFocusN:
-                    if thisLemma in match_n_lem:  # Additional check if needed
-                        idxN_list.append(idx)
-                        continue
-    
-            # Then check 1 slot
-            if thisPOS in posFocus1:
-                if lemmaFocus1 == 'UNK' or thisLemma == lemmaFocus1:
-                    if thisLemma in match_1_lem:
-                        idx1_list.append(idx)
-                        continue
-    
-            # Finally check 2 slot
-            if thisPOS in posFocus2:
-                if lemmaFocus2 == 'UNK' or thisLemma == lemmaFocus2:
-                    if thisLemma in match_2_lem:
-                        idx2_list.append(idx)
-
-        # OLD CODE (DO NOT DELETE)
-        # Find indices of words to replace
+        # NEW CODE (DO NOT DELETE -- MAY DELETE LATER)
         #idxN_list, idx1_list, idx2_list = [], [], []
         #for idx, w in enumerate(wrdList):
             #thisLemma = w.getLemma(0)
             #thisPOS = w.getPOS(0)
+    
+            # Check N slot first (priority if same POS appears in multiple slots)
+            #if thisPOS in posFocusN:
+                #if lemmaFocusN == 'UNK' or thisLemma == lemmaFocusN:
+                    #if thisLemma in match_n_lem:  # Additional check if needed
+                        #idxN_list.append(idx)
+                        #continue
+    
+            # Then check 1 slot
+            #if thisPOS in posFocus1:
+                #if lemmaFocus1 == 'UNK' or thisLemma == lemmaFocus1:
+                    #if thisLemma in match_1_lem:
+                        #idx1_list.append(idx)
+                        #continue
+    
+            # Finally check 2 slot
+            #if thisPOS in posFocus2:
+                #if lemmaFocus2 == 'UNK' or thisLemma == lemmaFocus2:
+                    #if thisLemma in match_2_lem:
+                        #idx2_list.append(idx)
 
-            #if thisPOS in posFocusN and thisLemma in match_n_lem:
-                #idxN_list.append(idx)
-            #elif thisPOS in posFocus1 and thisLemma in match_1_lem:
-                #idx1_list.append(idx)
-            #elif thisPOS in posFocus2 and thisLemma in match_2_lem:
-                #idx2_list.append(idx)
+        # OLD CODE (DO NOT DELETE)
+        # Find indices of words to replace
+        idxN_list, idx1_list, idx2_list = [], [], []
+        for idx, w in enumerate(wrdList):
+            thisLemma = w.getLemma(0)
+            thisPOS = w.getPOS(0)
+
+            if thisPOS in posFocusN and thisLemma in match_n_lem:
+                idxN_list.append(idx)
+            elif thisPOS in posFocus1 and thisLemma in match_1_lem:
+                idx1_list.append(idx)
+            elif thisPOS in posFocus2 and thisLemma in match_2_lem:
+                idx2_list.append(idx)
 
         # ---- language of wider communication ---- 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
