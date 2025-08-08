@@ -88,26 +88,6 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Get the path to the search-replace rules file
-    # textInRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_IN_RULES_FILE, DEFAULT_PATH_TEXT_IN)
-
-    # try:
-    #     # Check if the file exists, if not, create it.
-    #     if os.path.exists(textInRulesFile) == False:
-
-    #         # Set a string for an empty rules list
-    #         xmlString = f"<?xml version='1.0' encoding='utf-8'?><{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}><{TextInOutUtils.SEARCH_REPLACE_RULES_ELEM}/></{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}>"
-
-    #         fOut = open(textInRulesFile, 'w', encoding='utf-8')
-    #         fOut.write(xmlString)
-    #         fOut.close()
-    #     else:
-    #         # Make a backup copy of the search-replace rule file
-    #         shutil.copy2(textInRulesFile, textInRulesFile+'.bak')
-    # except:
-    #     report.Error(_translate("TextInRules", 'There was a problem creating or backing up the rules file. Check your configuration.'))
-    #     return
-
     # Show the window to get the options the user wants
     window = TextInOutUtils.TextInOutRulesWindow(DB, configMap, ReadConfig.TEXT_IN_RULES_FILE, textIn=True, winTitle=docs[FTM_Name])
     

@@ -57,7 +57,7 @@ from wildebeest.wb_normalize import Wildebeest
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QComboBox
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QComboBox, QWidget, QVBoxLayout, QTextEdit, QPushButton
 
 from TextInOut import Ui_TextInOutMainWindow
 
@@ -103,6 +103,34 @@ class SearchReplaceRuleData():
         self.isInactive = isInactive
         self.comment = "" if comment is None else comment
 
+class RulesPopup(QWidget):
+
+    def __init__(self, rules_text, parent=None):
+
+        super().__init__(parent, QtCore.Qt.Window | QtCore.Qt.ToolTip)
+        self.setWindowTitle("Rules for WorkProject")
+        layout = QVBoxLayout(self)
+
+        # Create a QTextEdit to display the rules
+        self.textEdit = QTextEdit(self)
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setText(rules_text)
+        self.textEdit.setWordWrapMode(QtGui.QTextOption.NoWrap)
+
+        # Add the QTextEdit to the layout
+        layout.addWidget(self.textEdit)
+
+        # Add a close button
+        closeBtn = QPushButton("Close", self)
+        closeBtn.clicked.connect(self.close)
+        layout.addWidget(closeBtn)
+
+        self.setLayout(layout)
+
+        # Add a thin black border
+        self.setStyleSheet("border: 1px solid black;")
+
+        self.resize(450, 140)
 
 def getRuleFromElement(element):
 
@@ -441,7 +469,6 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.rulesList.clicked.connect(self.RulesListClicked)
         self.ui.searchTextBox.textChanged.connect(self.SearchOrReplaceChanged)
         self.ui.testButton.clicked.connect(self.TestClicked)
-        # self.ui.uncheckAllButton.clicked.connect(self.UncheckAllClicked)
         self.ui.updateButton.clicked.connect(self.UpdateClicked)
         self.ui.wildebeestCheckBox.clicked.connect(self.WildebeestClicked)
 
@@ -449,7 +476,7 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.dummyLabel.setText('')
 
         # Load the rules
-        self.initLists()
+        self.checkForValidFolders()
         self.loadRules()
     
     def setWorkProjectComboBox(self, comboWidget):
@@ -513,6 +540,103 @@ class TextInOutRulesWindow(QMainWindow):
 
         return rulesPath
 
+    def eventFilter(self, obj, event):
+
+        # Show popup when mouse enters key widget
+        if event.type() == QtCore.QEvent.Enter and obj in self.keyWidgetList:
+
+            # Always close any existing popup before opening a new one
+            if hasattr(self, 'rulesPopup') and self.rulesPopup:
+
+                self.rulesPopup.close()
+                self.rulesPopup = None
+                self._popupActive = False
+
+            idx = 0
+
+            # Get the index of the first non- '...' folder
+            for widget in self.keyWidgetList:
+
+                if widget.currentText() != "...":
+
+                    if widget == obj:
+                        break
+
+                    idx += 1
+
+            # Check if the folder is ... and if so, don't show rules
+            if obj.currentText() == "...":
+                return super().eventFilter(obj, event)
+            
+            # Get the rules text for the folder
+            rules_text = self.getRulesTextForFolder(idx)
+
+            # Initialize the popup with the rules text
+            self.rulesPopup = RulesPopup(rules_text, self)
+
+            # Install event filter to track mouse events on the popup
+            self.rulesPopup.installEventFilter(self)  # Track mouse events on popup
+
+            # Set the popup size and position based on the widget
+            pos = obj.mapToGlobal(obj.rect().bottomLeft())
+
+            # Set the popup size to fit the text and show it
+            self.rulesPopup.move(pos)
+            self.rulesPopup.show()
+            self._popupActive = True
+
+        # Hide popup only if mouse leaves both widget and popup
+        elif event.type() == QtCore.QEvent.Leave and obj in self.keyWidgetList:
+
+            QtCore.QTimer.singleShot(100, self._maybeClosePopup)
+
+        elif event.type() == QtCore.QEvent.Leave and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+
+            QtCore.QTimer.singleShot(100, self._maybeClosePopup)
+
+        elif event.type() == QtCore.QEvent.Enter and hasattr(self, 'rulesPopup') and obj == self.rulesPopup:
+
+            self._popupActive = True
+
+        return super().eventFilter(obj, event)
+
+    def _maybeClosePopup(self):
+
+        # Check if mouse is over popup or any key widget
+        if hasattr(self, 'rulesPopup') and self.rulesPopup:
+
+            mouse_pos = QtGui.QCursor.pos()
+
+            # Check popup
+            over_popup = self.rulesPopup.geometry().contains(mouse_pos)
+
+            # Check all key widgets (map global mouse pos to widget's local coordinates)
+            over_widget = any(w.rect().contains(w.mapFromGlobal(mouse_pos)) for w in self.keyWidgetList)
+
+            # If mouse is not over popup and not over any key widget, close the popup
+            if not over_popup and not over_widget:
+
+                self.rulesPopup.close()
+                self.rulesPopup = None
+                self._popupActive = False
+
+    def getRulesTextForFolder(self, idx):
+
+        # idx: index in self.keyWidgetList, matches self.xmlParentObjList[1:] (default is [0])
+        if idx+1 < len(self.xmlParentObjList):
+
+            rulesElem = self.xmlParentObjList[idx+1]
+            rules = []
+
+            # Loop through the rules in the element and build a string
+            for ruleEl in rulesElem:
+
+                rules.append(buildRuleString(getRuleFromElement(ruleEl)))
+
+            return "\n".join(rules) if rules else "No rules found."
+        else:
+            return "No rules found."
+
     def clusterSelectionChanged(self):
 
         # Write the XML files if we have xml data
@@ -527,13 +651,10 @@ class TextInOutRulesWindow(QMainWindow):
         for widget in self.keyWidgetList:
 
             widget.currentIndexChanged.connect(self.checkForValidFolders)
-
+            widget.installEventFilter(self)
+        
         self.checkForValidFolders()
         
-        # if self.ruleIndex:
-
-        #     self.RulesListClicked(self.ruleIndex)
-
     def AddClicked(self):
         
         # Clear the error message widget
@@ -653,6 +774,8 @@ class TextInOutRulesWindow(QMainWindow):
 
         if self.ruleIndex:
 
+            rowCount = self.rulesModel.rowCount()
+
             # Remove the row
             rowNum = defaultRow = self.ruleIndex.row()
             self.rulesModel.removeRow(rowNum)
@@ -684,25 +807,24 @@ class TextInOutRulesWindow(QMainWindow):
                 self.ui.updateButton.setEnabled(False)
                 self.ui.searchTextBox.setText('')
                 self.ui.replaceTextBox.setText('')
+                self.ui.commentTextBox.setText('')
+                self.ui.regexCheckBox.setChecked(False)
+                self.ui.inactiveCheckBox.setChecked(False)
         
-            # Subtract 1 from the row number to get the previous row
-            if defaultRow > 0:
+            # If we are deleting the first and last row, set index to None.
+            if defaultRow == 0 and rowCount == 1:
 
-                defaultRow -= 1 
+                # If we are deleting the first row, set the ruleIndex to None
+                self.ruleIndex = None  
+                return
+            
+            # If we are deleting the last row in the list, set the ruleIndex to the previous row
+            elif defaultRow == rowCount-1:
 
-            # Build the currentIndex with this row number
-            self.ruleIndex = self.rulesModel.index(defaultRow, self.ruleIndex.column())
+                self.ruleIndex = self.rulesModel.index(defaultRow - 1, 0)
 
             # Update the text in the search and replace text boxes
-            # self.RulesListClicked(myIndex)
-
-            if self.ruleIndex.row() < 0 :
-
-                # If we are at the first row, set the ruleIndex to None
-                self.ruleIndex = None
-            else:
-                # Update the text in the search and replace text boxes
-                self.RulesListClicked(self.ruleIndex)
+            self.RulesListClicked(self.ruleIndex)
 
     def findMatch(self, xmlObj, myDataObj):
 
@@ -902,7 +1024,9 @@ class TextInOutRulesWindow(QMainWindow):
         self.ui.commentTextBox.setCursorPosition(0)
 
         # Enable controls
-        self.enableControls(True)
+        if self.validFolders:
+
+            self.enableControls(True)
 
         # Figure out last checked state
         oneBoxChecked = False
@@ -951,6 +1075,7 @@ class TextInOutRulesWindow(QMainWindow):
         else:
             self.ui.addButton.setEnabled(False)
             self.ui.updateButton.setEnabled(False)
+            self.ui.deleteButton.setEnabled(False)
             self.ui.regexCheckBox.setEnabled(False)
             self.ui.inactiveCheckBox.setEnabled(False)
                 
@@ -995,14 +1120,6 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.ui.outputText.setText(newStr)
         return
-
-    # def UncheckAllClicked(self):
-
-    #     # Loop through all the items in the rule list model
-    #     for i in range(0, self.rulesModel.rowCount()):
-
-    #         # Unheck each box
-    #         self.rulesModel.item(i).setCheckState(QtCore.Qt.Unchecked)
 
     def appendError(self, errorStr):
 
@@ -1117,6 +1234,8 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.validFolders = True
 
+        self.initLists()
+
         # If we have a ..., we have an invalid folder.
         for widget in self.keyWidgetList:
 
@@ -1131,11 +1250,9 @@ class TextInOutRulesWindow(QMainWindow):
             self.ui.errorTextBox.setText('Please select a valid folder for each project.')
         else:
             self.ui.errorTextBox.setText('')
-            self.initLists()
 
         # Enable or disable controls based on valid folders
         self.SearchOrReplaceChanged()
-
 
         return self.validFolders
     
@@ -1152,58 +1269,10 @@ class TextInOutRulesWindow(QMainWindow):
         self.defaultRoot = self.xmlRootList[0]
         self.initWBcontrols(self.defaultRoot)
 
-        # if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
+    def enumerateWorkProjects(self):
 
-        #     if not self.checkForValidFolders():
+        return [myCombo.currentText() for myCombo in self.keyWidgetList if myCombo.currentText() != '...']
 
-        #         return
-            
-        #     selectedProjects = self.ui.clusterProjectsComboBox.currentData()
-
-        #     # Loop through all of the cluster project lexeme form widgets
-        #     for i, proj in enumerate(selectedProjects):
-
-        #         # Verify we have a valid transfer file.
-        #         try:
-        #             testTree = ET.parse(self.searchReplacefile)
-        #         except:
-        #             QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid File'), 'The fix up synthesis text rules file you selected is invalid.')
-        #             return False
-                
-        #         self.root = testTree.getroot()
-
-        # else:
-        #     pass
-
-        # # Verify we have a valid transfer file.
-        # try:
-        #     testTree = ET.parse(self.searchReplacefile)
-        # except:
-        #     QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid File'), 'The fix up synthesis text rules file you selected is invalid.')
-        #     return False
-        
-        # self.root = testTree.getroot()
-
-        # # Find the Rules section
-        # self.searchReplaceRulesElement = self.root.find(SEARCH_REPLACE_RULES_ELEM)
-        
-        # if self.searchReplaceRulesElement is not None:
-            
-        #     self.ruleFileXMLtree = testTree
-        #     self.rulesModel = QStandardItemModel()
-        #     self.displayRules(self.searchReplaceRulesElement, self.rulesModel)
-            
-        #     # Initialize the model for the rule list control
-        #     self.ui.rulesList.setModel(self.rulesModel)
-            
-        # else:
-        #     QMessageBox.warning(self, _translate("TextInOutUtils", 'Invalid Rules File'),\
-        #     'The fix up synthesis rule file has no SearchReplaceRules.')
-        #     return False
-        
-        # # Set Wildebeest controls
-        # self.initWBcontrols(self.root)
-        
     def initLists(self):
 
         self.xmlTreeList.clear()
@@ -1224,7 +1293,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         if len(self.clusterProjects) > 0:
 
-            self.selectedWorkProjects = [myCombo.currentText() for myCombo in self.keyWidgetList]
+            self.selectedWorkProjects = self.enumerateWorkProjects()
 
             for folder in self.selectedWorkProjects:
 
@@ -1326,19 +1395,16 @@ class TextInOutRulesWindow(QMainWindow):
 
     def writeXMLfile(self):
 
-        # Get the folder name for each project
-        selectedWorkProjects = [myCombo.currentText() for myCombo in self.keyWidgetList]
-
         # Save last used settings to a json file
         self.settingsMap = {}
-        self.settingsMap[WORK_PROJECTS] = selectedWorkProjects
+        self.settingsMap[WORK_PROJECTS] = [myCombo.currentText() for myCombo in self.keyWidgetList]
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
 
         with open(self.settingsPath, 'w', encoding='utf-8') as f:
             
             json.dump(self.settingsMap, f, indent=4)
 
-        for i in range(len(selectedWorkProjects)+1): # +1 for the default project
+        for i in range(len(self.selectedWorkProjects)+1): # +1 for the default project
 
             # Get all the wildebeest info. and save it in the element tree
             self.saveWBinfo(self.xmlRootList[i])
@@ -1350,22 +1416,3 @@ class TextInOutRulesWindow(QMainWindow):
             # We are done after the 0th project, if it is the default project so break out of the loop
             if len(self.clusterProjects) == 0:
                 break
-
-        # if len(self.clusterProjects) > 0 and len(self.ui.clusterProjectsComboBox.currentData()) > 0:
-
-        #     selectedProjects = self.ui.clusterProjectsComboBox.currentData()
-
-        #     # Loop through all of the cluster project lexeme form widgets
-        #     for i, proj in enumerate(selectedProjects):
-
-        #         # Build a path to the work project folder
-        #         searchReplacefilePath = os.path.join(FTPaths.CLUSTER_PROJECTS_DIR, proj, FTPaths.SEARCH_REPLACE_FILE)
-
-        # else: # No cluster projects selected
-
-        #     # Get all the wildebeest info. and save it in the element tree
-        #     self.saveWBinfo()
-
-        #     # Indent the xml to make it pretty then write it to a file.
-        #     ET.indent(self.ruleFileXMLtree)
-        #     self.ruleFileXMLtree.write(self.searchReplacefile, encoding='utf-8', xml_declaration=True)

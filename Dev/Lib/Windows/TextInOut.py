@@ -312,7 +312,7 @@ class Ui_TextInOutMainWindow(object):
         self.OKButton.setDefault(True)
         self.OKButton.setObjectName("OKButton")
         self.errorTextBox = QtWidgets.QTextEdit(self.widgetContainer)
-        self.errorTextBox.setGeometry(QtCore.QRect(80, 420, 441, 36))
+        self.errorTextBox.setGeometry(QtCore.QRect(80, 423, 441, 36))
         self.errorTextBox.setAutoFillBackground(False)
         self.errorTextBox.setStyleSheet("background: transparent;\n"
 "color: #FF0000")
