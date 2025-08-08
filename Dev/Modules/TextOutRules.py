@@ -81,8 +81,6 @@ and move it to be after the {synthModule} Text module.""").format(fixUpSynthText
 app.quit()
 del app
 
-DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
-
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -100,30 +98,12 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Get the path to the search-replace rules file
-    textOutRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_OUT_RULES_FILE, DEFAULT_PATH_TEXT_OUT)
-    
-    try:
-        # Check if the file exists, if not, create it.
-        if os.path.exists(textOutRulesFile) == False:
-
-            # Set a string for an empty rules list
-            xmlString = f"<?xml version='1.0' encoding='utf-8'?><{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}><{TextInOutUtils.SEARCH_REPLACE_RULES_ELEM}/></{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}>"
-
-            fOut = open(textOutRulesFile, 'w', encoding='utf-8')
-            fOut.write(xmlString)
-            fOut.close()
-        else:
-            # Make a backup copy of the search-replace rule file
-            shutil.copy2(textOutRulesFile, textOutRulesFile+'.bak')
-    except:
-        report.Error(_translate('TextOutRules', 'There was a problem creating or backing up the rules file. Check your configuration.'))
-        return
-
     # Show the window to get the options the user wants
-    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False, winTitle=docs[FTM_Name])
-    window.show()
-    app.exec_()
+    window = TextInOutUtils.TextInOutRulesWindow(DB, configMap, ReadConfig.TEXT_OUT_RULES_FILE, textIn=False, winTitle=docs[FTM_Name])
+
+    if window.retVal:
+        window.show()
+        app.exec_()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

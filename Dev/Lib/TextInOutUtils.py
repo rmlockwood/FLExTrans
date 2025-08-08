@@ -66,7 +66,8 @@ import ClusterUtils
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 
-TEXT_IN_OUT_SETTINGS_FILE = 'TextInOutSettings.json'
+TEXT_IN_SETTINGS_FILE = 'TextInSettings.json'
+TEXT_OUT_SETTINGS_FILE = 'TextOutSettings.json'
 SELECTED_CLUSTER_PROJECTS = 'selectedClusterProjects'
 WORK_PROJECTS = 'workProjects'
 FT_SEARCH_REPLACE_ELEM = 'FLExTransSearchReplace' 
@@ -373,10 +374,11 @@ class TextInOutRulesWindow(QMainWindow):
             
             # Remove the current project from the cluster projects list, we will always use it
             self.clusterProjects.remove(currDBname)
-        
-        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), TEXT_IN_OUT_SETTINGS_FILE)
-        self.defaultFolderPath = FTPaths.WORK_DIR
-        self.defaultFolder = os.path.basename(self.defaultFolderPath)
+
+        if textIn:
+            self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), TEXT_IN_SETTINGS_FILE)
+        else:
+            self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), TEXT_OUT_SETTINGS_FILE)
 
         # Get the work project folders
         workProjPath = FTPaths.WORK_PROJECTS_DIR
@@ -515,7 +517,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         if folder == None: # default folder
 
-            rulesPath = os.path.join(self.defaultFolderPath, rulesRelPath)
+            rulesPath = os.path.join(FTPaths.WORK_DIR, rulesRelPath)
         else:
             rulesPath = os.path.join(FTPaths.WORK_PROJECTS_DIR, folder, rulesRelPath)
 

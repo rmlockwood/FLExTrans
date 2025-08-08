@@ -69,8 +69,6 @@ Paratext. Regular expressions and Wildebeest normalization can be used if desire
 app.quit()
 del app
 
-DEFAULT_PATH_TEXT_IN = 'Output\\fixup_paratext_rules.xml'
-
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
