@@ -28,7 +28,7 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
     self.noCancelButton = noCancelButton
     self.containerWidgetToMove = containerWidgetToMove
 
-    self.originalOKyPos = self.ui.OKButton.y()
+    self.originalOKyPos = containerWidgetToMove.y()
 
     if originalWinHeight > 0:
         self.originalMainWinHeight = originalWinHeight  
@@ -49,10 +49,10 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
         labelWidget.setText(self.clusterProjects[x])
         labelWidget.setVisible(False)
         
-        # Create the combo box
+        # Create the widget
         keyWidget = widgetClass(parentWin) 
         keyWidget.setGeometry(QtCore.QRect(210, 190, comboWidth, 22))
-        keyWidget.setObjectName(f"combo{x}")
+        keyWidget.setObjectName(f"widget{x}")
         keyWidget.setVisible(False)
 
         # Do special processing
@@ -134,10 +134,10 @@ def showClusterWidgets(self):
         self.topWidget1.setEnabled(True)
         self.topWidget2.setEnabled(True)
         
+    currentList = self.ui.clusterProjectsComboBox.currentData()
+
     # See which new widgets need to be shown
     for i, proj in enumerate(self.clusterProjects):
-
-        currentList = self.ui.clusterProjectsComboBox.currentData()
 
         if proj in currentList:
 
@@ -160,14 +160,14 @@ def showClusterWidgets(self):
             self.widgetList[i][1].setVisible(False)
 
     # Calculate how many pixels to move things
-    pixels = len(self.ui.clusterProjectsComboBox.currentData()) * WIDGET_SIZE_PLUS_SPACE
+    pixels = len(currentList) * WIDGET_SIZE_PLUS_SPACE
 
     if pixels > 0:
         pixels += WIDGET_SIZE_PLUS_SPACE
 
     # Move some widgets down
     widgetsToMove = [
-        self.ui.OKButton,
+        # self.ui.OKButton,
     ]
 
     # Include the cancel button for the move if it exists
@@ -185,4 +185,4 @@ def showClusterWidgets(self):
         wid.setGeometry(wid.x(), self.originalOKyPos+pixels, wid.width(), wid.height())
 
     # Increase the height of the main window
-    self.resize(self.width(), self.originalMainWinHeight+pixels + (self.containerWidgetToMove.height() if self.containerWidgetToMove else 0))
+    self.resize(self.width(), self.originalMainWinHeight+pixels)# + (self.containerWidgetToMove.height() if self.containerWidgetToMove else 0))

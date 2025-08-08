@@ -109,9 +109,11 @@ def MainFunction(DB, report, modify=True):
     #     return
 
     # Show the window to get the options the user wants
-    window = TextInOutUtils.TextInOutRulesWindow(textInRulesFile, textIn=True, winTitle=docs[FTM_Name])
-    window.show()
-    app.exec_()
+    window = TextInOutUtils.TextInOutRulesWindow(DB, configMap, ReadConfig.TEXT_IN_RULES_FILE, textIn=True, winTitle=docs[FTM_Name])
+    
+    if window.retVal:
+        window.show()
+        app.exec_()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

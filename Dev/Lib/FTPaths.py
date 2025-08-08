@@ -31,8 +31,8 @@
 import os
 
 CONFIG_PATH = os.path.join(os.getcwd(), "flextools.ini")
-
 WORK_DIR    = os.path.dirname(os.path.dirname(CONFIG_PATH))
+WORK_PROJECTS_DIR = os.path.dirname(WORK_DIR)
 ROOT_DIR    = os.path.dirname(os.path.dirname(WORK_DIR))
 WORK_PROJECT= os.path.basename(WORK_DIR)
 

@@ -312,7 +312,7 @@ def getConfigMap(f_handle, report):
 
     return my_map
 
-def getConfigVal(my_map, key, report, giveError=True):
+def getConfigVal(my_map, key, report, giveError=True, basePath=None):
 
     if key not in my_map:
 
@@ -333,7 +333,10 @@ def getConfigVal(my_map, key, report, giveError=True):
                 
                 # Return the parent folder of the Config folder + the relative file path.
                 # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
-                return os.path.join(WORK_DIR, my_map[key])
+                if basePath:
+                    return os.path.join(basePath, my_map[key])
+                else:
+                    return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
 

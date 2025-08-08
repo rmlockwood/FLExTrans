@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
-    <height>622</height>
+    <width>537</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,9 @@
      </font>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QLabel" name="replaceLabel">
        <property name="font">
@@ -60,7 +63,7 @@
      <rect>
       <x>10</x>
       <y>110</y>
-      <width>287</width>
+      <width>521</width>
       <height>31</height>
      </rect>
     </property>
@@ -73,15 +76,30 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetNoConstraint</enum>
      </property>
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QPushButton" name="addButton">
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -102,10 +120,22 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -126,10 +156,22 @@
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>23</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="font">
@@ -142,6 +184,31 @@
        </property>
        <property name="text">
         <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>25</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="clusterInfoLabel">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Current project automatically included</string>
        </property>
       </widget>
      </item>
@@ -162,6 +229,9 @@
      </font>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QLabel" name="searchLabel">
        <property name="minimumSize">
@@ -209,6 +279,9 @@
      </font>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
      <item>
       <widget class="QLabel" name="commentLabel">
        <property name="minimumSize">
@@ -277,7 +350,7 @@
    <widget class="QLabel" name="clusterProjectsLabel">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>66</x>
       <y>150</y>
       <width>231</width>
       <height>21</height>
@@ -293,29 +366,11 @@
    <widget class="QComboBox" name="clusterProjectsComboBox">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>306</x>
       <y>150</y>
       <width>221</width>
       <height>22</height>
      </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="dummyLabel">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>120</y>
-      <width>51</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>8</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>dummy</string>
     </property>
    </widget>
    <widget class="QWidget" name="widgetContainer" native="true">
@@ -330,9 +385,9 @@
     <widget class="QWidget" name="horizontalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>200</x>
        <y>179</y>
-       <width>281</width>
+       <width>321</width>
        <height>24</height>
       </rect>
      </property>
@@ -432,8 +487,8 @@
     <widget class="QPushButton" name="testButton">
      <property name="geometry">
       <rect>
-       <x>81</x>
-       <y>317</y>
+       <x>0</x>
+       <y>308</y>
        <width>101</width>
        <height>23</height>
       </rect>
@@ -453,9 +508,9 @@
     <widget class="QWidget" name="horizontalLayoutWidget_2">
      <property name="geometry">
       <rect>
-       <x>240</x>
+       <x>200</x>
        <y>201</y>
-       <width>281</width>
+       <width>321</width>
        <height>24</height>
       </rect>
      </property>
@@ -524,30 +579,6 @@ Separate steps with spaces or commas.</string>
       </item>
      </layout>
     </widget>
-    <widget class="QCheckBox" name="wildebeestCheckBox">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>161</y>
-       <width>241</width>
-       <height>17</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>8</pointsize>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>This tool will run before other rules.</string>
-     </property>
-     <property name="text">
-      <string notr="true">Run the Wildebeest cleanup tool</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="testInputLabel">
      <property name="geometry">
       <rect>
@@ -587,7 +618,7 @@ Separate steps with spaces or commas.</string>
     <widget class="QCheckBox" name="selectAllCheckBox">
      <property name="geometry">
       <rect>
-       <x>6</x>
+       <x>5</x>
        <y>13</y>
        <width>13</width>
        <height>13</height>
@@ -596,117 +627,19 @@ Separate steps with spaces or commas.</string>
      <property name="text">
       <string/>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
      <property name="tristate">
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QWidget" name="layoutWidget_3">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>161</y>
-       <width>190</width>
-       <height>42</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <layout class="QHBoxLayout" name="buttonLayout_2">
-      <item>
-       <widget class="QPushButton" name="checkAllButton">
-        <property name="minimumSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Check all rules.</string>
-        </property>
-        <property name="text">
-         <string notr="true">☑</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="uncheckAllButton">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Uncheck all rules.</string>
-        </property>
-        <property name="text">
-         <string notr="true">☐</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="moveUpButton">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Move the selected rule up.</string>
-        </property>
-        <property name="text">
-         <string notr="true"/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="moveDownButton">
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Move the selected rule down.</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
     <widget class="QLabel" name="WBstepsLabel">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>140</x>
        <y>183</y>
-       <width>36</width>
+       <width>61</width>
        <height>31</height>
       </rect>
      </property>
@@ -723,43 +656,6 @@ Separate steps with spaces or commas.</string>
      </property>
      <property name="text">
       <string>Steps:</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="errorLabel">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>290</y>
-       <width>431</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Error Msg</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>321</y>
-       <width>191</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>WorkProject</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QTextEdit" name="inputText">
@@ -808,19 +704,6 @@ p, li { white-space: pre-wrap; }
       <set>QAbstractItemView::EditKeyPressed</set>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lexemeFormEdit">
-     <property name="geometry">
-      <rect>
-       <x>380</x>
-       <y>321</y>
-       <width>130</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>Add an entry to the target lexicon.</string>
-     </property>
-    </widget>
     <widget class="QTextEdit" name="outputText">
      <property name="geometry">
       <rect>
@@ -858,31 +741,6 @@ p, li { white-space: pre-wrap; }
       <string/>
      </property>
     </widget>
-    <widget class="QLabel" name="WBlinkLabel">
-     <property name="geometry">
-      <rect>
-       <x>430</x>
-       <y>160</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="textFormat">
-      <enum>Qt::RichText</enum>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-     <property name="textInteractionFlags">
-      <set>Qt::TextBrowserInteraction</set>
-     </property>
-    </widget>
     <widget class="QPushButton" name="OKButton">
      <property name="geometry">
       <rect>
@@ -907,7 +765,7 @@ p, li { white-space: pre-wrap; }
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit">
+    <widget class="QTextEdit" name="errorTextBox">
      <property name="geometry">
       <rect>
        <x>80</x>
@@ -920,7 +778,8 @@ p, li { white-space: pre-wrap; }
       <bool>false</bool>
      </property>
      <property name="styleSheet">
-      <string notr="true">background: transparent</string>
+      <string notr="true">background: transparent;
+color: #FF0000</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -948,7 +807,166 @@ p, li { white-space: pre-wrap; }
       <bool>false</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="dummyLabel">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>320</y>
+       <width>51</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>dummy</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="rulesLabel">
+     <property name="geometry">
+      <rect>
+       <x>22</x>
+       <y>11</y>
+       <width>130</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Rules</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="moveUpButton">
+     <property name="geometry">
+      <rect>
+       <x>-1</x>
+       <y>160</y>
+       <width>40</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Move the selected rule up.</string>
+     </property>
+     <property name="text">
+      <string notr="true"/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="moveDownButton">
+     <property name="geometry">
+      <rect>
+       <x>45</x>
+       <y>160</y>
+       <width>40</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Move the selected rule down.</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>160</y>
+       <width>381</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QCheckBox" name="wildebeestCheckBox">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>This tool will run before other rules.</string>
+        </property>
+        <property name="text">
+         <string notr="true">Run the Wildebeest cleanup tool</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="WBlinkLabel">
+        <property name="text">
+         <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/uhermjakob/wildebeest&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;wildebeest help&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::TextBrowserInteraction</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget_2</zorder>
+   <zorder>layoutWidget_4</zorder>
+   <zorder>layoutWidget_5</zorder>
+   <zorder>widgetContainer</zorder>
+   <zorder>clusterProjectsComboBox</zorder>
+   <zorder>clusterProjectsLabel</zorder>
   </widget>
  </widget>
  <tabstops>
