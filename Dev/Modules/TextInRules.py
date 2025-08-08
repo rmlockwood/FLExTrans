@@ -5,6 +5,9 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#    Support cluster projects.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -26,11 +29,6 @@
 #   Define and test a set of search and replace operations to be used to fix up the text that comes out of 
 #   Paratext. Regular expression can be used if desired.
 #
-
-import os
-import shutil
-import sys
-import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                          
 
@@ -58,7 +56,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextInRules", 'Define and test a set of Paratext-import search and replace operations.') ,
         FTM_Help   : "",

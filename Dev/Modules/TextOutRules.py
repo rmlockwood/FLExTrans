@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#    Support cluster projects.
+#
 #   Version 3.14 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -36,10 +39,6 @@
 #   synthesis. Regular expression can be used if desired.
 #
 
-import os
-import shutil
-import sys
-
 from flextoolslib import *                                          
 
 from PyQt5.QtWidgets import QApplication
@@ -68,7 +67,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.14",
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",
