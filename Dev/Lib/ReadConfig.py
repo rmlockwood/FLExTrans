@@ -176,20 +176,21 @@ TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 # DM: ADDING NEW CONFIGS FOR GENSTC
 GENSTC_ANALYZED_GLOSS_TEXT_FILE = 'AnalyzedTextOutputFileForGloss'
 
-GEN_STC_LIMIT_POS_N = 'GenStcLimitPosN'
-GEN_STC_LIMIT_POS_1 = 'GenStcLimitPos1'
-GEN_STC_LIMIT_POS_2 = 'GenStcLimitPos2'
-
-GEN_STC_LIMIT_LEMMA_N = 'GenStcLimitLemmaN'
-GEN_STC_LIMIT_LEMMA_1 = 'GenStcLimitLemma1'
-GEN_STC_LIMIT_LEMMA_2 = 'GenStcLimitLemma2'
+GEN_STC_SEM_CUSTOMFIELD = 'GenStcCustomField'
 GEN_STC_LIMIT_STEM_COUNT = 'GenStcLimitStemCount'
 
-GEN_STC_SEM_CUSTOMFIELD = 'GenStcCustomField'
-
+GEN_STC_LIMIT_LEMMA_N = 'GenStcLimitLemmaN'
+GEN_STC_LIMIT_POS_N = 'GenStcLimitPosN'
 GEN_STC_LIMIT_SEMANTIC_DOMAIN_N = 'GenStcLimitSemDomainN'
+
+GEN_STC_LIMIT_LEMMA_1 = 'GenStcLimitLemma1'
+GEN_STC_LIMIT_POS_1 = 'GenStcLimitPos1'
 GEN_STC_LIMIT_SEMANTIC_DOMAIN_1 = 'GenStcLimitSemDomain1'
+
+GEN_STC_LIMIT_LEMMA_2 = 'GenStcLimitLemma2'
+GEN_STC_LIMIT_POS_2 = 'GenStcLimitPos2'
 GEN_STC_LIMIT_SEMANTIC_DOMAIN_2 = 'GenStcLimitSemDomain2'
+
 
 ##### IMPORTANT #####
 # If you are adding a new property that will have multiple values, add it to this list variable
@@ -208,6 +209,10 @@ PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              CATEGORY_ABBREV_SUB_LIST,
                              CLUSTER_PROJECTS,
                              ]
+
+#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_N,
+#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_1,
+#                             GEN_STC_LIMIT_SEMANTIC_DOMAIN_2,
 
 def openConfigFile(report, info):
     

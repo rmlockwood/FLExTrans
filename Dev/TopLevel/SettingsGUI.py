@@ -1516,7 +1516,7 @@ widgetList = [
    ["Limit to specific POS values", "limit_pos", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.SYNTHESIS_TEST_LIMIT_POS,\
     "One or more grammatical categories. The synthesis test will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-   ["Limit number of stems", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
+   ["Limit number of stems generated on", "stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_STEM_COUNT, \
     "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, FULL_VIEW],\
 
    ["Limit to specific Citation Form", "limit_citation", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.SYNTHESIS_TEST_LIMIT_LEXEME, \
@@ -1571,38 +1571,38 @@ widgetList = [
     ["Gloss Text Output File", "gloss_output_filename", "", FILE, object, object, object, loadFile, ReadConfig.GENSTC_ANALYZED_GLOSS_TEXT_FILE,\
     "The path and name of the file which holds\nthe extracted text in the source language.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-    ["Limit to specific POS values in head word", "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
-    "One or more grammatical categories. GenStc word replacement in head word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
+    ["Custom Field for semantic domain", "genstc_customfield", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
     
-    ["Limit to specific POS values in dependent word", "genstc_limit_pos_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_1,\
-    "One or more grammatical categories. GenStc word replacement in dependent word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
-    
-    ["Limit to specific POS values in second dependent word", "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
-    "One or more grammatical categories. GenStc word replacement in second dependent word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
+    ["Limit number of stems generated against", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
+    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, FULL_VIEW],\
 
     ["Limit to specific lemmas in head word", "genstc_limit_lemma_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_N, \
     "Limit GenStc word replacememnt to specific lemmas in head word.", DONT_GIVE_ERROR, FULL_VIEW],\
     
+    ["  Limit to specific POS values in head word", "genstc_limit_pos_n", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_N,\
+    "One or more grammatical categories. GenStc word replacement in head word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    ["  Limit to specific semantic domains in head word", "genstc_limit_semdomain_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    
     ["Limit to specific lemmas in dependent word 1", "genstc_limit_lemma_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_1, \
     "Limit GenStc word replacememnt to specific lemmas in first dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    ["  Limit to specific POS values in dependent word", "genstc_limit_pos_1", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_1,\
+    "One or more grammatical categories. GenStc word replacement in dependent word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
+    
+    ["  Limit to specific semantic domains in dependent word 1", "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
+    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
     
     ["Limit to specific lemmas in dependent word 2", "genstc_limit_lemma_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_LEMMA_2, \
     "Limit GenStc word replacememnt to specific lemmas in second dependent word.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-    ["Custom Field for semantic domain", "genstc_customfield", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.GEN_STC_SEM_CUSTOMFIELD,\
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
+    ["  Limit to specific POS values in second dependent word", "genstc_limit_pos_2", "", CHECK_COMBO_BOX, object, object, object, loadTargetCategories, ReadConfig.GEN_STC_LIMIT_POS_2,\
+    "One or more grammatical categories. GenStc word replacement in second dependent word will be limited to using only these categories.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-    ["Limit to specific semantic domains in head word", "genstc_limit_semdomain_n", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_N, \
+    ["  Limit to specific semantic domains in dependent word 2", "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
     "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
-    
-    ["Limit to specific semantic domains in dependent word 1", "genstc_limit_semdomain_1", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_1, \
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
-    
-    ["Limit to specific semantic domains in dependent word 2", "genstc_limit_semdomain_2", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_SEMANTIC_DOMAIN_2, \
-    "PLACEHOLDER", DONT_GIVE_ERROR, FULL_VIEW],\
-    
-    ["Limit number of stems", "genstc_stem_num", "", TEXT_BOX, object, object, object, loadTextBox, ReadConfig.GEN_STC_LIMIT_STEM_COUNT, \
-    "Limit the generation to a specified number of stems.\nStems chosen may seem random.", DONT_GIVE_ERROR, FULL_VIEW],\
     #################
 
    ["Cluster Settings", "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
