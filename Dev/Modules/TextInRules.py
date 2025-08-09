@@ -85,7 +85,7 @@ def MainFunction(DB, report, modify=True):
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
     # Show the window to get the options the user wants
-    window = TextInOutUtils.TextInOutRulesWindow(DB, configMap, ReadConfig.TEXT_IN_RULES_FILE, textIn=True, winTitle=docs[FTM_Name])
+    window = TextInOutUtils.TextInOutRulesWindow(DB, report, configMap, ReadConfig.TEXT_IN_RULES_FILE, textIn=True, winTitle=docs[FTM_Name])
     
     if window.retVal:
         window.show()

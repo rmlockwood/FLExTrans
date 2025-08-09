@@ -165,7 +165,7 @@ def getRuleFromElement(element):
 
     return searchReplaceRuleData
 
-def buildRuleString(searchRplObj):
+def buildRuleString(searchRplObj, basicInfo=True):
 
     # Create a regex indicator string if reg ex is checked
     if searchRplObj.isRegEx:
@@ -191,6 +191,10 @@ def buildRuleString(searchRplObj):
 
         commentStr = ' - ' + searchRplObj.comment
 
+    if basicInfo:
+        return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}'
+
+    # If not basic info, include all details
     return f'{searchStr} {ARROW_CHAR} {replStr}{regExStr}{inactiveStr}{commentStr}'
 
 def buildRuleStringFromElement(element):
@@ -309,13 +313,14 @@ def runWildebeest(root, inputStr):
 
 class TextInOutRulesWindow(QMainWindow):
 
-    def __init__(self, DB, configMap, settingName, textIn, winTitle):
+    def __init__(self, DB, report, configMap, settingName, textIn, winTitle):
 
         QMainWindow.__init__(self)
         self.ui = Ui_TextInOutMainWindow()
         self.ui.setupUi(self)
 
         self.DB = DB
+        self.report = report
         self.configMap = configMap
         self.settingName = settingName
         self.textIn = textIn
@@ -360,17 +365,11 @@ class TextInOutRulesWindow(QMainWindow):
 
         currDBname = DB.ProjectName()
 
-        # if not self.clusterProjects:
-
-        #     QMessageBox.warning(self, _translate("TextInOutUtils", "Cluster Project Error"), _translate("TextInOutUtils", "No Cluster Projects, exiting."))
-        #     self.retVal = False
-        #     self.close()
-        #     return
-
         if self.clusterProjects:
             
             if currDBname not in self.clusterProjects:
-                QMessageBox.warning(self, _translate("TextInOutUtils", "Cluster Project Error"), _translate("TextInOutUtils", "Current Project not in Cluster Projects list, exiting."))
+
+                self.report.Error(_translate("TextInOutUtils", "Current Project not in Cluster Projects list, exiting."))
                 self.retVal = False
                 self.close()
                 return
@@ -387,13 +386,17 @@ class TextInOutRulesWindow(QMainWindow):
         workProjPath = FTPaths.WORK_PROJECTS_DIR
         self.workProjectFoldersList.append("...")
 
-        for foldName in os.listdir(workProjPath):
+        try:
+            for foldName in os.listdir(workProjPath):
 
-            foldPath = os.path.join(workProjPath, foldName)
+                foldPath = os.path.join(workProjPath, foldName)
 
-            if os.path.isdir(foldPath):
+                if os.path.isdir(foldPath):
 
-                self.workProjectFoldersList.append(foldName)
+                    self.workProjectFoldersList.append(foldName)
+        except:
+            self.report.Error(_translate("TextInOutUtils", "Error accessing work project folders."))
+
 
         header1TextStr = _translate("TextInOutUtils", "FLEx project name")
         header2TextStr = _translate("TextInOutUtils", "WorkProject folder")
@@ -708,7 +711,8 @@ class TextInOutRulesWindow(QMainWindow):
                         # If the default project row number is out of range, put it at the end
                         rowNum = len(self.xmlParentObjList[i])
                 else:
-                    self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} already exists.").format(foldName=self.selectedWorkProjects[i-1], ruleID=ruleStr))
+                    self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} already exists.").format(foldName=self.selectedWorkProjects[i-1], 
+                                                                                                                                      ruleID=buildRuleString(myDataObj, basicInfo=True)))
                     continue
 
             # Construct the etree elements
@@ -740,7 +744,7 @@ class TextInOutRulesWindow(QMainWindow):
 
         # Get the current info for doing the find match
         oldDataObj = getRuleFromElement(self.xmlParentObjList[0][rowNum])
-        oldRuleStr = buildRuleString(oldDataObj)
+        oldRuleStr = buildRuleString(oldDataObj, basicInfo=True)
 
         # Build the rule string for the rule list
         myDataObj = self.initDataObj()
@@ -760,7 +764,8 @@ class TextInOutRulesWindow(QMainWindow):
 
                 if rowNum == -1:
 
-                    self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} was not found.").format(foldName=self.selectedWorkProjects[i-1], ruleID=oldRuleStr))
+                    self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} was not found.").format(foldName=self.selectedWorkProjects[i-1], 
+                                                                                                                                     ruleID=oldRuleStr))
                     continue
 
             # Get the rule element
@@ -787,7 +792,7 @@ class TextInOutRulesWindow(QMainWindow):
 
             # Get the current info for doing the find match
             oldDataObj = getRuleFromElement(self.xmlParentObjList[0][rowNum])
-            oldRuleStr = buildRuleString(oldDataObj)
+            oldRuleStr = buildRuleString(oldDataObj, basicInfo=True)
 
             # Update the etree elements
             for i in range(len(self.selectedWorkProjects)+1):
@@ -799,7 +804,8 @@ class TextInOutRulesWindow(QMainWindow):
 
                     if rowNum == -1:
 
-                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} was not found.").format(foldName=self.selectedWorkProjects[i-1], ruleID=oldRuleStr))
+                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} was not found.").format(foldName=self.selectedWorkProjects[i-1], 
+                                                                                                                                         ruleID=oldRuleStr))
                         continue
 
                 # Remove this row from the etree
@@ -878,12 +884,6 @@ class TextInOutRulesWindow(QMainWindow):
 
         self.RulesListClicked(self.ui.rulesList.currentIndex())
 
-        # Loop through all the items in the rule list model
-        # for i in range(0, self.rulesModel.rowCount()):
-
-        #     # Check each box
-        #     self.rulesModel.item(i).setCheckState(QtCore.Qt.Checked)
-
     def CloseClicked(self):
         
         self.writeXMLfile()
@@ -904,7 +904,7 @@ class TextInOutRulesWindow(QMainWindow):
 
             # Get the current info for doing the find match
             oldDataObj = getRuleFromElement(self.xmlParentObjList[0][rowNum])
-            oldRuleStr = buildRuleString(oldDataObj)
+            oldRuleStr = buildRuleString(oldDataObj, basicInfo=True)
 
             # Add it to the element tree
             for i in range(len(self.selectedWorkProjects)+1):
@@ -916,7 +916,8 @@ class TextInOutRulesWindow(QMainWindow):
 
                     if rowNum == -1: # not found
 
-                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} not found.").format(foldName=self.selectedWorkProjects[i-1], ruleID=oldRuleStr))
+                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} not found.").format(foldName=self.selectedWorkProjects[i-1], 
+                                                                                                                                     ruleID=oldRuleStr))
                         continue
 
                 # If the row number found was zero, we skip moving it.
@@ -956,7 +957,7 @@ class TextInOutRulesWindow(QMainWindow):
 
             # Get the current info for doing the find match
             oldDataObj = getRuleFromElement(self.xmlParentObjList[0][rowNum])
-            oldRuleStr = buildRuleString(oldDataObj)
+            oldRuleStr = buildRuleString(oldDataObj, basicInfo=True)
 
             # Add it to the element tree
             for i in range(len(self.selectedWorkProjects)+1):
@@ -968,7 +969,8 @@ class TextInOutRulesWindow(QMainWindow):
 
                     if rowNum == -1: # not found
 
-                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} not found.").format(foldName=self.selectedWorkProjects[i-1], ruleID=oldRuleStr))
+                        self.appendError(_translate("TextInOutUtils", "For folder {foldName}, the rule: {ruleID} not found.").format(foldName=self.selectedWorkProjects[i-1], 
+                                                                                                                                     ruleID=oldRuleStr))
                         continue
 
                 # If the row number is at the end of the list, we skip moving it.
@@ -1287,7 +1289,12 @@ class TextInOutRulesWindow(QMainWindow):
 
         # The default project is always the first one in the list.
         path = self.getPath(None)
-        tree = ET.parse(path)
+        try:
+            tree = ET.parse(path)
+        except:
+            self.report.Error(_translate("TextInOutUtils", "Error loading XML file."))
+            raise
+
         self.xmlTreeList = [tree]
 
         self.defaultRoot = tree.getroot()
@@ -1308,7 +1315,12 @@ class TextInOutRulesWindow(QMainWindow):
                 if not path:
                     continue
 
-                tree = ET.parse(path)
+                try:
+                    tree = ET.parse(path)
+                except:
+                    self.report.Error(_translate("TextInOutUtils", "Error loading XML file."))
+                    raise
+
                 self.xmlTreeList.append(tree)
 
                 # Get the parent element of the rule elements
@@ -1405,9 +1417,12 @@ class TextInOutRulesWindow(QMainWindow):
         self.settingsMap[WORK_PROJECTS] = [myCombo.currentText() for myCombo in self.keyWidgetList]
         self.settingsMap[SELECTED_CLUSTER_PROJECTS] = self.ui.clusterProjectsComboBox.currentData()
 
-        with open(self.settingsPath, 'w', encoding='utf-8') as f:
-            
-            json.dump(self.settingsMap, f, indent=4)
+        try:
+            with open(self.settingsPath, 'w', encoding='utf-8') as f:
+                
+                json.dump(self.settingsMap, f, indent=4)
+        except:
+            self.report.Error(_translate("TextInOutUtils", "Error saving settings."))
 
         for i in range(len(self.selectedWorkProjects)+1): # +1 for the default project
 
