@@ -4,6 +4,8 @@
 #   Generate sentences based on a model sentence, with some elements set as variables
 #   to be iteratively replaced by appropriate items in the dictionary.
 #
+#   06 Aug 2025 dm generation can now take the same POS in the head and dependent slots. 
+#
 #   15 Jul 2025 dm generation in LWC and target language can now be limited to specific semantic domains. 
 #
 #   13 Jun 2025 dm limited generation in LWC now supported. Sentence-to-sentence correspondence between languages. 
