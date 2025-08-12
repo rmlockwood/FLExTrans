@@ -475,10 +475,13 @@ def _writeSentence(stc, f_out):
 def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, translation, report, f_out2=None):
     """
     Iteratively replace target words in the free translation with glosses from the corresponding subLists.
+    Optimized version using itertools.product to match processSentence. 
     """
     if not translation:
+        f_out2.write('NO FREE TRANSLATION')
         return
         
+    ''' OLD LOOP (DELETE LATER AFTER MORE TESTING)
     for genWordN in subListN:
         word = genWordN.gloss
         for idx in idxN_list: 
@@ -503,7 +506,36 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
                             wrdList[idx] = word
 
                         f_out2.write((' '.join(cleanWordList(wrdList))) + '.')
-                        f_out2.write('\n')
+                        f_out2.write('\n')'''
+
+
+    from itertools import product
+
+    subs_n = subListN if idxN_list else [None]
+    subs_1 = subList1 if idx1_list else [None]
+    subs_2 = subList2 if idx2_list else [None]
+
+    for genWordN, genWord1, genWord2 in product(subs_n, subs_1, subs_2):
+            # Apply N substitutions if they exist
+        if genWordN and idxN_list:
+            word = genWordN.gloss
+            for idx in idxN_list: 
+                wrdList[idx] = word
+        
+        # Apply 1 substitutions if they exist
+        if genWord1 and idx1_list:
+            word = genWord1.gloss
+            for idx in idx1_list: 
+                wrdList[idx] = word
+        
+        # Apply 2 substitutions if they exist
+        if genWord2 and idx2_list:
+            word = genWord2.gloss
+            for idx in idx2_list: 
+                wrdList[idx] = word
+        
+        f_out2.write((' '.join(cleanWordList(wrdList))) + '.')
+        f_out2.write('\n')
 
 #----------------------------------------------------------------
 def MainFunction(DB, report, modifyAllowed):
@@ -644,6 +676,10 @@ def MainFunction(DB, report, modifyAllowed):
             elif thisPOS in posFocus2 and thisLemma in match_2_lem:
                 idx2_list.append(idx)
 
+        report.Info(f'idxN_list: {idxN_list}')
+        report.Info(f'idx1_list: {idx1_list}')
+        report.Info(f'idx2_list: {idx2_list}')
+
         # ---- language of wider communication ---- 
         free_translation = stc.getFreeTranslation().rstrip(".").lower()
         freeT_wrdList = cleanWordList(free_translation.split())
@@ -662,6 +698,10 @@ def MainFunction(DB, report, modifyAllowed):
                 idxFT1_list.append(idxFT)
             elif wFT in matchGlosses2: 
                 idxFT2_list.append(idxFT)
+
+        report.Info(f'idxFTN_list: {idxFTN_list}')
+        report.Info(f'idxFT1_list: {idxFT1_list}')
+        report.Info(f'idxFT2_list: {idxFT2_list}')
 
         # TL process
         processSentence(wrdList, idxN_list, idx1_list, idx2_list, subListN, subList1, subList2, f_out, stc, report)
