@@ -4,6 +4,11 @@
 <context>
     <name>ExportToParatext</name>
     <message>
+      <location filename="../ExportToParatext.py" line="118"/>
+      <source>Export FLExTrans Draft to Paratext</source>
+      <translation>FLExTrans-Entwurf nach Paratext exportieren</translation>
+    </message>
+    <message>
         <location filename="../ExportToParatext.py" line="118"/>
         <source>Export the draft that has been translated with FLExTrans to Paratext.</source>
         <translation>Exportieren Sie den Entwurf, der mit FLExTrans übersetzt wurde, nach Paratext.</translation>

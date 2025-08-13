@@ -4,6 +4,11 @@
 <context>
     <name>RunApertium</name>
     <message>
+      <location filename="../RunApertium.py" line="118"/>
+      <source>Run Apertium</source>
+      <translation>Ejecutar Apertium</translation>
+    </message>
+    <message>
         <location filename="../RunApertium.py" line="87"/>
         <source>This module executes lexical transfer based on links from source to target sense 
 you have established and then executes structural transfer which

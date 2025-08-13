@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -153,11 +156,11 @@ The synthesized text will be stored in the file specified by the Target Output S
 This is typically called target_text-syn.txt and is usually in the Output folder.
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
-docs = {FTM_Name       : "Synthesize Text with STAMP",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
-        FTM_Help       :"",
+        FTM_Help       : "",
         FTM_Description: description}
 
 app.quit()

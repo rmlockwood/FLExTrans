@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.13.1 - 3/20/25 - Ron Lockwood
 #    Modularized the main functions to make it easy to call from other modules.
 # 
@@ -52,12 +55,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),    
-        FTM_Help   : "",
-        FTM_Description: _translate("TranslateText", 
+        FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
+        FTM_Help       : "",
+        FTM_Description: _translate("TranslateText",
 """Translate the current source text.""")}
 
 app.quit()

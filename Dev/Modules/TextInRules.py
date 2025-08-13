@@ -5,6 +5,9 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects.
 #
@@ -55,11 +58,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("TextInRules", "Text In Rules"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextInRules", 'Define and test a set of Paratext-import search and replace operations.') ,
-        FTM_Help   : "",
+        FTM_Help       : "",
         FTM_Description: _translate("TextInRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 Paratext. Regular expressions and Wildebeest normalization can be used if desired.""")}

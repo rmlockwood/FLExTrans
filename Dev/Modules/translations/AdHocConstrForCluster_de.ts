@@ -5,6 +5,11 @@
     <name>AdHocConstrForCluster</name>
     <message>
       <location filename="../AdHocConstrForCluster.py" line="118"/>
+      <source>Add Ad Hoc Constraint for a Cluster</source>
+      <translation>Ad-hoc-Bedingung für einen Cluster hinzufügen</translation>
+    </message>
+    <message>
+      <location filename="../AdHocConstrForCluster.py" line="118"/>
       <source>Group Input</source>
       <translation>Gruppeneingabe</translation>
     </message>

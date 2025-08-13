@@ -4,6 +4,11 @@
 <context>
     <name>DoHermitCrabSynthesis</name>
     <message>
+      <location filename="../DoHermitCrabSynthesis.py" line="118"/>
+      <source>Synthesize Text with HermitCrab</source>
+      <translation>Sintetizar texto con HermitCrab</translation>
+    </message>
+    <message>
       <location filename="../DoHermitCrabSynthesis.py" line="153"/>
       <source>Synthesizes the target text with the tool HermitCrab.</source>
       <translation>Sintetiza el texto objetivo con la herramienta HermitCrab.</translation>

@@ -4,6 +4,11 @@
 <context>
     <name>LiveRuleTesterTool</name>
     <message>
+      <location filename="../LiveRuleTesterTool.py" line="118"/>
+      <source>Live Rule Tester Tool</source>
+      <translation>Herramienta de prueba de reglas en vivo</translation>
+    </message>
+    <message>
       <location filename="../LiveRuleTesterTool.py" line="269"/>
       <source>Test transfer rules and synthesis live against specific words.</source>
       <translation>Pruebe las reglas de transferencia y la síntesis en vivo con palabras específicas.</translation>

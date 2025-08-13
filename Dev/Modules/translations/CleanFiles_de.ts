@@ -4,6 +4,11 @@
 <context>
     <name>CleanFiles</name>
     <message>
+      <location filename="../CleanFiles.py" line="118"/>
+      <source>Clean Files</source>
+      <translation>Dateien bereinigen</translation>
+    </message>
+    <message>
         <location filename="../CleanFiles.py" line="79"/>
         <source>Remove generated files to force each FLExTrans module to regenerate everything</source>
         <translation>Entfernen Sie generierte Dateien, um jedes FLExTrans-Modul zu zwingen, alles neu zu generieren</translation>

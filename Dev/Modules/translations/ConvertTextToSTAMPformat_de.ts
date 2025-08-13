@@ -4,6 +4,11 @@
 <context>
     <name>ConvertTextToSTAMPformat</name>
     <message>
+      <location filename="../ConvertTextToSTAMPformat.py" line="118"/>
+      <source>Convert Text to Synthesizer Format</source>
+      <translation>Text in Synthesizer-Format umwandeln</translation>
+    </message>
+    <message>
       <location filename="../ConvertTextToSTAMPformat.py" line="174"/>
       <source>Convert the file produced by {runApert} into a text file in a Synthesizer format</source>
       <translation>Konvertieren Sie die von {runApert} erstellte Datei in eine Textdatei im Synthesizer-Format</translation>

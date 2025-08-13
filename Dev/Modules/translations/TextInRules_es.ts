@@ -4,6 +4,11 @@
 <context>
     <name>TextInRules</name>
     <message>
+      <location filename="../TextInRules.py" line="118"/>
+      <source>Text In Rules</source>
+      <translation>Reglas de entrada de texto</translation>
+    </message>
+    <message>
         <location filename="../TextInRules.py" line="63"/>
         <source>Define and test a set of Paratext-import search and replace operations.</source>
         <translation>Definir y probar un conjunto de operaciones de búsqueda y reemplazo para la importación de Paratext.</translation>

@@ -4,6 +4,11 @@
 <context>
     <name>SetUpTransferRuleGramCat</name>
     <message>
+      <location filename="../SetUpTransferRuleGramCat.py" line="118"/>
+      <source>Set Up Transfer Rule Categories and Attributes</source>
+      <translation>Kategorien und Attribute für Transferregeln einrichten</translation>
+    </message>
+    <message>
       <location filename="../SetUpTransferRuleGramCat.py" line="108"/>
       <source>Set up the transfer rule file with categories and attributes from source and target FLEx projects.</source>
       <translation>Die Transferregeldatei mit Kategorien und Attributen aus Quell- und Ziel-FLEx-Projekten einrichten.</translation>

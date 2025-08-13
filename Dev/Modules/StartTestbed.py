@@ -5,6 +5,9 @@
 #   SIL International
 #   6/9/2018
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -83,8 +86,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Testbed', 'TestbedValidator', 'M
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {
-    FTM_Name: "Start Testbed",
-    FTM_Version: "3.13",
+    FTM_Name: _translate("StartTestbed", "Start Testbed"),
+    FTM_Version: "3.14.1",
     FTM_ModifiesDB: False,
     FTM_Synopsis: _translate("StartTestbed", "Initialize the testbed log and create source text from the testbed."),
     FTM_Help: "",

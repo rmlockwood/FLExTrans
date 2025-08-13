@@ -4,6 +4,11 @@
 <context>
     <name>ExportFlexToParatext</name>
     <message>
+      <location filename="../ExportFlexToParatext.py" line="118"/>
+      <source>Export Text from Target FLEx to Paratext</source>
+      <translation>Exportar texto de FLEx objetivo a Paratext</translation>
+    </message>
+    <message>
       <location filename="../ExportFlexToParatext.py" line="78"/>
       <source>Export one or more texts that contain scripture from the target FLEx project to Paratext.</source>
       <translation>Exportar uno o más textos que contienen escrituras desde el proyecto FLEx de destino a Paratext.</translation>

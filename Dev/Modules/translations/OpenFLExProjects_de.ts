@@ -4,6 +4,11 @@
 <context>
     <name>OpenFLExProjects</name>
     <message>
+      <location filename="../OpenFLExProjects.py" line="118"/>
+      <source>Open Multiple FLEx Projects</source>
+      <translation>Mehrere FLEx-Projekte öffnen</translation>
+    </message>
+    <message>
         <location filename="../OpenFLExProjects.py" line="58"/>
         <source>Select one or more FLEx project and automatically open them one by one.</source>
         <translation>Wählen Sie ein oder mehrere FLEx-Projekte aus und öffnen Sie sie nacheinander automatisch.</translation>

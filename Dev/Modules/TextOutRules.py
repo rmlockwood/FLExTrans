@@ -5,6 +5,9 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects.
 #
@@ -66,11 +69,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("TextOutRules", "Text Out Rules"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
-        FTM_Help   : "",
+        FTM_Help       : "",
         FTM_Description: _translate("TextOutRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the {fixUpSynthTextModule} module.

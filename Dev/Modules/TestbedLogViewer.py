@@ -5,6 +5,9 @@
 #   SIL International
 #   6/22/18
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 7/23/25 - Ron Lockwood
 #    Fixes #1016. Repeat the expected result in the actual result column.
 #
@@ -79,11 +82,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TestbedLog', 'Testbe
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Testbed Log Viewer",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("TestbedLogViewer", "Testbed Log Viewer"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TestbedLogViewer", "View testbed run results."),
-        FTM_Help   : "", 
+        FTM_Help       : "", 
         FTM_Description: _translate("TestbedLogViewer", 
 """View testbed run results. The number of results to display is set by default to 25. Change MAX_RESULTS_TO_DISPLAY to a different value as needed.""")}
                  

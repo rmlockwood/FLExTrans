@@ -4,6 +4,11 @@
 <context>
     <name>InsertTargetText</name>
     <message>
+      <location filename="../InsertTargetText.py" line="118"/>
+      <source>Insert Target Text</source>
+      <translation>Insertar texto objetivo</translation>
+    </message>
+    <message>
       <location filename="../InsertTargetText.py" line="87"/>
       <source>Insert a translated text into the target FLEx project.</source>
       <translation>Insertar un texto traducido en el proyecto FLEx de destino.</translation>

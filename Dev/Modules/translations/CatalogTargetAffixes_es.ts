@@ -4,6 +4,11 @@
 <context>
     <name>CatalogTargetAffixes</name>
     <message>
+      <location filename="../CatalogTargetAffixes.py" line="118"/>
+      <source>Catalog Target Affixes</source>
+      <translation>Catalogar afijos objetivo</translation>
+    </message>
+    <message>
       <location filename="../CatalogTargetAffixes.py" line="138"/>
       <source>Problem reading the configuration file for the property: {property}</source>
       <translation>Problema al leer el archivo de configuración para la propiedad: {property}</translation>
