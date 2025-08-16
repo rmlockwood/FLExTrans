@@ -5,6 +5,10 @@
 #   SIL International
 #   3/8/23
 #
+#   Version 3.14.3 - 8/16/25 - Ron Lockwood
+#    Fixes #1040. Use lemma and category in our saved catalog for mapping capitalized
+#    words to lowercase words.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -97,33 +101,36 @@
 #
 # Basic Design:
 #
-# Create HermitCrabMaster.txt file - this file holds each word parse on a line the parse is in a couple different formats in the form X,Y. 
+# HermitCrabMaster.txt file - this file holds each word parse on a line the parse is in a couple different formats in the form X,Y. 
 #  This file is created in the Convert Text to Synthesizer Format module. It is a file that contains only unique parses. 
 #  X is the Apertium representation of the parse ^...$
 #  Y holds one or more parses in the form the HC needs. Y is in the form A|B...|C
 #  A is in the form Q;N where Q is the parse and N is the capitalization code N can be null
 #  Q is in the form <pfx1>...<pfxN>root<cat><sfx1>...<sfxN> the code goes from X form to Q form by consulting the affix list file
 #
-# The rest happens in the Do HermitCrab Synthesis module
-# Extract the HermitCrab config file - this config file is actually a full target lexicon in an XML format along with all rules and settings needed for HC. This takes a bit of time.
-# Create an internal map of the lowercase version of all lemmas in the HC config file to the original cased version.
-# Create the HC parses file - this is the file that we will send to HC for synthesizing.
+# The rest happens in the Do HermitCrab Synthesis module:
+# Extract the HermitCrab config file [extractHermitCrabConfig()]- this config file is actually a full target lexicon in an XML format 
+#  along with all rules and settings needed for HC. This takes a bit of time.
+# Create an internal map of the lowercase version of all lemmas in the HC config file + POSto the original cased version. [getCapitalLemmas()]
+# Create the HC parses file [createHermitCrabParsesFile()]- this is the file that we will send to HC for synthesizing.
 #  The parses are in HC order, like Q above.
 #  The file is created by iterating through the Master file. Lemmas are restored to their
-#   cased forms as in the HC config file using the internal map from above.
+#   cased forms as in the HC config file using the internal map from above. [capitalize()]
 #  Phrases of the form A|B in the master file come out as consecutive LUs, e.g. ^...$^...$
 #  The list of LUs gets saved for use below.
 # Now HC is called to convert the parses file into a surface forms file (using the HC config file info)
 #  In this surface forms file, multiple words are separated by commas (R,T)
-# Next we produce the synthesized text using the previous generated Apertium results file
-#  (which is the output from apply Apertium rules to the source file) and the surface forms and the saved LU list.
-#  The code iterates through the surface forms and using the original LU, substitutes every #   every LU in the Apertium results file with the matched surface form. 
-#   In the loop, the code applies the need capitalization for the word before substitution.
+# Next we produce the synthesized text using the previous generated Apertium results file [produceSynthesisFile()]
+#  The Apertium results file is the output from apply Apertium rules to the source file. We also use the surface forms and the saved LU list.
+#  The code iterates through the surface forms and using the original LU, substitutes every LU in the Apertium results file with the matched surface form. 
+#   In the loop, the code applies the needed capitalization for the word before substitution.
+#  Then we fix up the text if desired so there are not % @ signs.
 
 import os
 import re 
 import subprocess
 from datetime import datetime
+import xml.etree.ElementTree as ET
 
 from SIL.LCModel import *                                                    # type: ignore
 
@@ -155,7 +162,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("DoHermitCrabSynthesis", "Synthesize Text with HermitCrab"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoHermitCrabSynthesis", "Synthesizes the target text with the tool HermitCrab."),
         FTM_Help       :"",
@@ -424,7 +431,7 @@ def produceSynthesisFile(luInfoList, surfaceFormsFile, transferResultsFile, synF
     fResults.close()
     return errorList
 
-def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap):
+def createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap):
 
     errorList = []
 
@@ -489,22 +496,77 @@ def createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLem
 
 def capitalize(hcParse, HCcapitalLemmasMap):
 
-    # Get the root - non > characters before a <
-    match = re.search(r'(.*?)([^>]+?)(<.*)', hcParse)
-    before = match.group(1)
-    root   = match.group(2)
-    after  = match.group(3)
+    root, posName = extractRootAndFirstTag(hcParse)
 
-    # Get the capitalized form if the lemma is capitalized in the target lexicon (it's in the capitalized lemmas map)
-    # This is a map of lowercase forms to the original capitalized form.
-    # The root could be a phrase with multiple words capitalized such as 'Arangga Nanuno'
-    root = HCcapitalLemmasMap.get(root, root)
+    if root is None or posName is None:
 
-    return before+root+after
+        return hcParse  # fallback
+
+    key = root.lower() + (posName if posName else "")
+    rootCap = HCcapitalLemmasMap.get(key, root)
+
+    # Replace only the first occurrence of root with rootCap
+    rebuilt = hcParse.replace(root, rootCap, 1)
+    return rebuilt
+
+import re
+
+def extractRootAndFirstTag(hcParse):
+    """
+    Returns (root, firstTagAfterRoot) from a HermitCrab parse string.
+    Example: <2s.S2>tang1.1<v><3sg><obj> -> ('tang1.1', 'v')
+    """
+
+    # Find all tags. There should be at least one tag - the POS
+    tagMatches = list(re.finditer(r'<([^>]+)>', hcParse))
+    root = None
+    firstTagAfterRoot = None
+
+    # If there are no tags, the whole string is the root
+    if not tagMatches:
+
+        return hcParse, None
+
+    # Find the root: the text between the last '>' and the next '<'
+    for i, match in enumerate(tagMatches):
+
+        # No tags before the root
+        if i == 0 and match.start() > 0:
+
+            root = hcParse[0:match.start()]
+
+            # The first tag will this 0th match
+            firstTagAfterRoot = match.group(1)
+            return root, firstTagAfterRoot
+        
+        # Root must be after a prefix
+        elif i > 0:
+
+            prev = tagMatches[i-1]
+
+            # The root will be found where there is a gap between tags
+            if prev.end() < match.start():
+
+                root = hcParse[prev.end():match.start()]
+
+                # The first tag will be the ith match (the one after the gap)
+                firstTagAfterRoot = match.group(1)
+                return root, firstTagAfterRoot
+
+    # If no root found in the loop, check after the last tag
+    lastTag = tagMatches[-1]
+
+    if lastTag.end() < len(hcParse):
+
+        root = hcParse[lastTag.end():]
+        return root, None
+
+    # Fallback: no root found
+    return None, None
 
 # Remove @ signs at the beginning of words and N.N at the end of words if so desired in the settings.
 # Also symbols and ^%0%...%$
-def fix_up_text(synFile, cleanUpText):
+def fixUpText(synFile, cleanUpText):
     
     # Read the contents
     f_s = open(synFile, encoding="utf-8")
@@ -541,22 +603,47 @@ def getCapitalLemmas(HCconfigPath):
 
     # Read the contents of the file
     try:
-        with open(HCconfigPath, 'r', encoding='utf-8') as file:
-
-            contents = file.read()
+        # Parse the HermitCrab.config XML file
+        tree = ET.parse(HCconfigPath)
+        root = tree.getroot()
     except:
         return None
 
-    # Use regex to find all strings between <Gloss> tags
-    lemmas = re.findall(r'<Gloss>(.*?)</Gloss>', contents)
+    # Find the PartsOfSpeech element
+    partsOfSpeechElem = root.find('.//PartsOfSpeech')
 
-    # Iterate through the extracted lemmas
-    for lemStr in lemmas:
+    # Build a dictionary mapping part of speech id to name
+    partOfSpeechMap = {}
 
-        # Check any letter is capitalized
-        if any(char.isupper() for char in lemStr):
+    if partsOfSpeechElem is not None:
 
-            HCcapitalLemmasMap[lemStr.lower()] = lemStr
+        for posElem in partsOfSpeechElem.findall('PartOfSpeech'):
+
+            posId = posElem.get('id')
+            nameElem = posElem.find('Name')
+
+            if posId and nameElem is not None and nameElem.text:
+
+                partOfSpeechMap[posId] = nameElem.text
+
+    # Iterate over all LexicalEntry elements
+    for lexEntry in root.findall('.//LexicalEntry'):
+        
+        glossElem = lexEntry.find('Gloss')
+        posId = lexEntry.get('partOfSpeech')
+        
+        # Only proceed if both gloss and partOfSpeech are present and valid
+        if glossElem is not None and glossElem.text and posId in partOfSpeechMap:
+
+            glossText = glossElem.text
+            posName = partOfSpeechMap[posId]
+            
+            # Only add if any letter in the gloss is uppercase
+            if any(char.isupper() for char in glossText):
+
+                # Build a key for the map of gloss name + POS
+                key = (glossText.lower() + posName)
+                HCcapitalLemmasMap[key] = glossText
 
     return HCcapitalLemmasMap
 
@@ -572,7 +659,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
         errorList.append((_translate("DoHermitCrabSynthesis", 'Unable to open the HC master file.'), 2))
         return errorList
 
-    errorList = createdHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
+    errorList = createHermitCrabParsesFile(masterFile, parsesFile, luInfoList, HCcapitalLemmasMap)
 
     for triplet in errorList:
 
@@ -674,7 +761,7 @@ def synthesizeWithHermitCrab(configMap, HCconfigPath, synFile, parsesFile, maste
     if overrideClean:
         cleanUpText = False
 
-    fix_up_text(synFile, cleanUpText)
+    fixUpText(synFile, cleanUpText)
 
     # Tell the user which file was created
     errorList.append((_translate("DoHermitCrabSynthesis", 'The synthesized target text is in the file: {file}.').format(file=Utils.getPathRelativeToWorkProjectsDir(synFile)), 0))
