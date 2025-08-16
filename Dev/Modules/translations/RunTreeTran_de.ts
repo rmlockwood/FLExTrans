@@ -4,6 +4,11 @@
 <context>
     <name>RunTreeTran</name>
     <message>
+      <location filename="../RunTreeTran.py" line="118"/>
+      <source>Run TreeTran</source>
+      <translation>TreeTran ausführen</translation>
+    </message>
+    <message>
         <location filename="../RunTreeTran.py" line="80"/>
         <source>Run the TreeTran Tool.</source>
         <translation>Das TreeTran-Tool ausführen.</translation>

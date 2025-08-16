@@ -7,6 +7,9 @@
 #
 #   Remove generated files to force each FLExTrans module to regenerate everything.
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -73,11 +76,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Clean Files",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CleanFiles", "Remove generated files to force each FLExTrans module to regenerate everything"),
-        FTM_Help  : "",  
+        FTM_Help       : "",  
         FTM_Description: _translate("CleanFiles",
 """Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.""")}
 

@@ -5,6 +5,9 @@
 #   SIL International
 #   12/12/24
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -95,11 +98,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Add Ad Hoc Constraint for a Cluster",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("AdHocConstrForCluster", "Add Ad Hoc Constraint for a Cluster"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
-        FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),    
-        FTM_Help   : "",
+        FTM_Synopsis   : _translate("AdHocConstrForCluster", "Add an ad hoc constraint to multiple cluster projects."),
+        FTM_Help       : "",
         FTM_Description: _translate("AdHocConstrForCluster",
 """Add an ad hoc constraint to multiple cluster projects.""")}
 

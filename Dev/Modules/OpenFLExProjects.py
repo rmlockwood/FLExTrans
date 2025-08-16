@@ -5,6 +5,9 @@
 #   SIL International
 #   2/20/2025
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/18/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -52,8 +55,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Open Multiple FLEx Projects",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("OpenFLExProjects", "Select one or more FLEx project and automatically open them one by one."),
         FTM_Help       :"",

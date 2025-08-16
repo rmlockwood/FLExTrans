@@ -5,6 +5,9 @@
 #   SIL International
 #   12/28/17
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -93,12 +96,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'SrcTgtViewer']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "View Source/Target Apertium Text Tool",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("ViewSrcTgt", "View Source/Target Apertium Text Tool"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),    
-        FTM_Help   : "",
-        FTM_Description: _translate("ViewSrcTgt", 
+        FTM_Synopsis   : _translate("ViewSrcTgt", "View an easy-to-read source or target text file."),
+        FTM_Help       : "",
+        FTM_Description: _translate("ViewSrcTgt",
 """This module will display a more readable view of the Apertium source or target 
 file. The lexical units are color coded as follows: black-lemma, blue-grammatical 
 category, green-affix or feature or class, yellow-non-sentence punctuation, 

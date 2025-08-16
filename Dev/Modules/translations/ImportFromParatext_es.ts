@@ -4,6 +4,11 @@
 <context>
     <name>ImportFromParatext</name>
     <message>
+      <location filename="../ImportFromParatext.py" line="118"/>
+      <source>Import Text From Paratext</source>
+      <translation>Importar texto de Paratext</translation>
+    </message>
+    <message>
       <location filename="../ImportFromParatext.py" line="183"/>
       <source>Import chapters from Paratext.</source>
       <translation>Importar capítulos desde Paratext.</translation>

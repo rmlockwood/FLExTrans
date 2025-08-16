@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -168,8 +171,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Convert Text to Synthesizer Format",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 

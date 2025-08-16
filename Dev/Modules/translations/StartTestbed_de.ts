@@ -4,6 +4,11 @@
 <context>
     <name>StartTestbed</name>
     <message>
+      <location filename="../StartTestbed.py" line="118"/>
+      <source>Start Testbed</source>
+      <translation>Testbed starten</translation>
+    </message>
+    <message>
         <location filename="../StartTestbed.py" line="89"/>
         <source>Initialize the testbed log and create source text from the testbed.</source>
         <translation>Initialisieren Sie das Testbed-Protokoll und erstellen Sie Quelltext aus dem Testbed.</translation>

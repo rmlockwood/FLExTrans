@@ -4,6 +4,11 @@
 <context>
     <name>RuleAssistant</name>
     <message>
+      <location filename="../RuleAssistant.py" line="118"/>
+      <source>Rule Assistant</source>
+      <translation>Regelassistent</translation>
+    </message>
+    <message>
         <location filename="../RuleAssistant.py" line="89"/>
         <source>This module runs the Rule Assistant tool which let&apos;s you create transfer rules.</source>
         <translation>Dieses Modul führt das Rule Assistant-Tool aus, mit dem Sie Übertragungsregeln erstellen können.</translation>

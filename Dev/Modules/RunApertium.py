@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.14.3 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.2 - 7/31/25 - Ron Lockwood
 #    Fixes #1033. Don't escape <> in literal strings in the rule file.
 #
@@ -98,11 +101,11 @@ runs the transfer rules you have made to transform source morphemes into target 
 The results of this module are found in the file you specified in the Target Transfer Results File.
 This is typically called target_text-aper.txt and is usually in the Build folder.""")
 
-docs = {FTM_Name       : "Run Apertium",
-        FTM_Version    : "3.14.2",
+docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RunApertium", "Run the Apertium transfer engine."),
-        FTM_Help  : "",  
+        FTM_Help       : "",  
         FTM_Description:    descr}     
 
 app.quit()

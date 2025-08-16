@@ -4,6 +4,11 @@
 <context>
     <name>ViewSrcTgt</name>
     <message>
+      <location filename="../ViewSrcTgt.py" line="118"/>
+      <source>View Source/Target Apertium Text Tool</source>
+      <translation>Ver herramienta de texto Apertium fuente/objetivo</translation>
+    </message>
+    <message>
         <location filename="../ViewSrcTgt.py" line="96"/>
         <source>View an easy-to-read source or target text file.</source>
         <translation>Ver un archivo de texto fuente o de destino fácil de leer.</translation>

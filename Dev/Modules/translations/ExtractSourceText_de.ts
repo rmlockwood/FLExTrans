@@ -4,9 +4,14 @@
 <context>
     <name>ExtractSourceText</name>
     <message>
+      <location filename="../ExtractSourceText.py" line="118"/>
+      <source>Extract Source Text</source>
+      <translation>Quelltext extrahieren</translation>
+    </message>
+    <message>
         <location filename="../ExtractSourceText.py" line="97"/>
-        <source>Builds an Apertium-style bilingual lexicon.</source>
-        <translation>Erstellt ein zweisprachiges Lexikon im Apertium-Stil.</translation>
+        <source>Exports an Analyzed FLEx text into Apertium format.</source>
+        <translation>Exportiert einen analysierten FLEx-Text in das Apertium-Format.</translation>
     </message>
     <message>
         <location filename="../ExtractSourceText.py" line="99"/>

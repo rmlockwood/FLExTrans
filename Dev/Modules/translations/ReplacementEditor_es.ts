@@ -4,6 +4,11 @@
 <context>
     <name>ReplacementEditor</name>
     <message>
+      <location filename="../ReplacementEditor.py" line="118"/>
+      <source>Replacement Dictionary Editor</source>
+      <translation>Editor de diccionario de reemplazo</translation>
+    </message>
+    <message>
         <location filename="../ReplacementEditor.py" line="78"/>
         <source>Edit manual overrides for the bilingual dictionary.</source>
         <translation>Editar sobrescrituras manuales para el diccionario bilingüe.</translation>

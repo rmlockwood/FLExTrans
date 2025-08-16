@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -84,8 +87,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Catalog Target Affixes",
-        FTM_Version    : "3.14",        
+docs = {FTM_Name       : _translate("CatalogTargetAffixes", "Catalog Target Affixes"),
+        FTM_Version    : "3.14.1",        
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("CatalogTargetAffixes", "Creates a list of all the affix glosses and morpheme types in the target project."),
         FTM_Help  : "",

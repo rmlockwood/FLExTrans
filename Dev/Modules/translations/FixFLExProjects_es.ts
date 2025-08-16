@@ -4,6 +4,11 @@
 <context>
     <name>FixFLExProjects</name>
     <message>
+      <location filename="../FixFLExProjects.py" line="118"/>
+      <source>Fix FLEx Projects</source>
+      <translation>Reparar proyectos FLEx</translation>
+    </message>
+    <message>
       <location filename="../FixFLExProjects.py" line="69"/>
       <source>Run the Find and Fix utility on the FLEx projects you choose.</source>
       <translation>Ejecute la utilidad &quot;Buscar y Corregir&quot; en los proyectos FLEx que elija.</translation>

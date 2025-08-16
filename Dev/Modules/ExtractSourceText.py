@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
 #
@@ -94,10 +97,10 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'InterlinData', 'Text
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Extract Source Text",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("ExtractSourceText", "Extract Source Text"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB: False,
-        FTM_Synopsis   : _translate("ExtractSourceText", "Builds an Apertium-style bilingual lexicon."),
+        FTM_Synopsis   : _translate("ExtractSourceText", "Exports an Analyzed FLEx text into Apertium format."),
         FTM_Help : '',
         FTM_Description: _translate("ExtractSourceText", 
 """This module will use the Source Text Name set in the Settings. It will first check 

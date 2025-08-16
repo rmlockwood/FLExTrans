@@ -4,6 +4,11 @@
 <context>
     <name>FixUpSynthText</name>
     <message>
+      <location filename="../FixUpSynthText.py" line="118"/>
+      <source>Fix Up Synthesis Text</source>
+      <translation>Synthese-Text korrigieren</translation>
+    </message>
+    <message>
         <location filename="../FixUpSynthText.py" line="70"/>
         <source>Run a set of post-synthesis search and replace operations.</source>
         <translation>Führen Sie eine Reihe von Such- und Ersetzungsoperationen nach der Synthese durch.</translation>

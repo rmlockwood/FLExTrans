@@ -5,6 +5,9 @@
 #   SIL International
 #   3/3/25
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/18/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -63,8 +66,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation for the user:
-docs = {FTM_Name       : "Fix FLEx Projects",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("FixFLExProjects", "Fix FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("FixFLExProjects", "Run the Find and Fix utility on the FLEx projects you choose."),
         FTM_Help       : None,

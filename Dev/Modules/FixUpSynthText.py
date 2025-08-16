@@ -5,6 +5,9 @@
 #   SIL International
 #   7/1/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -67,8 +70,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Fix Up Synthesis Text",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("FixUpSynthText", "Fix Up Synthesis Text"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("FixUpSynthText", 'Run a set of post-synthesis search and replace operations.') ,
         FTM_Help   : "",

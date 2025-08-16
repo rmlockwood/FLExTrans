@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.5 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.4 - 7/31/25 - Ron Lockwood
 #    Fixes #1032. Space between lexical units in the Execution Log.
 #
@@ -266,8 +269,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Live Rule Tester Tool",
-        FTM_Version    : "3.14.4",
+docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 

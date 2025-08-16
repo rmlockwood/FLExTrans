@@ -4,6 +4,11 @@
 <context>
     <name>GenerateParses</name>
     <message>
+      <location filename="../GenerateParses.py" line="118"/>
+      <source>Generate All Parses</source>
+      <translation>Generar todos los análisis</translation>
+    </message>
+    <message>
         <location filename="../GenerateParses.py" line="94"/>
         <source>Creates all possible parses from a FLEx project, in Apertium format.</source>
         <translation>Crea todos los análisis posibles de un proyecto FLEx en formato Apertium.</translation>
