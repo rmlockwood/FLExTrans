@@ -49,7 +49,7 @@ rem copy the FlexTrans.config files
 
 rem copy and modify the original config file to have one different line for the German-Swedish folder
 set "SRC=FLExTrans.config"
-set "DST=%workprojects%\German-Swedish\Config\FLExTrans-Swedish.config"
+set "DST=%workprojects%\German-Swedish\Config\FLExTrans.config"
 
 rem copy the original config file to the template folder
 copy "%SRC%" "%workprojects%\TemplateProject\Config\%SRC%"
