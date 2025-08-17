@@ -756,6 +756,16 @@ die mit einer TreeTran-Regel eingefügt werden können.</translation>
         <translation>FLExTrans-Einstellungen</translation>
     </message>
     <message>
+        <location filename="../SettingsGUI.py" line="1321"/>
+        <source>Production Mode Output Destination</source>
+        <translation>Produktionsmodus-Ausgabedestination</translation>
+    </message>
+    <message>
+        <location filename="../SettingsGUI.py" line="1321"/>
+        <source>In the production mode module 'Translate Text', where do you want the drafted text to go?</source>
+        <translation>In dem Produktionsmodus-Modul 'Text Übersetzen', wo möchten Sie, dass der entworfene Text hingeht?</translation>
+    </message>
+    <message>
         <location filename="../SettingsGUI.py" line="1402"/>
         <source>The name of the grammatical category that you use for proper nouns in your
 source FLEx project. It is possible to choose not to translate proper nouns.</source>
