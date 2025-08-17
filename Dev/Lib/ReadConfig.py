@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.2 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects in TextInOut.
 #
@@ -144,6 +147,7 @@ LOG_STATISTICS_USER_ID = 'LogStatisticsUserID'
 LOG_STATISTICS_OPT_OUT_QUESTION = 'LogStatisticsOptOutQuestionAsked'
 NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
+PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
 SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
