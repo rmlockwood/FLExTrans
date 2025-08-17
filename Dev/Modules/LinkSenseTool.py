@@ -5,8 +5,11 @@
 #   SIL International
 #   7/18/15
 #
-#   Version 3.14.4 - 8/13/25 - Ron Lockwood
+#   Version 3.14.5 - 8/13/25 - Ron Lockwood
 #    Translate module name.
+#
+#   Version 3.14.4 - 7/31/25 - Ron Lockwood
+#    Fixes #1031. Save and reload Font information.
 #
 #   Version 3.14.3 - 7/25/25 - Ron Lockwood
 #    Fixes #324. Build a URL to the text involved so the user can double click to go to it.
@@ -190,7 +193,7 @@
 
 import re
 import os
-import sys
+import json
 import unicodedata
 import xml.etree.ElementTree as ET
 import time
@@ -236,7 +239,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.4",
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -266,7 +269,7 @@ del app
 #----------------------------------------------------------------
 # Configurables:
 UNLINKED_SENSE_FILENAME_PORTION = ' unlinked senses.html'
-
+LINKER_SETTINGS_FILE = "LinkerSettings.json"
 MAX_GLOSS_WARNINGS = 10
 
 # The minimum length a word should have before doing a fuzzy compare
@@ -809,9 +812,52 @@ class Main(QMainWindow):
                 self.__comboModel.setRTL(True)
                 break
     
+        self.loadFontSettings()
+
         # Figure out how many senses are unlinked so we can show the user
         self.calculateRemainingLinks()
         
+    def saveFontSettings(self):
+
+        settings = {}
+
+        font = self.__model.getFont()
+        font_data = {
+            "family": font.family(),
+            "size": font.pointSizeF(),
+            "bold": font.bold(),
+            "italic": font.italic(),
+            "underline": font.underline()
+        }
+        settings['font_info'] = font_data
+
+        with open(self.settingsPath, "w", encoding="utf-8") as f:
+
+            json.dump(settings, f)
+
+    def loadFontSettings(self):
+
+        self.settingsPath = os.path.join(os.path.dirname(FTPaths.CONFIG_PATH), LINKER_SETTINGS_FILE)
+
+        try:
+            with open(LINKER_SETTINGS_FILE, "r", encoding="utf-8") as f:
+
+                settings = json.load(f)
+
+            font_data = settings['font_info']
+
+            font = self.__model.getFont()
+            font.setFamily(font_data.get("family", font.family()))
+            font.setPointSizeF(font_data.get("size", font.pointSizeF()))
+            font.setBold(font_data.get("bold", font.bold()))
+            font.setItalic(font_data.get("italic", font.italic()))
+            font.setUnderline(font_data.get("underline", font.underline()))
+            self.__model.setFont(font)
+            self.ui.FontNameLabel.setText(font.family())
+
+        except Exception:
+            pass  # Ignore if file doesn't exist or is invalid
+
     def handleDoubleClick(self, index):
 
         if index.column() == COL_TGT_HEADWORD:
@@ -1112,6 +1158,8 @@ class Main(QMainWindow):
         
     def OKClicked(self):
         self.retVal = 1
+        self.saveFontSettings()   
+
         self.close()
         
     def ShowOnlyUnlinkedClicked(self):
@@ -1146,8 +1194,10 @@ class Main(QMainWindow):
             # Pause for 3 seconds to let FLEx write out the links before the bilingual lexicon gets rebuilt
             time.sleep(3)
 
+            self.saveFontSettings()   
+
             # Revert back to the default cursor 
-            QApplication.restoreOverrideCursor()       
+            QApplication.restoreOverrideCursor()    
 
     def CancelClicked(self):
         self.retVal = 0
