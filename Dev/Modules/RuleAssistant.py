@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -91,11 +94,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 #----------------------------------------------------------------
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
-docs = {FTM_Name       : "Rule Assistant",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
-        FTM_Help  : "",
+        FTM_Help       : "",
         FTM_Description:    descr}
 
 app.quit()

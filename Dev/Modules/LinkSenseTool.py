@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.5 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.4 - 7/31/25 - Ron Lockwood
 #    Fixes #1031. Save and reload Font information.
 #
@@ -235,8 +238,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Sense Linker Tool",
-        FTM_Version    : "3.14.4",
+docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",

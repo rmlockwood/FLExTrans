@@ -4,6 +4,11 @@
 <context>
     <name>ExtractBilingualLexicon</name>
     <message>
+      <location filename="../ExtractBilingualLexicon.py" line="118"/>
+      <source>Build Bilingual Lexicon</source>
+      <translation>Construir léxico bilingüe</translation>
+    </message>
+    <message>
         <location filename="../ExtractBilingualLexicon.py" line="180"/>
         <source>Builds an Apertium-style bilingual lexicon.</source>
         <translation>Construye un léxico bilingüe al estilo de Apertium.</translation>

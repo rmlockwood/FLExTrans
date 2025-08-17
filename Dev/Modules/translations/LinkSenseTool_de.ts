@@ -4,6 +4,11 @@
 <context>
     <name>LinkSenseTool</name>
     <message>
+      <location filename="../LinkSenseTool.py" line="118"/>
+      <source>Sense Linker Tool</source>
+      <translation>Sense-Linker-Werkzeug</translation>
+    </message>
+    <message>
       <location filename="../LinkSenseTool.py" line="229"/>
       <source>Link source and target senses.</source>
       <translation>Verknüpfen Sie Quell- und Zielbedeutungen.</translation>

@@ -5,6 +5,9 @@
 #   SIL International
 #   10/30/21
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -180,8 +183,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ParatextChapSelectio
 #----------------------------------------------------------------
 # Documentation that the user sees:
 
-docs = {FTM_Name       : "Import Text From Paratext",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("ImportFromParatext", "Import Text From Paratext"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("ImportFromParatext", "Import chapters from Paratext."),
         FTM_Help       : "",

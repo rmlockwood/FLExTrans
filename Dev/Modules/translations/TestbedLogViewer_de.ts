@@ -4,6 +4,11 @@
 <context>
     <name>TestbedLogViewer</name>
     <message>
+      <location filename="../TestbedLogViewer.py" line="118"/>
+      <source>Testbed Log Viewer</source>
+      <translation>Testbed-Log-Viewer</translation>
+    </message>
+    <message>
         <location filename="../TestbedLogViewer.py" line="82"/>
         <source>View testbed run results.</source>
         <translation>Testbett-Ausführungsergebnisse anzeigen.</translation>

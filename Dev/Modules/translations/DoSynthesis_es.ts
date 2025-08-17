@@ -4,6 +4,11 @@
 <context>
     <name>DoSynthesis</name>
     <message>
+      <location filename="../DoSynthesis.py" line="118"/>
+      <source>Synthesize Text</source>
+      <translation>Sintetizar texto</translation>
+    </message>
+    <message>
         <location filename="../DoSynthesis.py" line="64"/>
         <source>Synthesizes the target text with either STAMP or HermitCrab.</source>
         <translation>Sintetiza el texto objetivo con STAMP o HermitCrab.</translation>

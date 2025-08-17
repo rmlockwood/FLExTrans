@@ -5,6 +5,9 @@
 #   SIL International
 #   7/19/23
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/9/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -58,11 +61,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Synthesize Text",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("DoSynthesis", "Synthesize Text"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoSynthesis", "Synthesizes the target text with either STAMP or HermitCrab."),
-        FTM_Help       :"",
+        FTM_Help       : "",
         FTM_Description: _translate("DoSynthesis", 
 """This module synthesizes the target text. If in the settings you select 'Yes' for 'Use HermitCrab synthesis?',
 then the following information from the {hermitCrabModule} module applies: {hermitCrabDescription}\n\n

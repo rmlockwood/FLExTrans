@@ -4,6 +4,11 @@
 <context>
     <name>DoStampSynthesis</name>
     <message>
+      <location filename="../DoStampSynthesis.py" line="118"/>
+      <source>Synthesize Text with STAMP</source>
+      <translation>Text mit STAMP synthetisieren</translation>
+    </message>
+    <message>
       <location filename="../DoStampSynthesis.py" line="159"/>
       <source>Synthesizes the target text with the tool STAMP.</source>
       <translation>Synthetisiert den Zieltext mit dem Tool STAMP.</translation>

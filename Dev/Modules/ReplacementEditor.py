@@ -5,6 +5,9 @@
 #   SIL International
 #   8/7/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -76,8 +79,8 @@ Utils.loadTranslations([TRANSL_TS_NAME], translators)
 librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ReplacementEditorWindow'] 
 
 docs = {
-    FTM_Name:        "Replacement Dictionary Editor",
-    FTM_Version:     "3.14.1",
+    FTM_Name:        _translate("ReplacementEditor", "Replacement Dictionary Editor"),
+    FTM_Version:     "3.14.2",
     FTM_ModifiesDB:  False,
     FTM_Synopsis:    _translate("ReplacementEditor", "Edit manual overrides for the bilingual dictionary."),
     FTM_Help:        "",

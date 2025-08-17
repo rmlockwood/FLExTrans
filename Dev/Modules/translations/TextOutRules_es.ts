@@ -4,6 +4,11 @@
 <context>
     <name>TextOutRules</name>
     <message>
+      <location filename="../TextOutRules.py" line="118"/>
+      <source>Text Out Rules</source>
+      <translation>Reglas de salida de texto</translation>
+    </message>
+    <message>
         <location filename="../TextOutRules.py" line="68"/>
         <source>Define and test a set of post-synthesis search and replace operations.</source>
         <translation>Definir y probar un conjunto de operaciones de búsqueda y reemplazo posteriores a la síntesis.</translation>

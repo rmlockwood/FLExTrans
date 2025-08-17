@@ -6,6 +6,9 @@
 #   7/24/23
 #
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/27/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -62,8 +65,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Link All Senses As Duplicate",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("LinkAllSensesAsDup", "Link All Senses As Duplicate"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkAllSensesAsDup", "Link all senses to the same ID in the target."),
         FTM_Help       : "",

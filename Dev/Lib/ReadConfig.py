@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects in TextInOut.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -260,8 +263,13 @@ def readConfig(report):
     f_handle = openConfigFile(report, 'r')
     
     if f_handle is None:
-        return 
+        
+        return None
     
+    return getConfigMap(f_handle, report)
+
+def getConfigMap(f_handle, report):
+
     my_map = {}
     for line in f_handle:
         
@@ -307,7 +315,7 @@ def readConfig(report):
 
     return my_map
 
-def getConfigVal(my_map, key, report, giveError=True):
+def getConfigVal(my_map, key, report, giveError=True, basePath=None):
 
     if key not in my_map:
 
@@ -328,7 +336,10 @@ def getConfigVal(my_map, key, report, giveError=True):
                 
                 # Return the parent folder of the Config folder + the relative file path.
                 # E.g. the resulting path would be something like ...\German-Swedish\Build\target_text.txt
-                return os.path.join(WORK_DIR, my_map[key])
+                if basePath:
+                    return os.path.join(basePath, my_map[key])
+                else:
+                    return os.path.join(WORK_DIR, my_map[key])
       
         return my_map[key]
 

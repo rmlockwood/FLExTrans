@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.2 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -88,8 +91,8 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'ChapterSelection']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Insert Target Text",
-        FTM_Version    : "3.14.2",
+docs = {FTM_Name       : _translate("InsertTargetText", "Insert Target Text"),
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("InsertTargetText", "Insert a translated text into the target FLEx project."),
         FTM_Help       : "",

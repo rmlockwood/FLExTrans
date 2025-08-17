@@ -5,6 +5,9 @@
 #   SIL International
 #   6/10/19
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14.1 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -78,12 +81,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Run TreeTran",
-        FTM_Version    : "3.14.1",
+docs = {FTM_Name       : _translate("RunTreeTran", "Run TreeTran"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
-        FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),    
-        FTM_Help   : "",
-        FTM_Description: _translate("RunTreeTran",  
+        FTM_Synopsis   : _translate("RunTreeTran", "Run the TreeTran Tool."),
+        FTM_Help       : "",
+        FTM_Description: _translate("RunTreeTran",
 """This module will run the TreeTran program to modify a syntax tree. The resulting
 file is placed in the Output folder which is then used by the {extractSourceTextModule}
 module to modify the word order of the sentence according to the TreeTran rules

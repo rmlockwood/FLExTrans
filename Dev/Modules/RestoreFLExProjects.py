@@ -5,6 +5,9 @@
 #   SIL International
 #   3/7/2025
 #
+#   Version 3.14.1 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
 #   Version 3.14 - 5/18/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -54,12 +57,12 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Restore Multiple FLEx Projects",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("RestoreFLExProjects", "Restore Multiple FLEx Projects"),
+        FTM_Version    : "3.14.1",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RestoreFLExProjects", "Select one or more FLEx backup files and automatically restore them one by one."),
-        FTM_Help       :"",
-        FTM_Description: _translate("RestoreFLExProjects", 
+        FTM_Help       : "",
+        FTM_Description: _translate("RestoreFLExProjects",
 f"""Select one or more FLEx backup files and automatically restore them one by one. You have to click OK on the 
 window that comes up to complete the restore. 
 The tool waits until one project is open before restoring the next.""")}

@@ -5,6 +5,12 @@
 #   SIL International
 #   7/6/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -26,11 +32,6 @@
 #   Define and test a set of search and replace operations to be used to fix up the text that comes out of 
 #   Paratext. Regular expression can be used if desired.
 #
-
-import os
-import shutil
-import sys
-import xml.etree.ElementTree as ET
 
 from flextoolslib import *                                          
 
@@ -57,19 +58,17 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Text In Rules",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("TextInRules", "Text In Rules"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextInRules", 'Define and test a set of Paratext-import search and replace operations.') ,
-        FTM_Help   : "",
+        FTM_Help       : "",
         FTM_Description: _translate("TextInRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 Paratext. Regular expressions and Wildebeest normalization can be used if desired.""")}
 
 app.quit()
 del app
-
-DEFAULT_PATH_TEXT_IN = 'Output\\fixup_paratext_rules.xml'
 
 #----------------------------------------------------------------
 # The main processing function
@@ -88,30 +87,12 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Get the path to the search-replace rules file
-    textInRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_IN_RULES_FILE, DEFAULT_PATH_TEXT_IN)
-
-    try:
-        # Check if the file exists, if not, create it.
-        if os.path.exists(textInRulesFile) == False:
-
-            # Set a string for an empty rules list
-            xmlString = f"<?xml version='1.0' encoding='utf-8'?><{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}><{TextInOutUtils.SEARCH_REPLACE_RULES_ELEM}/></{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}>"
-
-            fOut = open(textInRulesFile, 'w', encoding='utf-8')
-            fOut.write(xmlString)
-            fOut.close()
-        else:
-            # Make a backup copy of the search-replace rule file
-            shutil.copy2(textInRulesFile, textInRulesFile+'.bak')
-    except:
-        report.Error(_translate("TextInRules", 'There was a problem creating or backing up the rules file. Check your configuration.'))
-        return
-
     # Show the window to get the options the user wants
-    window = TextInOutUtils.TextInOutRulesWindow(textInRulesFile, textIn=True, winTitle=docs[FTM_Name])
-    window.show()
-    app.exec_()
+    window = TextInOutUtils.TextInOutRulesWindow(DB, report, configMap, ReadConfig.TEXT_IN_RULES_FILE, textIn=True, winTitle=docs[FTM_Name])
+    
+    if window.retVal:
+        window.show()
+        app.exec_()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule

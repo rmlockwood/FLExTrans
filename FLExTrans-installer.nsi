@@ -92,6 +92,7 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
+# Set up variables to hold installation messages in different UI languages
 LangString InstallPythonMsg ${LANG_ENGLISH} "Install Python 3.11.7?$\nIMPORTANT! Check the box: 'Add Python 3.11 to Path'.$\nUse the 'Install now' option"
 LangString InstallPythonMsg ${LANG_GERMAN} "Python 3.11.7 installieren?$\nWICHTIG! Aktivieren Sie das Kontrollkästchen: 'Add Python 3.11 to Path'.$\nVerwenden Sie die Option 'Install now'."
 LangString InstallPythonMsg ${LANG_SPANISH} "¿Instalar Python 3.11.7?$\n¡IMPORTANTE! Marque la casilla: 'Add Python 3.11 to Path'.$\nUse la opción 'Install now'."
@@ -142,20 +143,26 @@ InitPluginsDir
   CreateDirectory "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
   CreateDirectory "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\Output"
   
+  ## Copy files only if they don't already exist. These are files users may change.
   SetOverwrite off
-
-  # Copy files users may change only if they don't already exist
+  
+  # Replacement dictionary  
+  ; German-Swedish project folder
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Output"
-
   File "${GIT_FOLDER}\replace.dix"
 
-  #SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish"
-  SetOutPath "$INSTDIR\install_files"
+  ; template project folder
+  SetOutPath "${TEMPLATEDIR}\Output"
+  File "${GIT_FOLDER}\replace.dix"
   
+  # Transfer rule files for each language.
+  ; First copy them to the install folder
+  SetOutPath "$INSTDIR\install_files"
   File "${GIT_FOLDER}\transfer_rules-Swedish.t1x"
   File "${GIT_FOLDER}\transfer_rules-Swedish_de.t1x"
   File "${GIT_FOLDER}\transfer_rules-Swedish_es.t1x"
   
+  ; Then copy them to the right name, depending on install language.
   ${If} $LANGUAGE == ${LANG_GERMAN}
     CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\transfer_rules-Swedish.t1x"
     CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
@@ -167,17 +174,14 @@ InitPluginsDir
     CopyFiles "$INSTDIR\install_files\transfer_rules-Swedish.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules.t1x"
   ${EndIf}
   
-  SetOutPath "${TEMPLATEDIR}\Output"
-
-  File "${GIT_FOLDER}\replace.dix"
-  
-  #SetOutPath "${TEMPLATEDIR}"
+  # Sample transfer rule files for each language.
+  ; First copy them to the install folder
   SetOutPath "$INSTDIR\install_files"
-
   File "${GIT_FOLDER}\transfer_rules-Sample1.t1x"
   File "${GIT_FOLDER}\transfer_rules-Sample1_de.t1x"
   File "${GIT_FOLDER}\transfer_rules-Sample1_es.t1x"
   
+  ; Then copy them to the right name, depending on install language. We only copy the sample rules file to the template project folder.
   ${If} $LANGUAGE == ${LANG_GERMAN}
     CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1_de.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
   ${ElseIf} $LANGUAGE == ${LANG_SPANISH}
@@ -186,6 +190,7 @@ InitPluginsDir
     CopyFiles "$INSTDIR\install_files\transfer_rules-Sample1.t1x" "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\TemplateProject\transfer_rules-Sample1.t1x"
   ${EndIf}
 
+  ## Now we overwrite the following files.
   SetOverwrite on
   
   # Find where FLEx is installed
@@ -202,7 +207,7 @@ InitPluginsDir
   # Delete FTPaths.py from the FlexTools folder (for old installs), otherwise it inteferes with the one in Modules\FLExTrans\Lib
   Delete "$OUT_FOLDER\${FLEXTRANS_FOLDER}\FlexTools\FTPaths.py"
   
-  # Fix up ini files, both collection ones and flextools.ini
+  # Fix up ini files, both collection ones and flextools.ini in all work project folders
   SetOutPath ${WORKPROJECTSDIR}
   FindFirst $0 $1 "${WORKPROJECTSDIR}\*.*"
   loop1:
@@ -210,7 +215,7 @@ InitPluginsDir
     StrCmp $1 "." nextfolder
     StrCmp $1 ".." nextfolder
     
-    # Get two values from flextools.ini
+    # Get two values from flextools.ini to save for later after the new .ini file is installed.
     ReadIniStr $8 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentproject"
     ReadIniStr $9 "${WORKPROJECTSDIR}\$1\Config\flextools.ini" "DEFAULT" "currentcollection"
 
@@ -238,13 +243,13 @@ InitPluginsDir
       ${EndIf}
     ${EndIf}
     
-	  # Overwrite FLExTrans.ini - the production mode collection
+	# Overwrite FLExTrans.ini - the production mode collection
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Config\Collections\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Config\Collections"
       File "${GIT_FOLDER}\FLExTrans.ini"
     ${EndIf}
 	
-	  # Overwrite Makefiles
+	# Overwrite Makefiles
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\Build\*.*"
       SetOutPath "${WORKPROJECTSDIR}\$1\Build"
       File "${GIT_FOLDER}\Makefile"
@@ -280,33 +285,7 @@ InitPluginsDir
 		
 				WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "DEFAULT" "disablerunall" "True"
 
-			skip3:
-			
-			# Delete extra section if needed. Mainly for MB.
-			DeleteINISec "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}"
-			# Need to do this before we write EXPORTFROMFLEX below so that we don't get duplicate sections
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export FLEx Text to Paratext" "Export Text from Target FLEx to Paratext"
-
-			# Write new tools to the tools.ini file. For ones that already exist, X=Y gets added.
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${RULEASSISTANT}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${REPLACEMENTEDITOR}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTIN}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${TEXTOUT}" "X" "Y"
-			WriteINIStr "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "${EXPORTFROMFLEX}" "X" "Y"
-
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Set Up Transfer Rule Grammatical Categories" "Set Up Transfer Rule Categories and Attributes"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Export Translated Text to Paratext" "Export FLExTrans Draft to Paratext"
-
-		${Else}
-			# Rename modules in the all the .ini files (for old installs)
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Bilingual Lexicon" "Build Bilingual Lexicon"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Convert Text to STAMP Format" "Convert Text to Synthesizer Format"
-			# older module names
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Extract Target Lexicon" "Synthesize Text"
-			!insertmacro _ReplaceInFile "${WORKPROJECTSDIR}\$1\Config\Collections\$4" "Catalog Target Prefixes" "Catalog Target Affixes"
-
-      # Now rename for language if non-English language was chose as the interface
-      
+			skip3:      
 		${EndIf}
       ${EndIf}
       FindNext $3 $4
@@ -319,7 +298,7 @@ InitPluginsDir
   done1:
     FindClose $0
   
-  # if we are installing for the same language that is already there, skip adding/renaming files to the language
+  # if we are installing for the same language that is already there, skip adding/renaming files for the language
   ${If} $LANGUAGE == ${LANG_GERMAN}
   
     ${If} ${FileExists} "${WORKPROJECTSDIR}\German-Swedish\Config\Collections\Werkzeuge.ini"
@@ -336,6 +315,7 @@ InitPluginsDir
     ${EndIf}
   ${EndIf}
 	
+  # Install the collection .ini files if they don't exist already.
   SetOverwrite off
 
   SetOutPath "$OUT_FOLDER\${FLEXTRANS_FOLDER}\WorkProjects\German-Swedish\Config\Collections"
@@ -355,7 +335,6 @@ InitPluginsDir
   File "${GIT_FOLDER}\Clusters.ini"
 
   skip4:
-  
   
   SetOverwrite on
 
@@ -583,6 +562,7 @@ Function nsDialogsPage
 nsDialogs::Show
 FunctionEnd
 
+# Set up the Browse step
 Function Browsedest
 nsDialogs::SelectFolderDialog "Select Destination Folder" $DOCUMENTS
 Pop $OUT_FOLDER
@@ -603,6 +583,7 @@ LangString YesText ${LANG_ENGLISH} "Yes"
 LangString YesText ${LANG_GERMAN} "Ja"
 LangString YesText ${LANG_SPANISH} "Sí"
 
+# Set up the Production mode step
 Function ProdModeDialog
   nsDialogs::Create 1018
   Pop $Dialog
@@ -628,7 +609,7 @@ FunctionEnd
 
 Function .onInit
 
-	;Language selection dialog
+	;Initial language selection dialog
 
 	Push ""
 	Push ${LANG_ENGLISH} 

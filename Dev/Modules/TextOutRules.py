@@ -5,6 +5,12 @@
 #   SIL International
 #   6/29/24
 #
+#   Version 3.14.2 - 8/13/25 - Ron Lockwood
+#    Translate module name.
+#
+#   Version 3.14.1 - 8/8/25 - Ron Lockwood
+#   Fixes #1017. Support cluster projects.
+#
 #   Version 3.14 - 7/28/25 - Ron Lockwood
 #    Reference module names by docs variable.
 #
@@ -36,10 +42,6 @@
 #   synthesis. Regular expression can be used if desired.
 #
 
-import os
-import shutil
-import sys
-
 from flextoolslib import *                                          
 
 from PyQt5.QtWidgets import QApplication
@@ -67,11 +69,11 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'TextInOut', 'TextInO
 
 #----------------------------------------------------------------
 # Documentation that the user sees:
-docs = {FTM_Name       : "Text Out Rules",
-        FTM_Version    : "3.14",
+docs = {FTM_Name       : _translate("TextOutRules", "Text Out Rules"),
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("TextOutRules", 'Define and test a set of post-synthesis search and replace operations.') ,
-        FTM_Help   : "",
+        FTM_Help       : "",
         FTM_Description: _translate("TextOutRules",
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined in this module only get applied in the {fixUpSynthTextModule} module.
@@ -80,8 +82,6 @@ and move it to be after the {synthModule} Text module.""").format(fixUpSynthText
 
 app.quit()
 del app
-
-DEFAULT_PATH_TEXT_OUT = 'Output\\fixup_synthesis_rules.xml'
 
 #----------------------------------------------------------------
 # The main processing function
@@ -100,30 +100,12 @@ def MainFunction(DB, report, modify=True):
     # Log the start of this module on the analytics server if the user allows logging.
     Mixpanel.LogModuleStarted(configMap, report, docs[FTM_Name], docs[FTM_Version])
 
-    # Get the path to the search-replace rules file
-    textOutRulesFile = TextInOutUtils.getPath(report, configMap, ReadConfig.TEXT_OUT_RULES_FILE, DEFAULT_PATH_TEXT_OUT)
-    
-    try:
-        # Check if the file exists, if not, create it.
-        if os.path.exists(textOutRulesFile) == False:
-
-            # Set a string for an empty rules list
-            xmlString = f"<?xml version='1.0' encoding='utf-8'?><{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}><{TextInOutUtils.SEARCH_REPLACE_RULES_ELEM}/></{TextInOutUtils.FT_SEARCH_REPLACE_ELEM}>"
-
-            fOut = open(textOutRulesFile, 'w', encoding='utf-8')
-            fOut.write(xmlString)
-            fOut.close()
-        else:
-            # Make a backup copy of the search-replace rule file
-            shutil.copy2(textOutRulesFile, textOutRulesFile+'.bak')
-    except:
-        report.Error(_translate('TextOutRules', 'There was a problem creating or backing up the rules file. Check your configuration.'))
-        return
-
     # Show the window to get the options the user wants
-    window = TextInOutUtils.TextInOutRulesWindow(textOutRulesFile, textIn=False, winTitle=docs[FTM_Name])
-    window.show()
-    app.exec_()
+    window = TextInOutUtils.TextInOutRulesWindow(DB, report, configMap, ReadConfig.TEXT_OUT_RULES_FILE, textIn=False, winTitle=docs[FTM_Name])
+
+    if window.retVal:
+        window.show()
+        app.exec_()
     
 #----------------------------------------------------------------
 # define the FlexToolsModule
