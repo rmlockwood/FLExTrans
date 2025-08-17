@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.14.2 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
 #   Version 3.14.1 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -56,7 +59,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'DoHermitCrabSynthesi
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("TranslateText", "Translate the current source text."),
         FTM_Help       : "",
@@ -65,8 +68,6 @@ docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
 
 app.quit()
 del app
-
-FINAL_MODULE_IS_EXPORT_TO_PARATEXT = True # Otherwise, the last module is Insert Target Text
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
@@ -142,7 +143,9 @@ def MainFunction(DB, report, modify=True):
         if not DoStampSynthesis.doStamp(DB, report, configMap):
             return
     
-    if FINAL_MODULE_IS_EXPORT_TO_PARATEXT:
+    prodModeOutputToFlex = ReadConfig.getConfigVal(configMap, ReadConfig.PROD_MODE_OUTPUT_FLEX, report, giveError=True)
+
+    if prodModeOutputToFlex == 'n':
 
         ## Export to Paratext
         report.Blank()

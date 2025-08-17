@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.1 - 8/17/25 - Ron Lockwood
+#    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
+#
 #   Version 3.14 - 5/17/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -903,8 +906,13 @@ class Ui_MainWindow(object):
 
             elif widgInfo[WIDGET_TYPE] == YES_NO:
                 
-                widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
-                widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
+                # Special radio buttons for production mode output. FLEx=Yes, Paratext=No
+                if widgInfo[WIDGET1_OBJ_NAME] == 'prod_mode_output_flex_yes':
+                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "FLEx"))
+                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "Paratext"))
+                else:
+                    widgInfo[WIDGET1_OBJ].setText(_translate("SettingsGUI", "Yes"))
+                    widgInfo[WIDGET2_OBJ].setText(_translate("SettingsGUI", "No"))
                 widgInfo[WIDGET1_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
                 widgInfo[WIDGET2_OBJ].setToolTip(widgInfo[WIDGET_TOOLTIP])
 
@@ -1391,9 +1399,9 @@ widgetList = [
    [_translate("SettingsGUI", "Project Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, MINI_VIEW],\
 
-   # label text          obj1 name       obj2 name  type     label   obj1    obj2    load function       config key name            
-   [_translate("SettingsGUI", "Source Text Name"), "choose_source_text", "", COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
-   # tooltip text 
+   #                          label text           obj1 name             obj2 name        type       label   obj1    obj2    load function                  config key name            
+   [_translate("SettingsGUI", "Source Text Name"), "choose_source_text", "",              COMBO_BOX, object, object, object, loadSourceTextListForSettings, ReadConfig.SOURCE_TEXT_NAME,\
+   #                          tooltip text 
     _translate("SettingsGUI", "The name of the text (in the first analysis writing system)\nin the source FLEx project to be translated."), GIVE_ERROR, MINI_VIEW],\
    
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
@@ -1423,6 +1431,10 @@ widgetList = [
 
    [_translate("SettingsGUI", "Target Morpheme Types Counted As Roots"), "choose_target_morpheme_types", "", CHECK_COMBO_BOX, object, object, object, loadTargetMorphemeTypes, ReadConfig.TARGET_MORPHNAMES,\
     _translate("SettingsGUI", "Morpheme types in the target FLEx project that are to be considered\nas some kind of root. In other words, non-affixes and non-clitics."), GIVE_ERROR, FULL_VIEW],\
+
+   # The text of the Yes and No radio buttons is changed to FLEx and Paratext. See retranslateUI().
+   [_translate("SettingsGUI", "Production Mode Output Destination"), "prod_mode_output_flex_yes", "prod_mode_output_paratext_no", YES_NO, object, object, object, loadYesNo, ReadConfig.PROD_MODE_OUTPUT_FLEX, \
+    _translate("SettingsGUI", "In the production mode module 'Translate Text', where do you want the drafted text to go?"), DONT_GIVE_ERROR, BASIC_VIEW],\
 
 
 
