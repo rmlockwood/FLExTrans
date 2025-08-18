@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.3 - 8/19/25 - Ron Lockwood
+#    Fixes #1045. When creating a test data file that has an error message. Create it as utf-8
+#    because the error message may contain non-ASCII characters when translated.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -95,7 +99,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
         FTM_Help       : "",
@@ -415,7 +419,7 @@ def GetTestDataFile(report, DB, configMap):
 
     if not GenerateTestDataFile(report, DB, configMap, fhtml):
 
-        with open(fhtml, 'w') as fout:
+        with open(fhtml, 'w', encoding='utf-8') as fout:
 
             fout.write(_translate('RuleAssistant', '<html><body><p>No test data available.</body></html>\n'))
 
