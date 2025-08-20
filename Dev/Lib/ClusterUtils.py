@@ -5,6 +5,9 @@
 #   SIL International
 #   12/30/2024
 #
+#   Version 3.14.2 - 8/20/25 - Ron Lockwood
+#   Fixes crash in Import Paratext and missing OK button in other dialogs with cluster support.
+#
 #   Version 3.14.1 - 8/8/25 - Ron Lockwood
 #   Fixes #1017. Support cluster projects in TextInOut.
 #
@@ -31,7 +34,10 @@ def initClusterWidgets(self, widgetClass, parentWin, header1TextStr, header2Text
     self.noCancelButton = noCancelButton
     self.containerWidgetToMove = containerWidgetToMove
 
-    self.originalOKyPos = containerWidgetToMove.y()
+    if not self.containerWidgetToMove:
+        self.originalOKyPos = self.ui.OKButton.y()
+    else:
+        self.originalOKyPos = self.containerWidgetToMove.y()
 
     if originalWinHeight > 0:
         self.originalMainWinHeight = originalWinHeight  
@@ -182,7 +188,9 @@ def showClusterWidgets(self):
     if self.containerWidgetToMove:
         
         widgetsToMove.append(self.containerWidgetToMove)
-    
+    else:
+        widgetsToMove.append(self.ui.OKButton)
+
     for wid in widgetsToMove:
 
         wid.setGeometry(wid.x(), self.originalOKyPos+pixels, wid.width(), wid.height())
