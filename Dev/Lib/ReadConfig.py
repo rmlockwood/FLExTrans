@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.13.1 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -162,6 +165,8 @@ TARGET_LEXICON_FILES_FOLDER = 'TargetLexiconFilesFolder'
 TARGET_MORPHNAMES = 'TargetMorphNamesCountedAsRoots'
 TARGET_PROJECT = 'TargetProject'
 TARGET_SYNTHESIS_FILE = 'TargetOutputSynthesisFile'
+TARGET_XAMPLE_CUSTOM_ENTRY_FIELD = 'TargetXampleCustomEntryField'
+TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD = 'TargetXampleCustomAllomorphField'
 TESTBED_FILE = 'TestbedFile'
 TESTBED_RESULTS_FILE = 'TestbedResultsFile'
 TEXT_OUT_RULES_FILE = 'TextOutRulesFile'
