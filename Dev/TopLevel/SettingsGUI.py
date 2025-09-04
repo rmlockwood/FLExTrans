@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.2 - 9/3/25 - Ron Lockwood
+#    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
+#
 #   Version 3.14.1 - 8/17/25 - Ron Lockwood
 #    Fixes #1042. Use settings to determine if production mode output is to FLEx or Paratext.
 #
@@ -137,6 +140,15 @@ import Utils
 import ReadConfig
 import FTPaths
 
+# TODO: temporary stuff until FlexTools implements LexiconGetAllomorphCustomFields
+from SIL.LCModel.Infrastructure import (# type: ignore
+    IFwMetaDataCacheManaged,
+    )
+from SIL.LCModel import MoFormTags# type: ignore
+from SIL.LCModel.Core.Cellar import (# type: ignore
+    CellarPropertyTypeFilter,
+    )
+
 # Define _translate for convenience
 _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'SettingsGUI'
@@ -264,12 +276,12 @@ def loadSourceTextListForSettings(widget, wind, settingName):
                 
                 widget.setCurrentIndex(i)
 
-def loadCustomEntry(widget, wind, settingName):
+def loadSourceSenseCustomField(widget, wind, settingName):
     
     # Get the custom field to link to target entry
-    customTarget = wind.read(settingName)
+    customLinkField = wind.read(settingName)
     
-    if customTarget is not None:
+    if customLinkField is not None:
 
         # Add items and when we find the one that matches the config file. Set that one to be displayed.
         for i, item in enumerate(wind.DB.LexiconGetSenseCustomFields()):
@@ -277,7 +289,54 @@ def loadCustomEntry(widget, wind, settingName):
             # item is a tuple, (id, name)
             widget.addItem(str(item[1]))           
     
-            if item[1] == customTarget:
+            if item[1] == customLinkField:
+                
+                widget.setCurrentIndex(i)
+
+def loadTargetEntryCustomField(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customXampleProp = wind.read(settingName)
+    
+    if customXampleProp is not None:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(wind.targetDB.LexiconGetEntryCustomFields()):
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customXampleProp:
+                
+                widget.setCurrentIndex(i)
+
+def tempLexiconGetAllomorphCustomFields(targetDB): # returns a list
+
+    # code copied from __GetCustomFieldsOfType in FLExProject.py
+    mdc = IFwMetaDataCacheManaged(targetDB.project.MetaDataCacheAccessor)
+    
+    for flid in mdc.GetFields(MoFormTags.kClassId, False, int(CellarPropertyTypeFilter.All)):
+
+        if targetDB.project.GetIsCustomField(flid):
+
+            yield ((flid, mdc.GetFieldLabel(flid)))
+
+def loadTargetAllomorphCustomField(widget, wind, settingName):
+    
+    # Get the custom field to link to target entry
+    customXampleProp = wind.read(settingName)
+    
+    if customXampleProp is not None:
+
+        # Add items and when we find the one that matches the config file. Set that one to be displayed.
+        for i, item in enumerate(tempLexiconGetAllomorphCustomFields(wind.targetDB)):
+
+        # TODO: for i, item in enumerate(wind.targetDB.LexiconGetAllomorphCustomFields()): #This eventually should be the FlexTools API call
+    
+            # item is a tuple, (id, name)
+            widget.addItem(str(item[1]))           
+    
+            if item[1] == customXampleProp:
                 
                 widget.setCurrentIndex(i)
 
@@ -1121,7 +1180,13 @@ class Main(QMainWindow):
             
             widgInfo = widgetList[i]
             
-            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", "choose_inflection_first_element", "choose_inflection_second_element", "limit_pos"]:
+            if widgInfo[WIDGET1_OBJ_NAME] in ["choose_target_morpheme_types", 
+                                              "choose_inflection_first_element", 
+                                              "choose_inflection_second_element", 
+                                              "limit_pos",
+                                              "custom_field_entry",
+                                              "custom_field_allomorph",
+                                              ]:
                 
                 widgInfo[WIDGET1_OBJ].setEnabled(False)
                 
@@ -1407,7 +1472,7 @@ widgetList = [
    [_translate("SettingsGUI", "Target Project"), "choose_target_project", "", COMBO_BOX, object, object, object, loadTargetProjects, ReadConfig.TARGET_PROJECT,\
     _translate("SettingsGUI", "The name of the target FLEx project."), GIVE_ERROR, MINI_VIEW],\
 
-   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadCustomEntry, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
+   [_translate("SettingsGUI", "Source Custom Field for Entry Link"), "choose_entry_link", "", COMBO_BOX, object, object, object, loadSourceSenseCustomField, ReadConfig.SOURCE_CUSTOM_FIELD_ENTRY,\
     _translate("SettingsGUI", "The name of the sense-level custom field in the source FLEx project that\nholds the link information to entries in the target FLEx project."), GIVE_ERROR, BASIC_VIEW],\
    
    [_translate("SettingsGUI", "Category that Represents Proper Noun"), "choose_proper_noun", "", COMBO_BOX, object, object, object, loadSourceCategoriesNormalListBox, ReadConfig.PROPER_NOUN_CATEGORY,\
@@ -1537,6 +1602,12 @@ widgetList = [
    [_translate("SettingsGUI", "Text In Rules File"), "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
     _translate("SettingsGUI", "The file that holds the search/replace rules to fix up the Paratext import text."), DONT_GIVE_ERROR, FULL_VIEW],\
 
+   [_translate("SettingsGUI", "Target Custom Field for Entry-level XAMPLE Properties"), "custom_field_entry", "", COMBO_BOX, object, object, object, loadTargetEntryCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ENTRY_FIELD, \
+    _translate("SettingsGUI", "The name of the entry-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Target Custom Field for Allomorph-level XAMPLE Properties"), "custom_field_allomorph", "", COMBO_BOX, object, object, object, loadTargetAllomorphCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD, \
+    _translate("SettingsGUI", "The name of the allomorph-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests."), DONT_GIVE_ERROR, FULL_VIEW],\
+
 
    [_translate("SettingsGUI", "Synthesis Test Settings"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
@@ -1611,6 +1682,8 @@ widgetList = [
 
    [_translate("SettingsGUI", "Usage Statistics Opt Out Question Asked"), "opt_out_id_yes", "opt_out_id_no", YES_NO, object, object, object, loadYesNo, ReadConfig.LOG_STATISTICS_OPT_OUT_QUESTION, \
     _translate("SettingsGUI", "Opt out of sending usage statistics."), DONT_GIVE_ERROR, FULL_VIEW],
+
+
 ]
 
 app.quit()
