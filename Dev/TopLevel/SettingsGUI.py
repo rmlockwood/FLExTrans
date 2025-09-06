@@ -1582,11 +1582,11 @@ widgetList = [
    ["Text In Rules File", "fixup_ptx_rules_filename", "", FILE, object, object, object, loadFile, ReadConfig.TEXT_IN_RULES_FILE, \
     "The file that holds the search/replace rules to fix up the Paratext import text.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-   ["SettingsGUI", "Target Custom Field for Entry-level XAMPLE Properties", "custom_field_entry", "", COMBO_BOX, object, object, object, loadTargetEntryCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ENTRY_FIELD, \
-    "SettingsGUI", "The name of the entry-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests.", DONT_GIVE_ERROR, FULL_VIEW],\
+   ["Target Custom Field for Entry-level XAMPLE Properties", "custom_field_entry", "", COMBO_BOX, object, object, object, loadTargetEntryCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ENTRY_FIELD, \
+    "The name of the entry-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests.", DONT_GIVE_ERROR, FULL_VIEW],\
 
-   ["SettingsGUI", "Target Custom Field for Allomorph-level XAMPLE Properties", "custom_field_allomorph", "", COMBO_BOX, object, object, object, loadTargetAllomorphCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD, \
-    "SettingsGUI", "The name of the allomorph-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests.", DONT_GIVE_ERROR, FULL_VIEW],\
+   ["Target Custom Field for Allomorph-level XAMPLE Properties", "custom_field_allomorph", "", COMBO_BOX, object, object, object, loadTargetAllomorphCustomField, ReadConfig.TARGET_XAMPLE_CUSTOM_ALLOMORPH_FIELD, \
+    "The name of the allomorph-level custom field in the target FLEx project that\nholds a property value. Used with custom STAMP tests.", DONT_GIVE_ERROR, FULL_VIEW],\
 
 
 
