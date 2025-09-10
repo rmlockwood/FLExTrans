@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.4 - 9/10/25 - Sara Mason
+#    Added missing end quote mark in report message for created text.
+#
 #   Version 3.14.3 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -170,7 +173,7 @@ def insertTargetText(DB, configMap, report):
     # Set metadata for the text
     ChapterSelection.setTextMetaData(DB, text)
 
-    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName} created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
+    report.Info(_translate("InsertTargetText", 'Text: "{sourceTextName}" created in the {targetProj} project.').format(sourceTextName=sourceTextName, targetProj=targetProj), 
                 TargetDB.BuildGotoURL(text))
     TargetDB.CloseProject()
 
