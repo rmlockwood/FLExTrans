@@ -57,6 +57,9 @@
 #   give it a new unique name.
 #
 
+import os
+import xml.etree.ElementTree as ET
+
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QApplication
 
@@ -73,6 +76,7 @@ from flexlibs import FLExProject
 import ChapterSelection
 import Mixpanel
 import ReadConfig
+import TextInOutUtils
 import Utils
 from DoSynthesis import docs as DoSynthesisDocs
 
@@ -112,6 +116,7 @@ del app
 def insertTargetText(DB, configMap, report):
 
     TargetDB = FLExProject()
+    tree = None
 
     try:
         # Open the target database
@@ -143,6 +148,33 @@ def insertTargetText(DB, configMap, report):
         TargetDB.CloseProject()
         report.Error(_translate("InsertTargetText", 'The Synthesize Text module must be run before this one. Could not open the synthesis file: "') + synFile + '".')
         return
+
+    # Get the path to the search-replace rules file
+    textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+    if textOutRulesFile is not None:
+    
+        # Check if the file exists.
+        if os.path.exists(textOutRulesFile) == True:
+
+            # Verify we have a valid transfer file.
+            try:
+                tree = ET.parse(textOutRulesFile)
+            except:
+                report.Error(_translate("InsertTargetText", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+                return
+
+    # Do user-defined search/replace rules if needed
+    if tree:
+
+        fullText, errMsg = TextInOutUtils.applySearchReplaceRules(fullText, tree)
+
+        if fullText is None:
+
+            report.Error(errMsg)
+            return
+        else:
+            report.Info(_translate("InsertTargetText", "{numRules} 'Text Out' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
 
     # Figure out the naming of the text file. Use the source text name by default,
     # but if it exists create a different name. E.g. War & Peace, War & Peace - Copy, War & Peace - Copy (2)

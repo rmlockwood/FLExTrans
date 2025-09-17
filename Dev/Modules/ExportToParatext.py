@@ -84,6 +84,7 @@
 
 import os
 import re
+import xml.etree.ElementTree as ET
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QApplication
@@ -95,6 +96,7 @@ from flextoolslib import *
 import Mixpanel
 import ReadConfig
 import FTPaths
+import TextInOutUtils
 import Utils
 from ParatextChapSelectionDlg import Ui_ParatextChapSelectionWindow
 import ChapterSelection
@@ -280,6 +282,33 @@ def doExportToParatext(DB, configMap, report):
         synFileContents = f.read()
         f.close()
         
+        # Get the path to the search-replace rules file
+        textOutRulesFile = ReadConfig.getConfigVal(configMap, ReadConfig.TEXT_OUT_RULES_FILE, report, giveError=False)
+
+        if textOutRulesFile is not None:
+        
+            # Check if the file exists.
+            if os.path.exists(textOutRulesFile) == True:
+
+                # Verify we have a valid transfer file.
+                try:
+                    tree = ET.parse(textOutRulesFile)
+                except:
+                    report.Error(_translate("ExportToParatext", "The rules file: {textOutRulesFile} has invalid XML data.").format(textOutRulesFile=textOutRulesFile))
+                    return
+
+        # Do user-defined search/replace rules if needed
+        if tree:
+
+            synFileContents, errMsg = TextInOutUtils.applySearchReplaceRules(synFileContents, tree)
+
+            if synFileContents is None:
+
+                report.Error(errMsg)
+                return
+            else:
+                report.Info(_translate("InsertTargetText", "{numRules} 'Text Out' rules applied.").format(numRules=str(TextInOutUtils.numRules(tree))))
+
         ChapterSelection.doExport(synFileContents, report, window.chapSel, window)
 
         return 1
