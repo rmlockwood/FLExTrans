@@ -5,6 +5,10 @@
 #   SIL International
 #   3/23/25
 #
+#   Version 3.14.1 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#    Converted interlinParams to a dataclass.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -84,16 +88,25 @@ class interlinInfo:
     analysisOccurance: object
     DB: object
 
-class GetInterlinParams():
+@dataclass
+class interlinParamsClass:
 
-    def __init__(self, sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+    sentPunct: str
+    contents: str
+    typesInfl1stList: list
+    typesInfl2ndList: list
+    discontigTypesList: list
+    discontigPOSList: list
+    noWarningProperNoun: bool
 
-        self.sentPunct = sentPunct
-        self.contents = contents
-        self.typesList = typesList
-        self.discontigTypesList = discontigTypesList
-        self.discontigPOSList = discontigPOSList
-        self.noWarningProperNoun = noWarningProperNoun
+    # def __init__(self, sentPunct, contents, typesInfl2ndList, discontigTypesList, discontigPOSList, noWarningProperNoun):
+
+    #     self.sentPunct = sentPunct
+    #     self.contents = contents
+    #     self.typesInfl2ndList = typesInfl2ndList
+    #     self.discontigTypesList = discontigTypesList
+    #     self.discontigPOSList = discontigPOSList
+    #     self.noWarningProperNoun = noWarningProperNoun
 
 class treeTranSent():
 
@@ -293,11 +306,22 @@ def initInterlinParams(configMap, report, contents):
     if not sentPunct:
         return
 
-    typesList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
+    typesFirstWordInflList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_FORMS_INFLECTION_1ST, report, giveError=False)
 
-    if not typesList:
+    if not typesFirstWordInflList:
 
-        typesList = []
+        typesFirstWordInflList = []
+
+    elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_FORMS_INFLECTION_1ST, report):
+
+        return None
+
+    # This is the setting to use for inflection on the 2nd element of a complex form. For backwards compatibility, we use the old variable and setting name.
+    typesSecondWordInflList = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report)
+
+    if not typesSecondWordInflList:
+
+        typesSecondWordInflList = []
 
     elif not ReadConfig.configValIsList(configMap, ReadConfig.SOURCE_COMPLEX_TYPES, report):
 
@@ -332,8 +356,8 @@ def initInterlinParams(configMap, report, contents):
         noWarningProperNoun = True
 
     # Initialize a class
-    interlinParams = GetInterlinParams(sentPunct, contents, typesList, discontigTypesList, discontigPOSList, noWarningProperNoun)
-
+    interlinParams = interlinParamsClass(sentPunct, contents, typesFirstWordInflList, typesSecondWordInflList, 
+                                    discontigTypesList, discontigPOSList, noWarningProperNoun)
     return interlinParams
 
 def getSenseNumber(entry, bundle, myInfo):
@@ -677,11 +701,11 @@ def getInterlinData(DB, report, params):
         report.Warning(_translate("InterlinData", "One or more unknown words occurred multiple times."))
 
     # Substitute a complex form when its components are found contiguous in the text
-    myInfo.myText.processComplexForms(params.typesList)
+    myInfo.myText.processComplexForms(params.typesInfl1stList, params.typesInfl2ndList)
 
     # Substitute a complex form when its components are found discontiguous in the text
-    if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and len(params.typesList) > 0:
+    if len(params.discontigTypesList) > 0 and len(params.discontigPOSList) > 0 and (len(params.typesInfl1stList) > 0 or len(params.typesInfl2ndList) > 0):
         
-        myInfo.myText.processDiscontiguousComplexForms(params.typesList, params.discontigTypesList, params.discontigPOSList)
+        myInfo.myText.processDiscontiguousComplexForms(params.typesInfl1stList, params.typesInfl2ndList, params.discontigTypesList, params.discontigPOSList)
 
     return myInfo.myText

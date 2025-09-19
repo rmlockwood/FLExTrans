@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.3 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
 #   Version 3.14.2 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #
@@ -1506,8 +1509,11 @@ widgetList = [
    [_translate("SettingsGUI", "Complex Forms"), "sec_title", "", SECTION_TITLE, object, object, object, None, None,\
     "", GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Source Complex Form Types"), "choose_source_compex_types", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
-    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will be treated as a lexical unit in FLExTrans and whenever\nthe components that make up this type of complex form are found sequentially\nin the source text, they will be converted to one lexical unit."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on first Element"), "choose_source_complex_types1", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_FORMS_INFLECTION_1ST,\
+    _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), DONT_GIVE_ERROR, FULL_VIEW],\
+
+   [_translate("SettingsGUI", "Source Complex Form Types\nwith inflection on last Element"), "choose_source_complex_types2", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_COMPLEX_TYPES,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
    [_translate("SettingsGUI", "Source Discontiguous Complex Form Types"), "choose_source_discontiguous_compex", "", CHECK_COMBO_BOX, object, object, object, loadSourceComplexFormTypes, ReadConfig.SOURCE_DISCONTIG_TYPES,\
     _translate("SettingsGUI", "One or more complex types from the source FLEx project.\nThese types will allow one intervening word between the first\nand second words of the complex type, yet will still be treated\nas a lexical unit."), GIVE_ERROR, FULL_VIEW],\
@@ -1515,11 +1521,11 @@ widgetList = [
    [_translate("SettingsGUI", "Source Skipped Word Grammatical\nCategories for Discontiguous Complex Forms"), "choose_skipped_source_words", "", CHECK_COMBO_BOX, object, object, object, loadSourceCategories, ReadConfig.SOURCE_DISCONTIG_SKIPPED,\
     _translate("SettingsGUI", "One or more grammatical categories that can intervene in the above complex types."), GIVE_ERROR, FULL_VIEW],\
     
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 1st Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on first Element"), "choose_inflection_first_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_1ST,\
     _translate("SettingsGUI", "One or more complex types from the target FLEx project.\nThese types, when occurring in the text file to be synthesized,\nwill be broken down into their constituent entries. Use this property\nfor the types that have inflection on the first element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
-   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on 2nd Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
-    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the second element of the complex form."), GIVE_ERROR, FULL_VIEW],\
+   [_translate("SettingsGUI", "Target Complex Form Types\nwith inflection on last Element"), "choose_inflection_second_element", "", CHECK_COMBO_BOX, object, object, object, loadTargetComplexFormTypes, ReadConfig.TARGET_FORMS_INFLECTION_2ND,\
+    _translate("SettingsGUI", "Same as above. Use this property for the types that have inflection\non the last element of the complex form."), GIVE_ERROR, FULL_VIEW],\
 
 
 
