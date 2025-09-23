@@ -478,7 +478,7 @@ def processFreeTranslation(wrdList, idxN_list, idx1_list, idx2_list, subListN, s
     Optimized version using itertools.product to match processSentence. 
     """
     if not translation:
-        f_out2.write('NO FREE TRANSLATION')
+        f_out2.write('NO FREE TRANSLATION\n')
         return
         
     ''' OLD LOOP (DELETE LATER AFTER MORE TESTING)
