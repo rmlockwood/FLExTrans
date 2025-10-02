@@ -71,7 +71,7 @@ Function ProdModeDialog
 
   ${NSD_CreateRadioButton} 10 70 200 12 "No"
   Pop $RadioNo
-  SendMessage $RadioNo ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
+  SendMessage $RadioYes ${BM_SETCHECK} ${BST_CHECKED} 0 ; Default to 'No'
 
   nsDialogs::Show
 FunctionEnd
