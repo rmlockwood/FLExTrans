@@ -10,7 +10,7 @@
    <body>
       <center><b><big><big><big><span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> User Documentation</big></big></big></b></center>
       <center><i></i></center>
-      <center><i>flextrans_help@sil.org</i></center><br><center><small>24 July 2025</small></center>
+      <center><i>flextrans_help@sil.org</i></center><br><center><small>02 October 2025</small></center>
       <center><small>Version: 3.14</small></center>
       <hr>
       <div>
@@ -218,7 +218,12 @@
                </ul>
                <li><a href="#sChangingXXELanguage">10.2&nbsp;Change User Interface Language of XMLmind XML Editor</a></li>
             </ul>
-            <li><a href="#sReferenceDocs">11&nbsp;Reference documents</a></li>
+            <li><a href="#sProductionMode">11&nbsp;Production Mode</a></li>
+            <ul>
+               <li><a href="#sProductionModeInstallation">11.1&nbsp;Installation for Production Mode</a></li>
+               <li><a href="#sAddingCollections">11.2&nbsp;Changing from Production Mode to Normal Development Mode</a></li>
+            </ul>
+            <li><a href="#sReferenceDocs">12&nbsp;Reference documents</a></li>
             <li><a href="#aAppend">A&nbsp;Appendix</a><ul>
                   <li><a href="#sStartFlextools">A.1&nbsp;Starting <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTools</span></a></li>
                   <li><a href="#sDataStreamFormat">A.2&nbsp;Data Stream Format</a></li>
@@ -230,7 +235,7 @@
       </div><br><hr>
       <center><b><big><big><a name="rXLingPapAbstract0">Abstract</a></big></big></b></center>
       <div style="margin-left: 0.5in; margin-right: 0.5in">
-         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">11</a> for other documentation.
+         <p>This document describes how to use the <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> machine translation system. See section&nbsp;<a href="#sReferenceDocs">12</a> for other documentation.
          </p>
          <p></p>
          <p></p>
@@ -3657,7 +3662,22 @@
       </p>
       <p>Note that for <span style="font-family:Courier New; font-weight:bold; color:navy; ">XLingPaper</span>, which is a separate add-on to <span style="font-family:Courier New; font-weight:bold; color:navy; ">XMLmind XML Editor</span>, there are only translations available in English, French and Spanish.
       </p>
-      <h1 style=""><a name="sReferenceDocs"></a>11&nbsp;Reference documents
+      <h1 style=""><a name="sProductionMode"></a>11&nbsp;Production Mode
+      </h1>
+      <p><span style="color:#000066; font-weight:bold; ">Production Mode</span> is intended to be used after <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> has the transfer rules setup. The interface is intentionally more simple, with only one collection that contains three modules.
+         The modules cover importing the text from <span style="color:#000066; font-weight:bold; ">Paratext</span>, linking the senses between the two <span style="color:#000066; font-weight:bold; ">Fieldworks</span> databases, and translating the text. The interface looks like this:
+      </p>
+      <p><img style=" height:40%" src="Images/ProductionMode.png"></p>
+      <h2 style=""><a name="sProductionModeInstallation"></a>11.1&nbsp;Installation for Production Mode
+      </h2>
+      <p>When installing <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> to use <span style="color:#000066; font-weight:bold; ">Production Mode</span>, ensure to choose the correct option:
+      </p>
+      <p><img style="height:40%" src="Images/ProductionModeInstall.png" border="1pt solid;"></p>
+      <h2 style=""><a name="sAddingCollections"></a>11.2&nbsp;Changing from Production Mode to Normal Development Mode
+      </h2>
+      <p>It may be required to change from <span style="color:#000066; font-weight:bold; ">Production Mode</span> to Normal Development Mode. In order to do this, the user should add the default <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> of Drafting, Run Testbed and Tools, see section&nbsp;<a href="#sCollections">3.3</a>. Other <span style="font-family:Courier New; font-weight:bold; color:navy; ">Collections</span> may be added, as required.
+      </p>
+      <h1 style=""><a name="sReferenceDocs"></a>12&nbsp;Reference documents
       </h1>
       <p>The first version of <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> was produced as part of a Master&#8217;s Thesis see <a href="#rLockwood15">Lockwood (2015)</a>. In 2018 and 2021 Ron presented papers about <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span> at the respective BT Conferences. See <a href="#rLockwood17">Lockwood (2018)</a> and <a href="#rLockwood21a">Lockwood (2021a)</a>. Also in 2021 Ron presented on Syntactic Parsing as a front-end to <span style="font-family:Courier New; font-weight:bold; color:navy; ">FLExTrans</span>. See <a href="#rLockwood21b">Lockwood (2021b)</a>.
       </p>

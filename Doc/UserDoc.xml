@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->24 July 2025</date
+>02 October 2025</date
 ><version
 >3.14</version
 ><contents
@@ -7766,6 +7766,74 @@ type="tXMLmindXMLEditor"
 ></section2
 ></section1
 ><section1
+id="sProductionMode"
+><secTitle
+>Production Mode</secTitle
+><p
+><object
+type="tProductionMode"
+></object
+> is intended to be used after <object
+type="tFlextrans"
+></object
+> has the transfer rules setup. The interface is intentionally more simple, with only one collection that contains three modules. The modules cover importing the text from <object
+type="tProgramName"
+>Paratext</object
+>, linking the senses between the two <object
+type="tProgramName"
+>Fieldworks</object
+> databases, and translating the text. The interface looks like this:</p
+><p
+><img
+XeLaTeXSpecial="scaled='400'"
+cssSpecial=" height:40%"
+src="Images/ProductionMode.png"
+></img
+></p
+><section2
+id="sProductionModeInstallation"
+><secTitle
+>Installation for Production Mode</secTitle
+><p
+>When installing <object
+type="tFlextrans"
+></object
+> to use <object
+type="tProductionMode"
+></object
+>, ensure to choose the correct option:</p
+><p
+><img
+XeLaTeXSpecial="scaled='400'"
+borderaround="yes"
+cssSpecial="height:40%"
+src="Images/ProductionModeInstall.png"
+></img
+></p
+></section2
+><section2
+id="sAddingCollections"
+><secTitle
+>Changing from Production Mode to Normal Development Mode</secTitle
+><p
+>It may be required to change from <object
+type="tProductionMode"
+></object
+> to Normal Development Mode. In order to do this, the user should add the default <object
+type="tCollections"
+></object
+> of Drafting, Run Testbed and Tools, see <sectionRef
+sec="sCollections"
+showTitle="numberOnly"
+textBefore="singular"
+></sectionRef
+>. Other <object
+type="tCollections"
+></object
+> may be added, as required.</p
+></section2
+></section1
+><section1
 id="sReferenceDocs"
 ><secTitle
 >Reference documents</secTitle
@@ -8270,6 +8338,12 @@ id="tFoldername"
 after="Live Rule Tester Tool"
 id="tLiveRuleTester"
 types="tTool"
+></type
+><type
+after="Production Mode"
+color="#000066"
+id="tProductionMode"
+types="tBold"
 ></type
 ><type
 color="#000066"
