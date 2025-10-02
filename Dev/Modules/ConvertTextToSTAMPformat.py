@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
 #   Version 3.14.2 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -172,7 +176,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel']
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("ConvertTextToSTAMPformat", "Convert Text to Synthesizer Format"),
-        FTM_Version    : "3.14.2",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("ConvertTextToSTAMPformat", "Convert the file produced by {runApert} into a text file in a Synthesizer format").format(runApert=RunApertDocs[FTM_Name]),
         FTM_Help  : "", 
@@ -1007,8 +1011,8 @@ def changeToVariant(myAnaInfo, rootVariantANAandFeatlistMap, doHermitCrabSynthes
             # How those categories take affixes could be different, e.g. different affix template. (STAMP doesn't use templates, but HC does)
             myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         else:
-            # (We are intentionally not adding the sense number.)
-            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot(), sfxs)
+            # Now we are adding the sense #
+            myAnaInfo.setAnalysisByPart(pfxs, VARIANT_STR, varAna.getCapitalizedAnalysisRoot()+'.'+myAnaInfo.getSenseNum(), sfxs)
         
         # Change the case as necessary
         myAnaInfo.setCapitalization(oldCap)

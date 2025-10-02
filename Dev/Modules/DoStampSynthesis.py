@@ -5,6 +5,10 @@
 #   University of Washington, SIL International
 #   12/5/14
 #
+#   Version 3.14.3 - 10/2/25 - Ron Lockwood
+#    Fixes #1086. Include inflection class properties (\mp) appropriately for variants in the
+#    root lexicon for STAMP. Also use full N.N specification for variant lemmas instead of just N.
+#
 #   Version 3.14.2 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #    See documentation added at the bottom of this comment block.
@@ -203,7 +207,7 @@ This is typically called target_text-syn.txt and is usually in the Output folder
 NOTE: Messages will say the source project is being used. Actually the target project is being used.""")
 
 docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with STAMP"),
-        FTM_Version    : "3.14.1",
+        FTM_Version    : "3.14.3",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("DoStampSynthesis", "Synthesizes the target text with the tool STAMP."),
         FTM_Help       : "",
@@ -309,7 +313,40 @@ def output_final_allomorph_info(f_handle, sense, morphCategory):
         return
     
     if msa:
+
+        writeSpecialProperties(f_handle, msa, morphCategory)
+
+def processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList):
+
+    # Get to the main entry for this variant entry
+    mainEntry = Utils.GetEntryWithSense(entry)
+
+    # Loop through all the senses
+    for i, sense in enumerate(mainEntry.SensesOS):
+
+        # Write out morphname field (with sense number for variants)
+        f_rt.write('\\m '+headWord+'.'+str(i+1)+'\n')
         
+        # Write out the XAMPLE properties
+        write_xample_properties(f_rt, xAmplePropList)
+
+        # Write out the variant marker
+        f_rt.write('\\c '+"_variant_"+'\n')
+
+        if sense.MorphoSyntaxAnalysisRA.ClassName == 'MoStemMsa':
+            
+            msa = IMoStemMsa(sense.MorphoSyntaxAnalysisRA)
+        else:
+            return
+
+        writeSpecialProperties(f_rt, msa, STEM_TYPE)
+
+        # Process all allomorphs and their environments
+        process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
+def writeSpecialProperties(f_handle, msa, morphCategory):        
+        
+        # Write out morpheme properties for stem names and required features
         if morphCategory != STEM_TYPE: # non-stems only
 
             # Deal with affix stem name stuff.
@@ -996,20 +1033,24 @@ def create_stamp_dictionaries(TargetDB, f_rt, f_pf, f_if, f_sf, morphNames, repo
                 headWord = ITsString(entry.HeadWord).Text
                 headWord = Utils.add_one(headWord)
                 headWord = headWord.lower()
+
                 # change spaces to underscores
                 headWord = re.sub(r'\s', '_', headWord)
 
-                # Write out morphname field (no sense number for variants)
-                f_rt.write('\\m '+headWord+'\n')
+                processVariantForAllSenses(entry, f_rt, headWord, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID, xAmplePropList)
+                
+                # # Write out morphname field (no sense number for variants)
+                # f_rt.write('\\m '+headWord+'\n')
 
-                # Write out the XAMPLE properties
-                write_xample_properties(f_rt, xAmplePropList)
+                # # Write out the XAMPLE properties
+                # write_xample_properties(f_rt, xAmplePropList)
 
-                # Write out the variant marker
-                f_rt.write('\\c '+"_variant_"+'\n')
+                # # Write out the variant marker
+                # f_rt.write('\\c '+"_variant_"+'\n')
 
-                # Process all allomorphs and their environments
-                process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+                # # Process all allomorphs and their environments
+                # process_allomorphs(entry, f_rt, "", STEM_TYPE, None, TargetDB, custXampleAllomorphFieldID, custXampleEntryFieldID)
+
                 rt_cnt +=1
 
         if entry.SensesOS.Count > 0: # Entry with senses
