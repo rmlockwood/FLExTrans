@@ -5,6 +5,9 @@
 #   SIL International
 #   12/31/24
 #
+#   Version 3.13.2 - 10/2/25 - Ron Lockwood
+#    For TOFT, default to exporting to FLEx at the end.
+# 
 #   Version 3.13.1 - 3/20/25 - Ron Lockwood
 #    Modularized the main functions to make it easy to call from other modules.
 # 
@@ -39,7 +42,7 @@ import Utils
 # Documentation that the user sees:
 
 docs = {FTM_Name       : "Translate Text",
-        FTM_Version    : "3.13.1",
+        FTM_Version    : "3.13.2",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : "Translate the current source text.",    
         FTM_Help   : "",
@@ -48,7 +51,7 @@ docs = {FTM_Name       : "Translate Text",
 Translate the current source text.
 """ }
 
-FINAL_MODULE_IS_EXPORT_TO_PARATEXT = True # Otherwise, the last module is Insert Target Text
+FINAL_MODULE_IS_EXPORT_TO_PARATEXT = False # Otherwise, the last module is Insert Target Text
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
