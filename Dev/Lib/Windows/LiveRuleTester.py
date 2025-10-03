@@ -198,7 +198,7 @@ class Ui_LRTWindow(object):
         self.selectWordsHintLabel.setGeometry(QtCore.QRect(400, 243, 651, 23))
         self.selectWordsHintLabel.setObjectName("selectWordsHintLabel")
         self.warningLabel = QtWidgets.QLabel(self.centralwidget)
-        self.warningLabel.setGeometry(QtCore.QRect(690, 440, 1100, 42))
+        self.warningLabel.setGeometry(QtCore.QRect(680, 440, 571, 42))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
