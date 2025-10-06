@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->02 October 2025</date
+>06 October 2025</date
 ><version
 >3.14</version
 ><contents
@@ -1333,6 +1333,16 @@ src="Images/MoveDownButton.png"
 type="tButton"
 >Select</object
 > button on the toolbar.</p
+><p
+>To remove a collection from the main display, right-click on the collection name, as seen below:</p
+><p
+><img
+XeLaTeXSpecial="scaled='400'"
+cssSpecial=" height:25%"
+height="40%"
+src="Images/CollectionsCloseTab.png"
+></img
+></p
 ></section2
 ></section1
 ><section1
