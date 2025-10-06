@@ -5,6 +5,9 @@
 #   University of Washington, SIL International
 #   12/4/14
 #
+#   Version 3.14.4 - 9/19/25 - Ron Lockwood
+#    Fixes #1074. Support inflection on the first element of a complex form.
+#
 #   Version 3.14.3 - 9/3/25 - Ron Lockwood
 #    Fixes #1059. Support user-defined tests and morpheme properties for STAMP synthesis.
 #
@@ -152,7 +155,8 @@ NO_PROPER_NOUN_WARNING = 'NoWarningForUnanalyzedProperNouns'
 PROPER_NOUN_CATEGORY = 'ProperNounCategory'
 PROD_MODE_OUTPUT_FLEX = 'ProductionModeOutputFlex'
 SENTENCE_PUNCTUATION = 'SentencePunctuation'
-SOURCE_COMPLEX_TYPES = 'SourceComplexTypes'
+SOURCE_FORMS_INFLECTION_1ST = 'SourceComplexFormsWithInflectionOn1stElement'
+SOURCE_COMPLEX_TYPES = 'SourceComplexTypes' # This the setting for source complex forms with inflection on the second/last element, but for historical reasons it is named this way.
 SOURCE_CUSTOM_FIELD_ENTRY = 'SourceCustomFieldForEntryLink'
 SOURCE_CUSTOM_FIELD_SENSE_NUM = 'SourceCustomFieldForSenseNum'
 SOURCE_DISCONTIG_TYPES = 'SourceDiscontigousComplexTypes'
@@ -192,6 +196,7 @@ TREETRAN_RULES_FILE = 'TreeTranRulesFile'
 # If you are adding a new property that will have multiple values, add it to this list variable
 PROPERTIES_THAT_ARE_LISTS = [SOURCE_MORPHNAMES,
                              TARGET_MORPHNAMES,
+                             SOURCE_FORMS_INFLECTION_1ST,
                              SOURCE_COMPLEX_TYPES,
                              SOURCE_DISCONTIG_TYPES,
                              SOURCE_DISCONTIG_SKIPPED,
