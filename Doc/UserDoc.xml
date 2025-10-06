@@ -7786,7 +7786,7 @@ type="tProductionMode"
 > is intended to be used after <object
 type="tFlextrans"
 ></object
-> has the transfer rules setup. The interface is intentionally more simple, with only one collection that contains three modules. The modules cover importing the text from <object
+> has the transfer rules set up. The interface is intentionally more simple, with only one collection that contains three modules. The modules cover importing the text from <object
 type="tProgramName"
 >Paratext</object
 >, linking the senses between the two <object
