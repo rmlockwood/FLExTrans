@@ -15,7 +15,7 @@ type="tFlextrans"
 ><emailAddress
 >flextrans_help@sil.org</emailAddress
 ><date
->02 October 2025</date
+>06 October 2025</date
 ><version
 >3.14</version
 ><contents
@@ -1333,6 +1333,16 @@ src="Images/MoveDownButton.png"
 type="tButton"
 >Select</object
 > button on the toolbar.</p
+><p
+>To remove a collection from the main display, right-click on the collection name, as seen below:</p
+><p
+><img
+XeLaTeXSpecial="scaled='400'"
+cssSpecial=" height:25%"
+height="40%"
+src="Images/CollectionsCloseTab.png"
+></img
+></p
 ></section2
 ></section1
 ><section1
@@ -2386,15 +2396,42 @@ type="tTool"
 > provides a way to test whether your Target Project is ready for the Synthesis stage of <object
 type="tFlextrans"
 ></object
->. It allows you to choose a specific inflectional template from your <object
+>. It allows you to choose a specific inflectional template from your Target <object
 type="tFlexx"
 ></object
-> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure they are all valid forms. If not, that is an indication of further work needed on the morphological description in the <object
+> project and generate all possible forms that are allowed by that template. This allows you to review the forms to ensure they are all valid forms. If not, that is an indication of further work needed on the morphological description in the Target <object
 type="tFlexx"
 ></object
-> project. It does not attempt to generate for any category without a template, and it does not attempt to generate with derivational affixes.</p
+> project. It does not attempt to generate forms for any category without a template, and it does not attempt to generate with derivational affixes.</p
 ><p
->The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.</p
+>The output can be limited to a specific part of speech, a certain number of roots, and/or a specific Citation Form. It is a good idea to limit the output when starting out, because it can easily become quite large.  If you have not set any POS values in the setting <object
+type="tSettingsProperty"
+>Limit to Specific POS Values</object
+>, there will be an error message.</p
+><p
+>To adjust the settings for the Synthesis Test,</p
+><ol
+><li
+>Select <object
+type="tMenu"
+>FLExTrans</object
+> &gt; <object
+type="tMenu"
+>Settings</object
+> from the menu.</li
+><li
+>You should see the <object
+type="tSettingsTool"
+></object
+> window.</li
+><li
+>Scroll down until you get the the section <object
+type="tSettingsProperty"
+>Synthesis Test Settings</object
+>.</li
+><li
+>Here you can adjust the various parameters, as well as the names and locations of the output files.</li
+></ol
 ><p
 >Note that for this test, any active template must have at least one affix in each of its slots. If you have any slots with no affixes in them, it is recommended to set that template to "inactive" for this test. (Untick the box labeled "Active" in the description of the template in Category Edit in <object
 type="tFlexx"
@@ -7776,7 +7813,7 @@ type="tProductionMode"
 > is intended to be used after <object
 type="tFlextrans"
 ></object
-> has the transfer rules setup. The interface is intentionally more simple, with only one collection that contains three modules. The modules cover importing the text from <object
+> has the transfer rules set up. The interface is intentionally more simple, with only one collection that contains three modules. The modules cover importing the text from <object
 type="tProgramName"
 >Paratext</object
 >, linking the senses between the two <object
