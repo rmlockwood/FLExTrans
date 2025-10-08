@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.13.1 - 10/8/25 - Ron Lockwood
+#    Fixes #1096. Use _affixes instead of _slots for attribute names.
+#
 #   Version 3.13 - 3/10/25 - Ron Lockwood
 #    Bumped to 3.13.
 #
@@ -418,7 +421,7 @@ class RuleGenerator:
         values = self.GetAttributeValues(spec)
 
         if spec.isAffix:
-            name = f'a_{spec.category}_{spec.label}_slot'
+            name = f'a_{spec.category}_{spec.label}_affixes'
         else:
             name = f'a_{spec.label}_feature'
         if not values:
@@ -715,10 +718,10 @@ class RuleGenerator:
         plStemValues = self.GetAttributeValues(
             FeatureSpec('n', pluralFeature, isAffix=False))
 
-        sgAffix = self.AddSingleAttribute('a_n_singular_class_slot',
-                                          sgAffixValues, reject=plAffixValues)
-        plAffix = self.AddSingleAttribute('a_n_plural_class_slot',
-                                          plAffixValues, reject=sgAffixValues)
+        sgAffix = self.AddSingleAttribute('a_n_singular_class_affixes',
+                                        sgAffixValues, reject=plAffixValues)
+        plAffix = self.AddSingleAttribute('a_n_plural_class_affixes',
+                                        plAffixValues, reject=sgAffixValues)
         sgStem = self.AddSingleAttribute('a_n_singular_class_feature',
                                          sgStemValues, reject=plStemValues)
         plStem = self.AddSingleAttribute('a_n_plural_class_feature',
