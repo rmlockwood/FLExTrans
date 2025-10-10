@@ -5,6 +5,9 @@
 #   SIL International
 #   1/1/17
 #
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Fixes #1075. Give an error if the transfer rules file doesn't exist.
+#
 #   Version 3.14.3 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -442,6 +445,11 @@ def runApertium(DB, configMap, report):
     if not tranferRulePath:
         return None
 
+    # See if the transfer rules file exists.
+    if not os.path.exists(tranferRulePath):
+        report.Error(_translate("RunApertium", 'The transfer rules file does not exist. The file should be at: {file}').format(file=tranferRulePath))
+        return True
+    
     # Get the modification date of the transfer rule file.
     statResult = os.stat(tranferRulePath)
 
