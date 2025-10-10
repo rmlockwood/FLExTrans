@@ -5,6 +5,9 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.4 - 10/10/25 - Ron Lockwood
+#    Better error messages when the Rule Assistant returns an error.
+#
 #   Version 3.14.3 - 8/19/25 - Ron Lockwood
 #    Fixes #1045. When creating a test data file that has an error message. Create it as utf-8
 #    because the error message may contain non-ASCII characters when translated.
@@ -441,6 +444,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
         lrt = (not fromLRT) and ('LRT' in output)
 
         if not output or output[0] not in ['1', '2']:
+            
+            if len(output) > 1:
+
+                report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=' '.join(output), ruleAssistant=docs[FTM_Name]))
+            
             return (False, None, lrt)
         
         elif output[0] == '1':
@@ -451,7 +459,7 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 
     except Exception as e:
 
-        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=e.output.decode("utf-8"), ruleAssistant=docs[FTM_Name]))
+        report.Error(_translate('RuleAssistant', 'An error happened when running the {ruleAssistant} tool: {error}').format(error=str(e), ruleAssistant=docs[FTM_Name]))
         return (False, None, False)
 
 #----------------------------------------------------------------
