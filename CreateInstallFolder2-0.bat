@@ -3,7 +3,7 @@ rem It doesn't matter so much what this next version # is, 1) we get requirement
 rem  2) we create a folder named this in the install
 SET INSTALL_FOLDER_VERSION=2.2.1
 
-rem THIS INSTALL IS FOR TASTE OF FLExTrans
+rem THIS INSTALL IS FOR TASTE OF FLExTrans workshop
 REM --------------------------------------
 set SUFF=TOFT
 set FLEXTRANS_VERSION=%FLEXTRANS_VERSION%%SUFF%
