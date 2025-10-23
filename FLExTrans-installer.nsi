@@ -11,7 +11,7 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define TOFT "TOFT"
-!define PRODUCT_VERSION "3.13.1${TOFT}"
+!define PRODUCT_VERSION "3.13.2${TOFT}"
 !define PRODUCT_ZIP_FILE "FLExToolsWithFLExTrans${PRODUCT_VERSION}.zip"
 !define ADD_ON_ZIP_FILE "AddOnsForXMLmind${PRODUCT_VERSION}.zip"
 !define HERMIT_CRAB_ZIP_FILE "HermitCrabTools${PRODUCT_VERSION}.zip"
@@ -36,7 +36,7 @@ VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
 
 ; Always 4 numerals
-VIProductVersion 3.13.1.${BUILD_NUM}
+VIProductVersion 3.13.2.${BUILD_NUM}
 
 ; MUI Settings
 !define MUI_ABORTWARNING
