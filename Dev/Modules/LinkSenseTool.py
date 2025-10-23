@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.6 - 10/23/25 - Ron Lockwood
+#    Refixes #1031. Save font information also on close or cancel.
+#
 #   Version 3.14.5 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -239,7 +242,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.5",
+        FTM_Version    : "3.14.6",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1158,8 +1161,6 @@ class Main(QMainWindow):
         
     def OKClicked(self):
         self.retVal = 1
-        self.saveFontSettings()   
-
         self.close()
         
     def ShowOnlyUnlinkedClicked(self):
@@ -1184,6 +1185,10 @@ class Main(QMainWindow):
         self.filter()
         
     def closeEvent(self, event):
+
+        # Always save font settings on close
+        self.saveFontSettings()   
+
         if self.retVal != 1:
             self.CancelClicked()
         elif self.rebuildBiling:
@@ -1193,8 +1198,6 @@ class Main(QMainWindow):
 
             # Pause for 3 seconds to let FLEx write out the links before the bilingual lexicon gets rebuilt
             time.sleep(3)
-
-            self.saveFontSettings()   
 
             # Revert back to the default cursor 
             QApplication.restoreOverrideCursor()    
