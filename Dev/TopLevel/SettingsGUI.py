@@ -3,6 +3,9 @@
 #   Lærke Roager Christensen 
 #   3/28/22
 #
+#   Version 3.14.4 - 11/24/25 - Ron Lockwood
+#    Fixes #1108. Change the maxsize statement which enables the maximize button.
+#
 #   Version 3.14.3 - 9/19/25 - Ron Lockwood
 #    Fixes #1074. Support inflection on the first element of a complex form.
 #
