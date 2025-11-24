@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.7 - 11/24/25 - Ron Lockwood
+#    Fixes #1106. Don't prompt the user the save changes twice.
+#
 #   Version 3.14.6 - 10/23/25 - Ron Lockwood
 #    Refixes #1031. Save font information also on close or cancel.
 #
@@ -242,7 +245,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.6",
+        FTM_Version    : "3.14.7",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1016,14 +1019,6 @@ class Main(QMainWindow):
         # Set the global variable
         FTPaths.CURRENT_SRC_TEXT = self.ui.SourceTextCombo.currentText()
         
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         # Have FlexTools refresh the status bar
         refreshStatusbar()
 
@@ -1190,7 +1185,15 @@ class Main(QMainWindow):
         self.saveFontSettings()   
 
         if self.retVal != 1:
-            self.CancelClicked()
+
+            # Check if the user did some linking or unlinking
+            if self.__model.didLinkingChange():
+                
+                # Check if the user wants to save changes
+                if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
+            
+                    self.retVal = 1
+            
         elif self.rebuildBiling:
         
             # Show hourglass cursor 
@@ -1204,15 +1207,6 @@ class Main(QMainWindow):
 
     def CancelClicked(self):
         self.retVal = 0
-
-        # Check if the user did some linking or unlinking
-        if self.__model.didLinkingChange():
-            
-            # Check if the user wants to save changes
-            if QMessageBox.question(self, _translate("LinkSenseTool", 'Save Changes'), _translate("LinkSenseTool", "Do you want to save your changes?"), QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes) == QMessageBox.Yes:
-        
-                self.retVal = 1
-        
         self.close()
         
     def filter(self):
