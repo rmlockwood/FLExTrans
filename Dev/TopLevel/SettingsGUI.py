@@ -692,7 +692,7 @@ class Ui_MainWindow(object):
 
         MainWindow.setObjectName("SettingsGUI")
         MainWindow.resize(800, 630)
-        MainWindow.setMaximumSize(QtCore.QSize(910, 1000))
+        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
