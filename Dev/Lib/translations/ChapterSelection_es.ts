@@ -201,7 +201,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="705"/>
         <source>Daniel</source>
-        <translation type="unfinished">Daniel</translation>
+        <translation>Daniel</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="706"/>
@@ -211,7 +211,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="707"/>
         <source>Joel</source>
-        <translation type="unfinished">Joel</translation>
+        <translation>Joel</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="708"/>
@@ -406,7 +406,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="746"/>
         <source>Judith</source>
-        <translation type="unfinished">Judith</translation>
+        <translation>Judith</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="747"/>
@@ -546,7 +546,7 @@
     <message>
         <location filename="../ChapterSelection.py" line="774"/>
         <source>1 Meqabyan/Mekabis</source>
-        <translation type="unfinished">1 Meqabyan/Mekabis</translation>
+        <translation>1 Meqabyan/Mekabis</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="775"/>
@@ -566,37 +566,37 @@
     <message>
         <location filename="../ChapterSelection.py" line="778"/>
         <source>Extra A</source>
-        <translation type="unfinished">Extra A</translation>
+        <translation>Extra A</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="779"/>
         <source>Extra B</source>
-        <translation type="unfinished">Extra B</translation>
+        <translation>Extra B</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="780"/>
         <source>Extra C</source>
-        <translation type="unfinished">Extra C</translation>
+        <translation>Extra C</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="781"/>
         <source>Extra D</source>
-        <translation type="unfinished">Extra D</translation>
+        <translation>Extra D</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="782"/>
         <source>Extra E</source>
-        <translation type="unfinished">Extra E</translation>
+        <translation>Extra E</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="783"/>
         <source>Extra F</source>
-        <translation type="unfinished">Extra F</translation>
+        <translation>Extra F</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="784"/>
         <source>Extra G</source>
-        <translation type="unfinished">Extra G</translation>
+        <translation>Extra G</translation>
     </message>
     <message>
         <location filename="../ChapterSelection.py" line="785"/>
