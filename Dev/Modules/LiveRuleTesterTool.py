@@ -613,6 +613,9 @@ class Main(QMainWindow):
         self.ui.selectAllCheckBox.clicked.connect(self.SelectAllCheckBoxClicked)
         self.ui.refreshSourceLexiconButton.clicked.connect(self.sourceTextComboChanged)
 
+        # Align selectAllCheckBox to the bottom
+        self.ui.horizontalLayout_9.setAlignment(self.ui.selectAllCheckBox, QtCore.Qt.AlignBottom)
+
         # Set up paths to things.
         # Get parent folder of the folder flextools.ini is in and add \Build to it
         self.buildFolder = FTPaths.BUILD_DIR
@@ -900,10 +903,28 @@ class Main(QMainWindow):
                 # Add LogEdit to horizLayoutTransferRules at the desired position
                 self.ui.horizLayoutTransferRules.insertWidget(1, self.ui.LogEdit) # to the right of the rules list
 
+                # Align ruleExecutionLabel to the right.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_4 to horizontalLayout_9.
+                self.ui.horizontalLayout_4.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the end.
+                self.ui.horizontalLayout_9.addWidget(self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from verticalLayout
+                self.ui.verticalLayout.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to horizontalLayout_4 at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.targetTextLabel)
+
             # Add advanced tabs
             self.ui.tabSource.insertTab(2, self.ui.tab_manual_entry, self.manualTabText)
             self.ui.tabRules.insertTab(1, self.ui.tab_interchunk_rules, self.interChunkTabText)
             self.ui.tabRules.insertTab(2, self.ui.tab_postchunk_rules, self.postChunkTabText)
+
+            # Force a resize
+            self.adjustSize()
 
             self.resize(self.advancedModeDimensions[0], self.advancedModeDimensions[1])
 
@@ -948,6 +969,21 @@ class Main(QMainWindow):
                 count = self.ui.verticalLayout.count()
                 insert_position = count - 4  # 4th from the bottom
                 self.ui.verticalLayout.insertWidget(insert_position, self.ui.LogEdit)
+
+                # Align ruleExecutionLabel to the left.
+                self.ui.ruleExecutionLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+
+                # Move ruleExecutionLabel from horizontalLayout_9 to horizontalLayout_4.
+                self.ui.horizontalLayout_9.removeWidget(self.ui.ruleExecutionLabel)
+
+                # Add it at the beginning.
+                self.ui.horizontalLayout_4.insertWidget(0, self.ui.ruleExecutionLabel)
+
+                # Remove the targetTextLabel from horizontalLayout_4
+                self.ui.horizontalLayout_4.removeWidget(self.ui.targetTextLabel)
+
+                # Add it to the verticalLayout above the LogEdit
+                self.ui.verticalLayout.insertWidget(insert_position+1, self.ui.targetTextLabel)
 
             # Set window width half the size
             self.resize(self.standardModeDimensions[0], self.standardModeDimensions[1])
@@ -1105,15 +1141,15 @@ class Main(QMainWindow):
             if self.advancedTransfer:
                 self.__ruleModel = self.__interChunkModel
                 self.__rulesElement = self.__interchunkRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
                 self.__ruleModel = self.__postChunkModel
                 self.__rulesElement = self.__postchunkRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
                 self.__ruleModel = self.__transferModel
                 self.__rulesElement = self.__transferRulesElement
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
             else:
-                self.SelectAllClicked()
+                self.SelectAllCheckBoxClicked()
 
     def getLexUnitObjsFromString(self, lexUnitStr):
         # Initialize a Parser object
