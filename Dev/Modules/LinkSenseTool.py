@@ -5,6 +5,9 @@
 #   SIL International
 #   7/18/15
 #
+#   Version 3.14.8 - 11/24/25 - Ron Lockwood
+#    Fixes #1121. Give a better error message when no words matching morphtype roots is found.
+#
 #   Version 3.14.7 - 11/24/25 - Ron Lockwood
 #    Fixes #1106. Don't prompt the user the save changes twice.
 #
@@ -245,7 +248,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'Linker', 'NewEntryDl
 # Documentation that the user sees:
 
 docs = {FTM_Name       : _translate("LinkSenseTool", "Sense Linker Tool"),
-        FTM_Version    : "3.14.7",
+        FTM_Version    : "3.14.8",
         FTM_ModifiesDB : True,
         FTM_Synopsis   : _translate("LinkSenseTool", "Link source and target senses."),
         FTM_Help       : "",
@@ -1442,6 +1445,7 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     saveMap = {}
     processedMap = {}
     myData = []
+    foundAtLeastOneValidMorphType = False
     
     report.ProgressStart(myText.getWordCount())
 
@@ -1479,7 +1483,11 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
     
                         if morphType not in sourceMorphNames:
                             continue
-                            
+                        
+                        # We have at least one valid morph type. If we never get here and this remains false,
+                        # we will report an error later.
+                        foundAtLeastOneValidMorphType = True
+
                         # Get gloss
                         srcGloss = Utils.as_string(mySense.Gloss)    
                 
@@ -1550,6 +1558,10 @@ def processInterlinear(report, DB, senseEquivField, senseNumField, sourceMorphNa
                         else:
                             addLinkerRowsFromMatchLinkList(myMatchLinkList, myData, word)
                 # wordIndex += 1
+
+    if not foundAtLeastOneValidMorphType:
+
+        report.Error(_translate("LinkSenseTool", "No words with a valid root morph type were found. Please check the your settings, specifically Source Morpheme Types Counted As Roots.")) 
 
     return myData, processedMap
 
@@ -1981,7 +1993,7 @@ def RunModule(DB, report, configMap, app):
     # Check to see if there is any data to link
     if len(myData) == 0:
                                         
-        report.Error(_translate("LinkSenseTool", 'There were no senses found for linking. Please check your text and approve some words.'))
+        report.Error(_translate("LinkSenseTool", 'There was an error finding senses to link.'))
     else:        
         myHeaderData = [_translate("LinkSenseTool", 'Link it!'), 
                                                     'V #', 
