@@ -5,6 +5,9 @@
 #   SIL International
 #   7/2/16
 #
+#   Version 3.14.13 - 11/28/25 - Ron Lockwood
+#    Fixes #1103. Respond to arrow up and down in the sentence list box.
+#
 #   Version 3.14.12 - 8/13/25 - Ron Lockwood
 #    Translate module name.
 #
@@ -293,7 +296,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'LiveRuleTester', 'Te
 #----------------------------------------------------------------
 # Documentation that the user sees:
 docs = {FTM_Name       : _translate("LiveRuleTesterTool", "Live Rule Tester Tool"),
-        FTM_Version    : "3.14.12",
+        FTM_Version    : "3.14.13",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("LiveRuleTesterTool", "Test transfer rules and synthesis live against specific words."),
         FTM_Help       : "", 
@@ -548,10 +551,6 @@ class Main(QMainWindow):
         self.standardModeDimensions = STANDARD_MODE_DEFAULT_DIMENSIONS
         self.advancedModeDimensions = ADVANCED_MODE_DEFAULT_DIMENSIONS
 
-        #policy = self.ui.TestButton.sizePolicy()
-        #self.ui.TestButton.setSizePolicy(QSizePolicy.Minimum, policy.verticalPolicy())
-        #self.ui.startRuleAssistant.hide()
-
         self.advancedWidgetsList = [
             self.ui.rebuildBilingLexButton,
             self.ui.startRuleAssistant,
@@ -590,8 +589,6 @@ class Main(QMainWindow):
         self.ui.tabRules.currentChanged.connect(self.rulesTabClicked)
         self.ui.tabSource.currentChanged.connect(self.sourceTabClicked)
         self.ui.refreshButton.clicked.connect(self.RefreshClicked)
-        # self.ui.selectAllButton.clicked.connect(self.SelectAllClicked)
-        # self.ui.unselectAllButton.clicked.connect(self.UnselectAllClicked)
         self.ui.upButton.clicked.connect(self.UpButtonClicked)
         self.ui.downButton.clicked.connect(self.DownButtonClicked)
         self.ui.synthesizeButton.clicked.connect(self.SynthesizeButtonClicked)
@@ -783,7 +780,8 @@ class Main(QMainWindow):
 
         self.ui.listSentences.setModel(self.__sent_model)
         self.ui.SentCombo.setModel(self.__sent_model)
-
+        self.ui.listSentences.selectionModel().selectionChanged.connect(self.listSentClicked)
+        
         # Only use the sentence number from saved values if the text is the same one that was last saved
         if savedSourceTextName != sourceText:
 
