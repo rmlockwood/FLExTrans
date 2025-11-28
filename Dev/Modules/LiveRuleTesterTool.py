@@ -1822,24 +1822,6 @@ class Main(QMainWindow):
         # Redo the numbering
         self.rulesListClicked(self.TRIndex)
 
-    # def SelectAllClicked(self):
-    #     # Loop through all the items in the rule list model
-    #     for i in range(0, self.__ruleModel.rowCount()):
-    #         # Check each box
-    #         self.__ruleModel.item(i).setCheckState(QtCore.Qt.Checked)
-
-    #     # Redo the numbering
-    #     self.rulesListClicked(self.TRIndex)
-
-    # def UnselectAllClicked(self):
-    #     # Loop through all the items in the rule list model
-    #     for i in range(0, self.__ruleModel.rowCount()):
-    #         # Check each box
-    #         self.__ruleModel.item(i).setCheckState(QtCore.Qt.Unchecked)
-
-    #     # Redo the numbering
-    #     self.rulesListClicked(self.TRIndex)
-
     def RefreshClicked(self):
         self.saveChecked()
         self.loadTransferRules()
