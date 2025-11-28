@@ -1035,7 +1035,6 @@ class Main(QMainWindow):
         refreshStatusbar()
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     # Read the bilingual lexicon and make a map from source entries to one or more target entries
@@ -1133,7 +1132,6 @@ class Main(QMainWindow):
         self.startReplacementEditor = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def checkThemAll(self):
@@ -1252,12 +1250,10 @@ class Main(QMainWindow):
         self.startTestbedLogViewer = True
 
         # Close the tool and it will restart
-        self.closeEvent(None)
         self.close()
 
     def OpenRuleAssistantClicked(self):
         self.startRuleAssistant = True
-        self.closeEvent(None)
         self.close()
 
     def EditTestbedLogButtonClicked(self):
