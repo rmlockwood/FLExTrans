@@ -33,6 +33,12 @@ Do these things when you are going live with the release
  -Auto-generate release notes.
  -Publish
  -Edit release notes.
+-Update the user documentation
+ -Create a subfolder for the old version (e.g. 3.13.1) in the FTP server's resources folder
+ -Move UserDoc.htm to this folder
+ -Move the Images folder to the new subfolder
+ -Move UserDoc.htm in the beta folder up one level
+ -Move the Images folder under beta up one level as well.
 -If just doing a minor release without release notes and want to create a tag
  -Go to tags, switch to Releases
  -Click draft new release
