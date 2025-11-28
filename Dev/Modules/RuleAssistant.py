@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.5 - 11/28/25 - Ron Lockwood
+#    Fixed #1062. When generating test data, if there is no compiled bilingual dictionary,
+#    compile it.
+#
 #   Version 3.14.4 - 10/10/25 - Ron Lockwood
 #    Better error messages when the Rule Assistant returns an error.
 #
@@ -105,7 +109,7 @@ librariesToTranslate = ['ReadConfig', 'Utils', 'Mixpanel', 'CreateApertiumRules'
 # Documentation that the user sees:
 descr = _translate("RuleAssistant", """This module runs the Rule Assistant tool which let's you create transfer rules.""")
 docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
-        FTM_Version    : "3.14.3",
+        FTM_Version    : "3.14.5",
         FTM_ModifiesDB : False,
         FTM_Synopsis   : _translate("RuleAssistant", "Runs the Rule Assistant tool."),
         FTM_Help       : "",
@@ -340,14 +344,15 @@ def ReadingToHTML(reading):
 def GenerateTestDataFile(report, DB, configMap, fhtml):
 
     sourceText = ReadConfig.getConfigVal(configMap, ReadConfig.SOURCE_TEXT_NAME, report)
-    bidix = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
+    bidixDix = ReadConfig.getConfigVal(configMap, ReadConfig.BILINGUAL_DICTIONARY_FILE, report)
+    bidixBin = os.path.join(FTPaths.BUILD_DIR, 'bilingual.bin')
 
-    if not sourceText:
+    if not (sourceText or bidixDix):
         return False
 
-    if not os.path.isfile(bidix):
+    if not os.path.isfile(bidixDix):
 
-        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. Run the "{runApert}" module to display test data in the {ruleAssistant}.').format(runApert=RunApertDocs[FTM_Name], ruleAssistant=docs[FTM_Name]))
+        report.Warning(_translate('RuleAssistant', 'Bilingual dictionary not found. Build the bilingual dictionary to see test data in the {ruleAssistant}.').format(ruleAssistant=docs[FTM_Name]))
         return False
 
     content = None
@@ -374,9 +379,16 @@ def GenerateTestDataFile(report, DB, configMap, fhtml):
     with open(fsrc, 'w', encoding='utf-8') as fout:
         text.write(fout)
 
+    # Compile the bilingual dictionary
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-comp.exe'), 'lr', bidixDix, bidixBin], capture_output=True)
+
+    if not os.path.isfile(bidixBin):
+
+        report.Warning(_translate('RuleAssistant', 'Compiled bilingual dictionary not found. There was an error compiling the bilingual dictionary.'))
+        return False
+
     ftgt = os.path.join(FTPaths.BUILD_DIR, Utils.RULE_ASSISTANT_TARGET_TEST_DATA_FILE)
-    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'),
-                    '-b', bidix, fsrc, ftgt], capture_output=True)
+    subprocess.run([os.path.join(FTPaths.TOOLS_DIR, 'lt-proc.exe'), '-b', bidixBin, fsrc, ftgt], capture_output=True)
 
     try:
         with open(ftgt, encoding='utf-8') as fin, open(fhtml, 'w', encoding='utf-8') as fout:
