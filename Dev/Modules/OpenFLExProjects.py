@@ -45,7 +45,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'OpenFLExProjects'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -63,8 +66,8 @@ docs = {FTM_Name       : _translate("OpenFLExProjects", "Open Multiple FLEx Proj
         FTM_Description: _translate("OpenFLExProjects", 
 f"""Select one or more FLEx project and automatically open them one by one. The tool waits until one project is open before opening the next.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 LIMIT_SECS = 40
 
@@ -125,7 +128,11 @@ def isFLExOpen(projName):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

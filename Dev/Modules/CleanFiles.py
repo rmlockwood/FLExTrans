@@ -66,7 +66,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'CleanFiles'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -84,8 +87,8 @@ docs = {FTM_Name       : _translate("CleanFiles", "Clean Files"),
         FTM_Description: _translate("CleanFiles",
 """Remove generated files to force each FLExTrans module to regenerate everything. This typically removes most files in the Build and Output folders.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # The main processing function
 def MainFunction(DB, report, modify=True):

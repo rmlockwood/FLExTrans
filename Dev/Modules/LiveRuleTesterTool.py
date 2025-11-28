@@ -281,7 +281,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'LiveRuleTesterTool'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -308,8 +311,8 @@ transfer results get synthesized correctly into target words. If you want, you
 can add the source lexical items paired with the synthesis results to a testbed.
 You can run the testbed to check that you are getting the results you expect.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 ZOOM_INCREASE_FACTOR = 1.15
 ADVANCED_MODE_DEFAULT_DIMENSIONS = (1256, 656)
@@ -3071,7 +3074,11 @@ def RunModule(DB, report, configMap, ruleCount=None, app=None):
 def MainFunction(DB, report, modify=False, ruleCount=None):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

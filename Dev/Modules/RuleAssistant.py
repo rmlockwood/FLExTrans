@@ -90,7 +90,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RuleAssistant'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -108,8 +111,8 @@ docs = {FTM_Name       : _translate("RuleAssistant", "Rule Assistant"),
         FTM_Help       : "",
         FTM_Description:    descr}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # Element names in the rule assistant gui input file
 FLEXDATA          = "FLExData"
@@ -467,7 +470,11 @@ def StartRuleAssistant(report, ruleAssistantFile, ruleAssistGUIinputfile,
 def MainFunction(DB, report, modify=True, fromLRT=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

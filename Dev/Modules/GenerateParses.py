@@ -81,7 +81,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'GenerateParses'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -106,8 +109,8 @@ a single POS or Citation Form, or to a specified number of stems (stems will be 
 randomly). This module also outputs a human readable version of the parses (with glosses of roots
 and affixes) to the Parses Output File specified in the settings.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 
@@ -278,7 +281,11 @@ def MainFunction(DB, report, modifyAllowed):
     standardSpellList = []
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

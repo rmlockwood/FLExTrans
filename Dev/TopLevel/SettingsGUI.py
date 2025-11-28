@@ -1394,7 +1394,11 @@ def giveDBErrorMessageBox(myProj):
 def MainFunction(DB, report, modify=True): 
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     
@@ -1453,7 +1457,10 @@ FlexToolsModule = FlexToolsModuleClass(runFunction=MainFunction,
                                        docs=docs)
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -1695,8 +1702,8 @@ widgetList = [
 
 ]
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # ----------------------------------------------------------------
 # The main processing function

@@ -47,7 +47,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TranslateText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -66,14 +69,18 @@ docs = {FTM_Name       : _translate("TranslateText", "Translate Text"),
         FTM_Description: _translate("TranslateText",
 """Translate the current source text.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
@@ -160,7 +167,11 @@ def MainFunction(DB, report, modify=True):
         
         # Reload the translations after Export to Paratext
         translators = []
+        app = QApplication.instance()
+
+    if app is None:
         app = QApplication([])
+
         Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                                translators, loadBase=False)
     else:

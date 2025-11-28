@@ -71,7 +71,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RunTreeTran'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -95,8 +98,8 @@ that the invoker file Invoker.xml exists in the system temporary folder (%TEMP%)
 This file gets created by the PC-PATR with FLEx program when the tree toolbar
 button is used. """).format(extractSourceTextModule=ExtractSourceTextDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 INVOKER_FILE = 'Invoker.xml'   
 VALID_PARSES_FILE = 'valid_parses_for_tree_tran.xml'
@@ -165,7 +168,11 @@ def filterAndLogInvokerParses(inputFilename):
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

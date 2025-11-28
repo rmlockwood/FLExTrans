@@ -75,7 +75,10 @@ import Utils
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['StartTestbed'], translators)
@@ -99,8 +102,8 @@ docs = {
     ),
 }
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def init_new_result(DB, report):
     # should this clean up result nodes that have no data?
@@ -135,7 +138,11 @@ def init_new_result(DB, report):
 def MainFunction(DB, report, modifyAllowed):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['StartTestbed'], 
                            translators, loadBase=True)
 

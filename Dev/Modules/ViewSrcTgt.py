@@ -86,7 +86,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ViewSrcTgt'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -108,8 +111,8 @@ category, green-affix or feature or class, yellow-non-sentence punctuation,
 dark pink-unknown lemma, pink-unknown category, red-lemma not found. Important! You
 must run the modules up to and including {runApert} before running this module.""").format(runApert=RunApertium.docs[FTM_Name])}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 class Main(QMainWindow):
 
@@ -332,7 +335,11 @@ class Main(QMainWindow):
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

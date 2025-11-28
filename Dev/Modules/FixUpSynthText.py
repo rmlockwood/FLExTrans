@@ -60,7 +60,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FixUpSynthText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -80,15 +83,19 @@ docs = {FTM_Name       : _translate("FixUpSynthText", "Fix Up Synthesis Text"),
 synthesis. The operations are defined with the {textOutRulesModule} module. The rules are stored in the
 Fix Up Synthesis Text Rules File as specified in the Settings.""").format(textOutRulesModule=TextInOutUtils.TEXTOUT_MODULENAME)}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
