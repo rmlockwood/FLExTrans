@@ -187,7 +187,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoStampSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -213,8 +216,8 @@ docs = {FTM_Name       : _translate("DoStampSynthesis", "Synthesize Text with ST
         FTM_Help       : "",
         FTM_Description: description}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 DONT_CACHE = False
 CATEGORY_STR = 'category'
@@ -1462,7 +1465,11 @@ def doStamp(DB, report, configMap=None):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

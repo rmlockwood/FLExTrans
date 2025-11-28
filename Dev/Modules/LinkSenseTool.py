@@ -236,7 +236,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'LinkSenseTool'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -272,8 +275,8 @@ a sense-level custom field in your source project. It should be simple text fiel
 The purpose of the custom field is to hold the link to a sense in the target project.
 Set which custom field is used for linking in the settings.""")}
                  
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # Configurables:
@@ -2050,7 +2053,11 @@ REBUILD_BILING = 3
 def MainFunction(DB, report, modify=False):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
     if not modify:

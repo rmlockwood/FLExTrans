@@ -70,7 +70,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ReplacementEditor'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -91,8 +94,8 @@ in the presence of particular affixes. For example, if you have a noun that
 is generally translated one way, but has a different translation in the
 vocative singular, you can specify that here.""").format(linkSenseToolModule=LinkSenseToolDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 class TableRow:
     def __init__(self, window, table):
@@ -598,7 +601,11 @@ class Main(QMainWindow):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

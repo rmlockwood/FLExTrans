@@ -84,7 +84,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'InsertTargetText'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -106,8 +109,8 @@ and insert the text into the target FLEx project. The Source Text Name setting
 will be used for the text name in the target project. An existing text of the 
 same name will not be overwritten. A copy will be created.""").format(doSynthModule=DoSynthesisDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
@@ -186,7 +189,11 @@ def MainFunction(DB, report, modify=True):
         return
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

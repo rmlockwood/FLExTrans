@@ -88,7 +88,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RunApertium'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -111,8 +114,8 @@ docs = {FTM_Name       : _translate("RunApertium", "Run Apertium"),
         FTM_Help       : "",  
         FTM_Description:    descr}     
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 STRIPPED_RULES  = 'tr.t1x'
 STRIPPED_RULES2 = 'tr.t2x'
@@ -514,7 +517,11 @@ def runApertium(DB, configMap, report):
 def MainFunction(DB, report, modify=True):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

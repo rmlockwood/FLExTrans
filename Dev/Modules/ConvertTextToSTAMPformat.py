@@ -164,7 +164,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ConvertTextToSTAMPformat'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -193,8 +196,8 @@ target_words-HC.txt. Both files are usually in the Build folder.
 NOTE: messages and the task bar will show the source project as being used. Actually the target project 
 is being used.""").format(runApert=RunApertDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 COMPLEX_FORMS = 'COMPLEX FORMS'
 IRR_INFL_VARIANTS = 'IRREGULARLY INFLECTED VARIANT FORMS'
@@ -1473,7 +1476,11 @@ def convertToSynthesizerFormat(DB, configMap, report):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

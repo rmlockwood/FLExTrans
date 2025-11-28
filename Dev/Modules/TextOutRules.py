@@ -59,7 +59,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TextOutRules'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -80,15 +83,19 @@ synthesis. Regular expressions can be used if desired. IMPORTANT: Rules defined 
 This module is not in the Drafting collection of modules by default. You need to add {fixUpSynthTextModule} to the Drafting collection 
 and move it to be after the {synthModule} Text module.""").format(fixUpSynthTextModule=FixUpSynthTextDocs[FTM_Name], synthModule=DoSynthesisDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

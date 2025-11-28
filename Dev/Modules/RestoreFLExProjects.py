@@ -47,7 +47,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'RestoreFLExProjects'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -67,8 +70,8 @@ f"""Select one or more FLEx backup files and automatically restore them one by o
 window that comes up to complete the restore. 
 The tool waits until one project is open before restoring the next.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 # Maximum time to wait for a project to open before exiting
 LIMIT_SECS = 45
@@ -190,7 +193,11 @@ def extractProjName(backupName):
 def mainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

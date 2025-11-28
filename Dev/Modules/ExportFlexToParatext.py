@@ -65,7 +65,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'ExportFlexToParatext'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -85,8 +88,8 @@ docs = {FTM_Name       : _translate("ExportFlexToParatext", "Export Text from Ta
 from will be filtered according to texts that have a scripture book name or abbreviation in the title plus
 a chapter number or a range of chapter numbers.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
@@ -246,7 +249,11 @@ def makeTextStr(contentsObj):
 def MainFunction(DB, report, modify):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

@@ -48,7 +48,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'TextInRules'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -67,15 +70,19 @@ docs = {FTM_Name       : _translate("TextInRules", "Text In Rules"),
 """This module is used to define and test a set of search and replace operations to be used to fix up the text that comes out of 
 Paratext. Regular expressions and Wildebeest normalization can be used if desired.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 # The main processing function
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

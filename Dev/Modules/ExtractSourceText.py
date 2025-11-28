@@ -87,7 +87,10 @@ NGRAM_SIZE = 5
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['ExtractSourceText'], translators)
@@ -116,8 +119,8 @@ and class1 to classN are inflection classes that may be present on the stem.
 The exported sentences will be stored in the file specified by the Analyzed Text Output File setting.
 This is typically called source_text-aper.txt and is usually in the Build folder.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 def punctuationEval(i, treeTranSentObj, myFLExSent, beforeAfterMap, wordGramMap, puncOutputMap, wordsHandledMap):
 
@@ -482,7 +485,11 @@ def doExtractSourceText(DB, configMap, report):
 def MainFunction(DB, report, modifyAllowed):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['ExtractSourceText'], 
                            translators, loadBase=True)
 

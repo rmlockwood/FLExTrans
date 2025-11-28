@@ -20,7 +20,7 @@
 #    Settings are now launched from the menu
 
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QCoreApplication, QTranslator
+from PyQt5.QtCore import QCoreApplication
 from System.Windows.Forms import (  # type: ignore
     Keys,
     MessageBox,
@@ -48,7 +48,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'FLExTransMenu'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -59,7 +62,11 @@ librariesToTranslate = ['ReadConfig']
 def RunEditTransferRules(sender, event):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
     
@@ -90,7 +97,11 @@ def RunHelp(sender, event):
 def RunAbout(sender, event):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=False)
     
@@ -111,6 +122,6 @@ customMenu = (
     ],
 )
 
-app.quit()
-del app
+#app.quit()
+#del app
 

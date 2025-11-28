@@ -171,7 +171,10 @@ REPLDICTIONARY = 'repldictionary'
 _translate = QCoreApplication.translate
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations(['ExtractBilingualLexicon'], translators)
@@ -197,8 +200,8 @@ This is typically called bilingual.dix and is usually in the Output folder.\n
 You can make custom changes to the bilingual lexicon by using the {replEditorModule}. See the help
 document for more details.""").format(replEditorModule=ReplEditorDocs[FTM_Name])}
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 #----------------------------------------------------------------
 
@@ -612,7 +615,11 @@ def extract_bilingual_lex(DB, configMap, report=None, useCacheIfAvailable=False)
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + ['ExtractBilingualLexicon'], 
                            translators, loadBase=True)
 

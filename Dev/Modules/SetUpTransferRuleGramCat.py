@@ -95,7 +95,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'SetUpTransferRuleGramCat'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -122,8 +125,8 @@ attributes in the transfer rule file from FLEx inflection features, inflection c
 and template slots. You can decide which of these are used and whether existing attributes
 should be overwritten.""")}
 
-app.quit()
-del app
+#app.quit()
+#del app
                  
 slot2AffixListMap = {}
 GRAM_CAT = 'a_gram_cat'
@@ -472,7 +475,11 @@ def getThings(masterAttribList, override, DB, TargetDB, report, processFunc, thi
 def MainFunction(DB, report, modify=True):
     
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 

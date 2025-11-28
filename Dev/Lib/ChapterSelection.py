@@ -671,7 +671,10 @@ def doExport(textContents, report, chapSelectObj, parent):
     return 1
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 Utils.loadTranslations(['ChapterSelection'], translators)
 
@@ -786,5 +789,5 @@ bookMap = {
     'GLO': _translate("ChapterSelection", "Glossary"),
 }
 
-app.quit()
-del app
+#app.quit()
+#del app

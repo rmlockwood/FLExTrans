@@ -151,7 +151,10 @@ _translate = QCoreApplication.translate
 TRANSL_TS_NAME = 'DoHermitCrabSynthesis'
 
 translators = []
-app = QApplication([])
+app = QApplication.instance()
+
+if app is None:
+    app = QApplication([])
 
 # This is just for translating the docs dictionary below
 Utils.loadTranslations([TRANSL_TS_NAME], translators)
@@ -181,8 +184,8 @@ These forms are then used to create the target text.""")}
 
 description = docs[FTM_Description]
 
-app.quit()
-del app
+#app.quit()
+#del app
 
 SUCCESS = 'Success!'
 
@@ -825,7 +828,11 @@ def doHermitCrab(DB, report, configMap=None):
 def MainFunction(DB, report, modifyAllowed):
 
     translators = []
-    app = QApplication([])
+    app = QApplication.instance()
+
+    if app is None:
+        app = QApplication([])
+
     Utils.loadTranslations(librariesToTranslate + [TRANSL_TS_NAME], 
                            translators, loadBase=True)
 
