@@ -5,6 +5,10 @@
 #   SIL International
 #   9/11/23
 #
+#   Version 3.14.4 - 12/1/25 - Ron Lockwood
+#    Fixes #1119. Give a better error message when the co-feature "number" is not found.
+#    Also give an error if the values "sg" and "pl" are not found.
+#
 #   Version 3.14.2 - 10/8/25 - Ron Lockwood
 #    Fixes #1096. Use _affixes instead of _slots for attribute names.
 #
@@ -1465,26 +1469,49 @@ class RuleGenerator:
         # See if we need to delete old stuff
         delete_old = (root.get('overwrite_rules', 'no') == 'yes')
 
-        # Check if we need a Bantu macro.
-        # This will only use a feature which is split by number and has
-        # both singular and plural values.
         # Perhaps in future we can generalize this to work with whatever
-        # disjoint features the UI gives us, but for now we're special-casing
-        # the logic.
-        bantuPair = root.find(".//DisjointFeatureSet[@co_feature_name='number']")
-        if bantuPair is not None:
-            merged = bantuPair.get('disjoint_name')
-            sg, pl = None, None
-            for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
-                val = node.get('co_feature_value')
-                if val == 'sg':
-                    sg = node.get('flex_feature_name')
-                elif val == 'pl':
-                    pl = node.get('flex_feature_name')
-            if merged and sg and pl:
-                self.BantuFeature = merged
-                self.BantuParts = (sg, pl)
-                self.MakeBantuMacro(sg, pl, delete_old)
+        # disjoint features the UI gives us, but for now we're hardcoding this to expect a co-feature named "number" 
+        # and we expect number to have values "sg" and "pl".
+
+        # First check if we have a disjoint feature set.
+        disjointFeatureSets = root.find('.//DisjointFeatureSets')
+
+        if disjointFeatureSets is not None:
+
+            # Look for a co-feature named "number".
+            bantuPair = root.find(".//DisjointFeatureSet[@co_feature_name='number']")
+
+            if bantuPair is None:
+
+                self.report.Error(_translate('CreateApertiumRules', 'Expected a co-feature with the exact name "number". Please correct this.'))
+                return 0
+            else:
+                merged = bantuPair.get('disjoint_name')
+                sg, pl = None, None
+
+                for node in bantuPair.findall('.//DisjointFeatureValuePairing'):
+
+                    val = node.get('co_feature_value')
+
+                    if val == 'sg':
+
+                        sg = node.get('flex_feature_name')
+
+                    elif val == 'pl':
+
+                        pl = node.get('flex_feature_name')
+                    else:
+                        # Unexpected value found. Give a warning and ignore it.
+                        self.report.Warning(_translate('CreateApertiumRules', 'Unexpected co-feature value "{val}" found in a disjoint feature set. Expected only "sg" or "pl". This value will be ignored.').format(val=val))
+
+                if merged and sg and pl:
+
+                    self.BantuFeature = merged
+                    self.BantuParts = (sg, pl)
+                    self.MakeBantuMacro(sg, pl, delete_old)
+                else:
+                    self.report.Error(_translate('CreateApertiumRules', 'Please ensure that the co-feature "number" has both "sg" and "pl" values.'))
+                    return 0
 
         # Iterate over the rules in the file.
         ruleCount = 0
