@@ -225,10 +225,14 @@ InitPluginsDir
       StrCpy $9 "Tools"
     ${EndIf}
 
-    # Overwrite FlexTools.vbs
+    # Overwrite FLExTrans.vbs
     ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\*.*"
+       ; Delete a old FlexTools.vbs file if it exists
+       ${If} ${FileExists} "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+          Delete "${WORKPROJECTSDIR}\$1\FlexTools.vbs"
+      ${EndIf}
       SetOutPath "${WORKPROJECTSDIR}\$1"
-      File "${GIT_FOLDER}\FlexTools.vbs"
+      File "${GIT_FOLDER}\FLExTrans.vbs"
     ${EndIf}
     
     # Overwrite flextools.ini
