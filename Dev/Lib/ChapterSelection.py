@@ -5,6 +5,9 @@
 #   SIL International
 #   5/3/22
 #
+#   Version 3.14.1 - 12/3/25 - Ron Lockwood
+#    Fixes #1139. Give a better error message when Paratext path is not found in registry.
+#
 #   Version 3.14 - 5/29/25 - Ron Lockwood
 #    Added localization capability.
 #
@@ -384,12 +387,15 @@ def InitControls(self, export=True, fromFLEx=False):
 def getParatextPath():
 
     # Get the Paratext path from the registry
-    aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
-    aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-    aKey = winreg.OpenKey(aReg, aKey)
-    paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
-    return paratextPathTuple[0]
+    try:
+        aKey = r"SOFTWARE\Wow6432Node\Paratext\8"
+        aReg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+        aKey = winreg.OpenKey(aReg, aKey)
+        paratextPathTuple = winreg.QueryValueEx(aKey, "Settings_Directory")
+        return paratextPathTuple[0]
     
+    except Exception as e:
+        return None
     
 def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=True, fromFLEx=False):
     
@@ -425,6 +431,12 @@ def doOKbuttonValidation(self, export=True, checkBookAbbrev=True, checkBookPath=
     
     # Get the Paratext path
     paratextPath = getParatextPath()
+
+    # If we get None, there was a registry problem
+    if paratextPath is None:
+        
+        QMessageBox.warning(self, _translate("ChapterSelection", "Registry Error"), _translate("ChapterSelection", "Could not find the Paratext installation path in the registry."))
+        return
 
     # Check if Paratext path exists
     if not os.path.exists(paratextPath): 
@@ -479,6 +491,10 @@ def getFilteredSubdirectories(rootDir, excludeList):
     those that start with '_' or 'UserSettings'.
     """
     subdirectories = []
+    
+    if rootDir is None:
+
+        return subdirectories
     
     for dirname in os.listdir(rootDir):
 
