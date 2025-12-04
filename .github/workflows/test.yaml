@@ -31,4 +31,4 @@ jobs:
           pip install PyQt5
           pip install flextoolslib
       - name: test
-        run: python test_rule_assistant.py
+        run: python -v test_rule_assistant.py
